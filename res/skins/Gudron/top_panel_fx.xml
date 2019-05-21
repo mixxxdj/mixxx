@@ -1,0 +1,77 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Old FX section (Flanger).
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanelFX</ObjectName>
+    <SizePolicy>f,f</SizePolicy>
+    <Size>200,32</Size>
+    <Style>QGroupBox { background: url(skin:/backgrounds/panel_recess_fx.png); } </Style>
+    <Children>
+      <!-- Depth -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/depth.png</Unpressed>
+          <Pressed>labels/depth.png</Pressed>
+        </State>
+        <Pos>41,22</Pos>
+      </PushButton>
+      <Knob>
+        <TooltipId>lfoDepth</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_magenta/%1.png</Path>
+        <Pos>38,2</Pos>
+        <Connection>
+          <ConfigKey>[Flanger],lfoDepth</ConfigKey>
+        </Connection>
+      </Knob>
+
+      <!-- LFO -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/lfo.png</Unpressed>
+          <Pressed>labels/lfo.png</Pressed>
+        </State>
+        <Pos>92,22</Pos>
+      </PushButton>
+      <Knob>
+        <TooltipId>lfoPeriod</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_magenta/%1.png</Path>
+        <Pos>82,2</Pos>
+        <Connection>
+          <ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+        </Connection>
+      </Knob>
+
+      <!-- Delay -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/delay.png</Unpressed>
+          <Pressed>labels/delay.png</Pressed>
+        </State>
+        <Pos>129,22</Pos>
+      </PushButton>
+      <Knob>
+        <TooltipId>lfoDelay</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_magenta/%1.png</Path>
+        <Pos>126,2</Pos>
+        <Connection>
+          <ConfigKey>[Flanger],lfoDelay</ConfigKey>
+        </Connection>
+      </Knob>
+    </Children>
+    </WidgetGroup>
+</Template>

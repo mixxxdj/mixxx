@@ -1,0 +1,277 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck info block + key/beat sync and bend.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckHead</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,f</SizePolicy>
+    <Style>QGroupBox { border-top: 0px solid green; padding-top: 0px; }</Style>
+    <Children>
+      <WidgetGroup>
+        <Size>13,65</Size>
+        <Pos>0,0</Pos>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { background: url(skin:/deck/bg_track_info_1.png); }</Style>
+        <Children>
+          <!-- Eject -->
+          <PushButton>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Unpressed>deck/bg_track_info_1_<Variable name="i"/>.png</Unpressed>
+              <Pressed>deck/bg_track_info_1_<Variable name="i"/>.png</Pressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>e,65</Size>
+        <Layout>vertical</Layout>
+        <Style>QGroupBox { background: url(skin:/deck/bg_track_info_2.png); }</Style>
+        <Children>
+          <!-- Track Title -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { background: url(skin:/backgrounds/transparent.png); }</Style>
+            <Children>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <Style>QLabel { padding-top: 0px; }</Style>
+                <Property>title</Property>
+                <Group><Variable name="group"/></Group>
+                <MinimumSize>-1,24</MinimumSize>
+              </TrackProperty>
+              <Template src="skin:expander_h.xml"/>
+            </Children>
+          </WidgetGroup>
+          <!-- Track Artist -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { background: url(skin:/backgrounds/transparent.png); }</Style>
+            <Children>
+              <TrackProperty>
+                <TooltipId>track_artist</TooltipId>
+                <Style>QLabel { padding-top: 6px; }</Style>
+                <Property>artist</Property>
+                <Group><Variable name="group"/></Group>
+                <MinimumSize>-1,24</MinimumSize>
+              </TrackProperty>
+              <Template src="skin:expander_h.xml"/>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>122,65</Size>
+        <SizePolicy>f,f</SizePolicy>
+        <Layout>vertical</Layout>
+        <Style>QGroupBox { background: url(skin:/deck/bg_track_info_3.png); }</Style>
+        <Children>
+          <WidgetGroup>
+            <SizePolicy>e,e</SizePolicy>
+            <Size>e,e</Size>
+            <Style>QGroupBox { border: 0px solid red; background: url(skin:/backgrounds/transparent.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>f,f</SizePolicy>
+            <Size>122,25</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { border: 0px solid green; background: url(skin:/backgrounds/transparent.png); }</Style>
+            <Children>
+              <!-- Separator -->
+              <PushButton>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>backgrounds/1px.png</Pressed>
+                  <Unpressed>backgrounds/1px.png</Unpressed>
+                </State>
+              </PushButton>
+              <WidgetGroup>
+                <SizePolicy>f,f</SizePolicy>
+                <Size>58,25</Size>
+                <Children>
+                  <!-- Key -->
+                  <Key>
+                    <TooltipId>visual_key</TooltipId>
+                    <Style>QLabel { text-align: center; padding-left: 0px; padding-top: 0px; }
+                    </Style>
+                    <Group><Variable name="group"/></Group>
+                    <Size>58f,25f</Size>
+                    <Alignment>center</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
+                  <!-- Key sync -->
+                  <PushButton>
+                    <TooltipId>sync_reset_key</TooltipId>
+                    <Style></Style>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/sync_1.png</Pressed>
+                      <Unpressed>deck/sync_0.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+              <!-- Separator -->
+              <PushButton>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>backgrounds/1px.png</Pressed>
+                  <Unpressed>backgrounds/1px.png</Unpressed>
+                </State>
+              </PushButton>
+              <WidgetGroup>
+                <SizePolicy>f,f</SizePolicy>
+                <Size>58,25</Size>
+                <Children>
+                  <!-- BPM -->
+                  <NumberBpm>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <Style>QLabel { text-align: center; padding-right: 2px; padding-top: 0px; }
+                    </Style>
+                    <Group><Variable name="group"/></Group>
+                    <Size>60f,25f</Size>
+                    <Alignment>center</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </NumberBpm>
+                  <!-- Beat sync -->
+                  <PushButton>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/sync_1.png</Pressed>
+                      <Unpressed>deck/sync_0.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/sync_1.png</Pressed>
+                      <Unpressed>deck/sync_1.png</Unpressed>
+                    </State>
+                    <Connection>
+                        <ConfigKey><Variable name="group" />,sync_enabled</ConfigKey>
+                        <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                        <ConfigKey><Variable name="group" />,beatsync</ConfigKey>
+                        <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+              <Template src="skin:expander_h.xml"/>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>e,f</SizePolicy>
+            <Size>e,1</Size>
+            <Style>QGroupBox { border: 0px solid red; background: url(skin:/backgrounds/transparent.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { border: 0px solid yellow; background: url(skin:/backgrounds/transparent.png); }</Style>
+            <Children>
+              <!-- Separator -->
+              <PushButton>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>backgrounds/1px.png</Pressed>
+                  <Unpressed>backgrounds/1px.png</Unpressed>
+                </State>
+              </PushButton>
+              <!-- Pitch bend left -->
+              <PushButton>
+                <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
+                <Style></Style>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>deck/bend_left_1.png</Pressed>
+                  <Unpressed>deck/bend_left_0.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate_temp_down_small</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+              <!-- Separator -->
+              <PushButton>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>backgrounds/1px.png</Pressed>
+                  <Unpressed>backgrounds/1px.png</Unpressed>
+                </State>
+              </PushButton>
+              <!-- Pitch bend right -->
+              <PushButton>
+                <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
+                <Style></Style>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>deck/bend_right_1.png</Pressed>
+                  <Unpressed>deck/bend_right_0.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate_temp_up_small</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+              <WidgetGroup>
+                <SizePolicy>e,e</SizePolicy>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>e,e</SizePolicy>
+            <Size>e,e</Size>
+            <Style>QGroupBox { border: 0px solid red; background: url(skin:/backgrounds/transparent.png); }</Style>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

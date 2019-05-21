@@ -1,0 +1,1902 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck rewind + repeat + key lock + pitch +/-.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckTransport2</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,f</SizePolicy>
+    <Size>min,61f</Size>
+    <Style>QGroupBox { border: 0px solid green; padding-top: 0px; background: url(skin:/backgrounds/transparent.png); }</Style>
+    <Children>
+      <!-- Play/Reverse, Cue/Grid -->
+      <WidgetGroup>
+        <Size>152min,61f</Size>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+        <Children>
+          <!-- Play -->
+          <PushButton>
+            <TooltipId>play_cue_set</TooltipId>
+            <Style></Style>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/play_1.png</Pressed>
+              <Unpressed>deck/play_0.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>deck/play_0.png</Pressed>
+              <Unpressed>deck/play_1.png</Unpressed>
+            </State>
+            <Pos>2,0</Pos>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,play</ConfigKey>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+          </PushButton>
+          <!-- Reverse -->
+          <PushButton>
+            <TooltipId>reverse</TooltipId>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/reverse_1.png</Pressed>
+              <Unpressed>deck/reverse_0.png</Unpressed>
+            </State>
+            <Pos>2,29</Pos>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <!-- Cue -->
+          <PushButton>
+            <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/cue_1.png</Pressed>
+              <Unpressed>deck/cue_0.png</Unpressed>
+            </State>
+            <Pos>93,0</Pos>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <!-- Beatgrid -->
+          <PushButton>
+            <TooltipId>beats_translate_curpos</TooltipId>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/grid_1.png</Pressed>
+              <Unpressed>deck/grid_0.png</Unpressed>
+            </State>
+            <Pos>121,29</Pos>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <!-- Separator -->
+      <WidgetGroup>
+        <Size>1f,61</Size>
+      </WidgetGroup>
+      <!-- Looping, Key, Hotcues -->
+      <WidgetGroup>
+        <Size>min,61</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+        <Children>
+          <!-- Looping -->
+          <WidgetGroup>
+            <Size>226f,61f</Size>
+            <Layout>vertical</Layout>
+            <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 3px; } </Style>
+            <Children>
+              <WidgetGroup>
+                <Size>e,e</Size>
+                <Layout>horizontal</Layout>
+                <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                <Children>
+                  <PushButton>
+                    <TooltipId>loop_in</TooltipId>
+                    <Style></Style>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/loop_in_1.png</Pressed>
+                      <Unpressed>deck/loop_in_0.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,loop_in</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>loop_out</TooltipId>
+                    <Style></Style>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/loop_out_1.png</Pressed>
+                      <Unpressed>deck/loop_out_0.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,loop_out</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>reloop_exit</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/loop_0.png</Pressed>
+                      <Unpressed>deck/loop_0.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/loop_1.png</Pressed>
+                      <Unpressed>deck/loop_1.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,reloop_exit</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,loop_enabled</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>loop_halve</TooltipId>
+                    <Style></Style>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/loop_halve_1.png</Pressed>
+                      <Unpressed>deck/loop_halve_0.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,loop_halve</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>loop_double</TooltipId>
+                    <Style></Style>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/loop_double_1.png</Pressed>
+                      <Unpressed>deck/loop_double_0.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,loop_double</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+              <WidgetStack>
+                <Size>f,f</Size>
+                <NextControl><Variable name="loops"/>,page_next</NextControl>
+                <PrevControl><Variable name="loops"/>,page_prev</PrevControl>
+                <Children>
+                  <WidgetGroup>
+                    <Size>f,f</Size>
+                    <Layout>horizontal</Layout>
+                    <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 4px 0px; }</Style>
+                    <Children>
+                      <!-- Loop < 0.5 loops tricky button -->
+                      <WidgetGroup>
+                        <Size>29,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <!-- Loop < 0.5 Indicator -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_left_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.03125_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.0625_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.125_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.25_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <!-- Go to < 0.5 loops page -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="loops"/>,page_prev</ConfigKey>
+                              <EmitOnDownPress>true</EmitOnDownPress>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 1/2 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_05_m_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_05_m_1.png</Pressed>
+                              <Unpressed>deck/loop_05_m_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_0.5_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 1 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_1_m_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_1_m_1.png</Pressed>
+                              <Unpressed>deck/loop_1_m_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_1_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 2 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_2_m_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_2_m_1.png</Pressed>
+                              <Unpressed>deck/loop_2_m_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_2_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 4 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_4_m_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_4_m_1.png</Pressed>
+                              <Unpressed>deck/loop_4_m_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_4_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 8 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_8_m_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_8_m_1.png</Pressed>
+                              <Unpressed>deck/loop_8_m_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_8_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 16 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_16_m_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_16_m_1.png</Pressed>
+                              <Unpressed>deck/loop_16_m_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_16_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- Loop > 16 loops tricky button -->
+                      <WidgetGroup>
+                        <Size>29,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <!-- Loop > 16 Indicator -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_right_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_32_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_64_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <!-- Go to > 16 loops page -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="loops"/>,page_next</ConfigKey>
+                              <EmitOnDownPress>true</EmitOnDownPress>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Size>f,f</Size>
+                    <Layout>horizontal</Layout>
+                    <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 4px 0px; }</Style>
+                    <Children>
+                      <!-- Loop < 1 loops tricky button -->
+                      <WidgetGroup>
+                        <Size>29,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <!-- Loop < 1 Indicator -->
+
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_left_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.03125_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.0625_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.125_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.25_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_left_1.png</Pressed>
+                              <Unpressed>deck/loop_left_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <!-- Go to < 0.5 loops page -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="loops"/>,page_prev</ConfigKey>
+                              <EmitOnDownPress>true</EmitOnDownPress>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 1 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_1_r_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_1_r_1.png</Pressed>
+                              <Unpressed>deck/loop_1_r_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_1_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 2 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_2_r_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_2_r_1.png</Pressed>
+                              <Unpressed>deck/loop_2_r_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_2_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 4 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_4_r_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_4_r_1.png</Pressed>
+                              <Unpressed>deck/loop_4_r_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_4_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 8 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_8_r_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_8_r_1.png</Pressed>
+                              <Unpressed>deck/loop_8_r_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_8_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 16 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_16_r_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_16_r_1.png</Pressed>
+                              <Unpressed>deck/loop_16_r_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_16_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 32 -->
+                      <PushButton>
+                        <TooltipId>beatloop</TooltipId>
+                        <Style></Style>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>deck/loop_32_r_1.png</Pressed>
+                          <Unpressed>deck/loop_32_r_0.png</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>deck/loop_32_r_1.png</Pressed>
+                          <Unpressed>deck/loop_32_r_1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_32_toggle</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatlooproll_32_activate</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_32_enabled</ConfigKey>
+                          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                      </PushButton>
+                      <!-- 64 -->
+                      <PushButton>
+                        <TooltipId>beatloop</TooltipId>
+                        <Style></Style>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>deck/loop_64_r_1.png</Pressed>
+                          <Unpressed>deck/loop_64_r_0.png</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>deck/loop_64_r_1.png</Pressed>
+                          <Unpressed>deck/loop_64_r_1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_64_toggle</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatlooproll_64_activate</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_64_enabled</ConfigKey>
+                          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                      </PushButton>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Size>f,f</Size>
+                    <Layout>horizontal</Layout>
+                    <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 4px 0px; }</Style>
+                    <Children>
+                      <!-- 1/32 -->
+                      <PushButton>
+                        <TooltipId>beatloop</TooltipId>
+                        <Style></Style>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>deck/loop_003125_l_1.png</Pressed>
+                          <Unpressed>deck/loop_003125_l_0.png</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>deck/loop_003125_l_1.png</Pressed>
+                          <Unpressed>deck/loop_003125_l_1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.03125_toggle</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatlooproll_0.03125_activate</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.03125_enabled</ConfigKey>
+                          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                      </PushButton>
+                      <!-- 1/16 -->
+                      <PushButton>
+                        <TooltipId>beatloop</TooltipId>
+                        <Style></Style>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>deck/loop_00625_l_1.png</Pressed>
+                          <Unpressed>deck/loop_00625_l_0.png</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>deck/loop_00625_l_1.png</Pressed>
+                          <Unpressed>deck/loop_00625_l_1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.0625_toggle</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatlooproll_0.0625_activate</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.0625_enabled</ConfigKey>
+                          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                      </PushButton>
+                      <!-- 1/8 -->
+                      <PushButton>
+                        <TooltipId>beatloop</TooltipId>
+                        <Style></Style>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>deck/loop_0125_l_1.png</Pressed>
+                          <Unpressed>deck/loop_0125_l_0.png</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>deck/loop_0125_l_1.png</Pressed>
+                          <Unpressed>deck/loop_0125_l_1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.125_toggle</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatlooproll_0.125_activate</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.125_enabled</ConfigKey>
+                          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                      </PushButton>
+                      <!-- 1/4 -->
+                      <PushButton>
+                        <TooltipId>beatloop</TooltipId>
+                        <Style></Style>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>deck/loop_025_l_1.png</Pressed>
+                          <Unpressed>deck/loop_025_l_0.png</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>deck/loop_025_l_1.png</Pressed>
+                          <Unpressed>deck/loop_025_l_1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.25_toggle</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatlooproll_0.25_activate</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,beatloop_0.25_enabled</ConfigKey>
+                          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                      </PushButton>
+                      <!-- 1/2 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_05_l_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_05_l_1.png</Pressed>
+                              <Unpressed>deck/loop_05_l_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_0.5_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_0.5_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 1 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_1_l_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_1_l_1.png</Pressed>
+                              <Unpressed>deck/loop_1_l_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_1_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- 2 -->
+                      <WidgetGroup>
+                        <Size>28,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_2_l_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_2_l_1.png</Pressed>
+                              <Unpressed>deck/loop_2_l_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beatloop</TooltipId>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_toggle</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatlooproll_2_activate</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- Loop > 16 loops tricky button -->
+                      <WidgetGroup>
+                        <Size>29,29</Size>
+                        <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+                        <Children>
+                          <!-- Loop > 16 Indicator -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_right_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_4_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_8_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_16_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_32_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>2</NumberStates>
+                            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                            <RightClickIsPushButton>true</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>deck/loop_right_1.png</Pressed>
+                              <Unpressed>deck/loop_right_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beatloop_64_enabled</ConfigKey>
+                              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                            </Connection>
+                          </PushButton>
+                          <!-- Go to > 2 loops page -->
+                          <PushButton>
+                            <Pos>0,0</Pos>
+                            <Style></Style>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>deck/loop_z.png</Pressed>
+                              <Unpressed>deck/loop_z.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey><Variable name="loops"/>,page_next</ConfigKey>
+                              <EmitOnDownPress>true</EmitOnDownPress>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetStack>
+              <WidgetGroup>
+              <Size>me,e</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- Expander -->
+          <WidgetGroup>
+            <Size>4me,61</Size>
+            <MinimumSize>5,-1</MinimumSize>
+            <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; } </Style>
+            <Children>
+            </Children>
+          </WidgetGroup>
+          <!-- Key -->
+          <WidgetGroup>
+            <Size>56f,61f</Size>
+            <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; background: url(skin:/knobs/key/bg.png); } </Style>
+            <Children>
+              <Knob>
+                <TooltipId>pitch</TooltipId>
+                <NumberStates>121</NumberStates>
+                <Path>knobs/key/%1.png</Path>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,pitch</ConfigKey>
+                </Connection>
+              </Knob>
+            </Children>
+          </WidgetGroup>
+          <!-- Separator -->
+          <WidgetGroup>
+            <Size>4f,61f</Size>
+          </WidgetGroup>
+          <!-- Hotcues -->
+          <WidgetGroup>
+            <Size>f,61</Size>
+            <Layout>vertical</Layout>
+            <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 2px 0px 4px; } </Style>
+            <Children>
+              <WidgetGroup>
+                <Size>f,f</Size>
+                <Layout>horizontal</Layout>
+                <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+
+                <Children>
+                  <PushButton>
+                    <TooltipId>hotcue</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/hotcue_1_0_p.png</Pressed>
+                      <Unpressed>deck/hotcue_1_0_u.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/hotcue_1_1_p.png</Pressed>
+                      <Unpressed>deck/hotcue_1_1_u.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>hotcue</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/hotcue_2_0_p.png</Pressed>
+                      <Unpressed>deck/hotcue_2_0_u.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/hotcue_2_1_p.png</Pressed>
+                      <Unpressed>deck/hotcue_2_1_u.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Size>f,f</Size>
+                <Layout>horizontal</Layout>
+                <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+
+                <Children>
+                  <PushButton>
+                    <TooltipId>hotcue</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/hotcue_3_0_p.png</Pressed>
+                      <Unpressed>deck/hotcue_3_0_u.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/hotcue_3_1_p.png</Pressed>
+                      <Unpressed>deck/hotcue_3_1_u.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>hotcue</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/hotcue_4_0_p.png</Pressed>
+                      <Unpressed>deck/hotcue_4_0_u.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/hotcue_4_1_p.png</Pressed>
+                      <Unpressed>deck/hotcue_4_1_u.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <!-- Placeholder -->
+      <WidgetGroup>
+        <Size>2,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; } </Style>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

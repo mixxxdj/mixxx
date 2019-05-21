@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler gain and PFL.
+  Variables:
+    group: Group to control
+-->
+<Template>
+  <!-- Gain -->
+  <WidgetGroup>
+    <Size>f,f</Size>
+    <Layout>horizontal</Layout>
+    <Style>
+      QGroupBox {
+        border: 0px solid blue;
+        margin: 0;
+      }
+    </Style>
+    <Children>
+      <WidgetGroup>
+        <Size>2,me</Size>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>56me,56me</Size>
+        <Layout>vertical</Layout>
+        <Style>QGroupBox { border: 0px solid green; margin: 0; background: url("skin:/knobs/white/bg.png"); }</Style>
+        <Children>
+          <Knob>
+            <TooltipId>pregain</TooltipId>
+            <Style></Style>
+            <NumberStates>120</NumberStates>
+            <Path>knobs/cyan/%1.png</Path>
+            <Pos>0,0</Pos>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
+            </Connection>
+          </Knob>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+  <WidgetGroup>
+    <SizePolicy>min,min</SizePolicy>
+    <Size>me,1</Size>
+    <Style>QGroupBox { border-top: 0 solid rgba(255, 255, 255, 16); background-color: transparent; }</Style>
+  </WidgetGroup>
+  <!-- PFL -->
+  <WidgetGroup>
+    <Size>f,f</Size>
+    <Layout>horizontal</Layout>
+    <Style>QGroupBox { border: 0 solid green; margin: 0; }</Style>
+    <Children>
+      <WidgetGroup>
+        <Size>1,me</Size>
+      </WidgetGroup>
+      <PushButton>
+        <TooltipId>pfl</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>mixer/pfl_0.png</Pressed>
+          <Unpressed>mixer/pfl_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>mixer/pfl_1.png</Pressed>
+          <Unpressed>mixer/pfl_1.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

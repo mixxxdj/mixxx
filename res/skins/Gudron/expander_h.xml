@@ -1,0 +1,15 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Horizontal expander.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ExpanderH</ObjectName>
+    <SizePolicy>e,f</SizePolicy>
+    <Size>e,me</Size>
+    <Children>
+
+    </Children>
+  </WidgetGroup>
+</Template>

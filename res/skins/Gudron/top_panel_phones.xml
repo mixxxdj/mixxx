@@ -1,0 +1,55 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Phones and PFL section.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanelPhones</ObjectName>
+    <SizePolicy>f,f</SizePolicy>
+    <Size>160,32</Size>
+    <Style>QGroupBox { border-bottom: 1px solid black; background: url(skin:/backgrounds/panel_recess_levels.png); } </Style>
+    <Children>
+      <!-- Phones -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/phones.png</Unpressed>
+          <Pressed>labels/phones.png</Pressed>
+        </State>
+        <Pos>37,22</Pos>
+      </PushButton>
+      <Knob>
+        <TooltipId>headphone_volume</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_cyan/%1.png</Path>
+        <Pos>40,2</Pos>
+        <Connection>
+          <ConfigKey>[Master],headVolume</ConfigKey>
+        </Connection>
+      </Knob>
+      <!-- PFL - Mix -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/pfl-mix.png</Unpressed>
+          <Pressed>labels/pfl-mix.png</Pressed>
+        </State>
+        <Pos>84,22</Pos>
+      </PushButton>
+      <Knob>
+        <TooltipId>headMix</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_cyan_red/%1.png</Path>
+        <Pos>84,2</Pos>
+        <Connection>
+          <ConfigKey>[Master],headMix</ConfigKey>
+        </Connection>
+      </Knob>
+    </Children>
+    </WidgetGroup>
+</Template>

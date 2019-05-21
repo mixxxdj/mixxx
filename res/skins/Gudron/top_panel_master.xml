@@ -1,0 +1,65 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Master and balance section.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanelMaster</ObjectName>
+    <SizePolicy>f,f</SizePolicy>
+    <Size>160,32</Size>
+    <Style>QGroupBox { border-bottom: 1px solid black; background: url(skin:/backgrounds/panel_recess_levels.png); } </Style>
+    <Children>
+      <!-- Master -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/master.png</Unpressed>
+          <Pressed>labels/master.png</Pressed>
+        </State>
+        <Pos>36,22</Pos>
+      </PushButton>
+      <StatusLight>
+        <TooltipId>master_PeakIndicator</TooltipId>
+        <Style></Style>
+        <PathStatusLight>panel/master_overload_1.png</PathStatusLight>
+        <PathBack>panel/master_overload_0.png</PathBack>
+        <Pos>16,3</Pos>
+        <Connection>
+          <ConfigKey>[Master],PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
+      <Knob>
+        <TooltipId>master_volume</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_red/%1.png</Path>
+        <Pos>40,2</Pos>
+        <Connection>
+          <ConfigKey>[Master],volume</ConfigKey>
+        </Connection>
+      </Knob>
+      <!-- Balance -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/balance.png</Unpressed>
+          <Pressed>labels/balance.png</Pressed>
+        </State>
+        <Pos>84,22</Pos>
+      </PushButton>
+      <Knob>
+        <TooltipId>balance</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_yellow/%1.png</Path>
+        <Pos>84,2</Pos>
+        <Connection>
+          <ConfigKey>[Master],balance</ConfigKey>
+        </Connection>
+      </Knob>
+    </Children>
+    </WidgetGroup>
+</Template>

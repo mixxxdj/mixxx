@@ -1,0 +1,45 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Top panel container.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanel</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,f</SizePolicy>
+    <Size>e,32</Size>
+    <Style>QGroupBox { border-bottom: 1px solid black; background-color: rgba(0,0,0,128); }</Style>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Size>e,32</Size>
+        <Style>QGroupBox { border-bottom: 0px solid black; background-color: rgba(0,0,0,0); }</Style>
+        <Children>
+          <PushButton>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>/panel/mixxx_on.png</Pressed>
+              <Unpressed>/panel/mixxx.png</Unpressed>
+            </State>
+          </PushButton>
+          <Template src="skin:expander_h.xml"/>
+        </Children>
+      </WidgetGroup>
+      <Template src="skin:top_panel_fx.xml"/>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Size>e,32</Size>
+        <Style>QGroupBox { border-bottom: 0px solid black; background-color: rgba(0,0,0,0); }</Style>
+        <Children>
+          <Template src="skin:expander_h.xml"/>
+          <Template src="skin:top_panel_phones.xml"/>
+          <Template src="skin:top_panel_master.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

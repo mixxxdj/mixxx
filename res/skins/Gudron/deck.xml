@@ -1,0 +1,38 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck widget.
+  Variables:
+    i: The deck number (1-indexed)
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <SetVariable name="spinny">[Spinny<Variable name="i"/>]</SetVariable>
+  <SetVariable name="wave">[Wave<Variable name="i"/>]</SetVariable>
+  <SetVariable name="overview">[Overview<Variable name="i"/>]</SetVariable>
+  <SetVariable name="loops">[Loops<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Deck<Variable name="i"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Style>QGroupBox { background-color: rgba(0,0,0,64); } </Style>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckRows</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Style>QGroupBox { border-top: 1px solid rgba(255, 255, 255, 16); padding-top: -1px; background-color: transparent; }</Style>
+        <Children>
+          <Template src="skin:deck_head.xml"/>
+          <Template src="skin:deck_wave.xml"/>
+          <Template src="skin:deck_transport1.xml"/>
+          <Template src="skin:deck_transport2.xml"/>
+          <WidgetGroup>
+            <Style>QGroupBox { border-top: 0px; border-bottom: 1px solid rgba(0, 0, 0, 128); background-color: transparent; }</Style>
+            <Size>e,1</Size>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

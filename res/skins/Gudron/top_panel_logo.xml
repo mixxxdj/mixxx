@@ -1,0 +1,25 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Mixxx logo
+-->
+<Template>
+  <PushButton>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>panel/mixxx.png</Pressed>
+      <Unpressed>panel/mixxx.png</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed>panel/mixxx_on.png</Pressed>
+      <Unpressed>panel/mixxx_on.png</Unpressed>
+    </State>
+      <Connection>
+        <ConfigKey>[Shoutcast],enabled</ConfigKey>
+        <EmitOnDownPress>false</EmitOnDownPress>
+        <ConnectValueToWidget>true</ConnectValueToWidget>
+      </Connection>
+  </PushButton>
+</Template>

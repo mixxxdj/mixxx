@@ -1,0 +1,90 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler overview with text and sync.
+  Variables:
+    group: Group to control.
+-->
+<Template>
+  <!-- Text + Overview -->
+  <WidgetGroup>
+    <Style>QGroupBox { border-top: 0; border-bottom: 0; background: url("skin:/sampler/bg_sample_info.png"); }</Style>
+    <Size>166f,61f</Size>
+    <Children>
+      <WidgetGroup>
+        <Style>QGroupBox { border-top: 0; border-bottom: 0; background: url("skin:/backgrounds/transparent.png"); }</Style>
+        <Size>156,54</Size>
+        <Pos>5,2</Pos>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- Overview -->
+          <Template src="skin:overview_sampler.xml"/>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Style>QGroupBox { border-top: 0; border-bottom: 0; background: url("skin:/backgrounds/transparent.png"); }</Style>
+        <Size>156,16</Size>
+        <Pos>5,2</Pos>
+        <Children>
+          <WidgetGroup>
+            <Style>QGroupBox { border-top: 0; border-bottom: 0; background: url("skin:/backgrounds/transparent.png"); }</Style>
+            <Size>156f,16f</Size>
+            <Pos>0,0</Pos>
+            <Layout>horizontal</Layout>
+            <Children>
+              <!-- Text -->
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <Style>QLabel { font: bold 7pt; background-color: transparent; text-align: left; text-transform: uppercase; padding-left: 4px; }</Style>
+                <Property>title</Property>
+                <Group><Variable name="group"/></Group>
+                <Alignment>left</Alignment>
+              </TrackProperty>
+              <Template src="skin:expander_h.xml"/>
+              <NumberBpm>
+                <TooltipId>visual_bpm</TooltipId>
+                <Style>QLabel { font: bold 7pt; background-color: transparent; text-align: left; text-transform: uppercase; padding-right: 3px; }</Style>
+                <Group><Variable name="group"/></Group>
+                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                <Alignment>right</Alignment>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                </Connection>
+              </NumberBpm>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Style>QGroupBox { border-top: 0; border-bottom: 0; background: url("skin:/backgrounds/transparent.png"); }</Style>
+            <Size>156f,16f</Size>
+            <Pos>0,0</Pos>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:expander_h.xml"/>
+              <PushButton>
+                <TooltipId>beatsync_beatsync_tempo</TooltipId>
+                <Style></Style>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>sampler/sync_1.png</Pressed>
+                  <Unpressed>sampler/sync_0.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,37 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler play button.
+  Variables:
+    group: Group to control.
+-->
+<Template>
+  <!-- Play -->
+  <PushButton>
+    <TooltipId>play_start</TooltipId>
+    <Style></Style>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Pressed>sampler/play_0.png</Pressed>
+      <Unpressed>sampler/play_0.png</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed>sampler/play_1.png</Pressed>
+      <Unpressed>sampler/play_1.png</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,start</ConfigKey>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <ButtonState>RightButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+  </PushButton>
+</Template>

@@ -1,0 +1,155 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Library widget (both collapsed and expanded).
+-->
+<Template>
+  <WidgetStack>
+    <ObjectName>LibraryContainer</ObjectName>
+    <!-- Fixed is interesting here. Ignore is the only thing that lets it shrink
+         to nothing. -->
+    <SizePolicy>me,i</SizePolicy>
+    <MinimumSize>0,0</MinimumSize>
+    <Children>
+      <!-- Main Library -->
+      <WidgetGroup>
+				<Layout>horizontal</Layout>
+				<Children>
+					<Splitter>
+						<Size>me,me</Size>
+						<SplitSizes>1,12</SplitSizes>
+						<Children>
+							<WidgetGroup>
+								<Style>QGroupBox {}</Style>
+								<Layout>vertical</Layout>
+								<Children>
+									<!--Search Input Field-->
+									<SearchBox></SearchBox>
+                  <!--Preview Deck-->
+                  <WidgetGroup>
+                    <ObjectName>PreviewDeckContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <!-- When TextRow is laid out, we need to ignore our children.
+                         Otherwise decks might end up with different widths based
+                         on the size of the labels in this row -->
+                    <SizePolicy>i,max</SizePolicy>
+                    <Children>
+                      <Template src="skin:sampler_vu.xml">
+                        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>>
+                        <SetVariable name="group">[PreviewDeck1]</SetVariable>
+                        <SetVariable name="control">VuMeter</SetVariable>
+                      </Template>
+
+                      <WidgetGroup>
+                        <ObjectName>PreviewDeckTextRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Text>
+                          <TooltipId>text</TooltipId>
+                            <SizePolicy>me,min</SizePolicy>
+                            <Group>[PreviewDeck1]</Group>
+                            <Elide>right</Elide>
+                          </Text>
+                          <PushButton>
+                            <TooltipId>eject</TooltipId>
+                            <MinimumSize>22,22</MinimumSize>
+                            <MaximumSize>32,32</MaximumSize>
+                            <SizePolicy>f,f</SizePolicy>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Text></Text>
+                              <Pressed scalemode="STRETCH_ASPECT">style/ic_eject_48px.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">style/ic_eject_48px.svg</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],eject</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>PreviewDeckVisualRow</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+
+                          <PushButton>
+                            <TooltipId>play_start</TooltipId>
+                            <MinimumSize>30,29</MinimumSize>
+                            <MaximumSize>30,29</MaximumSize>
+                            <SizePolicy>f,f</SizePolicy>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>sampler/oldplay_1.png</Pressed>
+                              <Unpressed>sampler/oldplay_0.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>sampler/oldplay_0.png</Pressed>
+                              <Unpressed>sampler/oldplay_1.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],play</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],start</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                          <WidgetGroup>
+                            <Size>me,30f</Size>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <Template src="skin:overview.xml">
+                                <SetVariable name="group">[PreviewDeck1]</SetVariable>
+                              </Template>
+                            </Children>
+                          </WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+									<!--Library Tree View-->
+									<LibrarySidebar></LibrarySidebar>
+									<!--Cover Art-->
+									<CoverArt>
+										<SizePolicy>me,me</SizePolicy>
+										<MinimumSize>100,100</MinimumSize>
+										<Connection>
+											<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+											<BindProperty>visible</BindProperty>
+										</Connection>
+									</CoverArt>
+								</Children>
+							</WidgetGroup>
+							<WidgetGroup>
+								<!-- Library Table-->
+								<Style>QGroupBox {}</Style>
+								<Layout>vertical</Layout>
+								<Children>
+									<Library>
+										<BgColor>#585858</BgColor>
+										<FgColor>#eece33</FgColor>
+									</Library>
+								</Children>
+							</WidgetGroup>
+						</Children>
+					</Splitter>
+				</Children>
+			</WidgetGroup>
+    </Children>
+  </WidgetStack>
+
+</Template>

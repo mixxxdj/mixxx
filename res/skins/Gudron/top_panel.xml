@@ -1,0 +1,47 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Top panel container.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanel</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,f</SizePolicy>
+    <Size>e,32</Size>
+    <Style>QGroupBox { border-bottom: 1px solid black; background: url(skin:/backgrounds/panel_dark.png); }</Style>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Size>e,32</Size>
+        <Style>QGroupBox { border-bottom: 0px solid black; }</Style>
+        <Children>
+          <Template src="skin:top_panel_mic.xml"/>
+          <Template src="skin:top_panel_color.xml"/>
+          <Template src="skin:expander_h.xml"/>
+          <Template src="skin:top_panel_phones.xml"/>
+        </Children>
+      </WidgetGroup>
+      <Template src="skin:top_panel_clock.xml"/>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Size>e,32</Size>
+        <Style>QGroupBox { border-bottom: 0px solid black; }</Style>
+        <Children>
+          <Template src="skin:top_panel_master.xml"/>
+          <Template src="skin:expander_h.xml"/>
+          <Template src="skin:top_panel_show_samplers.xml"/>
+          <Template src="skin:top_panel_separator.xml"/>
+          <Template src="skin:top_panel_show_deck34.xml"/>
+          <Template src="skin:top_panel_separator.xml"/>
+          <Template src="skin:top_panel_show_deck34_wide.xml"/>
+          <Template src="skin:top_panel_separator.xml"/>
+          <Template src="skin:top_panel_show_decks.xml"/>
+          <Template src="skin:top_panel_logo.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

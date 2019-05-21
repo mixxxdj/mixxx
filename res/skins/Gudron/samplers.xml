@@ -1,0 +1,345 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Samplers widget.
+  Variables:
+    i: The deck number (1-indexed)
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,f</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>e,f</SizePolicy>
+        <Children>
+          <SizeAwareStack>
+            <ObjectName>Samplers</ObjectName>
+            <SizePolicy>e,f</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Style>
+              QGroupBox {
+                background-color: rgba(0,0,0,128);
+              }
+            </Style>
+
+            <Children>
+
+              <WidgetGroup>
+                <MinimumSize>320,-1</MinimumSize>
+                <MaximumSize>639,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>640,-1</MinimumSize>
+                <MaximumSize>959,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>960,-1</MinimumSize>
+                <MaximumSize>1279,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>1280,-1</MinimumSize>
+                <MaximumSize>1599,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>1600,-1</MinimumSize>
+                <MaximumSize>1919,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton5</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>1920,-1</MinimumSize>
+                <MaximumSize>2239,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton5</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton6</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+
+              <WidgetGroup>
+                <MinimumSize>2240,-1</MinimumSize>
+                <MaximumSize>2559,-1</MaximumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton5</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton6</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton7</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <MinimumSize>2560,-1</MinimumSize>
+                <ObjectName>SamplersContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <SingletonContainer><ObjectName>SamplerSingleton1</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton5</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton6</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton7</ObjectName></SingletonContainer>
+                  <SingletonContainer><ObjectName>SamplerSingleton8</ObjectName></SingletonContainer>
+                  <Template src="skin:expander_h.xml"/>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </SizeAwareStack>
+          <WidgetGroup>
+            <Size>me,me</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <SizeAwareStack>
+                <ObjectName>Samplers</ObjectName>
+                <SizePolicy>e,f</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Style>
+                  QGroupBox {
+                    background-color: rgba(0,0,0,192);
+                  }
+                </Style>
+
+                <Children>
+
+                  <WidgetGroup>
+                    <MinimumSize>320,-1</MinimumSize>
+                    <MaximumSize>639,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton2</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>640,-1</MinimumSize>
+                    <MaximumSize>959,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton3</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>960,-1</MinimumSize>
+                    <MaximumSize>1279,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton4</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton5</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton6</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>1280,-1</MinimumSize>
+                    <MaximumSize>1599,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton5</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton6</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton7</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton8</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>1600,-1</MinimumSize>
+                    <MaximumSize>1919,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton6</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton7</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton8</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton9</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton10</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>1920,-1</MinimumSize>
+                    <MaximumSize>2239,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton7</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton8</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton9</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton10</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton11</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton12</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+
+                  <WidgetGroup>
+                    <MinimumSize>2240,-1</MinimumSize>
+                    <MaximumSize>2559,-1</MaximumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton8</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton9</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton10</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton11</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton12</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton13</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton14</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>2560,-1</MinimumSize>
+                    <ObjectName>SamplersContainer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Style> QGroupBox { border: 0px solid yellow; } </Style>
+                    <Children>
+                      <Template src="skin:expander_h.xml"/>
+                      <SingletonContainer><ObjectName>SamplerSingleton9</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton10</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton11</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton12</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton13</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton14</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton15</ObjectName></SingletonContainer>
+                      <SingletonContainer><ObjectName>SamplerSingleton16</ObjectName></SingletonContainer>
+                      <Template src="skin:expander_h.xml"/>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </SizeAwareStack>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Samplers2],show_samplers</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,29 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Spinny.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Spinny</ObjectName>
+    <Size>111,111</Size>
+    <Style>QGroupBox { border: 0px solid green; padding: 0; } QWidget { margin: 0; padding: 0;} </Style>
+    <Children>
+      <Spinny>
+        <TooltipId>spinny</TooltipId>
+        <Style></Style>
+        <Group><Variable name="group"/></Group>
+        <Size>111,111</Size>
+        <PathBackground>deck/spinny_bg.png</PathBackground>
+        <PathForeground>deck/spinny_1.png</PathForeground>
+        <PathGhost>deck/spinny_0.png</PathGhost>
+      </Spinny>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="spinny"/>,show_spinny</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

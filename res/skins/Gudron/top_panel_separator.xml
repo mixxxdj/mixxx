@@ -1,0 +1,15 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Small separator line for top panel.
+-->
+<Template>
+  <PushButton>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Unpressed>panel/separator.png</Unpressed>
+      <Pressed>panel/separator.png</Pressed>
+    </State>
+  </PushButton>
+</Template>

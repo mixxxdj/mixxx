@@ -1,0 +1,42 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Spinny.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Mark</ObjectName>
+    <Size>58f,11f</Size>
+    <Layout>vertical</Layout>
+    <Style>QGroupBox { background-color: transparent; } </Style>
+    <Children>
+      <WidgetGroup>
+        <Size>10min,4</Size>
+        <Children>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>56min,4</Size>
+        <Layout>vertical</Layout>
+        <Style>QGroupBox { background-color: transparent;} </Style>
+        <Children>
+          <PushButton>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Unpressed>mixer/eq_mark_<Variable name="i"/>.png</Unpressed>
+              <Pressed>mixer/eq_mark_<Variable name="i"/>.png</Pressed>
+            </State>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>10min,3</Size>
+        <Children>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

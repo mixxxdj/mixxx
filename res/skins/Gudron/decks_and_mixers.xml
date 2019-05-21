@@ -1,0 +1,148 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Decks and Mixers container.
+-->
+<Template>
+<WidgetStack>
+<Size>me,f</Size>
+<Children>
+  <WidgetGroup>
+  <Layout>vertical</Layout>
+  <Style>QGroupBox { background-color: #222222; } </Style>
+  <Children>
+    <!--
+      Decks & Mixer
+    -->
+    <WidgetStack  currentpage="[Deck34_Indicator],current" persist="true">
+      <Layout>horizontal</Layout>
+      <SizePolicy>e,f</SizePolicy>
+      <Children>
+        <!--
+          2 Decks Mode
+        -->
+        <WidgetGroup trigger="[Deck34_Indicator],off">
+          <Layout>horizontal</Layout>
+          <SizePolicy>e,f</SizePolicy>
+          <Style>QGroupBox { border: 0px solid red; }</Style>
+          <Children>
+            <SingletonContainer>
+              <ObjectName>DeckSingleton1</ObjectName>
+            </SingletonContainer>
+            <Template src="skin:mixer2.xml"/>
+            <SingletonContainer>
+              <ObjectName>DeckSingleton2</ObjectName>
+            </SingletonContainer>
+          </Children>
+        </WidgetGroup>
+        <!--
+          4 Decks Mode
+        -->
+
+        <WidgetStack trigger="[Deck34_Indicator],on" currentpage="[Deck34_Wide],current" persist="true">
+          <Layout>horizontal</Layout>
+          <SizePolicy>e,f</SizePolicy>
+          <Style>QGroupBox { border: 0px solid blue; }</Style>
+          <Children>
+
+            <WidgetGroup trigger="[Deck34_Wide],off">
+              <Layout>horizontal</Layout>
+              <SizePolicy>e,f</SizePolicy>
+              <Style>QGroupBox { border: 0px solid blue; }</Style>
+              <Children>
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton1</ObjectName>
+                    </SingletonContainer>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton3</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+                <Template src="skin:mixer4.xml"/>
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton2</ObjectName>
+                    </SingletonContainer>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton4</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+              </Children>
+            </WidgetGroup>
+
+            <WidgetGroup trigger="[Deck34_Wide],on">
+              <Layout>horizontal</Layout>
+              <SizePolicy>e,f</SizePolicy>
+              <Style>QGroupBox { border: 0px solid blue; }</Style>
+              <Children>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton3</ObjectName>
+                    </SingletonContainer>
+                    <WidgetGroup>
+                      <Size>3,min</Size>
+                      <Style>QGroupBox { border-bottom: 1px solid rgba(0, 0, 0, 128); background-color: rgba(0,0,0,0); background: url(skin:/deck/separator.png); }</Style>
+                    </WidgetGroup>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton1</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+                <Template src="skin:mixer3.xml"/>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton2</ObjectName>
+                    </SingletonContainer>
+                    <WidgetGroup>
+                      <Size>3,min</Size>
+                      <Style>QGroupBox { border-bottom: 1px solid rgba(0, 0, 0, 128); background-color: rgba(0,0,0,0); background: url(skin:/deck/separator.png); }</Style>
+                    </WidgetGroup>
+                    <SingletonContainer>
+                      <ObjectName>DeckSingleton4</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+              </Children>
+            </WidgetGroup>
+
+          </Children>
+        </WidgetStack>
+
+
+
+
+
+
+
+
+
+      </Children>
+    </WidgetStack>
+    <!--
+      Samplers
+    -->
+
+    <Template src="skin:samplers.xml"/>
+  </Children>
+  <!-- <Connection>
+    <ConfigKey>[Master],maximize_library</ConfigKey>
+    <BindProperty>visible</BindProperty>
+    <Transform>Not</Transform>
+  </Connection> -->
+</WidgetGroup>
+<WidgetGroup trigger="[Master],maximize_library">
+<Size>min,min</Size>
+</WidgetGroup>
+</Children>
+</WidgetStack>
+</Template>

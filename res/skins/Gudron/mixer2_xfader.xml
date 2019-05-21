@@ -1,0 +1,20 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck rewind + repeat + key lock + pitch +/-.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <SliderComposed>
+    <TooltipId>crossfader</TooltipId>
+    <Style></Style>
+    <Handle>mixer/crossfader_handle.png</Handle>
+    <Slider>mixer/crossfader_bg.png</Slider>
+    <Horizontal>true</Horizontal>
+    <Connection>
+      <ConfigKey>[Master],crossfader</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+    </Connection>
+  </SliderComposed>
+</Template>

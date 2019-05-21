@@ -1,0 +1,116 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Mic section.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanelMic</ObjectName>
+    <SizePolicy>f,f</SizePolicy>
+    <Size>193,32</Size>
+    <Style>QGroupBox { border-bottom: 1px solid black; background: url(skin:/backgrounds/panel_recess_air.png); } </Style>
+    <Children>
+      <!-- Mic -->
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed>labels/input.png</Unpressed>
+          <Pressed>labels/input.png</Pressed>
+        </State>
+        <Pos>92,22</Pos>
+      </PushButton>
+      <!-- Mic Vu -->
+      <VuMeter>
+        <TooltipId>microphone_VuMeter</TooltipId>
+        <Style></Style>
+        <PathVu>panel/air_vu_1.png</PathVu>
+        <PathBack>panel/air_vu_0.png</PathBack>
+        <Pos>0,28</Pos>
+        <Horizontal>true</Horizontal>
+        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldTime>500</PeakHoldTime>
+        <PeakFallTime>50</PeakFallTime>
+        <PeakFallStep>1</PeakFallStep>
+        <Connection>
+          <ConfigKey>[Microphone],VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
+      <!-- Mic Overload -->
+      <StatusLight>
+        <TooltipId>microphone_PeakIndicator</TooltipId>
+        <Style></Style>
+        <PathStatusLight>panel/air_overload_1.png</PathStatusLight>
+        <PathBack>panel/air_overload_0.png</PathBack>
+        <Pos>86,2</Pos>
+        <Connection>
+          <ConfigKey>[Microphone],PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
+      <!-- Mic Volume -->
+      <Knob>
+        <TooltipId>microphone_volume</TooltipId>
+        <Style></Style>
+        <NumberStates>121</NumberStates>
+        <Path>knobs/recess_red/%1.png</Path>
+        <Pos>88,2</Pos>
+        <Connection>
+          <ConfigKey>[Microphone],volume</ConfigKey>
+        </Connection>
+      </Knob>
+      <!-- Mic Mix Orientation-->
+      <PushButton>
+        <TooltipId>orientation</TooltipId>
+        <Style></Style>
+        <NumberStates>3</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>panel/air_orient_0.png</Pressed>
+          <Unpressed>panel/air_orient_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>panel/air_orient_1.png</Pressed>
+          <Unpressed>panel/air_orient_1.png</Unpressed>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Pressed>panel/air_orient_2.png</Pressed>
+          <Unpressed>panel/air_orient_2.png</Unpressed>
+        </State>
+        <Pos>132,0</Pos>
+        <Connection>
+          <ConfigKey>[Microphone],orientation</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <!-- Mic Talk -->
+      <PushButton>
+        <TooltipId>microphone_talkover</TooltipId>
+        <Style></Style>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>panel/air_0.png</Pressed>
+          <Unpressed>panel/air_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>panel/air_1.png</Pressed>
+          <Unpressed>panel/air_1.png</Unpressed>
+        </State>
+        <Pos>0,0</Pos>
+        <Connection>
+          <ConfigKey>[Microphone],talkover</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+    </WidgetGroup>
+</Template>

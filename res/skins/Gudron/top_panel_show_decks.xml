@@ -1,0 +1,26 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Hide/show all except library.
+-->
+<Template>
+  <PushButton>
+    <TooltipId>maximize_library</TooltipId>
+    <Style></Style>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>panel/big_library_1.png</Pressed>
+      <Unpressed>panel/big_library_0.png</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed>panel/big_library_0.png</Pressed>
+      <Unpressed>panel/big_library_1.png</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <ConnectValueToWidget>true</ConnectValueToWidget>
+    </Connection>
+  </PushButton>
+</Template>

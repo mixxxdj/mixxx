@@ -1,0 +1,228 @@
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>Gudron</title>
+    <author>zezic</author>
+    <version>1.12.0.01</version>
+    <description>Mixxx 1.12 skin adapted for 2.0.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <!--Optionally, make elements visible on skin load-->
+      <attribute config_key="[Decks],show_decks">1</attribute>
+      <!-- <attribute config_key="[Samplers],show_samplers">1</attribute> -->
+      <attribute config_key="[Microphone],show_microphone">1</attribute>
+      <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute config_key="[Master],maximize_library">0</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss"/>
+
+  <MinimumSize>-1,-1</MinimumSize>
+  <SizePolicy>me,me</SizePolicy>
+  <Layout>vertical</Layout>
+
+  <Children>
+
+    <SingletonDefinition>
+      <ObjectName>DeckSingleton1</ObjectName>
+      <!-- <SizePolicy>min,f</SizePolicy>
+      <Size>min,500f</Size> -->
+      <Children>
+        <Template src="skin:deck.xml">
+          <SetVariable name="i">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckSingleton2</ObjectName>
+      <!-- <SizePolicy>min,f</SizePolicy>
+      <Size>min,500f</Size> -->
+      <Children>
+        <Template src="skin:deck.xml">
+          <SetVariable name="i">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckSingleton3</ObjectName>
+      <!-- <SizePolicy>min,f</SizePolicy>
+      <Size>min,500f</Size> -->
+      <Children>
+        <Template src="skin:deck.xml">
+          <SetVariable name="i">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckSingleton4</ObjectName>
+      <!-- <SizePolicy>min,f</SizePolicy>
+      <Size>min,500f</Size> -->
+      <Children>
+        <Template src="skin:deck.xml">
+          <SetVariable name="i">4</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton1</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton2</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton3</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton4</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">4</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton5</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">5</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton6</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">6</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton7</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">7</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton8</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">8</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton9</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">9</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton10</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">10</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton11</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">11</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton12</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">12</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton13</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">13</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton14</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">14</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton15</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">15</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSingleton16</ObjectName>
+      <Children>
+        <Template src="skin:sampler.xml">
+          <SetVariable name="i">16</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+
+  	<Template src="skin:top_panel.xml"/>
+    <Template src="skin:decks_and_mixers.xml"/>
+    <!-- <Template src="skin:bottom_panel.xml"/> -->
+    <Template src="skin:library.xml"/>
+  </Children>
+</skin>

@@ -1,0 +1,318 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck waveform overview.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetStack currentpage="[Colorscheme],current" persist="true">
+    <Size>e,e</Size>
+    <Children>
+      <WidgetGroup trigger="[Colorscheme],velvet">
+        <Size>e,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; }</Style>
+        <Children>
+          <!-- Waveform overview -->
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <Size>e,e</Size>
+            <BgPixmap>/backgrounds/transparent.png</BgPixmap>
+            <SignalColor>#AAAAAA</SignalColor>
+              <SignalLowColor>#656277</SignalLowColor>
+              <SignalMidColor>#AB987C</SignalMidColor>
+              <SignalHighColor>#FFFFFF</SignalHighColor>
+              <EndOfTrackColor>#EE2299</EndOfTrackColor>
+              <AxesColor>#333333</AxesColor>
+              <PlayPosColor>#BB3333</PlayPosColor>
+            <MarkerColor>#FF0000</MarkerColor>
+            <ProgressColor>#FFFF00</ProgressColor>
+            <ProgressAlpha>80</ProgressAlpha>
+            <DefaultMark>
+              <Align>top</Align>
+              <Color>#FFFFFF</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <Mark>
+              <Control>hotcue_1_position</Control>
+              <Text> 1</Text>
+              <Align>top</Align>
+              <Color>#00b1ff</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_2_position</Control>
+              <Text> 2</Text>
+              <Align>top</Align>
+              <Color>#ffc200</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_3_position</Control>
+              <Text> 3</Text>
+              <Align>top</Align>
+              <Color>#7bde21</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_4_position</Control>
+              <Text> 4</Text>
+              <Align>top</Align>
+              <Color>#ff0043</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#b7ff24</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Align>bottom</Align>
+              <Color>#f8a744</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> C</Text>
+            </Mark>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup trigger="[Colorscheme],legacy">
+        <Size>e,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; }</Style>
+        <Children>
+          <!-- Waveform overview -->
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <Size>e,e</Size>
+            <BgPixmap>/backgrounds/transparent.png</BgPixmap>
+            <SignalColor>#AAAAAA</SignalColor>
+              <SignalLowColor>#E03054</SignalLowColor>
+              <SignalMidColor>#FFB402</SignalMidColor>
+              <SignalHighColor>#FFFFFF</SignalHighColor>
+              <EndOfTrackColor>#EE2299</EndOfTrackColor>
+              <AxesColor>#333333</AxesColor>
+              <PlayPosColor>#CCCCCC</PlayPosColor>
+            <MarkerColor>#FF0000</MarkerColor>
+            <ProgressColor>#FFFF00</ProgressColor>
+            <ProgressAlpha>80</ProgressAlpha>
+            <DefaultMark>
+              <Align>top</Align>
+              <Color>#FFFFFF</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <Mark>
+              <Control>hotcue_1_position</Control>
+              <Text> 1</Text>
+              <Align>top</Align>
+              <Color>#00b1ff</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_2_position</Control>
+              <Text> 2</Text>
+              <Align>top</Align>
+              <Color>#ffc200</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_3_position</Control>
+              <Text> 3</Text>
+              <Align>top</Align>
+              <Color>#7bde21</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_4_position</Control>
+              <Text> 4</Text>
+              <Align>top</Align>
+              <Color>#ff0043</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#b7ff24</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Align>bottom</Align>
+              <Color>#f8a744</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> C</Text>
+            </Mark>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup trigger="[Colorscheme],mono">
+        <Size>e,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; }</Style>
+        <Children>
+          <!-- Waveform overview -->
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <Size>e,e</Size>
+            <BgPixmap>/backgrounds/transparent.png</BgPixmap>
+            <SignalColor>#AAAAAA</SignalColor>
+              <SignalLowColor>#777777</SignalLowColor>
+              <SignalMidColor>#AAAAAA</SignalMidColor>
+              <SignalHighColor>#FFFFFF</SignalHighColor>
+              <EndOfTrackColor>#EE2299</EndOfTrackColor>
+              <AxesColor>#333333</AxesColor>
+              <PlayPosColor>#BB3333</PlayPosColor>
+            <MarkerColor>#FF0000</MarkerColor>
+            <ProgressColor>#FFFF00</ProgressColor>
+            <ProgressAlpha>80</ProgressAlpha>
+            <DefaultMark>
+              <Align>top</Align>
+              <Color>#FFFFFF</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <Mark>
+              <Control>hotcue_1_position</Control>
+              <Text> 1</Text>
+              <Align>top</Align>
+              <Color>#00b1ff</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_2_position</Control>
+              <Text> 2</Text>
+              <Align>top</Align>
+              <Color>#ffc200</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_3_position</Control>
+              <Text> 3</Text>
+              <Align>top</Align>
+              <Color>#7bde21</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_4_position</Control>
+              <Text> 4</Text>
+              <Align>top</Align>
+              <Color>#ff0043</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#b7ff24</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Align>bottom</Align>
+              <Color>#f8a744</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> C</Text>
+            </Mark>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup trigger="[Colorscheme],submarine">
+        <Size>e,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; }</Style>
+        <Children>
+          <!-- Waveform overview -->
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <Size>e,e</Size>
+            <BgPixmap>/backgrounds/transparent.png</BgPixmap>
+            <SignalColor>#AAAAAA</SignalColor>
+              <SignalLowColor>#1e4744</SignalLowColor>
+              <SignalMidColor>#3e7e58</SignalMidColor>
+              <SignalHighColor>#56877c</SignalHighColor>
+              <EndOfTrackColor>#EE2299</EndOfTrackColor>
+              <AxesColor>#333333</AxesColor>
+              <PlayPosColor>#993333</PlayPosColor>
+            <MarkerColor>#FF0000</MarkerColor>
+            <ProgressColor>#FFFF00</ProgressColor>
+            <ProgressAlpha>80</ProgressAlpha>
+            <DefaultMark>
+              <Align>top</Align>
+              <Color>#FFFFFF</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <Mark>
+              <Control>hotcue_1_position</Control>
+              <Text> 1</Text>
+              <Align>top</Align>
+              <Color>#00b1ff</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_2_position</Control>
+              <Text> 2</Text>
+              <Align>top</Align>
+              <Color>#ffc200</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_3_position</Control>
+              <Text> 3</Text>
+              <Align>top</Align>
+              <Color>#7bde21</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>hotcue_4_position</Control>
+              <Text> 4</Text>
+              <Align>top</Align>
+              <Color>#ff0043</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#b7ff24</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Align>bottom</Align>
+              <Color>#f8a744</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> C</Text>
+            </Mark>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetStack>
+</Template>

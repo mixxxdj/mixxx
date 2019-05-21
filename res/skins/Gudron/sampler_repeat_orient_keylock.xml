@@ -1,0 +1,88 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler repeat, orientation & key lock
+  Variables:
+    group: Group to control
+-->
+<Template>
+  <!-- Repeat, orientation, key lock -->
+  <WidgetGroup>
+    <Style>
+      QGroupBox {
+        border-top: 0;
+        border-bottom: 0;
+        background-color: transparent;
+      }
+    </Style>
+    <Layout>horizontal</Layout>
+    <Size>min,min</Size>
+    <Children>
+      -->
+      <!-- Repeat -->
+      <PushButton>
+        <TooltipId>repeat</TooltipId>
+        <Style></Style>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/repeat_0.png</Pressed>
+          <Unpressed>deck/repeat_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>deck/repeat_1.png</Pressed>
+          <Unpressed>deck/repeat_1.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+        </Connection>
+      </PushButton>
+      <!-- Orientation -->
+      <PushButton>
+        <TooltipId>orientation</TooltipId>
+        <Style></Style>
+        <NumberStates>3</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>sampler/sampler_orient_0.png</Pressed>
+          <Unpressed>sampler/sampler_orient_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>sampler/sampler_orient_1.png</Pressed>
+          <Unpressed>sampler/sampler_orient_1.png</Unpressed>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Pressed>sampler/sampler_orient_2.png</Pressed>
+          <Unpressed>sampler/sampler_orient_2.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <!-- Key Lock -->
+      <PushButton>
+        <TooltipId>keylock</TooltipId>
+        <Style></Style>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/key_lock_0.png</Pressed>
+          <Unpressed>deck/key_lock_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>deck/key_lock_1.png</Pressed>
+          <Unpressed>deck/key_lock_1.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

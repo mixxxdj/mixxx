@@ -1,0 +1,85 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler Vu meter with peak.
+  Variables:
+    group: Group to control
+-->
+<Template>
+  <!-- Vu -->
+  <WidgetGroup>
+    <ObjectName>SamplerRows</ObjectName>
+    <Layout>stacked</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Size>-1,3</Size>
+    <Style>
+      QGroupBox {
+        border-top: 0 solid green;
+        background-color: rgba(0,0,0,64);
+      }
+    </Style>
+    <Children>
+      <!-- <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Size>me,me</Size>
+        <Style>
+          QGroupBox {
+            background-color: #D22B3B;
+          }
+        </Style>
+        <Children></Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup> -->
+
+
+      <PushButton>
+        <TooltipId>sampler_VuMeter</TooltipId>
+        <Style></Style>
+        <ObjectName>Overload</ObjectName>
+        <NumberStates>2</NumberStates>
+        <LeftClickIsPushButton>false</LeftClickIsPushButton>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+      </PushButton>
+
+
+      <!-- <StatusLight>
+        <TooltipId>sampler_PeakIndicator</TooltipId>
+        <PathStatusLight>sampler/vu_over.png</PathStatusLight>
+        <PathBack></PathBack>
+        <Connection>
+          <ConfigKey></ConfigKey>
+        </Connection>
+      </StatusLight> -->
+      <VuMeter>
+        <TooltipId>sampler_VuMeter</TooltipId>
+        <PathVu>sampler/vu_peak.png</PathVu>
+        <PathBack></PathBack>
+        <PeakHoldSize>4</PeakHoldSize>
+        <PeakHoldTime>250</PeakHoldTime>
+        <PeakFallTime>40</PeakFallTime>
+        <PeakFallStep>2</PeakFallStep>
+        <Horizontal>true</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
+    </Children>
+  </WidgetGroup>
+  <WidgetGroup>
+    <SizePolicy>me,min</SizePolicy>
+    <Size>me,3</Size>
+    <Style>
+      QGroupBox {
+        border-top: 1px solid rgba(255, 255, 255, 16);
+        background-color: transparent;
+      }
+    </Style>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,90 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler widget.
+  Variables:
+    i: The sampler number (1-indexed)
+-->
+<Template>
+  <SetVariable name="group">[Sampler<Variable name="i"/>]</SetVariable>
+  <SetVariable name="overview">[SamplerOverview<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Sampler<Variable name="i"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Style>QGroupBox { border-left: 1px solid rgba(255,255,255,16); border-right: 1px solid rgba(255,255,255,16); border-top: 3px solid #171717; background-color: rgba(255,255,255,24); }</Style>
+    <Children>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Style>QGroupBox { border: 0px solid green; background-color: transparent; }</Style>
+        <Children>
+          <Template src="skin:sampler_vu.xml"/>
+          <WidgetGroup>
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Style> QGroupBox { border-top: 0 solid rgba(255, 255, 255, 16); border-bottom: 1px solid rgba(0, 0, 0, 128); padding-top: 0;  background-color: transparent; } </Style>
+            <Children>
+              <WidgetGroup>
+                <Size>3f,me</Size>
+                <Style>QGroupBox { border-left: 0px solid rgba(255,255,255,16); border-right: 0px solid rgba(255,255,255,16); background-color: transparent; }</Style>
+              </WidgetGroup>
+              <!-- Hotcues & Play  -->
+              <WidgetGroup>
+                <Style>QGroupBox { border-top: 0; border-bottom: 0; background-color: transparent; }</Style>
+                <Layout>vertical</Layout>
+                <Size>min,min</Size>
+                <Children>
+                  <Template src="skin:sampler_hotcues.xml"/>
+                  <Template src="skin:sampler_play.xml"/>
+                </Children>
+              </WidgetGroup>
+              <!-- Overview & Repeat, orientation, key lock -->
+              <WidgetGroup>
+                <Style> QGroupBox { border-top: 0; border-bottom: 0; background-color: transparent; } </Style>
+                <Layout>vertical</Layout>
+                <Size>min,min</Size>
+                <Children>
+                  <Template src="skin:sampler_overview.xml"/>
+                  <Template src="skin:sampler_repeat_orient_keylock.xml"/>
+                </Children>
+              </WidgetGroup>
+              -->
+              <!-- Gain & PFL -->
+              <WidgetGroup>
+                <Style>QGroupBox { border-top: 0; border-bottom: 0; background-color: transparent; }</Style>
+                <Layout>vertical</Layout>
+                <Size>min,min</Size>
+                <Children>
+                  <Template src="skin:sampler_gain_pfl.xml"/>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Size>1,me</Size>
+              </WidgetGroup>
+              -->
+              <!-- Pitch -->
+              <SliderComposed>
+                <TooltipId>rate</TooltipId>
+                <Style></Style>
+                <Handle>sampler/pitch_slider_handle.png</Handle>
+                <Slider>sampler/pitch_slider_bg.png</Slider>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+              <WidgetGroup>
+                <SizePolicy>f,min</SizePolicy>
+                <Size>2,1</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,131 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck waveform+overview block + pitch fader.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckWave</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,f</SizePolicy>
+    <Style>QGroupBox { border-top: 0px solid green; padding-top: 0px; background: url(skin:/backgrounds/transparent.png); }</Style>
+    <Children>
+      <WidgetGroup>
+        <Size>4,148</Size>
+        <Style>QGroupBox { background: url(skin:/deck/bg_waveform_1.png); }</Style>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>e,148</Size>
+        <Layout>vertical</Layout>
+        <Style>QGroupBox { background: url(skin:/deck/bg_waveform_2.png); }</Style>
+        <Children>
+          <WidgetGroup>
+          <Size>e,3</Size>
+          <Style>QGroupBox { background: url(skin:/deck/transparent.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Template src="skin:wave.xml"/>
+            <Template src="skin:spinny.xml"/>
+          </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+          <Size>e,1</Size>
+          <Style>QGroupBox { background: url(skin:/deck/transparent.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Size>e,26f</Size>
+          <Style>QGroupBox { background: url(skin:/deck/transparent.png); }</Style>
+          <Children>
+            <Template src="skin:overview.xml"/>
+            <!-- Spinny button -->
+            <PushButton>
+              <TooltipId>show_spinny</TooltipId>
+              <Style></Style>
+              <NumberStates>2</NumberStates>
+              <State>
+                <Number>0</Number>
+                <Pressed>deck/spinny_show_0.png</Pressed>
+                <Unpressed>deck/spinny_show_0.png</Unpressed>
+              </State>
+              <State>
+                <Number>1</Number>
+                <Pressed>deck/spinny_show_1.png</Pressed>
+                <Unpressed>deck/spinny_show_1.png</Unpressed>
+              </State>
+              <Connection>
+                <ConfigKey persist="true"><Variable name="spinny"/>,show_spinny</ConfigKey>
+                <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                <ButtonState>LeftButton</ButtonState>
+              </Connection>
+            </PushButton>
+            <!-- Beat snap -->
+            <PushButton>
+              <TooltipId>quantize</TooltipId>
+              <Style></Style>
+              <NumberStates>2</NumberStates>
+              <State>
+                <Number>0</Number>
+                <Pressed>deck/beatsnap_0.png</Pressed>
+                <Unpressed>deck/beatsnap_0.png</Unpressed>
+              </State>
+              <State>
+                <Number>1</Number>
+                <Pressed>deck/beatsnap_1.png</Pressed>
+                <Unpressed>deck/beatsnap_1.png</Unpressed>
+              </State>
+              <Connection>
+                <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
+                <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                <ButtonState>LeftButton</ButtonState>
+              </Connection>
+            </PushButton>
+            <!-- Separator -->
+            <PushButton>
+              <NumberStates>1</NumberStates>
+              <State>
+                <Number>0</Number>
+                <Unpressed>deck/separator_small.png</Unpressed>
+                <Pressed>deck/separator_small.png</Pressed>
+              </State>
+            </PushButton>
+            <!-- Pitch rate -->
+            <NumberRate>
+              <TooltipId>rate_display</TooltipId>
+              <Style>QLabel { text-align: center; padding-right: 0px; padding-top: 2px;}
+              </Style>
+              <Group><Variable name="group"/></Group>
+              <Size>56f,26f</Size>
+              <Alignment>center</Alignment>
+            </NumberRate>
+          </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+          <Size>e,7</Size>
+          <Style>QGroupBox { background: url(skin:/deck/transparent.png); }</Style>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>3,148</Size>
+        <Style>QGroupBox { background: url(skin:/deck/bg_waveform_3.png); }</Style>
+      </WidgetGroup>
+      <!-- Pitch slider -->
+      <SliderComposed>
+        <TooltipId>rate</TooltipId>
+        <Style></Style>
+        <Handle>deck/pitch_slider_handle.png</Handle>
+        <Slider>deck/pitch_slider_bg.png</Slider>
+        <Horizontal>false</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+      </SliderComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

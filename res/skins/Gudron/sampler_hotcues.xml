@@ -1,0 +1,181 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler hotcues block.
+  Variables:
+    group: Group to control
+-->
+<Template>
+  <!-- Hotcues -->
+  <WidgetGroup>
+    <Size>f,61</Size>
+    <Layout>vertical</Layout>
+    <Style>
+      QGroupBox {
+        border: 0 solid green;
+        padding: 0;
+        margin: 0 2px 0 4px;
+      }
+    </Style>
+    <Children>
+      <WidgetGroup>
+        <Size>f,f</Size>
+        <Layout>horizontal</Layout>
+        <Style>
+          QGroupBox {
+            border: 0 solid green;
+            padding: 0;
+            margin: 0;
+          }
+        </Style>
+        <Children>
+          <PushButton>
+            <TooltipId>hotcue</TooltipId>
+            <Style></Style>
+            <NumberStates>2</NumberStates>
+            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/hotcue_1_0_p.png</Pressed>
+              <Unpressed>deck/hotcue_1_0_u.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>deck/hotcue_1_1_p.png</Pressed>
+              <Unpressed>deck/hotcue_1_1_u.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <TooltipId>hotcue</TooltipId>
+            <Style></Style>
+            <NumberStates>2</NumberStates>
+            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/hotcue_2_0_p.png</Pressed>
+              <Unpressed>deck/hotcue_2_0_u.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>deck/hotcue_2_1_p.png</Pressed>
+              <Unpressed>deck/hotcue_2_1_u.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>f,f</Size>
+        <Layout>horizontal</Layout>
+        <Style>
+          QGroupBox {
+            border: 0 solid green;
+            padding: 0;
+            margin: 0;
+          }
+        </Style>
+        <Children>
+          <PushButton>
+            <TooltipId>hotcue</TooltipId>
+            <Style></Style>
+            <NumberStates>2</NumberStates>
+            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/hotcue_3_0_p.png</Pressed>
+              <Unpressed>deck/hotcue_3_0_u.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>deck/hotcue_3_1_p.png</Pressed>
+              <Unpressed>deck/hotcue_3_1_u.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <TooltipId>hotcue</TooltipId>
+            <Style></Style>
+            <NumberStates>2</NumberStates>
+            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed>deck/hotcue_4_0_p.png</Pressed>
+              <Unpressed>deck/hotcue_4_0_u.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>deck/hotcue_4_1_p.png</Pressed>
+              <Unpressed>deck/hotcue_4_1_u.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

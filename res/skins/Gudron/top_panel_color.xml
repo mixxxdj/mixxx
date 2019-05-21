@@ -1,0 +1,69 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Master and balance section.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TopPanelMaster</ObjectName>
+    <SizePolicy>f,f</SizePolicy>
+    <Size>120,32</Size>
+    <Style>QGroupBox { border-bottom: 1px solid black; background: url(skin:/backgrounds/panel_recess_color.png); } </Style>
+    <Layout>horizontal</Layout>
+    <Children>
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>panel/color_left.png</Pressed>
+          <Unpressed>panel/color_left.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Colorscheme],prev</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+      </PushButton>
+      <WidgetStack currentpage="[Colorscheme],current" persist="true">
+        <Size>e,e</Size>
+        <NextControl>[Colorscheme],next</NextControl>
+        <PrevControl>[Colorscheme],prev</PrevControl>
+        <Children>
+          <WidgetGroup trigger="[Colorscheme],velvet">
+            <Size>e,e</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; background: url(skin:/panel/color_1.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup trigger="[Colorscheme],legacy">
+            <Size>e,e</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; background: url(skin:/panel/color_2.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup trigger="[Colorscheme],mono">
+            <Size>e,e</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; background: url(skin:/panel/color_3.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup trigger="[Colorscheme],submarine">
+            <Size>e,e</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; background: url(skin:/panel/color_4.png); }</Style>
+          </WidgetGroup>
+        </Children>
+      </WidgetStack>
+      <PushButton>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>panel/color_right.png</Pressed>
+          <Unpressed>panel/color_right.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Colorscheme],next</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+      </PushButton>
+    </Children>
+    </WidgetGroup>
+</Template>

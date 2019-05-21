@@ -1,0 +1,187 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck rewind + repeat + key lock + pitch +/-.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckTransport1</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,f</SizePolicy>
+    <Style>QGroupBox { border-top: 0px solid green; padding-top: 0px; background: url(skin:/backgrounds/transparent.png); }</Style>
+    <Children>
+      <!-- Placeholder -->
+      <WidgetGroup>
+        <Size>2,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; } </Style>
+      </WidgetGroup>
+      <!-- Fbwd -->
+      <PushButton>
+        <TooltipId>back_start</TooltipId>
+        <Style></Style>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/fbwd_1.png</Pressed>
+          <Unpressed>deck/fbwd_0.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,back</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,start</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <WidgetGroup>
+        <Size>93f,31f</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; background: url(skin:/deck/bg_time.png); } </Style>
+        <Children>
+          <NumberPos>
+            <TooltipId>track_time</TooltipId>
+            <Style>QLabel { font: 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+            background-color: transparent; color: rgba(255,255,255,160); text-align: center; padding-left: 0px; padding-bottom: 4px; }
+            </Style>
+            <Group><Variable name="group"/></Group>
+            <Size>93f,31f</Size>
+            <Alignment>center</Alignment>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+            </Connection>
+          </NumberPos>
+        </Children>
+      </WidgetGroup>
+      <!-- Ffwd -->
+      <PushButton>
+        <TooltipId>fwd_end</TooltipId>
+        <Style></Style>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/ffwd_1.png</Pressed>
+          <Unpressed>deck/ffwd_0.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,fwd</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,end</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <!-- Placeholder -->
+      <WidgetGroup>
+        <Size>54,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; } </Style>
+      </WidgetGroup>
+      <!-- Repeat -->
+      <PushButton>
+        <TooltipId>repeat</TooltipId>
+        <Style></Style>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/repeat_0.png</Pressed>
+          <Unpressed>deck/repeat_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>deck/repeat_1.png</Pressed>
+          <Unpressed>deck/repeat_1.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+        </Connection>
+      </PushButton>
+      <!-- Expander -->
+      <WidgetGroup>
+        <Size>e,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; } </Style>
+      </WidgetGroup>
+      <!-- Key Lock -->
+      <PushButton>
+        <TooltipId>keylock</TooltipId>
+        <Style></Style>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/key_lock_0.png</Pressed>
+          <Unpressed>deck/key_lock_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>deck/key_lock_1.png</Pressed>
+          <Unpressed>deck/key_lock_1.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
+        </Connection>
+      </PushButton>
+      <!-- Placeholder -->
+      <WidgetGroup>
+        <Size>3,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; } </Style>
+      </WidgetGroup>
+      <!-- Pitch control -->
+      <PushButton>
+        <TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
+        <Style></Style>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/pitch_down_1.png</Pressed>
+          <Unpressed>deck/pitch_down_0.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate_perm_down</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate_perm_down_small</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <PushButton>
+        <TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
+        <Style></Style>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>deck/pitch_up_1.png</Pressed>
+          <Unpressed>deck/pitch_up_0.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate_perm_up</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate_perm_up_small</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <!-- Placeholder -->
+      <WidgetGroup>
+        <Size>2,e</Size>
+        <Layout>horizontal</Layout>
+        <Style>QGroupBox { border: 0px solid green;  padding: 0; margin: 0px 0px 0px 0px; } </Style>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

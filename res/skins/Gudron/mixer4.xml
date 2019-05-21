@@ -1,0 +1,103 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Mixer widget.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Mixer4</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Style>QGroupBox { background-color: rgba(0,0,0,48); } </Style>
+    <Children>
+      <!-- Separator -->
+      <WidgetGroup>
+        <Size>3,min</Size>
+        <Style>QGroupBox { border-bottom: 1px solid rgba(0, 0, 0, 128); background-color: rgba(0,0,0,0); background: url(skin:/deck/separator.png); }</Style>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Size>min,5</Size>
+            <Style>QGroupBox { border-top: 1px solid rgba(255, 255, 255, 16); background-color: rgba(0,0,0,0); background: url(skin:/backgrounds/transparent.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,min</SizePolicy>
+            <Style>QGroupBox { background-color: rgba(0,0,0,0); background: url(skin:/backgrounds/transparent.png); }</Style>
+            <Children>
+              <WidgetGroup>
+                <Size>2f,m</Size>
+              </WidgetGroup>
+              <Template src="skin:mixer4_eq.xml">
+                <SetVariable name="group">[Channel3]</SetVariable>
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>2f,m</Size>
+              </WidgetGroup>
+              <Template src="skin:mixer4_eq.xml">
+                <SetVariable name="group">[Channel1]</SetVariable>
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>2f,m</Size>
+              </WidgetGroup>
+              <Template src="skin:mixer4_eq.xml">
+                <SetVariable name="group">[Channel2]</SetVariable>
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>2f,m</Size>
+              </WidgetGroup>
+              <Template src="skin:mixer4_eq.xml">
+                <SetVariable name="group">[Channel4]</SetVariable>
+                <SetVariable name="i">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,min</SizePolicy>
+            <Style>QGroupBox { background-color: rgba(0,0,0,0); background: url(skin:/backgrounds/transparent.png); }</Style>
+            <Children>
+
+              <WidgetGroup>
+                <Size>1f,m</Size>
+              </WidgetGroup>
+              <Template src="skin:mixer2_gain.xml">
+                <SetVariable name="group">[Channel3]</SetVariable>
+              </Template>
+              <Template src="skin:mixer2_gain.xml">
+                <SetVariable name="group">[Channel1]</SetVariable>
+              </Template>
+              <Template src="skin:mixer2_gain.xml">
+                <SetVariable name="group">[Channel2]</SetVariable>
+              </Template>
+              <Template src="skin:mixer2_gain.xml">
+                <SetVariable name="group">[Channel4]</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>min,3</Size>
+            <Style>QGroupBox { background: url(skin:/backgrounds/transparent.png); }</Style>
+          </WidgetGroup>
+          <Template src="skin:mixer2_xfader.xml"/>
+          <WidgetGroup>
+            <Style>QGroupBox { border-bottom: 1px solid rgba(0, 0, 0, 128); }</Style>
+            <Size>min,1</Size>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <!-- Separator -->
+      <WidgetGroup>
+        <Size>3,me</Size>
+        <Style>QGroupBox { border-bottom: 1px solid rgba(0, 0, 0, 128); background-color: rgba(0,0,0,0); background: url(skin:/deck/separator.png); }</Style>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
