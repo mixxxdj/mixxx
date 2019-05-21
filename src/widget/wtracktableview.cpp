@@ -366,29 +366,35 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
         connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
                 this, SLOT(slotSortingChanged(int, Qt::SortOrder)), Qt::AutoConnection);
+
+        int sortColumn;
+        Qt::SortOrder sortOrder;
+
         // Stupid hack that assumes column 0 is never visible, but this is a weak
         // proxy for "there was a saved column sort order"
         if (horizontalHeader()->sortIndicatorSection() > 0) {
             // Sort by the saved sort section and order.
-            horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
-                                                 horizontalHeader()->sortIndicatorOrder());
-            // in Qt5, we need to call it manually, which triggers finally the select()
-            doSortByColumn(horizontalHeader()->sortIndicatorSection());
+            sortColumn = horizontalHeader()->sortIndicatorSection();
+            sortOrder = horizontalHeader()->sortIndicatorOrder();
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
-            int sortColumn = trackModel->defaultSortColumn();
-            Qt::SortOrder sortOrder = trackModel->defaultSortOrder();
+            sortColumn = trackModel->defaultSortColumn();
+            sortOrder = trackModel->defaultSortOrder();
 
             // If the TrackModel has an invalid or internal column as its default
             // sort, find the first non-internal column and sort by that.
             while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
                 sortColumn++;
             }
-            // This line sorts the TrackModel
-            horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-            // in Qt5, we need to call it manually, which triggers finally the select()
-            doSortByColumn(sortColumn);
         }
+
+        // This line sorts the TrackModel
+        horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+        // in Qt5, we need to call it manually, which triggers finally the select()
+        doSortByColumn(sortColumn);
+
+        m_pSortColumn->set(sortColumn);
+        m_pSortOrder->set(sortOrder);
     }
 
     // Set up drag and drop behavior according to whether or not the track
