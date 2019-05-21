@@ -936,20 +936,6 @@
                 </options>
             </control>
 
-			<!-- 
-				works out of the box?
-			<control>
-                <description>MASTER CUE - press - Master out monitor toggle (headSplit)</description>
-				<group>[Master]</group>
-                <key>headSplit</key> 
-				<status>0x96</status>
-                <midino>0x63</midino>
-                <options>
-					<Script-Binding/>
-                </options>
-            </control>
-			-->
-
 			<control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
 				<group>[Master]</group>
@@ -1135,19 +1121,7 @@
                     <Normal/>
                 </options>
             </control>
- <!--
-			<control>
-                <description>BEAT FX LEVEL/DEPTH - rotate (LSB) - Adjust FX Level and BEAT FX Depth</description>
-				<group>[EffectRack1_EffectUnit3_Effect1]</group>
-                <key>PioneerDDJ400.beatFXLevelDepthRotate</key>
-                <status>0xB4</status>
-                <midino>0x22</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
--->
-
+ 
             <control>
                 <description>BEAT FX LEVEL/DEPTH - rotate (MSB) - Adjust FX Level (mix) and BEAT FX Depth (meta) in the selected slot</description>
 				<group>[EffectRack1_EffectUnit3]</group>
@@ -3270,44 +3244,25 @@
 		<outputs>
 
 			<!-- 
-				TEST:
+                OK:
                 Play/Pause Ch1 900B Shift 9047 Ch2 910B Shift 9147
 				Cue Ch1 900C Shift 9048 Ch2 910C Shift 9148
+				CH CUE Ch1 9054 Shift 9068 Ch2 9154 Shift 9168
+				VuLevel Ch1 B002 Ch2 B102
 				BEAT SYNC Ch1 9058 Shift 9060 Ch2 9158 Shift 9160
-				LOOP IN Ch1 9010 Shift 904C Ch2 9110 Shift 914C
+				
+
+				TEST:
+                LOOP IN Ch1 9010 Shift 904C Ch2 9110 Shift 914C
 				LOOP OUT 9011 Shift 904E Ch2 9111 Shift 914E
 				RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150
-                CH CUE Ch1 9054 Shift 9068 Ch2 9154 Shift 9168
-				VuLevel Ch1 B002 Ch2 B102
-				
+                BEAT FX 9447 Shift 9443
+                Hotcue PAD 1-8 ch1 970N ch2 990N (N = PADNUM -1)
+                Beatloop PAD 1-8 ch1 976N ch2 996N (N = Padnum -1)
+                Beatjump PAD 1-8 ch1 972N ch2 992N 
 
                 OPEN:
 				*Master Cue 9663 Shift 9678
-				BEAT FX 9447 Shift 9443
-				PAD 1 HOT CUE MODE Ch1 9700 Shift 9800 Ch2 9900 Shift 9A00
-				PAD 2 HOT CUE MODE Ch1 9701 Shift 9801 Ch2 9901 Shift 9A01
-				PAD 3 HOT CUE MODE Ch1 9702 Shift 9802 Ch2 9902 Shift 9A02
-				PAD 4 HOT CUE MODE Ch1 9703 Shift 9803 Ch2 9903 Shift 9A03
-				PAD 5 HOT CUE MODE Ch1 9704 Shift 9804 Ch2 9904 Shift 9A04
-				PAD 6 HOT CUE MODE Ch1 9705 Shift 9805 Ch2 9905 Shift 9A05
-				PAD 7 HOT CUE MODE Ch1 9706 Shift 9806 Ch2 9906 Shift 9A06
-				PAD 8 HOT CUE MODE Ch1 9707 Shift 9807 Ch2 9907 Shift 9A07
-				PAD 1 BEATLOOP MODE Ch1 9760 Shift 9860 Ch2 9960 Shift 9A60
-				PAD 2 BEATLOOP MODE Ch1 9761 Shift 9861 Ch2 9961 Shift 9A61
-				PAD 3 BEATLOOP MODE Ch1 9762 Shift 9862 Ch2 9962 Shift 9A62
-				PAD 4 BEATLOOP MODE Ch1 9763 Shift 9863 Ch2 9963 Shift 9A63
-				PAD 5 BEATLOOP MODE Ch1 9764 Shift 9864 Ch2 9964 Shift 9A64
-				PAD 6 BEATLOOP MODE Ch1 9765 Shift 9865 Ch2 9965 Shift 9A65
-				PAD 7 BEATLOOP MODE Ch1 9766 Shift 9866 Ch2 9966 Shift 9A66
-				PAD 8 BEATLOOP MODE Ch1 9767 Shift 9867 Ch2 9967 Shift 9A67
-				PAD 1 BEATJUMP MODE Ch1 9720 Shift 9820 Ch2 9920 Shift 9A20
-				PAD 2 BEATJUMP MODE Ch1 9721 Shift 9821 Ch2 9921 Shift 9A21
-				PAD 3 BEATJUMP MODE Ch1 9722 Shift 9822 Ch2 9922 Shift 9A22
-				PAD 4 BEATJUMP MODE Ch1 9723 Shift 9823 Ch2 9923 Shift 9A23
-				PAD 5 BEATJUMP MODE Ch1 9724 Shift 9824 Ch2 9924 Shift 9A24
-				PAD 6 BEATJUMP MODE Ch1 9725 Shift 9825 Ch2 9925 Shift 9A25
-				PAD 7 BEATJUMP MODE Ch1 9726 Shift 9826 Ch2 9926 Shift 9A26
-				PAD 8 BEATJUMP MODE Ch1 9727 Shift 9827 Ch2 9927 Shift 9A27
 				PAD 1 SAMPLER MODE Ch1 9730 Shift 9830 Ch2 9930 Shift 9A30
 				PAD 2 SAMPLER MODE Ch1 9731 Shift 9831 Ch2 9931 Shift 9A31
 				PAD 3 SAMPLER MODE Ch1 9732 Shift 9832 Ch2 9932 Shift 9A32
@@ -3316,14 +3271,14 @@
 				PAD 6 SAMPLER MODE Ch1 9735 Shift 9835 Ch2 9935 Shift 9A35
 				PAD 7 SAMPLER MODE Ch1 9736 Shift 9836 Ch2 9936 Shift 9A36
 				PAD 8 SAMPLER MODE Ch1 9737 Shift 9837 Ch2 9937 Shift 9A37
-				*PAD 1 KEYBOARD MODE Ch1 9740 Shift 9840 Ch2 9940 Shift 9A40
-				*PAD 2 KEYBOARD MODE Ch1 9741 Shift 9841 Ch2 9941 Shift 9A41
-				*PAD 3 KEYBOARD MODE Ch1 9742 Shift 9842 Ch2 9942 Shift 9A42
-				*PAD 4 KEYBOARD MODE Ch1 9743 Shift 9843 Ch2 9943 Shift 9A43
-				*PAD 5 KEYBOARD MODE Ch1 9744 Shift 9844 Ch2 9944 Shift 9A44
-				*PAD 6 KEYBOARD MODE Ch1 9745 Shift 9845 Ch2 9945 Shift 9A45
-				*PAD 7 KEYBOARD MODE Ch1 9746 Shift 9846 Ch2 9946 Shift 9A46
-				*PAD 8 KEYBOARD MODE Ch1 9747 Shift 9847 Ch2 9947 Shift 9A47
+				PAD 1 KEYBOARD MODE Ch1 9740 Shift 9840 Ch2 9940 Shift 9A40
+				PAD 2 KEYBOARD MODE Ch1 9741 Shift 9841 Ch2 9941 Shift 9A41
+				PAD 3 KEYBOARD MODE Ch1 9742 Shift 9842 Ch2 9942 Shift 9A42
+				PAD 4 KEYBOARD MODE Ch1 9743 Shift 9843 Ch2 9943 Shift 9A43
+				PAD 5 KEYBOARD MODE Ch1 9744 Shift 9844 Ch2 9944 Shift 9A44
+				PAD 6 KEYBOARD MODE Ch1 9745 Shift 9845 Ch2 9945 Shift 9A45
+				PAD 7 KEYBOARD MODE Ch1 9746 Shift 9846 Ch2 9946 Shift 9A46
+				PAD 8 KEYBOARD MODE Ch1 9747 Shift 9847 Ch2 9947 Shift 9A47
 				PAD 1 PADFX1 MODE Ch1 9710 *Shift 9810 Ch2 9910 *Shift 9A10
 				PAD 2 PADFX1 MODE Ch1 9711 *Shift 9811 Ch2 9911 *Shift 9A11
 				PAD 3 PADFX1 MODE Ch1 9712 *Shift 9812 Ch2 9912 *Shift 9A12
@@ -3553,6 +3508,265 @@
 				<key>pfl</key>
 				<status>0x91</status>
 				<midino>0x54</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            // Hotcue Mode Pads
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x97</status> 
+				<midino>0x00</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x99</status>
+				<midino>0x00</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x97</status> 
+				<midino>0x01</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x99</status>
+				<midino>0x01</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x97</status> 
+				<midino>0x02</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x99</status>
+				<midino>0x02</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_4_enabled</key>
+				<status>0x97</status> 
+				<midino>0x03</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_4_enabled</key>
+				<status>0x99</status>
+				<midino>0x03</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_5_enabled</key>
+				<status>0x97</status> 
+				<midino>0x04</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_5_enabled</key>
+				<status>0x99</status>
+				<midino>0x04</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_6_enabled</key>
+				<status>0x97</status> 
+				<midino>0x05</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_6_enabled</key>
+				<status>0x99</status>
+				<midino>0x05</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_7_enabled</key>
+				<status>0x97</status> 
+				<midino>0x06</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_7_enabled</key>
+				<status>0x99</status>
+				<midino>0x06</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_8_enabled</key>
+				<status>0x97</status> 
+				<midino>0x07</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_8_enabled</key>
+				<status>0x99</status>
+				<midino>0x07</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            // BEATLOOP Mode Pads
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_0.25_activate</key>
+				<status>0x97</status> 
+				<midino>0x60</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_0.25_activate</key>
+				<status>0x99</status>
+				<midino>0x60</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_0.5_activate</key>
+				<status>0x97</status> 
+				<midino>0x61</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_0.5_activate</key>
+				<status>0x99</status>
+				<midino>0x61</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_1_activate</key>
+				<status>0x97</status> 
+				<midino>0x62</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_1_activate</key>
+				<status>0x99</status>
+				<midino>0x62</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_2_activate</key>
+				<status>0x97</status> 
+				<midino>0x63</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_2_activate</key>
+				<status>0x99</status>
+				<midino>0x63</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_4_activate</key>
+				<status>0x97</status> 
+				<midino>0x64</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_4_activate</key>
+				<status>0x99</status>
+				<midino>0x64</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_8_activate</key>
+				<status>0x97</status> 
+				<midino>0x65</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_8_activate</key>
+				<status>0x99</status>
+				<midino>0x65</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_16_activate</key>
+				<status>0x97</status> 
+				<midino>0x66</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_16_activate</key>
+				<status>0x99</status>
+				<midino>0x66</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>beatloop_32_activate</key>
+				<status>0x97</status> 
+				<midino>0x67</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>beatloop_32_activate</key>
+				<status>0x99</status>
+				<midino>0x67</midino>
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
 			</output>
