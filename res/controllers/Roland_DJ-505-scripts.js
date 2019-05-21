@@ -1343,7 +1343,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         outConnect: false,
         off: DJ505.PadColor.OFF,
-        outputColor: function(id, dim) {
+        outputColor: function(id) {
             // For colored hotcues (shifted only)
             var color = this.colors[id];
             this.send((this.mode.cuepoint === this.number) ? color : (color + DJ505.PadColor.DIM_MODIFIER));
