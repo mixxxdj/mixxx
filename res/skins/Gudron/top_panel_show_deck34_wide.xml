@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -10,25 +11,25 @@
     <Size>44,32</Size>
     <Layout>horizontal</Layout>
     <Children>
-		  <PushButton>
-		    <TooltipId>toggle_4decks</TooltipId>
-		    <NumberStates>2</NumberStates>
-		    <State>
-		      <Number>0</Number>
-		      <Pressed>panel/deck34_wide_1.png</Pressed>
-		      <Unpressed>panel/deck34_wide_0.png</Unpressed>
-		    </State>
+      <PushButton>
+        <TooltipId>toggle_4decks</TooltipId>
+        <NumberStates>2</NumberStates>
         <State>
-		      <Number>1</Number>
-		      <Pressed>panel/deck34_wide_0.png</Pressed>
-		      <Unpressed>panel/deck34_wide_1.png</Unpressed>
-		    </State>
-		    <Connection>
-		      <ConfigKey>[Deck34_Wide],on</ConfigKey>
-		      <EmitOnDownPress>true</EmitOnDownPress>
-		      <ConnectValueToWidget>true</ConnectValueToWidget>
-		    </Connection>
-		  </PushButton>
+          <Number>0</Number>
+          <Pressed>panel/deck34_wide_1.png</Pressed>
+          <Unpressed>panel/deck34_wide_0.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>panel/deck34_wide_0.png</Pressed>
+          <Unpressed>panel/deck34_wide_1.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Deck34_Wide],on</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ConnectValueToWidget>true</ConnectValueToWidget>
+        </Connection>
+      </PushButton>
     </Children>
   </WidgetGroup>
 </Template>

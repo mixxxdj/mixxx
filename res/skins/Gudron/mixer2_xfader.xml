@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -8,7 +9,7 @@
 <Template>
   <SliderComposed>
     <TooltipId>crossfader</TooltipId>
-    <Style></Style>
+    <Style/>
     <Handle>mixer/crossfader_handle.png</Handle>
     <Slider>mixer/crossfader_bg.png</Slider>
     <Horizontal>true</Horizontal>

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -13,212 +14,212 @@
     <Style>QGroupBox { border: 0px solid red; background: url(skin:/backgrounds/transparent.png); }</Style>
     <Children>
       <WidgetGroup>
-      <Size>58,e</Size>
-      <Layout>vertical</Layout>
-      <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; } </Style>
-      <Children>
-        <!-- FX -->
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
-          <Children>
-            <PushButton>
-              <TooltipId>QuickEffectRack_enabled</TooltipId>
-              <Style></Style>
-              <NumberStates>2</NumberStates>
-              <State>
-                <Number>0</Number>
-                <Pressed>mixer/fx_0.png</Pressed>
-                <Unpressed>mixer/fx_0.png</Unpressed>
-              </State>
-              <State>
-                <Number>1</Number>
-                <Pressed>mixer/fx_1.png</Pressed>
-                <Unpressed>mixer/fx_1.png</Unpressed>
-              </State>
-              <Connection>
-                <ConfigKey>[QuickEffectRack1_<Variable name="group"/>_Effect1],enabled</ConfigKey>
-              </Connection>
-            </PushButton>
-            <WidgetGroup>
-              <Size>31f,29</Size>
-              <Layout>horizontal</Layout>
-              <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/violett_small/bg.png); } </Style>
-              <Children>
-                <Template src="skin:expander_h.xml"/>
-                <Knob>
-                  <TooltipId>filterHigh</TooltipId>
-                  <Style></Style>
-                  <NumberStates>123</NumberStates>
-                  <Path>knobs/violett_small/%1.png</Path>
-                  <Connection>
-                    <ConfigKey>[QuickEffectRack1_<Variable name="group"/>],super1</ConfigKey>
-                  </Connection>
-                </Knob>
-              </Children>
-            </WidgetGroup>
-          </Children>
-        </WidgetGroup>
-        <!-- High -->
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
-          <Children>
-            <WidgetGroup>
-              <Size>1,e</Size>
-            </WidgetGroup>
-            <WidgetGroup>
-              <Layout>vertical</Layout>
-              <Children>
-                <WidgetGroup>
-                  <Size>56f,59</Size>
-                  <Layout>vertical</Layout>
-                  <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/white/bg.png); } </Style>
-                  <Children>
-                    <Knob>
-                      <TooltipId>filterHigh</TooltipId>
-                      <Style></Style>
-                      <NumberStates>120</NumberStates>
-                      <Path>knobs/white/%1.png</Path>
-                      <Connection>
-                        <ConfigKey><Variable name="group"/>,filterHigh</ConfigKey>
-                      </Connection>
-                    </Knob>
-                  </Children>
-                </WidgetGroup>
-              </Children>
-            </WidgetGroup>
-          </Children>
-        </WidgetGroup>
-        <!-- Kill -->
-        <PushButton>
-          <TooltipId>filterHighKill</TooltipId>
-          <Style></Style>
-          <NumberStates>2</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Pressed>mixer/kill_0.png</Pressed>
-            <Unpressed>mixer/kill_0.png</Unpressed>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Pressed>mixer/kill_1_w.png</Pressed>
-            <Unpressed>mixer/kill_1_w.png</Unpressed>
-          </State>
-          <Connection>
-            <ConfigKey><Variable name="group"/>,filterHighKill</ConfigKey>
-            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            <ButtonState>LeftButton</ButtonState>
-          </Connection>
-        </PushButton>
-        <WidgetGroup>
-          <Size>m,1</Size>
-        </WidgetGroup>
-        <!-- Mid -->
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
-          <Children>
-            <WidgetGroup>
-              <Size>1,e</Size>
-            </WidgetGroup>
-            <WidgetGroup>
-              <Layout>vertical</Layout>
-              <Children>
-                <WidgetGroup>
-                  <Size>56f,59</Size>
-                  <Layout>vertical</Layout>
-                  <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/white/bg.png); } </Style>
-                  <Children>
-                    <Knob>
-                      <TooltipId>filterMid</TooltipId>
-                      <Style></Style>
-                      <NumberStates>120</NumberStates>
-                      <Path>knobs/yellow/%1.png</Path>
-                      <Connection>
-                        <ConfigKey><Variable name="group"/>,filterMid</ConfigKey>
-                      </Connection>
-                    </Knob>
-                  </Children>
-                </WidgetGroup>
-              </Children>
-            </WidgetGroup>
-          </Children>
-        </WidgetGroup>
-        <!-- Kill -->
-        <PushButton>
-          <TooltipId>filterMidKill</TooltipId>
-          <Style></Style>
-          <NumberStates>2</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Pressed>mixer/kill_0.png</Pressed>
-            <Unpressed>mixer/kill_0.png</Unpressed>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Pressed>mixer/kill_1_y.png</Pressed>
-            <Unpressed>mixer/kill_1_y.png</Unpressed>
-          </State>
-          <Connection>
-            <ConfigKey><Variable name="group"/>,filterMidKill</ConfigKey>
-            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            <ButtonState>LeftButton</ButtonState>
-          </Connection>
-        </PushButton>
-        <WidgetGroup>
-          <Size>m,1</Size>
-        </WidgetGroup>
-        <!-- Low -->
-        <WidgetGroup>
-          <Layout>horizontal</Layout>
-          <Children>
-            <WidgetGroup>
-              <Size>1,e</Size>
-            </WidgetGroup>
-            <WidgetGroup>
-              <Layout>vertical</Layout>
-              <Children>
-                <WidgetGroup>
-                  <Size>56f,59</Size>
-                  <Layout>vertical</Layout>
-                  <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/white/bg.png); } </Style>
-                  <Children>
-                    <Knob>
-                      <TooltipId>filterLow</TooltipId>
-                      <Style></Style>
-                      <NumberStates>120</NumberStates>
-                      <Path>knobs/red/%1.png</Path>
-                      <Connection>
-                        <ConfigKey><Variable name="group"/>,filterLow</ConfigKey>
-                      </Connection>
-                    </Knob>
-                  </Children>
-                </WidgetGroup>
-              </Children>
-            </WidgetGroup>
-          </Children>
-        </WidgetGroup>
-        <!-- Kill -->
-        <PushButton>
-          <TooltipId>filterLowKill</TooltipId>
-          <Style></Style>
-          <NumberStates>2</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Pressed>mixer/kill_0.png</Pressed>
-            <Unpressed>mixer/kill_0.png</Unpressed>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Pressed>mixer/kill_1.png</Pressed>
-            <Unpressed>mixer/kill_1.png</Unpressed>
-          </State>
-          <Connection>
-            <ConfigKey><Variable name="group"/>,filterLowKill</ConfigKey>
-            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            <ButtonState>LeftButton</ButtonState>
-          </Connection>
-        </PushButton>
-        <Template src="skin:mixer4_eq_mark.xml"/>
-      </Children>
+        <Size>58,e</Size>
+        <Layout>vertical</Layout>
+        <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; } </Style>
+        <Children>
+          <!-- FX -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <PushButton>
+                <TooltipId>QuickEffectRack_enabled</TooltipId>
+                <Style/>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>mixer/fx_0.png</Pressed>
+                  <Unpressed>mixer/fx_0.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>mixer/fx_1.png</Pressed>
+                  <Unpressed>mixer/fx_1.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[QuickEffectRack1_<Variable name="group"/>_Effect1],enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+              <WidgetGroup>
+                <Size>31f,29</Size>
+                <Layout>horizontal</Layout>
+                <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/violett_small/bg.png); } </Style>
+                <Children>
+                  <Template src="skin:expander_h.xml"/>
+                  <Knob>
+                    <TooltipId>filterHigh</TooltipId>
+                    <Style/>
+                    <NumberStates>123</NumberStates>
+                    <Path>knobs/violett_small/%1.png</Path>
+                    <Connection>
+                      <ConfigKey>[QuickEffectRack1_<Variable name="group"/>],super1</ConfigKey>
+                    </Connection>
+                  </Knob>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- High -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1,e</Size>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>56f,59</Size>
+                    <Layout>vertical</Layout>
+                    <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/white/bg.png); } </Style>
+                    <Children>
+                      <Knob>
+                        <TooltipId>filterHigh</TooltipId>
+                        <Style/>
+                        <NumberStates>120</NumberStates>
+                        <Path>knobs/white/%1.png</Path>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,filterHigh</ConfigKey>
+                        </Connection>
+                      </Knob>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- Kill -->
+          <PushButton>
+            <TooltipId>filterHighKill</TooltipId>
+            <Style/>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>mixer/kill_0.png</Pressed>
+              <Unpressed>mixer/kill_0.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>mixer/kill_1_w.png</Pressed>
+              <Unpressed>mixer/kill_1_w.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,filterHighKill</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <WidgetGroup>
+            <Size>m,1</Size>
+          </WidgetGroup>
+          <!-- Mid -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1,e</Size>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>56f,59</Size>
+                    <Layout>vertical</Layout>
+                    <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/white/bg.png); } </Style>
+                    <Children>
+                      <Knob>
+                        <TooltipId>filterMid</TooltipId>
+                        <Style/>
+                        <NumberStates>120</NumberStates>
+                        <Path>knobs/yellow/%1.png</Path>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,filterMid</ConfigKey>
+                        </Connection>
+                      </Knob>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- Kill -->
+          <PushButton>
+            <TooltipId>filterMidKill</TooltipId>
+            <Style/>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>mixer/kill_0.png</Pressed>
+              <Unpressed>mixer/kill_0.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>mixer/kill_1_y.png</Pressed>
+              <Unpressed>mixer/kill_1_y.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,filterMidKill</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <WidgetGroup>
+            <Size>m,1</Size>
+          </WidgetGroup>
+          <!-- Low -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1,e</Size>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>56f,59</Size>
+                    <Layout>vertical</Layout>
+                    <Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/knobs/white/bg.png); } </Style>
+                    <Children>
+                      <Knob>
+                        <TooltipId>filterLow</TooltipId>
+                        <Style/>
+                        <NumberStates>120</NumberStates>
+                        <Path>knobs/red/%1.png</Path>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,filterLow</ConfigKey>
+                        </Connection>
+                      </Knob>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- Kill -->
+          <PushButton>
+            <TooltipId>filterLowKill</TooltipId>
+            <Style/>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>mixer/kill_0.png</Pressed>
+              <Unpressed>mixer/kill_0.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>mixer/kill_1.png</Pressed>
+              <Unpressed>mixer/kill_1.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,filterLowKill</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <Template src="skin:mixer4_eq_mark.xml"/>
+        </Children>
       </WidgetGroup>
     </Children>
   </WidgetGroup>

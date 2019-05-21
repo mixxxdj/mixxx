@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -23,7 +24,7 @@
       <!-- Mic Vu -->
       <VuMeter>
         <TooltipId>microphone_VuMeter</TooltipId>
-        <Style></Style>
+        <Style/>
         <PathVu>panel/air_vu_1.png</PathVu>
         <PathBack>panel/air_vu_0.png</PathBack>
         <Pos>0,28</Pos>
@@ -39,7 +40,7 @@
       <!-- Mic Overload -->
       <StatusLight>
         <TooltipId>microphone_PeakIndicator</TooltipId>
-        <Style></Style>
+        <Style/>
         <PathStatusLight>panel/air_overload_1.png</PathStatusLight>
         <PathBack>panel/air_overload_0.png</PathBack>
         <Pos>86,2</Pos>
@@ -50,7 +51,7 @@
       <!-- Mic Volume -->
       <Knob>
         <TooltipId>microphone_volume</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_red/%1.png</Path>
         <Pos>88,2</Pos>
@@ -61,7 +62,7 @@
       <!-- Mic Mix Orientation-->
       <PushButton>
         <TooltipId>orientation</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>3</NumberStates>
         <State>
           <Number>0</Number>
@@ -88,7 +89,7 @@
       <!-- Mic Talk -->
       <PushButton>
         <TooltipId>microphone_talkover</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -112,5 +113,5 @@
       <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-    </WidgetGroup>
+  </WidgetGroup>
 </Template>

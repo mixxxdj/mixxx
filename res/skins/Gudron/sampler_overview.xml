@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -37,14 +38,18 @@
                 <TooltipId>track_title</TooltipId>
                 <Style>QLabel { font: bold 7pt; background-color: transparent; text-align: left; text-transform: uppercase; padding-left: 4px; }</Style>
                 <Property>title</Property>
-                <Group><Variable name="group"/></Group>
+                <Group>
+                  <Variable name="group"/>
+                </Group>
                 <Alignment>left</Alignment>
               </TrackProperty>
               <Template src="skin:expander_h.xml"/>
               <NumberBpm>
                 <TooltipId>visual_bpm</TooltipId>
                 <Style>QLabel { font: bold 7pt; background-color: transparent; text-align: left; text-transform: uppercase; padding-right: 3px; }</Style>
-                <Group><Variable name="group"/></Group>
+                <Group>
+                  <Variable name="group"/>
+                </Group>
                 <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
                 <Alignment>right</Alignment>
                 <Connection>
@@ -62,7 +67,7 @@
               <Template src="skin:expander_h.xml"/>
               <PushButton>
                 <TooltipId>beatsync_beatsync_tempo</TooltipId>
-                <Style></Style>
+                <Style/>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -84,7 +89,6 @@
           </WidgetGroup>
         </Children>
       </WidgetGroup>
-
     </Children>
   </WidgetGroup>
 </Template>

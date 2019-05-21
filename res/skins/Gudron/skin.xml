@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE skin>
 <skin>
   <manifest>
@@ -21,16 +22,12 @@
       <attribute config_key="[Master],maximize_library">0</attribute>
     </attributes>
   </manifest>
-
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
-
   <MinimumSize>-1,-1</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
-
   <Children>
-
     <SingletonDefinition>
       <ObjectName>DeckSingleton1</ObjectName>
       <!-- <SizePolicy>min,f</SizePolicy>
@@ -41,7 +38,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>DeckSingleton2</ObjectName>
       <!-- <SizePolicy>min,f</SizePolicy>
@@ -52,7 +48,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>DeckSingleton3</ObjectName>
       <!-- <SizePolicy>min,f</SizePolicy>
@@ -63,7 +58,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>DeckSingleton4</ObjectName>
       <!-- <SizePolicy>min,f</SizePolicy>
@@ -74,7 +68,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton1</ObjectName>
       <Children>
@@ -83,7 +76,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton2</ObjectName>
       <Children>
@@ -92,7 +84,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton3</ObjectName>
       <Children>
@@ -101,7 +92,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton4</ObjectName>
       <Children>
@@ -110,7 +100,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton5</ObjectName>
       <Children>
@@ -119,7 +108,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton6</ObjectName>
       <Children>
@@ -128,7 +116,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton7</ObjectName>
       <Children>
@@ -137,7 +124,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton8</ObjectName>
       <Children>
@@ -146,7 +132,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton9</ObjectName>
       <Children>
@@ -155,7 +140,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton10</ObjectName>
       <Children>
@@ -164,7 +148,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton11</ObjectName>
       <Children>
@@ -173,7 +156,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton12</ObjectName>
       <Children>
@@ -182,7 +164,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton13</ObjectName>
       <Children>
@@ -191,7 +172,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton14</ObjectName>
       <Children>
@@ -200,7 +180,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton15</ObjectName>
       <Children>
@@ -209,7 +188,6 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
     <SingletonDefinition>
       <ObjectName>SamplerSingleton16</ObjectName>
       <Children>
@@ -218,10 +196,8 @@
         </Template>
       </Children>
     </SingletonDefinition>
-
-
-  	<Template src="skin:waveforms.xml"/>
-	<Template src="skin:top_panel.xml"/>
+    <Template src="skin:waveforms.xml"/>
+    <Template src="skin:top_panel.xml"/>
     <Template src="skin:decks_and_mixers.xml"/>
     <!-- <Template src="skin:bottom_panel.xml"/> -->
     <Template src="skin:library.xml"/>

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -16,10 +17,10 @@
       <Pressed>panel/mixxx_on.png</Pressed>
       <Unpressed>panel/mixxx_on.png</Unpressed>
     </State>
-      <Connection>
-        <ConfigKey>[Shoutcast],enabled</ConfigKey>
-        <EmitOnDownPress>false</EmitOnDownPress>
-        <ConnectValueToWidget>true</ConnectValueToWidget>
-      </Connection>
+    <Connection>
+      <ConfigKey>[Shoutcast],enabled</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+      <ConnectValueToWidget>true</ConnectValueToWidget>
+    </Connection>
   </PushButton>
 </Template>

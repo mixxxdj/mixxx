@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -27,7 +28,7 @@
             <Children>
               <VuMeter>
                 <TooltipId>channel_VuMeter</TooltipId>
-                <Style></Style>
+                <Style/>
                 <PathVu>mixer/vu_1.png</PathVu>
                 <PathBack>mixer/vu_0.png</PathBack>
                 <Pos>29,8</Pos>
@@ -42,7 +43,7 @@
               </VuMeter>
               <StatusLight>
                 <TooltipId>channel_PeakIndicator</TooltipId>
-                <Style></Style>
+                <Style/>
                 <PathStatusLight>mixer/vu_over.png</PathStatusLight>
                 <PathBack>mixer/vu_0.png</PathBack>
                 <Pos>29,8</Pos>
@@ -52,7 +53,7 @@
               </StatusLight>
               <SliderComposed>
                 <TooltipId>channel_volume</TooltipId>
-                <Style></Style>
+                <Style/>
                 <Handle>mixer/fader_handle.png</Handle>
                 <Slider>mixer/fader_bg_ticks.png</Slider>
                 <Pos>0,0</Pos>
@@ -80,7 +81,7 @@
                 <Children>
                   <Knob>
                     <TooltipId>pregain</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>120</NumberStates>
                     <Path>knobs/cyan/%1.png</Path>
                     <Connection>

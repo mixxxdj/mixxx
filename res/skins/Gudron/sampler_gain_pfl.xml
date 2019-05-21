@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -27,7 +28,7 @@
         <Children>
           <Knob>
             <TooltipId>pregain</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>120</NumberStates>
             <Path>knobs/cyan/%1.png</Path>
             <Pos>0,0</Pos>

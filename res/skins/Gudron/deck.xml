@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -23,7 +24,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Style>QGroupBox { border-top: 1px solid rgba(255, 255, 255, 16); padding-top: -1px; background-color: transparent; }</Style>
         <Children>
-		  <Template src="skin:deck_head.xml"/>
+          <Template src="skin:deck_head.xml"/>
           <Template src="skin:deck_wave.xml"/>
           <Template src="skin:deck_transport1.xml"/>
           <Template src="skin:deck_transport2.xml"/>

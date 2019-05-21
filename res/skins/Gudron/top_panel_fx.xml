@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -22,7 +23,7 @@
       </PushButton>
       <Knob>
         <TooltipId>lfoDepth</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_magenta/%1.png</Path>
         <Pos>38,2</Pos>
@@ -30,7 +31,6 @@
           <ConfigKey>[Flanger],lfoDepth</ConfigKey>
         </Connection>
       </Knob>
-
       <!-- LFO -->
       <PushButton>
         <NumberStates>1</NumberStates>
@@ -43,7 +43,7 @@
       </PushButton>
       <Knob>
         <TooltipId>lfoPeriod</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_magenta/%1.png</Path>
         <Pos>82,2</Pos>
@@ -51,7 +51,6 @@
           <ConfigKey>[Flanger],lfoPeriod</ConfigKey>
         </Connection>
       </Knob>
-
       <!-- Delay -->
       <PushButton>
         <NumberStates>1</NumberStates>
@@ -64,7 +63,7 @@
       </PushButton>
       <Knob>
         <TooltipId>lfoDelay</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_magenta/%1.png</Path>
         <Pos>126,2</Pos>
@@ -73,5 +72,5 @@
         </Connection>
       </Knob>
     </Children>
-    </WidgetGroup>
+  </WidgetGroup>
 </Template>

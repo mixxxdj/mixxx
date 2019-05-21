@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -9,7 +10,7 @@
   <!-- Play -->
   <PushButton>
     <TooltipId>play_start</TooltipId>
-    <Style></Style>
+    <Style/>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>

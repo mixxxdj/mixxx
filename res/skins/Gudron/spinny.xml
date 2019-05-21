@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -13,10 +14,12 @@
     <Children>
       <Spinny>
         <TooltipId>spinny</TooltipId>
-        <Style></Style>
-        <Group><Variable name="group"/></Group>
+        <Style/>
+        <Group>
+          <Variable name="group"/>
+        </Group>
         <Size>111,111</Size>
-        <PathBackground>deck/spinny_bg.png</PathBackground>          
+        <PathBackground>deck/spinny_bg.png</PathBackground>
         <PathForeground>deck/spinny_1.png</PathForeground>
         <PathGhost>deck/spinny_0.png</PathGhost>
       </Spinny>

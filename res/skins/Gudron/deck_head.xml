@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -49,7 +50,9 @@
                 <TooltipId>track_title</TooltipId>
                 <Style>QLabel { padding-top: 0px; }</Style>
                 <Property>title</Property>
-                <Group><Variable name="group"/></Group>
+                <Group>
+                  <Variable name="group"/>
+                </Group>
                 <MinimumSize>-1,24</MinimumSize>
               </TrackProperty>
               <Template src="skin:expander_h.xml"/>
@@ -64,7 +67,9 @@
                 <TooltipId>track_artist</TooltipId>
                 <Style>QLabel { padding-top: 6px; }</Style>
                 <Property>artist</Property>
-                <Group><Variable name="group"/></Group>
+                <Group>
+                  <Variable name="group"/>
+                </Group>
                 <MinimumSize>-1,24</MinimumSize>
               </TrackProperty>
               <Template src="skin:expander_h.xml"/>
@@ -107,7 +112,9 @@
                     <TooltipId>visual_key</TooltipId>
                     <Style>QLabel { text-align: center; padding-left: 0px; padding-top: 0px; }
                     </Style>
-                    <Group><Variable name="group"/></Group>
+                    <Group>
+                      <Variable name="group"/>
+                    </Group>
                     <Size>58f,25f</Size>
                     <Alignment>center</Alignment>
                     <Connection>
@@ -117,7 +124,7 @@
                   <!-- Key sync -->
                   <PushButton>
                     <TooltipId>sync_reset_key</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -155,7 +162,9 @@
                     <TooltipId>visual_bpm</TooltipId>
                     <Style>QLabel { text-align: center; padding-right: 2px; padding-top: 0px; }
                     </Style>
-                    <Group><Variable name="group"/></Group>
+                    <Group>
+                      <Variable name="group"/>
+                    </Group>
                     <Size>60f,25f</Size>
                     <Alignment>center</Alignment>
                     <Connection>
@@ -165,7 +174,7 @@
                   <!-- Beat sync -->
                   <PushButton>
                     <TooltipId>sync_enabled</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -178,12 +187,12 @@
                       <Unpressed>deck/sync_1.png</Unpressed>
                     </State>
                     <Connection>
-                        <ConfigKey><Variable name="group" />,sync_enabled</ConfigKey>
-                        <ButtonState>LeftButton</ButtonState>
+                      <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                        <ConfigKey><Variable name="group" />,beatsync</ConfigKey>
-                        <ButtonState>RightButton</ButtonState>
+                      <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -212,7 +221,7 @@
               <!-- Pitch bend left -->
               <PushButton>
                 <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
-                <Style></Style>
+                <Style/>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -242,7 +251,7 @@
               <!-- Pitch bend right -->
               <PushButton>
                 <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
-                <Style></Style>
+                <Style/>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>

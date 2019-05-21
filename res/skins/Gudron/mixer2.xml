@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -27,7 +28,6 @@
             <Layout>horizontal</Layout>
             <SizePolicy>f,min</SizePolicy>
             <Style>QGroupBox { background-color: rgba(0,0,0,0); } </Style>
-
             <Children>
               <WidgetGroup>
                 <Size>2f,m</Size>

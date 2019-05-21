@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -21,7 +22,7 @@
           <!-- Play -->
           <PushButton>
             <TooltipId>play_cue_set</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>2</NumberStates>
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
@@ -50,7 +51,7 @@
           <!-- Reverse -->
           <PushButton>
             <TooltipId>reverse</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -67,7 +68,7 @@
           <!-- Cue -->
           <PushButton>
             <TooltipId>cue_default_cue_gotoandstop</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -89,7 +90,7 @@
           <!-- Beatgrid -->
           <PushButton>
             <TooltipId>beats_translate_curpos</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -128,7 +129,7 @@
                 <Children>
                   <PushButton>
                     <TooltipId>loop_in</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -143,7 +144,7 @@
                   </PushButton>
                   <PushButton>
                     <TooltipId>loop_out</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -158,7 +159,7 @@
                   </PushButton>
                   <PushButton>
                     <TooltipId>reloop_exit</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
                     <State>
@@ -184,7 +185,7 @@
                   </PushButton>
                   <PushButton>
                     <TooltipId>loop_halve</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -199,7 +200,7 @@
                   </PushButton>
                   <PushButton>
                     <TooltipId>loop_double</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -232,7 +233,7 @@
                           <!-- Loop < 0.5 Indicator -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -253,7 +254,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -274,7 +275,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -295,7 +296,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -317,7 +318,7 @@
                           <!-- Go to < 0.5 loops page -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -338,7 +339,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -360,7 +361,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -398,7 +399,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -420,7 +421,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -458,7 +459,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -480,7 +481,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -518,7 +519,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -540,7 +541,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -578,7 +579,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -600,7 +601,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -638,7 +639,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -660,7 +661,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -699,7 +700,7 @@
                           <!-- Loop > 16 Indicator -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -720,7 +721,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -742,7 +743,7 @@
                           <!-- Go to > 16 loops page -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -769,10 +770,9 @@
                         <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
                         <Children>
                           <!-- Loop < 1 Indicator -->
-
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -793,7 +793,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -814,7 +814,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -835,7 +835,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -856,7 +856,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -878,7 +878,7 @@
                           <!-- Go to < 0.5 loops page -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -899,7 +899,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -921,7 +921,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -959,7 +959,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -981,7 +981,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1019,7 +1019,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1041,7 +1041,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1079,7 +1079,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1101,7 +1101,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1139,7 +1139,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1161,7 +1161,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1195,7 +1195,7 @@
                       <!-- 32 -->
                       <PushButton>
                         <TooltipId>beatloop</TooltipId>
-                        <Style></Style>
+                        <Style/>
                         <NumberStates>2</NumberStates>
                         <LeftClickIsPushButton>true</LeftClickIsPushButton>
                         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1227,7 +1227,7 @@
                       <!-- 64 -->
                       <PushButton>
                         <TooltipId>beatloop</TooltipId>
-                        <Style></Style>
+                        <Style/>
                         <NumberStates>2</NumberStates>
                         <LeftClickIsPushButton>true</LeftClickIsPushButton>
                         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1266,7 +1266,7 @@
                       <!-- 1/32 -->
                       <PushButton>
                         <TooltipId>beatloop</TooltipId>
-                        <Style></Style>
+                        <Style/>
                         <NumberStates>2</NumberStates>
                         <LeftClickIsPushButton>true</LeftClickIsPushButton>
                         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1298,7 +1298,7 @@
                       <!-- 1/16 -->
                       <PushButton>
                         <TooltipId>beatloop</TooltipId>
-                        <Style></Style>
+                        <Style/>
                         <NumberStates>2</NumberStates>
                         <LeftClickIsPushButton>true</LeftClickIsPushButton>
                         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1330,7 +1330,7 @@
                       <!-- 1/8 -->
                       <PushButton>
                         <TooltipId>beatloop</TooltipId>
-                        <Style></Style>
+                        <Style/>
                         <NumberStates>2</NumberStates>
                         <LeftClickIsPushButton>true</LeftClickIsPushButton>
                         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1362,7 +1362,7 @@
                       <!-- 1/4 -->
                       <PushButton>
                         <TooltipId>beatloop</TooltipId>
-                        <Style></Style>
+                        <Style/>
                         <NumberStates>2</NumberStates>
                         <LeftClickIsPushButton>true</LeftClickIsPushButton>
                         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1398,7 +1398,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1419,7 +1419,7 @@
                           </PushButton>
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1457,7 +1457,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1479,7 +1479,7 @@
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1517,7 +1517,7 @@
                         <Children>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1538,7 +1538,7 @@
                           </PushButton>
                           <PushButton>
                             <TooltipId>beatloop</TooltipId>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1577,7 +1577,7 @@
                           <!-- Loop > 16 Indicator -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1598,7 +1598,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1619,7 +1619,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1640,7 +1640,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1661,7 +1661,7 @@
                           </PushButton>
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>2</NumberStates>
                             <LeftClickIsPushButton>true</LeftClickIsPushButton>
                             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1683,7 +1683,7 @@
                           <!-- Go to > 2 loops page -->
                           <PushButton>
                             <Pos>0,0</Pos>
-                            <Style></Style>
+                            <Style/>
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -1702,7 +1702,7 @@
                 </Children>
               </WidgetStack>
               <WidgetGroup>
-              <Size>me,e</Size>
+                <Size>me,e</Size>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
@@ -1714,13 +1714,12 @@
             <Children>
             </Children>
           </WidgetGroup>
-		  <!-- Seperator -->
-		  
+          <!-- Seperator -->
           <WidgetGroup>
             <Size>4f,61f</Size>
           </WidgetGroup>
-		  <!-- Vinyl Mod -->
-		  <WidgetGroup>
+          <!-- Vinyl Mod -->
+          <WidgetGroup>
             <Size>f,61</Size>
             <Layout>vertical</Layout>
             <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 2px 0px 4px; } </Style>
@@ -1729,98 +1728,95 @@
                 <Size>f,f</Size>
                 <Layout>horizontal</Layout>
                 <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
-
                 <Children>
                   <PushButton>
                     <TooltipId>vinylcontrol_enabled</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-					  <Pressed>deck/Vinyl_ONOFF_GDim.png</Pressed>
+                      <Pressed>deck/Vinyl_ONOFF_GDim.png</Pressed>
                       <Unpressed>deck/Vinyl_ONOFF_GBright.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-					  <Pressed>deck/Vinyl_ONOFF_VDim.png</Pressed>
+                      <Pressed>deck/Vinyl_ONOFF_VDim.png</Pressed>
                       <Unpressed>deck/Vinyl_ONOFF_VBright.png</Unpressed>
                     </State>
                     <Connection>
-						<ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
-						<ButtonState>LeftButton</ButtonState>
-					</Connection>
-					<Connection>
-						<ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
-					</Connection>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
+                    </Connection>
                   </PushButton>
                   <PushButton>
                     <TooltipId>vinylcontrol_mode</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
                       <Pressed>deck/Vinyl_MODE_RGreenDim.png</Pressed>
                       <Unpressed>deck/Vinyl_MODE_RGreenBright.png</Unpressed>
                     </State>
-					<State>
+                    <State>
                       <Number>1</Number>
                       <Pressed>deck/Vinyl_MODE_AYellowDim.png</Pressed>
                       <Unpressed>deck/Vinyl_MODE_AYellowBright.png</Unpressed>
                     </State>
-					<State>
+                    <State>
                       <Number>2</Number>
                       <Pressed>deck/Vinyl_MODE_CRedDim.png</Pressed>
                       <Unpressed>deck/Vinyl_MODE_CRedBright.png</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,vinylcontrol_mode</ConfigKey> 
-					  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
-					  <ConnectValueToWidget>false</ConnectValueToWidget>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
                     </Connection>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
-					  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
-			
                   </PushButton>
                 </Children>
-				<Connection>
-					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
-					<BindProperty>visible</BindProperty>
-					</Connection>
+                <Connection>
+                  <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
               <WidgetGroup>
                 <Size>f,f</Size>
                 <Layout>horizontal</Layout>
                 <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
-
                 <Children>
                   <PushButton>
                     <TooltipId>passthrough_enabled</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-					  <Pressed>deck/Vinyl_PassThruONOFF_GDim.png</Pressed>
+                      <Pressed>deck/Vinyl_PassThruONOFF_GDim.png</Pressed>
                       <Unpressed>deck/Vinyl_PassThruONOFF_GBright.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-					  <Pressed>deck/Vinyl_PassThruONOFF_PDim.png</Pressed>
+                      <Pressed>deck/Vinyl_PassThruONOFF_PDim.png</Pressed>
                       <Unpressed>deck/Vinyl_PassThruONOFF_PBright.png</Unpressed>
                     </State>
                     <Connection>
-						<ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-						<ButtonState>LeftButton</ButtonState>
-					</Connection>
-					<Connection>
-						<ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-					</Connection>
+                      <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                    </Connection>
                   </PushButton>
                   <PushButton>
                     <TooltipId>vinylcontrol_cueing</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -1832,38 +1828,35 @@
                       <Pressed>deck/Vinyl_CUEMODE_CCyanDim.png</Pressed>
                       <Unpressed>deck/Vinyl_CUEMODE_CCyanBright.png</Unpressed>
                     </State>
-					<State>
+                    <State>
                       <Number>2</Number>
                       <Pressed>deck/Vinyl_CUEMODE_HOrangeDim.png</Pressed>
                       <Unpressed>deck/Vinyl_CUEMODE_HOrangeBright.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
-					  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
-					  <ConnectValueToWidget>false</ConnectValueToWidget>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
                     </Connection>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
-					  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
                   </PushButton>
                 </Children>
-				<Connection>
-					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
-					<BindProperty>visible</BindProperty>
-				</Connection>
+                <Connection>
+                  <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
-		  
-		  <!-- Separator -->
-		  <!-- Separator -->
+          <!-- Separator -->
+          <!-- Separator -->
           <WidgetGroup>
             <Size>4f,61f</Size>
           </WidgetGroup>
-		  
-		  
           <!-- Key -->
           <WidgetGroup>
             <Size>56f,61f</Size>
@@ -1893,11 +1886,10 @@
                 <Size>f,f</Size>
                 <Layout>horizontal</Layout>
                 <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
-
                 <Children>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1930,7 +1922,7 @@
                   </PushButton>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1967,11 +1959,10 @@
                 <Size>f,f</Size>
                 <Layout>horizontal</Layout>
                 <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
-
                 <Children>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2004,7 +1995,7 @@
                   </PushButton>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
-                    <Style></Style>
+                    <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
                     <RightClickIsPushButton>true</RightClickIsPushButton>

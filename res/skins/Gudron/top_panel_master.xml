@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -22,7 +23,7 @@
       </PushButton>
       <StatusLight>
         <TooltipId>master_PeakIndicator</TooltipId>
-        <Style></Style>
+        <Style/>
         <PathStatusLight>panel/master_overload_1.png</PathStatusLight>
         <PathBack>panel/master_overload_0.png</PathBack>
         <Pos>16,3</Pos>
@@ -32,7 +33,7 @@
       </StatusLight>
       <Knob>
         <TooltipId>master_volume</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_red/%1.png</Path>
         <Pos>40,2</Pos>
@@ -52,7 +53,7 @@
       </PushButton>
       <Knob>
         <TooltipId>balance</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_yellow/%1.png</Path>
         <Pos>84,2</Pos>
@@ -61,5 +62,5 @@
         </Connection>
       </Knob>
     </Children>
-    </WidgetGroup>
+  </WidgetGroup>
 </Template>

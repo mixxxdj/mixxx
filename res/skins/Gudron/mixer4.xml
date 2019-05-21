@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -63,7 +64,6 @@
             <SizePolicy>f,min</SizePolicy>
             <Style>QGroupBox { background-color: rgba(0,0,0,0); background: url(skin:/backgrounds/transparent.png); }</Style>
             <Children>
-
               <WidgetGroup>
                 <Size>1f,m</Size>
               </WidgetGroup>
@@ -79,7 +79,6 @@
               <Template src="skin:mixer2_gain.xml">
                 <SetVariable name="group">[Channel4]</SetVariable>
               </Template>
-
             </Children>
           </WidgetGroup>
           <WidgetGroup>

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -15,31 +16,31 @@
         <Size>e,e</Size>
         <Children>
           <Time trigger="[Colorscheme],velvet">
-              <TooltipId>time</TooltipId>
-              <Style>QLabel { color: #847fa6; text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
-              <ShowSeconds>false</ShowSeconds>
-              <ClockFormat>24</ClockFormat>
+            <TooltipId>time</TooltipId>
+            <Style>QLabel { color: #847fa6; text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
+            <ShowSeconds>false</ShowSeconds>
+            <ClockFormat>24</ClockFormat>
           </Time>
           <Time trigger="[Colorscheme],legacy">
-              <TooltipId>time</TooltipId>
-              <Style>QLabel { color: #bc2645; text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
-              <ShowSeconds>false</ShowSeconds>
-              <ClockFormat>24</ClockFormat>
+            <TooltipId>time</TooltipId>
+            <Style>QLabel { color: #bc2645; text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
+            <ShowSeconds>false</ShowSeconds>
+            <ClockFormat>24</ClockFormat>
           </Time>
           <Time trigger="[Colorscheme],mono">
-              <TooltipId>time</TooltipId>
-              <Style>QLabel { text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
-              <ShowSeconds>false</ShowSeconds>
-              <ClockFormat>24</ClockFormat>
+            <TooltipId>time</TooltipId>
+            <Style>QLabel { text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
+            <ShowSeconds>false</ShowSeconds>
+            <ClockFormat>24</ClockFormat>
           </Time>
           <Time trigger="[Colorscheme],submarine">
-              <TooltipId>time</TooltipId>
-              <Style>QLabel { color: #47ac96; text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
-              <ShowSeconds>false</ShowSeconds>
-              <ClockFormat>24</ClockFormat>
+            <TooltipId>time</TooltipId>
+            <Style>QLabel { color: #47ac96; text-align: left; text-transform: uppercase; padding-top: 4px;}</Style>
+            <ShowSeconds>false</ShowSeconds>
+            <ClockFormat>24</ClockFormat>
           </Time>
         </Children>
       </WidgetStack>
     </Children>
-    </WidgetGroup>
+  </WidgetGroup>
 </Template>

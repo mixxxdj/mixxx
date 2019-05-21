@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -22,7 +23,7 @@
       </PushButton>
       <Knob>
         <TooltipId>headphone_volume</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_cyan/%1.png</Path>
         <Pos>40,2</Pos>
@@ -42,7 +43,7 @@
       </PushButton>
       <Knob>
         <TooltipId>headMix</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>121</NumberStates>
         <Path>knobs/recess_cyan_red/%1.png</Path>
         <Pos>84,2</Pos>
@@ -51,5 +52,5 @@
         </Connection>
       </Knob>
     </Children>
-    </WidgetGroup>
+  </WidgetGroup>
 </Template>

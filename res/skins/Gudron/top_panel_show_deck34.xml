@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -9,42 +10,42 @@
     <SizePolicy>f,f</SizePolicy>
     <Size>68,32</Size>
     <Children>
-			<WidgetStack currentpage="[Deck34_Indicator],current" persist="true">
-			  <Size>68,32</Size>
-			  <NextControl>[Deck34_Indicator],next</NextControl>
-			  <PrevControl>[Deck34_Indicator],prev</PrevControl>
-			  <Children>
-			    <WidgetGroup trigger="[Deck34_Indicator],off">
-			      <Size>e,e</Size>
-			      <Layout>horizontal</Layout>
-			      <Style>QGroupBox { background: url(skin:/panel/deck34_0.png); }</Style>
-			    </WidgetGroup>
-			    <WidgetGroup trigger="[Deck34_Indicator],on">
-			      <Size>e,e</Size>
-			      <Layout>horizontal</Layout>
-			      <Style>QGroupBox { background: url(skin:/panel/deck34_1.png); }</Style>
-			    </WidgetGroup>
-			  </Children>
-			</WidgetStack>
-		  <PushButton>
-		    <TooltipId>toggle_4decks</TooltipId>
-		    <NumberStates>1</NumberStates>
-		    <State>
-		      <Number>0</Number>
-		      <Pressed>panel/deck34_transparent.png</Pressed>
-		      <Unpressed>panel/deck34_transparent.png</Unpressed>
-		    </State>
-		    <Connection>
-		      <ConfigKey>[Deck34_Indicator],next</ConfigKey>
-		      <EmitOnDownPress>true</EmitOnDownPress>
-		      <ConnectValueToWidget>false</ConnectValueToWidget>
-		    </Connection>
-		    <Connection>
-		      <ConfigKey>[Deck34],next</ConfigKey>
-		      <EmitOnDownPress>true</EmitOnDownPress>
-		      <ConnectValueToWidget>false</ConnectValueToWidget>
-		    </Connection>
-		  </PushButton>
+      <WidgetStack currentpage="[Deck34_Indicator],current" persist="true">
+        <Size>68,32</Size>
+        <NextControl>[Deck34_Indicator],next</NextControl>
+        <PrevControl>[Deck34_Indicator],prev</PrevControl>
+        <Children>
+          <WidgetGroup trigger="[Deck34_Indicator],off">
+            <Size>e,e</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { background: url(skin:/panel/deck34_0.png); }</Style>
+          </WidgetGroup>
+          <WidgetGroup trigger="[Deck34_Indicator],on">
+            <Size>e,e</Size>
+            <Layout>horizontal</Layout>
+            <Style>QGroupBox { background: url(skin:/panel/deck34_1.png); }</Style>
+          </WidgetGroup>
+        </Children>
+      </WidgetStack>
+      <PushButton>
+        <TooltipId>toggle_4decks</TooltipId>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>panel/deck34_transparent.png</Pressed>
+          <Unpressed>panel/deck34_transparent.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Deck34_Indicator],next</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Deck34],next</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+      </PushButton>
     </Children>
   </WidgetGroup>
 </Template>

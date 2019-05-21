@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -33,11 +34,9 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup> -->
-
-
       <PushButton>
         <TooltipId>sampler_VuMeter</TooltipId>
-        <Style></Style>
+        <Style/>
         <ObjectName>Overload</ObjectName>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>false</LeftClickIsPushButton>
@@ -47,8 +46,6 @@
           <ConnectValueFromWidget>false</ConnectValueFromWidget>
         </Connection>
       </PushButton>
-
-
       <!-- <StatusLight>
         <TooltipId>sampler_PeakIndicator</TooltipId>
         <PathStatusLight>sampler/vu_over.png</PathStatusLight>
@@ -60,7 +57,7 @@
       <VuMeter>
         <TooltipId>sampler_VuMeter</TooltipId>
         <PathVu>sampler/vu_peak.png</PathVu>
-        <PathBack></PathBack>
+        <PathBack/>
         <PeakHoldSize>4</PeakHoldSize>
         <PeakHoldTime>250</PeakHoldTime>
         <PeakFallTime>40</PeakFallTime>

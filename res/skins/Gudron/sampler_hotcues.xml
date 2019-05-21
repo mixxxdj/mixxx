@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -31,7 +32,7 @@
         <Children>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -64,7 +65,7 @@
           </PushButton>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -110,7 +111,7 @@
         <Children>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -143,7 +144,7 @@
           </PushButton>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
-            <Style></Style>
+            <Style/>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -11,121 +12,122 @@
     <ObjectName>Wave</ObjectName>
     <Size>e,e</Size>
     <Children>
-	    <WidgetGroup trigger="[Colorscheme],velvet">
+      <WidgetGroup trigger="[Colorscheme],velvet">
         <Size>e,e</Size>
         <Layout>horizontal</Layout>
         <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; }</Style>
         <Children>
-				<WidgetGroup>
-		                <ObjectName>VinylStatusTop<Variable name="channum" /></ObjectName>
-		                <SizePolicy>me,min</SizePolicy>
-						<MinimumSize>0,0</MinimumSize>
-		                <Layout>vertical</Layout>
-		                <Children>
-		                    <StatusLight>
-								<Size>2me,7f</Size>
-								<TooltipId>vinylcontrol_status</TooltipId>
-		                        <NumberPos>3</NumberPos>
-		                        <PathStatusLight scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
-		                        <PathStatusLight2 scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
-		                        <PathStatusLight3 scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
-		                        <Connection>
-		                            <ConfigKey><Variable name="group"/>,vinylcontrol_status</ConfigKey>
-									<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
-									<BindProperty>visible</BindProperty>
-		                        </Connection>
-		                    </StatusLight>
-							<Visual>
-            <TooltipId>waveform_display</TooltipId>
-            <Group><Variable name="group"/></Group>
-            <Size>e,e</Size>
-            <BgPixmap>deck/waveform_bg.png</BgPixmap>
-            <Align>default</Align>
-            <SignalColor>#AAAAAA</SignalColor>
-              <SignalLowColor>#656277</SignalLowColor>
-              <SignalMidColor>#AB987C</SignalMidColor>
-              <SignalHighColor>#FFFFFF</SignalHighColor>
-            <BeatColor>#999999</BeatColor>
-              <EndOfTrackColor>#EE2299</EndOfTrackColor>
-              <AxesColor>#333333</AxesColor>
-              <PlayPosColor>#FF0000</PlayPosColor>
-            <BeatHighlightColor>#44EE22</BeatHighlightColor>
-              <HfcColor>#333333</HfcColor>
-            <MarkerColor>#FF0000</MarkerColor>
-            <CueColor>#FFFF00</CueColor>
-            <DefaultMark>
-              <Align>top</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#000000</TextColor>
-              <Text> %1 </Text>
-            </DefaultMark>
-            <MarkRange>
-              <StartControl>loop_start_position</StartControl>
-              <EndControl>loop_end_position</EndControl>
-              <EnabledControl>loop_enabled</EnabledControl>
-              <Color>#b7ff24</Color>
-              <DisabledColor>#FFFFFF</DisabledColor>
-            </MarkRange>
-            <Mark>
-              <Control>loop_start_position</Control>
-              <Pixmap>deck/marker_loop_in1.png</Pixmap>
-              <Text>IN</Text>
-              <Align>bottom</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Mark>
-              <Control>loop_end_position</Control>
-              <Pixmap>deck/marker_loop_out1.png</Pixmap>
-              <Text>OUT</Text>
-              <Align>bottom</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Mark>
-              <Control>hotcue_1_position</Control>
-              <Pixmap>deck/marker_hotcue1_1.png</Pixmap>
-              <Text>1</Text>
-              <Align>bottom</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Mark>
-              <Control>hotcue_2_position</Control>
-              <Pixmap>deck/marker_hotcue1_2.png</Pixmap>
-              <Text>2</Text>
-              <Align>bottom</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Mark>
-              <Control>hotcue_3_position</Control>
-              <Pixmap>deck/marker_hotcue1_3.png</Pixmap>
-              <Text>3</Text>
-              <Align>bottom</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Mark>
-              <Control>hotcue_4_position</Control>
-              <Pixmap>deck/marker_hotcue1_4.png</Pixmap>
-              <Text>4</Text>
-              <Align>bottom</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Mark>
-              <Control>cue_point</Control>
-              <Pixmap>deck/marker_cue1.png</Pixmap>
-              <Text>CUE</Text>
-              <Align>bottom</Align>
-              <Color>#FF001C</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-          </Visual>
-		                </Children>
-			</WidgetGroup>
-		    
+          <WidgetGroup>
+            <ObjectName>VinylStatusTop<Variable name="channum"/></ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <MinimumSize>0,0</MinimumSize>
+            <Layout>vertical</Layout>
+            <Children>
+              <StatusLight>
+                <Size>2me,7f</Size>
+                <TooltipId>vinylcontrol_status</TooltipId>
+                <NumberPos>3</NumberPos>
+                <PathStatusLight scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+                <PathStatusLight2 scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+                <PathStatusLight3 scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,vinylcontrol_status</ConfigKey>
+                  <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </StatusLight>
+              <Visual>
+                <TooltipId>waveform_display</TooltipId>
+                <Group>
+                  <Variable name="group"/>
+                </Group>
+                <Size>e,e</Size>
+                <BgPixmap>deck/waveform_bg.png</BgPixmap>
+                <Align>default</Align>
+                <SignalColor>#AAAAAA</SignalColor>
+                <SignalLowColor>#656277</SignalLowColor>
+                <SignalMidColor>#AB987C</SignalMidColor>
+                <SignalHighColor>#FFFFFF</SignalHighColor>
+                <BeatColor>#999999</BeatColor>
+                <EndOfTrackColor>#EE2299</EndOfTrackColor>
+                <AxesColor>#333333</AxesColor>
+                <PlayPosColor>#FF0000</PlayPosColor>
+                <BeatHighlightColor>#44EE22</BeatHighlightColor>
+                <HfcColor>#333333</HfcColor>
+                <MarkerColor>#FF0000</MarkerColor>
+                <CueColor>#FFFF00</CueColor>
+                <DefaultMark>
+                  <Align>top</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#000000</TextColor>
+                  <Text> %1 </Text>
+                </DefaultMark>
+                <MarkRange>
+                  <StartControl>loop_start_position</StartControl>
+                  <EndControl>loop_end_position</EndControl>
+                  <EnabledControl>loop_enabled</EnabledControl>
+                  <Color>#b7ff24</Color>
+                  <DisabledColor>#FFFFFF</DisabledColor>
+                </MarkRange>
+                <Mark>
+                  <Control>loop_start_position</Control>
+                  <Pixmap>deck/marker_loop_in1.png</Pixmap>
+                  <Text>IN</Text>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+                <Mark>
+                  <Control>loop_end_position</Control>
+                  <Pixmap>deck/marker_loop_out1.png</Pixmap>
+                  <Text>OUT</Text>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+                <Mark>
+                  <Control>hotcue_1_position</Control>
+                  <Pixmap>deck/marker_hotcue1_1.png</Pixmap>
+                  <Text>1</Text>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+                <Mark>
+                  <Control>hotcue_2_position</Control>
+                  <Pixmap>deck/marker_hotcue1_2.png</Pixmap>
+                  <Text>2</Text>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+                <Mark>
+                  <Control>hotcue_3_position</Control>
+                  <Pixmap>deck/marker_hotcue1_3.png</Pixmap>
+                  <Text>3</Text>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+                <Mark>
+                  <Control>hotcue_4_position</Control>
+                  <Pixmap>deck/marker_hotcue1_4.png</Pixmap>
+                  <Text>4</Text>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+                <Mark>
+                  <Control>cue_point</Control>
+                  <Pixmap>deck/marker_cue1.png</Pixmap>
+                  <Text>CUE</Text>
+                  <Align>bottom</Align>
+                  <Color>#FF001C</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
+              </Visual>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
       <WidgetGroup trigger="[Colorscheme],legacy">
@@ -135,20 +137,22 @@
         <Children>
           <Visual>
             <TooltipId>waveform_display</TooltipId>
-            <Group><Variable name="group"/></Group>
+            <Group>
+              <Variable name="group"/>
+            </Group>
             <Size>e,e</Size>
             <BgPixmap>deck/waveform_bg.png</BgPixmap>
             <Align>default</Align>
             <SignalColor>#AAAAAA</SignalColor>
-              <SignalLowColor>#E03054</SignalLowColor>
-              <SignalMidColor>#FFB402</SignalMidColor>
-              <SignalHighColor>#FFFFFF</SignalHighColor>
+            <SignalLowColor>#E03054</SignalLowColor>
+            <SignalMidColor>#FFB402</SignalMidColor>
+            <SignalHighColor>#FFFFFF</SignalHighColor>
             <BeatColor>#999999</BeatColor>
-              <EndOfTrackColor>#EE2299</EndOfTrackColor>
-              <AxesColor>#333333</AxesColor>
-              <PlayPosColor>#FFFFFF</PlayPosColor>
+            <EndOfTrackColor>#EE2299</EndOfTrackColor>
+            <AxesColor>#333333</AxesColor>
+            <PlayPosColor>#FFFFFF</PlayPosColor>
             <BeatHighlightColor>#44EE22</BeatHighlightColor>
-              <HfcColor>#333333</HfcColor>
+            <HfcColor>#333333</HfcColor>
             <MarkerColor>#FF0000</MarkerColor>
             <CueColor>#FFFF00</CueColor>
             <DefaultMark>
@@ -230,20 +234,22 @@
         <Children>
           <Visual>
             <TooltipId>waveform_display</TooltipId>
-            <Group><Variable name="group"/></Group>
+            <Group>
+              <Variable name="group"/>
+            </Group>
             <Size>e,e</Size>
             <BgPixmap>deck/waveform_bg.png</BgPixmap>
             <Align>default</Align>
             <SignalColor>#AAAAAA</SignalColor>
-              <SignalLowColor>#777777</SignalLowColor>
-              <SignalMidColor>#AAAAAA</SignalMidColor>
-              <SignalHighColor>#FFFFFF</SignalHighColor>
+            <SignalLowColor>#777777</SignalLowColor>
+            <SignalMidColor>#AAAAAA</SignalMidColor>
+            <SignalHighColor>#FFFFFF</SignalHighColor>
             <BeatColor>#999999</BeatColor>
-              <EndOfTrackColor>#EE2299</EndOfTrackColor>
-              <AxesColor>#333333</AxesColor>
-              <PlayPosColor>#FF0000</PlayPosColor>
+            <EndOfTrackColor>#EE2299</EndOfTrackColor>
+            <AxesColor>#333333</AxesColor>
+            <PlayPosColor>#FF0000</PlayPosColor>
             <BeatHighlightColor>#44EE22</BeatHighlightColor>
-              <HfcColor>#333333</HfcColor>
+            <HfcColor>#333333</HfcColor>
             <MarkerColor>#FF0000</MarkerColor>
             <CueColor>#FFFF00</CueColor>
             <DefaultMark>
@@ -325,20 +331,22 @@
         <Children>
           <Visual>
             <TooltipId>waveform_display</TooltipId>
-            <Group><Variable name="group"/></Group>
+            <Group>
+              <Variable name="group"/>
+            </Group>
             <Size>e,e</Size>
             <BgPixmap>deck/waveform_bg.png</BgPixmap>
             <Align>default</Align>
             <SignalColor>#AAAAAA</SignalColor>
-              <SignalLowColor>#1e4744</SignalLowColor>
-              <SignalMidColor>#3e7e58</SignalMidColor>
-              <SignalHighColor>#56877c</SignalHighColor>
+            <SignalLowColor>#1e4744</SignalLowColor>
+            <SignalMidColor>#3e7e58</SignalMidColor>
+            <SignalHighColor>#56877c</SignalHighColor>
             <BeatColor>#999999</BeatColor>
-              <EndOfTrackColor>#EE2299</EndOfTrackColor>
-              <AxesColor>#333333</AxesColor>
-              <PlayPosColor>#FF0000</PlayPosColor>
+            <EndOfTrackColor>#EE2299</EndOfTrackColor>
+            <AxesColor>#333333</AxesColor>
+            <PlayPosColor>#FF0000</PlayPosColor>
             <BeatHighlightColor>#44EE22</BeatHighlightColor>
-              <HfcColor>#333333</HfcColor>
+            <HfcColor>#333333</HfcColor>
             <MarkerColor>#FF0000</MarkerColor>
             <CueColor>#FFFF00</CueColor>
             <DefaultMark>

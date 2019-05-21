@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -13,18 +14,18 @@
     <Children>
       <!-- Main Library -->
       <WidgetGroup>
-				<Layout>horizontal</Layout>
-				<Children>
-					<Splitter>
-						<Size>me,me</Size>
-						<SplitSizes>1,12</SplitSizes>
-						<Children>
-							<WidgetGroup>
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<!--Search Input Field-->
-									<SearchBox></SearchBox>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Splitter>
+            <Size>me,me</Size>
+            <SplitSizes>1,12</SplitSizes>
+            <Children>
+              <WidgetGroup>
+                <Style>QGroupBox {}</Style>
+                <Layout>vertical</Layout>
+                <Children>
+                  <!--Search Input Field-->
+                  <SearchBox/>
                   <!--Preview Deck-->
                   <WidgetGroup>
                     <ObjectName>PreviewDeckContainer</ObjectName>
@@ -34,18 +35,14 @@
                          on the size of the labels in this row -->
                     <SizePolicy>i,max</SizePolicy>
                     <Children>
-                      <Template src="skin:sampler_vu.xml">
-                        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>>
-                        <SetVariable name="group">[PreviewDeck1]</SetVariable>
-                        <SetVariable name="control">VuMeter</SetVariable>
-                      </Template>
-
+                      <Template src="skin:sampler_vu.xml"><SetVariable name="TooltipId">channel_VuMeter</SetVariable>&gt;
+                        <SetVariable name="group">[PreviewDeck1]</SetVariable><SetVariable name="control">VuMeter</SetVariable></Template>
                       <WidgetGroup>
                         <ObjectName>PreviewDeckTextRow</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
                           <Text>
-                          <TooltipId>text</TooltipId>
+                            <TooltipId>text</TooltipId>
                             <SizePolicy>me,min</SizePolicy>
                             <Group>[PreviewDeck1]</Group>
                             <Elide>right</Elide>
@@ -58,7 +55,7 @@
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
-                              <Text></Text>
+                              <Text/>
                               <Pressed scalemode="STRETCH_ASPECT">style/ic_eject_48px.svg</Pressed>
                               <Unpressed scalemode="STRETCH_ASPECT">style/ic_eject_48px.svg</Unpressed>
                             </State>
@@ -68,15 +65,12 @@
                               <ButtonState>LeftButton</ButtonState>
                             </Connection>
                           </PushButton>
-
                         </Children>
                       </WidgetGroup>
-
                       <WidgetGroup>
                         <ObjectName>PreviewDeckVisualRow</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
-
                           <PushButton>
                             <TooltipId>play_start</TooltipId>
                             <MinimumSize>30,29</MinimumSize>
@@ -121,35 +115,34 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
-									<!--Library Tree View-->
-									<LibrarySidebar></LibrarySidebar>
-									<!--Cover Art-->
-									<CoverArt>
-										<SizePolicy>me,me</SizePolicy>
-										<MinimumSize>100,100</MinimumSize>
-										<Connection>
-											<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-											<BindProperty>visible</BindProperty>
-										</Connection>
-									</CoverArt>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<!-- Library Table-->
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<Library>
-										<BgColor>#585858</BgColor>
-										<FgColor>#eece33</FgColor>
-									</Library>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</Splitter>
-				</Children>
-			</WidgetGroup>
+                  <!--Library Tree View-->
+                  <LibrarySidebar/>
+                  <!--Cover Art-->
+                  <CoverArt>
+                    <SizePolicy>me,me</SizePolicy>
+                    <MinimumSize>100,100</MinimumSize>
+                    <Connection>
+                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </CoverArt>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <!-- Library Table-->
+                <Style>QGroupBox {}</Style>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Library>
+                    <BgColor>#585858</BgColor>
+                    <FgColor>#eece33</FgColor>
+                  </Library>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </Splitter>
+        </Children>
+      </WidgetGroup>
     </Children>
   </WidgetStack>
-
 </Template>

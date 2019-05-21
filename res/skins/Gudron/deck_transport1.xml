@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!DOCTYPE template>
 <!--
   Description:
@@ -21,7 +22,7 @@
       <!-- Fbwd -->
       <PushButton>
         <TooltipId>back_start</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -49,7 +50,9 @@
             <Style>QLabel { font: 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
             background-color: transparent; color: rgba(255,255,255,160); text-align: center; padding-left: 0px; padding-bottom: 4px; }
             </Style>
-            <Group><Variable name="group"/></Group>
+            <Group>
+              <Variable name="group"/>
+            </Group>
             <Size>93f,31f</Size>
             <Alignment>center</Alignment>
             <Connection>
@@ -61,7 +64,7 @@
       <!-- Ffwd -->
       <PushButton>
         <TooltipId>fwd_end</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -88,7 +91,7 @@
       <!-- Repeat -->
       <PushButton>
         <TooltipId>repeat</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -113,7 +116,7 @@
       <!-- Key Lock -->
       <PushButton>
         <TooltipId>keylock</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -138,7 +141,7 @@
       <!-- Pitch control -->
       <PushButton>
         <TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -158,7 +161,7 @@
       </PushButton>
       <PushButton>
         <TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
-        <Style></Style>
+        <Style/>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
