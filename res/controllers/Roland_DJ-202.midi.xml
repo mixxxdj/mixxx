@@ -2,7 +2,7 @@
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
         <name>Roland DJ-202</name>
-        <author>Silvio Ankermann</author>
+        <author>Silvio Ankermann (Lykos153), eigengrau and René Kraus (upCASE)</author>
         <description>4-deck mapping for Roland DJ-202 controller</description>
         <wiki>https://mixxx.org/wiki/doku.php/roland_dj-202</wiki>
     </info>
@@ -3284,6 +3284,125 @@
                 <key>DJ202.sampler.pfl.input</key>
                 <status>0x9F</status>
                 <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- TR-S Sequencer-->
+            <control>
+                <group>[Master]</group>
+                <key>DJ202.sampler.syncButtonPressed</key>
+                <description>TR-S SYNC</description>
+                <status>0x9F</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ202.sampler.syncButtonPressed</key>
+                <description>TR-S SYNC OFF</description>
+                <status>0x9F</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ202.sampler.startStopButtonPressed</key>
+                <description>TR-S START</description>
+                <status>0xFA</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ202.sampler.startStopButtonPressed</key>
+                <description>TR-S STOP</description>
+                <status>0xFC</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S1 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S2 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S3 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S4 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler5]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S5 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler6]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S6 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler7]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S7 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler8]</group>
+                <key>DJ202.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S8 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x28</midino>
                 <options>
                     <script-binding/>
                 </options>
