@@ -220,7 +220,8 @@
     </SingletonDefinition>
 
 
-  	<Template src="skin:top_panel.xml"/>
+  	<Template src="skin:waveforms.xml"/>
+	<Template src="skin:top_panel.xml"/>
     <Template src="skin:decks_and_mixers.xml"/>
     <!-- <Template src="skin:bottom_panel.xml"/> -->
     <Template src="skin:library.xml"/>

@@ -1714,6 +1714,156 @@
             <Children>
             </Children>
           </WidgetGroup>
+		  <!-- Seperator -->
+		  
+          <WidgetGroup>
+            <Size>4f,61f</Size>
+          </WidgetGroup>
+		  <!-- Vinyl Mod -->
+		  <WidgetGroup>
+            <Size>f,61</Size>
+            <Layout>vertical</Layout>
+            <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 2px 0px 4px; } </Style>
+            <Children>
+              <WidgetGroup>
+                <Size>f,f</Size>
+                <Layout>horizontal</Layout>
+                <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+
+                <Children>
+                  <PushButton>
+                    <TooltipId>vinylcontrol_enabled</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+					  <Pressed>deck/Vinyl_ONOFF_GDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_ONOFF_GBright.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+					  <Pressed>deck/Vinyl_ONOFF_VDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_ONOFF_VBright.png</Unpressed>
+                    </State>
+                    <Connection>
+						<ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
+						<ButtonState>LeftButton</ButtonState>
+					</Connection>
+					<Connection>
+						<ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
+					</Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>vinylcontrol_mode</TooltipId>
+                    <Style></Style>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/Vinyl_MODE_RGreenDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_MODE_RGreenBright.png</Unpressed>
+                    </State>
+					<State>
+                      <Number>1</Number>
+                      <Pressed>deck/Vinyl_MODE_AYellowDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_MODE_AYellowBright.png</Unpressed>
+                    </State>
+					<State>
+                      <Number>2</Number>
+                      <Pressed>deck/Vinyl_MODE_CRedDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_MODE_CRedBright.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_mode</ConfigKey> 
+					  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+					  <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
+					  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+			
+                  </PushButton>
+                </Children>
+				<Connection>
+					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+					<BindProperty>visible</BindProperty>
+					</Connection>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Size>f,f</Size>
+                <Layout>horizontal</Layout>
+                <Style>QGroupBox { border: 0px solid green;  padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; } </Style>
+
+                <Children>
+                  <PushButton>
+                    <TooltipId>passthrough_enabled</TooltipId>
+                    <Style></Style>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+					  <Pressed>deck/Vinyl_PassThruONOFF_GDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_PassThruONOFF_GBright.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+					  <Pressed>deck/Vinyl_PassThruONOFF_PDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_PassThruONOFF_PBright.png</Unpressed>
+                    </State>
+                    <Connection>
+						<ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+						<ButtonState>LeftButton</ButtonState>
+					</Connection>
+					<Connection>
+						<ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+					</Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>vinylcontrol_cueing</TooltipId>
+                    <Style></Style>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>deck/Vinyl_CUEMODE_GDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_CUEMODE_GBright.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>deck/Vinyl_CUEMODE_CCyanDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_CUEMODE_CCyanBright.png</Unpressed>
+                    </State>
+					<State>
+                      <Number>2</Number>
+                      <Pressed>deck/Vinyl_CUEMODE_HOrangeDim.png</Pressed>
+                      <Unpressed>deck/Vinyl_CUEMODE_HOrangeBright.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
+					  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+					  <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
+					  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                </Children>
+				<Connection>
+					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+		  
+		  <!-- Separator -->
+		  <!-- Separator -->
+          <WidgetGroup>
+            <Size>4f,61f</Size>
+          </WidgetGroup>
+		  
+		  
           <!-- Key -->
           <WidgetGroup>
             <Size>56f,61f</Size>

@@ -11,12 +11,31 @@
     <ObjectName>Wave</ObjectName>
     <Size>e,e</Size>
     <Children>
-      <WidgetGroup trigger="[Colorscheme],velvet">
+	    <WidgetGroup trigger="[Colorscheme],velvet">
         <Size>e,e</Size>
         <Layout>horizontal</Layout>
         <Style>QGroupBox { border: 0px solid red; margin: 0px 0px 0px 0px; }</Style>
         <Children>
-          <Visual>
+				<WidgetGroup>
+		                <ObjectName>VinylStatusTop<Variable name="channum" /></ObjectName>
+		                <SizePolicy>me,min</SizePolicy>
+						<MinimumSize>0,0</MinimumSize>
+		                <Layout>vertical</Layout>
+		                <Children>
+		                    <StatusLight>
+								<Size>2me,7f</Size>
+								<TooltipId>vinylcontrol_status</TooltipId>
+		                        <NumberPos>3</NumberPos>
+		                        <PathStatusLight scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		                        <PathStatusLight2 scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		                        <PathStatusLight3 scalemode="STRETCH">deck/btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		                        <Connection>
+		                            <ConfigKey><Variable name="group"/>,vinylcontrol_status</ConfigKey>
+									<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+									<BindProperty>visible</BindProperty>
+		                        </Connection>
+		                    </StatusLight>
+							<Visual>
             <TooltipId>waveform_display</TooltipId>
             <Group><Variable name="group"/></Group>
             <Size>e,e</Size>
@@ -104,6 +123,9 @@
               <TextColor>#FFFFFF</TextColor>
             </Mark>
           </Visual>
+		                </Children>
+			</WidgetGroup>
+		    
         </Children>
       </WidgetGroup>
       <WidgetGroup trigger="[Colorscheme],legacy">

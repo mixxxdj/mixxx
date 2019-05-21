@@ -44,4 +44,5 @@
       </WidgetGroup>
     </Children>
   </WidgetGroup>
+  <Template src="skin:waveforms.xml"/>
 </Template>
