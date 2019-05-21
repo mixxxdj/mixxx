@@ -1735,13 +1735,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>deck/Vinyl_ONOFF_GDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_ONOFF_GBright.png</Unpressed>
+                      <Pressed>deck/vinyl_onoff_gdim.png</Pressed>
+                      <Unpressed>deck/vinyl_onoff_gbright.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>deck/Vinyl_ONOFF_VDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_ONOFF_VBright.png</Unpressed>
+                      <Pressed>deck/vinyl_onoff_vdim.png</Pressed>
+                      <Unpressed>deck/vinyl_onoff_vbright.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
@@ -1757,18 +1757,18 @@
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>deck/Vinyl_MODE_RGreenDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_MODE_RGreenBright.png</Unpressed>
+                      <Pressed>deck/vinyl_mode_rgreendim.png</Pressed>
+                      <Unpressed>deck/vinyl_mode_rgreenbright.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>deck/Vinyl_MODE_AYellowDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_MODE_AYellowBright.png</Unpressed>
+                      <Pressed>deck/vinyl_mode_ayellowdim.png</Pressed>
+                      <Unpressed>deck/vinyl_mode_ayellowbright.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Pressed>deck/Vinyl_MODE_CRedDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_MODE_CRedBright.png</Unpressed>
+                      <Pressed>deck/vinyl_mode_creddim.png</Pressed>
+                      <Unpressed>deck/vinyl_mode_credbright.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
@@ -1798,13 +1798,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>deck/Vinyl_PassThruONOFF_GDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_PassThruONOFF_GBright.png</Unpressed>
+                      <Pressed>deck/vinyl_passthruonoff_gdim.png</Pressed>
+                      <Unpressed>deck/vinyl_passthruonoff_gbright.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>deck/Vinyl_PassThruONOFF_PDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_PassThruONOFF_PBright.png</Unpressed>
+                      <Pressed>deck/vinyl_passthruonoff_pdim.png</Pressed>
+                      <Unpressed>deck/vinyl_passthruonoff_pbright.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
@@ -1820,18 +1820,18 @@
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>deck/Vinyl_CUEMODE_GDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_CUEMODE_GBright.png</Unpressed>
+                      <Pressed>deck/vinyl_cuemode_gdim.png</Pressed>
+                      <Unpressed>deck/vinyl_cuemode_gbright.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>deck/Vinyl_CUEMODE_CCyanDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_CUEMODE_CCyanBright.png</Unpressed>
+                      <Pressed>deck/vinyl_cuemode_ccyandim.png</Pressed>
+                      <Unpressed>deck/vinyl_cuemode_ccyanbright.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Pressed>deck/Vinyl_CUEMODE_HOrangeDim.png</Pressed>
-                      <Unpressed>deck/Vinyl_CUEMODE_HOrangeBright.png</Unpressed>
+                      <Pressed>deck/vinyl_cuemode_horangedim.png</Pressed>
+                      <Unpressed>deck/vinyl_cuemode_horangebright.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
