@@ -93,7 +93,10 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotTrackInfoClosed();
     void slotTagFetcherClosed();
+    void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
+    void sortColumnChanged(double v);
+    void sortOrderChanged(double v);
 
   private:
 
@@ -217,6 +220,8 @@ class WTrackTableView : public WLibraryTableView {
     bool m_bCrateMenuLoaded;
     ControlProxy* m_pCOTGuiTick;
     ControlProxy* m_pKeyNotation;
+    ControlProxy* m_pSortColumn;
+    ControlProxy* m_pSortOrder;
 };
 
 #endif

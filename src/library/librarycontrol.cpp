@@ -106,6 +106,12 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddBottom(double)));
 
+    // Sort controls
+    m_pSortColumn = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_column"));
+    m_pSortColumn->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
+    m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
+
     // Font sizes
     m_pFontSizeKnob = std::make_unique<ControlObject>(
             ConfigKey("[Library]", "font_size_knob"), false);

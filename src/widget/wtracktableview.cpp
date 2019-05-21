@@ -127,6 +127,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
     m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
+    m_pSortColumn = new ControlProxy("[Library]", "sort_column", this);
+    m_pSortColumn->connectValueChanged(this, &WTrackTableView::sortColumnChanged);
+    m_pSortOrder = new ControlProxy("[Library]", "sort_order", this);
+    m_pSortOrder->connectValueChanged(this, &WTrackTableView::sortOrderChanged);
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -361,8 +365,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     if (m_sorting) {
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
         connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-                this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
-
+                this, SLOT(slotSortingChanged(int, Qt::SortOrder)), Qt::AutoConnection);
         // Stupid hack that assumes column 0 is never visible, but this is a weak
         // proxy for "there was a saved column sort order"
         if (horizontalHeader()->sortIndicatorSection() > 0) {
@@ -1975,6 +1978,18 @@ void WTrackTableView::slotReloadCoverArt() {
     }
 }
 
+void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
+    double sortOrder = (order == Qt::AscendingOrder) ? 0.0 : 1.0;
+    if (headerSection != (int)m_pSortColumn->get()) {
+        m_pSortColumn->set(headerSection);
+        sortColumnChanged(headerSection);
+    }
+    if (sortOrder != m_pSortOrder->get()) {
+        m_pSortOrder->set(sortOrder);
+        sortOrderChanged(sortOrder);
+    }
+}
+
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
@@ -1994,3 +2009,18 @@ void WTrackTableView::keyNotationChanged()
     QWidget::update();
 }
 
+void WTrackTableView::sortColumnChanged(double v)
+{
+    int sortColumn = (int)v;
+    Qt::SortOrder sortOrder = m_pSortColumn->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
+    horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+    doSortByColumn(sortColumn);
+}
+
+void WTrackTableView::sortOrderChanged(double v)
+{
+    int sortColumn = (int)m_pSortColumn->get();
+    Qt::SortOrder sortOrder = v ? Qt::DescendingOrder : Qt::AscendingOrder;
+    horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+    doSortByColumn(sortColumn);
+}
