@@ -545,7 +545,6 @@ PioneerDDJ400.vuMeterUpdate = function(value, group, control){
     
 };
 
-
 PioneerDDJ400.shutdown = function() {
     midi.sendShortMsg(0xB0, 0x02, 0); // reset vumeter
     midi.sendShortMsg(0xB1, 0x02, 0); // reset vumeter
