@@ -3262,7 +3262,6 @@
                 Beatjump PAD 1-8 ch1 972N ch2 992N 
 
                 OPEN:
-				*Master Cue 9663 Shift 9678
 				PAD 1 SAMPLER MODE Ch1 9730 Shift 9830 Ch2 9930 Shift 9A30
 				PAD 2 SAMPLER MODE Ch1 9731 Shift 9831 Ch2 9931 Shift 9A31
 				PAD 3 SAMPLER MODE Ch1 9732 Shift 9832 Ch2 9932 Shift 9A32
@@ -3303,10 +3302,12 @@
 				PAD 6 KEYSHIFT MODE Ch1 9775 Shift 9875 Ch2 9975 Shift 9A75
 				PAD 7 KEYSHIFT MODE Ch1 9776 Shift 9876 Ch2 9976 Shift 9A76
 				PAD 8 KEYSHIFT MODE Ch1 9777 Shift 9877 Ch2 9977 Shift 9A77
-				HOT CUE Ch1 901B Shift 9069 Ch2 911B Shift 9169
-				BEATLOOP Ch1 906D Shift 901E Ch2 916D Shift 911E
-				BEATJUMP Ch1 9020 Shift 906B Ch2 9120 Shift 916B
-				SAMPLER Ch1 9022 Shift 906F Ch2 9122 Shift 916F
+				**HOT CUE Ch1 901B Shift 9069 Ch2 911B Shift 9169
+				**BEATLOOP Ch1 906D Shift 901E Ch2 916D Shift 911E
+				**BEATJUMP Ch1 9020 Shift 906B Ch2 9120 Shift 916B
+				**SAMPLER Ch1 9022 Shift 906F Ch2 9122 Shift 916F
+                **Master Cue 9663 Shift 9678
+				
 
 				???
 				LOADED Ch1 9F007F ch2 9F017F
@@ -3318,6 +3319,7 @@
 				BACK SPIN LENGTH BF45
 
 				* = not implemented (yet?)
+                ** = builtin
 			-->
 
             // PLAY
@@ -3786,6 +3788,266 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
 			</output>
+
+            // SAMPLER Mode Pads
+            <output>
+				<group>[Sampler1]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x30</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler2]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x31</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler3]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x32</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler4]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x33</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler5]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x34</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler6]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x35/midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler7]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x36</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler8]</group>
+				<key>track_loaded</key>
+				<status>0x97</status> 
+				<midino>0x37</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler9]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x30</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler10]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x31</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler11]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x32</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler12]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x33</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler13]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x34</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler14]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x35/midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler15]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x36</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler16]</group>
+				<key>track_loaded</key>
+				<status>0x99</status> 
+				<midino>0x37</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            <output>
+				<group>[Sampler1]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x30</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler2]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x31</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler3]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x32</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler4]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x33</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler5]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x34</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler6]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x35/midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler7]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x36</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler8]</group>
+				<key>track_loaded</key>
+				<status>0x98</status> 
+				<midino>0x37</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler9]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x30</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler10]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x31</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler11]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x32</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler12]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x33</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler13]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x34</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler14]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x35/midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler15]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x36</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Sampler16]</group>
+				<key>track_loaded</key>
+				<status>0x9A</status> 
+				<midino>0x37</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            
 
             // LOADED (load illumination)
             <!-- 

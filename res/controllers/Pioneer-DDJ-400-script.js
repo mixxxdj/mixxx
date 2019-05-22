@@ -342,7 +342,6 @@ PioneerDDJ400.keyshiftModePad = function(channel, control, value, status, group)
 
 PioneerDDJ400.samplerModeShiftPadPressed = function(channel, control, value, status, group){
     if(value == 0) {
-        midi.sendShortMsg(status, control, 0x7F); // turn LED back on
         return; // ignore release
     }
     var playing = engine.getValue(group, 'play');
@@ -353,7 +352,6 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(channel, control, value, sta
     else{ // load selected track
         engine.setValue(group, 'LoadSelectedTrack', 1);
     }
-    midi.sendShortMsg(status, control, 0); // on press turn LED off
     // TODO: while playing a sample blink playing PAD?
 };
 
