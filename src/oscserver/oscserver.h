@@ -1,7 +1,7 @@
 #ifndef __OSCSERVER_H__
 #define __OSCSERVER_H__
 
-#include <memory>
+#include "util/memory.h"
 
 #include <QRegularExpression>
 
@@ -23,8 +23,8 @@ public:
 
 private:
     void setNeedsUpdate(bool needsUpdate);
-    // Sets whether to display a warning (error = true) or a success message (error = false)
-    // on the OSC preferences page
+    // Sets whether to display a warning (error = true) or a success message
+    // (error = false) on the OSC preferences page
     void setError(bool error);
 
 private slots:

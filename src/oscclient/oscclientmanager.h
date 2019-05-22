@@ -14,7 +14,6 @@
 #include <QList>
 #include <QTime>
 
-
 class EngineMaster;
 
 class OscClientManager : public QObject

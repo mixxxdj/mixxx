@@ -1,7 +1,7 @@
 #ifndef DLGPREFOSC_H
 #define DLGPREFOSC_H
 
-#include <memory>
+#include "util/memory.h"
 
 #include <QRadioButton>
 #include <QWidget>

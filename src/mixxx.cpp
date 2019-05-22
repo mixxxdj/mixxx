@@ -561,7 +561,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotChangedPlayingDeck(int)));
 
-    m_pOscClientManager = new OscClientManager(pConfig, m_pEngine);
+    m_pOscClientManager = std::make_unique<OscClientManager>(pConfig,
+        m_pEngine);
 
     m_pOscServer = std::make_unique<OscServer>(pConfig);
 
@@ -671,7 +672,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
-    delete m_pOscClientManager;
+    // Deleting m_pOscClientManager is unnecessary as it is a unique_ptr
 
     // Deleting m_pOscServer is unnecessary as it is a unique_ptr
 

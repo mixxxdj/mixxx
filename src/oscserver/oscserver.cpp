@@ -2,25 +2,29 @@
 
 namespace {
     void oscErrorHandler(int err, const char* msg, const char* path) {
-        qWarning() << QString("%1. OSC path: %2. Error Code: %3.").arg(QString::fromLatin1(msg)).arg(QString::fromLatin1(path)).arg(err);
+        qWarning() << QString("%1. OSC path: %2. Error Code: %3.").arg(
+            QString::fromLatin1(msg)).arg(QString::fromLatin1(path)).arg(err);
     }
 
-    int oscMsgHandler(const char* path, const char* types, lo_arg** argv, int argc, void* data, void* userData) {
+    int oscMsgHandler(const char* path, const char* types, lo_arg** argv,
+        int argc, void* data, void* userData) {
         Q_UNUSED(userData);
 
-        QRegularExpression pathRegEx("\\/(.+)\\/(.+)");
-        QRegularExpressionMatch pathMatch = pathRegEx.match(QString::fromLatin1(path));
+        QRegularExpression pathRegEx("\\/mixxx\\/(.+)\\/(.+)");
+        QRegularExpressionMatch pathMatch = pathRegEx.match(QString::fromLatin1(
+            path));
 
         if (!pathMatch.hasMatch()) {
             qWarning() << "Invalid OSC path: " << QString::fromLatin1(path);
-            qWarning() << "Proper OSC path format: /<group>/<control>";
+            qWarning() << "Proper OSC path format: /mixxx/<group>/<control>";
             return 1;
         }
 
         ConfigKey key = ConfigKey(pathMatch.captured(1), pathMatch.captured(2));
 
         if (key.isNull() || key.isEmpty()) {
-            qWarning() << "Invalid group/key pair specified in OSC path: " << QString::fromLatin1(path);
+            qWarning() << "Invalid group/key pair specified in OSC path: " <<
+                QString::fromLatin1(path);
             return 1;
         }
 
@@ -38,10 +42,12 @@ namespace {
             if ((argType == LO_STRING) ||
                 (argType == LO_SYMBOL)) {
                 if (reinterpret_cast<char*>(argv[i])[0] == '?') {
-                    lo_address msgTo = lo_message_get_source(static_cast<lo_message>(data));
+                    lo_address msgTo = lo_message_get_source(
+                        static_cast<lo_message>(data));
                     if (lo_send(msgTo, path, "d", ControlObject::get(key)) == -1) {
                         char *targetUrl = lo_address_get_url(msgTo);
-                        qWarning() << "Failed to reply to OSC get parameter message from: " << QString::fromLatin1(targetUrl);
+                        qWarning() << "Failed to reply to OSC get parameter message from: "
+                            << QString::fromLatin1(targetUrl);
                         free(targetUrl);
                     }
                 }
@@ -91,9 +97,11 @@ namespace {
 
 OscServer::OscServer(UserSettingsPointer pConfig)
     : m_pConfig(pConfig), m_st(nullptr) {
-    m_pUpdateProxy = std::make_unique<ControlProxy>(OSC_SERVER_PREF_KEY, "NeedsUpdate");
+    m_pUpdateProxy = std::make_unique<ControlProxy>(OSC_SERVER_PREF_KEY,
+        "NeedsUpdate");
     m_pUpdateProxy->connectValueChanged(this, &OscServer::slotNeedsUpdate);
-    m_pErrorProxy = std::make_unique<ControlProxy>(OSC_SERVER_PREF_KEY, "Error");
+    m_pErrorProxy = std::make_unique<ControlProxy>(OSC_SERVER_PREF_KEY,
+        "Error");
 
     init();
 }
@@ -103,7 +111,8 @@ OscServer::~OscServer() {
 }
 
 bool OscServer::init() {
-    // Return true in these two cases because there was no error (init was simply not necessary in these cases)
+    // Return true in these two cases because there was no error
+    // (init was simply not necessary in these cases)
     if (m_st) {
         return true;
     }
@@ -112,7 +121,8 @@ bool OscServer::init() {
         return true;
     }
 
-    QString port = m_pConfig->getValueString(ConfigKey(OSC_SERVER_PREF_KEY, "Port"));
+    QString port = m_pConfig->getValueString(ConfigKey(OSC_SERVER_PREF_KEY,
+        "Port"));
     // If user has not chosen a port, fall back to default.
     if (port.isEmpty() || port.isNull()) {
         port = OSC_SERVER_DEFAULT_PORT;

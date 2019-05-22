@@ -27,6 +27,7 @@
 #include "preferences/constants.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#include "util/memory.h"
 #include "util/timer.h"
 #include "util/db/dbconnectionpool.h"
 #include "soundio/sounddeviceerror.h"
@@ -164,7 +165,7 @@ class MixxxMainWindow : public QMainWindow {
     // RecordingManager
     RecordingManager* m_pRecordingManager;
     //oscClientManager
-    OscClientManager* m_pOscClientManager;
+    std::unique_ptr<OscClientManager> m_pOscClientManager;
     // OscServer
     std::unique_ptr<OscServer> m_pOscServer;
 #ifdef __BROADCAST__

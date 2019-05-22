@@ -48,11 +48,11 @@ public slots:
 
 
   private:
-    QTime time;
-    lo_address serverAdress;
+    QTime m_time;
+    lo_address m_serverAddress;
     UserSettingsPointer m_pConfig;
-    QList<ControlProxy*> connectedControls;
-    ControlProxy prefUpdate;
+    QList<ControlProxy*> m_connectedControls;
+    ControlProxy m_prefUpdate;
 
 };
 
