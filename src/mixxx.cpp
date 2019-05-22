@@ -561,8 +561,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotChangedPlayingDeck(int)));
 
-    m_pOscClientManager = std::make_unique<OscClientManager>(pConfig,
-        m_pEngine);
+    m_pOscClientManager =
+        std::make_unique<OscClientManager>(pConfig, m_pEngine);
 
     m_pOscServer = std::make_unique<OscServer>(pConfig);
 

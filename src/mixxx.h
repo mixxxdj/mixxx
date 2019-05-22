@@ -164,7 +164,7 @@ class MixxxMainWindow : public QMainWindow {
     PlayerManager* m_pPlayerManager;
     // RecordingManager
     RecordingManager* m_pRecordingManager;
-    //oscClientManager
+    // OscClientManager
     std::unique_ptr<OscClientManager> m_pOscClientManager;
     // OscServer
     std::unique_ptr<OscServer> m_pOscServer;
