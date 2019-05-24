@@ -1,3 +1,4 @@
+#include <QStyle>
 #include "widget/controlwidgetconnection.h"
 
 #include "widget/wbasewidget.h"
@@ -125,4 +126,9 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
         qDebug() << "Setting property" << m_propertyName
                 << "to widget failed. Value:" << parameter;
     }
+
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    pWidget->style()->unpolish(pWidget);
+    pWidget->style()->polish(pWidget);
 }
