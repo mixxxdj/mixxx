@@ -20,6 +20,7 @@
 #include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/banshee/bansheefeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
@@ -160,6 +161,12 @@ Library::Library(
         pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
+
+    // Rekordbox feature added persistently as the only way to enable it to
+    // dynamically appear/disappear when correctly prepared removable devices
+    // are mounted/unmounted would be to have some form of timed thread to check
+    // periodically. Not ideal perfomance wise.
+    addFeature(new RekordboxFeature(this, m_pTrackCollection));    
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with

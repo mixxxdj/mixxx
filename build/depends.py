@@ -486,6 +486,15 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+# For Rekordbox removable device binary database file parsing
+class Kaitai(Dependence):
+
+    def sources(self, build):
+        return ["lib/kaitai/kaitaistream.cpp"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
+        build.env.Append(CPPPATH="#lib/kaitai")        
 
 class Ebur128Mit(Dependence):
     INTERNAL_PATH = 'lib/libebur128'
@@ -1043,6 +1052,9 @@ class MixxxCore(Feature):
 
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
+                   
+                   "src/library/rekordbox/rekordboxfeature.cpp",
+                   "src/library/rekordbox/rekordbox_pdb.cpp",
 
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
@@ -1543,7 +1555,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, OSXFilePathUrlBackport]
+                QueenMaryDsp, OSXFilePathUrlBackport, Kaitai]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
