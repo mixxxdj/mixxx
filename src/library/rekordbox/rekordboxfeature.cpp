@@ -318,9 +318,9 @@ QList<TreeItem*> RekordboxFeature::findRekordboxDevices() {
     devices += QDir("/media").entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
-    // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
-    devices += run_media_user_dir.entryInfoList(
+    // Add folders under /media/$USER to devices.
+    QDir media_user_dir("/media/" + qgetenv("USER"));
+    devices += media_user_dir.entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
