@@ -3258,18 +3258,11 @@
 				RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150
                 BEAT FX 9447 Shift 9443
                 Hotcue PAD 1-8 ch1 970N ch2 990N (N = PADNUM -1)
-                Beatloop PAD 1-8 ch1 976N ch2 996N (N = Padnum -1)
+                Beatloop PAD 1-8 ch1 976N ch2 996N
                 Beatjump PAD 1-8 ch1 972N ch2 992N 
+                Sampler PAD 1-8 Ch1 973N Shift 983N Ch2 993N Shift 9A3N
 
                 OPEN:
-				PAD 1 SAMPLER MODE Ch1 9730 Shift 9830 Ch2 9930 Shift 9A30
-				PAD 2 SAMPLER MODE Ch1 9731 Shift 9831 Ch2 9931 Shift 9A31
-				PAD 3 SAMPLER MODE Ch1 9732 Shift 9832 Ch2 9932 Shift 9A32
-				PAD 4 SAMPLER MODE Ch1 9733 Shift 9833 Ch2 9933 Shift 9A33
-				PAD 5 SAMPLER MODE Ch1 9734 Shift 9834 Ch2 9934 Shift 9A34
-				PAD 6 SAMPLER MODE Ch1 9735 Shift 9835 Ch2 9935 Shift 9A35
-				PAD 7 SAMPLER MODE Ch1 9736 Shift 9836 Ch2 9936 Shift 9A36
-				PAD 8 SAMPLER MODE Ch1 9737 Shift 9837 Ch2 9937 Shift 9A37
 				PAD 1 KEYBOARD MODE Ch1 9740 Shift 9840 Ch2 9940 Shift 9A40
 				PAD 2 KEYBOARD MODE Ch1 9741 Shift 9841 Ch2 9941 Shift 9A41
 				PAD 3 KEYBOARD MODE Ch1 9742 Shift 9842 Ch2 9942 Shift 9A42
@@ -3659,6 +3652,7 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
 			</output>
+
             // BEATLOOP Mode Pads
             <output>
 				<group>[Channel1]</group>
@@ -4048,6 +4042,265 @@
                 <minimum>0.5</minimum>
 			</output>
             
+            // Keyboard Mode Pads
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x97</status> 
+				<midino>0x40</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x99</status>
+				<midino>0x40</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x97</status> 
+				<midino>0x41</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x99</status>
+				<midino>0x41</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x97</status> 
+				<midino>0x42</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x99</status>
+				<midino>0x42</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_4_enabled</key>
+				<status>0x97</status> 
+				<midino>0x43</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_4_enabled</key>
+				<status>0x99</status>
+				<midino>0x43</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_5_enabled</key>
+				<status>0x97</status> 
+				<midino>0x44</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_5_enabled</key>
+				<status>0x99</status>
+				<midino>0x44</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_6_enabled</key>
+				<status>0x97</status> 
+				<midino>0x45</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_6_enabled</key>
+				<status>0x99</status>
+				<midino>0x45</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_7_enabled</key>
+				<status>0x97</status> 
+				<midino>0x46</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_7_enabled</key>
+				<status>0x99</status>
+				<midino>0x46</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_8_enabled</key>
+				<status>0x97</status> 
+				<midino>0x47</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_8_enabled</key>
+				<status>0x99</status>
+				<midino>0x47</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            // Keyboard +Shift Mode Pads
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x98</status> 
+				<midino>0x40</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x9A</status>
+				<midino>0x40</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x98</status> 
+				<midino>0x41</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x9A</status>
+				<midino>0x41</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x98</status> 
+				<midino>0x42</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x9A</status>
+				<midino>0x42</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_4_enabled</key>
+				<status>0x98</status> 
+				<midino>0x43</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_4_enabled</key>
+				<status>0x9A</status>
+				<midino>0x43</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_5_enabled</key>
+				<status>0x98</status> 
+				<midino>0x44</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_5_enabled</key>
+				<status>0x9A</status>
+				<midino>0x44</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>hotcue_6_enabled</key>
+				<status>0x98</status> 
+				<midino>0x45</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>hotcue_6_enabled</key>
+				<status>0x9A</status>
+				<midino>0x45</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>play</key>
+				<status>0x98</status> 
+				<midino>0x46</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>play</key>
+				<status>0x9A</status>
+				<midino>0x46</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>play</key>
+				<status>0x98</status> 
+				<midino>0x47</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>play</key>
+				<status>0x9A</status>
+				<midino>0x47</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
 
             // LOADED (load illumination)
             <!-- 

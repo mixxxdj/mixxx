@@ -101,31 +101,6 @@ PioneerDDJ400.hotcueLoopPoints = {
 PioneerDDJ400.beatFxEffect = 0;
 PioneerDDJ400.beatFXEffectSlots = 3;
 
-// Modes
-const mode = {
-    HOTCUE : 0,
-    BEATLOOP : 1,
-    BEATJUMP : 2,
-    SAMPLER : 3,
-    KEYBOARD : 4,
-    PADFX1 : 5,
-    PADFX2 : 6,
-    KEYSHIFT : 7 
-};
-// map control-value to mode
-const modeMap = {
-    0x1B : mode.HOTCUE,
-    0x69 : mode.KEYBOARD,
-    0x6D : mode.BEATLOOP,
-    0x1E : mode.PADFX1,
-    0x20 : mode.BEATJUMP,
-    0x6B : mode.PADFX2,
-    0x22 : mode.SAMPLER,
-    0x6F : mode.KEYSHIFT 
-};
-// current Mode per Deck
-PioneerDDJ400.currentMode = [mode.HOTCUE, mode.HOTCUE];
-
 // Loop Section
 PioneerDDJ400.loopin4beat = [ false, false ]; // inn4loop is pressed
 PioneerDDJ400.loopout = [ false, false ]; // out loop is pressed
@@ -145,6 +120,7 @@ PioneerDDJ400.init = function() {
     engine.connectControl('[Channel2]','VuMeter','PioneerDDJ400.vuMeterUpdate');
     midi.sendShortMsg(0xB0, 0x02, 0); // reset vumeter
     midi.sendShortMsg(0xB1, 0x02, 0); // reset vumeter
+
 };
 
 
@@ -291,9 +267,32 @@ PioneerDDJ400.keyboardMode = function(channel, control, value, status, group){
         this.keyboardModeRefCount[channel] = 0;
         // reset pitch
         engine.setValue(group, 'pitch', 0.0);
-        // clear PAD LEDs of the Deck
+        this.keyboardModeEnabledOutput(channel, group);
     }
 };
+
+
+PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group){
+    const status = channel == 0 ? 0x97 : 0x99; 
+    if(this.keyboardHotCuePoint[channel] == 0){
+        for(var hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
+            var hotcueEnabled = engine.getValue(group, 'hotcue_'+hotcuePad+'_enabled');
+            midi.sendShortMsg(status, 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
+            // shift lights on if hotcue is set
+            midi.sendShortMsg(status+1 , 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
+        }
+    }
+    else{
+        // enable all LEDs
+        for(var hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
+            midi.sendShortMsg(status , 0x40 + hotcuePad-1, 0x7F);
+        }
+    }
+    // shift keyboard Pad 7 and 8 are always enabled
+    midi.sendShortMsg(status+1 , 0x46, 0x7F); 
+    midi.sendShortMsg(status+1 , 0x47, 0x7F);
+};
+
 
 PioneerDDJ400.keyboardModePad = function(channel, control, value, status, group){
     channel = (channel & 0xf) < 10 ? 0 : 1;
@@ -310,7 +309,7 @@ PioneerDDJ400.keyboardModePad = function(channel, control, value, status, group)
             engine.setValue(group, 'hotcue_'+hotcuePad+'_set', 1);
         }
         this.keyboardModeRefCount[channel] = 0; // reset count
-        // TODO enable LED of the Pad!
+        this.keyboardModeEnabledOutput(channel, group);
         return;
     }
         
@@ -382,11 +381,6 @@ PioneerDDJ400.beatjumpShiftByOne = function(channel, control, value, status, gro
 
 PioneerDDJ400.shiftPressed = function(channel, control, value, status, group){
     this.shiftState[channel] = value;
-};
-
-PioneerDDJ400.modeChange = function(channel, control, value, status, group){
-    if(value == 0) return; // ignore release
-    this.currentMode[channel] = modeMap[control];
 };
 
 
