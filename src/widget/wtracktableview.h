@@ -71,6 +71,7 @@ class WTrackTableView : public WLibraryTableView {
     void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
+    void applySorting();
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
@@ -95,8 +96,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotTagFetcherClosed();
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
-    void sortColumnChanged(double v);
-    void sortOrderChanged(double v);
 
   private:
 

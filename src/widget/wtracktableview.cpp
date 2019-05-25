@@ -128,9 +128,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
     m_pSortColumn = new ControlProxy("[Library]", "sort_column", this);
-    m_pSortColumn->connectValueChanged(this, &WTrackTableView::sortColumnChanged);
+    m_pSortColumn->connectValueChanged(this, &WTrackTableView::applySorting);
     m_pSortOrder = new ControlProxy("[Library]", "sort_order", this);
-    m_pSortOrder->connectValueChanged(this, &WTrackTableView::sortOrderChanged);
+    m_pSortOrder->connectValueChanged(this, &WTrackTableView::applySorting);
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -388,13 +388,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             }
         }
 
-        // This line sorts the TrackModel
-        horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-        // in Qt5, we need to call it manually, which triggers finally the select()
-        doSortByColumn(sortColumn);
-
         m_pSortColumn->set(sortColumn);
         m_pSortOrder->set(sortOrder);
+        applySorting();
     }
 
     // Set up drag and drop behavior according to whether or not the track
@@ -1784,6 +1780,17 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
+void WTrackTableView::applySorting() {
+    int sortColumn = (int)m_pSortColumn->get();
+    Qt::SortOrder sortOrder = m_pSortOrder->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
+
+    // This line sorts the TrackModel
+    horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+
+    // in Qt5, we need to call it manually, which triggers finally the select()
+    doSortByColumn(sortColumn);
+}
+
 void WTrackTableView::slotLockBpm() {
     lockBpm(true);
 }
@@ -1985,14 +1992,21 @@ void WTrackTableView::slotReloadCoverArt() {
 }
 
 void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
-    double sortOrder = (order == Qt::AscendingOrder) ? 0.0 : 1.0;
+
+    double sortOrder = (double)order;
+    bool sortingChanged = false;
+
     if (headerSection != (int)m_pSortColumn->get()) {
         m_pSortColumn->set(headerSection);
-        sortColumnChanged(headerSection);
+        sortingChanged = true;
     }
     if (sortOrder != m_pSortOrder->get()) {
         m_pSortOrder->set(sortOrder);
-        sortOrderChanged(sortOrder);
+        sortingChanged = true;
+    }
+
+    if (sortingChanged) {
+        applySorting();
     }
 }
 
@@ -2013,20 +2027,4 @@ void WTrackTableView::restoreCurrentVScrollBarPos()
 void WTrackTableView::keyNotationChanged()
 {
     QWidget::update();
-}
-
-void WTrackTableView::sortColumnChanged(double v)
-{
-    int sortColumn = (int)v;
-    Qt::SortOrder sortOrder = m_pSortColumn->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
-    horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-    doSortByColumn(sortColumn);
-}
-
-void WTrackTableView::sortOrderChanged(double v)
-{
-    int sortColumn = (int)m_pSortColumn->get();
-    Qt::SortOrder sortOrder = v ? Qt::DescendingOrder : Qt::AscendingOrder;
-    horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-    doSortByColumn(sortColumn);
 }
