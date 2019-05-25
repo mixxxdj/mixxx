@@ -490,4 +490,47 @@ WLibrary QPushButton {
     margin: 1px 2px 3px 10px;
   }
 
+/* Hotcue Color: No Color */
+#HotcueButton[highlight="0"] {
+    background-color: #fd0564;
+}
 
+/* Hotcue Color: Red */
+#HotcueButton[highlight="1"] {
+    background-color: #c50a08;
+}
+
+/* Hotcue Color: Green */
+#HotcueButton[highlight="2"] {
+    background-color: #32be44;
+}
+
+/* Hotcue Color: Blue */
+#HotcueButton[highlight="3"] {
+    background-color: #0044ff;
+}
+
+/* Hotcue Color: Yellow */
+#HotcueButton[highlight="4"] {
+    background-color: #f8d200;
+}
+
+/* Hotcue Color: Celeste */
+#HotcueButton[highlight="5"] {
+    background-color: #42d4f4;
+}
+
+/* Hotcue Color: Purple */
+#HotcueButton[highlight="6"] {
+    background-color: #af00cc;
+}
+
+/* Hotcue Color: Pink */
+#HotcueButton[highlight="7"] {
+    background-color: #fca6d7;
+}
+
+/* Hotcue Color: White */
+#HotcueButton[highlight="8"] {
+    background-color: #f2f2ff;
+}
