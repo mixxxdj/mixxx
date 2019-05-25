@@ -139,7 +139,7 @@ If no track sources are configured, the track is added from the library instead.
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="fadeModeLabel">
        <property name="text">
         <string>Fade mode:</string>
        </property>
