@@ -88,15 +88,15 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgAutoDJ::slotTransitionModeChanged);
     QString fadeModeTooltip = tr(
-    "Align intro + outro start: align the start of the intro of the next track with the\n"
-    "start of the outro of the current track. The length of the intro or outro range\n"
-    "is used as the transition time, whichever is shorter."
+    "Align intro + outro start/end modes:\n"
+    "Align the start/end of the intro of the next track with the\n"
+    "start/end of the outro of the current track. The length of\n"
+    "the intro or outro range is used as the transition time,\n"
+    "whichever is shorter. The selected number of seconds is\n"
+    "only used if neither track has an intro or outro range marked."
     "\n\n"
-    "Align intro + outro end: align the end of the intro of the next track with the\n"
-    "end of the outro of the current track. The length of the intro or outro range\n"
-    "is used as the transition time, whichever is shorter."
-    "\n\n"
-    "Fixed time modes: use the selected number of seconds as the transition time"
+    "Fixed time modes:\n"
+    "Use the selected number of seconds as the transition time."
     );
     fadeModeCombobox->setToolTip(fadeModeTooltip);
     fadeModeLabel->setToolTip(fadeModeTooltip);
