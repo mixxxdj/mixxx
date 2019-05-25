@@ -227,7 +227,7 @@ DJ505.browseEncoder = new components.Encoder({
 });
 
 DJ505.backButton = new components.Button({
-    // TODO: Map the BACK/SONG button
+    // TODO: Map the BACK button
     midi: [0x9F, 0x07],
     shiftOffset: 11,
     sendShifted: true,
@@ -236,7 +236,6 @@ DJ505.backButton = new components.Button({
 });
 
 DJ505.addPrepareButton = new components.Button({
-    // TODO: Map the ARTIST button
     midi: [0x9F, 0x1B],
     shiftOffset: -7,
     sendShifted: true,
@@ -245,6 +244,33 @@ DJ505.addPrepareButton = new components.Button({
     key: "maximize_library",
     type: components.Button.prototype.types.toggle,
 });
+
+
+DJ505.sortLibrary = function (channel, control, value, status, group) {
+    if (value === 0) {
+        return;
+    }
+
+    var sortColumn;
+    switch(control) {
+        case 0x12:  // SONG
+            sortColumn = 1;
+            break;
+        case 0x13:  // BPM
+            sortColumn = 14;
+            break;
+        case 0x14:  // ARTIST
+            sortColumn = 0;
+            break;
+        case 0x1E:  // KEY
+            sortColumn = 19;
+            break;
+        default:
+            // unknown sort column
+            return;
+    }
+    engine.setValue("[Library]", "sort_column_toggle", sortColumn);
+};
 
 DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],

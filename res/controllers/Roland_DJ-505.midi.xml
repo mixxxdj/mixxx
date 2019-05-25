@@ -3343,9 +3343,9 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
-                <group>[Master]</group>
+                <group>[Library]</group>
+                <key>DJ505.sortLibrary</key>
                 <description>BPM</description>
                 <status>0x9F</status>
                 <midino>0x13</midino>
@@ -3354,7 +3354,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Library]</group>
+                <key>DJ505.sortLibrary</key>
                 <description>KEY</description>
                 <status>0x9F</status>
                 <midino>0x1E</midino>
@@ -3362,7 +3363,6 @@
                     <script-binding/>
                 </options>
             </control>
-            -->
             <control>
                 <group>[Library]</group>
                 <key>DJ505.browseEncoder.input</key>
@@ -3405,7 +3405,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DJ505.backButton.input</key>
+                <key>DJ505.sortLibrary</key>
                 <description>SONG</description>
                 <status>0x9F</status>
                 <midino>0x12</midino>
@@ -3425,7 +3425,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DJ505.addPrepareButton.input</key>
+                <key>DJ505.sortLibrary</key>
                 <description>ARTIST</description>
                 <status>0x9F</status>
                 <midino>0x14</midino>
