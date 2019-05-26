@@ -1889,6 +1889,7 @@
                 <Children>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
+                    <ObjectName>HotcueButton</ObjectName>
                     <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1919,9 +1920,14 @@
                       <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
                       <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_color_id</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </PushButton>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
+                    <ObjectName>HotcueButton</ObjectName>
                     <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1952,6 +1958,10 @@
                       <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
                       <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_color_id</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </PushButton>
                 </Children>
               </WidgetGroup>
@@ -1962,6 +1972,7 @@
                 <Children>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
+                    <ObjectName>HotcueButton</ObjectName>
                     <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1992,9 +2003,14 @@
                       <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
                       <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_color_id</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </PushButton>
                   <PushButton>
                     <TooltipId>hotcue</TooltipId>
+                    <ObjectName>HotcueButton</ObjectName>
                     <Style/>
                     <NumberStates>2</NumberStates>
                     <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -2024,6 +2040,10 @@
                     <Connection>
                       <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
                       <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_color_id</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
                     </Connection>
                   </PushButton>
                 </Children>

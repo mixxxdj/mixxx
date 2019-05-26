@@ -229,3 +229,49 @@ QTreeView::item:selected {
   background-color: #222222;
   color: #ffffff;
 }
+
+/* Hotcue Color: No Color */
+#HotcueButton[value="1"][highlight="0"] {
+    background-color: #90c85b;
+}
+
+ /* Hotcue Color: Red */
+#HotcueButton[value="1"][highlight="1"] {
+    background-color: #c50a08;
+}
+
+ /* Hotcue Color: Green */
+#HotcueButton[value="1"][highlight="2"] {
+    background-color: #32be44;
+}
+
+ /* Hotcue Color: Blue */
+#HotcueButton[value="1"][highlight="3"] {
+    background-color: #0044ff;
+}
+
+ /* Hotcue Color: Yellow */
+#HotcueButton[value="1"][highlight="4"] {
+    background-color: #f8d200;
+}
+
+ /* Hotcue Color: Celeste */
+#HotcueButton[value="1"][highlight="5"] {
+    background-color: #42d4f4;
+}
+
+ /* Hotcue Color: Purple */
+#HotcueButton[value="1"][highlight="6"] {
+    background-color: #af00cc;
+}
+
+ /* Hotcue Color: Pink */
+#HotcueButton[value="1"][highlight="7"] {
+    background-color: #fca6d7;
+}
+
+
+ /* Hotcue Color: White */
+#HotcueButton[value="1"][highlight="8"] {
+    background-color: #f2f2ff;
+}
