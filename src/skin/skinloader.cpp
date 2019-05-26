@@ -30,6 +30,13 @@ SkinLoader::~SkinLoader() {
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
     QList<QDir> searchPaths;
+
+    // Add user skin path to search paths
+    QDir userSkinsPath(m_pConfig->getSettingsPath());
+    if (userSkinsPath.cd("skins")) {
+        searchPaths.append(userSkinsPath);
+    }
+
     // If we can't find the skins folder then we can't load a skin at all. This
     // is a critical error in the user's Mixxx installation.
     QDir skinsPath(m_pConfig->getResourcePath());
