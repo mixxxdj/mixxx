@@ -19,9 +19,11 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
         return;
     }
 
-    beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
-    endRemoveRows();
-    m_profiles.clear();
+    if (!m_profiles.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
+        endRemoveRows();
+        m_profiles.clear();
+    }
 
     for(BroadcastProfilePtr profile : pSettings->profiles()) {
         BroadcastProfilePtr copy = profile->valuesCopy();
