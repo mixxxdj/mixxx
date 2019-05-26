@@ -1,7 +1,7 @@
 // rekordboxfeature.h
 // Created 05/24/2019 by Evan Dekker
 
-// This feature reads tracks, playlists and folders from removable Recordbox 
+// This feature reads tracks, playlists and folders from removable Recordbox
 // prepared devices (USB drives, etc), by parsing the binary *.PDB files
 // stored on each removable device. It does not read the locally stored
 // Rekordbox database (Collection).
@@ -28,23 +28,18 @@
 #ifndef REKORDBOX_FEATURE_H
 #define REKORDBOX_FEATURE_H
 
-#include <QStringListModel>
-#include <QtSql>
-#include <QXmlStreamReader>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QStringListModel>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
-
-#include "library/rekordbox/rekordbox_pdb.h"
-
-#define PDB_PATH "PIONEER/rekordbox/export.pdb"
 
 class TrackCollection;
 class BaseExternalPlaylistModel;
@@ -52,8 +47,8 @@ class BaseExternalPlaylistModel;
 class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
   public:
     RekordboxPlaylistModel(QObject* parent,
-                         TrackCollection* pTrackCollection,
-                         QSharedPointer<BaseTrackCache> trackSource);
+            TrackCollection* pTrackCollection,
+            QSharedPointer<BaseTrackCache> trackSource);
     TrackPointer getTrack(const QModelIndex& index) const override;
     virtual bool isColumnHiddenByDefault(int column);
 };
@@ -68,7 +63,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QIcon getIcon();
     static bool isSupported();
     void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard) override;
+            KeyboardEventFilter* keyboard) override;
 
     TreeItemModel* getChildModel();
 
@@ -80,23 +75,11 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     void onTracksFound();
 
   private slots:
-      void htmlLinkClicked(const QUrl& link);    
+    void htmlLinkClicked(const QUrl& link);
 
   private:
-    QString formatRootViewHtml() const;   
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);    
-    QList<TreeItem*> findRekordboxDevices();
-    QString parseDeviceDB(TreeItem *deviceItem);
-    void buildPlaylistTree(TreeItem *parent, uint32_t parentID, 
-        std::map<uint32_t, std::string> &playlistNameMap, 
-        std::map<uint32_t, bool> &playlistIsFolderMap, 
-        std::map<uint32_t, std::map<uint32_t, uint32_t>> &playlistTreeMap,
-        std::map<uint32_t, std::map<uint32_t, uint32_t>> &playlistTrackMap,
-        QString playlistPath, QString device);
-    void clearTable(QString table_name);
-    template<typename Base, typename T>
-    inline bool instanceof(const T *ptr) {return dynamic_cast<const Base*>(ptr) != nullptr;}
-    std::string getText(rekordbox_pdb_t::device_sql_string_t *deviceString);
+    QString formatRootViewHtml() const;
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
 
     TreeItemModel m_childModel;
     TrackCollection* m_pTrackCollection;
