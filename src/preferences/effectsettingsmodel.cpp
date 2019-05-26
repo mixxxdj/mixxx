@@ -19,9 +19,11 @@ void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager
         return;
     }
 
-    beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
-    endRemoveRows();
-    m_profiles.clear();
+    if (!m_profiles.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
+        endRemoveRows();
+        m_profiles.clear();
+    }
 
     for (EffectManifestPointer pManifest : pEffectsManager->getAvailableEffectManifests()) {
         const bool visibility = pEffectsManager->getEffectVisibility(pManifest);
