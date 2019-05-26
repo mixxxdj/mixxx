@@ -1781,7 +1781,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 }
 
 void WTrackTableView::applySorting() {
-    int sortColumn = (int)m_pSortColumn->get();
+    int sortColumn = static_cast<int>(m_pSortColumn->get());
     Qt::SortOrder sortOrder = m_pSortOrder->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
 
     // This line sorts the TrackModel
@@ -1993,10 +1993,10 @@ void WTrackTableView::slotReloadCoverArt() {
 
 void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
 
-    double sortOrder = (double)order;
+    double sortOrder = static_cast<double>(order);
     bool sortingChanged = false;
 
-    if (headerSection != (int)m_pSortColumn->get()) {
+    if (headerSection != static_cast<int>(m_pSortColumn->get())) {
         m_pSortColumn->set(headerSection);
         sortingChanged = true;
     }
