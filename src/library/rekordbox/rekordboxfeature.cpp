@@ -7,8 +7,8 @@
 #include <QStandardPaths>
 #include <QtDebug>
 
-#include "library/rekordbox/rekordboxfeature.h"
 #include "library/rekordbox/rekordbox_pdb.h"
+#include "library/rekordbox/rekordboxfeature.h"
 
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
