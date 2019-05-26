@@ -99,7 +99,7 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
     // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
     return kMinFrameIndex +
             av_rescale_q(
-                    pts - getStreamStartTime(avStream),
+                    pts,
                     avStream.time_base,
                     (AVRational){1, avStream.codecpar->sample_rate});
 }
@@ -107,14 +107,12 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
     // Inverse mapping of convertStreamTimeToFrameIndex()
     return av_rescale_q(
-                   frameIndex - kMinFrameIndex,
-                   (AVRational){1, avStream.codecpar->sample_rate},
-                   avStream.time_base) +
-            getStreamStartTime(avStream);
+            frameIndex - kMinFrameIndex,
+            (AVRational){1, avStream.codecpar->sample_rate},
+            avStream.time_base);
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
-    DEBUG_ASSERT(kMinFrameIndex == convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)));
     return IndexRange::forward(
             kMinFrameIndex,
             convertStreamTimeToFrameIndex(avStream, getStreamEndTime(avStream)));
