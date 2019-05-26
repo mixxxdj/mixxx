@@ -111,8 +111,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 
     m_pControlTrackTimeFormat = new ControlObject(
             ConfigKey("[Controls]", "TimeFormat"));
-    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotTimeFormatChanged(double)));
+    connect(m_pControlTrackTimeFormat, &ControlObject::valueChanged, this, &DlgPrefDeck::slotTimeFormatChanged);
 
     QLocale locale;
     // Track Display model
