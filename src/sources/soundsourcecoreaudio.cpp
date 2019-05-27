@@ -13,17 +13,15 @@ const Logger kLogger("SoundSourceCoreAudio");
 // The maximum number of samples per MP3 frame
 const SINT kMp3MaxFrameSize = 1152;
 
-// NOTE(rryan): For every MP3 seek we jump back kStabilizationFrames frames from
+// NOTE(rryan): For every MP3 seek we jump back kMp3MaxSeekPrefetchFrames frames from
 // the seek position and read forward to allow the decoder to stabilize. The
 // cover-test.mp3 file needs this otherwise SoundSourceProxyTest.seekForward
 // fails. I can't find any good documentation on how to figure out the
 // appropriate amount to pre-fetch from the ExtAudioFile API. Oddly, the "prime"
 // information -- which AIUI is supposed to tell us this information -- is zero
 // for this file. We use the same frame pre-fetch count from SoundSourceMp3.
-const SINT kMp3StabilizationFrames =
+const SINT kMp3MaxSeekPrefetchFrames =
         kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
-
-static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames * 2]; // stereo
 
 } // namespace
 
@@ -31,7 +29,8 @@ SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
           LegacyAudioSourceAdapter(this, this),
           m_bFileIsMp3(false),
-          m_headerFrames(0) {
+          m_leadingFrames(0),
+          m_seekPrefetchFrames(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
@@ -65,7 +64,10 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
      */
 
     if (err != noErr) {
-        kLogger.debug() << "Error opening file " << fileName;
+        kLogger.warning()
+                << "Failed to open file"
+                << fileName
+                << err;
         return OpenResult::Failed;
     }
 
@@ -76,7 +78,10 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
             &inputFormatSize,
             &m_inputFormat);
     if (err != noErr) {
-        kLogger.debug() << "Error getting file format (" << fileName << ")";
+        kLogger.warning()
+                << "Failed to determine file format"
+                << fileName
+                << err;
         return OpenResult::Aborted;
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
@@ -95,7 +100,10 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
             sizeof(m_outputFormat),
             &m_outputFormat);
     if (err != noErr) {
-        kLogger.debug() << "Error setting file property";
+        kLogger.warning()
+                << "Failed to set output format"
+                << fileName
+                << err;
         return OpenResult::Failed;
     }
 
@@ -107,13 +115,12 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
             &totalFrameCountSize,
             &totalFrameCount);
     if (err != noErr) {
-        kLogger.debug() << "Error getting number of frames";
+        kLogger.warning()
+                << "Failed to read file length in sample frames"
+                << fileName
+                << err;
         return OpenResult::Failed;
     }
-
-    //
-    // WORKAROUND for bug in ExtFileAudio
-    //
 
     AudioConverterRef acRef;
     UInt32 acrsize = sizeof(AudioConverterRef);
@@ -121,34 +128,57 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
             kExtAudioFileProperty_AudioConverter,
             &acrsize,
             &acRef);
-    //_ThrowExceptionIfErr(@"kExtAudioFileProperty_AudioConverter", err);
+    VERIFY_OR_DEBUG_ASSERT(err == noErr) {
+        kLogger.warning()
+                << "Failed to obtain AudioConverterRef"
+                << fileName
+                << err;
+        return OpenResult::Failed;
+    }
 
     AudioConverterPrimeInfo primeInfo;
     UInt32 piSize = sizeof(AudioConverterPrimeInfo);
     memset(&primeInfo, 0, piSize);
     err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
-    if (err != kAudioConverterErr_PropertyNotSupported) { // Only if decompressing
-        //_ThrowExceptionIfErr(@"kAudioConverterPrimeInfo", err);
-        m_headerFrames = primeInfo.leadingFrames;
-    } else {
-        m_headerFrames = 0;
+    switch (err) {
+    case noErr:
+        VERIFY_OR_DEBUG_ASSERT(primeInfo.trailingFrames == 0) {
+            kLogger.warning()
+                    << "Unsupported audio converter property: trailingFrames ="
+                    << primeInfo.trailingFrames;
+        }
+        // See also: https://developer.apple.com/documentation/audiotoolbox/audioconverterprimeinfo/1501803-leadingframes
+        m_leadingFrames = primeInfo.leadingFrames;
+        break;
+    case kAudioConverterErr_PropertyNotSupported:
+        break;
+    default:
+        kLogger.warning()
+                << "Failed to get number of leading/trailing frames"
+                << fileName
+                << err;
+        return OpenResult::Failed;
     }
 
     setChannelCount(m_outputFormat.NumberChannels());
     setSampleRate(m_inputFormat.mSampleRate);
-    // NOTE(uklotzde): This is what I found when migrating
-    // the code from SoundSource (sample-oriented) to the new
-    // AudioSource (frame-oriented) API. It is not documented
-    // when m_headerFrames > 0 and what the consequences are.
-    initFrameIndexRangeOnce(IndexRange::forward(0 /*m_headerFrames*/, totalFrameCount));
+    // TODO(XXX): Reduce totalFrameCount by m_leadingFrames???
+    initFrameIndexRangeOnce(IndexRange::forward(m_leadingFrames, totalFrameCount));
 
-    //Seek to first position, which forces us to skip over all the header frames.
-    //This makes sure we're ready to just let the Analyzer rip and it'll
-    //get the number of samples it expects (ie. no header frames).
+    if (m_bFileIsMp3) {
+        // Use the maximum value for MP3 files to ensure that all decoded samples
+        // are accurate. Otherwise the deocding tests for MP3 files fail!
+        m_seekPrefetchFrames = math_max(m_leadingFrames, kMp3MaxSeekPrefetchFrames);
+    } else {
+        m_seekPrefetchFrames = m_leadingFrames;
+    }
+    m_seekPrefetchBuffer.resize(frames2samples(m_seekPrefetchFrames));
+
+    // Seek to the first position, skipping over all header frames
     seekSampleFrame(frameIndexMin());
 
     return OpenResult::Succeeded;
-}
+} // namespace mixxx
 
 void SoundSourceCoreAudio::close() {
     ExtAudioFileDispose(m_audioFile);
@@ -157,21 +187,30 @@ void SoundSourceCoreAudio::close() {
 SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    // See comments above on kMp3StabilizationFrames.
-    const SINT stabilization_frames = m_bFileIsMp3 ? math_min(
-                                                             kMp3StabilizationFrames, SINT(frameIndex + m_headerFrames))
-                                                   : 0;
-    OSStatus err = ExtAudioFileSeek(
-            m_audioFile, frameIndex + m_headerFrames - stabilization_frames);
-    if (stabilization_frames > 0) {
-        readSampleFrames(stabilization_frames,
-                &kMp3StabilizationScratchBuffer[0]);
-    }
-
-    //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
-    //kLogger.debug() << "Seeking to" << frameIndex;
+    // Prefetch frames for sample-accurate decoding
+    const SINT prefetchFrames = math_min(frameIndex, m_seekPrefetchFrames);
+    OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex - prefetchFrames);
     if (err != noErr) {
-        kLogger.debug() << "Error seeking to" << frameIndex; // << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        kLogger.warning()
+                << "Seeking to frame position"
+                << frameIndex
+                << "failed"
+                << err;
+    }
+    // Decode and discard prefetched frames
+    if (prefetchFrames > 0) {
+        DEBUG_ASSERT(frames2samples(prefetchFrames) <= SINT(m_seekPrefetchBuffer.size()));
+        const auto prefetchedFrames = readSampleFrames(prefetchFrames, m_seekPrefetchBuffer.data());
+        DEBUG_ASSERT(prefetchedFrames <= prefetchFrames);
+        if (prefetchedFrames < prefetchFrames) {
+            kLogger.warning()
+                << "Failed to skip prefetched frames while seeking:"
+                << prefetchedFrames
+                << "<"
+                << prefetchFrames;
+            // Adjust the frame index to reflect the current position
+            frameIndex -= prefetchFrames - prefetchedFrames;
+        }
     }
     return frameIndex;
 }
@@ -184,18 +223,21 @@ SINT SoundSourceCoreAudio::readSampleFrames(
     }
 
     // Handle special case: Skipping instead of reading
-    if (sampleBuffer == nullptr) {
+    if (!sampleBuffer) {
         SInt64 frameOffset = 0;
-        const OSStatus osErr = ExtAudioFileTell(m_audioFile, &frameOffset);
-        if (osErr == noErr) {
-            const SINT frameIndexBefore = frameIndexMin() + frameOffset;
-            const SINT frameIndexAfter = seekSampleFrame(frameIndexBefore + numberOfFrames);
-            DEBUG_ASSERT(frameIndexBefore <= frameIndexAfter);
-            return frameIndexAfter - frameIndexBefore;
-        } else {
-            kLogger.warning() << "Error to determine the current position for skipping sample frames" << osErr;
+        const OSStatus err = ExtAudioFileTell(m_audioFile, &frameOffset);
+        if (err != noErr) {
+            kLogger.warning()
+                    << "Failed to determine the current position for skipping"
+                    << numberOfFrames
+                    << "sample frames"
+                    << err;
             return 0; // abort
         }
+        const SINT frameIndexBefore = frameIndexMin() + frameOffset;
+        const SINT frameIndexAfter = seekSampleFrame(frameIndexBefore + numberOfFrames);
+        DEBUG_ASSERT(frameIndexBefore <= frameIndexAfter);
+        return frameIndexAfter - frameIndexBefore;
     }
 
     SINT numFramesRead = 0;
