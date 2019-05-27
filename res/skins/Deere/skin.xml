@@ -69,6 +69,22 @@
     </attributes>
   </manifest>
 
+  <Schemes>
+    <Scheme>
+      <Name>Classic</Name>
+      <Filters/>
+    </Scheme>
+    <Scheme>
+      <Name>Charcoal</Name>
+      <Filters>
+        <Add>
+          <Amount>-35</Amount>
+        </Add>
+      </Filters>
+      <Style src="skin:charcoal.qss"/>
+    </Scheme>
+  </Schemes>
+
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 

@@ -1,0 +1,310 @@
+/* Charcoal Colorscheme */
+#DeckTextRow {
+  border-top: 0px solid #0B0B0B;
+  border-bottom: 0px solid #0B0B0B;
+}
+#DeckTextRowSmall {
+  border: 1px solid #0B0B0B;
+}
+#ArtistKeyBpmGutter {
+  border-top: 1px solid #0B0B0B;
+}
+#UpperTextRow {
+  border-top: 0px solid #0B0B0B;
+  border-bottom: 0px solid #0B0B0B;
+}
+#DeckSmall {
+  background-color: #111;
+}
+#DeckRows {
+  border: 0px solid #0B0B0B;
+}
+#DeckRateSliderColumn {
+  border: 0px solid #0B0B0B;
+  border-left: 2px solid #0B0B0B;
+}
+#VisualRow,
+#OverviewRow,
+#ControlsRow {
+  border-top: 1px solid #0B0B0B;
+}
+#PlayGutterSmall {
+  border-left: 1px solid #0B0B0B;
+}
+#MixerBorder {
+  background-color: #0B0B0B;
+}
+#Deck1, #Deck3,
+#Deck2, #Deck4,
+#Sampler,
+#SamplerMiddleSpacer {
+  border-color: #0B0B0B;
+}
+#Spacer22 {
+  background-color: #0B0B0B;
+}
+#Spacer33 {
+  background-color: #111;
+}
+#SamplerRow1,
+#SamplerRow2,
+#SamplerRow3,
+#SamplerRow4,
+#SamplerRow5,
+#SamplerRow6,
+#SamplerRow7,
+#SamplerRow8 {
+  border-color: #0B0B0B;
+}
+QTableView {
+  background-color: #0B0B0B;
+  alternate-background-color: #111;
+  border: 1px solid #111;
+}
+#LibraryBPMSpinBox {
+  selection-color: #0f0f0f;
+  background-color: #0f0f0f;
+}
+QPushButton#LibraryPreviewButton:!checked:hover {
+  background-color: #111;
+}
+QPushButton#LibraryPreviewButton:checked {
+  background-color: #0f0f0f;
+}
+QHeaderView,
+QHeaderView::section,
+QHeaderView::section:selected {
+  background: #111;
+}
+WSearchLineEdit {
+  border: 1px solid #202020;
+  background-color: #111;
+}
+WSearchLineEdit:focus {
+  background-color: #111;
+  selection-color: #0B0B0B;
+}
+#PreviewDeck {
+  background-color: #111;
+}
+#PreviewDeckVisualRow {
+  border-top: 1px solid #111;
+}
+#PreviewDeckVUContainer {
+  border: 1px solid #111;
+}
+QTextBrowser, QTreeView {
+  background-color: #0B0B0B;
+  border: 1px solid #111;
+}
+QTreeView::branch:open:!has-children:has-siblings:selected {
+  background-color: #0B0B0B;
+}
+#LibraryCoverArtSplitter::handle,
+#LibraryVerticalSplitter::handle,
+#WaveformSplitter::handle,
+#LibraryCoverArtSplitter::handle:pressed,
+#LibraryVerticalSplitter::handle:pressed,
+#WaveformSplitter::handle:pressed {
+  background: #0B0B0B;
+}
+#LibraryCoverArt {
+  background-color: #0B0B0B;
+  border: 1px solid #111;
+}
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  background-color: #202020;
+  border: 0px solid #202020;
+}
+#DlgMissing > QPushButton:!enabled,
+#DlgHidden > QPushButton:!enabled,
+#DlgAutoDJ > QPushButton:!enabled,
+#DlgAnalysis > QPushButton:!enabled {
+  border: 0px solid #2f2f2f;
+}
+#DlgMissing > QPushButton:hover,
+#DlgHidden > QPushButton:hover,
+#DlgAutoDJ > QPushButton:hover,
+#DlgRecording > QPushButton:hover,
+#DlgAnalysis > QPushButton:hover {
+  background-color: #2f2f2f;
+  border: 0px solid #2f2f2f;
+}
+QScrollBar:horizontal {
+  border-top: 1px solid #141414;
+  background: #0B0B0B;
+}
+QScrollBar:vertical {
+  border-left: 1px solid #141414;
+  background: #0B0B0B;
+}
+QScrollBar::handle:horizontal {
+  background: #2f2f2f;
+}
+QScrollBar::handle:vertical {
+  background: #2f2f2f;
+}
+#SkinSettings > #h3 WPushButton:hover,
+#SkinSettingsButton:hover,
+#SkinSettingsCategoryButton:hover {
+  background: #0B0B0B;
+}
+#WaveformSplitter {
+  background-color: #0B0B0B;
+}
+#OptionGrid, #ButtonGrid,
+#Waveforms,
+#WaveformZoomContainer,
+#DeckRateSliderColumn {
+  background-color: #111;
+}
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
+  background-color: #1f1e1e;
+  border: 1px solid #202020;
+}
+#ToolBar {
+  background-color: #111111;
+  border-color: #0B0B0B;
+}
+#ArtistKeyBpmGutterSmall {
+  border-top: 1px solid #0B0B0B;
+}
+#BpmKeyEditRowCollapsed {
+  border: 1px solid #2F2F2F;
+}
+#BpmKeyEditRowControls {
+  background-color: #111;
+}
+#BpmKeyTextSmall {
+  border: 1px solid #0B0B0B;
+}
+#EffectUnitNameRow {
+  border-bottom: 1px solid #0B0B0B;
+}
+#EffectUnitFiller {
+  border: 1px solid #0B0B0B;
+}
+#EffectUnitControls {
+  background-color: #111;
+}
+#EffectUnitControls {
+  border: 1px solid #0B0B0B;
+}
+WEffectSelector {
+  background-color: #202020;
+  border: 1px solid #202020;
+}
+WEffectSelector::item:selected {
+  background-color: #080808;
+}
+#MainDecks, #MainDeckContainer {
+  background-color: #111;
+}
+#LeftGutter, #RightGutter {
+  background-color: #0B0B0B;
+}
+#Deck1, #Deck2, #Deck3, #Deck4,
+#Mixer,
+#DeckMixer {
+  background-color: #111;
+}
+#CircleButton, #QuickEffectKillButton {
+  border: 3px solid #111;
+}
+#SmallCircleButton {
+  border: 2px solid #111;
+}
+WVuMeter, #PeakIndicator {
+  background-color: #0B0B0B;
+}
+#SampleDecksContainer {
+  background-color: #111;
+}
+#MicAuxRack {
+  background-color: #111;
+  border-bottom: 4px solid #0B0B0B;
+}
+#MicrophoneContainer, #MicDuckingContainer,
+#AuxiliaryContainer {
+  border: 3px solid #0B0B0B;
+}
+#LibraryContainer,
+#LibrarySplitter {
+  background-color: #0B0B0B;
+}
+#EffectRackContainer {
+  background-color: #111;
+}
+#EffectUnitsRow {
+  border: 1px solid #0B0B0B;
+}
+WPushButton {
+    background-color: #202020;
+    border: 1px solid #202020;
+}
+WPushButton:hover {
+    background-color: #2f2f2f;
+    border: 0px solid #2f2f2f;
+}
+WPushButton[value="2"] {
+    background-color: #006596;
+    border: 0px solid #006596;
+}
+WPushButton[value="2"]:hover {
+    background-color: #0080BE;
+    border: 0px solid #0080BE;
+}
+WPushButton[value="2"] {
+    background-color: #202020;
+}
+WPushButton[value="2"]:hover {
+    background-color: #202020;
+}
+#ToolbarButton[value="1"] {
+    background-color: #006596;
+    border: 3px solid #006596;
+}
+#SkinSectionToggleButton[value="1"]:hover {
+    background-color: #2f2f2f;
+}
+#EffectUnitMixModeButton[value="0"]:hover,
+#EffectUnitMixModeButton[value="1"]:hover {
+    background-color: #2f2f2f;
+}
+#EffectUnitMixModeButton[value="1"] {
+    background-color: #202020;
+}
+#OrientationButtonDeck1[value="0"],
+#OrientationButtonDeck3[value="0"],
+#OrientationButtonDeck2[value="2"],
+#OrientationButtonDeck4[value="2"],
+#OrientationButtonAux[value="1"],
+#OrientationButtonSampler[value="1"] {
+    background-color: #202020;
+    border: 1px solid #202020;
+}
+#OrientationButtonDeck1[value="0"]:hover,
+#OrientationButtonDeck3[value="0"]:hover,
+#OrientationButtonDeck2[value="2"]:hover,
+#OrientationButtonDeck4[value="2"]:hover,
+#OrientationButtonAux[value="1"]:hover,
+#OrientationButtonSampler[value="1"]:hover {
+    background-color: #2f2f2f;
+    border: 0px solid #2f2f2f;
+}
+#SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
+    background-color: #202020;
+    border: 1px solid #202020;
+}
+#SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
+    background-color: #2f2f2f;
+    border: 0px solid #2f2f2f;
+}
+QToolTip {
+    background-color: #0B0B0B;
+}
