@@ -390,7 +390,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
         m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
         m_pSortOrder->set(sortOrder);
-        applySorting();
     }
 
     // Set up drag and drop behavior according to whether or not the track
@@ -417,6 +416,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+
+    if (m_sorting) {
+        // Sorting has to be applied after setVisible(true), since only visible
+        // WTrackTableViews will be sorted
+        applySorting();
+    }
 
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
@@ -1781,6 +1786,12 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 }
 
 void WTrackTableView::applySorting() {
+    // There are multiple instances of WTrackTableView, but we only want to
+    // apply the sorting to the currently visible instance
+    if (!isVisible()) {
+        return;
+    }
+
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
     if (sortColumnId < 0 || sortColumnId >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
