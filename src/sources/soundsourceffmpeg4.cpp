@@ -361,6 +361,10 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
                 // https://trac.ffmpeg.org/ticket/3825
                 list.append("ogg");
                 continue;
+            } else if (!strcmp(pavInputFormat->name, "wma") ||
+                    !strcmp(pavInputFormat->name, "xwma")) {
+                list.append("wma");
+                continue;
             */
                 ///////////////////////////////////////////////////////////
                 // Untested codecs
@@ -383,10 +387,6 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tta")) {
                 list.append("tta");
-                continue;
-            } else if (!strcmp(pavInputFormat->name, "wma") ||
-                       !strcmp(pavInputFormat->name, "xwma")) {
-                list.append("wma");
                 continue;
             */
             }

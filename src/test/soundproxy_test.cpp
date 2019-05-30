@@ -60,6 +60,7 @@ class SoundSourceProxyTest: public MixxxTest {
                 << ".ogg"
                 << ".opus"
                 << ".wav"
+                << ".wma"
                 << ".wv";
 
         QStringList supportedFileNameSuffixes;
@@ -67,6 +68,10 @@ class SoundSourceProxyTest: public MixxxTest {
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
+            } else {
+                qInfo()
+                        << "Ignoring unsupported file type"
+                        << fileNameSuffix;
             }
         }
         return supportedFileNameSuffixes;
