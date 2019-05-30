@@ -388,7 +388,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             }
         }
 
-        m_pSortColumn->set(sortColumn);
+        m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
         m_pSortOrder->set(sortOrder);
         applySorting();
     }
@@ -1781,7 +1781,17 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 }
 
 void WTrackTableView::applySorting() {
-    int sortColumn = static_cast<int>(m_pSortColumn->get());
+    TrackModel* trackModel = getTrackModel();
+    int sortColumnId = static_cast<int>(m_pSortColumn->get());
+    if (sortColumnId < 0 || sortColumnId >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
+        return;
+    }
+
+    int sortColumn = trackModel->columnIndexFromSortColumnId(static_cast<TrackModel::SortColumnId>(sortColumnId));
+    if (sortColumn < 0) {
+        return;
+    }
+
     Qt::SortOrder sortOrder = m_pSortOrder->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
 
     // This line sorts the TrackModel
@@ -1996,8 +2006,15 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     double sortOrder = static_cast<double>(order);
     bool sortingChanged = false;
 
-    if (headerSection != static_cast<int>(m_pSortColumn->get())) {
-        m_pSortColumn->set(headerSection);
+    TrackModel* trackModel = getTrackModel();
+    TrackModel::SortColumnId sortColumnId = trackModel->sortColumnIdFromColumnIndex(headerSection);
+
+    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+        return;
+    }
+
+    if (sortColumnId != static_cast<int>(m_pSortColumn->get())) {
+        m_pSortColumn->set(sortColumnId);
         sortingChanged = true;
     }
     if (sortOrder != m_pSortOrder->get()) {
