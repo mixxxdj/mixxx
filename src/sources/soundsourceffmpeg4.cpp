@@ -114,7 +114,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
     return IndexRange::forward(
-            kMinFrameIndex,
+            convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)),
             convertStreamTimeToFrameIndex(avStream, getStreamEndTime(avStream)));
 }
 
@@ -544,10 +544,6 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
             m_pavCodecContext->sample_fmt;
     const auto sampleRate =
             SampleRate(m_pavStream->codecpar->sample_rate);
-    const auto streamBitrate =
-            Bitrate(m_pavStream->codecpar->bit_rate / 1000); // kbps
-    const auto frameIndexRange =
-            getStreamFrameIndexRange(*m_pavStream);
 
     DEBUG_ASSERT(!m_pavDecodedFrame);
     m_pavDecodedFrame = av_frame_alloc();
@@ -622,6 +618,8 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
         return OpenResult::Aborted;
     }
 
+    const auto streamBitrate =
+            Bitrate(m_pavStream->codecpar->bit_rate / 1000); // kbps
     if (streamBitrate.valid() && !initBitrateOnce(streamBitrate)) {
         kLogger.warning()
                 << "Failed to initialize bitrate"
@@ -629,6 +627,26 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
         return OpenResult::Failed;
     }
 
+    const auto streamFrameIndexRange =
+            getStreamFrameIndexRange(*m_pavStream);
+    // The nominal frame index range includes the lead-in that
+    // is filled with silence during decoding. This is required
+    // for both for backward compatibility and for interoperability
+    // with external applications!
+    // See also the discussion regarding cue point shift/offset:
+    // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/Cue.20shift.2Foffset
+    VERIFY_OR_DEBUG_ASSERT(kMinFrameIndex <= streamFrameIndexRange.start()) {
+        kLogger.warning()
+                << "Stream with unsupported or invalid frame index range"
+                << streamFrameIndexRange;
+        return OpenResult::Failed;
+    }
+    if (kMinFrameIndex < streamFrameIndexRange.start()) {
+        kLogger.debug()
+                << "Lead-in frames"
+                << IndexRange::between(kMinFrameIndex, streamFrameIndexRange.start());
+    }
+    const auto frameIndexRange = IndexRange::between(kMinFrameIndex, streamFrameIndexRange.end());
     if (!initFrameIndexRangeOnce(frameIndexRange)) {
         kLogger.warning()
                 << "Failed to initialize frame index range"
@@ -906,6 +924,14 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                 if (!writableRange.empty()) {
                     DEBUG_ASSERT(readFrameIndex < writableRange.end());
                     DEBUG_ASSERT(m_sampleBuffer.empty());
+                    // Due to the lead-in with a start_time > 0 some encoded
+                    // files are shorter then actually reported. This may vary
+                    // depending on the encoder version, because sometimes the
+                    // lead-in is included in the stream's duration and sometimes
+                    // not. Short periods of silence at the end of a track are
+                    // acceptable in favor of a consistent handling of the lead-in,
+                    // because they may affect only the position of the outro end
+                    // point and not any other position markers!
                     kLogger.debug()
                             << "Stream ends at sample frame"
                             << readFrameIndex
@@ -1058,15 +1084,17 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
             //       v
             //       | missingFrameCount |<- decodedFrameRange ->|
 
-            VERIFY_OR_DEBUG_ASSERT(readFrameIndex <= writableRange.start()) {
+            if (readFrameIndex > writableRange.start()) {
                 // The decoder has skipped some sample data that needs to
                 // be filled with silence to continue decoding!
-                // NOTE(2019-02-09, uklotzde): This should never happen, but
-                // we are seeing this error when decoding our .ogg test file!
                 const auto missingRange = IndexRange::between(writableRange.start(), readFrameIndex);
-                kLogger.warning()
-                        << "Missing sample data"
-                        << missingRange;
+                // This should only happen at the beginning of a stream
+                // with a lead-in due to start_time > 0.
+                VERIFY_OR_DEBUG_ASSERT(intersect(missingRange, getStreamFrameIndexRange(*m_pavStream)).empty()) {
+                    kLogger.warning()
+                            << "Missing sample data within decoded stream"
+                            << intersect(missingRange, getStreamFrameIndexRange(*m_pavStream));
+                }
                 const auto clearRange = intersect(missingRange, writableRange);
                 if (clearRange.length() > 0) {
                     const auto clearSampleCount =
