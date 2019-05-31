@@ -76,7 +76,7 @@ DJ505.init = function () {
     var i, j;
 
     DJ505.shiftButton = function (channel, control, value, status, group) {
-        DJ505.deck.concat(DJ505.effectUnit, [DJ505.sampler]).forEach(
+        DJ505.deck.concat(DJ505.effectUnit, [DJ505.sampler, DJ505.browseEncoder]).forEach(
             value ? function (module) { module.shift(); } : function (module) { module.unshift(); }
         );
     };
@@ -208,20 +208,73 @@ DJ505.shutdown = function () {
 
 
 DJ505.browseEncoder = new components.Encoder({
-    input: function (channel, control, value, status, group) {
-        var isShifted = (control % 2) !== 0;
-        switch (status) {
-        case 0xBF: // Rotate.
-            if (value === 127) {
-                engine.setValue("[Playlist]", isShifted ? "SelectPlaylist" : "SelectTrackKnob", -1);
-            } else if (value === 1) {
-                engine.setValue("[Playlist]", isShifted ? "SelectPlaylist" : "SelectTrackKnob", 1);
+    longPressTimer: 0,
+    longPressTimeout: 250,
+    previewSeekEnabled: false,
+    previewSeekHappened: false,
+    unshift: function() {
+        this.onKnobEvent = function (rotateValue) {
+            if (rotateValue !== 0) {
+                if (this.previewSeekEnabled) {
+                    var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
+                    var newPos = Math.max(0, oldPos + (0.05 * rotateValue));
+                    engine.setValue("[PreviewDeck1]", "playposition", newPos);
+                } else {
+                    engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
+                }
             }
-            break;
-        case 0x9F: // Push.
+        };
+        this.onButtonEvent = function (value) {
+            if (value) {
+                this.isLongPressed = false;
+                this.longPressTimer = engine.beginTimer(
+                    this.longPressTimeout,
+                    function () { this.isLongPressed = true; },
+                    true
+                );
+
+                this.previewStarted = false;
+                if (!engine.getValue("[PreviewDeck1]", "play")) {
+                    engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+                    this.previewStarted = true;
+                }
+                // Track in PreviewDeck1 is playing, either the user
+                // wants to stop the track or seek in it
+                this.previewSeekEnabled = true;
+            } else {
+                if (this.longPressTimer !== 0) {
+                    engine.stopTimer(this.longPressTimer);
+                    this.longPressTimer = 0;
+                }
+
+                if (!this.isLongPressed && !this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
+                    script.triggerControl("[PreviewDeck1]", "stop");
+                }
+                this.previewSeekEnabled = false;
+                this.previewStarted = false;
+            }
+        };
+    },
+    shift: function() {
+        this.onKnobEvent = function (rotateValue) {
+            if (rotateValue !== 0) {
+                engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
+            }
+        };
+        this.onButtonEvent = function (value) {
             if (value) {
                 script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
             }
+        };
+    },
+    input: function (channel, control, value, status, group) {
+        switch (status) {
+        case 0xBF: // Rotate.
+            var rotateValue = (value === 127) ? -1 : ((value === 1) ? 1 : 0);
+            this.onKnobEvent(rotateValue);
+            break;
+        case 0x9F: // Push.
+            this.onButtonEvent(value);
         }
     }
 });
