@@ -46,11 +46,6 @@ QList<QDir> SkinLoader::getSkinSearchPaths() const {
     }
     searchPaths.append(skinsPath);
 
-    QDir developerSkinsPath(m_pConfig->getResourcePath());
-    if (developerSkinsPath.cd("developer_skins")) {
-        searchPaths.append(developerSkinsPath);
-    }
-
     return searchPaths;
 }
 
