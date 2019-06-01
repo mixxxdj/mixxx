@@ -2,9 +2,10 @@
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
         <name>Roland DJ-202</name>
-        <author>Silvio Ankermann (Lykos153), eigengrau and René Kraus (upCASE)</author>
+        <author>Silvio Ankermann (Lykos153), Sebastian Reuße (eigengrau) and René Kraus (upCASE)</author>
         <description>4-deck mapping for Roland DJ-202 controller</description>
         <wiki>https://mixxx.org/wiki/doku.php/roland_dj-202</wiki>
+        <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=11664</forums>
     </info>
     <controller id="DJ-202">
         <scriptfiles>
