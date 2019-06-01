@@ -53,7 +53,7 @@ DJ202.pitchplayRange = {
 
 DJ202.init = function () {
   DJ202.shiftButton = function (channel, control, value, status, group) {
-    DJ202.deck.concat(DJ202.effectUnit, DJ202.sampler)
+    DJ202.deck.concat(DJ202.effectUnit, DJ202.sampler, DJ202.browseEncoder)
       .forEach(value ? function (module) {
           module.shift();
         } :
@@ -107,21 +107,76 @@ DJ202.autoShowDecks = function (value, group, control) {
 DJ202.shutdown = function () {};
 
 DJ202.browseEncoder = new components.Encoder({
+  longPressTimer: 0,
+  longPressTimeout: 250,
+  previewSeekEnabled: false,
+  previewSeekHappened: false,
+  unshift: function () {
+    this.onKnobEvent = function (rotateValue) {
+      if (rotateValue !== 0) {
+        if (this.previewSeekEnabled) {
+          var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
+          var newPos = Math.max(0, oldPos + (0.05 * rotateValue));
+          engine.setValue("[PreviewDeck1]", "playposition", newPos);
+        } else {
+          engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
+        }
+      }
+    };
+    this.onButtonEvent = function (value) {
+      if (value) {
+        this.isLongPressed = false;
+        this.longPressTimer = engine.beginTimer(
+          this.longPressTimeout,
+          function () {
+            this.isLongPressed = true;
+          },
+          true
+        );
+
+        this.previewStarted = false;
+        if (!engine.getValue("[PreviewDeck1]", "play")) {
+          engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+          this.previewStarted = true;
+        }
+        // Track in PreviewDeck1 is playing, either the user
+        // wants to stop the track or seek in it
+        this.previewSeekEnabled = true;
+      } else {
+        if (this.longPressTimer !== 0) {
+          engine.stopTimer(this.longPressTimer);
+          this.longPressTimer = 0;
+        }
+
+        if (!this.isLongPressed && !this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
+          script.triggerControl("[PreviewDeck1]", "stop");
+        }
+        this.previewSeekEnabled = false;
+        this.previewStarted = false;
+      }
+    };
+  },
+  shift: function () {
+    this.onKnobEvent = function (rotateValue) {
+      if (rotateValue !== 0) {
+        engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
+      }
+    };
+    this.onButtonEvent = function (value) {
+      if (value) {
+        script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
+      }
+    };
+  },
   input: function (channel, control, value, status, group) {
     var isShifted = control % 2 != 0;
     switch (status) {
     case 0xBF: // Rotate.
-      if (value === 127) {
-        script.triggerControl(group, isShifted ? 'ScrollUp' : 'MoveUp');
-      } else if (value === 1) {
-        script.triggerControl(group, isShifted ? 'ScrollDown' : 'MoveDown');
-      }
+      var rotateValue = (value === 127) ? -1 : ((value === 1) ? 1 : 0);
+      this.onKnobEvent(rotateValue);
       break;
     case 0x9F: // Push.
-      if (value) {
-        script.triggerControl(group, isShifted ? 'MoveFocusBackward' :
-          'MoveFocusForward');
-      }
+      this.onButtonEvent(value);
     }
   }
 });
@@ -964,8 +1019,8 @@ DJ202.HotcueButton.prototype.unshift = function () {
           pitchAdjustment = this.number - ((this.number <= 4) ? 4 : 12);
         }
         engine.setValue(this.group, 'pitch_adjust', pitchAdjustment);
-         engine.setValue(this.group,
-           'hotcue_' + this.pad.pitchplayCue + '_activate', 1);
+        engine.setValue(this.group,
+          'hotcue_' + this.pad.pitchplayCue + '_activate', 1);
       }
     } else if (this.pad.mode === DJ202.PadMode.CUELOOP) {
       if (engine.getValue(this.group, 'hotcue_' + this.number + '_enabled')) {
