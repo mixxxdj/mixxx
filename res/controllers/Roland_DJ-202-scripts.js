@@ -952,21 +952,20 @@ DJ202.HotcueButton.prototype.unshift = function () {
   this.input = function (channel, control, value, status, group) {
     if (this.pad.mode === DJ202.PadMode.PITCHPLAY) {
       if (value > 0 && this.pad.pitchplayCue > 0) {
-        var fileKey = engine.getValue(group, 'file_key');
-        var keyModifier = 0;
+        var pitchAdjustment = 0;
         switch (this.pad.pitchplayRange) {
         case DJ202.pitchplayRange.UP:
-          keyModifier = this.number + ((this.number <= 4) ? 4 : -5);
+          pitchAdjustment = this.number + ((this.number <= 4) ? 4 : -5);
           break;
         case DJ202.pitchplayRange.MID:
-          keyModifier = this.number - ((this.number <= 4) ? 1 : 9);
+          pitchAdjustment = this.number - ((this.number <= 4) ? 1 : 9);
           break;
         case DJ202.pitchplayRange.DOWN:
-          keyModifier = this.number - ((this.number <= 4) ? 4 : 12);
+          pitchAdjustment = this.number - ((this.number <= 4) ? 4 : 12);
         }
-        engine.setValue(this.group, 'key', fileKey + keyModifier);
-        script.triggerControl(this.group,
-          'hotcue_' + this.pad.pitchplayCue + '_activate');
+        engine.setValue(this.group, 'pitch_adjust', pitchAdjustment);
+         engine.setValue(this.group,
+           'hotcue_' + this.pad.pitchplayCue + '_activate', 1);
       }
     } else if (this.pad.mode === DJ202.PadMode.CUELOOP) {
       if (engine.getValue(this.group, 'hotcue_' + this.number + '_enabled')) {
