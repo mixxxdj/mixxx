@@ -4,7 +4,7 @@ var DJCStarlight = {};
 ///////////////////////////////////////////////////////////////
 
 // How fast scratching is.
-DJCStarlight.scratchScale = 1.15;
+DJCStarlight.scratchScale = 1.0;
 
 // How much faster seeking (shift+scratch) is than scratching.
 DJCStarlight.scratchShiftMultiplier = 4;
