@@ -10,7 +10,7 @@ DJCStarlight.scratchScale = 1.15;
 DJCStarlight.scratchShiftMultiplier = 4;
 
 // How fast bending is.
-DJCStarlight.bendScale = 0.5;
+DJCStarlight.bendScale = 1.0;
 
 // DJControl_Starlight_scripts.js
 //
