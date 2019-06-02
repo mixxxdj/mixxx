@@ -10,8 +10,8 @@
 
 #include "maths/MathUtilities.h"
 
-#include "ext/kissfft/kiss_fft.h"
-#include "ext/kissfft/kiss_fftr.h"
+#include "kiss_fft.h"
+#include "kiss_fftr.h"
 
 #include <cmath>
 

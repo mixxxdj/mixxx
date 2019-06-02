@@ -36,7 +36,7 @@ void TCSGram::getTCSVector(int iPosition, TCSVector& rTCSVector) const
 {
 	if (iPosition < 0) 
 		rTCSVector = TCSVector();
-	else if (iPosition >= m_VectorList.size())
+	else if (iPosition >= int(m_VectorList.size()))
 		rTCSVector = TCSVector();
 	else
 		rTCSVector = m_VectorList[iPosition].second;

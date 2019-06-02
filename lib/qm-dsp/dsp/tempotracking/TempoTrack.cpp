@@ -70,10 +70,6 @@ void TempoTrack::initialise( TTParams Params )
     m_tempoScratch = new double[ m_lagLength ];
 	m_smoothRCF = new double[ m_lagLength ];
 
-
-    unsigned int winPre = Params.WinT.pre;
-    unsigned int winPost = Params.WinT.post;
-
     m_DFFramer.configure( m_winLength, m_lagLength );
 	
     m_DFPParams.length = m_winLength;
@@ -120,9 +116,9 @@ void TempoTrack::deInitialise()
 
 }
 
-void TempoTrack::createCombFilter(double* Filter, unsigned int winLength, unsigned int TSig, double beatLag)
+void TempoTrack::createCombFilter(double* Filter, int winLength, int /* TSig */, double beatLag)
 {
-    unsigned int i;
+    int i;
 
     if( beatLag == 0 )
     {
@@ -147,15 +143,15 @@ double TempoTrack::tempoMM(double* ACF, double* weight, int tsig)
 
     double period = 0;
     double maxValRCF = 0.0;
-    unsigned int maxIndexRCF = 0;
+    int maxIndexRCF = 0;
 
     double* pdPeaks;
 
-    unsigned int maxIndexTemp;
-    double	maxValTemp;
-    unsigned int count; 
+    int maxIndexTemp;
+    double maxValTemp;
+    int count; 
 	
-    unsigned int numelem,i,j;
+    int numelem,i,j;
     int a, b;
 
     for( i = 0; i < m_lagLength; i++ )
@@ -476,7 +472,7 @@ void TempoTrack::constDetect( double* periodP, int currentIdx, int* flag )
     }
 }
 
-int TempoTrack::findMeter(double *ACF, unsigned int len, double period)
+int TempoTrack::findMeter(double *ACF, int len, double period)
 {
     int i;
     int p = (int)MathUtilities::round( period );
@@ -491,7 +487,7 @@ int TempoTrack::findMeter(double *ACF, unsigned int len, double period)
     double temp4B = 0.0;
 
     double* dbf = new double[ len ]; int t = 0;
-    for( unsigned int u = 0; u < len; u++ ){ dbf[ u ] = 0.0; }
+    for( int u = 0; u < len; u++ ){ dbf[ u ] = 0.0; }
 
     if( (double)len < 6 * p + 2 )
     {
@@ -548,7 +544,7 @@ int TempoTrack::findMeter(double *ACF, unsigned int len, double period)
     return tsig;
 }
 
-void TempoTrack::createPhaseExtractor(double *Filter, unsigned int winLength, double period, unsigned int fsp, unsigned int lastBeat)
+void TempoTrack::createPhaseExtractor(double *Filter, int /* winLength */, double period, int fsp, int lastBeat)
 {	
     int p = (int)MathUtilities::round( period );
     int predictedOffset = 0;
@@ -584,7 +580,7 @@ void TempoTrack::createPhaseExtractor(double *Filter, unsigned int winLength, do
 	double sigma = (double)p/8;
 	double PhaseMin = 0.0;
 	double PhaseMax = 0.0;
-	unsigned int scratchLength = p*2;
+	int scratchLength = p*2;
 	double temp = 0.0;
 
 	for(  int i = 0; i < scratchLength; i++ )
@@ -604,7 +600,7 @@ void TempoTrack::createPhaseExtractor(double *Filter, unsigned int winLength, do
         std::cerr << "predictedOffset = " << predictedOffset << std::endl;
 #endif
 
-	unsigned int index = 0;
+	int index = 0;
 	for (int i = p - ( predictedOffset - 1); i < p + ( p - predictedOffset) + 1; i++)
 	{
 #ifdef DEBUG_TEMPO_TRACK
@@ -624,7 +620,7 @@ void TempoTrack::createPhaseExtractor(double *Filter, unsigned int winLength, do
     delete [] phaseScratch;
 }
 
-int TempoTrack::phaseMM(double *DF, double *weighting, unsigned int winLength, double period)
+int TempoTrack::phaseMM(double *DF, double *weighting, int winLength, double period)
 {
     int alignment = 0;
     int p = (int)MathUtilities::round( period );
@@ -667,7 +663,7 @@ int TempoTrack::phaseMM(double *DF, double *weighting, unsigned int winLength, d
     return alignment;
 }
 
-int TempoTrack::beatPredict(unsigned int FSP0, double alignment, double period, unsigned int step )
+int TempoTrack::beatPredict(int FSP0, double alignment, double period, int step )
 {
     int beat = 0;
 
@@ -712,39 +708,39 @@ vector<int> TempoTrack::process( vector <double> DF,
     causalDF = DF;
 
     //Prepare Causal Extension DFData
-    unsigned int DFCLength = m_dataLength + m_winLength;
+//    int DFCLength = m_dataLength + m_winLength;
 	
-    for( unsigned int j = 0; j < m_winLength; j++ )
+    for( int j = 0; j < m_winLength; j++ )
     {
 	causalDF.push_back( 0 );
     }
 	
 	
     double* RW = new double[ m_lagLength ];
-    for( unsigned int clear = 0; clear < m_lagLength; clear++){ RW[ clear ] = 0.0;}
+    for (int clear = 0; clear < m_lagLength; clear++){ RW[ clear ] = 0.0;}
 
     double* GW = new double[ m_lagLength ];
-    for(unsigned int clear = 0; clear < m_lagLength; clear++){ GW[ clear ] = 0.0;}
+    for (int clear = 0; clear < m_lagLength; clear++){ GW[ clear ] = 0.0;}
 
     double* PW = new double[ m_lagLength ];
-    for(unsigned clear = 0; clear < m_lagLength; clear++){ PW[ clear ] = 0.0;}
+    for(int clear = 0; clear < m_lagLength; clear++){ PW[ clear ] = 0.0;}
 
     m_DFFramer.setSource( &causalDF[0], m_dataLength );
 
-    unsigned int TTFrames = m_DFFramer.getMaxNoFrames();
+    int TTFrames = m_DFFramer.getMaxNoFrames();
 
 #ifdef DEBUG_TEMPO_TRACK
     std::cerr << "TTFrames = " << TTFrames << std::endl;
 #endif
 	
     double* periodP = new double[ TTFrames ];
-    for(unsigned clear = 0; clear < TTFrames; clear++){ periodP[ clear ] = 0.0;}
+    for(int clear = 0; clear < TTFrames; clear++){ periodP[ clear ] = 0.0;}
 	
     double* periodG = new double[ TTFrames ];
-    for(unsigned clear = 0; clear < TTFrames; clear++){ periodG[ clear ] = 0.0;}
+    for(int clear = 0; clear < TTFrames; clear++){ periodG[ clear ] = 0.0;}
 	
     double* alignment = new double[ TTFrames ];
-    for(unsigned clear = 0; clear < TTFrames; clear++){ alignment[ clear ] = 0.0;}
+    for(int clear = 0; clear < TTFrames; clear++){ alignment[ clear ] = 0.0;}
 
     m_beats.clear();
 
@@ -752,7 +748,7 @@ vector<int> TempoTrack::process( vector <double> DF,
 
     int TTLoopIndex = 0;
 
-    for( unsigned int i = 0; i < TTFrames; i++ )
+    for( int i = 0; i < TTFrames; i++ )
     {
 	m_DFFramer.getFrame( m_rawDFFrame );
 

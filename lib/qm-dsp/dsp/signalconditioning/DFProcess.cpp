@@ -27,6 +27,7 @@
 #include <cstring>
 #include <algorithm>
 
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -60,13 +61,11 @@ void DFProcess::initialise( DFProcConfig Config )
     filtSrc = new double[ m_length ];
     filtDst = new double[ m_length ];
 
-	
-    //Low Pass Smoothing Filter Config
-    m_FilterConfigParams.ord = Config.LPOrd;
-    m_FilterConfigParams.ACoeffs = Config.LPACoeffs;
-    m_FilterConfigParams.BCoeffs = Config.LPBCoeffs;
-	
-    m_FiltFilt = new FiltFilt( m_FilterConfigParams );
+    Filter::Parameters params;
+    params.a = std::vector<double>(Config.LPACoeffs, Config.LPACoeffs + Config.LPOrd + 1);
+    params.b = std::vector<double>(Config.LPBCoeffs, Config.LPBCoeffs + Config.LPOrd + 1);
+    
+    m_FiltFilt = new FiltFilt(params);
 	
     //add delta threshold
     m_delta = Config.delta;
@@ -194,7 +193,7 @@ void DFProcess::removeDCNormalize( double *src, double*dst )
 
     MathUtilities::getAlphaNorm( src, m_length, m_alphaNormParam, &DFAlphaNorm );
 
-    for( unsigned int i = 0; i< m_length; i++)
+    for (int i = 0; i < m_length; i++)
     {
 	dst[ i ] = ( src[ i ] - DFMin ) / DFAlphaNorm; 
     }

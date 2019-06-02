@@ -125,18 +125,17 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[u] = 0;
         }
         
-        const double samplesPerCycle =
-                m_FS / (m_FMin * pow(2, (double)k / (double)m_BPO));
+	// Computing a hamming window
+	const unsigned hammingLength = (int) ceil( m_dQ * m_FS / ( m_FMin * pow(2,((double)(k))/(double)m_BPO)));
 
-        // Computing a hamming window
-        const unsigned hammingLength = (int) ceil(
-                m_dQ * samplesPerCycle);
+//        cerr << "k = " << k << ", q = " << m_dQ << ", m_FMin = " << m_FMin << ", hammingLength = " << hammingLength << " (rounded up from " << (m_dQ * m_FS / ( m_FMin * pow(2,((double)(k))/(double)m_BPO))) << ")" << endl;
+        
 
         unsigned origin = m_FFTLength/2 - hammingLength/2;
 
 	for (unsigned i=0; i<hammingLength; i++) 
 	{
-	    const double angle = 2*PI*i/samplesPerCycle;
+	    const double angle = 2*PI*m_dQ*i/hammingLength;
 	    const double real = cos(angle);
 	    const double imag = sin(angle);
 	    const double absol = hamming(hammingLength, i)/hammingLength;
@@ -144,10 +143,6 @@ void ConstantQ::sparsekernel()
 	    hammingWindowIm[ origin + i ] = absol*imag;
 	}
 
-	/* This code splits the hanning window and moves it to the beginning
-	   and the end, creating an empty gap in the middle.
-	   It is disabled, because it results in wrong results,
-	   when tested with sin waves centered on a bin frequency.
         for (unsigned i = 0; i < m_FFTLength/2; ++i) {
             double temp = hammingWindowRe[i];
             hammingWindowRe[i] = hammingWindowRe[i + m_FFTLength/2];
@@ -156,7 +151,6 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[i] = hammingWindowIm[i + m_FFTLength/2];
             hammingWindowIm[i + m_FFTLength/2] = temp;
         }
-	*/
     
 	//do fft of hammingWindow
 	m_FFT.process( 0, hammingWindowRe, hammingWindowIm, transfHammingWindowRe, transfHammingWindowIm );
@@ -168,7 +162,7 @@ void ConstantQ::sparsekernel()
 	    const double squaredBin = squaredModule( transfHammingWindowRe[ j ], transfHammingWindowIm[ j ]);
 	    if (squaredBin <= squareThreshold) continue;
 		
-	    // Insert non-zero position indexes, doubled because they are floats
+	    // Insert non-zero position indexes
 	    sk->is.push_back(j);
 	    sk->js.push_back(k);
 
@@ -280,6 +274,7 @@ double* ConstantQ::process( const double* fftdata )
     {
 	const unsigned row = cqbin[i];
 	const unsigned col = fftbin[i];
+        if (col == 0) continue;
 	const double & r1  = real[i];
 	const double & i1  = imag[i];
 	const double & r2  = fftdata[ (2*m_FFTLength) - 2*col - 2 ];
@@ -301,17 +296,15 @@ void ConstantQ::initialise( CQConfig Config )
     m_BPO = Config.BPO;		// bins per octave
     m_CQThresh = Config.CQThresh;// ConstantQ threshold for kernel generation
 
-    // Work out Q value for Filter bank
-    m_dQ = 1/(pow(2,(1/(double)m_BPO))-1);
-    // No. of constant Q bins, extended to a full octave
-    m_uK = m_BPO * (unsigned int)ceil(log(m_FMax/m_FMin)/log(2.0));
+    m_dQ = 1/(pow(2,(1/(double)m_BPO))-1);	// Work out Q value for Filter bank
+    m_uK = (unsigned int) ceil(m_BPO * log(m_FMax/m_FMin)/log(2.0));	// No. of constant Q bins
 
 //    std::cerr << "ConstantQ::initialise: rate = " << m_FS << ", fmin = " << m_FMin << ", fmax = " << m_FMax << ", bpo = " << m_BPO << ", K = " << m_uK << ", Q = " << m_dQ << std::endl;
 
     // work out length of fft required for this constant Q Filter bank
     m_FFTLength = (int) pow(2, nextpow2(ceil( m_dQ*m_FS/m_FMin )));
 
-    m_hop = m_FFTLength/8; // <------ hop size is window length divided by 32
+    m_hop = m_FFTLength/8;
 
 //    std::cerr << "ConstantQ::initialise: -> fft length = " << m_FFTLength << ", hop = " << m_hop << std::endl;
 
@@ -351,10 +344,11 @@ void ConstantQ::process(const double *FFTRe, const double* FFTIm,
     {
 	const unsigned row = cqbin[i];
 	const unsigned col = fftbin[i];
+        if (col == 0) continue;
 	const double & r1  = real[i];
 	const double & i1  = imag[i];
-	const double & r2  = FFTRe[ m_FFTLength - col - 1 ];
-	const double & i2  = FFTIm[ m_FFTLength - col - 1 ];
+	const double & r2  = FFTRe[ m_FFTLength - col ];
+	const double & i2  = FFTIm[ m_FFTLength - col ];
 	// add the multiplication
 	CQRe[ row ] += (r1*r2 - i1*i2);
 	CQIm[ row ] += (r1*i2 + i1*r2);

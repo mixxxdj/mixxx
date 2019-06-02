@@ -34,7 +34,7 @@ double CosineDistance::distance(const vector<double> &v1,
     }
     else
     {
-        for(int i=0; i<v1.size(); i++)
+        for(int i=0; i<int(v1.size()); i++)
         {
             dSum1 += v1[i]*v2[i];
             dDen1 += v1[i]*v1[i];
