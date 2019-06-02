@@ -229,6 +229,41 @@ int GetKeyMode::process(double *PCMData)
     }
 
 
+/*
+    // filtered and normalized chromagram
+    for (unsigned int ii = 0; ii < m_BPO; ++ii) {
+      double value = m_MeanHPCP[(ii+m_BPO-1) % m_BPO];
+      if (value > 0 && maxNoteValue > 0.01) {
+          if (value > 0.99) {
+              std::cout << "Î";
+          } else if (value > 0.66) {
+              std::cout << "I";
+          } else if (value > 0.33) {
+              std::cout << "i";
+          } else {
+              std::cout << ";";
+          }
+      }
+      else
+      {
+          if (ii == 3 || ii == 9  || ii == 18 ||  ii == 24 || ii == 30 ||
+              ii == 4 || ii == 10 || ii == 19 ||  ii == 25 || ii == 31 ||
+              ii == 5 || ii == 11 || ii == 20 ||  ii == 26 || ii == 32) {
+              // Mark black keys
+              std::cout << "-";
+          }
+          else {
+              std::cout << "_";
+          }
+      }
+      if (ii % 3 == 2) {
+          std::cout << " ";
+      }
+    }
+*/
+
+
+
     for( k = 0; k < kBinsPerOctave; k++ )
     {
         // The Cromagram has the center of C at bin 0, while the major
