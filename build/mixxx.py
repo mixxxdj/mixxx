@@ -208,13 +208,15 @@ class MixxxBuild(object):
         self.read_environment_variables()
 
         # Now that environment variables have been read, we can detect the compiler.
-        self.compiler_is_gcc = 'gcc' in self.env['CC']
-        self.compiler_is_clang = 'clang' in self.env['CC']
+        import subprocess
+        process = subprocess.Popen([self.env['CC'], '--version'], stdout=subprocess.PIPE)
+        (stdout, stderr) = process.communicate()
+        self.compiler_is_gcc = 'gcc' in stdout.lower()
+        self.compiler_is_clang = 'clang' in stdout.lower()
 
         # Determine the major compiler version (only GCC)
         if self.compiler_is_gcc:
             self.gcc_major_version = None
-            import subprocess
             process = subprocess.Popen([self.env['CC'], '-dumpversion'], stdout=subprocess.PIPE)
             (stdout, stderr) = process.communicate()
             gcc_version = stdout
