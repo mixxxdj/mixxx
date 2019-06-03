@@ -551,7 +551,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
 
-    if (getConfig()->getValue(ConfigKey("[Controls]", "AutoHotcueColors"), false)) {
+    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
         const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
         pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
     };
