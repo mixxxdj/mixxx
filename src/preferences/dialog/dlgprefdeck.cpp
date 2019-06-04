@@ -166,7 +166,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
 
     // Automatically assign a color to new hot cues
-    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "AutoHotcueColors"), false);
+    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
     checkBoxAssignHotcueColors->setChecked(m_bAssignHotcueColors);
     connect(checkBoxAssignHotcueColors, SIGNAL(toggled(bool)),
             this, SLOT(slotAssignHotcueColorsCheckbox(bool)));
@@ -341,7 +341,7 @@ void DlgPrefDeck::slotUpdate() {
             ConfigKey("[Controls]", "CueRecall"), false));
 
     checkBoxAssignHotcueColors->setChecked(m_pConfig->getValue(
-            ConfigKey("[Controls]", "AutoHotcueColors"), false));
+            ConfigKey("[Controls]", "auto_hotcue_colors"), false));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
@@ -579,7 +579,7 @@ void DlgPrefDeck::slotApply() {
                         !m_bDisallowTrackLoadToPlayingDeck);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
-    m_pConfig->setValue(ConfigKey("[Controls]", "AutoHotcueColors"), m_bAssignHotcueColors);
+    m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);
