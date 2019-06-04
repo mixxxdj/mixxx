@@ -1349,7 +1349,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
             this.send((this.mode.cuepoint === this.number) ? color : (color + DJ505.PadColor.DIM_MODIFIER));
         },
         unshift: function() {
-            this.outKey = "key";
+            this.outKey = "pitch_adjust";
             this.output = function (value, group, control) {
                 var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
                 if ((this.mode.range === PitchPlayRange.UP && this.number === 5) ||
@@ -1361,19 +1361,18 @@ DJ505.PitchPlayMode = function (deck, offset) {
             };
             this.input = function (channel, control, value, status, group) {
                 if (value > 0) {
-                    var fileKey = engine.getValue(group, "file_key");
-                    var keyModifier;
+                    var pitchAdjust;
                     switch(this.mode.range) {
                     case PitchPlayRange.UP:
-                        keyModifier = this.number + ((this.number <= 4) ? 4 : -5);
+                        pitchAdjust = this.number + ((this.number <= 4) ? 4 : -5);
                         break;
                     case PitchPlayRange.MID:
-                        keyModifier = this.number - ((this.number <= 4) ? 1 : 9);
+                        pitchAdjust = this.number - ((this.number <= 4) ? 1 : 9);
                         break;
                     case PitchPlayRange.DOWN:
-                        keyModifier = this.number - ((this.number <= 4) ? 4 : 12);
+                        pitchAdjust = this.number - ((this.number <= 4) ? 4 : 12);
                     }
-                    engine.setValue(this.group, "key", fileKey + keyModifier);
+                    engine.setValue(this.group, "pitch_adjust", pitchAdjust);
                     engine.setValue(this.group, "hotcue_" + this.mode.cuepoint + "_activate", value);
                 }
             };
