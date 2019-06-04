@@ -81,8 +81,6 @@ private:
     double* m_filtScratchIn;
     double* m_filtScratchOut;
 
-    FilterConfig m_FilterConfigParams;
-
     FiltFilt* m_FiltFilt;
 
     bool m_isMedianPositive;

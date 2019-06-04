@@ -20,8 +20,8 @@
 #include "maths/MathAliases.h"
 #include "maths/MathUtilities.h"
 
-struct CQConfig{
-    double FS;   // samplerate
+struct CQConfig {
+    double FS;         // samplerate
     double min;        // minimum frequency
     double max;        // maximum frequency
     unsigned int BPO;  // bins per octave

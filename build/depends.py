@@ -595,7 +595,7 @@ class QueenMaryDsp(Dependence):
             "#lib/qm-dsp/dsp/transforms/FFT.cpp",
             #"#lib/qm-dsp/dsp/wavelet/Wavelet.cpp",
             "#lib/qm-dsp/ext/kissfft/kiss_fft.c",
-            "#lib/qm-dsp/ext/kissfft/kiss_fftr.c",
+            "#lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c",
             #"#lib/qm-dsp/hmm/hmm.c",
             "#lib/qm-dsp/maths/Correlation.cpp",
             #"#lib/qm-dsp/maths/CosineDistance.cpp",

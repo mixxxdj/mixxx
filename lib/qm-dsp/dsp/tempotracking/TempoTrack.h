@@ -30,16 +30,16 @@ using std::vector;
 
 struct WinThresh
 {
-    unsigned int pre;
-    unsigned int post;
+    int pre;
+    int post;
 };
 
 struct TTParams
 {
-    unsigned int winLength; //Analysis window length
-    unsigned int lagLength; //Lag & Stride size
-    unsigned int alpha; //alpha-norm parameter
-    unsigned int LPOrd; // low-pass Filter order
+    int winLength; //Analysis window length
+    int lagLength; //Lag & Stride size
+    int alpha; //alpha-norm parameter
+    int LPOrd; // low-pass Filter order
     double* LPACoeffs; //low pass Filter den coefficients
     double* LPBCoeffs; //low pass Filter num coefficients
     WinThresh WinT;//window size in frames for adaptive thresholding [pre post]:
@@ -59,22 +59,22 @@ private:
     void initialise( TTParams Params );
     void deInitialise();
 
-    int beatPredict( unsigned int FSP, double alignment, double period, unsigned int step);
-    int phaseMM( double* DF, double* weighting, unsigned int winLength, double period );
-    void createPhaseExtractor( double* Filter, unsigned int winLength,  double period,  unsigned int fsp, unsigned int lastBeat );
-    int findMeter( double* ACF,  unsigned int len, double period );
+    int beatPredict( int FSP, double alignment, double period, int step);
+    int phaseMM( double* DF, double* weighting, int winLength, double period );
+    void createPhaseExtractor( double* Filter, int winLength,  double period,  int fsp, int lastBeat );
+    int findMeter( double* ACF,  int len, double period );
     void constDetect( double* periodP, int currentIdx, int* flag );
     void stepDetect( double* periodP, double* periodG, int currentIdx, int* flag );
-    void createCombFilter( double* Filter, unsigned int winLength, unsigned int TSig, double beatLag );
+    void createCombFilter( double* Filter, int winLength, int TSig, double beatLag );
     double tempoMM( double* ACF, double* weight, int sig );
 	
-    unsigned int m_dataLength;
-    unsigned int m_winLength;
-    unsigned int m_lagLength;
+    int m_dataLength;
+    int m_winLength;
+    int m_lagLength;
 
-    double		 m_rayparam;
-    double		 m_sigma;
-    double		 m_DFWVNnorm;
+    double m_rayparam;
+    double m_sigma;
+    double m_DFWVNnorm;
 
     vector<int>	 m_beats; // Vector of detected beats
 
@@ -92,7 +92,7 @@ private:
     double* m_ACoeffs;
     double* m_BCoeffs;
 	
-    // Objects/operators declaration
+    // Objetcs/operators declaration
     Framer m_DFFramer;
     DFProcess* m_DFConditioning;
     Correlation m_correlator;

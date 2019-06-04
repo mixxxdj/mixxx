@@ -43,7 +43,7 @@ double kldist(double* a, double* b, int n) {
 
 void cluster_melt(double *h, int m, int n, double *Bsched, int t, int k, int l, int *c) {
 	double lambda, sum, beta, logsumexp, maxlp;
-	int i, j, a, b, b0, b1, limit, B, it, maxiter, maxiter0, maxiter1;
+	int i, j, a, b, b0, b1, limit, /* B, */ it, maxiter, maxiter0, maxiter1;
 	double** cl;	/* reference histograms for each cluster */
 	int** nc;	/* neighbour counts for each histogram */
 	double** lp;	/* soft assignment probs for each histogram */
@@ -57,7 +57,7 @@ void cluster_melt(double *h, int m, int n, double *Bsched, int t, int k, int l, 
 		limit = l;
 	else
 		limit = DEFAULT_LIMIT;		/* use default if no valid neighbourhood limit supplied */
-	B = 2 * limit + 1;
+//	B = 2 * limit + 1;
 	maxiter0 = 20;	/* number of iterations at initial temperature */
 	maxiter1 = 5;	/* number of iterations at subsequent temperatures */
 	

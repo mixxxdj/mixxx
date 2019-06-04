@@ -1,7 +1,7 @@
 #ifndef KISS_FTR_H
 #define KISS_FTR_H
 
-#include "kiss_fft.h"
+#include "../kiss_fft.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -27,17 +27,18 @@ public:
 
 	int process( double* PCMData );
 
-	double krumCorr( double* pData1, double* pData2, unsigned int length );
+	double krumCorr( const double *pDataNorm, const double *pProfileNorm, 
+                         int shiftProfile, unsigned int length );
 
 	unsigned int getBlockSize() { return m_ChromaFrameSize*m_DecimationFactor; }
 	unsigned int getHopSize() { return m_ChromaHopSize*m_DecimationFactor; }
 
 	double* getChroma() { return m_ChrPointer; }
-	unsigned int getChromaSize() { return m_BPO; }
+	unsigned int getChromaSize();
 
 	double* getMeanHPCP() { return m_MeanHPCP; }
 
-	double *getKeyStrengths() { return m_keyStrengths; }
+	double* getKeyStrengths();
 
 	bool isModeMinor( int key ); 
 
@@ -63,8 +64,6 @@ protected:
 	unsigned int m_ChromaFrameSize;
 	//Hop
 	unsigned int m_ChromaHopSize;
-	//Bins per octave
-	unsigned int m_BPO;
 
 
 	unsigned int m_ChromaBuffersize;
@@ -79,9 +78,10 @@ protected:
 	double* m_ChromaBuffer;
 	double* m_MeanHPCP;
 
+	double* m_MajProfileNorm;
+	double* m_MinProfileNorm;
 	double* m_MajCorr;
 	double* m_MinCorr;
-	double* m_Keys;
 	int* m_MedianFilterBuffer;
 	int* m_SortedBuffer;
 

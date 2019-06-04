@@ -329,23 +329,27 @@ void ClusterMeltSegmenter::segment()
     delete decimator;
     decimator = 0;
 
-    if (features.size() < histogramLength) return;
+    int sz = features.size();
+    
+    if (sz < histogramLength) return;
 /*    
     std::cerr << "ClusterMeltSegmenter::segment: have " << features.size()
               << " features with " << features[0].size() << " coefficients (ncoeff = " << ncoeff << ", ncomponents = " << ncomponents << ")" << std::endl;
 */
     // copy the features to a native array and use the existing C segmenter...
     double** arrFeatures = new double*[features.size()];	
-    for (int i = 0; i < features.size(); i++)
+    for (int i = 0; i < sz; i++)
     {
         if (featureType == FEATURE_TYPE_UNKNOWN) {
             arrFeatures[i] = new double[features[0].size()];
-            for (int j = 0; j < features[0].size(); j++)
-                arrFeatures[i][j] = features[i][j];	
+            for (int j = 0; j < int(features[0].size()); j++) {
+                arrFeatures[i][j] = features[i][j];
+            }
         } else {
             arrFeatures[i] = new double[ncoeff+1];	// allow space for the normalised envelope
-            for (int j = 0; j < ncoeff; j++)
-                arrFeatures[i][j] = features[i][j];	
+            for (int j = 0; j < ncoeff; j++) {
+                arrFeatures[i][j] = features[i][j];
+            }
         }
     }
 	
@@ -364,8 +368,7 @@ void ClusterMeltSegmenter::segment()
 	
     // de-allocate arrays
     delete [] q;
-    for (int i = 0; i < features.size(); i++)
-        delete [] arrFeatures[i];
+    for (int i = 0; i < int(features.size()); i++) delete [] arrFeatures[i];
     delete [] arrFeatures;
 	
     // clear the features

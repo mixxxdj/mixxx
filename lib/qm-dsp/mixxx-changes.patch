@@ -1,0 +1,272 @@
+diff --git a/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp b/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
+index 4585ddc..a5b1c12 100644
+--- a/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
++++ b/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
+@@ -117,31 +117,29 @@ void ConstantQ::sparsekernel()
+ 
+     FFT m_FFT(m_FFTLength);
+ 	
+-    for (unsigned k = m_uK; k--; ) 
+-    {
+-        for (unsigned u=0; u < m_FFTLength; u++) 
+-        {
++    for (unsigned k = m_uK; k--;) {
++        for (unsigned u=0; u < m_FFTLength; u++) {
+             hammingWindowRe[u] = 0;
+             hammingWindowIm[u] = 0;
+         }
+         
+-	// Computing a hamming window
+-	const unsigned hammingLength = (int) ceil( m_dQ * m_FS / ( m_FMin * pow(2,((double)(k))/(double)m_BPO)));
++        const double samplesPerCycle =
++                m_FS / (m_FMin * pow(2, (double)k / (double)m_BPO));
+ 
+-//        cerr << "k = " << k << ", q = " << m_dQ << ", m_FMin = " << m_FMin << ", hammingLength = " << hammingLength << " (rounded up from " << (m_dQ * m_FS / ( m_FMin * pow(2,((double)(k))/(double)m_BPO))) << ")" << endl;
+-        
++        // Computing a hamming window
++        const unsigned hammingLength = (int) ceil(
++                m_dQ * samplesPerCycle);
+ 
+         unsigned origin = m_FFTLength/2 - hammingLength/2;
+ 
+-	for (unsigned i=0; i<hammingLength; i++) 
+-	{
+-	    const double angle = 2*PI*m_dQ*i/hammingLength;
+-	    const double real = cos(angle);
+-	    const double imag = sin(angle);
+-	    const double absol = hamming(hammingLength, i)/hammingLength;
+-	    hammingWindowRe[ origin + i ] = absol*real;
+-	    hammingWindowIm[ origin + i ] = absol*imag;
+-	}
++        for (unsigned i=0; i<hammingLength; i++) {
++            const double angle = 2*PI*i/samplesPerCycle;
++            const double real = cos(angle);
++            const double imag = sin(angle);
++            const double absol = hamming(hammingLength, i)/hammingLength;
++            hammingWindowRe[ origin + i ] = absol*real;
++            hammingWindowIm[ origin + i ] = absol*imag;
++        }
+ 
+         for (unsigned i = 0; i < m_FFTLength/2; ++i) {
+             double temp = hammingWindowRe[i];
+@@ -152,24 +150,24 @@ void ConstantQ::sparsekernel()
+             hammingWindowIm[i + m_FFTLength/2] = temp;
+         }
+     
+-	//do fft of hammingWindow
+-	m_FFT.process( 0, hammingWindowRe, hammingWindowIm, transfHammingWindowRe, transfHammingWindowIm );
+-
+-		
+-	for (unsigned j=0; j<( m_FFTLength ); j++) 
+-	{
+-	    // perform thresholding
+-	    const double squaredBin = squaredModule( transfHammingWindowRe[ j ], transfHammingWindowIm[ j ]);
+-	    if (squaredBin <= squareThreshold) continue;
+-		
+-	    // Insert non-zero position indexes
+-	    sk->is.push_back(j);
+-	    sk->js.push_back(k);
+-
+-	    // take conjugate, normalise and add to array sparkernel
+-	    sk->real.push_back( transfHammingWindowRe[ j ]/m_FFTLength);
+-	    sk->imag.push_back(-transfHammingWindowIm[ j ]/m_FFTLength);
+-	}
++        //do fft of hammingWindow
++        m_FFT.process( 0, hammingWindowRe, hammingWindowIm, transfHammingWindowRe, transfHammingWindowIm );
++
++
++        for (unsigned j=0; j<( m_FFTLength ); j++) {
++            // perform thresholding
++            const double squaredBin = squaredModule( transfHammingWindowRe[ j ], transfHammingWindowIm[ j ]);
++            if (squaredBin <= squareThreshold) {
++                continue;
++            }
++            // Insert non-zero position indexes
++            sk->is.push_back(j);
++            sk->js.push_back(k);
++
++            // take conjugate, normalise and add to array sparkernel
++            sk->real.push_back( transfHammingWindowRe[ j ]/m_FFTLength);
++            sk->imag.push_back(-transfHammingWindowIm[ j ]/m_FFTLength);
++        }
+ 
+     }
+ 
+@@ -259,10 +257,9 @@ double* ConstantQ::process( const double* fftdata )
+ 
+     SparseKernel *sk = m_sparseKernel;
+ 
+-    for (unsigned row=0; row<2*m_uK; row++) 
+-    {
+-	m_CQdata[ row ] = 0;
+-	m_CQdata[ row+1 ] = 0;
++    for (unsigned row=0; row<2*m_uK; row++) {
++        m_CQdata[ row ] = 0;
++        m_CQdata[ row+1 ] = 0;
+     }
+     const unsigned *fftbin = &(sk->is[0]);
+     const unsigned *cqbin  = &(sk->js[0]);
+@@ -270,18 +267,19 @@ double* ConstantQ::process( const double* fftdata )
+     const double   *imag   = &(sk->imag[0]);
+     const unsigned int sparseCells = sk->real.size();
+ 	
+-    for (unsigned i = 0; i<sparseCells; i++)
+-    {
+-	const unsigned row = cqbin[i];
+-	const unsigned col = fftbin[i];
+-        if (col == 0) continue;
+-	const double & r1  = real[i];
+-	const double & i1  = imag[i];
+-	const double & r2  = fftdata[ (2*m_FFTLength) - 2*col - 2 ];
+-	const double & i2  = fftdata[ (2*m_FFTLength) - 2*col - 2 + 1 ];
+-	// add the multiplication
+-	m_CQdata[ 2*row  ] += (r1*r2 - i1*i2);
+-	m_CQdata[ 2*row+1] += (r1*i2 + i1*r2);
++    for (unsigned i = 0; i<sparseCells; i++) {
++        const unsigned row = cqbin[i];
++        const unsigned col = fftbin[i];
++        if (col == 0) {
++            continue;
++        }
++        const double & r1  = real[i];
++        const double & i1  = imag[i];
++        const double & r2  = fftdata[ (2*m_FFTLength) - 2*col - 2 ];
++        const double & i2  = fftdata[ (2*m_FFTLength) - 2*col - 2 + 1 ];
++        // add the multiplication
++        m_CQdata[ 2*row  ] += (r1*r2 - i1*i2);
++        m_CQdata[ 2*row+1] += (r1*i2 + i1*r2);
+     }
+ 
+     return m_CQdata;
+@@ -328,10 +326,9 @@ void ConstantQ::process(const double *FFTRe, const double* FFTIm,
+ 
+     SparseKernel *sk = m_sparseKernel;
+ 
+-    for (unsigned row=0; row<m_uK; row++) 
+-    {
+-	CQRe[ row ] = 0;
+-	CQIm[ row ] = 0;
++    for (unsigned row=0; row<m_uK; row++) {
++        CQRe[ row ] = 0;
++        CQIm[ row ] = 0;
+     }
+ 
+     const unsigned *fftbin = &(sk->is[0]);
+@@ -340,17 +337,18 @@ void ConstantQ::process(const double *FFTRe, const double* FFTIm,
+     const double   *imag   = &(sk->imag[0]);
+     const unsigned int sparseCells = sk->real.size();
+ 	
+-    for (unsigned i = 0; i<sparseCells; i++)
+-    {
+-	const unsigned row = cqbin[i];
+-	const unsigned col = fftbin[i];
+-        if (col == 0) continue;
+-	const double & r1  = real[i];
+-	const double & i1  = imag[i];
+-	const double & r2  = FFTRe[ m_FFTLength - col ];
+-	const double & i2  = FFTIm[ m_FFTLength - col ];
+-	// add the multiplication
+-	CQRe[ row ] += (r1*r2 - i1*i2);
+-	CQIm[ row ] += (r1*i2 + i1*r2);
++    for (unsigned i = 0; i<sparseCells; i++) {
++        const unsigned row = cqbin[i];
++        const unsigned col = fftbin[i];
++        if (col == 0) {
++            continue;
++        }
++        const double & r1  = real[i];
++        const double & i1  = imag[i];
++        const double & r2  = FFTRe[ m_FFTLength - col ];
++        const double & i2  = FFTIm[ m_FFTLength - col ];
++        // add the multiplication
++        CQRe[ row ] += (r1*r2 - i1*i2);
++        CQIm[ row ] += (r1*i2 + i1*r2);
+     }
+ }
+diff --git a/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp b/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
+index cb8bc24..a4abcbc 100644
+--- a/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
++++ b/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
+@@ -229,6 +229,41 @@ int GetKeyMode::process(double *PCMData)
+     }
+ 
+ 
++/*
++    // filtered and normalized chromagram
++    for (unsigned int ii = 0; ii < m_BPO; ++ii) {
++      double value = m_MeanHPCP[(ii+m_BPO-1) % m_BPO];
++      if (value > 0 && maxNoteValue > 0.01) {
++          if (value > 0.99) {
++              std::cout << "Î";
++          } else if (value > 0.66) {
++              std::cout << "I";
++          } else if (value > 0.33) {
++              std::cout << "i";
++          } else {
++              std::cout << ";";
++          }
++      }
++      else
++      {
++          if (ii == 3 || ii == 9  || ii == 18 ||  ii == 24 || ii == 30 ||
++              ii == 4 || ii == 10 || ii == 19 ||  ii == 25 || ii == 31 ||
++              ii == 5 || ii == 11 || ii == 20 ||  ii == 26 || ii == 32) {
++              // Mark black keys
++              std::cout << "-";
++          }
++          else {
++              std::cout << "_";
++          }
++      }
++      if (ii % 3 == 2) {
++          std::cout << " ";
++      }
++    }
++*/
++
++
++
+     for( k = 0; k < kBinsPerOctave; k++ )
+     {
+         // The Cromagram has the center of C at bin 0, while the major
+diff --git a/lib/qm-dsp/dsp/transforms/FFT.cpp b/lib/qm-dsp/dsp/transforms/FFT.cpp
+index da476b8..6f96b0e 100644
+--- a/lib/qm-dsp/dsp/transforms/FFT.cpp
++++ b/lib/qm-dsp/dsp/transforms/FFT.cpp
+@@ -10,8 +10,8 @@
+ 
+ #include "maths/MathUtilities.h"
+ 
+-#include "kiss_fft.h"
+-#include "kiss_fftr.h"
++#include "ext/kissfft/kiss_fft.h"
++#include "ext/kissfft/tools/kiss_fftr.h"
+ 
+ #include <cmath>
+ 
+diff --git a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
+index b8e238b..8adb0f0 100644
+--- a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
++++ b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
+@@ -13,7 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ */
+ 
+ #include "kiss_fftr.h"
+-#include "_kiss_fft_guts.h"
++#include "../_kiss_fft_guts.h"
+ 
+ struct kiss_fftr_state{
+     kiss_fft_cfg substate;
+diff --git a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h
+index 72e5a57..81d8a8e 100644
+--- a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h
++++ b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h
+@@ -1,7 +1,7 @@
+ #ifndef KISS_FTR_H
+ #define KISS_FTR_H
+ 
+-#include "kiss_fft.h"
++#include "../kiss_fft.h"
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
