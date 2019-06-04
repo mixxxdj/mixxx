@@ -63,7 +63,7 @@ class HID(Feature):
         if not self.enabled(build):
             return
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
                 # No System Lib found
