@@ -23,12 +23,11 @@ class AnalyzerGain : public Analyzer {
     }
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    void process(const CSAMPLE* pIn, const int iLen) override;
-    void cleanup(TrackPointer tio) override;
+    bool process(const CSAMPLE* pIn, const int iLen) override;
     void finalize(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
-    bool m_initalized;
     ReplayGainSettings m_rgSettings;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;

@@ -27,15 +27,58 @@ class Analyzer {
     // returned true!
     /////////////////////////////////////////////////////////////////////////
 
-    // Analyze the next chunk of audio samples.
-    virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
+    // Analyze the next chunk of audio samples and return true if successful.
+    // If processing fails the analysis can be aborted early by returning
+    // false. After aborting the analysis only cleanup() will be invoked,
+    // but not finalize()!
+    virtual bool process(const CSAMPLE* pIn, const int iLen) = 0;
 
     // Update the track object with the analysis results after
-    // processing finished, i.e. all available audio samples have
-    // been processed.
+    // processing finished successfully, i.e. all available audio
+    // samples have been processed.
     virtual void finalize(TrackPointer tio) = 0;
 
-    // Discard any temporary results or free allocated memory after
-    // finalization.
-    virtual void cleanup(TrackPointer tio) = 0;
+    // Discard any temporary results or free allocated memory.
+    virtual void cleanup() = 0;
+};
+
+typedef std::unique_ptr<Analyzer> AnalyzerPtr;
+
+class AnalyzerState {
+  public:
+    explicit AnalyzerState(AnalyzerPtr analyzer)
+            : m_analyzer(std::move(analyzer)),
+              m_processing(false) {
+        DEBUG_ASSERT(m_analyzer);
+    }
+    AnalyzerState(const AnalyzerState&) = delete;
+    AnalyzerState(AnalyzerState&&) = default;
+
+    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+        DEBUG_ASSERT(!m_processing);
+        m_processing = m_analyzer->initialize(tio, sampleRate, totalSamples);
+        return m_processing;
+    }
+
+    void process(const CSAMPLE* pIn, const int iLen) {
+        if (m_processing) {
+            m_processing = m_analyzer->process(pIn, iLen);
+        }
+    }
+
+    void finalize(TrackPointer tio) {
+        if (m_processing) {
+            m_analyzer->finalize(tio);
+            m_processing = false;
+        }
+    }
+
+    void cleanup() {
+        m_analyzer->cleanup();
+        m_processing = false;
+    }
+
+  private:
+    AnalyzerPtr m_analyzer;
+    bool m_processing;
 };

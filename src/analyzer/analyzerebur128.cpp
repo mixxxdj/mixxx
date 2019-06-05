@@ -27,55 +27,48 @@ bool AnalyzerEbur128::initialize(TrackPointer tio,
         qDebug() << "Skipping AnalyzerEbur128";
         return false;
     }
-    if (!isInitialized()) {
-        m_pState = ebur128_init(2u,
-                static_cast<unsigned long>(sampleRate),
-                EBUR128_MODE_I);
-    }
-    return isInitialized();
+    DEBUG_ASSERT(m_pState == nullptr);
+    m_pState = ebur128_init(2u,
+            static_cast<unsigned long>(sampleRate),
+            EBUR128_MODE_I);
+    return m_pState != nullptr;
 }
 
 void AnalyzerEbur128::cleanup() {
-    if (isInitialized()) {
+    if (m_pState) {
         ebur128_destroy(&m_pState);
         // ebur128_destroy clears the pointer but let's not rely on that.
         m_pState = nullptr;
     }
-    DEBUG_ASSERT(!isInitialized());
 }
 
-void AnalyzerEbur128::cleanup(TrackPointer tio) {
-    Q_UNUSED(tio);
-    cleanup();
-}
-
-void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
-    if (!isInitialized()) {
-        return;
+bool AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
+    VERIFY_OR_DEBUG_ASSERT(m_pState) {
+        return false;
     }
     ScopedTimer t("AnalyzerEbur128::process()");
     size_t frames = iLen / 2;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
         qWarning() << "AnalyzerEbur128::process() failed with" << e;
-        return;
+        return false;
     }
+    return true;
 }
 
 void AnalyzerEbur128::finalize(TrackPointer tio) {
-    if (!isInitialized()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return;
     }
     double averageLufs;
     int e = ebur128_loudness_global(m_pState, &averageLufs);
-    cleanup(tio);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
         qWarning() << "AnalyzerEbur128::finalize() failed with" << e;
         return;
     }
     if (averageLufs == -HUGE_VAL || averageLufs == 0.0) {
         qWarning() << "AnalyzerEbur128::finalize() averageLufs invalid:"
-                 << averageLufs;
+                   << averageLufs;
         return;
     }
 

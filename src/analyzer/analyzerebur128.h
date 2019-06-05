@@ -16,16 +16,11 @@ class AnalyzerEbur128 : public Analyzer {
     }
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    void process(const CSAMPLE* pIn, const int iLen) override;
-    void cleanup(TrackPointer tio) override;
+    bool process(const CSAMPLE* pIn, const int iLen) override;
     void finalize(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
-    void cleanup();
-    bool isInitialized() const {
-        return m_pState != nullptr;
-    }
-
     ReplayGainSettings m_rgSettings;
     ebur128_state* m_pState;
 };

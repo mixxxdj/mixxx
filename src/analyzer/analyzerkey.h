@@ -20,13 +20,13 @@ class AnalyzerKey : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    void process(const CSAMPLE *pIn, const int iLen) override;
+    bool process(const CSAMPLE *pIn, const int iLen) override;
     void finalize(TrackPointer tio) override;
-    void cleanup(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis);
+            QString pluginId, bool bPreferencesFastAnalysis);
 
     bool shouldAnalyze(TrackPointer tio) const;
 

@@ -1,7 +1,7 @@
 #include "analyzer/analyzerkey.h"
 
-#include <QtDebug>
 #include <QVector>
+#include <QtDebug>
 
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarykey.h"
@@ -91,7 +91,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
         QString subVersion = keys.getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            pluginID, bPreferencesFastAnalysisEnabled);
+                pluginID, bPreferencesFastAnalysisEnabled);
         QString newVersion = KeyFactory::getPreferredVersion();
         QString newSubVersion = KeyFactory::getPreferredSubVersion(extraVersionInfo);
 
@@ -111,43 +111,34 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_pPlugin) {
-        return;
+bool AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
+        return false;
     }
 
     m_iCurrentSample += iLen;
     if (m_iCurrentSample > m_iMaxSamplesToProcess) {
-        return;
+        return true; // silently ignore remaining samples
     }
 
-    bool success = m_pPlugin->process(pIn, iLen);
-    if (!success) {
-        m_pPlugin.reset();
-    }
+    return m_pPlugin->process(pIn, iLen);
 }
 
-void AnalyzerKey::cleanup(TrackPointer tio) {
-    Q_UNUSED(tio);
+void AnalyzerKey::cleanup() {
     m_pPlugin.reset();
 }
 
 void AnalyzerKey::finalize(TrackPointer tio) {
-    if (!m_pPlugin) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return;
     }
 
-    bool success = m_pPlugin->finalize();
-    qDebug() << "Key Detection" << (success ? "complete" : "failed");
-
-    if (!success) {
-        m_pPlugin.reset();
+    if (!m_pPlugin->finalize()) {
+        qWarning() << "Key detection failed";
         return;
     }
 
     KeyChangeList key_changes = m_pPlugin->getKeyChanges();
-    m_pPlugin.reset();
-
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysisEnabled);
     Keys track_keys = KeyFactory::makePreferredKeys(

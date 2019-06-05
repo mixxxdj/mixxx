@@ -1,18 +1,18 @@
 #include "analyzer/analyzerwaveform.h"
 
 #include "engine/engineobject.h"
-#include "engine/filters/enginefilterbutterworth8.h"
 #include "engine/filters/enginefilterbessel4.h"
+#include "engine/filters/enginefilterbutterworth8.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
-#include "waveform/waveformfactory.h"
 #include "util/logger.h"
+#include "waveform/waveformfactory.h"
 
 namespace {
 
 mixxx::Logger kLogger("AnalyzerWaveform");
 
-} // anonymous
+} // namespace
 
 AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
@@ -167,9 +167,13 @@ void AnalyzerWaveform::destroyFilters() {
     }
 }
 
-void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
-    if (!m_waveform || !m_waveformSummary)
-        return;
+bool AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
+    VERIFY_OR_DEBUG_ASSERT(m_waveform) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_waveformSummary) {
+        return false;
+    }
 
     //this should only append once if bufferLength is constant
     if (bufferLength > (int)m_buffers[0].size()) {
@@ -216,22 +220,22 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
         m_stride.m_position++;
 
         if (fmod(m_stride.m_position, m_stride.m_length) < 1) {
-            if (m_currentStride + ChannelCount > m_waveform->getDataSize()) {
-                qWarning() << "AnalyzerWaveform::process - currentStride >= waveform size";
-                return;
+            VERIFY_OR_DEBUG_ASSERT(m_currentStride + ChannelCount <= m_waveform->getDataSize()) {
+                qWarning() << "AnalyzerWaveform::process - currentStride > waveform size";
+                return false;
             }
             m_stride.store(m_waveformData + m_currentStride);
-            m_currentStride += 2;
+            m_currentStride += ChannelCount;
             m_waveform->setCompletion(m_currentStride);
         }
 
         if (fmod(m_stride.m_position, m_stride.m_averageLength) < 1) {
-            if (m_currentSummaryStride + ChannelCount > m_waveformSummary->getDataSize()) {
-                qWarning() << "AnalyzerWaveform::process - current summary stride >= waveform summary size";
-                return;
+            VERIFY_OR_DEBUG_ASSERT(m_currentSummaryStride + ChannelCount <= m_waveformSummary->getDataSize()) {
+                qWarning() << "AnalyzerWaveform::process - current summary stride > waveform summary size";
+                return false;
             }
             m_stride.averageStore(m_waveformSummaryData + m_currentSummaryStride);
-            m_currentSummaryStride += 2;
+            m_currentSummaryStride += ChannelCount;
             m_waveformSummary->setCompletion(m_currentSummaryStride);
 
 #ifdef TEST_HEAT_MAP
@@ -249,22 +253,14 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
 
     //kLogger.debug() << "process - m_waveform->getCompletion()" << m_waveform->getCompletion() << "off" << m_waveform->getDataSize();
     //kLogger.debug() << "process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion() << "off" << m_waveformSummary->getDataSize();
+    return true;
 }
 
-void AnalyzerWaveform::cleanup(TrackPointer tio) {
-    Q_UNUSED(tio);
-
-    tio->setWaveform(ConstWaveformPointer());
-    // Since clear() could delete the waveform, clear our pointer to the
-    // waveform's vector data first.
-    m_waveformData = nullptr;
+void AnalyzerWaveform::cleanup() {
     m_waveform.clear();
-
-    tio->setWaveformSummary(ConstWaveformPointer());
-    // Since clear() could delete the waveform, clear our pointer to the
-    // waveform's vector data first.
-    m_waveformSummaryData = nullptr;
+    m_waveformData = nullptr;
     m_waveformSummary.clear();
+    m_waveformSummaryData = nullptr;
 }
 
 void AnalyzerWaveform::finalize(TrackPointer tio) {
@@ -274,11 +270,8 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
         m_waveform->setCompletion(m_waveform->getDataSize());
         m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
-        // Since clear() could delete the waveform, clear our pointer to the
-        // waveform's vector data first.
-        m_waveformData = nullptr;
-        m_waveform.clear();
     }
+    tio->setWaveform(m_waveform);
 
     // Force completion to waveform size
     if (m_waveformSummary) {
@@ -286,11 +279,8 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
         m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
-        // Since clear() could delete the waveform, clear our pointer to the
-        // waveform's vector data first.
-        m_waveformSummaryData = nullptr;
-        m_waveformSummary.clear();
     }
+    tio->setWaveformSummary(m_waveformSummary);
 
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
@@ -302,11 +292,11 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
     // the update of their data.
     m_analysisDao.saveTrackAnalyses(
             tio->getId(),
-            tio->getWaveform(),
-            tio->getWaveformSummary());
+            m_waveform,
+            m_waveformSummary);
 
     kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
-             << m_timer.elapsed().debugSecondsWithUnit();
+                    << m_timer.elapsed().debugSecondsWithUnit();
 }
 
 void AnalyzerWaveform::storeIfGreater(float* pDest, float source) {

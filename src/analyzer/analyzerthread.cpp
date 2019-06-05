@@ -3,25 +3,24 @@
 #include <mutex>
 
 #include "analyzer/analyzerbeats.h"
-#include "analyzer/constants.h"
-#include "analyzer/analyzerkey.h"
-#include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
-#include "analyzer/analyzerwaveform.h"
+#include "analyzer/analyzergain.h"
+#include "analyzer/analyzerkey.h"
 #include "analyzer/analyzersilence.h"
+#include "analyzer/analyzerwaveform.h"
+#include "analyzer/constants.h"
 
 #include "library/dao/analysisdao.h"
 
 #include "engine/engine.h"
 
-#include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
+#include "sources/soundsourceproxy.h"
 
-#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
 #include "util/timer.h"
-
 
 namespace {
 
@@ -33,8 +32,6 @@ mixxx::Logger kLogger("AnalyzerThread");
 
 /// TODO(XXX): Use the vsync timer for the purpose of sending updates
 // to the UI thread with a limited rate??
-
-
 
 // Maximum frequency of progress updates while busy. A value of 60 ms
 // results in ~17 progress updates per second which is sufficient for
@@ -59,7 +56,7 @@ void registerMetaTypesOnce() {
 } // anonymous namespace
 
 AnalyzerThread::NullPointer::NullPointer()
-    : Pointer(nullptr, [](AnalyzerThread*){}) {
+        : Pointer(nullptr, [](AnalyzerThread*) {}) {
 }
 
 //static
@@ -69,10 +66,10 @@ AnalyzerThread::Pointer AnalyzerThread::createInstance(
         UserSettingsPointer pConfig,
         AnalyzerModeFlags modeFlags) {
     return Pointer(new AnalyzerThread(
-            id,
-            dbConnectionPool,
-            pConfig,
-            modeFlags),
+                           id,
+                           dbConnectionPool,
+                           pConfig,
+                           modeFlags),
             deleteAnalyzerThread);
 }
 
@@ -106,20 +103,20 @@ void AnalyzerThread::doRun() {
             return;
         }
         QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
-        m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(m_pConfig, dbConnection));
+        m_analyzers.push_back(AnalyzerState(std::make_unique<AnalyzerWaveform>(m_pConfig, dbConnection)));
     }
     if (AnalyzerGain::isEnabled(ReplayGainSettings(m_pConfig))) {
-        m_analyzers.push_back(std::make_unique<AnalyzerGain>(m_pConfig));
+        m_analyzers.push_back(AnalyzerState(std::make_unique<AnalyzerGain>(m_pConfig)));
     }
     if (AnalyzerEbur128::isEnabled(ReplayGainSettings(m_pConfig))) {
-        m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
+        m_analyzers.push_back(AnalyzerState(std::make_unique<AnalyzerEbur128>(m_pConfig)));
     }
     // BPM detection might be disabled in the config, but can be overridden
     // and enabled by explicitly setting the mode flag.
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
-    m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));
-    m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
-    m_analyzers.push_back(std::make_unique<AnalyzerSilence>(m_pConfig));
+    m_analyzers.push_back(AnalyzerState(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection)));
+    m_analyzers.push_back(AnalyzerState(std::make_unique<AnalyzerKey>(m_pConfig)));
+    m_analyzers.push_back(AnalyzerState(std::make_unique<AnalyzerSilence>(m_pConfig)));
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 
@@ -144,12 +141,12 @@ void AnalyzerThread::doRun() {
         }
 
         bool processTrack = false;
-        for (auto const& analyzer: m_analyzers) {
+        for (auto&& analyzer : m_analyzers) {
             // Make sure not to short-circuit initialize(...)
-            if (analyzer->initialize(
-                    m_currentTrack,
-                    audioSource->sampleRate(),
-                    audioSource->frameLength() * mixxx::kAnalysisChannels)) {
+            if (analyzer.initialize(
+                        m_currentTrack,
+                        audioSource->sampleRate(),
+                        audioSource->frameLength() * mixxx::kAnalysisChannels)) {
                 processTrack = true;
             }
         }
@@ -167,13 +164,14 @@ void AnalyzerThread::doRun() {
                 // suddenly.
                 emitBusyProgress(kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
-                for (auto const& analyzer: m_analyzers) {
-                    analyzer->finalize(m_currentTrack);
+                for (auto&& analyzer : m_analyzers) {
+                    analyzer.finalize(m_currentTrack);
+                    analyzer.cleanup();
                 }
                 emitDoneProgress(kAnalyzerProgressDone);
             } else {
-                for (auto const& analyzer: m_analyzers) {
-                    analyzer->cleanup(m_currentTrack);
+                for (auto&& analyzer : m_analyzers) {
+                    analyzer.cleanup();
                 }
                 emitDoneProgress(kAnalyzerProgressUnknown);
             }
@@ -261,8 +259,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 2nd: step: Analyze chunk of decoded audio data
         if (readableSampleFrames.frameLength() == mixxx::kAnalysisFramesPerBlock) {
             // Complete chunk of audio samples has been read for analysis
-            for (auto const& analyzer: m_analyzers) {
-                analyzer->process(
+            for (auto&& analyzer : m_analyzers) {
+                analyzer.process(
                         readableSampleFrames.readableData(),
                         readableSampleFrames.readableLength());
             }
