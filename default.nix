@@ -1,5 +1,5 @@
 { nixroot  ? (import <nixpkgs> {}) }:
-let inherit (nixroot) stdenv pkgs
+let inherit (nixroot) stdenv pkgs lib
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv 
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
     rubberband scons sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
@@ -7,8 +7,11 @@ let inherit (nixroot) stdenv pkgs
 
 in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
-  # read the version tag from git describe
-  version = builtins.readFile (pkgs.runCommand "mixxversion" { } "${git}/bin/git -C ${./.} describe --dirty | tr -d '\n' > $out").out;
+  # reading the version from git output is very hard to do without wasting lots of diskspace and runtime
+  # reading version file is easy
+  version = lib.strings.removeSuffix "\"\n" (
+              lib.strings.removePrefix "#define MIXXX_VERSION \"" (
+                builtins.readFile ./src/_version.h ));
 
   shellHook =  ''
     export CC="ccache gcc"
