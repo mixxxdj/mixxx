@@ -9,18 +9,31 @@ constexpr float kSilenceThreshold = 0.001;
 // TODO: Change the above line to:
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
-}  // anonymous namespace
+bool shouldUpdateMainCue(CuePosition cue) {
+    return cue.getSource() != Cue::MANUAL || cue.getPosition() == -1.0 || cue.getPosition() == 0.0;
+}
+
+bool hasIntroCueStart(const Cue& cue) {
+    return cue.getPosition() != -1.0;
+}
+
+bool hasOutroCueEnd(const Cue& cue) {
+    return cue.getEndPosition() > 0.0;
+}
+
+} // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
-    : m_pConfig(pConfig),
-      m_fThreshold(kSilenceThreshold),
-      m_iFramesProcessed(0),
-      m_bPrevSilence(true),
-      m_iSignalStart(-1),
-      m_iSignalEnd(-1) {
+        : m_pConfig(pConfig),
+          m_fThreshold(kSilenceThreshold),
+          m_iFramesProcessed(0),
+          m_bPrevSilence(true),
+          m_iSignalStart(-1),
+          m_iSignalEnd(-1) {
 }
 
 bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+    Q_UNUSED(tio);
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
 
@@ -29,25 +42,15 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
     m_iSignalStart = -1;
     m_iSignalEnd = -1;
 
-    return !isDisabledOrLoadStoredSuccess(tio);
+    return true;
 }
 
 bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    if (!shouldUpdateCue(tio->getCuePoint())) {
-        return false;
-    }
-
     CuePointer pIntroCue = tio->findCueByType(Cue::INTRO);
-    if (!pIntroCue || pIntroCue->getSource() != Cue::MANUAL) {
-        return false;
-    }
-
     CuePointer pOutroCue = tio->findCueByType(Cue::OUTRO);
-    if (!pOutroCue || pOutroCue->getSource() != Cue::MANUAL) {
-        return false;
-    }
-
-    return true;
+    return !(pIntroCue && pOutroCue &&
+            hasIntroCueStart(*pIntroCue) &&
+            hasOutroCueEnd(*pOutroCue));
 }
 
 void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
@@ -93,7 +96,7 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    if (shouldUpdateCue(tio->getCuePoint())) {
+    if (shouldUpdateMainCue(tio->getCuePoint())) {
         tio->setCuePoint(CuePosition(mixxx::kAnalysisChannels * m_iSignalStart, Cue::AUTOMATIC));
     }
 
@@ -120,8 +123,4 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         pOutroCue->setPosition(-1.0);
         pOutroCue->setLength(mixxx::kAnalysisChannels * m_iSignalEnd);
     }
-}
-
-bool AnalyzerSilence::shouldUpdateCue(CuePosition cue) {
-    return cue.getSource() != Cue::MANUAL || cue.getPosition() == -1.0 || cue.getPosition() == 0.0;
 }
