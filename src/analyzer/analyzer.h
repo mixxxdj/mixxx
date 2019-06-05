@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZER_H
-#define ANALYZER_ANALYZER_H
+#pragma once
 
 #include "util/types.h"
 
@@ -15,12 +14,28 @@
 
 class Analyzer {
   public:
-    virtual bool initialize(TrackPointer tio, int sampleRate, int totalSamples) = 0;
-    virtual bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const = 0;
-    virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
-    virtual void cleanup(TrackPointer tio) = 0;
-    virtual void finalize(TrackPointer tio) = 0;
     virtual ~Analyzer() = default;
-};
 
-#endif
+    // This method is supposed to:
+    //  1. Check if the track needs to be analyzed, otherwise return false.
+    //  2. Perform the initialization and return true on success.
+    //  3. If the initialization failed log the internal error and return false.
+    virtual bool initialize(TrackPointer tio, int sampleRate, int totalSamples) = 0;
+
+    /////////////////////////////////////////////////////////////////////////
+    // All following methods will only be invoked after initialize()
+    // returned true!
+    /////////////////////////////////////////////////////////////////////////
+
+    // Analyze the next chunk of audio samples.
+    virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
+
+    // Update the track object with the analysis results after
+    // processing finished, i.e. all available audio samples have
+    // been processed.
+    virtual void finalize(TrackPointer tio) = 0;
+
+    // Discard any temporary results or free allocated memory after
+    // finalization.
+    virtual void cleanup(TrackPointer tio) = 0;
+};

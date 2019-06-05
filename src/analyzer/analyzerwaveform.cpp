@@ -18,7 +18,6 @@ AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
         QSqlDatabase dbConnection)
         : m_analysisDao(pConfig),
-          m_skipProcessing(false),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
           m_stride(0, 0),
@@ -36,62 +35,59 @@ AnalyzerWaveform::~AnalyzerWaveform() {
 }
 
 bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    m_skipProcessing = false;
-
-    m_timer.start();
-
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
-    if (isDisabledOrLoadStoredSuccess(tio)) {
-        m_skipProcessing = true;
-    } else {
-        // Now actually initialize the AnalyzerWaveform:
-        destroyFilters();
-        createFilters(sampleRate);
-
-        //TODO (vrince) Do we want to expose this as settings or whatever ?
-        const int mainWaveformSampleRate = 441;
-        // two visual sample per pixel in full width overview in full hd
-        const int summaryWaveformSamples = 2 * 1920;
-
-        m_waveform = WaveformPointer(new Waveform(
-                sampleRate, totalSamples, mainWaveformSampleRate, -1));
-        m_waveformSummary = WaveformPointer(new Waveform(
-                sampleRate, totalSamples, mainWaveformSampleRate,
-                summaryWaveformSamples));
-
-        // Now, that the Waveform memory is initialized, we can set set them to
-        // the TIO. Be aware that other threads of Mixxx can touch them from
-        // now.
-        tio->setWaveform(m_waveform);
-        tio->setWaveformSummary(m_waveformSummary);
-
-        m_waveformData = m_waveform->data();
-        m_waveformSummaryData = m_waveformSummary->data();
-
-        m_stride = WaveformStride(m_waveform->getAudioVisualRatio(),
-                                  m_waveformSummary->getAudioVisualRatio());
-
-        m_currentStride = 0;
-        m_currentSummaryStride = 0;
-
-        //debug
-        //m_waveform->dump();
-        //m_waveformSummary->dump();
-
-    #ifdef TEST_HEAT_MAP
-        test_heatMap = new QImage(256,256,QImage::Format_RGB32);
-        test_heatMap->fill(0xFFFFFFFF);
-    #endif
+    if (!shouldAnalyze(tio)) {
+        return false;
     }
-    return !m_skipProcessing;
+
+    m_timer.start();
+
+    // Now actually initialize the AnalyzerWaveform:
+    destroyFilters();
+    createFilters(sampleRate);
+
+    //TODO (vrince) Do we want to expose this as settings or whatever ?
+    const int mainWaveformSampleRate = 441;
+    // two visual sample per pixel in full width overview in full hd
+    const int summaryWaveformSamples = 2 * 1920;
+
+    m_waveform = WaveformPointer(new Waveform(
+            sampleRate, totalSamples, mainWaveformSampleRate, -1));
+    m_waveformSummary = WaveformPointer(new Waveform(
+            sampleRate, totalSamples, mainWaveformSampleRate, summaryWaveformSamples));
+
+    // Now, that the Waveform memory is initialized, we can set set them to
+    // the TIO. Be aware that other threads of Mixxx can touch them from
+    // now.
+    tio->setWaveform(m_waveform);
+    tio->setWaveformSummary(m_waveformSummary);
+
+    m_waveformData = m_waveform->data();
+    m_waveformSummaryData = m_waveformSummary->data();
+
+    m_stride = WaveformStride(m_waveform->getAudioVisualRatio(),
+            m_waveformSummary->getAudioVisualRatio());
+
+    m_currentStride = 0;
+    m_currentSummaryStride = 0;
+
+    //debug
+    //m_waveform->dump();
+    //m_waveformSummary->dump();
+
+#ifdef TEST_HEAT_MAP
+    test_heatMap = new QImage(256, 256, QImage::Format_RGB32);
+    test_heatMap->fill(0xFFFFFFFF);
+#endif
+    return true;
 }
 
-bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
@@ -120,7 +116,8 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     // remove all other Analysis except that one we should keep
                     m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
-            } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
+            }
+            if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
                 if (missingWavesummary && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveformSummary = ConstWaveformPointer(
@@ -143,9 +140,9 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
         if (pLoadedTrackWaveformSummary) {
             tio->setWaveformSummary(pLoadedTrackWaveformSummary);
         }
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 void AnalyzerWaveform::createFilters(int sampleRate) {
@@ -171,7 +168,7 @@ void AnalyzerWaveform::destroyFilters() {
 }
 
 void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
-    if (m_skipProcessing || !m_waveform || !m_waveformSummary)
+    if (!m_waveform || !m_waveformSummary)
         return;
 
     //this should only append once if bufferLength is constant
@@ -188,12 +185,12 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     m_waveform->setSaveState(Waveform::SaveState::NotSaved);
     m_waveformSummary->setSaveState(Waveform::SaveState::NotSaved);
 
-    for (int i = 0; i < bufferLength; i+=2) {
+    for (int i = 0; i < bufferLength; i += 2) {
         // Take max value, not average of data
-        CSAMPLE cover[2] = { fabs(buffer[i]), fabs(buffer[i + 1]) };
-        CSAMPLE clow[2] =  { fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1]) };
-        CSAMPLE cmid[2] =  { fabs(m_buffers[Mid][i]), fabs(m_buffers[Mid][i + 1]) };
-        CSAMPLE chigh[2] = { fabs(m_buffers[High][i]), fabs(m_buffers[High][i + 1]) };
+        CSAMPLE cover[2] = {fabs(buffer[i]), fabs(buffer[i + 1])};
+        CSAMPLE clow[2] = {fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1])};
+        CSAMPLE cmid[2] = {fabs(m_buffers[Mid][i]), fabs(m_buffers[Mid][i + 1])};
+        CSAMPLE chigh[2] = {fabs(m_buffers[High][i]), fabs(m_buffers[High][i + 1])};
 
         // This is for if you want to experiment with averaging instead of
         // maxing.
@@ -238,14 +235,14 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
             m_waveformSummary->setCompletion(m_currentSummaryStride);
 
 #ifdef TEST_HEAT_MAP
-                QPointF point(m_stride.m_filteredData[Right][High],
-                              m_stride.m_filteredData[Right][Mid]);
+            QPointF point(m_stride.m_filteredData[Right][High],
+                    m_stride.m_filteredData[Right][Mid]);
 
-                float norm = sqrt(point.x()*point.x() + point.y()*point.y());
-                point /= norm;
+            float norm = sqrt(point.x() * point.x() + point.y() * point.y());
+            point /= norm;
 
-                point *= m_stride.m_filteredData[Right][Low];
-                test_heatMap->setPixel(point.toPoint(),0xFF0000FF);
+            point *= m_stride.m_filteredData[Right][Low];
+            test_heatMap->setPixel(point.toPoint(), 0xFF0000FF);
 #endif
         }
     }
@@ -256,9 +253,6 @@ void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
 
 void AnalyzerWaveform::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
-    if (m_skipProcessing) {
-        return;
-    }
 
     tio->setWaveform(ConstWaveformPointer());
     // Since clear() could delete the waveform, clear our pointer to the
@@ -274,10 +268,6 @@ void AnalyzerWaveform::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerWaveform::finalize(TrackPointer tio) {
-    if (m_skipProcessing) {
-        return;
-    }
-
     // Force completion to waveform size
     if (m_waveform) {
         m_waveform->setSaveState(Waveform::SaveState::SavePending);

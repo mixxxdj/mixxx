@@ -21,8 +21,10 @@ AnalyzerEbur128::~AnalyzerEbur128() {
 }
 
 bool AnalyzerEbur128::initialize(TrackPointer tio,
-        int sampleRate, int totalSamples) {
-    if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
+        int sampleRate,
+        int totalSamples) {
+    if (m_rgSettings.isAnalyzerDisabled(2, tio) || totalSamples == 0) {
+        qDebug() << "Skipping AnalyzerEbur128";
         return false;
     }
     if (!isInitialized()) {
@@ -31,10 +33,6 @@ bool AnalyzerEbur128::initialize(TrackPointer tio,
                 EBUR128_MODE_I);
     }
     return isInitialized();
-}
-
-bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    return m_rgSettings.isAnalyzerDisabled(2, tio);
 }
 
 void AnalyzerEbur128::cleanup() {

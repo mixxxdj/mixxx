@@ -27,12 +27,12 @@ class AnalyzerBeats: public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
     void process(const CSAMPLE *pIn, const int iLen) override;
     void cleanup(TrackPointer tio) override;
     void finalize(TrackPointer tio) override;
 
   private:
+    bool shouldAnalyze(TrackPointer tio) const;
     static QHash<QString, QString> getExtraVersionInfo(
         QString pluginId, bool bPreferencesFastAnalysis);
 

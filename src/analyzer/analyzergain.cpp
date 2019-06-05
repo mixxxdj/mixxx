@@ -23,16 +23,13 @@ AnalyzerGain::~AnalyzerGain() {
 }
 
 bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
+    if (m_rgSettings.isAnalyzerDisabled(1, tio) || totalSamples == 0) {
+        qDebug() << "Skipping AnalyzerGain";
         return false;
     }
 
     m_initalized = m_pReplayGain->initialise((long)sampleRate, 2);
     return true;
-}
-
-bool AnalyzerGain::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    return m_rgSettings.isAnalyzerDisabled(1, tio);
 }
 
 void AnalyzerGain::cleanup(TrackPointer tio) {

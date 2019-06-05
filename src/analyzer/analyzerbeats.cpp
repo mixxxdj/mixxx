@@ -88,7 +88,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_iCurrentSample = 0;
 
     // if we can load a stored track don't reanalyze it
-    bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
+    bool bShouldAnalyze = shouldAnalyze(tio);
 
     if (bShouldAnalyze) {
         if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
@@ -111,7 +111,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     return bShouldAnalyze;
 }
 
-bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
     if (m_bpmSettings.getAllowBpmAboveRange()) {
@@ -125,7 +125,7 @@ bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     bool bpmLock = tio->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
-        return true;
+        return false;
     }
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
@@ -138,35 +138,32 @@ bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
         QString subVersion = pBeats->getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            pluginID, m_bPreferencesFastAnalysis);
+                pluginID, m_bPreferencesFastAnalysis);
         QString newVersion = BeatFactory::getPreferredVersion(
-            m_bPreferencesOffsetCorrection);
+                m_bPreferencesOffsetCorrection);
         QString newSubVersion = BeatFactory::getPreferredSubVersion(
-            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
-            iMinBpm, iMaxBpm, extraVersionInfo);
+                m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection, iMinBpm, iMaxBpm, extraVersionInfo);
 
         if (version == newVersion && subVersion == newSubVersion) {
             // If the version and settings have not changed then if the world is
             // sane, re-analyzing will do nothing.
-            return true;
-        } else if (m_bPreferencesReanalyzeOldBpm) {
             return false;
-        } else if (pBeats->getBpm() == 0.0) {
+        }
+        if (!m_bPreferencesReanalyzeOldBpm) {
+            return false;
+        }
+        if (pBeats->getBpm() == 0.0) {
             qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
-            return false;
         } else if (pBeats->findNextBeat(0) <= 0.0) {
             qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
-            return false;
         } else {
             qDebug() << "Beat calculation skips analyzing because the track has"
                      << "a BPM computed by a previous Mixxx version and user"
                      << "preferences indicate we should not change it.";
-            return true;
+            return false;
         }
-    } else {
-        // If we got here, we want to analyze this track.
-        return false;
     }
+    return true;
 }
 
 void AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
