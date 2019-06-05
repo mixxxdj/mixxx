@@ -3864,7 +3864,7 @@
 				<group>[Sampler14]</group>
 				<key>track_loaded</key>
 				<status>0x99</status> 
-				<midino>0x35/midino> 
+				<midino>0x35</midino> 
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
 			</output>
@@ -3929,7 +3929,7 @@
 				<group>[Sampler6]</group>
 				<key>track_loaded</key>
 				<status>0x98</status> 
-				<midino>0x35/midino> 
+				<midino>0x35</midino> 
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
 			</output>
@@ -3993,7 +3993,7 @@
 				<group>[Sampler14]</group>
 				<key>track_loaded</key>
 				<status>0x9A</status> 
-				<midino>0x35/midino> 
+				<midino>0x35</midino> 
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
 			</output>
