@@ -209,7 +209,7 @@ class Qt(Dependence):
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
         import sys
-        if sys.platform.startswith('linux') or sys.platform.find('bsd'):
+        if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
                 import subprocess
                 try:
