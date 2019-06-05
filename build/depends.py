@@ -192,10 +192,12 @@ class FLAC(Dependence):
 
 class Qt(Dependence):
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
+                         'bsd': '/usr/local/lib/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
+                         'bsd': '/usr/local/lib/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
 
@@ -207,7 +209,7 @@ class Qt(Dependence):
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
         import sys
-        if sys.platform.startswith('linux'):
+        if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
                 import subprocess
                 try:
@@ -293,7 +295,7 @@ class Qt(Dependence):
             conf.CheckLib('sqlite3');
 
         # Enable Qt include paths
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
 
@@ -315,11 +317,6 @@ class Qt(Dependence):
                 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65886#c30
                 build.env.Append(CCFLAGS='-fPIC')
 
-        elif build.platform_is_bsd:
-            build.env.Append(LIBS=qt_modules)
-            include_paths = ['$QTDIR/include/%s' % module
-                             for module in qt_modules]
-            build.env.Append(CPPPATH=include_paths)
         elif build.platform_is_osx:
             qtdir = build.env['QTDIR']
             build.env.Append(
@@ -525,7 +522,7 @@ class SoundTouch(Dependence):
         if env is None:
             env = build.env
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
@@ -1493,9 +1490,6 @@ class MixxxCore(Feature):
                                       '/usr/local/lib',
                                       '/usr/X11R6/lib'])
             build.env.Append(LIBS='pthread')
-            # why do we need to do this on OpenBSD and not on Linux?  if we
-            # don't then CheckLib("vorbisfile") fails
-            build.env.Append(LIBS=['ogg', 'vorbis'])
 
         # Define for things that would like to special case UNIX (Linux or BSD)
         if build.platform_is_bsd or build.platform_is_linux:
