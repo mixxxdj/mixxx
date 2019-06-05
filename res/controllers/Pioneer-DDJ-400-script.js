@@ -160,7 +160,7 @@ PioneerDDJ400.jogSearch = function(_channel, _control, value, _status, group) {
     engine.setValue(group, 'jog', newVal);
 };
 
-PioneerDDJ400.jogTouch = function(channel, _control, value, _status, _group) {
+PioneerDDJ400.jogTouch = function(channel, _control, value, _status) {
     const deckNum = channel + 1;   
 
     // skip scratchmode if we adjust the loop points
@@ -365,7 +365,7 @@ PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, status, gr
     midi.sendShortMsg(status, control, 0x7f); // turn LED back on
 };
 
-PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status, _group){
+PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status){
     if(value == 0) {
         midi.sendShortMsg(status, control, 0); // turn off LED
         return; // ignore release
@@ -379,7 +379,7 @@ PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status, _g
 };
 
 
-PioneerDDJ400.shiftPressed = function(channel, _control, value, _status, _group){
+PioneerDDJ400.shiftPressed = function(channel, _control, value, _status){
     this.shiftState[channel] = value;
 };
 
@@ -440,7 +440,7 @@ PioneerDDJ400.hotcuePadShiftPressed = function(_channel, control, value, status,
     }
 };
 
-PioneerDDJ400.waveFormRotate = function(_channel, _control, value, _status, _group){
+PioneerDDJ400.waveFormRotate = function(_channel, _control, value){
     // select the Waveform to zoom left shift = deck1, right shift = deck2
     const deckNum = this.shiftState[0] > 0 ? 1 : 2; 
     const oldVal = engine.getValue('[Channel'+deckNum+']', 'waveform_zoom');
@@ -472,7 +472,7 @@ PioneerDDJ400.loopoutPressed = function(channel, _control, value, _status, group
     }
 };
 
-PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value, _status, _group){
+PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value){
     const newVal = value == 0 ? 0 : (value / 0x7F);
     const effectOn = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled');
     
@@ -484,11 +484,11 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value, _stat
     }
 };
 
-PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value, _status, _group){
+PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value){
     engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'next_effect', value);
 };
 
-PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value, _status, _group){
+PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value){
     engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'prev_effect', value);
 };
 
@@ -513,7 +513,7 @@ PioneerDDJ400.beatFxOnOffPressed = function(_channel, control, value, status, gr
     midi.sendShortMsg(status, control, !lastVal ? 0x7F : 0x00);
 };
 
-PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, control, value, status, _group){
+PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, control, value, status){
     if(value == 0) return; // ignore release
     for(var i = 0; i < this.beatFXEffectSlots; i++){
         engine.setValue('[EffectRack1_EffectUnit3_Effect'+(i+1)+']', 'enabled', 0);
@@ -522,7 +522,7 @@ PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, control, value, statu
     midi.sendShortMsg(status, control, 0);
 };
 
-PioneerDDJ400.vuMeterUpdate = function(value, group, _control){
+PioneerDDJ400.vuMeterUpdate = function(value, group){
     const newVal = value * 150;
     switch(group){
         case '[Channel1]':
