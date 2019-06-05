@@ -160,7 +160,7 @@ PioneerDDJ400.jogSearch = function(_channel, _control, value, _status, group) {
     engine.setValue(group, 'jog', newVal);
 };
 
-PioneerDDJ400.jogTouch = function(channel, _control, value, _status) {
+PioneerDDJ400.jogTouch = function(channel, _control, value) {
     const deckNum = channel + 1;   
 
     // skip scratchmode if we adjust the loop points
@@ -379,7 +379,7 @@ PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status){
 };
 
 
-PioneerDDJ400.shiftPressed = function(channel, _control, value, _status){
+PioneerDDJ400.shiftPressed = function(channel, _control, value){
     this.shiftState[channel] = value;
 };
 
