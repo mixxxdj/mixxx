@@ -4,8 +4,8 @@
 // * Mixxx mapping script file for the Pioneer DDJ-400.
 // * Author: Warker
 // * Version 0.1 (April 25 2019)
-// * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=TBD
-// * Wiki: https://mixxx.org/wiki/doku.php/pioneer_ddj_400
+// * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
+// * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
 
 /*
             Working:
@@ -473,7 +473,6 @@ PioneerDDJ400.loopoutPressed = function(channel, control, value, status, group){
 };
 
 PioneerDDJ400.beatFxLevelDepthRotate = function(channel, control, value, status, group){
-    // which bit we want to use? MSB 0x02 or LSB 0x22
     const newVal = value == 0 ? 0 : (value / 0x7F);
     const effectOn = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled');
     
