@@ -71,6 +71,7 @@ class WTrackTableView : public WLibraryTableView {
     void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
+    void applySortingIfVisible();
     void applySorting();
     void slotLockBpm();
     void slotUnlockBpm();

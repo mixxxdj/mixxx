@@ -128,9 +128,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
     m_pSortColumn = new ControlProxy("[Library]", "sort_column", this);
-    m_pSortColumn->connectValueChanged(this, &WTrackTableView::applySorting);
+    m_pSortColumn->connectValueChanged(this, &WTrackTableView::applySortingIfVisible);
     m_pSortOrder = new ControlProxy("[Library]", "sort_order", this);
-    m_pSortOrder->connectValueChanged(this, &WTrackTableView::applySorting);
+    m_pSortOrder->connectValueChanged(this, &WTrackTableView::applySortingIfVisible);
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -390,6 +390,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
         m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
         m_pSortOrder->set(sortOrder);
+        applySorting();
     }
 
     // Set up drag and drop behavior according to whether or not the track
@@ -416,12 +417,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
-
-    if (m_sorting) {
-        // Sorting has to be applied after setVisible(true), since only visible
-        // WTrackTableViews will be sorted
-        applySorting();
-    }
 
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
@@ -1785,13 +1780,17 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
-void WTrackTableView::applySorting() {
+void WTrackTableView::applySortingIfVisible() {
     // There are multiple instances of WTrackTableView, but we only want to
     // apply the sorting to the currently visible instance
     if (!isVisible()) {
         return;
     }
 
+    applySorting();
+}
+
+void WTrackTableView::applySorting() {
     TrackModel* trackModel = getTrackModel();
     int sortColumnId = static_cast<int>(m_pSortColumn->get());
     if (sortColumnId < 0 || sortColumnId >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
@@ -2034,7 +2033,7 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     }
 
     if (sortingChanged) {
-        applySorting();
+        applySortingIfVisible();
     }
 }
 
