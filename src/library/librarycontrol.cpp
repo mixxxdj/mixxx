@@ -107,8 +107,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this, SLOT(slotAutoDjAddBottom(double)));
 
     // Sort controls
-    m_pSortColumn = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_column"));
-    m_pSortColumn->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
     m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
 

@@ -118,7 +118,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
 
     // Controls to sort the track view
-    std::unique_ptr<ControlPushButton> m_pSortColumn;
+    std::unique_ptr<ControlEncoder> m_pSortColumn;
     std::unique_ptr<ControlPushButton> m_pSortOrder;
 
     // Font sizes
