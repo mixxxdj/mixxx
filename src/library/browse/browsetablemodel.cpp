@@ -123,7 +123,8 @@ BrowseTableModel::~BrowseTableModel() {
 }
 
 int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
-    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID ||
+        column >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
         return -1;
     }
 
