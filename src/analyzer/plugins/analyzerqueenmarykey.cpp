@@ -15,8 +15,6 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 namespace mixxx {
 namespace {
-// Window length in chroma frames. Default value from VAMP plugin.
-constexpr int kChromaWindowLength = 10;
 
 // Tuning frequency of concert A in Hertz. Default value from VAMP plugin.
 constexpr int kTuningFrequencyHertz = 440;
@@ -41,7 +39,29 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
     m_prevKey = mixxx::track::io::key::INVALID;
     m_resultKeys.clear();
     m_currentFrame = 0;
-    m_pKeyMode = std::make_unique<GetKeyMode>(samplerate, kTuningFrequencyHertz, kChromaWindowLength, kChromaWindowLength);
+
+    struct Config {
+        double sampleRate;
+        float tuningFrequency;
+        double hpcpAverage;
+        double medianAverage;
+        int frameOverlapFactor; // 1 = none (default, fast, but means
+                                // we skip a fair bit of input data);
+                                // 8 = normal chroma overlap
+        int decimationFactor;
+
+        Config(double _sampleRate, float _tuningFrequency) :
+            sampleRate(_sampleRate),
+            tuningFrequency(_tuningFrequency),
+            hpcpAverage(10),
+            medianAverage(10),
+            frameOverlapFactor(1),
+            decimationFactor(8) {
+        }
+    };
+
+    GetKeyMode::Config config(samplerate, kTuningFrequencyHertz);
+    m_pKeyMode = std::make_unique<GetKeyMode>(config);
     size_t windowSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();
 

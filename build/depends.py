@@ -563,7 +563,6 @@ class QueenMaryDsp(Dependence):
             #"#lib/qm-dsp/base/KaiserWindow.cpp",
             "#lib/qm-dsp/base/Pitch.cpp",
             #"#lib/qm-dsp/base/SincWindow.cpp",
-            "#lib/qm-dsp/dsp/chromagram/CQprecalc.cpp",
             "#lib/qm-dsp/dsp/chromagram/Chromagram.cpp",
             "#lib/qm-dsp/dsp/chromagram/ConstantQ.cpp",
             "#lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp",

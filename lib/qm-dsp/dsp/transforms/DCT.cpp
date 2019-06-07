@@ -36,14 +36,14 @@ void
 DCT::forward(const double *in, double *out)
 {
     for (int i = 0; i < m_n; ++i) {
-	m_time2[i*2 + 1] = in[i];
-	m_time2[m_n*4 - i*2 - 1] = in[i];
+        m_time2[i*2 + 1] = in[i];
+        m_time2[m_n*4 - i*2 - 1] = in[i];
     }
 
     m_fft.forward(m_time2.data(), m_freq2r.data(), m_freq2i.data());
 
     for (int i = 0; i < m_n; ++i) {
-	out[i] = m_freq2r[i];
+        out[i] = m_freq2r[i];
     }
 }
 
@@ -52,7 +52,7 @@ DCT::forwardUnitary(const double *in, double *out)
 {
     forward(in, out);
     for (int i = 0; i < m_n; ++i) {
-	out[i] /= m_scale;
+        out[i] /= m_scale;
     }
     out[0] /= sqrt(2.0);
 }
@@ -61,21 +61,21 @@ void
 DCT::inverse(const double *in, double *out)
 {
     for (int i = 0; i < m_n; ++i) {
-	m_freq2r[i] = in[i];
+        m_freq2r[i] = in[i];
     }
     for (int i = 0; i < m_n; ++i) {
-	m_freq2r[m_n*2 - i] = -in[i];
+        m_freq2r[m_n*2 - i] = -in[i];
     }
     m_freq2r[m_n] = 0.0;
 
     for (int i = 0; i <= m_n*2; ++i) {
-	m_freq2i[i] = 0.0;
+        m_freq2i[i] = 0.0;
     }
     
     m_fft.inverse(m_freq2r.data(), m_freq2i.data(), m_time2.data());
 
     for (int i = 0; i < m_n; ++i) {
-	out[i] = m_time2[i*2 + 1];
+        out[i] = m_time2[i*2 + 1];
     }
 }
 
@@ -83,7 +83,7 @@ void
 DCT::inverseUnitary(const double *in, double *out)
 {
     for (int i = 0; i < m_n; ++i) {
-	m_scaled[i] = in[i] * m_scale;
+        m_scaled[i] = in[i] * m_scale;
     }
     m_scaled[0] *= sqrt(2.0);
     inverse(m_scaled.data(), out);

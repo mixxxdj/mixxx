@@ -13,14 +13,15 @@
     COPYING included with this distribution for more information.
  */
 
+#ifndef QM_DSP_CLUSTER_MELT_SEGMENTER_H
+#define QM_DSP_CLUSTER_MELT_SEGMENTER_H
+
 #include <vector>
 
 #include "segment.h"
 #include "Segmenter.h"
 #include "hmm/hmm.h"
 #include "base/Window.h"
-
-using std::vector;
 
 class Decimator;
 class ConstantQ;
@@ -39,13 +40,13 @@ public:
         fmax(16000), 
         nbins(8),
         ncomponents(20),
- 	nHMMStates(40),
+        nHMMStates(40),
         nclusters(10),
         histogramLength(15),
         neighbourhoodLimit(20) { }
     feature_types featureType;
-    double hopSize;    	// in secs
-    double windowSize;	// in secs
+    double hopSize;     // in secs
+    double windowSize;  // in secs
     int fmin;
     int fmax;
     int nbins;
@@ -65,14 +66,14 @@ public:
     virtual int getWindowsize();
     virtual int getHopsize();
     virtual void extractFeatures(const double* samples, int nsamples);
-    void setFeatures(const vector<vector<double> >& f);		// provide the features yourself
-    virtual void segment();		// segment into default number of segment-types
-    void segment(int m);		// segment into m segment-types
+    void setFeatures(const std::vector<std::vector<double> >& f);         // provide the features yourself
+    virtual void segment();             // segment into default number of segment-types
+    void segment(int m);                // segment into m segment-types
     int getNSegmentTypes() { return nclusters; }
 
 protected:
     void makeSegmentation(int* q, int len);
-	
+        
     void extractFeaturesConstQ(const double *, int);
     void extractFeaturesMFCC(const double *, int);
 
@@ -80,13 +81,13 @@ protected:
     FFTReal *fft;
     ConstantQ* constq; 
     MFCC* mfcc;
-    model_t* model;				// the HMM
-    int* q;					// the decoded HMM state sequence
-    vector<vector<double> > histograms;	
+    model_t* model;                             // the HMM
+    int* q;                                     // the decoded HMM state sequence
+    std::vector<std::vector<double> > histograms; 
     
-    feature_types featureType;	
-    double hopSize;		// in seconds
-    double windowSize;	// in seconds
+    feature_types featureType;  
+    double hopSize;             // in seconds
+    double windowSize;  // in seconds
     
     // constant-Q parameters
     int fmin;
@@ -107,3 +108,5 @@ protected:
 
     Decimator *decimator;
 };
+
+#endif

@@ -44,12 +44,10 @@ void MathUtilities::getAlphaNorm(const double *data, int len, int alpha, double*
     int i;
     double temp = 0.0;
     double a=0.0;
-	
-    for( i = 0; i < len; i++)
-    {
-	temp = data[ i ];
-		
-	a  += ::pow( fabs(temp), double(alpha) );
+        
+    for( i = 0; i < len; i++) {
+        temp = data[ i ];
+        a  += ::pow( fabs(temp), double(alpha) );
     }
     a /= ( double )len;
     a = ::pow( a, ( 1.0 / (double) alpha ) );
@@ -63,11 +61,10 @@ double MathUtilities::getAlphaNorm( const vector <double> &data, int alpha )
     int len = data.size();
     double temp = 0.0;
     double a=0.0;
-	
-    for( i = 0; i < len; i++)
-    {
-	temp = data[ i ];
-	a  += ::pow( fabs(temp), double(alpha) );
+        
+    for( i = 0; i < len; i++) {
+        temp = data[ i ];
+        a  += ::pow( fabs(temp), double(alpha) );
     }
     a /= ( double )len;
     a = ::pow( a, ( 1.0 / (double) alpha ) );
@@ -105,9 +102,8 @@ double MathUtilities::sum(const double *src, int len)
     int i ;
     double retVal =0.0;
 
-    for(  i = 0; i < len; i++)
-    {
-	retVal += src[ i ];
+    for(  i = 0; i < len; i++) {
+        retVal += src[ i ];
     }
 
     return retVal;
@@ -120,7 +116,7 @@ double MathUtilities::mean(const double *src, int len)
     if (len == 0) return 0;
 
     double s = sum( src, len );
-	
+        
     retVal =  s  / (double)len;
 
     return retVal;
@@ -131,11 +127,10 @@ double MathUtilities::mean(const vector<double> &src,
                            int count)
 {
     double sum = 0.;
-	
+        
     if (count == 0) return 0;
     
-    for (int i = 0; i < (int)count; ++i)
-    {
+    for (int i = 0; i < (int)count; ++i) {
         sum += src[start + i];
     }
 
@@ -151,92 +146,82 @@ void MathUtilities::getFrameMinMax(const double *data, int len, double *min, dou
         *min = *max = 0;
         return;
     }
-	
+        
     *min = data[0];
     *max = data[0];
 
-    for( i = 0; i < len; i++)
-    {
-	temp = data[ i ];
+    for( i = 0; i < len; i++) {
+        temp = data[ i ];
 
-	if( temp < *min )
-	{
-	    *min =  temp ;
-	}
-	if( temp > *max )
-	{
-	    *max =  temp ;
-	}
-		
+        if( temp < *min ) {
+            *min =  temp ;
+        }
+        if( temp > *max ) {
+            *max =  temp ;
+        }
     }
 }
 
 int MathUtilities::getMax( double* pData, int Length, double* pMax )
 {
-	int index = 0;
-	int i;
-	double temp = 0.0;
-	
-	double max = pData[0];
+    int index = 0;
+    int i;
+    double temp = 0.0;
+        
+    double max = pData[0];
 
-	for( i = 0; i < Length; i++)
-	{
-		temp = pData[ i ];
+    for( i = 0; i < Length; i++) {
+        temp = pData[ i ];
 
-		if( temp > max )
-		{
-			max =  temp ;
-			index = i;
-		}
-		
-   	}
+        if( temp > max ) {
+            max =  temp ;
+            index = i;
+        }
+    }
 
-	if (pMax) *pMax = max;
+    if (pMax) *pMax = max;
 
 
-	return index;
+    return index;
 }
 
 int MathUtilities::getMax( const vector<double> & data, double* pMax )
 {
-	int index = 0;
-	int i;
-	double temp = 0.0;
-	
-	double max = data[0];
+    int index = 0;
+    int i;
+    double temp = 0.0;
+        
+    double max = data[0];
 
-	for( i = 0; i < int(data.size()); i++)
-	{
-		temp = data[ i ];
+    for( i = 0; i < int(data.size()); i++) {
 
-		if( temp > max )
-		{
-			max =  temp ;
-			index = i;
-		}
-		
-   	}
+        temp = data[ i ];
 
-	if (pMax) *pMax = max;
+        if( temp > max ) {
+            max =  temp ;
+            index = i;
+        }
+    }
+
+    if (pMax) *pMax = max;
 
 
-	return index;
+    return index;
 }
 
 void MathUtilities::circShift( double* pData, int length, int shift)
 {
-	shift = shift % length;
-	double temp;
-	int i,n;
+    shift = shift % length;
+    double temp;
+    int i,n;
 
-	for( i = 0; i < shift; i++)
-	{
-		temp=*(pData + length - 1);
+    for( i = 0; i < shift; i++) {
+        
+        temp=*(pData + length - 1);
 
-		for( n = length-2; n >= 0; n--)
-		{
-			*(pData+n+1)=*(pData+n);
-		}
+        for( n = length-2; n >= 0; n--) {
+            *(pData+n+1)=*(pData+n);
+        }
 
         *pData = temp;
     }
@@ -244,7 +229,7 @@ void MathUtilities::circShift( double* pData, int length, int shift)
 
 int MathUtilities::compareInt (const void * a, const void * b)
 {
-  return ( *(int*)a - *(int*)b );
+    return ( *(int*)a - *(int*)b );
 }
 
 void MathUtilities::normalise(double *data, int length, NormaliseType type)
@@ -327,8 +312,8 @@ double MathUtilities::getLpNorm(const vector<double> &data, int p)
 }
 
 vector<double> MathUtilities::normaliseLp(const vector<double> &data,
-                                               int p,
-                                               double threshold)
+                                          int p,
+                                          double threshold)
 {
     int n = int(data.size());
     if (n == 0 || p == 0) return data;
@@ -349,7 +334,7 @@ void MathUtilities::adaptiveThreshold(vector<double> &data)
     if (sz == 0) return;
 
     vector<double> smoothed(sz);
-	
+        
     int p_pre = 8;
     int p_post = 7;
 
@@ -400,7 +385,8 @@ int
 MathUtilities::nearestPowerOfTwo(int x)
 {
     if (isPowerOfTwo(x)) return x;
-    int n0 = previousPowerOfTwo(x), n1 = nextPowerOfTwo(x);
+    int n0 = previousPowerOfTwo(x);
+    int n1 = nextPowerOfTwo(x);
     if (x - n0 < n1 - x) return n0;
     else return n1;
 }
@@ -411,7 +397,7 @@ MathUtilities::factorial(int x)
     if (x < 0) return 0;
     double f = 1;
     for (int i = 1; i <= x; ++i) {
-	f = f * i;
+        f = f * i;
     }
     return f;
 }

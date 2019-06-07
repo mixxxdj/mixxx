@@ -13,8 +13,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef DCT_H
-#define DCT_H
+#ifndef QM_DSP_DCT_H
+#define QM_DSP_DCT_H
 
 #include "FFT.h"
 

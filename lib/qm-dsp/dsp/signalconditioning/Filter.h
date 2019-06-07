@@ -12,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef FILTER_H
-#define FILTER_H
+#ifndef QM_DSP_FILTER_H
+#define QM_DSP_FILTER_H
 
 #include "base/Restrict.h"
 

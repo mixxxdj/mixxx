@@ -12,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef RESAMPLER_H
-#define RESAMPLER_H
+#ifndef QM_DSP_RESAMPLER_H
+#define QM_DSP_RESAMPLER_H
 
 #include <vector>
 

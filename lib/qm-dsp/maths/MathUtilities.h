@@ -25,7 +25,7 @@
  */
 class MathUtilities  
 {
-public:	
+public: 
     /**
      * Round x to the nearest integer.
      */
@@ -35,7 +35,8 @@ public:
      * Return through min and max pointers the highest and lowest
      * values in the given array of the given length.
      */
-    static void	  getFrameMinMax( const double* data, int len,  double* min, double* max );
+    static void getFrameMinMax( const double* data, int len,
+                                double* min, double* max );
 
     /**
      * Return the mean of the given array of the given length.
@@ -79,7 +80,7 @@ public:
      * of the input data, and when alpha = 1 this is the mean
      * magnitude.
      */
-    static void	  getAlphaNorm(const double *data, int len, int alpha, double* ANorm);
+    static void getAlphaNorm(const double *data, int len, int alpha, double* ANorm);
 
     /**
      * The alpha norm is the alpha'th root of the mean alpha'th power
@@ -124,11 +125,11 @@ public:
      */
     static void adaptiveThreshold(std::vector<double> &data);
 
-    static void   circShift( double* data, int length, int shift);
+    static void circShift( double* data, int length, int shift);
 
-    static int	  getMax( double* data, int length, double* max = 0 );
-    static int	  getMax( const std::vector<double> &data, double* max = 0 );
-    static int    compareInt(const void * a, const void * b);
+    static int getMax( double* data, int length, double* max = 0 );
+    static int getMax( const std::vector<double> &data, double* max = 0 );
+    static int compareInt(const void * a, const void * b);
 
     /** 
      * Return true if x is 2^n for some integer n >= 0.
