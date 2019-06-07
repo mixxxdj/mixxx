@@ -9,16 +9,40 @@ constexpr float kSilenceThreshold = 0.001;
 // TODO: Change the above line to:
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
-bool shouldUpdateMainCue(CuePosition cue) {
-    return cue.getSource() != Cue::MANUAL || cue.getPosition() == -1.0 || cue.getPosition() == 0.0;
+bool shouldUpdateMainCue(CuePosition mainCue) {
+    return mainCue.getSource() != Cue::MANUAL ||
+            mainCue.getPosition() == -1.0 ||
+            mainCue.getPosition() == 0.0;
 }
 
-bool hasIntroCueStart(const Cue& cue) {
-    return cue.getPosition() != -1.0;
+bool hasIntroCueStart(const Cue& introCue) {
+    return introCue.getPosition() != -1.0;
 }
 
-bool hasOutroCueEnd(const Cue& cue) {
-    return cue.getEndPosition() > 0.0;
+bool hasOutroCueEnd(const Cue& outroCue) {
+    return outroCue.getEndPosition() > 0.0;
+}
+
+bool needsIntroCueStart(const Cue& introCue) {
+    return introCue.getSource() != Cue::MANUAL &&
+            !hasIntroCueStart(introCue);
+}
+
+bool needsOutroCueEnd(const Cue& outroCue) {
+    return outroCue.getSource() != Cue::MANUAL &&
+            !hasOutroCueEnd(outroCue);
+}
+
+bool shouldAnalyze(TrackPointer tio) {
+    CuePointer pIntroCue = tio->findCueByType(Cue::INTRO);
+    if (!pIntroCue) {
+        return true;
+    }
+    CuePointer pOutroCue = tio->findCueByType(Cue::OUTRO);
+    if (!pOutroCue) {
+        return true;
+    }
+    return needsIntroCueStart(*pIntroCue) || needsOutroCueEnd(*pOutroCue);
 }
 
 } // anonymous namespace
@@ -46,11 +70,7 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
 }
 
 bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    CuePointer pIntroCue = tio->findCueByType(Cue::INTRO);
-    CuePointer pOutroCue = tio->findCueByType(Cue::OUTRO);
-    return !(pIntroCue && pOutroCue &&
-            hasIntroCueStart(*pIntroCue) &&
-            hasOutroCueEnd(*pOutroCue));
+    return !shouldAnalyze(tio);
 }
 
 void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
