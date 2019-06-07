@@ -57,9 +57,12 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
 }
 
 bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    Q_UNUSED(tio);
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
+
+    if (!shouldAnalyze(tio)) {
+        return false;
+    }
 
     m_iFramesProcessed = 0;
     m_bPrevSilence = true;
