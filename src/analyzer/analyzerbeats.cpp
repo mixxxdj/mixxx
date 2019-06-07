@@ -81,7 +81,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysis) {
-        m_iMaxSamplesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+        m_iMaxSamplesToProcess =
+                mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
     } else {
         m_iMaxSamplesToProcess = m_iTotalSamples;
     }
@@ -138,11 +139,16 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
         QString subVersion = pBeats->getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-                pluginID, m_bPreferencesFastAnalysis);
+                pluginID,
+                m_bPreferencesFastAnalysis);
         QString newVersion = BeatFactory::getPreferredVersion(
                 m_bPreferencesOffsetCorrection);
         QString newSubVersion = BeatFactory::getPreferredSubVersion(
-                m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection, iMinBpm, iMaxBpm, extraVersionInfo);
+                m_bPreferencesFixedTempo,
+                m_bPreferencesOffsetCorrection,
+                iMinBpm,
+                iMaxBpm,
+                extraVersionInfo);
 
         if (version == newVersion && subVersion == newSubVersion) {
             // If the version and settings have not changed then if the world is
@@ -199,7 +205,15 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(
-                *tio, beats, extraVersionInfo, m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection, m_iSampleRate, m_iTotalSamples, m_iMinBpm, m_iMaxBpm);
+                *tio,
+                beats,
+                extraVersionInfo,
+                m_bPreferencesFixedTempo,
+                m_bPreferencesOffsetCorrection,
+                m_iSampleRate,
+                m_iTotalSamples,
+                m_iMinBpm,
+                m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
                  << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
     } else {
