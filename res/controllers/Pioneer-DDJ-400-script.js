@@ -170,7 +170,7 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
 
     // on touch jog with vinylmode enabled -> enable scratchmode
     if(value != 0 && this.vinylMode){
-        engine.scratchEnable(deckNum, 800, 33+1/3, this.alpha, this.beta);
+        engine.scratchEnable(deckNum, 720, 33+1/3, this.alpha, this.beta);
     }
     else{
         // on release jog (value==0) disable pitch bend mode or scratch mode
@@ -274,8 +274,9 @@ PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group){
 
 PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group){
     const status = channel == 0 ? 0x97 : 0x99; 
+    var hotcuePad = 1;
     if(this.keyboardHotCuePoint[channel] == 0){
-        for(var hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
+        for(hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
             var hotcueEnabled = engine.getValue(group, 'hotcue_'+hotcuePad+'_enabled');
             midi.sendShortMsg(status, 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
             // shift lights on if hotcue is set
@@ -284,7 +285,7 @@ PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group){
     }
     else{
         // enable all LEDs
-        for(var hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
+        for(hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
             midi.sendShortMsg(status , 0x40 + hotcuePad-1, 0x7F);
         }
     }
@@ -506,7 +507,7 @@ PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value, _status, 
 
 PioneerDDJ400.beatFxOnOffPressed = function(_channel, control, value, status, group){
     if(value == 0) return; // ignore release
-    const lastVal = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled')
+    const lastVal = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled');
     engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled', !lastVal);
     engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
 

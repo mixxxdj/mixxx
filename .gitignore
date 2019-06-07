@@ -61,3 +61,4 @@ lib/qtscript-bytearray/*.cc
 .idea
 *.vscode
 compile_commands.json
+res/controllers/.jshintrc
