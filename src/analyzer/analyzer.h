@@ -44,41 +44,41 @@ class Analyzer {
 
 typedef std::unique_ptr<Analyzer> AnalyzerPtr;
 
-class AnalyzerState {
+class AnalyzerWithState {
   public:
-    explicit AnalyzerState(AnalyzerPtr analyzer)
+    explicit AnalyzerWithState(AnalyzerPtr analyzer)
             : m_analyzer(std::move(analyzer)),
-              m_processing(false) {
+              m_continueAnalyzing(false) {
         DEBUG_ASSERT(m_analyzer);
     }
-    AnalyzerState(const AnalyzerState&) = delete;
-    AnalyzerState(AnalyzerState&&) = default;
+    AnalyzerWithState(const AnalyzerWithState&) = delete;
+    AnalyzerWithState(AnalyzerWithState&&) = default;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-        DEBUG_ASSERT(!m_processing);
-        m_processing = m_analyzer->initialize(tio, sampleRate, totalSamples);
-        return m_processing;
+        DEBUG_ASSERT(!m_continueAnalyzing);
+        m_continueAnalyzing = m_analyzer->initialize(tio, sampleRate, totalSamples);
+        return m_continueAnalyzing;
     }
 
     void process(const CSAMPLE* pIn, const int iLen) {
-        if (m_processing) {
-            m_processing = m_analyzer->process(pIn, iLen);
+        if (m_continueAnalyzing) {
+            m_continueAnalyzing = m_analyzer->process(pIn, iLen);
         }
     }
 
     void finalize(TrackPointer tio) {
-        if (m_processing) {
+        if (m_continueAnalyzing) {
             m_analyzer->finalize(tio);
-            m_processing = false;
+            m_continueAnalyzing = false;
         }
     }
 
     void cleanup() {
         m_analyzer->cleanup();
-        m_processing = false;
+        m_continueAnalyzing = false;
     }
 
   private:
     AnalyzerPtr m_analyzer;
-    bool m_processing;
+    bool m_continueAnalyzing;
 };

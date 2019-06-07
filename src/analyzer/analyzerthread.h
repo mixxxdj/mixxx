@@ -113,7 +113,7 @@ class AnalyzerThread : public WorkerThread {
     // Thread local: Only used in the constructor/destructor and within
     // run() by the worker thread.
 
-    std::vector<AnalyzerState> m_analyzers;
+    std::vector<AnalyzerWithState> m_analyzers;
 
     mixxx::SampleBuffer m_sampleBuffer;
 
