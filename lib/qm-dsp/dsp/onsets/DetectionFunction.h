@@ -13,8 +13,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef DETECTIONFUNCTION_H
-#define DETECTIONFUNCTION_H
+#ifndef QM_DSP_DETECTIONFUNCTION_H
+#define QM_DSP_DETECTIONFUNCTION_H
 
 #include "maths/MathUtilities.h"
 #include "maths/MathAliases.h"
@@ -28,8 +28,8 @@
 #define DF_BROADBAND (5)
 
 struct DFConfig{
-    unsigned int stepSize; // DF step in samples
-    unsigned int frameLength; // DF analysis window - usually 2*step. Must be even!
+    int stepSize; // DF step in samples
+    int frameLength; // DF analysis window - usually 2*step. Must be even!
     int DFType; // type of detection function ( see defines )
     double dbRise; // only used for broadband df (and required for it)
     bool adaptiveWhitening; // perform adaptive whitening
@@ -41,7 +41,7 @@ class DetectionFunction
 {
 public:
     double* getSpectrumMagnitude();
-    DetectionFunction( DFConfig Config );
+    DetectionFunction( DFConfig config );
     virtual ~DetectionFunction();
 
     /**
@@ -60,20 +60,20 @@ private:
     void whiten();
     double runDF();
 
-    double HFC( unsigned int length, double* src);
-    double specDiff( unsigned int length, double* src);
-    double phaseDev(unsigned int length, double *srcPhase);
-    double complexSD(unsigned int length, double *srcMagnitude, double *srcPhase);
-    double broadband(unsigned int length, double *srcMagnitude);
-	
+    double HFC(int length, double* src);
+    double specDiff(int length, double* src);
+    double phaseDev(int length, double *srcPhase);
+    double complexSD(int length, double *srcMagnitude, double *srcPhase);
+    double broadband(int length, double *srcMagnitude);
+        
 private:
     void initialise( DFConfig Config );
     void deInitialise();
 
     int m_DFType;
-    unsigned int m_dataLength;
-    unsigned int m_halfLength;
-    unsigned int m_stepSize;
+    int m_dataLength;
+    int m_halfLength;
+    int m_stepSize;
     double m_dbRise;
     bool m_whiten;
     double m_whitenRelaxCoeff;
@@ -90,7 +90,7 @@ private:
     double* m_unwrapped; // Unwrapped phase of analysis frame
 
     Window<double> *m_window;
-    PhaseVocoder* m_phaseVoc;	// Phase Vocoder
+    PhaseVocoder* m_phaseVoc;   // Phase Vocoder
 };
 
 #endif 

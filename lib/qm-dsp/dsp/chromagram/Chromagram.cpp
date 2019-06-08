@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -27,10 +26,10 @@ Chromagram::Chromagram( ChromaConfig Config ) :
 }
 
 int Chromagram::initialise( ChromaConfig Config )
-{	
-    m_FMin = Config.min;		// min freq
-    m_FMax = Config.max;		// max freq
-    m_BPO  = Config.BPO;		// bins per octave
+{       
+    m_FMin = Config.min;                // min freq
+    m_FMax = Config.max;                // max freq
+    m_BPO  = Config.BPO;                // bins per octave
     m_normalise = Config.normalise;     // if frame normalisation is required
 
     // Extend range to a full octave
@@ -50,7 +49,7 @@ int Chromagram::initialise( ChromaConfig Config )
     ConstantQConfig.max = m_FMax;
     ConstantQConfig.BPO = m_BPO;
     ConstantQConfig.CQThresh = Config.CQThresh;
-	
+        
     // Initialise ConstantQ operator
     m_ConstantQ = new ConstantQ( ConstantQConfig );
 
@@ -58,10 +57,10 @@ int Chromagram::initialise( ChromaConfig Config )
     m_uK = m_ConstantQ->getK();
 
     // Initialise working arrays
-    m_frameSize = m_ConstantQ->getfftlength();
-    m_hopSize = m_ConstantQ->gethop();
+    m_frameSize = m_ConstantQ->getFFTLength();
+    m_hopSize = m_ConstantQ->getHop();
 
-    // Initialise FFT object	
+    // Initialise FFT object    
     m_FFT = new FFTReal(m_frameSize);
 
     m_FFTRe = new double[ m_frameSize ];
@@ -111,16 +110,13 @@ double Chromagram::kabs(double xx, double yy)
 void Chromagram::unityNormalise(double *src)
 {
     double min, max;
-
     double val = 0;
 
     MathUtilities::getFrameMinMax( src, m_BPO, & min, &max );
 
-    for (int i = 0; i < m_BPO; i++)
-    {
-	val = src[ i ] / max;
-
-	src[ i ] = val;
+    for (int i = 0; i < m_BPO; i++) {
+        val = src[ i ] / max;
+        src[ i ] = val;
     }
 }
 
@@ -169,16 +165,15 @@ double *Chromagram::process(const double *real, const double *imag)
 
     // Calculate ConstantQ frame
     m_ConstantQ->process( real, imag, m_CQRe, m_CQIm );
-	
+        
     // add each octave of cq data into Chromagram
     const int octaves = m_uK / m_BPO;
-    for (int octave = 0; octave < octaves; octave++) 
-    {
-	int firstBin = octave*m_BPO;
-	for (int i = 0; i < m_BPO; i++) 
-	{
-	    m_chromadata[i] += kabs( m_CQRe[ firstBin + i ], m_CQIm[ firstBin + i ]);
-	}
+    for (int octave = 0; octave < octaves; octave++) {
+        int firstBin = octave*m_BPO;
+        for (int i = 0; i < m_BPO; i++) {
+            m_chromadata[i] += kabs( m_CQRe[ firstBin + i ],
+                                     m_CQIm[ firstBin + i ]);
+        }
     }
 
     MathUtilities::normalise(m_chromadata, m_BPO, m_normalise);

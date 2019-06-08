@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef CHROMAGRAM_H
-#define CHROMAGRAM_H
+#ifndef QM_DSP_CHROMAGRAM_H
+#define QM_DSP_CHROMAGRAM_H
 
 #include "dsp/transforms/FFT.h"
 #include "base/Window.h"
@@ -31,8 +30,7 @@ struct ChromaConfig {
 
 class Chromagram 
 {
-
-public:	
+public: 
     Chromagram( ChromaConfig Config );
     ~Chromagram();
 
@@ -67,7 +65,7 @@ public:
 
     // Complex arithmetic
     double kabs( double real, double imag );
-	
+        
     // Results
     int getK() { return m_uK;}
     int getFrameSize() { return m_frameSize; }
@@ -79,7 +77,7 @@ private:
 
     Window<double> *m_window;
     double *m_windowbuf;
-	
+        
     double* m_chromadata;
     double m_FMin;
     double m_FMax;

@@ -19,6 +19,7 @@
 #include <limits>
 
 using std::cerr;
+using std::vector;
 
 double CosineDistance::distance(const vector<double> &v1,
                                 const vector<double> &v2)
