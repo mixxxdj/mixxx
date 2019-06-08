@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/assert.h"
 #include "util/types.h"
 
 /*
@@ -44,7 +45,7 @@ class Analyzer {
 
 typedef std::unique_ptr<Analyzer> AnalyzerPtr;
 
-class AnalyzerWithState {
+class AnalyzerWithState final {
   public:
     explicit AnalyzerWithState(AnalyzerPtr analyzer)
             : m_analyzer(std::move(analyzer)),
@@ -53,6 +54,11 @@ class AnalyzerWithState {
     }
     AnalyzerWithState(const AnalyzerWithState&) = delete;
     AnalyzerWithState(AnalyzerWithState&&) = default;
+    ~AnalyzerWithState() {
+        VERIFY_OR_DEBUG_ASSERT(!m_active) {
+            m_analyzer->cleanup();
+        }
+    }
 
     bool isActive() const {
         return m_active;
