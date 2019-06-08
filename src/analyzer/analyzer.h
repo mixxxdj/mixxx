@@ -48,37 +48,48 @@ class AnalyzerWithState {
   public:
     explicit AnalyzerWithState(AnalyzerPtr analyzer)
             : m_analyzer(std::move(analyzer)),
-              m_continueAnalyzing(false) {
+              m_active(false) {
         DEBUG_ASSERT(m_analyzer);
     }
     AnalyzerWithState(const AnalyzerWithState&) = delete;
     AnalyzerWithState(AnalyzerWithState&&) = default;
 
+    bool isActive() const {
+        return m_active;
+    }
+
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-        DEBUG_ASSERT(!m_continueAnalyzing);
-        m_continueAnalyzing = m_analyzer->initialize(tio, sampleRate, totalSamples);
-        return m_continueAnalyzing;
+        DEBUG_ASSERT(!m_active);
+        return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
     }
 
     void process(const CSAMPLE* pIn, const int iLen) {
-        if (m_continueAnalyzing) {
-            m_continueAnalyzing = m_analyzer->process(pIn, iLen);
+        if (m_active) {
+            m_active = m_analyzer->process(pIn, iLen);
+            if (!m_active) {
+                // Ensure that cleanup() is invoked after processing
+                // failed and the analyzer became inactive!
+                m_analyzer->cleanup();
+            }
         }
     }
 
-    void finalize(TrackPointer tio) {
-        if (m_continueAnalyzing) {
+    void finish(TrackPointer tio) {
+        if (m_active) {
             m_analyzer->finalize(tio);
-            m_continueAnalyzing = false;
+            m_analyzer->cleanup();
+            m_active = false;
         }
     }
 
-    void cleanup() {
-        m_analyzer->cleanup();
-        m_continueAnalyzing = false;
+    void cancel() {
+        if (m_active) {
+            m_analyzer->cleanup();
+            m_active = false;
+        }
     }
 
   private:
     AnalyzerPtr m_analyzer;
-    bool m_continueAnalyzing;
+    bool m_active;
 };

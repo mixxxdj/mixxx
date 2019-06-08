@@ -165,13 +165,12 @@ void AnalyzerThread::doRun() {
                 emitBusyProgress(kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto&& analyzer : m_analyzers) {
-                    analyzer.finalize(m_currentTrack);
-                    analyzer.cleanup();
+                    analyzer.finish(m_currentTrack);
                 }
                 emitDoneProgress(kAnalyzerProgressDone);
             } else {
                 for (auto&& analyzer : m_analyzers) {
-                    analyzer.cleanup();
+                    analyzer.cancel();
                 }
                 emitDoneProgress(kAnalyzerProgressUnknown);
             }
