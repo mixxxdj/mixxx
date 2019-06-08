@@ -120,9 +120,9 @@ class IOKit(Dependence):
         build.env.Append(LINKFLAGS='-framework IOKit')
 
 class UPower(Dependence):
-    """UPower is used to get battery measurements on Linux."""
+    """UPower is used to get battery measurements on Linux and BSD."""
     def configure(self, build, conf):
-        if not build.platform_is_linux:
+        if not build.platform_is_linux and not build.platform_is_bsd:
             return
         build.env.ParseConfig(
                 'pkg-config upower-glib --silence-errors --cflags --libs')
