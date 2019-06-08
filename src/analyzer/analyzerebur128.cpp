@@ -42,32 +42,32 @@ void AnalyzerEbur128::cleanup() {
     }
 }
 
-bool AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerEbur128::processSamples(const CSAMPLE *pIn, const int iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return false;
     }
-    ScopedTimer t("AnalyzerEbur128::process()");
+    ScopedTimer t("AnalyzerEbur128::processSamples()");
     size_t frames = iLen / 2;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
-        qWarning() << "AnalyzerEbur128::process() failed with" << e;
+        qWarning() << "AnalyzerEbur128::processSamples() failed with" << e;
         return false;
     }
     return true;
 }
 
-void AnalyzerEbur128::finalize(TrackPointer tio) {
+void AnalyzerEbur128::storeResults(TrackPointer tio) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return;
     }
     double averageLufs;
     int e = ebur128_loudness_global(m_pState, &averageLufs);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
-        qWarning() << "AnalyzerEbur128::finalize() failed with" << e;
+        qWarning() << "AnalyzerEbur128::storeResults() failed with" << e;
         return;
     }
     if (averageLufs == -HUGE_VAL || averageLufs == 0.0) {
-        qWarning() << "AnalyzerEbur128::finalize() averageLufs invalid:"
+        qWarning() << "AnalyzerEbur128::storeResults() averageLufs invalid:"
                    << averageLufs;
         return;
     }

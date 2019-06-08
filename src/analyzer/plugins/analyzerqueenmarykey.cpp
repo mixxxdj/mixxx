@@ -65,7 +65,7 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
             });
 }
 
-bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, const int iLen) {
     DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
 

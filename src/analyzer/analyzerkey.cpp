@@ -111,7 +111,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
@@ -121,14 +121,14 @@ bool AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
         return true; // silently ignore remaining samples
     }
 
-    return m_pPlugin->process(pIn, iLen);
+    return m_pPlugin->processSamples(pIn, iLen);
 }
 
 void AnalyzerKey::cleanup() {
     m_pPlugin.reset();
 }
 
-void AnalyzerKey::finalize(TrackPointer tio) {
+void AnalyzerKey::storeResults(TrackPointer tio) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return;
     }

@@ -172,7 +172,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerBeats::processSamples(const CSAMPLE *pIn, const int iLen) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
@@ -182,14 +182,14 @@ bool AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
         return true; // silently ignore all remaining samples
     }
 
-    return m_pPlugin->process(pIn, iLen);
+    return m_pPlugin->processSamples(pIn, iLen);
 }
 
 void AnalyzerBeats::cleanup() {
     m_pPlugin.reset();
 }
 
-void AnalyzerBeats::finalize(TrackPointer tio) {
+void AnalyzerBeats::storeResults(TrackPointer tio) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return;
     }

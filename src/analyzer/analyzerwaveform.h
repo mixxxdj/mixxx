@@ -143,8 +143,8 @@ class AnalyzerWaveform : public Analyzer {
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool process(const CSAMPLE* buffer, const int bufferLength) override;
-    void finalize(TrackPointer tio) override;
+    bool processSamples(const CSAMPLE* buffer, const int bufferLength) override;
+    void storeResults(TrackPointer tio) override;
     void cleanup() override;
 
   private:

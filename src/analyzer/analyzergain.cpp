@@ -33,7 +33,7 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
 void AnalyzerGain::cleanup() {
 }
 
-bool AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
     ScopedTimer t("AnalyzerGain::process()");
 
     int halfLength = static_cast<int>(iLen / 2);
@@ -49,7 +49,7 @@ bool AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
     return m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
 }
 
-void AnalyzerGain::finalize(TrackPointer tio) {
+void AnalyzerGain::storeResults(TrackPointer tio) {
     //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
     // This means that we are going to transform from dB to peaks and viceversa.
     // One may think to digg into replay_gain code and modify it so that

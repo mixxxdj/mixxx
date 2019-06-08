@@ -167,7 +167,7 @@ void AnalyzerWaveform::destroyFilters() {
     }
 }
 
-bool AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
+bool AnalyzerWaveform::processSamples(const CSAMPLE* buffer, const int bufferLength) {
     VERIFY_OR_DEBUG_ASSERT(m_waveform) {
         return false;
     }
@@ -263,7 +263,7 @@ void AnalyzerWaveform::cleanup() {
     m_waveformSummaryData = nullptr;
 }
 
-void AnalyzerWaveform::finalize(TrackPointer tio) {
+void AnalyzerWaveform::storeResults(TrackPointer tio) {
     // Force completion to waveform size
     if (m_waveform) {
         m_waveform->setSaveState(Waveform::SaveState::SavePending);

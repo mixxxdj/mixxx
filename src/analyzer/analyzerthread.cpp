@@ -259,7 +259,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         if (readableSampleFrames.frameLength() == mixxx::kAnalysisFramesPerBlock) {
             // Complete chunk of audio samples has been read for analysis
             for (auto&& analyzer : m_analyzers) {
-                analyzer.process(
+                analyzer.processSamples(
                         readableSampleFrames.readableData(),
                         readableSampleFrames.readableLength());
             }

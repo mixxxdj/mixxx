@@ -32,14 +32,16 @@ class Analyzer {
     // If processing fails the analysis can be aborted early by returning
     // false. After aborting the analysis only cleanup() will be invoked,
     // but not finalize()!
-    virtual bool process(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual bool processSamples(const CSAMPLE* pIn, const int iLen) = 0;
 
     // Update the track object with the analysis results after
     // processing finished successfully, i.e. all available audio
     // samples have been processed.
-    virtual void finalize(TrackPointer tio) = 0;
+    virtual void storeResults(TrackPointer tio) = 0;
 
     // Discard any temporary results or free allocated memory.
+    // This function will be invoked after the results have been
+    // stored or if processing aborted preliminary.
     virtual void cleanup() = 0;
 };
 
@@ -69,9 +71,9 @@ class AnalyzerWithState final {
         return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
     }
 
-    void process(const CSAMPLE* pIn, const int iLen) {
+    void processSamples(const CSAMPLE* pIn, const int iLen) {
         if (m_active) {
-            m_active = m_analyzer->process(pIn, iLen);
+            m_active = m_analyzer->processSamples(pIn, iLen);
             if (!m_active) {
                 // Ensure that cleanup() is invoked after processing
                 // failed and the analyzer became inactive!
@@ -82,7 +84,7 @@ class AnalyzerWithState final {
 
     void finish(TrackPointer tio) {
         if (m_active) {
-            m_analyzer->finalize(tio);
+            m_analyzer->storeResults(tio);
             m_analyzer->cleanup();
             m_active = false;
         }
