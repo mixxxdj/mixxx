@@ -125,8 +125,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefControllers* m_pControllersDlg;
 
     QSize m_pageSizeHint;
-
-    ControlPushButton m_preferencesUpdated;
 };
 
 #endif

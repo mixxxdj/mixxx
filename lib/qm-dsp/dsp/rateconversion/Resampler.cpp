@@ -17,12 +17,12 @@
 #include "maths/MathUtilities.h"
 #include "base/KaiserWindow.h"
 #include "base/SincWindow.h"
-#include "thread/Thread.h"
 
 #include <iostream>
 #include <vector>
 #include <map>
 #include <cassert>
+#include <algorithm>
 
 using std::vector;
 using std::map;
@@ -36,6 +36,9 @@ Resampler::Resampler(int sourceRate, int targetRate) :
     m_sourceRate(sourceRate),
     m_targetRate(targetRate)
 {
+#ifdef DEBUG_RESAMPLER
+    cerr << "Resampler::Resampler(" <<  sourceRate << "," << targetRate << ")" << endl;
+#endif
     initialise(100, 0.02);
 }
 
@@ -51,13 +54,6 @@ Resampler::~Resampler()
 {
     delete[] m_phaseData;
 }
-
-// peakToPole -> length -> beta -> window
-static map<double, map<int, map<double, vector<double> > > >
-knownFilters;
-
-static Mutex
-knownFilterMutex;
 
 void
 Resampler::initialise(double snr, double bandwidth)
@@ -85,25 +81,15 @@ Resampler::initialise(double snr, double bandwidth)
     m_filterLength = params.length;
 
     vector<double> filter;
-    knownFilterMutex.lock();
 
-    if (knownFilters[m_peakToPole][m_filterLength].find(params.beta) ==
-	knownFilters[m_peakToPole][m_filterLength].end()) {
+    KaiserWindow kw(params);
+    SincWindow sw(m_filterLength, m_peakToPole * 2);
 
-	KaiserWindow kw(params);
-	SincWindow sw(m_filterLength, m_peakToPole * 2);
-
-	filter = vector<double>(m_filterLength, 0.0);
-	for (int i = 0; i < m_filterLength; ++i) filter[i] = 1.0;
-	sw.cut(filter.data());
-	kw.cut(filter.data());
-
-	knownFilters[m_peakToPole][m_filterLength][params.beta] = filter;
-    }
-
-    filter = knownFilters[m_peakToPole][m_filterLength][params.beta];
-    knownFilterMutex.unlock();
-
+    filter = vector<double>(m_filterLength, 0.0);
+    for (int i = 0; i < m_filterLength; ++i) filter[i] = 1.0;
+    sw.cut(filter.data());
+    kw.cut(filter.data());
+    
     int inputSpacing = m_targetRate / m_gcd;
     int outputSpacing = m_sourceRate / m_gcd;
 
@@ -293,10 +279,22 @@ Resampler::reconstructOne()
     double v = 0.0;
     int n = pd.filter.size();
 
-    assert(n + m_bufferOrigin <= (int)m_buffer.size());
+    if (n + m_bufferOrigin > (int)m_buffer.size()) {
+        cerr << "ERROR: n + m_bufferOrigin > m_buffer.size() [" << n << " + "
+             << m_bufferOrigin << " > " << m_buffer.size() << "]" << endl;
+        throw std::logic_error("n + m_bufferOrigin > m_buffer.size()");
+    }
 
-    const double *const __restrict__ buf = m_buffer.data() + m_bufferOrigin;
-    const double *const __restrict__ filt = pd.filter.data();
+#if defined(__MSVC__)
+#define R__ __restrict
+#elif defined(__GNUC__)
+#define R__ __restrict__
+#else
+#define R__
+#endif
+
+    const double *const R__ buf(m_buffer.data() + m_bufferOrigin);
+    const double *const R__ filt(pd.filter.data());
 
     for (int i = 0; i < n; ++i) {
 	// NB gcc can only vectorize this with -ffast-math
@@ -311,9 +309,7 @@ Resampler::reconstructOne()
 int
 Resampler::process(const double *src, double *dst, int n)
 {
-    for (int i = 0; i < n; ++i) {
-	m_buffer.push_back(src[i]);
-    }
+    m_buffer.insert(m_buffer.end(), src, src + n);
 
     int maxout = int(ceil(double(n) * m_targetRate / m_sourceRate));
     int outidx = 0;
@@ -328,6 +324,12 @@ Resampler::process(const double *src, double *dst, int n)
 	   m_buffer.size() >= m_phaseData[m_phase].filter.size() + m_bufferOrigin) {
 	dst[outidx] = scaleFactor * reconstructOne();
 	outidx++;
+    }
+
+    if (m_bufferOrigin > (int)m_buffer.size()) {
+        cerr << "ERROR: m_bufferOrigin > m_buffer.size() [" 
+             << m_bufferOrigin << " > " << m_buffer.size() << "]" << endl;
+        throw std::logic_error("m_bufferOrigin > m_buffer.size()");
     }
 
     m_buffer = vector<double>(m_buffer.begin() + m_bufferOrigin, m_buffer.end());

@@ -46,7 +46,7 @@ class MixxxBuild(object):
             raise Exception("invalid target platform")
 
         if machine.lower() not in ['x86_64', 'x86', 'i686', 'i586',
-                                   'alpha', 'hppa', 'mips', 'mipsel', 's390',
+                                   'alpha', 'hppa', 's390',
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
                                    'armv5tel', 'armv5tejl', 'armv6l', 'armv6hl',
                                    'armv7l', 'armv7hl', 'armv7hnl',
@@ -55,8 +55,11 @@ class MixxxBuild(object):
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el', 'ppc64le', 'm68k', 'mips64',
-                                   'mips64el', 'mipsn32', 'mipsn32el',
+                                   'ppc64el', 'ppc64le', 'm68k', 
+                                   'mips', 'mipsel', 'mipsr6', 'mipsr6el',
+                                   'mips64', 'mips64r6', 'mips64el', 'mips64r6el', 
+                                   'mipsn32', 'mipsn32el', 'mipsn32r6', 'mipsn32r6el',
+                                   'mipsisa32r6', 'mipsisa32r6el', 'mipsisa64r6', 'mipsisa64r6el',
                                    'aarch64']:
             raise Exception("invalid machine type")
 
@@ -208,8 +211,23 @@ class MixxxBuild(object):
         self.read_environment_variables()
 
         # Now that environment variables have been read, we can detect the compiler.
-        self.compiler_is_gcc = 'gcc' in self.env['CC']
-        self.compiler_is_clang = 'clang' in self.env['CC']
+        import subprocess
+        process = subprocess.Popen([self.env['CC'], '--version'], stdout=subprocess.PIPE)
+        (stdout, stderr) = process.communicate()
+        self.compiler_is_gcc = 'gcc' in stdout.lower()
+        self.compiler_is_clang = 'clang' in stdout.lower()
+
+        # Determine the major compiler version (only GCC)
+        if self.compiler_is_gcc:
+            self.gcc_major_version = None
+            process = subprocess.Popen([self.env['CC'], '-dumpversion'], stdout=subprocess.PIPE)
+            (stdout, stderr) = process.communicate()
+            gcc_version = stdout
+            # If match is None we don't know the version.
+            if not gcc_version is None:
+                version_split = gcc_version.split('.')
+                if version_split:
+                    self.gcc_major_version = int(version_split[0])
 
         self.virtualize_build_dir()
 

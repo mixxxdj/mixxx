@@ -80,21 +80,35 @@ private:
 
 // some utility functions
 
-namespace NSUtility
+struct NSUtility
 {
-    inline void swap(double &a, double &b) {double t = a; a = b; b = t;}
-    void zeroise(vector<double> &array, int n);
-    void zeroise(vector<int> &array, int n);
-    void zeroise(vector<vector<double> > &matrix, int m, int n);
-    void zeroise(vector<vector<int> > &matrix, int m, int n);
-    inline double sqr(const double &x) {return x * x;}
+    static void swap(double &a, double &b) {double t = a; a = b; b = t;}
+    // fills a vector with zeros.
+    static void zeroise(vector<double> &array, int n) { 
+        array.clear();
+        for(int j = 0; j < n; ++j) array.push_back(0);
+    }
+    // fills a vector with zeros.
+    static void zeroise(vector<int> &array, int n) {
+        array.clear();
+        for(int j = 0; j < n; ++j) array.push_back(0);
+    }
+    // fills a (m by n) matrix with zeros.
+    static void zeroise(vector<vector<double> > &matrix, int m, int n) {
+        vector<double> zero;
+        zeroise(zero, n);
+        matrix.clear();
+        for(int j = 0; j < m; ++j) matrix.push_back(zero);
+    }
+    // fills a (m by n) matrix with zeros.
+    static void zeroise(vector<vector<int> > &matrix, int m, int n) {
+        vector<int> zero;
+        zeroise(zero, n);
+        matrix.clear();
+        for(int j = 0; j < m; ++j) matrix.push_back(zero);
+    }
+    static double sqr(const double &x) {return x * x;}
 };
-
-//---------------------------------------------------------------------------
-// Implementation
-//---------------------------------------------------------------------------
-using namespace NSUtility;
-//------------------------------------------------------------------------------------------
 
 
 // main PolyFit routine
@@ -113,9 +127,9 @@ double TPolyFit::PolyFit2 (const vector<double> &x,
     const int npoints(x.size());
     const int nterms(coefs.size());
     double correl_coef;
-    zeroise(g, nterms);
-    zeroise(a, nterms, nterms);
-    zeroise(xmatr, npoints, nterms);
+    NSUtility::zeroise(g, nterms);
+    NSUtility::zeroise(a, nterms, nterms);
+    NSUtility::zeroise(xmatr, npoints, nterms);
     if (nterms < 1) {
         std::cerr << "ERROR: PolyFit called with less than one term" << std::endl;
         return 0;
@@ -148,13 +162,13 @@ double TPolyFit::PolyFit2 (const vector<double> &x,
 	yc = 0.0;
 	for(j = 0; j < nterms; ++j)
 	    yc += coefs [j] * xmatr [i][j];
-	srs += sqr (yc - yi);
+	srs += NSUtility::sqr (yc - yi);
 	sum_y += yi;
 	sum_y2 += yi * yi;
     }
 
     // If all Y values are the same, avoid dividing by zero
-    correl_coef = sum_y2 - sqr (sum_y) / npoints;
+    correl_coef = sum_y2 - NSUtility::sqr (sum_y) / npoints;
     // Either return 0 or the correct value of correlation coefficient
     if (correl_coef != 0)
 	correl_coef = srs / correl_coef;
@@ -229,8 +243,8 @@ bool TPolyFit::GaussJordan (Matrix &b,
     vector<vector<int> >index;
     Matrix w;
 
-    zeroise(w, ncol, ncol);
-    zeroise(index, ncol, 3);
+    NSUtility::zeroise(w, ncol, ncol);
+    NSUtility::zeroise(index, ncol, 3);
 
     if(!GaussJordan2(b, y, w, index))
 	return false;
@@ -278,7 +292,7 @@ bool TPolyFit::GaussJordan2(Matrix &b,
     double big, t;
     double pivot;
     double determ;
-    int irow, icol;
+    int irow = 0, icol = 0;
     int ncol(b.size());
     int nv = 1;                  // single constant vector
     for(int i = 0; i < ncol; ++i)
@@ -355,53 +369,6 @@ bool TPolyFit::GaussJordan2(Matrix &b,
     } // { i-loop }
     return true;
 }
-//----------------------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------------
-
-// Utility functions
-//--------------------------------------------------------------------------
-
-// fills a vector with zeros.
-void NSUtility::zeroise(vector<double> &array, int n)
-{
-    array.clear();
-    for(int j = 0; j < n; ++j)
-	array.push_back(0);
-}
-//--------------------------------------------------------------------------
-
-// fills a vector with zeros.
-void NSUtility::zeroise(vector<int> &array, int n)
-{
-    array.clear();
-    for(int j = 0; j < n; ++j)
-	array.push_back(0);
-}
-//--------------------------------------------------------------------------
-
-// fills a (m by n) matrix with zeros.
-void NSUtility::zeroise(vector<vector<double> > &matrix, int m, int n)
-{
-    vector<double> zero;
-    zeroise(zero, n);
-    matrix.clear();
-    for(int j = 0; j < m; ++j)
-	matrix.push_back(zero);
-}
-//--------------------------------------------------------------------------
-
-// fills a (m by n) matrix with zeros.
-void NSUtility::zeroise(vector<vector<int> > &matrix, int m, int n)
-{
-    vector<int> zero;
-    zeroise(zero, n);
-    matrix.clear();
-    for(int j = 0; j < m; ++j)
-	matrix.push_back(zero);
-}
-//--------------------------------------------------------------------------
-
 
 #endif
  

@@ -124,6 +124,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
+    m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
+
+
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
 
@@ -365,11 +369,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             // Sort by the saved sort section and order.
             horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
                                                  horizontalHeader()->sortIndicatorOrder());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-            // in Qt4, the line above emits sortIndicatorChanged
             // in Qt5, we need to call it manually, which triggers finally the select()
             doSortByColumn(horizontalHeader()->sortIndicatorSection());
-#endif
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
             int sortColumn = trackModel->defaultSortColumn();
@@ -382,11 +383,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             }
             // This line sorts the TrackModel
             horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-            // in Qt4, the line above emits sortIndicatorChanged
             // in Qt5, we need to call it manually, which triggers finally the select()
             doSortByColumn(sortColumn);
-#endif
         }
     }
 
@@ -931,8 +929,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        // FIXME: Why are clearning the main cue and loop not working?
-        //m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
+        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
@@ -1990,3 +1988,9 @@ void WTrackTableView::restoreCurrentVScrollBarPos()
 {
     restoreVScrollBarPos(getTrackModel());
 }
+
+void WTrackTableView::keyNotationChanged()
+{
+    QWidget::update();
+}
+

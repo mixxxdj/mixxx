@@ -96,6 +96,7 @@ class EngineControl : public QObject {
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
 
+    friend class CueControlTest;
 
     FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
     FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);

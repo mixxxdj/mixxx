@@ -27,6 +27,7 @@
 #include <QLocale>
 #include <QGuiApplication>
 #include <QInputMethod>
+#include <QGLFormat>
 
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -62,7 +63,6 @@
 #include "util/time.h"
 #include "util/version.h"
 #include "control/controlpushbutton.h"
-#include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "mixer/playerinfo.h"
 #include "waveform/guitick.h"
@@ -391,9 +391,39 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+        QGLFormat glFormat;
+        glFormat.setDirectRendering(true);
+        glFormat.setDoubleBuffer(true);
+        glFormat.setDepth(false);
+        // Disable waiting for vertical Sync
+        // This can be enabled when using a single Threads for each QGLContext
+        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
+#if defined(__APPLE__)
+        // On OS X, syncing to vsync has good performance FPS-wise and
+        // eliminates tearing.
+        glFormat.setSwapInterval(1);
+#else
+        // Otherwise, turn VSync off because it could cause horrible FPS on
+        // Linux.
+        // TODO(XXX): Make this configurable.
+        // TODO(XXX): What should we do on Windows?
+        glFormat.setSwapInterval(0);
+#endif
+        glFormat.setRgba(true);
+        QGLFormat::setDefaultFormat(glFormat);
+
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->setGeometry(QRect(0, 0, 3, 3));
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
+    }
+
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
 
     launchProgress(52);
 
@@ -423,14 +453,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Connect signals to the menubar. Should be done before we go fullscreen
     // and emit newSkinLoaded.
     connectMenuBar();
-
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
-    if (!CmdlineArgs::Instance().getSafeMode()) {
-        QGLWidget* pContextWidget = new QGLWidget(this);
-        pContextWidget->hide();
-        SharedGLContext::setWidget(pContextWidget);
-    }
 
     launchProgress(63);
 
@@ -816,6 +838,7 @@ void MixxxMainWindow::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
+        qDebug() << "Found and will use default keyboard preset" << defaultKeyboard;
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
@@ -1407,7 +1430,7 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    if (!factory->isOpenGLAvailable() &&
+    if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(
             0, tr("OpenGL Direct Rendering"),
@@ -1416,10 +1439,7 @@ void MixxxMainWindow::checkDirectRendering() {
                "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
                "configuration to enable direct rendering, or disable<br>"
                "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section.<br><br>"
-               "NOTE: If you use NVIDIA hardware,<br>"
-               "direct rendering may not be present, but you should<br>"
-               "not experience degraded performance."));
+               "\"Empty\" as the waveform display in the 'Interface' section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }

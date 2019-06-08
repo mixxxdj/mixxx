@@ -1,6 +1,5 @@
 #include <QtDebug>
 
-#include "util/compatibility.h"
 #include "util/task.h"
 
 TaskWatcher::TaskWatcher(QObject* pParent) : QObject(pParent) {

@@ -71,8 +71,8 @@ Wavelet::getWaveletName(Type wavelet)
 
 void
 Wavelet::createDecompositionFilters(Type wavelet,
-                                    std::vector<float> &lpd,
-                                    std::vector<float> &hpd)
+                                    std::vector<double> &lpd,
+                                    std::vector<double> &hpd)
 {
     lpd.clear();
     hpd.clear();
@@ -1843,7 +1843,10 @@ Wavelet::createDecompositionFilters(Type wavelet,
         break;
     }
 
-    assert(flength == lpd.size());
-    assert(flength == hpd.size());
+    // avoid compiler warning for unused value if assert is not compiled in:
+    (void)flength;
+
+    assert(flength == int(lpd.size()));
+    assert(flength == int(hpd.size()));
 }
 

@@ -45,7 +45,8 @@
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
-      <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
@@ -60,7 +61,7 @@
       <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
@@ -70,7 +71,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -81,9 +82,9 @@
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
       <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
-      <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_rows">4</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_3_expanded">0</attribute>
@@ -241,7 +242,7 @@
       </Children>
     </SingletonDefinition>
 
-    <!-- Overviews are needed in both regular and minmal decks -->
+    <!-- Overviews are needed in both regular and minimal decks -->
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton1</ObjectName>
       <Children>

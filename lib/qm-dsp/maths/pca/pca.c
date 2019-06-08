@@ -252,7 +252,7 @@ void tqli(double* d, double* e, int n, double** z)
 void pca_project(double** data, int n, int m, int ncomponents)
 {
 	int  i, j, k, k2;
-	double  **symmat, **symmat2, *evals, *interm;
+	double  **symmat, /* **symmat2, */ *evals, *interm;
 	
 	//TODO: assert ncomponents < m
 	

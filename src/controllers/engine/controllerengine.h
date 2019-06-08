@@ -54,18 +54,22 @@ class ScriptConnection {
 class ScriptConnectionInvokableWrapper : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString id READ readId)
+    Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
     ScriptConnectionInvokableWrapper(ScriptConnection conn) {
         m_scriptConnection = conn;
         m_idString = conn.id.toString();
+        m_isConnected = true;
     }
     const QString& readId() const { return m_idString; }
-    Q_INVOKABLE void disconnect();
+    bool readIsConnected() const { return m_isConnected; }
+    Q_INVOKABLE bool disconnect();
     Q_INVOKABLE void trigger();
 
   private:
     ScriptConnection m_scriptConnection;
     QString m_idString;
+    bool m_isConnected;
 };
 
 class ControllerEngine : public QObject {
@@ -94,7 +98,7 @@ class ControllerEngine : public QObject {
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
     // Disconnect a ScriptConnection
-    void removeScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection conn);
     void triggerScriptConnection(const ScriptConnection conn);
 
     inline void setTesting(bool testing) { m_bTesting = testing; };

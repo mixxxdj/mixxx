@@ -73,8 +73,8 @@ public:
     static std::string getWaveletName(Type);
 
     static void createDecompositionFilters(Type,
-                                           std::vector<float> &lpd,
-                                           std::vector<float> &hpd);
+                                           std::vector<double> &lpd,
+                                           std::vector<double> &hpd);
 };
 
 #endif

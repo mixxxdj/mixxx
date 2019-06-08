@@ -22,12 +22,16 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "engine/engine.h"
+#include "mixer/playermanager.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
 #include "analyzer/analyzerprogress.h"
 #include "util/color/color.h"
+#include "util/compatibility.h"
+#include "util/duration.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -45,6 +49,7 @@ WOverview::WOverview(
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
         m_diffGain(0),
+        m_devicePixelRatio(1.0),
         m_group(group),
         m_pConfig(pConfig),
         m_endOfTrack(false),
@@ -59,6 +64,13 @@ WOverview::WOverview(
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
+    m_pRateDirControl = new ControlProxy(m_group, "rate_dir", this);
+    m_pRateRangeControl = new ControlProxy(m_group, "rateRange", this);
+    m_pRateSliderControl = new ControlProxy(m_group, "rate", this);
+    // Needed to recalculate range durations when rate slider is moved without the deck playing
+    // TODO: connect to rate_ratio instead in PR #1765
+    m_pRateSliderControl->connectValueChanged(this, &WOverview::onRateSliderChange);
+    m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
     setAcceptDrops(true);
@@ -102,6 +114,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             pMark->connectSamplePositionChanged(this,
                     &WOverview::onMarkChanged);
         }
+        if (pMark->hasVisible()) {
+            pMark->connectVisibleChanged(this,
+                    &WOverview::onMarkChanged);
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -112,6 +128,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
+                        this, &WOverview::onMarkRangeChange);
+            }
+            if (markRange.m_markVisibleControl) {
+                markRange.m_markVisibleControl->connectValueChanged(
                         this, &WOverview::onMarkRangeChange);
             }
             if (markRange.m_markStartPointControl) {
@@ -252,12 +272,18 @@ void WOverview::onEndOfTrackChange(double v) {
 
 void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
-    updateCues(m_pCurrentTrack->getCuePoints());
-    update();
+    if (m_pCurrentTrack) {
+        updateCues(m_pCurrentTrack->getCuePoints());
+        update();
+    }
 }
 
 void WOverview::onMarkRangeChange(double /*v*/) {
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
+    update();
+}
+
+void WOverview::onRateSliderChange(double /*v*/) {
     update();
 }
 
@@ -320,12 +346,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     }
 
     if (m_pCurrentTrack) {
-        // Display viewer contour if end of track
+        // Draw background if end of track
         if (m_endOfTrack) {
-            painter.setOpacity(0.8);
-            painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
-            painter.setBrush(QColor(0,0,0,0));
-            painter.drawRect(rect().adjusted(0,0,-1,-1));
             painter.setOpacity(0.3);
             painter.setBrush(m_endOfTrackColor);
             painter.drawRect(rect().adjusted(1,1,-2,-2));
@@ -360,7 +382,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     // Rotate pixmap
                     croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
                 }
-                m_waveformImageScaled = croppedImage.scaled(size(), Qt::IgnoreAspectRatio,
+                m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                                                            Qt::IgnoreAspectRatio,
                                                             Qt::SmoothTransformation);
                 m_diffGain = diffGain;
             }
@@ -376,6 +399,15 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
                 }
             }
+        }
+
+        // Draw contour around waveform if end of track
+        if (m_endOfTrack) {
+            painter.setOpacity(0.8);
+            painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
+            painter.setBrush(QColor(0,0,0,0));
+            painter.drawRect(rect().adjusted(0,0,-1,-1));
+            painter.setOpacity(1);
         }
 
         if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
@@ -424,45 +456,6 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             const float offset = 1.0f;
             const float gain = static_cast<float>(length() - 2) / trackSamples;
 
-            // Draw range (loop)
-            for (auto&& currentMarkRange : m_markRanges) {
-                // If the mark range is not active we should not draw it.
-                if (!currentMarkRange.active()) {
-                    continue;
-                }
-
-                // Active mark ranges by definition have starts/ends that are not
-                // disabled.
-                const double startValue = currentMarkRange.start();
-                const double endValue = currentMarkRange.end();
-
-                const float startPosition = offset + startValue * gain;
-                const float endPosition = offset + endValue * gain;
-
-                if (startPosition < 0.0 && endPosition < 0.0) {
-                    continue;
-                }
-
-                if (currentMarkRange.enabled()) {
-                    painter.setOpacity(0.4);
-                    painter.setPen(currentMarkRange.m_activeColor);
-                    painter.setBrush(currentMarkRange.m_activeColor);
-                } else {
-                    painter.setOpacity(0.2);
-                    painter.setPen(currentMarkRange.m_disabledColor);
-                    painter.setBrush(currentMarkRange.m_disabledColor);
-                }
-
-                // let top and bottom of the rect out of the widget
-                if (m_orientation == Qt::Horizontal) {
-                    painter.drawRect(QRectF(QPointF(startPosition, -2.0),
-                                            QPointF(endPosition, height() + 1.0)));
-                } else {
-                    painter.drawRect(QRectF(QPointF(-2.0, startPosition),
-                                            QPointF(width() + 1.0, endPosition)));
-                }
-            }
-
             // Draw markers (Cue & hotcues)
             QFont markerFont = painter.font();
             markerFont.setPixelSize(10 * m_scaleFactor);
@@ -473,9 +466,82 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             painter.setOpacity(0.9);
 
+            // Draw range (loop)
+            for (auto&& markRange: m_markRanges) {
+                if (!markRange.active() || !markRange.visible()) {
+                    continue;
+                }
+
+                // Active mark ranges by definition have starts/ends that are not
+                // disabled.
+                const double startValue = markRange.start();
+                const double endValue = markRange.end();
+
+                const float startPosition = offset + startValue * gain;
+                const float endPosition = offset + endValue * gain;
+
+                if (startPosition < 0.0 && endPosition < 0.0) {
+                    continue;
+                }
+
+                if (markRange.enabled()) {
+                    painter.setOpacity(0.4);
+                    painter.setPen(markRange.m_activeColor);
+                    painter.setBrush(markRange.m_activeColor);
+                } else {
+                    painter.setOpacity(0.2);
+                    painter.setPen(markRange.m_disabledColor);
+                    painter.setBrush(markRange.m_disabledColor);
+                }
+
+                // let top and bottom of the rect out of the widget
+                if (m_orientation == Qt::Horizontal) {
+                    painter.drawRect(QRectF(QPointF(startPosition, -2.0),
+                                            QPointF(endPosition, height() + 1.0)));
+                } else {
+                    painter.drawRect(QRectF(QPointF(-2.0, startPosition),
+                                            QPointF(width() + 1.0, endPosition)));
+                }
+
+                // draw duration of range
+                if (markRange.showDuration()) {
+                    // TODO: replace with rate_ratio in PR #1765
+                    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
+                    QString duration = mixxx::Duration::formatTime((endValue - startValue)
+                            / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio);
+
+                    QFontMetrics fm(painter.font());
+                    int textWidth = fm.width(duration);
+                    float padding = 3.0;
+                    float x;
+
+                    WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
+                    if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
+                        x = startPosition - textWidth - padding;
+                    } else {
+                        x = endPosition + padding;
+                    }
+
+                    // Ensure the right end of the text does not get cut off by
+                    // the end of the track
+                    if (x + textWidth > width()) {
+                        x = width() - textWidth;
+                    }
+
+                    painter.setOpacity(1.0);
+                    painter.setPen(markRange.m_durationTextColor);
+                    painter.drawText(QPointF(x, fm.ascent()), duration);
+                }
+            }
+
             for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
                 if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
+                    // Marks are visible by default.
+                    if (currentMark->hasVisible() && !currentMark->isVisible()) {
+                        continue;
+                    }
+
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;
@@ -611,6 +677,8 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     // space.
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
+
+    m_devicePixelRatio = getDevicePixelRatioF(this);
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;

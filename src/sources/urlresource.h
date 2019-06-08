@@ -8,8 +8,9 @@
 namespace mixxx {
 
 class UrlResource {
-public:
-    virtual ~UrlResource() {}
+  public:
+    virtual ~UrlResource() {
+    }
 
     QUrl getUrl() const {
         return m_url;
@@ -18,9 +19,9 @@ public:
         return m_url.toString();
     }
 
-protected:
+  protected:
     explicit UrlResource(QUrl url)
-        : m_url(url) {
+            : m_url(url) {
     }
 
     inline bool isLocalFile() const {
@@ -36,7 +37,7 @@ protected:
         return m_url.toLocalFile();
     }
 
-private:
+  private:
     QUrl m_url;
 };
 

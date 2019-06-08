@@ -436,6 +436,31 @@ TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
+TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
+    // Test that checks if disconnecting yields the appropriate feedback
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
+    
+    EXPECT_TRUE(evaluateAndAssert(
+            "var reaction = function(success) { "
+            "  if (success) {"
+            "    var pass = engine.getValue('[Test]', 'passed');"
+            "    engine.setValue('[Test]', 'passed', pass + 1.0); "
+            "  }"
+            "};"
+            "var dummy_callback = function(value) {};"
+            "var connection = engine.makeConnection('[Test]', 'co', dummy_callback);"
+            "reaction(connection);"
+            "reaction(connection.isConnected);"
+            "var successful_disconnect = connection.disconnect();"
+            "reaction(successful_disconnect);"
+            "reaction(!connection.isConnected);"
+    ));
+    application()->processEvents();
+    EXPECT_DOUBLE_EQ(4.0, pass->get());
+}
+
+
 TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectControl) {
     // Test that passing a connection object back to engine.connectControl
     // removes the connection
@@ -540,6 +565,7 @@ TEST_F(ControllerEngineTest, connectionObject_trigger) {
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
 
+
 TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     // Test that callback functions are executed with JavaScript's
     // 'this' keyword referring to the object in which the connection
@@ -567,7 +593,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
 }
 
 TEST_F(ControllerEngineTest, colorProxy) {
-    QList<PredefinedColorPointer> allColors = Color::predefinedColorSet.allColors;
+    QList<PredefinedColorPointer> allColors = Color::kPredefinedColorsSet.allColors;
     for (int i = 0; i < allColors.length(); ++i) {
         PredefinedColorPointer color = allColors[i];
         qDebug() << "Testing color " << color->m_sName;

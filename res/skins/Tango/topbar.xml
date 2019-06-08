@@ -30,28 +30,23 @@ Description:
             <Size>-1me,28f</Size>
             <Children>
 
-              <WidgetGroup>
-                <MaximumSize>3,-1</MaximumSize>
-                <SizePolicy>min,min</SizePolicy>
-              </WidgetGroup>
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
               <PushButton>
-                <MinimumSize>51,12</MinimumSize>
-                <MaximumSize>102,24</MaximumSize>
-                <SizePolicy>me,min</SizePolicy>
+                <Size>102f,24f</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24_grey.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24_grey.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">graphics/logo_102x24_grey.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">graphics/logo_102x24_grey.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">graphics/logo_102x24.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">graphics/logo_102x24.svg</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],colorLogo</ConfigKey>
+                  <ConfigKey>[Tango],colorLogo</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -63,35 +58,27 @@ Description:
                 <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
               </Template>
 
-              <WidgetGroup><!-- Master & Headphone mixer -->
+              <Label>
                 <Size>22f,28f</Size>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Label>
-                    <Size>22f,28f</Size>
-                    <ObjectName>MasterHeadMixerLabel</ObjectName>
-                  </Label>
-                </Children>
+                <ObjectName>MasterHeadMixerLabel</ObjectName>
                 <Connection>
                   <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </Label>
 
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-              <Template src="skin:mixer_master_booth.xml"/>
+              <!-- Master & Headphone mixer -->
+              <Template src="skin:mixer_master.xml"/>
 
               <WidgetGroup>
-                <MinimumSize>5,-1</MinimumSize>
-                <MaximumSize>50,-1</MaximumSize>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
+                <MaximumSize>30,1</MaximumSize>
               </WidgetGroup>
 
               <Template src="skin:mixer_headphone.xml"/>
 
-              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
             </Children>
           </WidgetGroup>
@@ -260,11 +247,16 @@ Description:
                 <Layout>horizontal</Layout>
                 <Size>70f,20f</Size>
                 <Children>
-                  <Label>
-                    <ObjectName>RecDot</ObjectName>
-                    <Size>15f,20f</Size>
-                  </Label>
-
+                  <Template src="skin:button_3state_display.xml">
+                    <SetVariable name="ObjectName">RecDot</SetVariable>
+                    <SetVariable name="TooltipId">toggle_recording</SetVariable>
+                    <SetVariable name="Size">15f,16f</SetVariable>
+                    <SetVariable name="state_0_text">&#9679;</SetVariable>
+                    <SetVariable name="state_1_text">&#9679;</SetVariable>
+                    <SetVariable name="state_2_text">&#9679;</SetVariable>
+                    <SetVariable name="Align">right</SetVariable>
+                    <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+                  </Template>
                   <RecordingDuration>
                     <ObjectName>RecDuration</ObjectName>
                     <Size>55f,20f</Size>
@@ -289,12 +281,13 @@ Description:
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Clock + latency display -->
-            <ObjectName>AlignCenter</ObjectName>
-            <Size>52f,24f</Size>
+            <ObjectName>ClockBox</ObjectName>
+            <Size>52f,28f</Size>
             <Layout>vertical</Layout>
             <Children>
+
               <WidgetGroup>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Time>
@@ -308,22 +301,27 @@ Description:
                 </Children>
               </WidgetGroup>
 
-              <VuMeter><!-- latency usage -->
-                <Size>31f,3f</Size>
-                <TooltipId>audio_latency_usage</TooltipId>
-                <PathVu>graphics/latency_usage_over.svg</PathVu>
-                <PathBack>graphics/latency_usage.svg</PathBack>
-                <Horizontal>true</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>1000</PeakHoldTime>
-                <PeakFallTime>100</PeakFallTime>
-                <PeakFallStep>1</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Master],audio_latency_usage</ConfigKey>
-                </Connection>
-              </VuMeter><!-- /latency usage -->
-
-              <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>AlignHCenter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter><!-- latency usage -->
+                    <Size>31f,3f</Size>
+                    <TooltipId>audio_latency_usage</TooltipId>
+                    <PathVu>graphics/latency_usage_over.svg</PathVu>
+                    <PathBack>graphics/latency_usage.svg</PathBack>
+                    <Horizontal>true</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>1000</PeakHoldTime>
+                    <PeakFallTime>100</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                    </Connection>
+                  </VuMeter><!-- /latency usage -->
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- Clock + latency display -->
 

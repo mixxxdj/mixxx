@@ -4,9 +4,8 @@
 
 #include "util/audiosignal.h"
 #include "util/indexrange.h"
-#include "util/samplebuffer.h"
 #include "util/memory.h"
-
+#include "util/samplebuffer.h"
 
 namespace mixxx {
 
@@ -15,7 +14,7 @@ class SampleFrames {
     SampleFrames() = default;
     explicit SampleFrames(
             IndexRange frameIndexRange)
-        : m_frameIndexRange(frameIndexRange) {
+            : m_frameIndexRange(frameIndexRange) {
     }
     /*non-virtual*/ ~SampleFrames() = default;
 
@@ -31,19 +30,18 @@ class SampleFrames {
     IndexRange m_frameIndexRange;
 };
 
-
 // Associates a range of frame indices with the corresponding
 // readable sample data as a slice in some sample buffer. The
 // memory is owned by the external sample buffer that must not
 // be modified or destroyed while reading sample data!
-class ReadableSampleFrames final: public SampleFrames {
+class ReadableSampleFrames final : public SampleFrames {
   public:
     ReadableSampleFrames() = default;
     explicit ReadableSampleFrames(
             IndexRange frameIndexRange,
             SampleBuffer::ReadableSlice readableSlice = SampleBuffer::ReadableSlice())
-          : SampleFrames(frameIndexRange),
-            m_readableSlice(readableSlice) {
+            : SampleFrames(frameIndexRange),
+              m_readableSlice(readableSlice) {
     }
     /*non-virtual*/ ~ReadableSampleFrames() = default;
 
@@ -67,19 +65,18 @@ class ReadableSampleFrames final: public SampleFrames {
     SampleBuffer::ReadableSlice m_readableSlice;
 };
 
-
 // Associates a range of frame indices with the corresponding
 // writable sample data as a slice in some sample buffer. The
 // memory is owned by the external sample buffer that must not
 // be modified or destroyed while writing sample data!
-class WritableSampleFrames final: public SampleFrames {
+class WritableSampleFrames final : public SampleFrames {
   public:
     WritableSampleFrames() = default;
     explicit WritableSampleFrames(
             IndexRange frameIndexRange,
             SampleBuffer::WritableSlice writableSlice = SampleBuffer::WritableSlice())
-          : SampleFrames(frameIndexRange),
-            m_writableSlice(writableSlice) {
+            : SampleFrames(frameIndexRange),
+              m_writableSlice(writableSlice) {
     }
     /*non-virtual*/ ~WritableSampleFrames() = default;
 
@@ -102,7 +99,6 @@ class WritableSampleFrames final: public SampleFrames {
   private:
     SampleBuffer::WritableSlice m_writableSlice;
 };
-
 
 class IAudioSourceReader {
   public:
@@ -132,7 +128,6 @@ class IAudioSourceReader {
     }
 };
 
-
 // Common base class for audio sources.
 //
 // Both the number of channels and the sample rate must
@@ -143,10 +138,9 @@ class IAudioSourceReader {
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource, public AudioSignal, public virtual /*implements*/ IAudioSourceReader {
+class AudioSource : public UrlResource, public AudioSignal, public virtual /*implements*/ IAudioSourceReader {
   public:
     virtual ~AudioSource() = default;
-
 
     // All sources are required to produce a signal of frames
     // where each frame contains samples from all channels that are
@@ -156,7 +150,6 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
     // for a stereo signal contains a pair of samples, one for the
     // left and right channel respectively.
     static constexpr SampleLayout kSampleLayout = SampleLayout::Interleaved;
-
 
     enum class OpenMode {
         // In Strict mode the opening operation should be aborted
@@ -191,10 +184,10 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
     class OpenParams : public AudioSignal {
       public:
         OpenParams()
-            : AudioSignal(kSampleLayout) {
+                : AudioSignal(kSampleLayout) {
         }
         OpenParams(ChannelCount channelCount, SampleRate sampleRate)
-            : AudioSignal(kSampleLayout, channelCount, sampleRate) {
+                : AudioSignal(kSampleLayout, channelCount, sampleRate) {
         }
 
         using AudioSignal::setChannelCount;
@@ -214,13 +207,11 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
             OpenMode mode,
             const OpenParams& params = OpenParams());
 
-
     // Closes the AudioSource and frees all resources.
     //
     // Might be called even if the AudioSource has never been
     // opened, has already been closed, or if opening has failed.
     virtual void close() = 0;
-
 
     // The total length of audio data is bounded and measured in frames.
     IndexRange frameIndexRange() const {
@@ -251,7 +242,6 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
         return m_frameIndexRange.clampIndex(frameIndex) == frameIndex;
     }
 
-
     // The actual duration in seconds.
     // Well defined only for valid files!
     inline bool hasDuration() const {
@@ -262,7 +252,6 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
         return double(frameLength()) / double(sampleRate());
     }
 
-
     // The bitrate is optional and measured in kbit/s (kbps).
     // It depends on the metadata and decoder if a value for the
     // bitrate is available.
@@ -271,10 +260,12 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
         static constexpr SINT kValueDefault = 0;
 
       public:
-        static constexpr const char* unit() { return "kbps"; }
+        static constexpr const char* unit() {
+            return "kbps";
+        }
 
         explicit constexpr Bitrate(SINT value = kValueDefault)
-            : m_value(value) {
+                : m_value(value) {
         }
 
         bool valid() const {
@@ -294,9 +285,7 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
         return m_bitrate;
     }
 
-
     bool verifyReadable() const override;
-
 
     ReadableSampleFrames readSampleFrames(
             WritableSampleFrames sampleFrames) {
@@ -369,8 +358,7 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
 
 typedef std::shared_ptr<AudioSource> AudioSourcePointer;
 
-inline
-QDebug operator<<(QDebug dbg, AudioSource::OpenMode openMode) {
+inline QDebug operator<<(QDebug dbg, AudioSource::OpenMode openMode) {
     switch (openMode) {
     case AudioSource::OpenMode::Strict:
         return dbg << "Strict";
@@ -382,8 +370,7 @@ QDebug operator<<(QDebug dbg, AudioSource::OpenMode openMode) {
     }
 }
 
-inline
-QDebug operator<<(QDebug dbg, AudioSource::OpenResult openResult) {
+inline QDebug operator<<(QDebug dbg, AudioSource::OpenResult openResult) {
     switch (openResult) {
     case AudioSource::OpenResult::Succeeded:
         return dbg << "Succeeded";

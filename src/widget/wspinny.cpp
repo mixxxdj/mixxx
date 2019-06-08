@@ -68,6 +68,9 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
     qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
@@ -391,7 +394,7 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    VSyncThread::swapGl(this, 0);
+    swapBuffers();
 }
 
 
@@ -675,6 +678,6 @@ void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
     DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
-void WSpinny::dropEvent(QDropEvent * event) {
+void WSpinny::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

@@ -102,6 +102,10 @@ class LoopingControl : public EngineControl {
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
     bool currentLoopMatchesBeatloopSize();
+
+    // Given loop in and out points, determine if this is a beatloop of a particular
+    // size.
+    double findBeatloopSizeForLoop(double start, double end) const;
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.

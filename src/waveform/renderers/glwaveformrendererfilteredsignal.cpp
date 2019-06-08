@@ -7,12 +7,10 @@
 
 #include <QDomNode>
 
-#include <qgl.h>
-
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
-
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererFilteredSignal::~GLWaveformRendererFilteredSignal() {
@@ -64,8 +62,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
-
-#ifndef __OPENGLES__
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
@@ -224,8 +220,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
-
-#endif
 
     painter->endNativePainting();
 }

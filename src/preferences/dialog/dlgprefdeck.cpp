@@ -111,8 +111,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 
     m_pControlTrackTimeFormat = new ControlObject(
             ConfigKey("[Controls]", "TimeFormat"));
-    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotTimeFormatChanged(double)));
+    connect(m_pControlTrackTimeFormat, &ControlObject::valueChanged, this, &DlgPrefDeck::slotTimeFormatChanged);
 
     QLocale locale;
     // Track Display model
@@ -165,6 +164,12 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     checkBoxSeekToCue->setChecked(m_bJumpToCueOnTrackLoad);
     connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
             this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
+
+    // Automatically assign a color to new hot cues
+    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
+    checkBoxAssignHotcueColors->setChecked(m_bAssignHotcueColors);
+    connect(checkBoxAssignHotcueColors, SIGNAL(toggled(bool)),
+            this, SLOT(slotAssignHotcueColorsCheckbox(bool)));
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
@@ -335,6 +340,9 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "CueRecall"), false));
 
+    checkBoxAssignHotcueColors->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "auto_hotcue_colors"), false));
+
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
     if (index == -1) {
@@ -490,6 +498,10 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
     m_bJumpToCueOnTrackLoad = checked;
 }
 
+void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
+    m_bAssignHotcueColors = checked;
+}
+
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     if (b == radioButtonRemaining) {
         m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
@@ -567,6 +579,7 @@ void DlgPrefDeck::slotApply() {
                         !m_bDisallowTrackLoadToPlayingDeck);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
+    m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);

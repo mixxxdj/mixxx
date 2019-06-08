@@ -6,12 +6,11 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
 
-#include <qgl.h>
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
-
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {
@@ -59,8 +58,6 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     // Reset device for native painting
     painter->beginNativePainting();
-
-#ifndef __OPENGLES__
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -158,8 +155,6 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
-
-#endif
 
     painter->endNativePainting();
 }

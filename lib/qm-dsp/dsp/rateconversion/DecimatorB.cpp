@@ -112,7 +112,6 @@ void DecimatorB::doProcess()
 {
     int filteridx = 0;
     int factorDone = 1;
-    int factorRemaining = m_decFactor;
 
     while (factorDone < m_decFactor) {
 

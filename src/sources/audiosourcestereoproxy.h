@@ -1,13 +1,11 @@
 #ifndef MIXXX_AUDIOSOURCESTEREOPROXY_H
 #define MIXXX_AUDIOSOURCESTEREOPROXY_H
 
-
 #include "sources/audiosource.h"
-
 
 namespace mixxx {
 
-class AudioSourceStereoProxy: public AudioSource {
+class AudioSourceStereoProxy : public AudioSource {
   public:
     static AudioSourcePointer create(
             AudioSourcePointer pAudioSource,
@@ -48,6 +46,5 @@ class AudioSourceStereoProxy: public AudioSource {
 };
 
 } // namespace mixxx
-
 
 #endif // MIXXX_AUDIOSOURCESTEREOPROXY_H

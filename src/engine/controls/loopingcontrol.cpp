@@ -819,6 +819,15 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.get(), &Track::beatsUpdated,
                 this, &LoopingControl::slotUpdatedTrackBeats);
+
+        LoopSamples loopSamples = m_loopSamples.getValue();
+        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
+            double loaded_loop_size = findBeatloopSizeForLoop(
+                loopSamples.start, loopSamples.end);
+            if (loaded_loop_size != -1) {
+                m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
+            }
+        }
     } else {
         m_pTrack.reset();
         m_pBeats.clear();
@@ -908,6 +917,22 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 
     return loopSamples.end > beatLoopOutPoint - 2 &&
             loopSamples.end < beatLoopOutPoint + 2;
+}
+
+double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
+    BeatsPointer pBeats = m_pBeats;
+    if (!pBeats) {
+        return -1;
+    }
+
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        double beatLoopOutPoint =
+            pBeats->findNBeatsFromSample(start, s_dBeatSizes[i]);
+        if (end > beatLoopOutPoint - 2 && end < beatLoopOutPoint + 2) {
+            return s_dBeatSizes[i];
+        }
+    }
+    return -1;
 }
 
 void LoopingControl::updateBeatLoopingControls() {
