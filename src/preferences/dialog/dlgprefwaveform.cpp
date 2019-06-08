@@ -1,3 +1,5 @@
+#include <QtDebug>
+
 #include "preferences/dialog/dlgprefwaveform.h"
 
 #include "mixxx.h"
@@ -73,6 +75,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetNormalizeOverview(bool)));
+    connect(showBarAndPhraseMarksCheckBox, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetBarAndPhrase(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
@@ -111,6 +115,7 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
+    showBarAndPhraseMarksCheckBox->setChecked(factory->getShowBarAndPhrase());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
@@ -229,6 +234,10 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+}
+
+void DlgPrefWaveform::slotSetBarAndPhrase(bool showBarAndPhrase) {
+    WaveformWidgetFactory::instance()->setShowBarAndPhrase(showBarAndPhrase);
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {

@@ -44,8 +44,9 @@ class BeatMapIterator : public BeatIterator {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual double next() {
-        double beat = framesToSamples(m_currentBeat->frame_position());
+    virtual BeatData next() {
+        BeatData beat;
+        beat.sample = framesToSamples(m_currentBeat->frame_position());
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
             ++m_currentBeat;
@@ -422,6 +423,12 @@ double BeatMap::getBpmRange(double startSample, double stopSample) const {
     return calculateBpm(startBeat, stopBeat);
 }
 
+double BeatMap::calculateFirstPhraseSample(double phraseSample) const {
+    Q_UNUSED(phraseSample);
+    DEBUG_ASSERT(!"BeatMap::calculateFirstPhraseSample() not implemented");
+    return 0.0;
+}
+
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
@@ -682,6 +689,12 @@ void BeatMap::scaleFourth() {
             break;
         }
     }
+}
+
+void BeatMap::setFirstPhraseBegin(double firstPhraseBegin) {
+    Q_UNUSED(firstPhraseBegin);
+    DEBUG_ASSERT(!"BeatMap::setFirstPhraseBegin() not implemented");
+    return;
 }
 
 void BeatMap::setBpm(double dBpm) {

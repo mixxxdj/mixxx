@@ -1,5 +1,6 @@
 #include <QDirIterator>
 #include <QFile>
+#include <QtDebug>
 #include <QMutexLocker>
 
 #include <atomic>
@@ -125,7 +126,7 @@ void Track::relocate(
 void Track::setTrackMetadata(
         mixxx::TrackMetadata trackMetadata,
         QDateTime metadataSynchronized) {
-    // Safe some values that are needed after move assignment and unlocking(see below)
+    // Save some values that are needed after move assignment and unlocking(see below)
     const auto newBpm = trackMetadata.getTrackInfo().getBpm();
     const auto newKey = trackMetadata.getTrackInfo().getKey();
     const auto newReplayGain = trackMetadata.getTrackInfo().getReplayGain();
@@ -672,6 +673,16 @@ int Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getSampleRate();
 }
+
+double Track::getFirstPhraseBegin() const {
+    return dFirstPhraseBegin;
+}
+
+void Track::setPhraseBegin(double phraseBegin) {
+	dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(phraseBegin);
+    m_pBeats->setFirstPhraseBegin(dFirstPhraseBegin);
+}
+
 
 void Track::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);

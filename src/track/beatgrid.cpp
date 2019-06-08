@@ -3,28 +3,54 @@
 
 #include "track/beatgrid.h"
 #include "util/math.h"
+#include "maths/MathUtilities.h"
 
 static const int kFrameSize = 2;
 
 struct BeatGridData {
     double bpm;
     double firstBeat;
+    double firstPhrase;
 };
+
 
 class BeatGridIterator : public BeatIterator {
   public:
-    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
+    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample,
+    		double dFirstPhraseBegin, int beatsPerBar, int barsPerPhrase)
             : m_dBeatLength(dBeatLength),
               m_dCurrentSample(dFirstBeat),
-              m_dEndSample(dEndSample) {
+              m_dEndSample(dEndSample),
+			  m_dPhraseBeginSample(dFirstPhraseBegin),
+              m_beatsPerBar(beatsPerBar),
+              m_barsPerPhrase(barsPerPhrase),
+              m_beatCounter(0) {
     }
+
 
     virtual bool hasNext() const {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
     }
 
-    virtual double next() {
-        double beat = m_dCurrentSample;
+    virtual BeatData next() {
+        BeatData beat;
+        beat.sample = m_dCurrentSample;
+
+
+        if (m_dPhraseBeginSample > m_dCurrentSample or m_dCurrentSample > m_dEndSample) {
+            beat.phraseNumber = beat.beatNumber = beat.barNumber = -1;
+        } else {
+            beat.beatNumber = ((m_dCurrentSample - m_dPhraseBeginSample) / (int)m_dBeatLength);
+            // If we are at a bar start, set bar number and check for phrase.
+            if (std::remainder(beat.beatNumber, m_beatsPerBar) == 0) {
+            	beat.barNumber = beat.beatNumber / m_beatsPerBar;
+            	beat.phraseNumber = (std::remainder(beat.barNumber, m_barsPerPhrase) == 0 ? beat.barNumber / m_barsPerPhrase : -1);
+            } else {
+            	beat.barNumber = beat.phraseNumber = -1;
+            }
+
+        }
+
         m_dCurrentSample += m_dBeatLength;
         return beat;
     }
@@ -33,7 +59,12 @@ class BeatGridIterator : public BeatIterator {
     double m_dBeatLength;
     double m_dCurrentSample;
     double m_dEndSample;
+    double m_dPhraseBeginSample;
+    int m_beatsPerBar;
+    int m_barsPerPhrase;
+    int m_beatCounter;
 };
+
 
 BeatGrid::BeatGrid(
         const Track& track,
@@ -64,6 +95,10 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
+    setGrid(dBpm, dFirstBeatSample, dFirstBeatSample);
+}
+
+void BeatGrid::setGrid(double dBpm, double dFirstBeatSample, double dFirstPhraseBegin) {
     if (dBpm < 0) {
         dBpm = 0.0;
     }
@@ -71,6 +106,7 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
     QMutexLocker lock(&m_mutex);
     m_grid.mutable_bpm()->set_bpm(dBpm);
     m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
+    m_grid.mutable_first_phrase()->set_frame_position(dFirstPhraseBegin / kFrameSize);
     // Calculate beat length as sample offsets
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
@@ -103,7 +139,11 @@ void BeatGrid::readByteArray(const QByteArray& byteArray) {
     const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
 
     // We serialize into frame offsets but use sample offsets at runtime
-    setGrid(blob->bpm, blob->firstBeat * kFrameSize);
+    setGrid(blob->bpm, blob->firstBeat * kFrameSize, blob->firstPhrase * kFrameSize);
+}
+
+double BeatGrid::firstPhraseSample() const {
+    return m_grid.first_phrase().frame_position() * kFrameSize;
 }
 
 double BeatGrid::firstBeatSample() const {
@@ -178,14 +218,12 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     const double kEpsilon = .01;
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
-        beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeat
         // needs to be re-calculated. Since it is floor(beatFraction), that's
         // the same as nextBeat.  We only use prevBeat so no need to increment
         // nextBeat.
         prevBeat = nextBeat;
     } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
-        beatFraction = prevBeat;
         // If we are going to pretend we were actually on prevBeat then nextBeat
         // needs to be re-calculated. Since it is ceil(beatFraction), that's
         // the same as prevBeat.  We will only use nextBeat so no need to
@@ -206,10 +244,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         n = n + 1;
     }
 
-    double dResult = floor(dClosestBeat + n * m_dBeatLength);
-    if (!even(static_cast<int>(dResult))) {
-        dResult--;
-    }
+    double dResult = dClosestBeat + n * m_dBeatLength;
     return dResult;
 }
 
@@ -246,14 +281,8 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
         // And nextBeat needs to be incremented.
         ++nextBeat;
     }
-    *dpPrevBeatSamples = floor(prevBeat * dBeatLength + dFirstBeatSample);
-    *dpNextBeatSamples = floor(nextBeat * dBeatLength + dFirstBeatSample);
-    if (!even(static_cast<int>(*dpPrevBeatSamples))) {
-        --*dpPrevBeatSamples;
-    }
-    if (!even(static_cast<int>(*dpNextBeatSamples))) {
-        --*dpNextBeatSamples;
-    }
+    *dpPrevBeatSamples = prevBeat * dBeatLength + dFirstBeatSample;
+    *dpNextBeatSamples = nextBeat * dBeatLength + dFirstBeatSample;
     return true;
 }
 
@@ -269,7 +298,9 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
     if (curBeat == -1.0) {
         return std::unique_ptr<BeatIterator>();
     }
-    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample);
+    double m_firstPhraseBegin = firstPhraseSample();
+    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample, m_firstPhraseBegin,
+        c_beatsPerBar, c_barsPerPhrase);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -309,6 +340,12 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
         return -1;
     }
     return bpm();
+}
+
+double BeatGrid::calculateFirstPhraseSample(double phraseSample) const {
+	return ((int)MathUtilities::round((phraseSample - firstBeatSample()) / m_dBeatLength) %
+	            (c_beatsPerBar * c_barsPerPhrase)) * m_dBeatLength + firstBeatSample();
+
 }
 
 void BeatGrid::addBeat(double dBeatSample) {
@@ -368,6 +405,12 @@ void BeatGrid::scale(enum BPMScale scale) {
         return;
     }
     setBpm(bpm);
+}
+
+void BeatGrid::setFirstPhraseBegin(double firstPhraseBegin) {
+    double newFirstPhraseBegin = firstPhraseBegin / kFrameSize;
+    m_grid.mutable_first_phrase()->set_frame_position(newFirstPhraseBegin);
+    emit(updated());
 }
 
 void BeatGrid::setBpm(double dBpm) {

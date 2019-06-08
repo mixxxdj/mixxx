@@ -29,6 +29,8 @@ Variables:
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
         <BeatColor>#ffffff</BeatColor>
+        <BarColor>#00630e</BarColor>
+        <PhraseColor>#00ff00</PhraseColor>
         <PlayPosColor>#FF4300</PlayPosColor>
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>

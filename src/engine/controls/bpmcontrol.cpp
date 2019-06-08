@@ -1,4 +1,6 @@
 #include <QStringList>
+#include <QtDebug>
+
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -791,6 +793,11 @@ void BpmControl::slotBeatsTranslate(double v) {
             delta--;
         }
         pBeats->translate(delta);
+
+        TrackPointer pTrack = m_pTrack;
+        if (pTrack) {
+        	pTrack->setPhraseBegin(currentSample);
+        }
     }
 }
 

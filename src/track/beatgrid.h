@@ -29,6 +29,7 @@ class BeatGrid final : public Beats {
     // of dFirstBeatSample. Does not generate an updated() signal, since it is
     // meant for initialization.
     void setGrid(double dBpm, double dFirstBeatSample);
+    void setGrid(double dBpm, double dFirstBeatSample, double dFirstPhraseBegin);
 
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
@@ -59,6 +60,7 @@ class BeatGrid final : public Beats {
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
     virtual double getBpmAroundPosition(double curSample, int n) const;
+    virtual double calculateFirstPhraseSample(double phraseSample) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
@@ -70,10 +72,12 @@ class BeatGrid final : public Beats {
     virtual void translate(double dNumSamples);
     virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
+    virtual void setFirstPhraseBegin(double firstPhraseBegin);
 
   private:
     BeatGrid(const BeatGrid& other);
     double firstBeatSample() const;
+    double firstPhraseSample() const;
     double bpm() const;
 
     void readByteArray(const QByteArray& byteArray);
@@ -89,6 +93,8 @@ class BeatGrid final : public Beats {
     mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
     double m_dBeatLength;
+    const int c_beatsPerBar = 4;
+    const int c_barsPerPhrase = 4;
 };
 
 

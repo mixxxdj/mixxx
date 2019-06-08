@@ -96,6 +96,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
+    void setShowBarAndPhrase(bool showBarAndPhrase);
+    bool getShowBarAndPhrase() const { return m_showBarAndPhrase;}
+
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
@@ -152,6 +155,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
+    bool m_showBarAndPhrase;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

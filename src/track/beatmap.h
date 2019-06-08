@@ -68,6 +68,7 @@ class BeatMap final : public Beats {
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
     virtual double getBpmAroundPosition(double curSample, int n) const;
+    virtual double calculateFirstPhraseSample(double phraseSample) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
@@ -79,6 +80,7 @@ class BeatMap final : public Beats {
     virtual void translate(double dNumSamples);
     virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
+    virtual void setFirstPhraseBegin(double firstPhraseBegin);
 
   private:
     BeatMap(const BeatMap& other);

@@ -16,11 +16,18 @@ namespace {
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
+struct BeatData {
+    double sample;
+    int beatNumber;
+    int barNumber;
+    int phraseNumber;
+};
+
 class BeatIterator {
   public:
     virtual ~BeatIterator() {}
     virtual bool hasNext() const = 0;
-    virtual double next() = 0;
+    virtual BeatData next() = 0;
 };
 
 // Beats is a pure abstract base class for BPM and beat management classes. It
@@ -135,6 +142,8 @@ class Beats : public QObject {
     // BPM returns -1.
     virtual double getBpmAroundPosition(double curSample, int n) const = 0;
 
+    virtual double calculateFirstPhraseSample(double phraseSample) const = 0;
+
     virtual double getMaxBpm() const {
         return kMaxBpm;
     }
@@ -163,6 +172,9 @@ class Beats : public QObject {
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
     virtual void setBpm(double dBpm) = 0;
+
+    virtual void setFirstPhraseBegin(double firstPhraseBegin) = 0;
+
 
   signals:
     void updated();

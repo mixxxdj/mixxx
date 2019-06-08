@@ -6,6 +6,8 @@
 #include "skin/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
+#include "preferences/usersettings.h"
+#include "control/controlproxy.h"
 
 class WaveformRenderBeat : public WaveformRendererAbstract {
   public:
@@ -17,7 +19,10 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
 
   private:
     QColor m_beatColor;
+    QColor m_barColor;
+    QColor m_phraseColor;
     QVector<QLineF> m_beats;
+    bool m_showBarAndPhrase;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

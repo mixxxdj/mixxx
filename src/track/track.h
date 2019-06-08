@@ -115,6 +115,10 @@ class Track : public QObject {
     void setSampleRate(int iSampleRate);
     // Get sample rate
     int getSampleRate() const;
+    // Get first phrase mark within this track
+    double getFirstPhraseBegin() const;
+    void setPhraseBegin(double dPhraseBegin);
+
 
     // Sets the bitrate
     void setBitrate(int);
@@ -374,6 +378,8 @@ class Track : public QObject {
     SecurityTokenPointer m_pSecurityToken;
 
     mixxx::TrackRecord m_record;
+
+    double dFirstPhraseBegin;
 
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
