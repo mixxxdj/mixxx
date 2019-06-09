@@ -12,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef RESAMPLER_H
-#define RESAMPLER_H
+#ifndef QM_DSP_RESAMPLER_H
+#define QM_DSP_RESAMPLER_H
 
 #include <vector>
 
@@ -79,7 +79,6 @@ private:
     int m_targetRate;
     int m_gcd;
     int m_filterLength;
-    int m_bufferLength;
     int m_latency;
     double m_peakToPole;
     

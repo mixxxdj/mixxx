@@ -63,7 +63,7 @@ class HID(Feature):
         if not self.enabled(build):
             return
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
                 # No System Lib found
@@ -1179,7 +1179,7 @@ class Battery(Feature):
             return ["src/util/battery/batterywindows.cpp"]
         elif build.platform_is_osx:
             return ["src/util/battery/batterymac.cpp"]
-        elif build.platform_is_linux:
+        elif build.platform_is_linux or build.platform_is_bsd:
             return ["src/util/battery/batterylinux.cpp"]
         else:
             raise Exception('Battery support is not implemented for the target platform.')

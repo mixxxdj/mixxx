@@ -118,13 +118,36 @@ CUP mode:
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="labelAutoCue">
+       <widget class="QLabel" name="labelLoadPoint">
         <property name="text">
          <string>Track load point</string>
         </property>
        </widget>
       </item>
+      <item row="3" column="1" colspan="2">
+        <widget class="QComboBox" name="comboBoxLoadPoint"/>
+      </item>
       <item row="4" column="0">
+       <widget class="QLabel" name="labelAutoHotcueColors">
+        <property name="text">
+          <string>Auto hot cue colors</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxAssignHotcueColors</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAssignHotcueColors">
+        <property name="toolTip">
+         <string>Automatically assigns a predefined color to a newly created hot cue point, based on its index.</string>
+        </property>
+        <property name="text">
+         <string>Assign predefined colors to newly created hot cue points</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
        <widget class="QLabel" name="labelPlayingTrackProtection">
         <property name="text">
          <string>Playing track protection</string>
@@ -134,7 +157,7 @@ CUP mode:
         </property>
        </widget>
       </item>
-      <item row="4" column="1" colspan="2">
+      <item row="5" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
         <property name="text">
          <string>Do not load tracks into playing decks</string>
@@ -147,9 +170,6 @@ CUP mode:
          <string>Time Format</string>
         </property>
        </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-        <widget class="QComboBox" name="comboBoxLoadPoint"/>
       </item>
      </layout>
     </widget>

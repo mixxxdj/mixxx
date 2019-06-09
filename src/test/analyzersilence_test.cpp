@@ -9,12 +9,12 @@ namespace {
 
 constexpr mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 constexpr int kTrackLengthFrames = 100000;
-constexpr double kTonePitchHz = 1000.0;  // 1kHz
+constexpr double kTonePitchHz = 1000.0; // 1kHz
 
 class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilenceTest()
-        : analyzerSilence(config()) {
+            : analyzerSilence(config()) {
     }
 
     void SetUp() override {
@@ -26,20 +26,21 @@ class AnalyzerSilenceTest : public MixxxTest {
     }
 
     void TearDown() override {
-        delete [] pTrackSampleData;
+        delete[] pTrackSampleData;
     }
 
     void analyzeTrack() {
         analyzerSilence.initialize(pTrack, pTrack->getSampleRate(), nTrackSampleDataLength);
-        analyzerSilence.process(pTrackSampleData, nTrackSampleDataLength);
-        analyzerSilence.finalize(pTrack);
+        analyzerSilence.processSamples(pTrackSampleData, nTrackSampleDataLength);
+        analyzerSilence.storeResults(pTrack);
+        analyzerSilence.cleanup();
     }
 
   protected:
     AnalyzerSilence analyzerSilence;
     TrackPointer pTrack;
     CSAMPLE* pTrackSampleData;
-    int nTrackSampleDataLength;  // in samples
+    int nTrackSampleDataLength; // in samples
 };
 
 TEST_F(AnalyzerSilenceTest, SilenceTrack) {
@@ -184,7 +185,7 @@ TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
     pOutroCue->setType(Cue::Type::Outro);
     pOutroCue->setSource(Cue::Source::Automatic);
     pOutroCue->setPosition(-1.0);
-    pOutroCue->setLength(9000);  // Arbitrary value
+    pOutroCue->setLength(9000); // Arbitrary value
 
     // Fill the first half with silence
     for (int i = 0; i < halfTrackLength; i++) {
@@ -300,4 +301,4 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     EXPECT_EQ(Cue::Source::Manual, pOutroCue->getSource());
 }
 
-}
+} // namespace
