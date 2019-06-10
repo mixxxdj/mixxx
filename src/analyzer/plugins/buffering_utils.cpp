@@ -15,11 +15,7 @@ bool DownmixAndOverlapHelper::initialize(size_t windowSize, size_t stepSize, Win
     m_stepSize = stepSize;
     // make sure the first frame is centered into the fft window. This makes sure
     // that the result is significant starting fom the first step.
-    if (stepSize < windowSize) {
-        m_bufferWritePosition = windowSize / 2;
-    } else {
-        m_bufferWritePosition = 0;
-    }
+    m_bufferWritePosition = windowSize / 2;
     return m_windowSize > 0 && m_stepSize > 0 &&
             m_stepSize <= m_windowSize && callback;
 }
