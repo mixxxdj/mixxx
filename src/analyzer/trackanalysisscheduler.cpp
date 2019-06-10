@@ -210,7 +210,6 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         DEBUG_ASSERT(trackId.isValid());
         // Ignore delayed signals for tracks that are no longer pending
         if (m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end()) {
-            DEBUG_ASSERT(m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end());
             DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
                     || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
             m_pendingTrackIds.erase(trackId);
