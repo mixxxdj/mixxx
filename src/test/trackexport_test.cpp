@@ -1,12 +1,65 @@
-// Exercises the track export worker.
-// Just uses temp directories rather than trying to mock the filesystem.
+#include <gtest/gtest.h>
 
-#include "test/trackexport_test.h"
-
+#include <QDateTime>
 #include <QDebug>
-#include <QScopedPointer>
 
-FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
+#include "library/export/trackexportworker.h"
+#include "track/track.h"
+#include "util/memory.h"
+
+namespace {
+
+class FakeOverwriteAnswerer : public QObject {
+    Q_OBJECT
+  public:
+    FakeOverwriteAnswerer(TrackExportWorker* worker) : m_worker(worker) {
+        connect(m_worker, SIGNAL(progress(QString, int, int)), this,
+            SLOT(slotProgress(QString, int, int)));
+        connect(m_worker,
+            SIGNAL(askOverwriteMode(
+                    QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
+            this,
+            SLOT(slotAskOverwriteMode(
+                    QString,
+                    std::promise<TrackExportWorker::OverwriteAnswer>*)));
+        connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
+    }
+    ~FakeOverwriteAnswerer() override = default;
+
+    void setAnswer(QString expected_filename,
+                   TrackExportWorker::OverwriteAnswer answer) {
+        // We should never copy a duplicate filename, so if a name already
+        // exists that's a bug in the test.
+        Q_ASSERT(m_answers.find(expected_filename) == m_answers.end());
+        m_answers[expected_filename] = answer;
+    }
+
+    QString currentProgressFilename() const {
+        return m_progress_filename;
+    }
+
+    int currentProgress() const {
+        return m_progress;
+    }
+
+    int currentProgressCount() const {
+        return m_progress_count;
+    }
+
+  public slots:
+    void slotProgress(QString filename, int progress, int count);
+    void slotAskOverwriteMode(
+            QString filename,
+            std::promise<TrackExportWorker::OverwriteAnswer>* promise);
+    void cancelButtonClicked();
+
+  private:
+    TrackExportWorker* m_worker;
+    QMap<QString, TrackExportWorker::OverwriteAnswer> m_answers;
+    QString m_progress_filename;
+    int m_progress = 0;
+    int m_progress_count = 0;
+};
 
 void FakeOverwriteAnswerer::slotProgress(QString filename, int progress, int count) {
     m_progress_filename = filename;
@@ -33,6 +86,41 @@ void FakeOverwriteAnswerer::cancelButtonClicked() {
     m_progress = -1;
     m_progress_count = -1;
 }
+
+} // anonymous namespace
+
+// Exercises the track export worker.
+// Just uses temp directories rather than trying to mock the filesystem.
+class TrackExporterTest : public testing::Test {
+  public:
+    TrackExporterTest() :
+        m_testDataDir(QDir::current().absoluteFilePath(
+                "src/test/id3-test-data")) { }
+
+    void SetUp() override {
+        // QTemporaryDir only in QT5, that would be more convenient.
+        QDir tempPath(QDir::tempPath());
+        qsrand(QDateTime::currentDateTime().toTime_t());
+        const int randnum = qrand() % 100000;
+        QString export_subdir = QString("ExportTest-%2/").arg(randnum);
+        m_exportDir = QDir(tempPath.filePath(export_subdir));
+        tempPath.mkpath(export_subdir);
+    }
+
+    void TearDown() override {
+        QFileInfoList files =
+                m_exportDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+        for (const auto& file : files) {
+            ASSERT_TRUE(m_exportDir.remove(file.absoluteFilePath()));
+        }
+        ASSERT_TRUE(m_exportDir.rmdir(m_exportDir.absolutePath()));
+    }
+
+  protected:
+    const QDir m_testDataDir;
+    QDir m_exportDir;
+    std::unique_ptr<FakeOverwriteAnswerer> m_answerer;
+};
 
 TEST_F(TrackExporterTest, SimpleListExport) {
     // Create a simple list of trackpointers and export them.
