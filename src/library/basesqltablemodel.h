@@ -76,8 +76,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-    virtual SortColumnId sortColumnIdFromColumnIndex(int column) override;
-    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from QAbstractItemModel
