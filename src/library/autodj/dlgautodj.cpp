@@ -6,6 +6,7 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 #include "util/duration.h"
+#include "util/compatibility.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
