@@ -127,6 +127,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
     m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
+    m_pSortColumn = new ControlProxy("[Library]", "sort_column", this);
+    m_pSortColumn->connectValueChanged(this, &WTrackTableView::applySortingIfVisible);
+    m_pSortOrder = new ControlProxy("[Library]", "sort_order", this);
+    m_pSortOrder->connectValueChanged(this, &WTrackTableView::applySortingIfVisible);
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -361,31 +365,32 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     if (m_sorting) {
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
         connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-                this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
+                this, SLOT(slotSortingChanged(int, Qt::SortOrder)), Qt::AutoConnection);
+
+        int sortColumn;
+        Qt::SortOrder sortOrder;
 
         // Stupid hack that assumes column 0 is never visible, but this is a weak
         // proxy for "there was a saved column sort order"
         if (horizontalHeader()->sortIndicatorSection() > 0) {
             // Sort by the saved sort section and order.
-            horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
-                                                 horizontalHeader()->sortIndicatorOrder());
-            // in Qt5, we need to call it manually, which triggers finally the select()
-            doSortByColumn(horizontalHeader()->sortIndicatorSection());
+            sortColumn = horizontalHeader()->sortIndicatorSection();
+            sortOrder = horizontalHeader()->sortIndicatorOrder();
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
-            int sortColumn = trackModel->defaultSortColumn();
-            Qt::SortOrder sortOrder = trackModel->defaultSortOrder();
+            sortColumn = trackModel->defaultSortColumn();
+            sortOrder = trackModel->defaultSortOrder();
 
             // If the TrackModel has an invalid or internal column as its default
             // sort, find the first non-internal column and sort by that.
             while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
                 sortColumn++;
             }
-            // This line sorts the TrackModel
-            horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-            // in Qt5, we need to call it manually, which triggers finally the select()
-            doSortByColumn(sortColumn);
         }
+
+        m_pSortColumn->set(trackModel->sortColumnIdFromColumnIndex(sortColumn));
+        m_pSortOrder->set(sortOrder);
+        applySorting();
     }
 
     // Set up drag and drop behavior according to whether or not the track
@@ -1775,6 +1780,37 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
+void WTrackTableView::applySortingIfVisible() {
+    // There are multiple instances of WTrackTableView, but we only want to
+    // apply the sorting to the currently visible instance
+    if (!isVisible()) {
+        return;
+    }
+
+    applySorting();
+}
+
+void WTrackTableView::applySorting() {
+    TrackModel* trackModel = getTrackModel();
+    int sortColumnId = static_cast<int>(m_pSortColumn->get());
+    if (sortColumnId < 0 || sortColumnId >= TrackModel::SortColumnId::NUM_SORTCOLUMNIDS) {
+        return;
+    }
+
+    int sortColumn = trackModel->columnIndexFromSortColumnId(static_cast<TrackModel::SortColumnId>(sortColumnId));
+    if (sortColumn < 0) {
+        return;
+    }
+
+    Qt::SortOrder sortOrder = m_pSortOrder->get() ? Qt::DescendingOrder : Qt::AscendingOrder;
+
+    // This line sorts the TrackModel
+    horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+
+    // in Qt5, we need to call it manually, which triggers finally the select()
+    doSortByColumn(sortColumn);
+}
+
 void WTrackTableView::slotLockBpm() {
     lockBpm(true);
 }
@@ -1975,6 +2011,32 @@ void WTrackTableView::slotReloadCoverArt() {
     }
 }
 
+void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
+
+    double sortOrder = static_cast<double>(order);
+    bool sortingChanged = false;
+
+    TrackModel* trackModel = getTrackModel();
+    TrackModel::SortColumnId sortColumnId = trackModel->sortColumnIdFromColumnIndex(headerSection);
+
+    if (sortColumnId == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+        return;
+    }
+
+    if (sortColumnId != static_cast<int>(m_pSortColumn->get())) {
+        m_pSortColumn->set(sortColumnId);
+        sortingChanged = true;
+    }
+    if (sortOrder != m_pSortOrder->get()) {
+        m_pSortOrder->set(sortOrder);
+        sortingChanged = true;
+    }
+
+    if (sortingChanged) {
+        applySortingIfVisible();
+    }
+}
+
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
@@ -1993,4 +2055,3 @@ void WTrackTableView::keyNotationChanged()
 {
     QWidget::update();
 }
-
