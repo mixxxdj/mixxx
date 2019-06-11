@@ -291,9 +291,7 @@
             return;
         }
         if (options.colors !== undefined || options.sendRGB !== undefined) {
-
             this.colorIdKey = 'hotcue_' + options.number + '_color_id';
-
             if (options.colors === undefined) {
                 options.colors = color.predefinedColorsList();
             }
@@ -343,11 +341,11 @@
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorIdKey !== undefined) {
-                this.connections.push(engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
                     if (engine.getValue(this.group,this.outKey)) {
                         this.outputColor(id);
                     }
-                }));
+                });
             }
         },
     });
