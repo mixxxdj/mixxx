@@ -16,13 +16,33 @@
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
+#include "util/logger.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 namespace {
 
-// Utilize all available cores for batch analysis of tracks
-const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount());
+const mixxx::Logger kLogger("AnalysisFeature");
+
+int numberOfAnalyzerThreads() {
+    const int idealThreadCount = QThread::idealThreadCount();
+    DEBUG_ASSERT(idealThreadCount >= 1);
+    // Don't use all available cores on systems with more than
+    // 4 cores to keep the UI and the whole system responsive!
+    if (idealThreadCount <= 4) {
+        // Utilize all available CPU cores
+        return idealThreadCount;
+    } else if (idealThreadCount <= 6) {
+        // Reserve 1 core as headroom
+        return idealThreadCount - 1;
+    } else if (idealThreadCount <= 10) {
+        // Reserve 2 cores as headroom
+        return idealThreadCount - 2;
+    } else {
+        // Never utilize more than 8 cores
+        return 8;
+    }
+}
 
 inline
 AnalyzerModeFlags getAnalyzerModeFlags(
@@ -130,9 +150,14 @@ void AnalysisFeature::activate() {
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (!m_pTrackAnalysisScheduler) {
+        const int numAnalyzerThreads = numberOfAnalyzerThreads();
+        kLogger.info()
+                << "Using"
+                << numAnalyzerThreads
+                << "analyzer threads";
         m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
                 m_library,
-                kNumberOfAnalyzerThreads,
+                numAnalyzerThreads,
                 m_pConfig,
                 getAnalyzerModeFlags(m_pConfig));
 
