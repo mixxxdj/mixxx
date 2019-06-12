@@ -397,22 +397,22 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     const KeyChangeList& key_changes, const int iTotalSamples, const int iSampleRate) {
     const int iTotalFrames = iTotalSamples / 2;
-    QMap<mixxx::track::io::key::ChromaticKey, double> key_occurrence;
+    QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
     for (int i = 0; i < key_changes.size(); ++i) {
         mixxx::track::io::key::ChromaticKey key = key_changes[i].first;
         const double start_frame = key_changes[i].second;
         const double next_frame = (i == key_changes.size() - 1) ?
                 iTotalFrames : key_changes[i+1].second;
-        key_occurrence[key] += (next_frame - start_frame);
+        key_histogram[key] += (next_frame - start_frame);
     }
 
 
     double max_delta = 0;
     mixxx::track::io::key::ChromaticKey max_key = mixxx::track::io::key::INVALID;
-    qDebug() << "Key Occurrence";
-    for (auto it = key_occurrence.constBegin();
-         it != key_occurrence.constEnd(); ++it) {
+    qDebug() << "Key Histogram";
+    for (auto it = key_histogram.constBegin();
+         it != key_histogram.constEnd(); ++it) {
         qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / iSampleRate;
         if (it.value() > max_delta) {
             max_key = it.key();
