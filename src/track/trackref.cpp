@@ -4,14 +4,14 @@
 namespace {
 
 inline
-QUrl urlFromLocalFilePath(QString localFilePath) {
+QUrl urlFromLocalFilePath(const QString& localFilePath) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    return QUrl::fromLocalFile(std::move(localFilePath));
+    return QUrl::fromLocalFile(localFilePath);
 #else
     if (localFilePath.isEmpty()) {
         return QUrl();
     } else {
-        return QUrl::fromLocalFile(std::move(localFilePath));
+        return QUrl::fromLocalFile(localFilePath);
     }
 #endif
 }
