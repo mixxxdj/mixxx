@@ -17,7 +17,7 @@ QUrl urlFromLocalFilePath(const QString& localFilePath) {
 }
 
 inline
-QString uriFromUrl(const QUrl& url) {
+QString urlToString(const QUrl& url) {
     return url.toEncoded(
             QUrl::StripTrailingSlash |
             QUrl::NormalizePathSegments);
@@ -37,12 +37,12 @@ QUrl TrackRef::canonicalLocationUrl(const QFileInfo& fileInfo) {
 
 //static
 QString TrackRef::locationUri(const QFileInfo& fileInfo) {
-    return uriFromUrl(locationUrl(fileInfo));
+    return urlToString(locationUrl(fileInfo));
 }
 
 //static
 QString TrackRef::canonicalLocationUri(const QFileInfo& fileInfo) {
-    return uriFromUrl(canonicalLocationUrl(fileInfo));
+    return urlToString(canonicalLocationUrl(fileInfo));
 }
 
 bool TrackRef::verifyConsistency() const {
