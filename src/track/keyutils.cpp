@@ -395,7 +395,7 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-    const KeyChangeList& key_changes, const int iTotalSamples, const int iSampleRate) {
+    const KeyChangeList& key_changes, const int iTotalSamples, int iSampleRate) {
     const int iTotalFrames = iTotalSamples / 2;
     QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
