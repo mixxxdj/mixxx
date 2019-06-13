@@ -15,10 +15,9 @@ BatteryWindows::~BatteryWindows() {
 }
 
 void BatteryWindows::read() {
-    m_iMinutesLeft = -1;
+    m_iMinutesLeft = Battery::TIME_UNKNOWN;
     m_dPercentage = 0.0;
     m_chargingState = Battery::UNKNOWN;
-    int seconds_left;
 
     // SYSTEM_POWER_STATUS doc
     // http://msdn.microsoft.com/en-us/library/windows/desktop/aa373232(v=vs.85).aspx
@@ -41,7 +40,7 @@ void BatteryWindows::read() {
             m_chargingState = Battery::CHARGED;
         }
         // windows tells us the remainging time in seconds (-1 if unknown)
-        seconds_left = static_cast<int>(spsPwr.BatteryLifeTime);
+        int seconds_left = static_cast<int>(spsPwr.BatteryLifeTime);
         if (seconds_left >= 0) {
             m_iMinutesLeft = seconds_left / 60;
         }

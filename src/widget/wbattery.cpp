@@ -105,7 +105,7 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_chargingPixmaps.size())];
             }
-            if (minutesLeft == -1) {
+            if (minutesLeft == Battery::TIME_UNKNOWN) {
                 setBaseTooltip(tr("Time until charged unknown."));
             } else {
                 setBaseTooltip(tr("Time until charged: %1")
@@ -118,7 +118,7 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_dischargingPixmaps.size())];
             }
-            if (minutesLeft == -1) {
+            if (minutesLeft == Battery::TIME_UNKNOWN) {
                 setBaseTooltip(tr("Time left unknown."));
             } else {
                 setBaseTooltip(tr("Time left: %1")

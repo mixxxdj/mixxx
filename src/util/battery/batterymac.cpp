@@ -16,7 +16,7 @@ BatteryMac::~BatteryMac() {
 }
 
 void BatteryMac::read() {
-    m_iMinutesLeft = -1;
+    m_iMinutesLeft = Battery::TIME_UNKNOWN;
     m_dPercentage = 0.0;
     m_chargingState = Battery::UNKNOWN;
 
