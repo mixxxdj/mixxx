@@ -1217,10 +1217,12 @@ void importTrackMetadataFromID3v2Tag(
         } else {
             double bpmValueOriginal = bpmValue;
             DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
+            bool adjusted = false;
             while (bpmValue > Bpm::kValueMax) {
                 double bpmValueAdjusted = bpmValue / 10;
                 if (bpmValueAdjusted < bpmValue) {
                     bpmValue = bpmValueAdjusted;
+                    adjusted = true;
                     continue;
                 }
                 // Ensure that the loop always terminates even for invalid
@@ -1231,11 +1233,13 @@ void importTrackMetadataFromID3v2Tag(
                 bpmValue = Bpm::kValueUndefined;
                 break;
             }
-            kLogger.info()
-                    << "Adjusted bpm value from"
-                    << bpmValueOriginal
-                    << "to"
-                    << bpmValue;
+            if (adjusted) {
+                kLogger.info()
+                        << "Adjusted bpm value from"
+                        << bpmValueOriginal
+                        << "to"
+                        << bpmValue;
+            }
         }
         if (bpmValue != Bpm::kValueUndefined) {
             pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
