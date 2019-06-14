@@ -148,7 +148,9 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
         qDebug() << this << "Error loading pixmap:" << source.getPath();
     } else {
         *ppPixmap = pPixmap;
-        setFixedSize(pPixmap->size());
+        if (mode == Paintable::FIXED) {
+            setFixedSize(pPixmap->size());
+        }
     }
 }
 
@@ -159,10 +161,10 @@ void WBattery::paintEvent(QPaintEvent* /*unused*/) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
-        m_pPixmapBack->draw(0, 0, &p);
+        m_pPixmapBack->draw(rect(), &p);
     }
 
     if (m_pCurrentPixmap) {
-        m_pCurrentPixmap->draw(0, 0, &p);
+        m_pCurrentPixmap->draw(rect(), &p);
     }
 }
