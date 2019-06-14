@@ -224,7 +224,7 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
 }
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+    Q_UNUSED(pTrack); // only used in DEBUG_ASSERT
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
     if (m_pCurrentTrack) {
@@ -234,7 +234,7 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+    Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
