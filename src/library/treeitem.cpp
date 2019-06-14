@@ -87,6 +87,7 @@ void TreeItem::removeChild(int row) {
 }
 
 void TreeItem::insertChildren(QList<TreeItem*>& children, int row, int count) {
+    Q_UNUSED(row);
     DEBUG_ASSERT(feature() != nullptr);
     DEBUG_ASSERT(count >= 0);
     DEBUG_ASSERT(count <= children.size());

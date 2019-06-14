@@ -41,6 +41,7 @@ class EvictAndSaveFunctor {
     }
 
     void operator()(Track* plainPtr) {
+        Q_UNUSED(plainPtr);
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
         // functor and the owning reference counting object.
