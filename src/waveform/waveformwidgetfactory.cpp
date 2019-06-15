@@ -131,7 +131,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
         auto rendererString = QString();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
         if (QOpenGLContext::currentContext()) {
             auto glFunctions = QOpenGLFunctions();
 
@@ -149,7 +148,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             qDebug() << "QOpenGLContext::currentContext() returns nullptr";
             qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
         }
-#endif
 
         int majorGlVersion = 0;
         int minorGlVersion = 0;
