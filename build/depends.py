@@ -22,17 +22,6 @@ class PortAudio(Dependence):
         return ['src/soundio/sounddeviceportaudio.cpp']
 
 
-class OSXFilePathUrlBackport(Dependence):
-
-    def configure(self, build, conf):
-        return
-
-    def sources(self, build):
-        if build.platform_is_osx:
-            return ['src/util/filepathurl.mm']
-        return []
-
-
 class PortMIDI(Dependence):
 
     def configure(self, build, conf):
@@ -1542,7 +1531,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, OSXFilePathUrlBackport]
+                QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
