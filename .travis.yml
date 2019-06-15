@@ -60,7 +60,7 @@ install:
   # Build flags common to OS X and Linux.
   # Parallel builds are important for avoiding OSX build timeouts.
   # We turn off verbose output to avoid going over the 4MB output limit.
-  - export COMMON="-j4 qt5=1 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+  - export COMMON="-j4 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
 
   #####
   # Ubuntu Trusty Build
