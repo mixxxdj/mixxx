@@ -112,7 +112,6 @@ DJ202.sortLibrary = function (channel, control, value, status, group) {
   }
 
   var sortColumn;
-  debug("Wunz",control);
   switch (control) {
   case 0x12: // SONG
     sortColumn = 1;
