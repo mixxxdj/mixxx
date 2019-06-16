@@ -106,6 +106,27 @@ DJ202.autoShowDecks = function (value, group, control) {
 
 DJ202.shutdown = function () {};
 
+DJ202.sortLibrary = function (channel, control, value, status, group) {
+  if (value === 0) {
+    return;
+  }
+
+  var sortColumn;
+  debug("Wunz",control);
+  switch (control) {
+  case 0x12: // SONG
+    sortColumn = 1;
+    break;
+  case 0x13: // BPM
+    sortColumn = 14;
+    break;
+  default:
+    // unknown sort column
+    return;
+  }
+  engine.setValue("[Library]", "sort_column_toggle", sortColumn);
+};
+
 DJ202.browseEncoder = new components.Encoder({
   longPressTimer: 0,
   longPressTimeout: 250,

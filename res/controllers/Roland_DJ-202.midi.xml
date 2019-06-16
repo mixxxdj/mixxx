@@ -3254,6 +3254,26 @@
                 </options>
             </control>
             <control>
+                <group>[Library]</group>
+                <key>DJ202.sortLibrary</key>
+                <description>BPM</description>
+                <status>0x9F</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJ202.sortLibrary</key>
+                <description>SONG</description>
+                <status>0x9F</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Master]</group>
                 <key>DJ202.crossfader.inputMSB</key>
                 <status>0xBF</status>
