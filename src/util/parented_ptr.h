@@ -53,8 +53,8 @@ class parented_ptr {
             typename U,
             typename = typename std::enable_if<std::is_convertible<U*, T*>::value, U>::type>
     parented_ptr& operator=(parented_ptr<U>&& u) noexcept {
-        m_ptr = u.m_ptr;
-        u.m_ptr = nullptr;
+        parented_ptr temp{std::move(u)};
+        std::swap(temp.m_ptr, m_ptr);
         return *this;
     }
 
@@ -98,6 +98,13 @@ inline parented_ptr<T> make_parented(Args&&... args) {
     return parented_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+/// A use case for this function is when giving an object owned by `std::unique_ptr` to a Qt
+/// function, that will make the object owned by the Qt object tree. Example:
+/// ```
+/// parent->someFunctionThatAddsAChild(to_parented(child))
+/// ```
+/// where `child` is a `std::unique_ptr`. After the call, the created `parented_ptr` will
+/// automatically be destructed such that the DEBUG_ASSERT for an existent parent is triggered.
 template<typename T>
 inline parented_ptr<T> to_parented(std::unique_ptr<T>& u) noexcept {
     // the DEBUG_ASSERT in the parented_ptr constructor will catch cases where the unique_ptr should
