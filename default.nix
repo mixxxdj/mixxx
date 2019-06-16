@@ -5,6 +5,17 @@ let inherit (nixroot) stdenv pkgs lib
     rubberband scons sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
     libGLU x11 lame lv2 makeWrapper;
 
+  shell-build = nixroot.writeShellScriptBin "build" ''
+    scons \
+      -j$NIX_BUILD_CORES \
+      $sconsFlags "prefix=$HOME/mixxx" "$@";
+  '';
+
+  shell-run = nixroot.writeShellScriptBin "run" ''
+      BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
+      $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
+  '';
+
 in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
   # reading the version from git output is very hard to do without wasting lots of diskspace and runtime
@@ -17,15 +28,6 @@ in stdenv.mkDerivation rec {
     export CC="ccache gcc"
     export CXX="ccache g++"
 
-    build() {
-      scons $sconsFlags prefix=~/mixxx $@
-    }
-
-    run() {
-      BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
-      $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res $@
-    }
-
     echo -e "mixxx development shell. available commands:\n"
     echo " build - compiles mixxx"
     echo " run - runs mixxx with development settings"
@@ -34,7 +36,11 @@ in stdenv.mkDerivation rec {
   src = builtins.filterSource
      (path: type: ! builtins.any (x: x == baseNameOf path) [ ".git" "cache" "lin64_build" "lin_build" "debian" ])
      ./.;
-  
+
+  nativeBuildInputs = [
+    shell-build shell-run
+  ];
+
   buildInputs = [
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
