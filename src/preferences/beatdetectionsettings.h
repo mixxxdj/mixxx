@@ -64,14 +64,14 @@ class BeatDetectionSettings {
             plugin_id);
     }
     QString getBeatPluginIdDefault() const {
-        return "qm-tempotracker";
+        return "qm-tempotracker:0";
     }
     void setBeatPluginIdDefault() {
         setBeatPluginId(getBeatPluginIdDefault());
     }
 
     bool isFixedTempoSupportedByPlugin(const QString& pluginId) {
-        return pluginId == "qm-tempotracker";
+        return pluginId == "qm-tempotracker:0";
     }
 
   private:
