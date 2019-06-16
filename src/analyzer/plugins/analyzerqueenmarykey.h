@@ -20,7 +20,8 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
         return AnalyzerPluginInfo(
                 "qm-keydetector",
                 QObject::tr("Queen Mary University London"),
-                QObject::tr("Queen Mary Key Detector"));
+                QObject::tr("Queen Mary Key Detector"),
+                false);
     }
 
     AnalyzerQueenMaryKey();

@@ -16,8 +16,9 @@
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
-    plugins.append(mixxx::AnalyzerSoundTouchBeats::pluginInfo());
+    // First one below is the default
     plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
+    plugins.append(mixxx::AnalyzerSoundTouchBeats::pluginInfo());
     return plugins;
 }
 

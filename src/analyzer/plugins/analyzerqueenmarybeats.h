@@ -20,7 +20,8 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return AnalyzerPluginInfo(
                 "qm-tempotracker:0",
                 QObject::tr("Queen Mary University London"),
-                QObject::tr("Queen Mary Tempo and Beat Tracker"));
+                QObject::tr("Queen Mary Tempo and Beat Tracker"),
+                true);
     }
 
     AnalyzerQueenMaryBeats();
