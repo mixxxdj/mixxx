@@ -288,8 +288,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 namespace {
 // Get the list of devices (under "Removable Devices" section).
 QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
-#if defined(__WINDOWS__)
     QList<TreeItem*> ret;
+#if defined(__WINDOWS__)
     // Repopulate drive list
     QFileInfoList drives = QDir::drives();
     // show drive letters
@@ -312,8 +312,6 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
             drive.filePath()); // Displays C:/
         ret << driveLetter;
     }
-
-    return ret;
 #elif defined(__LINUX__)
     // To get devices on Linux, we look for directories under /media and
     // /run/media/$USER.
@@ -329,7 +327,6 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Convert devices into a QList<TreeItem*> for display.
-    QList<TreeItem*> ret;
     foreach(QFileInfo device, devices) {
         TreeItem* folder = new TreeItem(
             pFeature,
@@ -338,8 +335,8 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         ret << folder;
     }
 
-    return ret;
 #endif
+    return ret;
 }
 }
 
@@ -381,11 +378,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-#if defined(__WINDOWS__) || defined(__LINUX__)
         folders += getRemovableDevices(this);
-#else // __APPLE__
-        DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
-#endif
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
