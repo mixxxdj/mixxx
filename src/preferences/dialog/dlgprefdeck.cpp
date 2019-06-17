@@ -162,7 +162,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     comboBoxLoadPoint->addItem(tr("Intro end"), static_cast<int>(SeekOnLoadMode::IntroEnd));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
-    comboBoxLoadPoint->addItem(tr("Beginning of file"), static_cast<int>(SeekOnLoadMode::Beginning));
+    comboBoxLoadPoint->addItem(tr("Beginning of track"), static_cast<int>(SeekOnLoadMode::Beginning));
     int seekMode = m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"),
                                        static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->setCurrentIndex(
