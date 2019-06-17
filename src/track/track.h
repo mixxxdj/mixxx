@@ -4,6 +4,7 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
+#include <QUrl>
 
 #include "track/beats.h"
 #include "track/cue.h"
@@ -20,6 +21,8 @@ class Track;
 
 typedef std::shared_ptr<Track> TrackPointer;
 typedef std::weak_ptr<Track> TrackWeakPointer;
+
+Q_DECLARE_METATYPE(TrackPointer);
 
 class Track : public QObject {
     Q_OBJECT
@@ -79,7 +82,11 @@ class Track : public QObject {
     // Accessors for various stats of the file on disk.
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
+    QUrl    getLocationUrl() const;
+    QString getLocationUri() const;
     QString getCanonicalLocation() const;
+    QUrl    getCanonicalLocationUrl() const;
+    QString getCanonicalLocationUri() const;
     // Returns the absolute path to the directory containing the file
     QString getDirectory() const;
     // Returns the name of the file.

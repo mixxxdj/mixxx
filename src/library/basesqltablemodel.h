@@ -76,6 +76,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from QAbstractItemModel
@@ -90,6 +92,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
+    virtual void initSortColumnMapping();
 
     // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
@@ -102,6 +105,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QString m_previewDeckGroup;
     TrackId m_previewDeckTrackId;
     QString m_tableOrderBy;
+    int m_columnIndexBySortColumnId[NUM_SORTCOLUMNIDS];
+    QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
   private slots:
     virtual void tracksChanged(QSet<TrackId> trackIds);

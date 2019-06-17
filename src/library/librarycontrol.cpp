@@ -106,6 +106,16 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddBottom(double)));
 
+    // Sort controls
+    m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
+    m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
+    m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
+    connect(m_pSortColumn.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotSortColumn(double)));
+    connect(m_pSortColumnToggle.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotSortColumnToggle(double)));
+
     // Font sizes
     m_pFontSizeKnob = std::make_unique<ControlObject>(
             ConfigKey("[Library]", "font_size_knob"), false);
@@ -476,6 +486,20 @@ void LibraryControl::slotGoToItem(double v) {
     // translate this into Alt+Return and handle it at each library widget 
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
+}
+
+void LibraryControl::slotSortColumn(double v) {
+    m_pSortColumnToggle->set(v);
+}
+
+void LibraryControl::slotSortColumnToggle(double v) {
+    int column = static_cast<int>(v);
+    if (static_cast<int>(m_pSortColumn->get()) == column) {
+        m_pSortOrder->set(!m_pSortOrder->get());
+    } else {
+        m_pSortColumn->set(v);
+        m_pSortOrder->set(0);
+    }
 }
 
 void LibraryControl::slotFontSize(double v) {

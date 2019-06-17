@@ -41,6 +41,7 @@ class EvictAndSaveFunctor {
     }
 
     void operator()(Track* plainPtr) {
+        Q_UNUSED(plainPtr); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
         // functor and the owning reference counting object.
@@ -339,7 +340,7 @@ void GlobalTrackCache::deactivate() {
 
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr= j->second->getPlainPtr();
         m_pSaver->saveCachedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
     }
