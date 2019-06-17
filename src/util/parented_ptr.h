@@ -1,10 +1,10 @@
 #ifndef UTIL_PARENTED_PTR_H
 #define UTIL_PARENTED_PTR_H
 
+#include <memory>
 #include <QPointer>
 
 #include "util/assert.h"
-#include "util/memory.h"
 
 /**
  * Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
