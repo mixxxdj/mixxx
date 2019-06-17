@@ -14,7 +14,9 @@
 template<typename T>
 class parented_ptr {
   public:
-    parented_ptr() noexcept = default;
+    parented_ptr() noexcept
+            : m_ptr{nullptr} {
+    }
 
     parented_ptr(nullptr_t) noexcept
             : m_ptr{nullptr} {
