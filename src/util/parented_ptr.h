@@ -20,7 +20,7 @@ class parented_ptr {
             : m_ptr{nullptr} {
     }
 
-    parented_ptr(nullptr_t) noexcept
+    parented_ptr(std::nullptr_t) noexcept
             : m_ptr{nullptr} {
     }
 
@@ -57,7 +57,7 @@ class parented_ptr {
         return *this;
     }
 
-    parented_ptr& operator=(nullptr_t) noexcept {
+    parented_ptr& operator=(std::nullptr_t) noexcept {
         parented_ptr{std::move(*this)}; // move *this into a temporary that gets destructed
         return *this;
     }
