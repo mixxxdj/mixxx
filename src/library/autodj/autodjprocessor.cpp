@@ -155,10 +155,10 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
         m_transitionTime = str_autoDjTransition.toDouble();
     }
 
-    int configMode = m_pConfig->getValue(
+    int configuredTransitionMode = m_pConfig->getValue(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
             static_cast<int>(TransitionMode::AlignIntroOutroStart));
-    m_transitionMode = static_cast<TransitionMode>(configMode);
+    m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
