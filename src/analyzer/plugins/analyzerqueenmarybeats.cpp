@@ -72,21 +72,13 @@ bool AnalyzerQueenMaryBeats::finalize() {
     }
 
     std::vector<double> df;
-    std::vector<double> beatPeriod;
+    std::vector<double> beatPeriod(nonZeroCount);
     std::vector<double> tempi;
 
     df.reserve(nonZeroCount);
-    beatPeriod.reserve(nonZeroCount);
 
-    // NOTE(rryan): The VAMP plugin skipped the first 2 detection function
-    // results so I do as well. Not sure why.
-    for (int i = 2; i < nonZeroCount; ++i) {
+    for (int i = 0; i < nonZeroCount; ++i) {
         df.push_back(m_detectionResults.at(i));
-        beatPeriod.push_back(0.0);
-    }
-
-    if (df.empty()) {
-        return false;
     }
 
     TempoTrackV2 tt(m_iSampleRate, kStepSize);
@@ -95,10 +87,10 @@ bool AnalyzerQueenMaryBeats::finalize() {
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
 
-    m_resultBeats.resize(beats.size());
-    double* result = (double*)&m_resultBeats.at(0);
+    m_resultBeats.reserve(beats.size());
     for (size_t i = 0; i < beats.size(); ++i) {
-        result[i] = beats[i] * kStepSize;
+        double result = beats[i] * kStepSize;
+        m_resultBeats.push_back(result);
     }
 
     m_pDetectionFunction.reset();
