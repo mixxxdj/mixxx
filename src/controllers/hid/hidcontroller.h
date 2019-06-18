@@ -57,8 +57,8 @@ class HidController final : public Controller {
     int open() override;
     int close() override;
 
-    virtual bool poll() override;
-    virtual bool isPolling() const override;
+    bool poll() override;
+    bool isPolling() const override;
 
   private:
     // For devices which only support a single report, reportID must be set to
