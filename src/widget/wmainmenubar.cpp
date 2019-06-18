@@ -48,13 +48,6 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-QString fullScreenDefaultKeyBinding() {
-#ifdef __APPLE__
-    return QObject::tr("Ctrl+Shift+F");
-#else
-    return QObject::tr("F11");
-#endif
-}
 
 }  // namespace
 
@@ -275,10 +268,7 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    pViewFullScreen->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(
-                ConfigKey("[KeyboardShortcuts]", "ViewMenu_Fullscreen"),
-                fullScreenDefaultKeyBinding())));
+    pViewFullScreen->setShortcut(QKeySequence(QKeySequence::FullScreen));
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);
     pViewFullScreen->setChecked(false);
