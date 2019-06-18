@@ -170,7 +170,12 @@ void WMainMenuBar::initialize() {
     addMenu(pLibraryMenu);
 
     // VIEW MENU
-    QMenu* pViewMenu = new QMenu(tr("&View"));
+    // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
+    // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
+    // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
+    // and the magic menu items won't get injected.
+    // https://bugs.launchpad.net/mixxx/+bug/1534292
+    QMenu* pViewMenu = new QMenu(tr("&View")+("\u200C"));
 
     // Skin Settings Menu
     QString mayNotBeSupported = tr("May not be supported on all skins.");
