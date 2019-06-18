@@ -53,7 +53,6 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
 }
 
 bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) {
-    DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pDetectionFunction) {
         return false;
