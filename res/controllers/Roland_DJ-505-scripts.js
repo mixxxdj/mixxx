@@ -1286,7 +1286,7 @@ DJ505.RollMode = function (deck, offset) {
             inKey: "beatlooproll_" + loopSize + "_activate",
             outConnect: false,
             on: this.color,
-            off: (loopSize === 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER),
+            off: (loopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((loopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.color + DJ505.PadColor.DIM_MODIFIER)),
         });
     }
     this.pads[4] = new components.Button({
@@ -1364,9 +1364,7 @@ DJ505.RollMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.loopSize === 0.03125) {
-                    this.mode.setLoopSize(0.25);
-                } else {
+                if (this.mode.loopSize > this.mode.minSize) {
                     this.mode.setLoopSize(this.mode.loopSize / 2);
                 }
             }
@@ -1378,9 +1376,7 @@ DJ505.RollMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.loopSize === 0.25) {
-                    this.mode.setLoopSize(0.03125);
-                } else {
+                if (this.mode.loopSize * 8 < this.mode.maxSize) {
                     this.mode.setLoopSize(this.mode.loopSize * 2);
                 }
             }
@@ -1396,7 +1392,7 @@ DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = (padLoopSize === 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER);
+        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.pads[i].color + DJ505.PadColor.DIM_MODIFIER));
     }
     this.reconnectComponents();
 };
