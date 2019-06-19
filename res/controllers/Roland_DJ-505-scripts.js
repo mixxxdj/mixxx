@@ -935,7 +935,7 @@ DJ505.PadColor = {
     CORAL:        0x0A,
     AZURE:        0x0B,
     TURQUOISE:    0x0C,
-    AQUAMARINE:   0x0C,
+    AQUAMARINE:   0x0D,
     GREEN:        0x0E,
     WHITE:        0x0F,
     DIM_MODIFIER: 0x10,
