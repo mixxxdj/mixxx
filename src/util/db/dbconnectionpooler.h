@@ -22,14 +22,7 @@ class DbConnectionPooler final {
     explicit DbConnectionPooler(
             DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr());
     DbConnectionPooler(const DbConnectionPooler&) = delete;
-#if !defined(_MSC_VER) || _MSC_VER > 1900
     DbConnectionPooler(DbConnectionPooler&&) = default;
-#else
-    // Workaround for Visual Studio 2015 (and before)
-    DbConnectionPooler(DbConnectionPooler&& other)
-        : m_pDbConnectionPool(std::move(other.m_pDbConnectionPool)) {
-    }
-#endif
     ~DbConnectionPooler();
 
     // Checks if a thread-local connection has actually been created
@@ -39,15 +32,7 @@ class DbConnectionPooler final {
     }
 
     DbConnectionPooler& operator=(const DbConnectionPooler&) = delete;
-#if !defined(_MSC_VER) || _MSC_VER > 1900
     DbConnectionPooler& operator=(DbConnectionPooler&&) = default;
-#else
-    // Workaround for Visual Studio 2015 (and before)
-    DbConnectionPooler& operator=(DbConnectionPooler&& other) {
-        m_pDbConnectionPool = std::move(other.m_pDbConnectionPool);
-        return *this;
-    }
-#endif
 
   private:
     // Prevent heap allocation

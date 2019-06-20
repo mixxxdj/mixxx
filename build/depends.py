@@ -443,10 +443,13 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++11 support. Windows enables C++11 features by
-        # default but Clang/GCC require a flag.
-        if not build.platform_is_windows:
-            build.env.Append(CXXFLAGS='-std=c++11')
+        # Mixxx requires C++14 support
+        if build.platform_is_windows:
+            # MSVC
+            build.env.Append(CXXFLAGS='/std:c++14')
+        else:
+            # GCC/Clang
+            build.env.Append(CXXFLAGS='-std=c++14')
 
 
 class TestHeaders(Dependence):
