@@ -91,7 +91,7 @@ class HidController final : public Controller {
     hid_device* m_pHidDevice;
     HidControllerPreset m_preset;
 
-    unsigned char* m_pPollData;
+    unsigned char m_pPollData[255];
 };
 
 #endif

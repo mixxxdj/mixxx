@@ -53,9 +53,6 @@ HidController::HidController(const hid_device_info deviceInfo)
 
     guessDeviceCategory();
 
-    // Initialize buffer for polling
-    m_pPollData = new unsigned char[255];
-
     // Set the Unique Identifier to the serial_number
     m_sUID = hid_serial;
 
@@ -85,8 +82,6 @@ HidController::~HidController() {
     }
     delete [] hid_path;
     delete [] hid_serial_raw;
-
-    delete [] m_pPollData;
 }
 
 QString HidController::presetExtension() {
@@ -215,7 +210,9 @@ int HidController::open() {
     }
 
     // Set hid controller to non-blocking
-    hid_set_nonblocking(m_pHidDevice, 1);
+    if (hid_set_nonblocking(m_pHidDevice, 1) == -1) {
+        qWarning() << "Unable to set HID device " << getName() << " to non-blocking";
+    }
 
     setOpen(true);
     startEngine();
@@ -243,16 +240,22 @@ int HidController::close() {
 }
 
 bool HidController::poll() {
-    Trace hidRead("HidReader read packet");
-    int result = hid_read(m_pHidDevice, m_pPollData, 255);
+    Trace hidRead("HidReader poll");
 
-    if (result > 0) {
+    for (int i = 0; i < 10; i++) {
+        int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
+        if (result == -1) {
+            return false;
+        } else if (result == 0) {
+            break;
+        }
+
         Trace process("HidReader process packet");
         QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
         receive(outData, mixxx::Time::elapsed());
     }
 
-    return result != -1;
+    return true;
 }
 
 bool HidController::isPolling() const {
