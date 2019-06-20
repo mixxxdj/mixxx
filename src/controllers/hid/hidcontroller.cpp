@@ -214,6 +214,9 @@ int HidController::open() {
         return -1;
     }
 
+    // Set hid controller to non-blocking
+    hid_set_nonblocking(m_pHidDevice, 1);
+
     setOpen(true);
     startEngine();
 
@@ -240,19 +243,11 @@ int HidController::close() {
 }
 
 bool HidController::poll() {
-    // Blocked polling: The only problem with this is that we can't close
-    // the device until the block is released, which means the controller
-    // has to send more data
-    //result = hid_read_timeout(m_pHidDevice, m_pPollData, 255, -1);
+    Trace hidRead("HidReader read packet");
+    int result = hid_read(m_pHidDevice, m_pPollData, 255);
 
-    // This relieves that at the cost of higher CPU usage since we only
-    // block for a short while (500ms)
-    int result = hid_read_timeout(m_pHidDevice, m_pPollData, 255, 500);
-
-    Trace timeout("HidReader timeout");
     if (result > 0) {
         Trace process("HidReader process packet");
-        //qDebug() << "Read" << result << "bytes, pointer:" << m_pPollData;
         QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
         receive(outData, mixxx::Time::elapsed());
     }
