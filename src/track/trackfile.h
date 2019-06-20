@@ -93,12 +93,9 @@ class TrackFile {
     QUrl locationUrl() const;
     QUrl canonicalLocationUrl() const;
 
-    // String-encoded URL representation
-    QString locationUri() const;
-    QString canonicalLocationUri() const;
-
   private:
     QFileInfo m_fileInfo;
 };
 
-QDebug operator<<(QDebug debug, const TrackFile& trackFile);
+QDebug
+operator<<(QDebug debug, const TrackFile& trackFile);

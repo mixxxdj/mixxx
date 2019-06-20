@@ -1,10 +1,8 @@
 #include "track/trackfile.h"
 
-
 namespace {
 
-inline
-QUrl urlFromLocalFilePath(const QString& localFilePath) {
+inline QUrl urlFromLocalFilePath(const QString& localFilePath) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     return QUrl::fromLocalFile(localFilePath);
 #else
@@ -14,13 +12,6 @@ QUrl urlFromLocalFilePath(const QString& localFilePath) {
         return QUrl::fromLocalFile(localFilePath);
     }
 #endif
-}
-
-inline
-QString urlToString(const QUrl& url) {
-    return url.toEncoded(
-            QUrl::StripTrailingSlash |
-            QUrl::NormalizePathSegments);
 }
 
 } // anonymous namespace
@@ -44,14 +35,6 @@ QUrl TrackFile::locationUrl() const {
 
 QUrl TrackFile::canonicalLocationUrl() const {
     return urlFromLocalFilePath(canonicalLocation());
-}
-
-QString TrackFile::locationUri() const {
-    return urlToString(locationUrl());
-}
-
-QString TrackFile::canonicalLocationUri() const {
-    return urlToString(canonicalLocationUrl());
 }
 
 QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
