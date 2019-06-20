@@ -33,10 +33,6 @@ QUrl TrackFile::locationUrl() const {
     return urlFromLocalFilePath(location());
 }
 
-QUrl TrackFile::canonicalLocationUrl() const {
-    return urlFromLocalFilePath(canonicalLocation());
-}
-
 QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     return debug << static_cast<const QFileInfo&>(trackFile);

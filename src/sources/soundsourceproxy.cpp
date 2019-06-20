@@ -213,7 +213,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     const auto trackFile = pTrack->getFileInfo();
     mixxx::MetadataSourcePointer pMetadataSource =
-            SoundSourceProxy(trackFile.canonicalLocationUrl()).m_pSoundSource;
+            SoundSourceProxy(trackFile.locationUrl()).m_pSoundSource;
     if (pMetadataSource) {
         return pTrack->exportMetadata(pMetadataSource);
     } else {
@@ -227,7 +227,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
 SoundSourceProxy::SoundSourceProxy(
         TrackPointer pTrack)
         : m_pTrack(std::move(pTrack)),
-          m_url(m_pTrack ? m_pTrack->getFileInfo().canonicalLocationUrl() : QUrl()),
+          m_url(m_pTrack ? m_pTrack->getFileInfo().locationUrl() : QUrl()),
           m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
           m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();

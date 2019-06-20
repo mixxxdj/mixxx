@@ -91,7 +91,6 @@ class TrackFile {
 
     // Portable URL representation
     QUrl locationUrl() const;
-    QUrl canonicalLocationUrl() const;
 
   private:
     QFileInfo m_fileInfo;
