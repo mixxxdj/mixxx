@@ -1,21 +1,5 @@
 #include "track/trackfile.h"
 
-namespace {
-
-inline QUrl urlFromLocalFilePath(const QString& localFilePath) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    return QUrl::fromLocalFile(localFilePath);
-#else
-    if (localFilePath.isEmpty()) {
-        return QUrl();
-    } else {
-        return QUrl::fromLocalFile(localFilePath);
-    }
-#endif
-}
-
-} // anonymous namespace
-
 QString TrackFile::freshCanonicalLocation() {
     // Note: We return here the cached value, that was calculated just after
     // init this TrackFile object. This will avoid repeated use of the time
@@ -30,7 +14,15 @@ QString TrackFile::freshCanonicalLocation() {
 }
 
 QUrl TrackFile::locationUrl() const {
-    return urlFromLocalFilePath(location());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    return QUrl::fromLocalFile(location());
+#else
+    if (location().isEmpty()) {
+        return QUrl();
+    } else {
+        return QUrl::fromLocalFile(location());
+    }
+#endif
 }
 
 QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
