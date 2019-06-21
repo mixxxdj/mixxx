@@ -22,6 +22,10 @@
 // underlying QFileInfo is implicitly shared.
 class TrackFile {
   public:
+    static TrackFile fromUrl(const QUrl& url) {
+        return TrackFile(url.toLocalFile());
+    }
+
     // For backward-compatibility the QString single argument
     // constructor has not been declared as "explicit". It is
     // also not strictly necessary and might be removed at some
@@ -91,7 +95,7 @@ class TrackFile {
     QString freshCanonicalLocation();
 
     // Portable URL representation
-    QUrl locationUrl() const;
+    QUrl toUrl() const;
 
     friend bool operator==(const TrackFile& lhs, const TrackFile& rhs) {
         return lhs.m_fileInfo == rhs.m_fileInfo;

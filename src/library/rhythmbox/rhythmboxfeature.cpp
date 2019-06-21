@@ -273,7 +273,6 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     QString album;
     QString year;
     QString genre;
-    QString location;
     QUrl locationUrl;
 
     int bpm = 0;
@@ -335,8 +334,8 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
         }
     }
 
-    location = locationUrl.toLocalFile();
-
+    const auto trackFile = TrackFile::fromUrl(locationUrl);
+    QString location = trackFile.location();
     if (location.isEmpty()) {
         // here in case of smb:// location
         // TODO(XXX) QUrl does not support SMB:// locations does Mixxx?

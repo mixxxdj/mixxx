@@ -13,7 +13,7 @@ QString TrackFile::freshCanonicalLocation() {
     return loc;
 }
 
-QUrl TrackFile::locationUrl() const {
+QUrl TrackFile::toUrl() const {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     return QUrl::fromLocalFile(location());
 #else
