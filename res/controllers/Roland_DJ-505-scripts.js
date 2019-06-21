@@ -1044,6 +1044,9 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.HOTCUE:
         mode = this.modes.hotcue;
         break;
+    // FIXME: Mixxx is currently missing support for Serato-style "flips",
+    // hence this mode can only be implemented if this feature is added:
+    // https://bugs.launchpad.net/mixxx/+bug/1768113
     //case DJ505.PadMode.FLIP:
     //    mode = this.modes.flip;
     //    break;
