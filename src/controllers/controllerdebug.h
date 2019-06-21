@@ -34,7 +34,7 @@ class ControllerDebug {
 // In order of Bug #1797746, since transition to qt5 it is needed unquote the
 // output for mixxx.log with .noquote(), because in qt5 QDebug() is quoted by default.
 
-#if QT_VERSION > 0x050399
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
 
 #define controllerDebug(stream)       \
 {                                     \

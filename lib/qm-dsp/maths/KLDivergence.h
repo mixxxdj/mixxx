@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,12 +12,10 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef KLDIVERGENCE_H
-#define KLDIVERGENCE_H
+#ifndef QM_DSP_KLDIVERGENCE_H
+#define QM_DSP_KLDIVERGENCE_H
 
 #include <vector>
-
-using std::vector;
 
 /**
  * Helper methods for calculating Kullback-Leibler divergences.
@@ -34,10 +31,10 @@ public:
      * models based on mean and variance vectors.  All input vectors
      * must be of equal size.
      */
-    double distanceGaussian(const vector<double> &means1,
-                            const vector<double> &variances1,
-                            const vector<double> &means2,
-                            const vector<double> &variances2);
+    double distanceGaussian(const std::vector<double> &means1,
+                            const std::vector<double> &variances1,
+                            const std::vector<double> &means2,
+                            const std::vector<double> &variances2);
 
     /**
      * Calculate a Kullback-Leibler divergence of two probability
@@ -45,8 +42,8 @@ public:
      * symmetrised is true, the result will be the symmetrised
      * distance (equal to KL(d1, d2) + KL(d2, d1)).
      */
-    double distanceDistribution(const vector<double> &d1,
-                                const vector<double> &d2,
+    double distanceDistribution(const std::vector<double> &d1,
+                                const std::vector<double> &d2,
                                 bool symmetrised);
 };
 

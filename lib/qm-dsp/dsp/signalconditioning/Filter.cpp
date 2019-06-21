@@ -75,13 +75,14 @@ Filter::reset()
 
 void
 Filter::process(const double *const QM_R__ in,
-		double *const QM_R__ out,
-		const int n)
+                double *const QM_R__ out,
+                const int n)
 {
     for (int s = 0; s < n; ++s) {
 
-        if (m_offb > 0) --m_offb;
-        else {
+        if (m_offb > 0) {
+            --m_offb;
+        } else {
             for (int i = m_sz - 2; i >= 0; --i) {
                 m_bufb[i + m_offmax + 1] = m_bufb[i];
             }
@@ -109,8 +110,9 @@ Filter::process(const double *const QM_R__ in,
 
             outval = b_sum - a_sum;
 
-            if (m_offa > 0) --m_offa;
-            else {
+            if (m_offa > 0) {
+                --m_offa;
+            } else {
                 for (int i = m_order - 2; i >= 0; --i) {
                     m_bufa[i + m_offmax + 1] = m_bufa[i];
                 }
@@ -119,7 +121,7 @@ Filter::process(const double *const QM_R__ in,
             m_bufa[m_offa] = outval;
         }
         
-	out[s] = outval;
+        out[s] = outval;
     }
 }
 

@@ -9,12 +9,12 @@ namespace {
 
 constexpr mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 constexpr int kTrackLengthFrames = 100000;
-constexpr double kTonePitchHz = 1000.0;  // 1kHz
+constexpr double kTonePitchHz = 1000.0; // 1kHz
 
 class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilenceTest()
-        : analyzerSilence(config()) {
+            : analyzerSilence(config()) {
     }
 
     void SetUp() override {
@@ -26,20 +26,21 @@ class AnalyzerSilenceTest : public MixxxTest {
     }
 
     void TearDown() override {
-        delete [] pTrackSampleData;
+        delete[] pTrackSampleData;
     }
 
     void analyzeTrack() {
         analyzerSilence.initialize(pTrack, pTrack->getSampleRate(), nTrackSampleDataLength);
-        analyzerSilence.process(pTrackSampleData, nTrackSampleDataLength);
-        analyzerSilence.finalize(pTrack);
+        analyzerSilence.processSamples(pTrackSampleData, nTrackSampleDataLength);
+        analyzerSilence.storeResults(pTrack);
+        analyzerSilence.cleanup();
     }
 
   protected:
     AnalyzerSilence analyzerSilence;
     TrackPointer pTrack;
     CSAMPLE* pTrackSampleData;
-    int nTrackSampleDataLength;  // in samples
+    int nTrackSampleDataLength; // in samples
 };
 
 TEST_F(AnalyzerSilenceTest, SilenceTrack) {
@@ -172,19 +173,19 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
 TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
     int halfTrackLength = nTrackSampleDataLength / 2;
 
-    pTrack->setCuePoint(CuePosition(100, Cue::AUTOMATIC));  // Arbitrary value
+    pTrack->setCuePoint(CuePosition(100, Cue::AUTOMATIC)); // Arbitrary value
 
     CuePointer pIntroCue = pTrack->createAndAddCue();
     pIntroCue->setType(Cue::INTRO);
     pIntroCue->setSource(Cue::AUTOMATIC);
-    pIntroCue->setPosition(1000);  // Arbitrary value
+    pIntroCue->setPosition(1000); // Arbitrary value
     pIntroCue->setLength(0.0);
 
     CuePointer pOutroCue = pTrack->createAndAddCue();
     pOutroCue->setType(Cue::OUTRO);
     pOutroCue->setSource(Cue::AUTOMATIC);
     pOutroCue->setPosition(-1.0);
-    pOutroCue->setLength(9000);  // Arbitrary value
+    pOutroCue->setLength(9000); // Arbitrary value
 
     // Fill the first half with silence
     for (int i = 0; i < halfTrackLength; i++) {
@@ -218,14 +219,14 @@ TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedRangeCues) {
     CuePointer pIntroCue = pTrack->createAndAddCue();
     pIntroCue->setType(Cue::INTRO);
     pIntroCue->setSource(Cue::AUTOMATIC);
-    pIntroCue->setPosition(1500.0);  // Arbitrary value
-    pIntroCue->setLength(1000.0);  // Arbitrary value
+    pIntroCue->setPosition(1500.0); // Arbitrary value
+    pIntroCue->setLength(1000.0);   // Arbitrary value
 
     CuePointer pOutroCue = pTrack->createAndAddCue();
     pOutroCue->setType(Cue::OUTRO);
     pOutroCue->setSource(Cue::AUTOMATIC);
-    pOutroCue->setPosition(9000.0);  // Arbitrary value
-    pOutroCue->setLength(1000.0);  // Arbitrary value
+    pOutroCue->setPosition(9000.0); // Arbitrary value
+    pOutroCue->setLength(1000.0);   // Arbitrary value
 
     // Fill the first third with silence
     for (int i = 0; i < thirdTrackLength; i++) {
@@ -300,4 +301,4 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     EXPECT_EQ(Cue::MANUAL, pOutroCue->getSource());
 }
 
-}
+} // namespace

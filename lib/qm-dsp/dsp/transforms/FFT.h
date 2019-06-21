@@ -12,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef FFT_H
-#define FFT_H
+#ifndef QM_DSP_FFT_H
+#define QM_DSP_FFT_H
 
 class FFT  
 {

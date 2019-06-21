@@ -31,7 +31,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
     }
 
     bool initialize(int samplerate) override;
-    bool process(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
     KeyChangeList getKeyChanges() const override {

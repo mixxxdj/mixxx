@@ -1,7 +1,5 @@
 #include <dsp/keydetection/GetKeyMode.h>
 
-#include <QMutex>
-
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarykey.h"
@@ -15,17 +13,9 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 namespace mixxx {
 namespace {
-// Window length in chroma frames. Default value from VAMP plugin.
-constexpr int kChromaWindowLength = 10;
 
 // Tuning frequency of concert A in Hertz. Default value from VAMP plugin.
 constexpr int kTuningFrequencyHertz = 440;
-
-// NOTE(2019-01-26, uklotzde) Temporary workaround until multi-threading
-// issues when using the qm-dsp key detector have been solved. Synchronizes
-// all invocations of initialize()/process()/finalize().
-// See also: https://bugs.launchpad.net/mixxx/+bug/1813413
-QMutex s_mutex;
 
 } // namespace
 
@@ -41,11 +31,32 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
     m_prevKey = mixxx::track::io::key::INVALID;
     m_resultKeys.clear();
     m_currentFrame = 0;
-    m_pKeyMode = std::make_unique<GetKeyMode>(samplerate, kTuningFrequencyHertz, kChromaWindowLength, kChromaWindowLength);
+
+    struct Config {
+        double sampleRate;
+        float tuningFrequency;
+        double hpcpAverage;
+        double medianAverage;
+        int frameOverlapFactor; // 1 = none (default, fast, but means
+                                // we skip a fair bit of input data);
+                                // 8 = normal chroma overlap
+        int decimationFactor;
+
+        Config(double _sampleRate, float _tuningFrequency) :
+            sampleRate(_sampleRate),
+            tuningFrequency(_tuningFrequency),
+            hpcpAverage(10),
+            medianAverage(10),
+            frameOverlapFactor(1),
+            decimationFactor(8) {
+        }
+    };
+
+    GetKeyMode::Config config(samplerate, kTuningFrequencyHertz);
+    m_pKeyMode = std::make_unique<GetKeyMode>(config);
     size_t windowSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();
 
-    QMutexLocker locked(&s_mutex);
     return m_helper.initialize(
             windowSize, stepSize, [this](double* pWindow, size_t) {
                 int iKey = m_pKeyMode->process(pWindow);
@@ -65,7 +76,7 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
             });
 }
 
-bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, const int iLen) {
     DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
 
@@ -75,13 +86,11 @@ bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
 
     const size_t numInputFrames = iLen / kAnalysisChannels;
     m_currentFrame += numInputFrames;
-    QMutexLocker locked(&s_mutex);
     return m_helper.processStereoSamples(pIn, iLen);
 }
 
 bool AnalyzerQueenMaryKey::finalize() {
     // TODO(rryan) do we need a flush?
-    QMutexLocker locked(&s_mutex);
     m_helper.finalize();
     m_pKeyMode.reset();
     return true;

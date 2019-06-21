@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -7,8 +6,8 @@
     This file Copyright 2009 QMUL.
 */
 
-#ifndef _ASYNCHRONOUS_TASK_H_
-#define _ASYNCHRONOUS_TASK_H_
+#ifndef QM_DSP_ASYNCHRONOUS_TASK_H
+#define QM_DSP_ASYNCHRONOUS_TASK_H
 
 #include "Thread.h"
 
@@ -42,12 +41,11 @@ public:
         m_todo("AsynchronousTask: task to perform"),
         m_done("AsynchronousTask: task complete"),
         m_inTask(false),
-        m_finishing(false)
-    {
+        m_finishing(false) {
         start();
     }
-    virtual ~AsynchronousTask()
-    {
+    
+    virtual ~AsynchronousTask() {
         m_todo.lock();
         m_finishing = true;
         m_todo.signal();

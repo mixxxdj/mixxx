@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef FILTFILT_H
-#define FILTFILT_H
+#ifndef QM_DSP_FILTFILT_H
+#define QM_DSP_FILTFILT_H
 
 #include "Filter.h"
 
@@ -29,8 +28,9 @@ public:
     FiltFilt(Filter::Parameters);
     virtual ~FiltFilt();
 
-    void reset();
-    void process( double* src, double* dst, unsigned int length );
+    void process(const double *const QM_R__ src,
+                 double *const QM_R__ dst,
+                 const int length);
 
 private:
     Filter m_filter;

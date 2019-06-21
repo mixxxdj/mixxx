@@ -72,11 +72,7 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
     return true;
 }
 
-bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    return !shouldAnalyze(tio);
-}
-
-void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
     for (int i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
         // Compute max of channels in this sample frame
         CSAMPLE fMax = CSAMPLE_ZERO;
@@ -97,15 +93,14 @@ void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
 
         m_bPrevSilence = bSilence;
     }
-
     m_iFramesProcessed += iLen / mixxx::kAnalysisChannels;
+    return true;
 }
 
-void AnalyzerSilence::cleanup(TrackPointer tio) {
-    Q_UNUSED(tio);
+void AnalyzerSilence::cleanup() {
 }
 
-void AnalyzerSilence::finalize(TrackPointer tio) {
+void AnalyzerSilence::storeResults(TrackPointer tio) {
     if (m_iSignalStart < 0) {
         m_iSignalStart = 0;
     }
@@ -119,8 +114,11 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
+    double introStart = mixxx::kAnalysisChannels * m_iSignalStart;
+    double outroEnd = mixxx::kAnalysisChannels * m_iSignalEnd;
+
     if (shouldUpdateMainCue(tio->getCuePoint())) {
-        tio->setCuePoint(CuePosition(mixxx::kAnalysisChannels * m_iSignalStart, Cue::AUTOMATIC));
+        tio->setCuePoint(CuePosition(introStart, Cue::AUTOMATIC));
     }
 
     CuePointer pIntroCue = tio->findCueByType(Cue::INTRO);
@@ -128,10 +126,9 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         pIntroCue = tio->createAndAddCue();
         pIntroCue->setType(Cue::INTRO);
         pIntroCue->setSource(Cue::AUTOMATIC);
-        pIntroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
-        pIntroCue->setLength(0.0);
-    } else if (pIntroCue->getSource() != Cue::MANUAL) {
-        pIntroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
+    }
+    if (pIntroCue->getSource() != Cue::MANUAL) {
+        pIntroCue->setPosition(introStart);
         pIntroCue->setLength(0.0);
     }
 
@@ -140,10 +137,9 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         pOutroCue = tio->createAndAddCue();
         pOutroCue->setType(Cue::OUTRO);
         pOutroCue->setSource(Cue::AUTOMATIC);
+    }
+    if (pOutroCue->getSource() != Cue::MANUAL) {
         pOutroCue->setPosition(-1.0);
-        pOutroCue->setLength(mixxx::kAnalysisChannels * m_iSignalEnd);
-    } else if (pOutroCue->getSource() != Cue::MANUAL) {
-        pOutroCue->setPosition(-1.0);
-        pOutroCue->setLength(mixxx::kAnalysisChannels * m_iSignalEnd);
+        pOutroCue->setLength(outroEnd);
     }
 }

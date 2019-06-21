@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,48 +12,42 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef MATHALIASES_H
-#define MATHALIASES_H
+#ifndef QM_DSP_MATHALIASES_H
+#define QM_DSP_MATHALIASES_H
 
 #include <cmath>
 #include <complex>
 
-using namespace std;
-typedef complex<double> ComplexData;
+#define TWO_PI          (2. * M_PI)
 
-
-#ifndef PI
-#define PI (3.14159265358979232846)
-#endif
-
-#define TWO_PI 		(2. * PI)
-
-#define EPS 2.2204e-016
+#define EPS             2.2204e-016
 
 /* aliases to math.h functions */
-#define EXP				exp
-#define COS				cos
-#define SIN				sin
-#define ABS				fabs
-#define POW				powf
-#define SQRT			sqrtf
-#define LOG10			log10f
-#define LOG				logf
-#define FLOOR			floorf
-#define TRUNC			truncf
+#define EXP                             exp
+#define COS                             cos
+#define SIN                             sin
+#define ABS                             fabs
+#define POW                             powf
+#define SQRT                    sqrtf
+#define LOG10                   log10f
+#define LOG                             logf
+#define FLOOR                   floorf
+#define TRUNC                   truncf
+
+typedef std::complex<double> ComplexData;
 
 /* aliases to complex.h functions */
 /** sample = EXPC(complex) */
-#define EXPC			cexpf
+#define EXPC                    cexpf
 /** complex = CEXPC(complex) */
-#define CEXPC			cexp
+#define CEXPC                   cexp
 /** sample = ARGC(complex) */
-#define ARGC			cargf
+#define ARGC                    cargf
 /** sample = ABSC(complex) norm */
-#define ABSC			cabsf
+#define ABSC                    cabsf
 /** sample = REAL(complex) */
-#define REAL			crealf
+#define REAL                    crealf
 /** sample = IMAG(complex) */
-#define IMAG			cimagf
+#define IMAG                    cimagf
 
 #endif

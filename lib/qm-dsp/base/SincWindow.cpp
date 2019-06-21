@@ -19,27 +19,27 @@ void
 SincWindow::init()
 {
     if (m_length < 1) {
-	return;
+        return;
     } else if (m_length < 2) {
-	m_window.push_back(1);
-	return;
+        m_window.push_back(1);
+        return;
     } else {
 
-	int n0 = (m_length % 2 == 0 ? m_length/2 : (m_length - 1)/2);
-	int n1 = (m_length % 2 == 0 ? m_length/2 : (m_length + 1)/2);
-	double m = 2 * M_PI / m_p;
+        int n0 = (m_length % 2 == 0 ? m_length/2 : (m_length - 1)/2);
+        int n1 = (m_length % 2 == 0 ? m_length/2 : (m_length + 1)/2);
+        double m = 2 * M_PI / m_p;
 
-	for (int i = 0; i < n0; ++i) {
-	    double x = ((m_length / 2) - i) * m;
-	    m_window.push_back(sin(x) / x);
-	}
+        for (int i = 0; i < n0; ++i) {
+            double x = ((m_length / 2) - i) * m;
+            m_window.push_back(sin(x) / x);
+        }
 
-	m_window.push_back(1.0);
+        m_window.push_back(1.0);
 
-	for (int i = 1; i < n1; ++i) {
-	    double x = i * m;
-	    m_window.push_back(sin(x) / x);
-	}
+        for (int i = 1; i < n1; ++i) {
+            double x = i * m;
+            m_window.push_back(sin(x) / x);
+        }
     }
 }
 

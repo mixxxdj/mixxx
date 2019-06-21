@@ -23,13 +23,11 @@ class AnalyzerGain : public Analyzer {
     }
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE* pIn, const int iLen) override;
-    void cleanup(TrackPointer tio) override;
-    void finalize(TrackPointer tio) override;
+    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    void storeResults(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
-    bool m_initalized;
     ReplayGainSettings m_rgSettings;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
