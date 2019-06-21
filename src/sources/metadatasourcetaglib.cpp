@@ -482,6 +482,8 @@ private:
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
         // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
+        Q_UNUSED(pFile);
+        Q_UNUSED(trackMetadata);
         kLogger.warning()
                 << "Skipping export of metadata into Ogg file due to serious bug in TagLib 1.11.1"
                 << "(https://github.com/taglib/taglib/issues/864)";
