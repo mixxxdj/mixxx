@@ -1071,6 +1071,8 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.VELOCITYSAMPLER:
         mode = this.modes.velocitysampler;
         break;
+    // FIXME: Loop mode can be added as soon as Saved Loops are
+    // implemented: https://bugs.launchpad.net/mixxx/+bug/692926
     //case DJ505.PadMode.LOOP:
     //    mode = this.modes.loop;
     //    break;
