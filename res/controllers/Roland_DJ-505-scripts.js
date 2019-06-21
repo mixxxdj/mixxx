@@ -1062,6 +1062,8 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.ROLL:
         mode = this.modes.roll;
         break;
+    // FIXME: Although it might be possible to implement Slicer Mode, it would
+    // miss visual feedback: https://bugs.launchpad.net/mixxx/+bug/1828886
     //case DJ505.PadMode.SLICER:
     //    mode = this.modes.slicer;
     //    break;
