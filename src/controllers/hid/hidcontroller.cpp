@@ -16,6 +16,8 @@
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
 
+#define HIDCONTROLLER_POLL_LIMIT 10
+
 HidController::HidController(const hid_device_info deviceInfo)
         : m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
@@ -210,8 +212,9 @@ int HidController::open() {
     }
 
     // Set hid controller to non-blocking
-    if (hid_set_nonblocking(m_pHidDevice, 1) == -1) {
+    if (hid_set_nonblocking(m_pHidDevice, 1) != 0) {
         qWarning() << "Unable to set HID device " << getName() << " to non-blocking";
+        return -1;
     }
 
     setOpen(true);
@@ -242,12 +245,12 @@ int HidController::close() {
 bool HidController::poll() {
     Trace hidRead("HidReader poll");
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < HIDCONTROLLER_POLL_LIMIT; i++) {
         int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
         if (result == -1) {
             return false;
         } else if (result == 0) {
-            break;
+            return true;
         }
 
         Trace process("HidReader process packet");
@@ -255,6 +258,7 @@ bool HidController::poll() {
         receive(outData, mixxx::Time::elapsed());
     }
 
+    qDebug() << "Reached maximum poll loop iterations for HID device " << getName();
     return true;
 }
 
