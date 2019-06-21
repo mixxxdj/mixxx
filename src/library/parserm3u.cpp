@@ -106,17 +106,17 @@ QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
         }
 
         if (!textline.contains("#")) {
-            QString trackLocation = playlistEntrytoLocalFile(textline);
-            if(QFile::exists(trackLocation)) {
-                return trackLocation;
+            TrackFile trackFile = playlistEntryToTrackFile(textline);
+            if(trackFile.checkFileExists()) {
+                return trackFile.location();
             } else {
                 // Try relative to m3u dir
-                QString rel = QDir(basepath).filePath(trackLocation);
+                QString rel = QDir(basepath).filePath(trackFile.location());
                 if (QFile::exists(rel)) {
                     return rel;
                 }
                 // We couldn't match this to a real file so ignore it
-                qWarning() << trackLocation << "not found";
+                qWarning() << trackFile.location() << "not found";
             }
         }
         textline = stream->readLine();

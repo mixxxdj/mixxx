@@ -148,11 +148,11 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-QString Parser::playlistEntrytoLocalFile(const QString& playlistEntry) {
+TrackFile Parser::playlistEntryToTrackFile(const QString& playlistEntry) {
     if (playlistEntry.startsWith("file:")) {
-        return QUrl(playlistEntry).toLocalFile();
+        return TrackFile::fromUrl(QUrl(playlistEntry));
     }
 
-    return QString(playlistEntry).replace('\\', '/');
+    return TrackFile(QString(playlistEntry).replace('\\', '/'));
 }
 

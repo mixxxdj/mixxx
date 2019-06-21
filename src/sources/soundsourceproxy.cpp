@@ -133,8 +133,7 @@ void SoundSourceProxy::registerSoundSourceProviders() {
 
 // static
 bool SoundSourceProxy::isUrlSupported(const QUrl& url) {
-    const QFileInfo fileInfo(url.toLocalFile());
-    return isFileSupported(fileInfo);
+    return isFileSupported(TrackFile::fromUrl(url));
 }
 
 // static
