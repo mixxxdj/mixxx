@@ -50,7 +50,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
 
-    TrackPointer addSingleTrack(QFileInfo fileInfo, bool unremove);
+    TrackPointer addSingleTrack(const TrackFile& trackFile, bool unremove);
     QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
 
     void addTracksPrepare();
@@ -131,9 +131,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     bool updateTrack(Track* pTrack);
 
     // Callback for GlobalTrackCache
-    QFileInfo relocateCachedTrack(
+    TrackFile relocateCachedTrack(
             TrackId trackId,
-            QFileInfo fileInfo) override;
+            TrackFile fileInfo) override;
 
     QSqlDatabase m_database;
 

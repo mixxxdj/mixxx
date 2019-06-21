@@ -143,6 +143,11 @@ bool SoundSourceProxy::isFileSupported(const QFileInfo& fileInfo) {
 }
 
 // static
+bool SoundSourceProxy::isFileSupported(const TrackFile& trackFile) {
+    return isFileNameSupported(trackFile.fileName());
+}
+
+// static
 bool SoundSourceProxy::isFileNameSupported(const QString& fileName) {
     return fileName.contains(getSupportedFileNamesRegex());
 }
@@ -178,10 +183,10 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 
 //static
 TrackPointer SoundSourceProxy::importTemporaryTrack(
-        QFileInfo fileInfo,
+        TrackFile trackFile,
         SecurityTokenPointer pSecurityToken) {
     TrackPointer pTrack = Track::newTemporary(
-            TrackFile(std::move(fileInfo)),
+            std::move(trackFile),
             std::move(pSecurityToken));
     // Lock the track cache while populating the temporary track
     // object to ensure that no metadata is exported into any file
@@ -194,10 +199,10 @@ TrackPointer SoundSourceProxy::importTemporaryTrack(
 
 //static
 QImage SoundSourceProxy::importTemporaryCoverImage(
-        QFileInfo fileInfo,
+        TrackFile trackFile,
         SecurityTokenPointer pSecurityToken) {
     TrackPointer pTrack = Track::newTemporary(
-            TrackFile(std::move(fileInfo)),
+            std::move(trackFile),
             std::move(pSecurityToken));
     // Lock the track cache while populating the temporary track
     // object to ensure that no metadata is exported into any file

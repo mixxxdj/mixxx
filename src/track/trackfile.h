@@ -40,10 +40,7 @@ class TrackFile {
             : m_fileInfo(QFileInfo(dir, file)) {
     }
 
-    operator QFileInfo&() {
-        return m_fileInfo;
-    }
-    operator const QFileInfo&() const {
+    const QFileInfo& asFileInfo() const {
         return m_fileInfo;
     }
 
@@ -78,6 +75,10 @@ class TrackFile {
         return QFile::exists(location());
     }
 
+    void refresh() {
+        m_fileInfo.refresh();
+    }
+
     // Refresh the canonical location if it is still empty, i.e. if
     // the file may have re-appeared after mounting the corresponding
     // drive while Mixxx is already running.
@@ -92,9 +93,17 @@ class TrackFile {
     // Portable URL representation
     QUrl locationUrl() const;
 
+    friend bool operator==(const TrackFile& lhs, const TrackFile& rhs) {
+        return lhs.m_fileInfo == rhs.m_fileInfo;
+    }
+
   private:
     QFileInfo m_fileInfo;
 };
+
+inline bool operator!=(const TrackFile& lhs, const TrackFile& rhs) {
+    return !(lhs == rhs);
+}
 
 QDebug
 operator<<(QDebug debug, const TrackFile& trackFile);

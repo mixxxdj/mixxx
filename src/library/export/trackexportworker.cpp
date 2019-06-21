@@ -61,7 +61,7 @@ QMap<QString, TrackFile> createCopylist(const QList<TrackPointer>& tracks) {
                 break;
             }
             // Next round
-            destFileName = rewriteFilename(trackFile, duplicateCounter);
+            destFileName = rewriteFilename(trackFile.asFileInfo(), duplicateCounter);
         } while (!destFileName.isEmpty());
     }
     return copylist;
@@ -78,7 +78,7 @@ void TrackExportWorker::run() {
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
         emit(progress(it->fileName(), i, copy_list.size()));
-        copyFile(*it, it.key());
+        copyFile((*it).asFileInfo(), it.key());
         if (m_bStop.load()) {
             emit(canceled());
             return;

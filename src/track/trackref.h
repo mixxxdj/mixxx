@@ -12,17 +12,19 @@
 // value object. Only the id can be set once.
 class TrackRef {
 public:
-    // Converts a QFileInfo and an optional TrackId into a TrackRef. This
+    // Converts a TrackFile and an optional TrackId into a TrackRef. This
     // involves obtaining the file-related track properties from QFileInfo
-    // (see above) and should used consciously!
+    // (see above) and should used consciously! The file info is refreshed
+    // implicitly if the canonical location if necessary.
     static TrackRef fromFileInfo(
-            const QFileInfo& fileInfo,
+            TrackFile fileInfo,
             TrackId id = TrackId()) {
-        const TrackFile trackFile(fileInfo);
+        auto canonicalLocation = fileInfo.freshCanonicalLocation();
+        // All properties of the file info are now considered fresh
         return TrackRef(
-                trackFile.location(),
-                trackFile.canonicalLocation(),
-                id);
+                fileInfo.location(),
+                std::move(canonicalLocation),
+                std::move(id));
     }
 
     // Default constructor

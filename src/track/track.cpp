@@ -22,10 +22,10 @@ constexpr bool kLogStats = false;
 std::atomic<int> s_numberOfInstances;
 
 SecurityTokenPointer openSecurityToken(
-        const QFileInfo& fileInfo,
+        const TrackFile& trackFile,
         SecurityTokenPointer pSecurityToken = SecurityTokenPointer()) {
     if (pSecurityToken.isNull()) {
-        return Sandbox::openSecurityToken(fileInfo, true);
+        return Sandbox::openSecurityToken(trackFile.asFileInfo(), true);
     } else {
         return pSecurityToken;
     }
@@ -111,11 +111,11 @@ TrackPointer Track::newDummy(
 }
 
 void Track::relocate(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken) {
     QMutexLocker lock(&m_qMutex);
-    m_fileInfo = TrackFile(std::move(fileInfo));
-    m_pSecurityToken = std::move(pSecurityToken);
+    m_pSecurityToken = openSecurityToken(fileInfo, std::move(pSecurityToken));
+    m_fileInfo = std::move(fileInfo);
     // The track does not need to be marked as dirty,
     // because this function will always be called with
     // the updated location from the database.

@@ -678,9 +678,9 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     return pTrack;
 }
 
-TrackPointer TrackDAO::addSingleTrack(QFileInfo fileInfo, bool unremove) {
+TrackPointer TrackDAO::addSingleTrack(const TrackFile& trackFile, bool unremove) {
     addTracksPrepare();
-    TrackPointer pTrack = addTracksAddFile(TrackFile(std::move(fileInfo)), unremove);
+    TrackPointer pTrack = addTracksAddFile(trackFile, unremove);
     addTracksFinish(!pTrack);
     return pTrack;
 }
@@ -1256,7 +1256,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Location is the first column.
     const QString trackLocation(queryRecord.value(0).toString());
 
-    GlobalTrackCacheResolver cacheResolver(QFileInfo(trackLocation), trackId);
+    GlobalTrackCacheResolver cacheResolver(TrackFile(trackLocation), trackId);
     TrackPointer pTrack = cacheResolver.getTrack();
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         // Just to be safe, but this should never happen!!
@@ -1859,13 +1859,13 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         //qDebug() << "Searching for cover art for" << trackLocation;
         emit(progressCoverArt(track.trackLocation));
 
-        QFileInfo trackInfo(track.trackLocation);
-        if (!trackInfo.exists()) {
+        TrackFile trackFile(track.trackLocation);
+        if (!trackFile.checkFileExists()) {
             //qDebug() << trackLocation << "does not exist";
             continue;
         }
 
-        QImage image(CoverArtUtils::extractEmbeddedCover(trackInfo));
+        QImage image(CoverArtUtils::extractEmbeddedCover(trackFile));
         if (!image.isNull()) {
             updateQuery.bindValue(":coverart_type",
                                   static_cast<int>(CoverInfo::METADATA));
@@ -1893,7 +1893,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         }
 
         CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
-            trackInfo.baseName(), track.trackAlbum, possibleCovers);
+            trackFile, track.trackAlbum, possibleCovers);
 
         updateQuery.bindValue(":coverart_type",
                               static_cast<int>(coverInfo.type));
@@ -1950,14 +1950,14 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     return pTrack;
 }
 
-QFileInfo TrackDAO::relocateCachedTrack(
+TrackFile TrackDAO::relocateCachedTrack(
         TrackId trackId,
-        QFileInfo fileInfo) {
+        TrackFile fileInfo) {
     QString trackLocation = getTrackLocation(trackId);
     if (trackLocation.isEmpty()) {
         // not found
         return fileInfo;
     } else {
-        return QFileInfo(trackLocation);
+        return TrackFile(trackLocation);
     }
 }

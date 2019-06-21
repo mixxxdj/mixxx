@@ -27,7 +27,7 @@ QUrl TrackFile::locationUrl() const {
 
 QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    return debug << static_cast<const QFileInfo&>(trackFile);
+    return debug << trackFile.asFileInfo();
 #else
     return debug << trackFile.location();
 #endif

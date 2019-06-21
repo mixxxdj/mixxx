@@ -325,7 +325,7 @@ class Track : public QObject {
     void resetId();
 
     void relocate(
-            QFileInfo fileInfo,
+            TrackFile fileInfo,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
 
     // Set whether the TIO is dirty or not and unlock before emitting
