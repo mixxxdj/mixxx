@@ -777,7 +777,7 @@ void Track::setCuePoint(CuePosition cue) {
         }
         pLoadCue->setPosition(position);
         pLoadCue->setSource(source);
-    } else {
+    } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
     }
