@@ -1024,7 +1024,6 @@ DJ505.PadSection = function (deck, offset) {
         "hotcue": new DJ505.HotcueMode(deck, offset),
         "cueloop": new DJ505.CueLoopMode(deck, offset),
         "roll": new DJ505.RollMode(deck, offset),
-        "loop": new DJ505.LoopMode(deck, offset),
         "sampler": new DJ505.SamplerMode(deck, offset),
         "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
         "pitchplay": new DJ505.PitchPlayMode(deck, offset),
@@ -1045,6 +1044,9 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.HOTCUE:
         mode = this.modes.hotcue;
         break;
+    // FIXME: Mixxx is currently missing support for Serato-style "flips",
+    // hence this mode can only be implemented if this feature is added:
+    // https://bugs.launchpad.net/mixxx/+bug/1768113
     //case DJ505.PadMode.FLIP:
     //    mode = this.modes.flip;
     //    break;
@@ -1060,6 +1062,8 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.ROLL:
         mode = this.modes.roll;
         break;
+    // FIXME: Although it might be possible to implement Slicer Mode, it would
+    // miss visual feedback: https://bugs.launchpad.net/mixxx/+bug/1828886
     //case DJ505.PadMode.SLICER:
     //    mode = this.modes.slicer;
     //    break;
@@ -1072,9 +1076,11 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.VELOCITYSAMPLER:
         mode = this.modes.velocitysampler;
         break;
-    case DJ505.PadMode.LOOP:
-        mode = this.modes.loop;
-        break;
+    // FIXME: Loop mode can be added as soon as Saved Loops are
+    // implemented: https://bugs.launchpad.net/mixxx/+bug/692926
+    //case DJ505.PadMode.LOOP:
+    //    mode = this.modes.loop;
+    //    break;
     case DJ505.PadMode.PITCHPLAY:
         mode = this.modes.pitchplay;
         break;
@@ -1396,28 +1402,6 @@ DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
     }
     this.reconnectComponents();
 };
-
-DJ505.LoopMode = function (deck, offset) {
-    components.ComponentContainer.call(this);
-    this.ledControl = DJ505.PadMode.ROLL;
-    this.color = DJ505.PadColor.GREEN;
-    this.pads = new components.ComponentContainer();
-    for (var i = 0; i <= 7; i++) {
-        this.pads[i] = new components.Button({
-            midi: [0x94 + offset, 0x14 + i],
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            group: deck.currentDeck,
-            outKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_enabled",
-            inKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_toggle",
-            outConnect: false,
-            on: this.color,
-            off: this.color + DJ505.PadColor.DIM_MODIFIER,
-        });
-    }
-};
-DJ505.LoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DJ505.SamplerMode = function (deck, offset) {
     components.ComponentContainer.call(this);
