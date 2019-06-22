@@ -374,17 +374,14 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
         //read next XML element
         xml.readNext();
         if (xml.isStartElement() && xml.name() == "location") {
-            QString location = xml.readElementText();
-            QUrl locationUrl = QUrl(location);
-            location = locationUrl.toLocalFile();
+            const auto trackFile = TrackFile::fromUrl(xml.readElementText());
 
             //get the ID of the file in the rhythmbox_library table
             int track_id = -1;
             QSqlQuery finder_query(m_database);
             finder_query.prepare("select id from rhythmbox_library where location=:path");
-            finder_query.bindValue(":path", location);
+            finder_query.bindValue(":path", trackFile.location());
             bool success = finder_query.exec();
-
 
             if (success) {
                 const int idColumn = finder_query.record().indexOf("id");
