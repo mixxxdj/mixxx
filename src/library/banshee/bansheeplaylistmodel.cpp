@@ -286,8 +286,8 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
         }
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
-                QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-                if (TrackFile::fromUrl(rowUrl).location() == pTrack->getLocation()) {
+                const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
+                if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
                     m_previewDeckTrackId =
                             TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
                     break;
