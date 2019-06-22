@@ -556,6 +556,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     } else {
                         line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
                     }
+                    painter.setOpacity(1.0);
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
