@@ -16,8 +16,6 @@
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
 
-#define HIDCONTROLLER_POLL_LIMIT 10
-
 HidController::HidController(const hid_device_info deviceInfo)
         : m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
@@ -243,22 +241,17 @@ int HidController::close() {
 }
 
 bool HidController::poll() {
-    Trace hidRead("HidReader poll");
+    Trace hidRead("HidController poll");
 
-    for (int i = 0; i < HIDCONTROLLER_POLL_LIMIT; i++) {
-        int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
-        if (result == -1) {
-            return false;
-        } else if (result == 0) {
-            return true;
-        }
-
-        Trace process("HidReader process packet");
+    int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
+    if (result == -1) {
+        return false;
+    } else if (result > 0) {
+        Trace process("HidController process packet");
         QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
         receive(outData, mixxx::Time::elapsed());
     }
 
-    qDebug() << "Reached maximum poll loop iterations for HID device " << getName();
     return true;
 }
 
