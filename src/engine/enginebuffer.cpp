@@ -1125,7 +1125,7 @@ void EngineBuffer::processSeek(bool paused) {
     // call anyway again.
 
     SeekRequests seekType = static_cast<SeekRequest>(
-            m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
+                m_iSeekQueued.load());
     double position = m_queuedSeekPosition.getValue();
 
     // Don't allow the playposition to go past the end.
@@ -1163,12 +1163,24 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
+    double syncPosition = position;
     if (!paused && (seekType & SEEK_PHASE)) {
-        position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
-    if (position != m_filepos_play) {
-        setNewPlaypos(position, adjustingPhase);
+
+    if (syncPosition != m_filepos_play) {
+        if(seekType & SEEK_PHASE){
+            // inform controllers about the seek position itself
+            // and do the phase shift afterwards
+            // this prevents loops from getting disabled because the synced position is in front of the loop
+            setNewPlaypos(position, false);
+            adjustingPhase = true;
+        }
+        setNewPlaypos(syncPosition, adjustingPhase);
     }
+
+    // seek finished after setNewPlaypos
+    m_iSeekQueued.fetchAndStoreRelaxed(SEEK_NONE);
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
@@ -1282,6 +1294,14 @@ bool EngineBuffer::isTrackLoaded() {
         return true;
     }
     return false;
+}
+
+bool EngineBuffer::isSeekQueued(ControlValueAtomic<double> &seekPos) {
+    if(!m_iSeekQueued){
+        return false;
+    }
+    seekPos = m_queuedSeekPosition;
+    return m_iSeekQueued.load() != SEEK_NONE;
 }
 
 void EngineBuffer::slotEjectTrack(double v) {

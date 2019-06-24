@@ -7,6 +7,7 @@
 #include "control/controlobject.h"
 #include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
+#include "engine/enginebuffer.h"
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
@@ -782,8 +783,8 @@ void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
             setLoopingEnabled(false);
         }
         if (currentSample <= loopSamples.end &&
-                dNewPlaypos > loopSamples.end) {
-            // jumping out a loop or over a catching loop forward
+                dNewPlaypos >= loopSamples.end) {
+            // jumping out or to the exact end of a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
     }
@@ -958,6 +959,14 @@ void LoopingControl::updateBeatLoopingControls() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+
+    // if a seek was queued in the engine buffer move the current sample to its position
+    ControlValueAtomic<double> seekPosition;
+    if(getEngineBuffer()->isSeekQueued(seekPosition)){
+        // seek position is already quantized if quantization is enabled
+        m_currentSample.setValue(seekPosition.getValue());
+    }
+
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {

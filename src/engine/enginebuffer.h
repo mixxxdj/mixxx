@@ -141,6 +141,7 @@ class EngineBuffer : public EngineObject {
 
     QString getGroup();
     bool isTrackLoaded();
+    bool isSeekQueued(ControlValueAtomic<double> &seekPos);
     TrackPointer getLoadedTrack() const;
 
     double getExactPlayPos();
