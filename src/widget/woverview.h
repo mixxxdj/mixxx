@@ -31,6 +31,7 @@
 #include "skin/skincontext.h"
 
 class PlayerManager;
+class PainterScope;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
@@ -41,7 +42,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalyzerProgress(TrackId trackId,
+            AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -99,9 +101,18 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotWaveformSummaryUpdated();
 
   private:
-    // Append the waveform overview pixmap according to available data in waveform
+    // Append the waveform overview pixmap according to available data
+    // in waveform
     virtual bool drawNextPixmapPart() = 0;
-    void paintText(const QString &text, QPainter *painter);
+    void drawEndOfTrackBackground(QPainter& painter);
+    void drawAxis(QPainter& painter);
+    void drawWaveformPixmap(QPainter& painter);
+    void drawEndOfTrackFrame(QPainter& painter);
+    void drawAnalyzerProgress(QPainter& painter);
+    void drawRangeMarks(QPainter& painter, const float& offset, const float& gain);
+    void drawMarks(QPainter& painter, const float offset, const float gain);
+    void drawCurrentPosition(QPainter& painter);
+    void paintText(const QString& text, QPainter& painter);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }
