@@ -63,7 +63,7 @@ lib/qtscript-bytearray/*.cc
 compile_commands.json
 
 # Developers might use `--settingsPath ./devsettings/`
-devsettings
+/devsettings
 
 # Nix build result
-result
+/result
