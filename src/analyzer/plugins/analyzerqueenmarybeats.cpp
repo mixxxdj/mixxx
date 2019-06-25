@@ -62,8 +62,7 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) 
 }
 
 bool AnalyzerQueenMaryBeats::finalize() {
-    // TODO(rryan) if iLen is less than frame size, pad with zeros. Do we need
-    // flush support?
+    m_helper.finalize();
 
     int nonZeroCount = m_detectionResults.size();
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {

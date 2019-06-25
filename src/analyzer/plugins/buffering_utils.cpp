@@ -21,6 +21,23 @@ bool DownmixAndOverlapHelper::initialize(size_t windowSize, size_t stepSize, Win
 
 bool DownmixAndOverlapHelper::processStereoSamples(const CSAMPLE* pInput, size_t inputStereoSamples) {
     const size_t numInputFrames = inputStereoSamples / 2;
+    return processInner(pInput, numInputFrames);
+}
+
+bool DownmixAndOverlapHelper::finalize() {
+    // We need to append at least m_windowSize / 2 - m_stepSize silence
+    // to have a valid analysis results for the last track samples.
+    size_t framesToFillWindow = m_windowSize - m_bufferWritePosition;
+    size_t numInputFrames = framesToFillWindow;
+    if (numInputFrames < m_windowSize / 2 - 1) {
+        // -1 ensures that silence < m_stepSize ramains unprocessed
+        numInputFrames = m_windowSize / 2 - 1;
+    }
+    return processInner(nullptr, numInputFrames);
+}
+
+bool DownmixAndOverlapHelper::processInner(
+        const CSAMPLE* pInput, size_t numInputFrames) {
     size_t inRead = 0;
     double* pDownmix = m_buffer.data();
 
@@ -28,12 +45,20 @@ bool DownmixAndOverlapHelper::processStereoSamples(const CSAMPLE* pInput, size_t
         size_t writeAvailable = math_min(numInputFrames,
                 m_windowSize - m_bufferWritePosition);
 
-        for (size_t i = 0; i < writeAvailable; ++i) {
-            // We analyze a mono downmix of the signal since we don't think
-            // stereo does us any good.
-            pDownmix[m_bufferWritePosition + i] = (pInput[(inRead + i) * 2] +
-                                                          pInput[(inRead + i) * 2 + 1]) *
-                    0.5;
+        if (pInput) {
+            for (size_t i = 0; i < writeAvailable; ++i) {
+                // We analyze a mono downmix of the signal since we don't think
+                // stereo does us any good.
+                pDownmix[m_bufferWritePosition + i] = (pInput[(inRead + i) * 2] +
+                                                              pInput[(inRead + i) * 2 + 1]) *
+                        0.5;
+            }
+        } else {
+            // we are in the finalize call. Add silence to
+            // complete samples left in th buffer.
+            for (size_t i = 0; i < writeAvailable; ++i) {
+                pDownmix[m_bufferWritePosition + i] = 0;
+            }
         }
         m_bufferWritePosition += writeAvailable;
         inRead += writeAvailable;
@@ -57,9 +82,4 @@ bool DownmixAndOverlapHelper::processStereoSamples(const CSAMPLE* pInput, size_t
     return true;
 }
 
-bool DownmixAndOverlapHelper::finalize() {
-    // TODO(rryan) flush support?
-    return true;
-}
-
-}
+} // namespace mixxx

@@ -98,7 +98,6 @@ bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, const int iLen) {
 }
 
 bool AnalyzerQueenMaryKey::finalize() {
-    // TODO(rryan) do we need a flush?
     QMutexLocker locked(&s_mutex);
     m_helper.finalize();
     m_pKeyMode.reset();
