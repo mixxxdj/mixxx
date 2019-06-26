@@ -280,7 +280,7 @@ DJ505.browseEncoder = new components.Encoder({
 });
 
 DJ505.backButton = new components.Button({
-    // TODO: Map the BACK/SONG button
+    // TODO: Map the BACK button
     midi: [0x9F, 0x07],
     shiftOffset: 11,
     sendShifted: true,
@@ -289,7 +289,6 @@ DJ505.backButton = new components.Button({
 });
 
 DJ505.addPrepareButton = new components.Button({
-    // TODO: Map the ARTIST button
     midi: [0x9F, 0x1B],
     shiftOffset: -7,
     sendShifted: true,
@@ -298,6 +297,33 @@ DJ505.addPrepareButton = new components.Button({
     key: "maximize_library",
     type: components.Button.prototype.types.toggle,
 });
+
+
+DJ505.sortLibrary = function (channel, control, value, status, group) {
+    if (value === 0) {
+        return;
+    }
+
+    var sortColumn;
+    switch(control) {
+        case 0x12:  // SONG
+            sortColumn = 1;
+            break;
+        case 0x13:  // BPM
+            sortColumn = 14;
+            break;
+        case 0x14:  // ARTIST
+            sortColumn = 0;
+            break;
+        case 0x1E:  // KEY
+            sortColumn = 19;
+            break;
+        default:
+            // unknown sort column
+            return;
+    }
+    engine.setValue("[Library]", "sort_column_toggle", sortColumn);
+};
 
 DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
@@ -909,7 +935,7 @@ DJ505.PadColor = {
     CORAL:        0x0A,
     AZURE:        0x0B,
     TURQUOISE:    0x0C,
-    AQUAMARINE:   0x0C,
+    AQUAMARINE:   0x0D,
     GREEN:        0x0E,
     WHITE:        0x0F,
     DIM_MODIFIER: 0x10,
@@ -998,7 +1024,6 @@ DJ505.PadSection = function (deck, offset) {
         "hotcue": new DJ505.HotcueMode(deck, offset),
         "cueloop": new DJ505.CueLoopMode(deck, offset),
         "roll": new DJ505.RollMode(deck, offset),
-        "loop": new DJ505.LoopMode(deck, offset),
         "sampler": new DJ505.SamplerMode(deck, offset),
         "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
         "pitchplay": new DJ505.PitchPlayMode(deck, offset),
@@ -1019,6 +1044,9 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.HOTCUE:
         mode = this.modes.hotcue;
         break;
+    // FIXME: Mixxx is currently missing support for Serato-style "flips",
+    // hence this mode can only be implemented if this feature is added:
+    // https://bugs.launchpad.net/mixxx/+bug/1768113
     //case DJ505.PadMode.FLIP:
     //    mode = this.modes.flip;
     //    break;
@@ -1034,6 +1062,8 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.ROLL:
         mode = this.modes.roll;
         break;
+    // FIXME: Although it might be possible to implement Slicer Mode, it would
+    // miss visual feedback: https://bugs.launchpad.net/mixxx/+bug/1828886
     //case DJ505.PadMode.SLICER:
     //    mode = this.modes.slicer;
     //    break;
@@ -1046,9 +1076,11 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case DJ505.PadMode.VELOCITYSAMPLER:
         mode = this.modes.velocitysampler;
         break;
-    case DJ505.PadMode.LOOP:
-        mode = this.modes.loop;
-        break;
+    // FIXME: Loop mode can be added as soon as Saved Loops are
+    // implemented: https://bugs.launchpad.net/mixxx/+bug/692926
+    //case DJ505.PadMode.LOOP:
+    //    mode = this.modes.loop;
+    //    break;
     case DJ505.PadMode.PITCHPLAY:
         mode = this.modes.pitchplay;
         break;
@@ -1243,9 +1275,12 @@ DJ505.RollMode = function (deck, offset) {
     this.color = DJ505.PadColor.CELESTE;
     this.pads = new components.ComponentContainer();
     this.loopSize = 0.03125;
+    this.minSize = 0.03125;  // 1/32
+    this.maxSize = 32;
 
     var loopSize;
-    for (var i = 0; i <= 7; i++) {
+    var i;
+    for (i = 0; i <= 3; i++) {
         loopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i] = new components.Button({
             midi: [0x94 + offset, 0x14 + i],
@@ -1257,17 +1292,85 @@ DJ505.RollMode = function (deck, offset) {
             inKey: "beatlooproll_" + loopSize + "_activate",
             outConnect: false,
             on: this.color,
-            off: (loopSize === 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER),
+            off: (loopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((loopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.color + DJ505.PadColor.DIM_MODIFIER)),
         });
     }
+    this.pads[4] = new components.Button({
+        midi: [0x94 + offset, 0x18],
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        key: "beatjump_backward",
+        outConnect: false,
+        off: DJ505.PadColor.RED,
+        on: DJ505.PadColor.RED + DJ505.PadColor.DIM_MODIFIER,
+    });
+    this.pads[5] = new components.Button({
+        midi: [0x94 + offset, 0x19],
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        outKey: "beatjump_size",
+        outConnect: false,
+        on: DJ505.PadColor.ORANGE,
+        off: DJ505.PadColor.ORANGE + DJ505.PadColor.DIM_MODIFIER,
+        mode: this,
+        input: function (channel, control, value, status, group) {
+            if (value) {
+                var jumpSize = engine.getValue(this.group, "beatjump_size");
+                if (jumpSize > this.mode.minSize) {
+                    engine.setValue(this.group, "beatjump_size", jumpSize / 2);
+                }
+            }
+        },
+        output: function (value, group, control) {
+            this.send((value > this.mode.minSize) ? this.on : this.off);
+        },
+    });
+    this.pads[6] = new components.Button({
+        midi: [0x94 + offset, 0x1A],
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        outKey: "beatjump_size",
+        outConnect: false,
+        on: DJ505.PadColor.ORANGE,
+        off: DJ505.PadColor.ORANGE + DJ505.PadColor.DIM_MODIFIER,
+        mode: this,
+        input: function (channel, control, value, status, group) {
+            if (value) {
+                var jumpSize = engine.getValue(this.group, "beatjump_size");
+                if (jumpSize < this.mode.maxSize) {
+                    engine.setValue(this.group, "beatjump_size", jumpSize * 2);
+                }
+            }
+        },
+        output: function (value, group, control) {
+            this.send((value < this.mode.maxSize) ? this.on : this.off);
+        },
+    });
+    this.pads[7] = new components.Button({
+        midi: [0x94 + offset, 0x1B],
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        key: "beatjump_forward",
+        outConnect: false,
+        off: DJ505.PadColor.RED,
+        on: DJ505.PadColor.RED + DJ505.PadColor.DIM_MODIFIER,
+    });
+
+
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.loopSize === 0.03125) {
-                    this.mode.setLoopSize(0.25);
-                } else {
+                if (this.mode.loopSize > this.mode.minSize) {
                     this.mode.setLoopSize(this.mode.loopSize / 2);
                 }
             }
@@ -1279,9 +1382,7 @@ DJ505.RollMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.loopSize === 0.25) {
-                    this.mode.setLoopSize(0.03125);
-                } else {
+                if (this.mode.loopSize * 8 < this.mode.maxSize) {
                     this.mode.setLoopSize(this.mode.loopSize * 2);
                 }
             }
@@ -1293,36 +1394,14 @@ DJ505.RollMode.prototype = Object.create(components.ComponentContainer.prototype
 DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
     this.loopSize = loopSize;
     var padLoopSize;
-    for (var i = 0; i <= 7; i++) {
+    for (var i = 0; i <= 3; i++) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = (padLoopSize === 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER);
+        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.pads[i].color + DJ505.PadColor.DIM_MODIFIER));
     }
     this.reconnectComponents();
 };
-
-DJ505.LoopMode = function (deck, offset) {
-    components.ComponentContainer.call(this);
-    this.ledControl = DJ505.PadMode.ROLL;
-    this.color = DJ505.PadColor.GREEN;
-    this.pads = new components.ComponentContainer();
-    for (var i = 0; i <= 7; i++) {
-        this.pads[i] = new components.Button({
-            midi: [0x94 + offset, 0x14 + i],
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            group: deck.currentDeck,
-            outKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_enabled",
-            inKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_toggle",
-            outConnect: false,
-            on: this.color,
-            off: this.color + DJ505.PadColor.DIM_MODIFIER,
-        });
-    }
-};
-DJ505.LoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DJ505.SamplerMode = function (deck, offset) {
     components.ComponentContainer.call(this);

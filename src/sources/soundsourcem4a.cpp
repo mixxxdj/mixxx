@@ -506,6 +506,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                               << getUrlString();
             break; // abort
         }
+        Q_UNUSED(pDecodeResult); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(pDecodeResult == pDecodeBuffer); // verify the in/out parameter
 
         // Verify the decoded sample data for consistency

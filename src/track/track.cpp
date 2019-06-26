@@ -222,6 +222,38 @@ QString Track::getCanonicalLocation() const {
     return loc;
 }
 
+QUrl Track::getLocationUrl() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
+    QMutexLocker lock(&m_qMutex);
+    return TrackRef::locationUrl(m_fileInfo);
+}
+
+QUrl Track::getCanonicalLocationUrl() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
+    QMutexLocker lock(&m_qMutex);
+    return TrackRef::canonicalLocationUrl(m_fileInfo);
+}
+
+QString Track::getLocationUri() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
+    QMutexLocker lock(&m_qMutex);
+    return TrackRef::locationUri(m_fileInfo);
+}
+
+QString Track::getCanonicalLocationUri() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
+    QMutexLocker lock(&m_qMutex);
+    return TrackRef::canonicalLocationUri(m_fileInfo);
+}
+
 QString Track::getDirectory() const {
     // Copying QFileInfo is thread-safe due to "implicit sharing"
     // (copy-on write). But operating on a single instance of QFileInfo
@@ -745,7 +777,7 @@ void Track::setCuePoint(CuePosition cue) {
         }
         pLoadCue->setPosition(position);
         pLoadCue->setSource(source);
-    } else {
+    } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
     }
