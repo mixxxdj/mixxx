@@ -139,7 +139,7 @@ CUP mode:
        <widget class="QCheckBox" name="checkBoxSeekToCue">
         <property name="toolTip">
          <string>Automatically seeks to the first saved cue point on track load.
-            If none exists, seeks to the beginning of the track.</string>
+If none exists, seeks to the beginning of the track.</string>
         </property>
         <property name="text">
          <string>Jump to main cue point on track load</string>
