@@ -55,6 +55,7 @@ build/wix/ProductID.wxi
 *.pdb
 lib/*/*.lib
 lib/*/lib/*.lib
+/*.plist
 
 lib/qtscript-bytearray/*.cc
 
