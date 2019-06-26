@@ -177,8 +177,8 @@ CUP mode:
        <widget class="QCheckBox" name="checkBoxCloneDeckOnLoadDoubleTap">
         <property name="toolTip">
          <string>Create a playing clone of the first playing deck Mixxx finds
-         by double-tapping a Load button on a controller or keyboard.
-         You can always drag-and-drop tracks on screen to clone a deck.</string>
+by double-tapping a Load button on a controller or keyboard.
+You can always drag-and-drop tracks on screen to clone a deck.</string>
         </property>
         <property name="text">
          <string>Double-press Load button to clone</string>
