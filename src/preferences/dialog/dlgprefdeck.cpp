@@ -167,10 +167,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
 
     // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
-    // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","CloneDeckOnLoadDoubleTap"))) {
-        m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
-    }
     m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
