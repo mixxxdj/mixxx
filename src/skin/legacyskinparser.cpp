@@ -2087,7 +2087,8 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {
                     SKIN_WARNING(con, *m_pContext)
-                            << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
+                            << "LegacySkinParser::setupConnections():"
+                            << "Setting EmitOnPressAndRelease to false is not necessary.";
                 }
             } else {
                 // default:

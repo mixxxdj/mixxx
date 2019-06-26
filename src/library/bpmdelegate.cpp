@@ -74,7 +74,7 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     // #LibraryBPMButton::indicator:unchecked {
     //  image: url(:/images/library/ic_library_unlocked.svg);
     // }
-    QStyleOptionViewItemV4 opt = option;
+    QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
     if (m_pTableView != NULL) {

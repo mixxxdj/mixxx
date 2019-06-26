@@ -39,8 +39,6 @@
             </State>
             <Connection>
               <ConfigKey>[Master],skin_settings</ConfigKey>
-              <!-- This is used to work around Bug 1795663 on OSX -->
-              <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>

@@ -33,7 +33,7 @@
 #include <QStyle>
 #include <QSize>
 #include <QPaintEvent>
-#include <QStyleOptionViewItemV4>
+#include <QStyleOptionViewItem>
 #include <QTableView>
 #include <QModelIndex>
 
@@ -44,7 +44,7 @@ class StarEditor : public QWidget {
   public:
     StarEditor(QWidget* parent, QTableView* pTableView,
                const QModelIndex& index,
-               const QStyleOptionViewItemV4& option);
+               const QStyleOptionViewItem& option);
 
     QSize sizeHint() const;
     void setStarRating(const StarRating& starRating) {
@@ -53,7 +53,7 @@ class StarEditor : public QWidget {
     StarRating starRating() { return m_starRating; }
 
     static void renderHelper(QPainter* painter, QTableView* pTableView,
-                             const QStyleOptionViewItemV4& option,
+                             const QStyleOptionViewItem& option,
                              StarRating* pStarRating);
 
   signals:
@@ -71,7 +71,7 @@ class StarEditor : public QWidget {
 
     QTableView* m_pTableView;
     QModelIndex m_index;
-    QStyleOptionViewItemV4 m_styleOption;
+    QStyleOptionViewItem m_styleOption;
     StarRating m_starRating;
 };
 

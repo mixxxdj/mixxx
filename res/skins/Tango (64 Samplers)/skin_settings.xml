@@ -40,8 +40,6 @@ Description:
                 <TooltipId>skin_settings</TooltipId>
                 <ObjectName>SkinSettingsClose</ObjectName>
                 <Size>20f,24f</Size>
-                <!-- This is used to work around Bug 1795663 on OSX -->
-                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
