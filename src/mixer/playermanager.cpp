@@ -580,8 +580,13 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     }
 
     mixxx::Duration elapsed = m_cloneTimer.restart();
-    bool cloneOnDoubleTap = m_pConfig->getValue<bool>(
-                ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"));
+    // If not present in the config, use the default value
+    if (!m_pConfig->exists(ConfigKey("[Controls]","CloneDeckOnLoadDoubleTap"))) {
+        bool cloneOnDoubleTap = true;
+    } else {
+        bool cloneOnDoubleTap = m_pConfig->getValue<bool>(
+                    ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"));
+    };
     if (cloneOnDoubleTap && m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
         // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
         // so clone another playing deck instead of loading the selected track
