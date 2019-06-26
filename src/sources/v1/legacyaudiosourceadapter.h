@@ -1,16 +1,14 @@
 #ifndef MIXXX_LEGACYAUDIOSOURCEADAPTER_H
 #define MIXXX_LEGACYAUDIOSOURCEADAPTER_H
 
-
 #include "sources/v1/legacyaudiosource.h"
 
 #include "sources/audiosource.h"
 
-
 namespace mixxx {
 
 // Only required for SoundSourceCoreAudio.
-class LegacyAudioSourceAdapter: public virtual /*implements*/ IAudioSourceReader {
+class LegacyAudioSourceAdapter : public virtual /*implements*/ IAudioSourceReader {
   public:
     LegacyAudioSourceAdapter(
             AudioSource* pOwner,
@@ -26,6 +24,5 @@ class LegacyAudioSourceAdapter: public virtual /*implements*/ IAudioSourceReader
 };
 
 } // namespace mixxx
-
 
 #endif // MIXXX_LEGACYAUDIOSOURCEADAPTER_H

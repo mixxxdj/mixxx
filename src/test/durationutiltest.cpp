@@ -101,13 +101,13 @@ TEST_F(DurationUtilTest, FormatSecondsNegative) {
 }
 
 TEST_F(DurationUtilTest, formatTime) {
-    formatTime("00:00.000", 0);
-    formatTime("00:01.000", 1);
-    formatTime("00:59.000", 59);
-    formatTime("01:00.000", 60);
-    formatTime("01:01.123", 61.1234);
+    formatTime("0:00.000", 0);
+    formatTime("0:01.000", 1);
+    formatTime("0:59.000", 59);
+    formatTime("1:00.000", 60);
+    formatTime("1:01.123", 61.1234);
     formatTime("59:59.999", 3599.999);
-    formatTime("01:00:00.000", 3600);
+    formatTime("1:00:00.000", 3600);
     formatTime("23:59:59.000", 24 * 3600 - 1);
     formatTime("24:00:00.000", 24 * 3600);
     formatTime("24:00:01.000", 24 * 3600 + 1);

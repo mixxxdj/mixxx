@@ -22,13 +22,29 @@ Variables:
         <SizePolicy>max,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
+          <!-- Kill button -->
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_button.xml">
+                <SetVariable name="ObjectName">EQKillButton</SetVariable>
+                <SetVariable name="Size">12f,30f</SetVariable>
+                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
           <!-- EQ knob + Kill indicator underneath -->
           <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
               <EffectParameterKnobComposed>
-                <ObjectName>EQKnob</ObjectName>
                 <Size>30f,26f</Size>
                 <Knob>knobs_sliders/knob_white.svg</Knob>
                 <BackPath>knobs_sliders/knob_bg.svg</BackPath>
@@ -47,23 +63,6 @@ Variables:
               </Template>
             </Children>
           </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
-
-          <!-- Kill button -->
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:fx_button.xml">
-                <SetVariable name="ObjectName">EQKillButton</SetVariable>
-                <SetVariable name="Size">12f,30f</SetVariable>
-                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_eq_kill_buttons</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
 
         </Children>
         <Connection>
@@ -111,7 +110,6 @@ Variables:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-
     </Children>
   </WidgetGroup>
 </Template>

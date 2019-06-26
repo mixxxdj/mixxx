@@ -99,44 +99,39 @@ class LibFaadLoader {
 
     char* GetErrorMessage(unsigned char errcode);
 
-
   private:
     LibFaadLoader();
 
-    LibFaadLoader(const LibFaadLoader &) = delete;
-    LibFaadLoader &operator=(const LibFaadLoader &) = delete;
+    LibFaadLoader(const LibFaadLoader&) = delete;
+    LibFaadLoader& operator=(const LibFaadLoader&) = delete;
 
     // QLibrary is not copy-able
     std::unique_ptr<QLibrary> m_pLibrary;
 
-    typedef Handle (* NeAACDecOpen_t)();
+    typedef Handle (*NeAACDecOpen_t)();
     NeAACDecOpen_t m_neAACDecOpen;
 
-    typedef Configuration* (* NeAACDecGetCurrentConfiguration_t)(Handle);
+    typedef Configuration* (*NeAACDecGetCurrentConfiguration_t)(Handle);
     NeAACDecGetCurrentConfiguration_t m_neAACDecGetCurrentConfiguration;
 
-    typedef unsigned char (* NeAACDecSetConfiguration_t)(
+    typedef unsigned char (*NeAACDecSetConfiguration_t)(
             Handle, Configuration*);
     NeAACDecSetConfiguration_t m_neAACDecSetConfiguration;
 
-    typedef char (* NeAACDecInit2_t)(
-            Handle, unsigned char*,
-            unsigned long, unsigned long*, unsigned char* );
+    typedef char (*NeAACDecInit2_t)(
+            Handle, unsigned char*, unsigned long, unsigned long*, unsigned char*);
     NeAACDecInit2_t m_neAACDecInit2;
 
-    typedef void (* NeAACDecClose_t)(Handle);
+    typedef void (*NeAACDecClose_t)(Handle);
     NeAACDecClose_t m_neAACDecClose;
 
-    typedef void (* NeAACDecPostSeekReset_t)(Handle, long);
+    typedef void (*NeAACDecPostSeekReset_t)(Handle, long);
     NeAACDecPostSeekReset_t m_neAACDecPostSeekReset;
 
-    typedef void* (* NeAACDecDecode2_t)(
-            Handle, FrameInfo*, unsigned char*,
-            unsigned long, void**, unsigned long);
+    typedef void* (*NeAACDecDecode2_t)(
+            Handle, FrameInfo*, unsigned char*, unsigned long, void**, unsigned long);
     NeAACDecDecode2_t m_neAACDecDecode2;
 
-    typedef char* (* NeAACDecGetErrorMessage_t)(unsigned char);
+    typedef char* (*NeAACDecGetErrorMessage_t)(unsigned char);
     NeAACDecGetErrorMessage_t m_neAACDecGetErrorMessage;
 };
-
-

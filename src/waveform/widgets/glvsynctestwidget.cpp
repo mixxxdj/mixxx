@@ -18,6 +18,12 @@
 GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
     : QGLWidget(parent, SharedGLContext::getWidget()),
       WaveformWidgetAbstract(group) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 
     addRenderer<WaveformRenderBackground>(); // 172 µs
 //    addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
@@ -32,9 +38,6 @@ GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
 
     setAutoBufferSwap(false);
 
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
     qDebug() << "GLVSyncTestWidget.isSharing() =" << isSharing();
 }

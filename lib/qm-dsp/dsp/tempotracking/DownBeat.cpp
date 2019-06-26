@@ -23,6 +23,8 @@
 #include <iostream>
 #include <cstdlib>
 
+using std::vector;
+
 DownBeat::DownBeat(float originalSampleRate,
                    size_t decimationFactor,
                    size_t dfIncrement) :
@@ -47,7 +49,6 @@ DownBeat::DownBeat(float originalSampleRate,
     if (m_beatframesize < 2) {
         m_beatframesize = 2;
     }
-//    std::cerr << "rate = " << m_rate << ", dec = " << decimationFactor << ", bfs = " << m_beatframesize << std::endl;
     m_beatframe = new double[m_beatframesize];
     m_fftRealOut = new double[m_beatframesize];
     m_fftImagOut = new double[m_beatframesize];
@@ -75,18 +76,14 @@ DownBeat::setBeatsPerBar(int bpb)
 void
 DownBeat::makeDecimators()
 {
-//    std::cerr << "m_factor = " << m_factor << std::endl;
     if (m_factor < 2) return;
     size_t highest = Decimator::getHighestSupportedFactor();
     if (m_factor <= highest) {
         m_decimator1 = new Decimator(m_increment, m_factor);
-//        std::cerr << "DownBeat: decimator 1 factor " << m_factor << ", size " << m_increment << std::endl;
         return;
     }
     m_decimator1 = new Decimator(m_increment, highest);
-//    std::cerr << "DownBeat: decimator 1 factor " << highest << ", size " << m_increment << std::endl;
     m_decimator2 = new Decimator(m_increment / highest, m_factor / highest);
-//    std::cerr << "DownBeat: decimator 2 factor " << m_factor / highest << ", size " << m_increment / highest << std::endl;
     m_decbuf = new float[m_increment / highest];
 }
 
@@ -99,15 +96,12 @@ DownBeat::pushAudioBlock(const float *audio)
         if (!m_buffer) {
             m_buffer = (float *)malloc(m_bufsiz * sizeof(float));
         } else {
-//            std::cerr << "DownBeat::pushAudioBlock: realloc m_buffer to " << m_bufsiz << std::endl;
             m_buffer = (float *)realloc(m_buffer, m_bufsiz * sizeof(float));
         }
     }
-    if (!m_decimator1 && m_factor > 1) makeDecimators();
-//    float rmsin = 0, rmsout = 0;
-//    for (int i = 0; i < m_increment; ++i) {
-//        rmsin += audio[i] * audio[i];
-//    }
+    if (!m_decimator1 && m_factor > 1) {
+        makeDecimators();
+    }
     if (m_decimator2) {
         m_decimator1->process(audio, m_decbuf);
         m_decimator2->process(m_decbuf, m_buffer + m_buffill);
@@ -119,10 +113,6 @@ DownBeat::pushAudioBlock(const float *audio)
             (m_buffer + m_buffill)[i] = audio[i];
         }
     }
-//    for (int i = 0; i < m_increment / m_factor; ++i) {
-//        rmsout += m_buffer[m_buffill + i] * m_buffer[m_buffill + i];
-//    }
-//    std::cerr << "pushAudioBlock: rms in " << sqrt(rmsin) << ", out " << sqrt(rmsout) << std::endl;
     m_buffill += m_increment / m_factor;
 }
     
@@ -136,7 +126,9 @@ DownBeat::getBufferedAudio(size_t &length) const
 void
 DownBeat::resetAudioBuffer()
 {
-    if (m_buffer) free(m_buffer);
+    if (m_buffer) {
+        free(m_buffer);
+    }
     m_buffer = 0;
     m_buffill = 0;
     m_bufsiz = 0;
@@ -149,7 +141,7 @@ DownBeat::findDownBeats(const float *audio,
                         i_vec_t &downbeats)
 {
     // FIND DOWNBEATS BY PARTITIONING THE INPUT AUDIO FILE INTO BEAT SEGMENTS
-    // WHERE THE AUDIO FRAMES ARE DOWNSAMPLED BY A FACTOR OF 16 (fs ~= 2700Hz)
+    // WHERE THE AUDIO FRAMES ARE DOWNSAMPLED  BY A FACTOR OF 16 (fs ~= 2700Hz)
     // THEN TAKING THE JENSEN-SHANNON DIVERGENCE BETWEEN BEAT SYNCHRONOUS SPECTRAL FRAMES
 
     // IMPLEMENTATION (MOSTLY) FOLLOWS:
@@ -179,16 +171,10 @@ DownBeat::findDownBeats(const float *audio,
         // the size varies, it's easier to do this by hand than use
         // our Window abstraction.)
 
-//        std::cerr << "beatlen = " << beatlen << std::endl;
-
-//        float rms = 0;
         for (size_t j = 0; j < beatlen && j < m_beatframesize; ++j) {
             double mul = 0.5 * (1.0 - cos(TWO_PI * (double(j) / double(beatlen))));
             m_beatframe[j] = audio[beatstart + j] * mul;
-//            rms += m_beatframe[j] * m_beatframe[j];
         }
-//        rms = sqrt(rms);
-//        std::cerr << "beat " << i << ": audio rms " << rms << std::endl;
 
         for (size_t j = beatlen; j < m_beatframesize; ++j) {
             m_beatframe[j] = 0.0;
@@ -213,7 +199,6 @@ DownBeat::findDownBeats(const float *audio,
 
         if (i > 0) { // otherwise we have no previous frame
             m_beatsd.push_back(measureSpecDiff(oldspec, newspec));
-//            std::cerr << "specdiff: " << m_beatsd[m_beatsd.size()-1] << std::endl;
         }
 
         // Copy newspec across to old
@@ -242,8 +227,9 @@ DownBeat::findDownBeats(const float *audio,
            dbcand[beat] += (m_beatsd[example]) / timesig;
            ++count;
        }
-       if (count > 0) dbcand[beat] /= count;
-//        std::cerr << "dbcand[" << beat << "] = " << dbcand[beat] << std::endl;
+       if (count > 0) {
+           dbcand[beat] /= count;
+       }
    }
 
     // first downbeat is beat at index of maximum value of dbcand
@@ -260,9 +246,9 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
 {
     // JENSEN-SHANNON DIVERGENCE BETWEEN SPECTRAL FRAMES
 
-    unsigned int SPECSIZE = 512;   // ONLY LOOK AT FIRST 512 SAMPLES OF SPECTRUM. 
-    if (SPECSIZE > oldspec.size()/4) {
-        SPECSIZE = oldspec.size()/4;
+    int SPECSIZE = 512;   // ONLY LOOK AT FIRST 512 SAMPLES OF SPECTRUM. 
+    if (SPECSIZE > int(oldspec.size())/4) {
+        SPECSIZE = int(oldspec.size())/4;
     }
     double SD = 0.;
     double sd1 = 0.;
@@ -270,8 +256,8 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
     double sumnew = 0.;
     double sumold = 0.;
   
-    for (unsigned int i = 0;i < SPECSIZE;i++)
-    {
+    for (int i = 0;i < SPECSIZE;i++) {
+        
         newspec[i] +=EPS;
         oldspec[i] +=EPS;
         
@@ -279,25 +265,25 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
         sumold+=oldspec[i];
     } 
     
-    for (unsigned int i = 0;i < SPECSIZE;i++)
-    {
+    for (int i = 0;i < SPECSIZE;i++) {
+        
         newspec[i] /= (sumnew);
         oldspec[i] /= (sumold);
         
         // IF ANY SPECTRAL VALUES ARE 0 (SHOULDN'T BE ANY!) SET THEM TO 1
-        if (newspec[i] == 0)
-        {
+        if (newspec[i] == 0) {
             newspec[i] = 1.;
         }
         
-        if (oldspec[i] == 0)
-        {
+        if (oldspec[i] == 0) {
             oldspec[i] = 1.;
         }
         
         // JENSEN-SHANNON CALCULATION
-        sd1 = 0.5*oldspec[i] + 0.5*newspec[i];	
-        SD = SD + (-sd1*log(sd1)) + (0.5*(oldspec[i]*log(oldspec[i]))) + (0.5*(newspec[i]*log(newspec[i])));
+        sd1 = 0.5*oldspec[i] + 0.5*newspec[i];  
+        SD = SD + (-sd1*log(sd1)) +
+            (0.5*(oldspec[i]*log(oldspec[i]))) +
+            (0.5*(newspec[i]*log(newspec[i])));
     }
     
     return SD;
@@ -306,6 +292,8 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
 void
 DownBeat::getBeatSD(vector<double> &beatsd) const
 {
-    for (int i = 0; i < (int)m_beatsd.size(); ++i) beatsd.push_back(m_beatsd[i]);
+    for (int i = 0; i < (int)m_beatsd.size(); ++i) {
+        beatsd.push_back(m_beatsd[i]);
+    }
 }
 

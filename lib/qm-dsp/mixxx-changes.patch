@@ -1,0 +1,66 @@
+diff --git a/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp b/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
+index d268756..f2fad31 100644
+--- a/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
++++ b/lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
+@@ -61,14 +61,15 @@ void ConstantQ::sparsekernel()
+ 
+         // Compute a complex sinusoid windowed with a hamming window
+         // of the right length
+-        
+-        int windowLength = (int)ceil
+-            (m_dQ * m_FS / (m_FMin * pow(2, (double)j / (double)m_BPO)));
++
++        const double samplesPerCycle =
++            m_FS / (m_FMin * pow(2, (double)j / (double)m_BPO));
++        int windowLength = (int)ceil(m_dQ * samplesPerCycle);
+ 
+         int origin = m_FFTLength/2 - windowLength/2;
+ 
+         for (int i = 0; i < windowLength; ++i) {
+-            double angle = (2.0 * M_PI * m_dQ * i) / windowLength;
++            double angle = (2.0 * M_PI * i) / samplesPerCycle;
+             windowRe[origin + i] = cos(angle);
+             windowIm[origin + i] = sin(angle);
+         }
+diff --git a/lib/qm-dsp/dsp/transforms/FFT.cpp b/lib/qm-dsp/dsp/transforms/FFT.cpp
+index da476b8..8833255 100644
+--- a/lib/qm-dsp/dsp/transforms/FFT.cpp
++++ b/lib/qm-dsp/dsp/transforms/FFT.cpp
+@@ -10,8 +10,8 @@
+ 
+ #include "maths/MathUtilities.h"
+ 
+-#include "kiss_fft.h"
+-#include "kiss_fftr.h"
++#include "ext/kissfft/kiss_fft.h"
++#include "ext/kissfft/tools/kiss_fftr.h"
+ 
+ #include <cmath>
+ 
+diff --git a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
+index b8e238b..8adb0f0 100644
+--- a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
++++ b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
+@@ -13,7 +13,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ */
+ 
+ #include "kiss_fftr.h"
+-#include "_kiss_fft_guts.h"
++#include "../_kiss_fft_guts.h"
+ 
+ struct kiss_fftr_state{
+     kiss_fft_cfg substate;
+diff --git a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h
+index 72e5a57..81d8a8e 100644
+--- a/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h
++++ b/lib/qm-dsp/ext/kissfft/tools/kiss_fftr.h
+@@ -1,7 +1,7 @@
+ #ifndef KISS_FTR_H
+ #define KISS_FTR_H
+ 
+-#include "kiss_fft.h"
++#include "../kiss_fft.h"
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+

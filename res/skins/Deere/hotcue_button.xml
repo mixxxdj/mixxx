@@ -8,20 +8,46 @@
     SmallSquareButtonSize: the button size
 -->
 <Template>
-  <Template src="skin:left_right_display_2state_button.xml">
-    <SetVariable name="TooltipId">hotcue</SetVariable>
-    <SetVariable name="ObjectName">HotcueButton</SetVariable>
-    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-    <SetVariable name="state_0_pressed"></SetVariable>
-    <SetVariable name="state_0_unpressed"></SetVariable>
-    <SetVariable name="state_0_text"><Variable name="hotcue"/></SetVariable>
-    <SetVariable name="state_1_pressed"></SetVariable>
-    <SetVariable name="state_1_unpressed"></SetVariable>
-    <SetVariable name="state_1_text"><Variable name="hotcue"/></SetVariable>
-    <SetVariable name="left_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</SetVariable>
-    <SetVariable name="right_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</SetVariable>
-    <SetVariable name="display_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</SetVariable>
-  </Template>
+  <PushButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+    <NumberStates>2</NumberStates>
+    <LeftClickIsPushButton><Variable name="LeftClickIsPushButton"/></LeftClickIsPushButton>
+    <RightClickIsPushButton><Variable name="RightClickIsPushButton"/></RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="hotcue"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"></Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="hotcue"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"></Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>RightButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_color_id</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </PushButton>
 </Template>

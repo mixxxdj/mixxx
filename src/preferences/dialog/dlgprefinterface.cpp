@@ -110,42 +110,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
 
-
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    AutoHiDpi autoHiDpi;
-    m_dScaleFactorAuto = autoHiDpi.getScaleFactor();
-    m_dScaleFactor = m_dScaleFactorAuto;
-    if (m_dScaleFactor > 0) {
-        // we got a valid auto scale factor
-        bool scaleFactorAuto = m_pConfig->getValue(
-                ConfigKey("[Config]", "ScaleFactorAuto"), true);
-        checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
-        if (scaleFactorAuto) {
-            spinBoxScaleFactor->setEnabled(false);
-            m_pConfig->setValue(
-                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
-        } else {
-            m_dScaleFactor = m_pConfig->getValue(
-                        ConfigKey("[Config]", "ScaleFactor"), 1.0);
-        }
-    } else {
-        checkBoxScaleFactorAuto->setEnabled(false);
-        m_dScaleFactor = m_pConfig->getValue(
-                    ConfigKey("[Config]", "ScaleFactor"), 1.0);
-    }
-
-    connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetScaleFactorAuto(bool)));
-    connect(spinBoxScaleFactor, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetScaleFactor(double)));
-
-#else
     checkBoxScaleFactorAuto->hide();
     spinBoxScaleFactor->hide();
     labelScaleFactor->hide();
-#endif
-
 
     //
     // Start in fullscreen mode

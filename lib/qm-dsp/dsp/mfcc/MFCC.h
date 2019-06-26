@@ -13,8 +13,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef MFCC_H
-#define MFCC_H
+#ifndef QM_DSP_MFCC_H
+#define QM_DSP_MFCC_H
 
 #include "base/Window.h"
 

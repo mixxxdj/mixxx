@@ -27,7 +27,7 @@ DFConfig makeDetectionFunctionConfig() {
     return config;
 }
 
-}  // namespace
+} // namespace
 
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats()
         : m_iSampleRate(0) {
@@ -40,19 +40,19 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
-        makeDetectionFunctionConfig());
+            makeDetectionFunctionConfig());
 
     m_helper.initialize(
-        kWindowSize, kStepSize, [this](double* pWindow, size_t) {
-            // TODO(rryan) reserve?
-            m_detectionResults.push_back(
-                m_pDetectionFunction->processTimeDomain(pWindow));
-            return true;
-        });
+            kWindowSize, kStepSize, [this](double* pWindow, size_t) {
+                // TODO(rryan) reserve?
+                m_detectionResults.push_back(
+                        m_pDetectionFunction->processTimeDomain(pWindow));
+                return true;
+            });
     return true;
 }
 
-bool AnalyzerQueenMaryBeats::process(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) {
     DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pDetectionFunction) {
@@ -105,4 +105,4 @@ bool AnalyzerQueenMaryBeats::finalize() {
     return true;
 }
 
-}  // namespace mixxx
+} // namespace mixxx

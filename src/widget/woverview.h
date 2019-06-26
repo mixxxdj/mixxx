@@ -86,12 +86,14 @@ class WOverview : public WWidget, public TrackDropTarget {
     float m_waveformPeak;
 
     int m_diffGain;
+    qreal m_devicePixelRatio;
 
   private slots:
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void onRateSliderChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
@@ -113,6 +115,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
+    ControlProxy* m_pRateDirControl;
+    ControlProxy* m_pRateRangeControl;
+    ControlProxy* m_pRateSliderControl;
+    ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
 
     // Current active track
