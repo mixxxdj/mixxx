@@ -510,13 +510,12 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
     m_bJumpToCueOnTrackLoad = checked;
 }
 
-
 void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
     m_bCloneDeckOnLoadDoubleTap = checked;
+}
 
 void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
     m_bAssignHotcueColors = checked;
-
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
