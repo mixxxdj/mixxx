@@ -63,8 +63,6 @@ void DlgPrefBeats::loadSettings() {
 }
 
 void DlgPrefBeats::slotResetToDefaults() {
-    // NOTE(rryan): Do not hard-code defaults here! Put them in
-    // BeatDetectionSettings.
     if (m_availablePlugins.size() > 0) {
         m_selectedAnalyzerId = m_availablePlugins[0].id;
     }
@@ -127,15 +125,23 @@ void DlgPrefBeats::slotUpdate() {
         return;
     }
 
-    for (int i = 0; i < m_availablePlugins.size(); ++i) {
-        const auto& info = m_availablePlugins.at(i);
-        if (info.id == m_selectedAnalyzerId) {
-            plugincombo->setCurrentIndex(i);
-            if (!m_availablePlugins[i].constantTempoSupported) {
-                bfixedtempo->setEnabled(false);
-                boffset->setEnabled(false);
+    if (m_availablePlugins.size() > 0) {
+        bool found = false;
+        for (int i = 0; i < m_availablePlugins.size(); ++i) {
+            const auto& info = m_availablePlugins.at(i);
+            if (info.id == m_selectedAnalyzerId) {
+                found = true;
+                plugincombo->setCurrentIndex(i);
+                if (!m_availablePlugins[i].constantTempoSupported) {
+                    bfixedtempo->setEnabled(false);
+                    boffset->setEnabled(false);
+                }
+                break;
             }
-            break;
+        }
+        if (!found) {
+            plugincombo->setCurrentIndex(0);
+            m_selectedAnalyzerId = m_availablePlugins[0].id;
         }
     }
 

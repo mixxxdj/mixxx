@@ -243,11 +243,18 @@ void DlgPrefKey::slotUpdate() {
         return;
     }
 
-    for (int i = 0; i < m_availablePlugins.size(); ++i) {
-        const auto& info = m_availablePlugins.at(i);
-        if (info.id == m_selectedAnalyzerId) {
-            plugincombo->setCurrentIndex(i);
-            break;
+    if (m_availablePlugins.size() > 0) {
+        bool found = false;
+        for (int i = 0; i < m_availablePlugins.size(); ++i) {
+            const auto& info = m_availablePlugins.at(i);
+            if (info.id == m_selectedAnalyzerId) {
+                plugincombo->setCurrentIndex(i);
+                break;
+            }
+        }
+        if (!found) {
+            plugincombo->setCurrentIndex(0);
+            m_selectedAnalyzerId = m_availablePlugins[0].id;
         }
     }
 }
