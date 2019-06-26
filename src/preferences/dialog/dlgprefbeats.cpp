@@ -131,7 +131,6 @@ void DlgPrefBeats::slotUpdate() {
         const auto& info = m_availablePlugins.at(i);
         if (info.id == m_selectedAnalyzerId) {
             plugincombo->setCurrentIndex(i);
-            m_selectedAnalyzerId = m_availablePlugins[i].id;
             if (!m_availablePlugins[i].constantTempoSupported) {
                 bfixedtempo->setEnabled(false);
                 boffset->setEnabled(false);

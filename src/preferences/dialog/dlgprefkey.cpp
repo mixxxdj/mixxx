@@ -142,7 +142,9 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabledDefault();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
-    m_selectedAnalyzerId = m_keySettings.getKeyPluginIdDefault();
+    if (m_availablePlugins.size() > 0) {
+        m_selectedAnalyzerId = m_availablePlugins[0].id;
+    }
 
     KeyUtils::KeyNotation notation_type;
     QString defaultNotation = m_keySettings.getKeyNotationDefault();
