@@ -58,8 +58,8 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_DOUBLE_EQ(position + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_DOUBLE_EQ(position + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_DOUBLE_EQ(position + beatLength * (i - 1), pGrid->findNthBeat(position, i));
+        EXPECT_DOUBLE_EQ(position + beatLength * (-i + 1), pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation.
@@ -96,8 +96,8 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-    	EXPECT_DOUBLE_EQ(kClosestBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-    	EXPECT_DOUBLE_EQ(kClosestBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_DOUBLE_EQ(kClosestBeat + beatLength * (i - 1), pGrid->findNthBeat(position, i));
+        EXPECT_DOUBLE_EQ(kClosestBeat + beatLength * (-i + 1), pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation.
@@ -134,8 +134,8 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-    	EXPECT_DOUBLE_EQ(kClosestBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-    	EXPECT_DOUBLE_EQ(kClosestBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_DOUBLE_EQ(kClosestBeat + beatLength * (i - 1), pGrid->findNthBeat(position, i));
+        EXPECT_DOUBLE_EQ(kClosestBeat + beatLength * (-i + 1), pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation.

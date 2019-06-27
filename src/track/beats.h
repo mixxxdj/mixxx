@@ -175,7 +175,6 @@ class Beats : public QObject {
 
     virtual void setFirstPhraseBegin(double firstPhraseBegin) = 0;
 
-
   signals:
     void updated();
 };

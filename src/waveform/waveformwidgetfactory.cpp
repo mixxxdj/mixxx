@@ -94,28 +94,27 @@ WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidge
 
 ///////////////////////////////////////////
 
-WaveformWidgetFactory::WaveformWidgetFactory() :
-        m_type(WaveformWidgetType::Count_WaveformwidgetType),
-        m_config(0),
-        m_skipRender(false),
-        m_frameRate(30),
-        m_endOfTrackWarningTime(30),
-        m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
-        m_zoomSync(false),
-        m_overviewNormalized(false),
-        m_showBarAndPhrase(false),
-        m_openGlAvailable(false),
-        m_openGlesAvailable(false),
-        m_openGLShaderAvailable(false),
-        m_beatGridAlpha(90),
-        m_vsyncThread(NULL),
-        m_pGuiTick(nullptr),
-        m_pVisualsManager(nullptr),
-        m_frameCnt(0),
-        m_actualFrameRate(0),
-        m_vSyncType(0),
-        m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
-
+WaveformWidgetFactory::WaveformWidgetFactory()
+        : m_type(WaveformWidgetType::Count_WaveformwidgetType),
+          m_config(0),
+          m_skipRender(false),
+          m_frameRate(30),
+          m_endOfTrackWarningTime(30),
+          m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
+          m_zoomSync(false),
+          m_overviewNormalized(false),
+          m_showBarAndPhrase(false),
+          m_openGlAvailable(false),
+          m_openGlesAvailable(false),
+          m_openGLShaderAvailable(false),
+          m_beatGridAlpha(90),
+          m_vsyncThread(NULL),
+          m_pGuiTick(nullptr),
+          m_pVisualsManager(nullptr),
+          m_frameCnt(0),
+          m_actualFrameRate(0),
+          m_vSyncType(0),
+          m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
@@ -336,11 +335,11 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
-    int showBarAndPhrase = m_config->getValueString(ConfigKey("[Waveform]","BarAndPhrase")).toInt(&ok);
+    int showBarAndPhrase = m_config->getValueString(ConfigKey("[Waveform]", "BarAndPhrase")).toInt(&ok);
     if (ok) {
         setShowBarAndPhrase(static_cast<bool>(showBarAndPhrase));
     } else {
-        m_config->set(ConfigKey("[Waveform]","BarAndPhrase"), ConfigValue(m_showBarAndPhrase));
+        m_config->set(ConfigKey("[Waveform]", "BarAndPhrase"), ConfigValue(m_showBarAndPhrase));
     }
 
     m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
@@ -571,7 +570,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
 void WaveformWidgetFactory::setShowBarAndPhrase(bool showBarAndPhrase) {
     m_showBarAndPhrase = showBarAndPhrase;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","BarAndPhrase"), ConfigValue(m_showBarAndPhrase));
+        m_config->set(ConfigKey("[Waveform]", "BarAndPhrase"), ConfigValue(m_showBarAndPhrase));
     }
 }
 

@@ -119,7 +119,6 @@ class Track : public QObject {
     double getFirstPhraseBegin() const;
     void setPhraseBegin(double dPhraseBegin);
 
-
     // Sets the bitrate
     void setBitrate(int);
     // Returns the bitrate

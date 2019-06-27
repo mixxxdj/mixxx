@@ -73,7 +73,9 @@ class WaveformWidgetRenderer {
     double getZoomFactor() const { return m_zoomFactor;}
     double getRateAdjust() const { return m_rateAdjust;}
     double getGain() const { return m_gain;}
-    int getNumberOfSamples() const { return m_trackSamples;}
+    int getNumberOfSamples() const {
+        return m_trackSamples;
+    }
 
     int beatGridAlpha() const { return m_alphaBeatGrid; }
 

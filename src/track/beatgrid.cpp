@@ -17,20 +17,17 @@ struct BeatGridData {
     double firstPhrase;
 };
 
-
 class BeatGridIterator : public BeatIterator {
   public:
-    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample,
-    		double dFirstPhraseBegin, int beatsPerBar, int barsPerPhrase)
+    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample, double dFirstPhraseBegin, int beatsPerBar, int barsPerPhrase)
             : m_dBeatLength(dBeatLength),
               m_dCurrentSample(dFirstBeat),
               m_dEndSample(dEndSample),
-			  m_dPhraseBeginSample(dFirstPhraseBegin),
+              m_dPhraseBeginSample(dFirstPhraseBegin),
               m_beatsPerBar(beatsPerBar),
               m_barsPerPhrase(barsPerPhrase),
               m_beatCounter(0) {
     }
-
 
     virtual bool hasNext() const {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
@@ -40,17 +37,16 @@ class BeatGridIterator : public BeatIterator {
         BeatData beat;
         beat.sample = m_dCurrentSample;
 
-
         if (m_dPhraseBeginSample > m_dCurrentSample || m_dCurrentSample > m_dEndSample)
             beat.phraseNumber = beat.beatNumber = beat.barNumber = -1;
         else {
-            beat.beatNumber = static_cast< int >((m_dCurrentSample - m_dPhraseBeginSample) / m_dBeatLength);
+            beat.beatNumber = static_cast<int>((m_dCurrentSample - m_dPhraseBeginSample) / m_dBeatLength);
             // If we are at a bar start, set bar number and check for phrase.
             if (std::remainder(beat.beatNumber, m_beatsPerBar) == 0) {
-            	beat.barNumber = beat.beatNumber / m_beatsPerBar;
-            	beat.phraseNumber = (std::remainder(beat.barNumber, m_barsPerPhrase) == 0 ? beat.barNumber / m_barsPerPhrase : -1);
+                beat.barNumber = beat.beatNumber / m_beatsPerBar;
+                beat.phraseNumber = (std::remainder(beat.barNumber, m_barsPerPhrase) == 0 ? beat.barNumber / m_barsPerPhrase : -1);
             } else
-            	beat.barNumber = beat.phraseNumber = -1;
+                beat.barNumber = beat.phraseNumber = -1;
         }
 
         m_dCurrentSample += m_dBeatLength;
@@ -66,7 +62,6 @@ class BeatGridIterator : public BeatIterator {
     int m_barsPerPhrase;
     int m_beatCounter;
 };
-
 
 BeatGrid::BeatGrid(
         const Track& track,
@@ -301,8 +296,7 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
         return std::unique_ptr<BeatIterator>();
     }
     double m_firstPhraseBegin = firstPhraseSample();
-    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample, m_firstPhraseBegin,
-        kBeatsPerBar, kBarsPerPhrase);
+    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample, m_firstPhraseBegin, kBeatsPerBar, kBarsPerPhrase);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -345,9 +339,10 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
 }
 
 double BeatGrid::calculateFirstPhraseSample(double phraseSample) const {
-	return (static_cast< int >(std::round((phraseSample - firstBeatSample()) / m_dBeatLength)) %
-	            (kBeatsPerBar * kBarsPerPhrase)) * m_dBeatLength + firstBeatSample();
-
+    return (static_cast<int>(std::round((phraseSample - firstBeatSample()) / m_dBeatLength)) %
+                   (kBeatsPerBar * kBarsPerPhrase)) *
+            m_dBeatLength +
+            firstBeatSample();
 }
 
 void BeatGrid::addBeat(double dBeatSample) {

@@ -75,8 +75,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetNormalizeOverview(bool)));
-    connect(showBarAndPhraseMarksCheckBox, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetBarAndPhrase(bool)));
+    connect(showBarAndPhraseMarksCheckBox, SIGNAL(toggled(bool)), this, SLOT(slotSetBarAndPhrase(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),

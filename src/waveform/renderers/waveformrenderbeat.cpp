@@ -31,7 +31,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
-	m_showBarAndPhrase = WaveformWidgetFactory::instance()->getShowBarAndPhrase();
+    m_showBarAndPhrase = WaveformWidgetFactory::instance()->getShowBarAndPhrase();
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo)
@@ -45,8 +45,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (alpha == 0)
         return;
     m_beatColor.setAlphaF(alpha/100.0);
-    m_barColor.setAlphaF(alpha/100.0);
-    m_phraseColor.setAlphaF(alpha/100.0);
+    m_barColor.setAlphaF(alpha / 100.0);
+    m_phraseColor.setAlphaF(alpha / 100.0);
 
     const int trackSamples = m_waveformRenderer->getNumberOfSamples();
     if (trackSamples <= 0) {
@@ -78,10 +78,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     beatPen.setWidthF(std::max(1.0, scaleFactor()));
 
     QPen barPen(m_barColor);
-    barPen.setWidthF(std::max(1.0, scaleFactor()*2));
+    barPen.setWidthF(std::max(1.0, scaleFactor() * 2));
 
     QPen phrasePen(m_phraseColor);
-    phrasePen.setWidthF(std::max(1.0, scaleFactor()*2));
+    phrasePen.setWidthF(std::max(1.0, scaleFactor() * 2));
 
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
     const float rendererWidth = m_waveformRenderer->getWidth();
@@ -94,9 +94,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint);
 
-
         // Selects the right pen, if we are in phrase also paints the phrase tag
-        if(beat.phraseNumber != -1 && m_showBarAndPhrase) {
+        if (beat.phraseNumber != -1 && m_showBarAndPhrase) {
             // Selects the font
             QFont font; // Uses the application default
             font.setPointSizeF(10 * scaleFactor());
@@ -112,15 +111,15 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             const int marginY = 1 * scaleFactor();
             wordRect.moveTop(marginX + 1);
             wordRect.moveLeft(marginY + 1);
-            wordRect.setHeight(wordRect.height() + (wordRect.height()%2));
-            wordRect.setWidth(wordRect.width() + (wordRect.width())%2);
+            wordRect.setHeight(wordRect.height() + (wordRect.height() % 2));
+            wordRect.setWidth(wordRect.width() + (wordRect.width()) % 2);
             //even wordrect to have an even Image >> draw the line in the middle !
 
             int labelRectWidth = wordRect.width() + 2 * marginX + 4;
             int labelRectHeight = wordRect.height() + 2 * marginY + 4 * scaleFactor();
 
-            QRectF labelRect(xBeatPoint-labelRectWidth,
-                    rendererHeight-labelRectHeight,
+            QRectF labelRect(xBeatPoint - labelRectWidth,
+                    rendererHeight - labelRectHeight,
                     (float)labelRectWidth,
                     (float)labelRectHeight);
 
@@ -131,18 +130,16 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             painter->setBrush(QBrush(rectColor));
             painter->drawRoundedRect(labelRect, 2 * scaleFactor(), 2 * scaleFactor());
             // Draw the text
-            painter->setBrush(QBrush(QColor(0,0,0,0)));
+            painter->setBrush(QBrush(QColor(0, 0, 0, 0)));
             painter->setFont(font);
             painter->setPen(Qt::black);
             painter->drawText(labelRect, Qt::AlignCenter, label);
 
             painter->setPen(phrasePen);
-        } else if(beat.barNumber != -1 && m_showBarAndPhrase) {
+        } else if (beat.barNumber != -1 && m_showBarAndPhrase) {
             painter->setPen(barPen);
-        }
-        else {
+        } else {
             painter->setPen(beatPen);
-
         }
 
         // Paints the beat line

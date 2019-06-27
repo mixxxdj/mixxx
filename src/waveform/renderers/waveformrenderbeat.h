@@ -3,11 +3,11 @@
 
 #include <QColor>
 
+#include "control/controlproxy.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
-#include "preferences/usersettings.h"
-#include "control/controlproxy.h"
 
 class WaveformRenderBeat : public WaveformRendererAbstract {
   public:

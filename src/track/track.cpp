@@ -1,7 +1,7 @@
 #include <QDirIterator>
 #include <QFile>
-#include <QtDebug>
 #include <QMutexLocker>
+#include <QtDebug>
 
 #include <atomic>
 
@@ -674,12 +674,10 @@ int Track::getSampleRate() const {
     return m_record.getMetadata().getSampleRate();
 }
 
-
 void Track::setPhraseBegin(double phraseBegin) {
-	double dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(phraseBegin);
+    double dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(phraseBegin);
     m_pBeats->setFirstPhraseBegin(dFirstPhraseBegin);
 }
-
 
 void Track::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);
