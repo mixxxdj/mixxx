@@ -322,6 +322,23 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the position read only
         positionItem->setFlags(Qt::NoItemFlags);
 
+        QString length;
+        int iLength = pCue->getLength();
+        if (iLength > 0) {
+            totalSeconds = float(iLength) / float(sampleRate) / 2.0;
+            fraction = 100*(totalSeconds - floor(totalSeconds));
+            seconds = int(totalSeconds) % 60;
+
+            //Construct a nicely formatted length string now.
+            length = QString("%1.%2").arg(
+                QString("%1").arg(seconds, 2, 10, QChar('0')),
+                QString("%1").arg(fraction, 2, 10, QChar('0')));
+        }
+
+        QTableWidgetItem* lengthItem = new QTableWidgetItem(length);
+        // Make the length read only
+        lengthItem->setFlags(Qt::NoItemFlags);
+
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
@@ -362,15 +379,16 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, positionItem);
-        cueTable->setItem(row, 2, typeItem);
-        cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
-        cueTable->setCellWidget(row, 4, colorComboBox);
-        cueTable->setItem(row, 5, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setItem(row, 2, lengthItem);
+        cueTable->setItem(row, 3, typeItem);
+        cueTable->setItem(row, 4, new QTableWidgetItem(hotcue));
+        cueTable->setCellWidget(row, 5, colorComboBox);
+        cueTable->setItem(row, 6, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
     cueTable->setSortingEnabled(true);
     cueTable->horizontalHeader()->setStretchLastSection(true);
-    cueTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    cueTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
 }
 
 void DlgTrackInfo::saveTrack() {
