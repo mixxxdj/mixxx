@@ -299,12 +299,12 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             hotcue = QString("%1").arg(iHotcue);
         }
 
-        int position = pCue->getPosition();
+        int iPosition = pCue->getPosition();
         double totalSeconds;
-        if (position == -1)
+        if (iPosition == -1)
             continue;
         else {
-            totalSeconds = float(position) / float(sampleRate) / 2.0;
+            totalSeconds = float(iPosition) / float(sampleRate) / 2.0;
         }
 
         int fraction = 100*(totalSeconds - floor(totalSeconds));
@@ -312,15 +312,15 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         int mins = int(totalSeconds) / 60;
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
-        //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(
+        //Construct a nicely formatted position string now.
+        QString position = QString("%1:%2.%3").arg(
             QString::number(mins),
             QString("%1").arg(seconds, 2, 10, QChar('0')),
             QString("%1").arg(fraction, 2, 10, QChar('0')));
 
-        QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
-        // Make the duration read only
-        durationItem->setFlags(Qt::NoItemFlags);
+        QTableWidgetItem* positionItem = new QTableWidgetItem(position);
+        // Make the position read only
+        positionItem->setFlags(Qt::NoItemFlags);
 
         // Decode cue type to display text
         QString cueType;
@@ -361,7 +361,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
-        cueTable->setItem(row, 1, durationItem);
+        cueTable->setItem(row, 1, positionItem);
         cueTable->setItem(row, 2, typeItem);
         cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
         cueTable->setCellWidget(row, 4, colorComboBox);
