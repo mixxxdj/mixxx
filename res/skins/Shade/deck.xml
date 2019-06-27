@@ -350,15 +350,15 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+              <Pressed>skin:/btn/btn_sync_bpm_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_sync_bpm.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_sync_bpm_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_sync_bpm_over.png</Unpressed>
             </State>
-            <Pos>6,21</Pos>
+            <Pos>3,15</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],sync_enabled</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
@@ -375,15 +375,15 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+              <Pressed>skin:/btn/btn_sync_key_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_sync_key.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_sync_key_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_sync_key_over.png</Unpressed>
             </State>
-            <Pos>32,21</Pos>
+            <Pos>27,15</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],sync_key</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
@@ -396,7 +396,7 @@
 
 
           <WidgetGroup>
-            <Pos>3,34</Pos>
+            <Pos>3,30</Pos>
             <Size>47f,26f</Size>
             <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }
               QLabel {
@@ -434,7 +434,7 @@
             <Style></Style>
             <Handle>knob_visual_key.png</Handle>
             <Slider>slider_visual_key.png</Slider>
-            <Pos>18,59</Pos>
+            <Pos>18,55</Pos>
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],visual_key_distance</ConfigKey>
@@ -451,7 +451,7 @@
               <Number>0</Number>
               <Text>◄</Text>
             </State>
-            <Pos>5,57</Pos>
+            <Pos>5,52</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
@@ -471,7 +471,7 @@
               <Number>0</Number>
               <Text>►</Text>
             </State>
-            <Pos>38,57</Pos>
+            <Pos>38,52</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
@@ -487,7 +487,7 @@
             <Style></Style>
             <Handle>knob_visual_key.png</Handle>
             <Slider>slider_visual_key.png</Slider>
-            <Pos>18,63</Pos>
+            <Pos>18,58</Pos>
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],pitch</ConfigKey>
@@ -500,7 +500,7 @@
             <Style></Style>
             <Handle>knob_pitch.png</Handle>
             <Slider>slider_pitch.png</Slider>
-            <Pos>20,67</Pos>
+            <Pos>20,62</Pos>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],rate</ConfigKey>
