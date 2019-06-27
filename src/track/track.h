@@ -379,8 +379,6 @@ class Track : public QObject {
 
     mixxx::TrackRecord m_record;
 
-    double dFirstPhraseBegin;
-
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;

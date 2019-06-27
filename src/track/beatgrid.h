@@ -93,8 +93,6 @@ class BeatGrid final : public Beats {
     mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
     double m_dBeatLength;
-    const int c_beatsPerBar = 4;
-    const int c_barsPerPhrase = 4;
 };
 
 

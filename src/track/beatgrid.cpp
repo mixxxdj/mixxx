@@ -3,9 +3,13 @@
 
 #include "track/beatgrid.h"
 #include "util/math.h"
-#include "maths/MathUtilities.h"
 
 static const int kFrameSize = 2;
+
+namespace {
+constexpr int kBeatsPerBar = 4;
+constexpr int kBarsPerPhrase = 4;
+} // anonymous namespace
 
 struct BeatGridData {
     double bpm;
@@ -37,18 +41,16 @@ class BeatGridIterator : public BeatIterator {
         beat.sample = m_dCurrentSample;
 
 
-        if (m_dPhraseBeginSample > m_dCurrentSample or m_dCurrentSample > m_dEndSample) {
+        if (m_dPhraseBeginSample > m_dCurrentSample || m_dCurrentSample > m_dEndSample)
             beat.phraseNumber = beat.beatNumber = beat.barNumber = -1;
-        } else {
-            beat.beatNumber = ((m_dCurrentSample - m_dPhraseBeginSample) / (int)m_dBeatLength);
+        else {
+            beat.beatNumber = static_cast< int >((m_dCurrentSample - m_dPhraseBeginSample) / m_dBeatLength);
             // If we are at a bar start, set bar number and check for phrase.
             if (std::remainder(beat.beatNumber, m_beatsPerBar) == 0) {
             	beat.barNumber = beat.beatNumber / m_beatsPerBar;
             	beat.phraseNumber = (std::remainder(beat.barNumber, m_barsPerPhrase) == 0 ? beat.barNumber / m_barsPerPhrase : -1);
-            } else {
+            } else
             	beat.barNumber = beat.phraseNumber = -1;
-            }
-
         }
 
         m_dCurrentSample += m_dBeatLength;
@@ -300,7 +302,7 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
     }
     double m_firstPhraseBegin = firstPhraseSample();
     return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample, m_firstPhraseBegin,
-        c_beatsPerBar, c_barsPerPhrase);
+        kBeatsPerBar, kBarsPerPhrase);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -343,8 +345,8 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
 }
 
 double BeatGrid::calculateFirstPhraseSample(double phraseSample) const {
-	return ((int)MathUtilities::round((phraseSample - firstBeatSample()) / m_dBeatLength) %
-	            (c_beatsPerBar * c_barsPerPhrase)) * m_dBeatLength + firstBeatSample();
+	return (static_cast< int >(std::round((phraseSample - firstBeatSample()) / m_dBeatLength)) %
+	            (kBeatsPerBar * kBarsPerPhrase)) * m_dBeatLength + firstBeatSample();
 
 }
 

@@ -674,12 +674,9 @@ int Track::getSampleRate() const {
     return m_record.getMetadata().getSampleRate();
 }
 
-double Track::getFirstPhraseBegin() const {
-    return dFirstPhraseBegin;
-}
 
 void Track::setPhraseBegin(double phraseBegin) {
-	dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(phraseBegin);
+	double dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(phraseBegin);
     m_pBeats->setFirstPhraseBegin(dFirstPhraseBegin);
 }
 
