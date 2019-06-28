@@ -90,11 +90,16 @@ class LoopingControl : public EngineControl {
     void slotLoopHalve(double pressed);
 
   private:
+    enum LoopSeekMode {
+        CHANGED, // force the playposition to be inside the loop after adjusting it.
+        MOVED_OUT,
+        NONE,
+    };
 
     struct LoopSamples {
         double start;
         double end;
-        bool seek; // force the playposition to be inside the loop after adjusting it.
+        LoopSeekMode seekMode;
     };
 
     void setLoopingEnabled(bool enabled);
