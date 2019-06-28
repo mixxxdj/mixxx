@@ -51,6 +51,8 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(double dNewPlaypos) override;
 
+    void setLoop(double startPosition, double endPosition, bool reloop);
+
     bool isLoopingEnabled();
 
   public slots:

@@ -67,6 +67,12 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
+void EngineControl::setLoop(double startPosition, double endPosition, bool reloop) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->setLoop(startPosition, endPosition, reloop);
+    }
+}
+
 void EngineControl::seekAbs(double samplePosition) {
     if (m_pEngineBuffer) {
         m_pEngineBuffer->slotControlSeekAbs(samplePosition);
