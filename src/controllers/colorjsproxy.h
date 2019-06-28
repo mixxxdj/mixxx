@@ -17,10 +17,14 @@ class ColorJSProxy: public QObject {
     Q_INVOKABLE QScriptValue predefinedColorFromId(int iId);
     Q_INVOKABLE QScriptValue predefinedColorsList();
 
+    void setDefaultColor(const QColor& defaultColor);
+
   private:
     QScriptValue jsColorFrom(PredefinedColorPointer predefinedColor);
-    QScriptValue makePredefinedColorsList(QScriptEngine* pScriptEngine);
+    // Initialization order is important: m_predefinedColorsList is initialized
+    // with makePredefinedColorsList, which uses m_pScriptEngine.
     QScriptEngine* m_pScriptEngine;
+    QScriptValue makePredefinedColorsList(QColor defaultColorRgba = Color::kPredefinedColorsSet.noColor->m_defaultRgba);
     QScriptValue m_predefinedColorsList;
 };
 

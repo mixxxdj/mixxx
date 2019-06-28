@@ -80,6 +80,8 @@
 
   <Size>1024me,550me</Size>
   <Layout>horizontal</Layout>
+  <ControllersDefaultCueColor>#00abff</ControllersDefaultCueColor>
+  <ControllersFallbackCueColor>Celeste</ControllersFallbackCueColor>
 
   <Children>
     <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>

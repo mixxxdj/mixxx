@@ -5,6 +5,8 @@
 #include <QList>
 #include <QDir>
 
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
 
 class KeyboardEventFilter;
@@ -16,7 +18,8 @@ class EffectsManager;
 class RecordingManager;
 class LaunchImage;
 
-class SkinLoader {
+class SkinLoader : public QObject {
+    Q_OBJECT
   public:
     SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
@@ -42,7 +45,11 @@ class SkinLoader {
     QString pickResizableSkin(QString oldSkin) const;
 
     UserSettingsPointer m_pConfig;
-};
 
+    QColor m_defaultCueColor;
+
+    ControlPushButton m_coSkinLoaded;
+    ControlObject m_coFallbackCueColorId;
+};
 
 #endif /* SKINLOADER_H */

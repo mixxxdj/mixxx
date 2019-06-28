@@ -12,12 +12,12 @@
 #include <QSharedPointer>
 #include <QRegExp>
 
-#include "../util/color/predefinedcolorsrepresentation.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
-#include "widget/wsingletoncontainer.h"
+#include "util/color/predefinedcolorsrepresentation.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wsingletoncontainer.h"
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
 
@@ -268,6 +268,23 @@ class SkinContext {
         return m_scaleFactor;
     }
 
+    inline QColor getControllersDefaultCueColor() const {
+        return m_controllersDefaultCueColor;
+    }
+
+    inline void setControllersDefaultCueColor(const QColor& defaultColor) {
+        m_controllersDefaultCueColor = defaultColor;
+    }
+
+    inline PredefinedColorPointer getControllersFallbackCueColor() const {
+        return m_controllersFallbackCueColor;
+    }
+
+    inline void setControllersFallbackCueColor(
+            PredefinedColorPointer fallbackColor) {
+        m_controllersFallbackCueColor = fallbackColor;
+    }
+
     PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
         PredefinedColorsRepresentation colorRepresentation = Color::kPredefinedColorsSet.defaultRepresentation();
         for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
@@ -304,6 +321,9 @@ class SkinContext {
     QRegExp m_hookRx;
 
     QSharedPointer<QHash<QString, QDomElement>> m_pSvgCache;
+
+    QColor m_controllersDefaultCueColor;
+    PredefinedColorPointer m_controllersFallbackCueColor;
 
     // The SingletonContainer map is passed to child SkinContexts, so that all
     // templates in the tree can share a single map.

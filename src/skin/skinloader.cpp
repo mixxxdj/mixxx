@@ -9,19 +9,23 @@
 #include <QString>
 #include <QtDebug>
 
-#include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/legacyskinparser.h"
 #include "controllers/controllermanager.h"
-#include "library/library.h"
 #include "effects/effectsmanager.h"
+#include "library/library.h"
 #include "mixer/playermanager.h"
-#include "util/debug.h"
-#include "skin/launchimage.h"
-#include "util/timer.h"
 #include "recording/recordingmanager.h"
+#include "skin/launchimage.h"
+#include "skin/legacyskinparser.h"
+#include "skin/skincontext.h"
+#include "util/debug.h"
+#include "util/timer.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 
-SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
-        m_pConfig(pConfig) {
+SkinLoader::SkinLoader(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig),
+          m_defaultCueColor(),
+          m_coSkinLoaded(ConfigKey("[Skin]", "reloaded")),
+          m_coFallbackCueColorId(ConfigKey("[Skin]", "fallback_cue_color_id")) {
 }
 
 SkinLoader::~SkinLoader() {
@@ -122,10 +126,18 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         return NULL;
     }
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
-                            pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager, pRecordingManager);
-    return legacy.parseSkin(skinPath, pParent);
+    LegacySkinParser parser(m_pConfig, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pVCMan, pEffectsManager, pRecordingManager);
+    QWidget* skin = parser.parseSkin(skinPath, pParent);
+
+    QColor controllersDefaultCueColor =
+            parser.m_pContext->getControllersDefaultCueColor();
+    PredefinedColorPointer controllersFallbackColor =
+            parser.m_pContext->getControllersFallbackCueColor();
+
+    pControllerManager->setDefaultCueColor(controllersDefaultCueColor);
+    m_coFallbackCueColorId.set(controllersFallbackColor->m_iId);
+    m_coSkinLoaded.set(1);
+    return skin;
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {

@@ -101,6 +101,8 @@
   <MinimumSize>1270,550</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
+  <ControllersDefaultCueColor>#00FF00</ControllersDefaultCueColor>
+  <ControllersFallbackCueColor>Green</ControllersFallbackCueColor>
   <LaunchImageStyle>
     LaunchImage {
       background-color: #0f0f0f;

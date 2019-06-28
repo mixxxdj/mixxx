@@ -187,6 +187,8 @@
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
+  <ControllersDefaultCueColor>#d1d1d1</ControllersDefaultCueColor>
+  <ControllersFallbackCueColor>White</ControllersFallbackCueColor>
 
 <!--  ################################################################
        Launch Image  ################################################

@@ -52,6 +52,8 @@ class ControllerManager : public QObject {
     bool importScript(const QString& scriptPath, QString* newScriptFileName);
     static bool checksumFile(const QString& filename, quint16* pChecksum);
 
+    void setDefaultCueColor(const QColor&);
+
   signals:
     void devicesChanged();
     void requestSetUpDevices();
@@ -99,6 +101,7 @@ class ControllerManager : public QObject {
     QThread* m_pThread;
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;
+    QColor m_defaultCueColor;
 };
 
 #endif  // CONTROLLERMANAGER_H

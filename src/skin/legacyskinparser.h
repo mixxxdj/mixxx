@@ -105,6 +105,11 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseOverview(const QDomElement& node);
     QWidget* parseSpinny(const QDomElement& node);
 
+    // These nodes are used to let controllers use the same default color
+    // than skins for cue points with no assigned color.
+    void parseControllersDefaultCueColor(const QDomElement& node);
+    void parseControllersFallbackPredefinedColorId(const QDomElement& node);
+
     // Library widgets.
     QWidget* parseTableView(const QDomElement& node);
     QWidget* parseSearchBox(const QDomElement& node);
@@ -152,6 +157,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
+
+    friend class SkinLoader;
 };
 
 

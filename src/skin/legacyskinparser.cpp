@@ -499,6 +499,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
             pOuterWidget->layout()->addWidget(pInnerWidget);
             result.append(pOuterWidget);
         }
+        parseControllersDefaultCueColor(node);
+        parseControllersFallbackPredefinedColorId(node);
     } else if (nodeName == "SliderComposed") {
         result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
@@ -998,6 +1000,21 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     return viewer;
 }
 
+void LegacySkinParser::parseControllersDefaultCueColor(const QDomElement& node) {
+    QColor controllersDefaultCueColor = m_pContext->selectColor(
+            node, "ControllersDefaultCueColor");
+    m_pContext->setControllersDefaultCueColor(controllersDefaultCueColor);
+}
+
+void LegacySkinParser::parseControllersFallbackPredefinedColorId(
+        const QDomElement& node) {
+    QString colorName = m_pContext->selectString(node,
+            "ControllersFallbackCueColor");
+    PredefinedColorPointer fallbackColor =
+            Color::kPredefinedColorsSet.predefinedColorFromName(colorName);
+    m_pContext->setControllersFallbackCueColor(fallbackColor);
+}
+
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
@@ -1005,7 +1022,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
-        return NULL;
+        return nullptr;
 
     WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);

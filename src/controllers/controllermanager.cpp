@@ -65,7 +65,8 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
-          m_skipPoll(false) {
+          m_skipPoll(false),
+          m_defaultCueColor() {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
@@ -255,6 +256,9 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
+        if (pController->getEngine()) {
+            pController->getEngine()->setDefaultCueColor(m_defaultCueColor);
+        }
         pController->applyPreset(getPresetPaths(m_pConfig), true);
     }
 
@@ -347,6 +351,9 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
+        if (pController->getEngine()) {
+            pController->getEngine()->setDefaultCueColor(m_defaultCueColor);
+        }
         pController->applyPreset(getPresetPaths(m_pConfig), true);
 
         // Update configuration to reflect controller is enabled.
@@ -378,6 +385,9 @@ bool ControllerManager::loadPreset(Controller* pController,
         ConfigKey("[ControllerPreset]",
                   presetFilenameFromName(pController->getName())),
         preset->filePath());
+    if (pController->getEngine()) {
+        pController->getEngine()->setDefaultCueColor(m_defaultCueColor);
+    }
     return true;
 }
 
@@ -431,6 +441,16 @@ bool ControllerManager::checksumFile(const QString& filename,
     *pChecksum = qChecksum(pFile, fileSize);
     file.close();
     return true;
+}
+
+void ControllerManager::setDefaultCueColor(const QColor& defaultColor) {
+    m_defaultCueColor = defaultColor;
+    for (Controller* pController : getControllers()) {
+        ControllerEngine* pEngine = pController->m_pEngine;
+        if (pEngine) {
+            pEngine->setDefaultCueColor(m_defaultCueColor);
+        }
+    }
 }
 
 // static

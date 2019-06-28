@@ -216,6 +216,8 @@
   <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
+  <ControllersDefaultCueColor>#FD0564</ControllersDefaultCueColor>
+  <ControllersFallbackCueColor>Red</ControllersFallbackCueColor>
     <LaunchImageStyle>
       LaunchImage { background-color: #202020; }
         QLabel {

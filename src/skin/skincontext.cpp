@@ -7,15 +7,18 @@
 #include "skin/skincontext.h"
 #include "skin/svgparser.h"
 #include "util/cmdlineargs.h"
+#include "util/color/color.h"
 #include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
-                         const QString& xmlPath)
+        const QString& xmlPath)
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
           m_pScriptDebugger(new QScriptEngineDebugger()),
           m_pSvgCache(new QHash<QString, QDomElement>()),
+          m_controllersDefaultCueColor(),
+          m_controllersFallbackCueColor(Color::kPredefinedColorsSet.noColor),
           m_pSingletons(new SingletonMap()) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
@@ -44,6 +47,8 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_hookRx(parent.m_hookRx),
           m_pSvgCache(parent.m_pSvgCache),
+          m_controllersDefaultCueColor(parent.m_controllersDefaultCueColor),
+          m_controllersFallbackCueColor(parent.m_controllersFallbackCueColor),
           m_pSingletons(parent.m_pSingletons),
           m_scaleFactor(parent.m_scaleFactor) {
     // we generate a new global object to preserve the scope between

@@ -275,6 +275,10 @@ void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
     initializeScripts(pPreset->scripts);
 }
 
+void ControllerEngine::setDefaultCueColor(const QColor& defaultColor) {
+    m_pColorJSProxy->setDefaultColor(defaultColor);
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Run the initialization function for each loaded script
                 if it exists

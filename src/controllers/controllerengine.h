@@ -165,6 +165,8 @@ class ControllerEngine : public QObject {
     void gracefulShutdown();
     void scriptHasChanged(const QString&);
 
+    void setDefaultCueColor(const QColor&);
+
   signals:
     void initialized();
     void resetController();
