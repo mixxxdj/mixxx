@@ -5,12 +5,12 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/enginebuffer.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/enginebuffer.h"
+#include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -959,12 +959,11 @@ void LoopingControl::updateBeatLoopingControls() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
-
     // if a seek was queued in the engine buffer move the current sample to its position
-    ControlValueAtomic<double> seekPosition;
-    if(getEngineBuffer()->isSeekQueued(seekPosition)){
+    double p_seekPosition = 0;
+    if (getEngineBuffer()->isSeekQueued(&p_seekPosition)) {
         // seek position is already quantized if quantization is enabled
-        m_currentSample.setValue(seekPosition.getValue());
+        m_currentSample.setValue(p_seekPosition);
     }
 
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
