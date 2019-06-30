@@ -1622,14 +1622,6 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         if (newTrackLocationId.isValid()) {
             qDebug() << "Found moved track!" << filename;
 
-            // Remove old row from track_locations table
-            query.prepare("DELETE FROM track_locations WHERE id=:id");
-            query.bindValue(":id", oldTrackLocationId.toVariant());
-            if (!query.exec()) {
-                // Should not happen!
-                LOG_FAILED_QUERY(query);
-            }
-
             // The library scanner will have added a new row to the Library
             // table which corresponds to the track in the new location. We need
             // to remove that so we don't end up with two rows in the library
@@ -1640,7 +1632,6 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                 // Should not happen!
                 LOG_FAILED_QUERY(query);
             }
-
             const int newTrackIdColumn = query.record().indexOf("id");
             if (query.next()) {
                 TrackId newTrackId(query.value(newTrackIdColumn));
@@ -1650,15 +1641,15 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                     // Should not happen!
                     LOG_FAILED_QUERY(query);
                 }
+                // Delete the track
+                query.prepare("DELETE FROM library WHERE id=:newid");
+                query.bindValue(":newid", newTrackId.toVariant());
+                if (!query.exec()) {
+                    // Should not happen!
+                    LOG_FAILED_QUERY(query);
+                }
                 // We collect all the new tracks the where added to BaseTrackCache as well
                 pTracksMovedSetNew->insert(newTrackId);
-            }
-            // Delete the track
-            query.prepare("DELETE FROM library WHERE id=:newid");
-            query.bindValue(":newid", newTrackLocationId.toVariant());
-            if (!query.exec()) {
-                // Should not happen!
-                LOG_FAILED_QUERY(query);
             }
 
             // Update the location foreign key for the existing row in the
@@ -1671,12 +1662,19 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                 LOG_FAILED_QUERY(query);
             }
             const int oldTrackIdColumn = query.record().indexOf("id");
-
             if (query.next()) {
                 TrackId oldTrackId(query.value(oldTrackIdColumn));
                 query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
                 query.bindValue(":newloc", newTrackLocationId.toVariant());
                 query.bindValue(":oldid", oldTrackId.toVariant());
+                if (!query.exec()) {
+                    // Should not happen!
+                    LOG_FAILED_QUERY(query);
+                }
+
+                // Remove old row from track_locations table
+                query.prepare("DELETE FROM track_locations WHERE id=:id");
+                query.bindValue(":id", oldTrackLocationId.toVariant());
                 if (!query.exec()) {
                     // Should not happen!
                     LOG_FAILED_QUERY(query);
