@@ -6,6 +6,7 @@ let inherit (nixroot) stdenv pkgs lib
     libGLU x11 lame lv2 makeWrapper
     clang-tools
     fetchurl
+    gdb
     python3;
 
   git-clang-format = stdenv.mkDerivation {
@@ -44,6 +45,11 @@ let inherit (nixroot) stdenv pkgs lib
       $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
   '';
 
+  shell-debug = nixroot.writeShellScriptBin "debug" ''
+      BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
+      gdb --args $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
+  '';
+
 in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
   # reading the version from git output is very hard to do without wasting lots of diskspace and runtime
@@ -56,9 +62,10 @@ in stdenv.mkDerivation rec {
     export CC="ccache gcc"
     export CXX="ccache g++"
 
-    echo -e "mixxx development shell. available commands:\n"
-    echo " build - compiles mixxx"
-    echo " run - runs mixxx with development settings"
+    echo -e "Mixxx development shell. Available commands:\n"
+    echo " build - compiles Mixxx"
+    echo " run - runs Mixxx with development settings"
+    echo " debug - runs Mixxx inside gdb"
       '';
 
   src = builtins.filterSource
@@ -66,8 +73,9 @@ in stdenv.mkDerivation rec {
      ./.;
 
   nativeBuildInputs = [
+    gdb
     git-clang-format
-    shell-build shell-run
+    shell-build shell-run shell-debug
   ];
 
   buildInputs = [
