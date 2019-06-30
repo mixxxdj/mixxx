@@ -8,10 +8,6 @@
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
 
-#ifdef __OPUS__
-#include "sources/soundsourceopus.h"
-#endif // __OPUS__
-
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
