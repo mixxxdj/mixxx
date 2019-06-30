@@ -56,8 +56,9 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(pHintList);
     }
 
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override {
+    void notifySeek(double dNewPlaypos, double dSyncedNewPlayPos, bool adjustingPhase) override {
         Q_UNUSED(dNewPlaypos);
+        Q_UNUSED(dSyncedNewPlayPos);
         Q_UNUSED(adjustingPhase);
     }
 

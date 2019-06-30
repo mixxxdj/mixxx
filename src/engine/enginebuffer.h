@@ -231,7 +231,7 @@ class EngineBuffer : public EngineObject {
     void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos, bool adjustingPhase);
+    void setNewPlaypos(double dNewPlayPos, double dSyncedNewPlayPos, bool adjustingPhase);
 
     void processSyncRequests();
     void processSeek(bool paused);
