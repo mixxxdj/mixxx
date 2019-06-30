@@ -1579,7 +1579,8 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                     "INNER JOIN library ON track_locations.id=library.location "
                     "WHERE track_locations.location IN (%1) AND "
                     "filename=:filename AND "
-                    "ABS(duration - :duration) < 1").arg(
+                    "ABS(duration - :duration) < 1 AND "
+                    "fs_deleted=0").arg(
                             SqlStringFormatter::formatList(m_database, addedTracks)));
 
     QSqlRecord queryRecord = deletedTrackQuery.record();
