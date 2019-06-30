@@ -104,15 +104,15 @@ class WOverview : public WWidget, public TrackDropTarget {
     // Append the waveform overview pixmap according to available data
     // in waveform
     virtual bool drawNextPixmapPart() = 0;
-    void drawEndOfTrackBackground(QPainter& painter);
-    void drawAxis(QPainter& painter);
-    void drawWaveformPixmap(QPainter& painter);
-    void drawEndOfTrackFrame(QPainter& painter);
-    void drawAnalyzerProgress(QPainter& painter);
-    void drawRangeMarks(QPainter& painter, const float& offset, const float& gain);
-    void drawMarks(QPainter& painter, const float offset, const float gain);
-    void drawCurrentPosition(QPainter& painter);
-    void paintText(const QString& text, QPainter& painter);
+    void drawEndOfTrackBackground(QPainter* pPainter);
+    void drawAxis(QPainter* pPainter);
+    void drawWaveformPixmap(QPainter* pPainter);
+    void drawEndOfTrackFrame(QPainter* pPainter);
+    void drawAnalyzerProgress(QPainter* pPainter);
+    void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
+    void drawMarks(QPainter* pPainter, const float offset, const float gain);
+    void drawCurrentPosition(QPainter* pPainter);
+    void paintText(const QString& text, QPainter* pPainter);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }

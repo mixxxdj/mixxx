@@ -16,15 +16,19 @@ class PainterScope final {
     PainterScope(const PainterScope&) = delete;
     PainterScope& operator=(const PainterScope&) = delete;
 
-    explicit PainterScope(QPainter& painter)
-            : m_painter(painter) {
-        m_painter.save();
+    explicit PainterScope(QPainter* pPainter)
+            : m_pPainter(pPainter) {
+        if (m_pPainter) {
+            m_pPainter->save();
+        }
     }
 
     ~PainterScope() {
-        m_painter.restore();
+        if (m_pPainter) {
+            m_pPainter->restore();
+        }
     }
 
   private:
-    QPainter& m_painter;
+    QPainter* m_pPainter;
 };
