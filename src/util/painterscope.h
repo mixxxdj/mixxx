@@ -10,9 +10,11 @@
 //
 // PainterScope will save the painter state on creation, and restore it
 // on destruction.
-class PainterScope {
+class PainterScope final {
   public:
     PainterScope() = delete;
+    PainterScope(const PainterScope&) = delete;
+    PainterScope& operator=(const PainterScope&) = delete;
 
     explicit PainterScope(QPainter& painter)
             : m_painter(painter) {
