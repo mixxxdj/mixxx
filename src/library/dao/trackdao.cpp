@@ -1593,7 +1593,6 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         if (*pCancel) {
             return false;
         }
-        DbId newTrackLocationId;
         DbId oldTrackLocationId(deletedTrackQuery.value(idColumn));
         filename = deletedTrackQuery.value(filenameColumn).toString();
         duration = deletedTrackQuery.value(durationColumn).toInt();
@@ -1611,9 +1610,10 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             LOG_FAILED_QUERY(newTrackQuery) << "Result size was greater than 1.";
         }
 
-        const int query2idColumn = newTrackQuery.record().indexOf("id");
+        DbId newTrackLocationId;
+        const int newTrackLocationIdColumn = newTrackQuery.record().indexOf("id");
         while (newTrackQuery.next()) {
-            newTrackLocationId = DbId(newTrackQuery.value(query2idColumn));
+            newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
         }
 
         //If we found a moved track...
@@ -1639,9 +1639,9 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                 LOG_FAILED_QUERY(query);
             }
 
-            const int query3idColumn = query.record().indexOf("id");
+            const int newTrackIdColumn = query.record().indexOf("id");
             if (query.next()) {
-                TrackId newTrackId(query.value(query3idColumn));
+                TrackId newTrackId(query.value(newTrackIdColumn));
                 query.prepare("DELETE FROM library WHERE id=:newid");
                 query.bindValue(":newid", newTrackLocationId.toVariant());
                 if (!query.exec()) {
@@ -1668,9 +1668,10 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                 // Should not happen!
                 LOG_FAILED_QUERY(query);
             }
+            const int oldTrackIdColumn = query.record().indexOf("id");
 
             if (query.next()) {
-                TrackId oldTrackId(query.value(query3idColumn));
+                TrackId oldTrackId(query.value(oldTrackIdColumn));
                 query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
                 query.bindValue(":newloc", newTrackLocationId.toVariant());
                 query.bindValue(":oldid", oldTrackId.toVariant());
