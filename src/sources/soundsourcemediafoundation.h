@@ -1,13 +1,11 @@
 #ifndef MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
 #define MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
 
-
 #include <mfidl.h>
 #include <mfreadwrite.h>
 
 #include "sources/soundsourceprovider.h"
 #include "util/readaheadsamplebuffer.h"
-
 
 namespace mixxx {
 
@@ -16,14 +14,14 @@ class StreamUnitConverter final {
 
   public:
     StreamUnitConverter()
-        : m_pAudioSource(nullptr),
-          m_fromSampleFramesToStreamUnits(0),
-          m_fromStreamUnitsToSampleFrames(0) {
+            : m_pAudioSource(nullptr),
+              m_fromSampleFramesToStreamUnits(0),
+              m_fromStreamUnitsToSampleFrames(0) {
     }
     explicit StreamUnitConverter(const AudioSource* pAudioSource)
-        : m_pAudioSource(pAudioSource),
-          m_fromSampleFramesToStreamUnits(double(kStreamUnitsPerSecond) / double(pAudioSource->sampleRate())),
-          m_fromStreamUnitsToSampleFrames(double(pAudioSource->sampleRate()) / double(kStreamUnitsPerSecond)){
+            : m_pAudioSource(pAudioSource),
+              m_fromSampleFramesToStreamUnits(double(kStreamUnitsPerSecond) / double(pAudioSource->sampleRate())),
+              m_fromStreamUnitsToSampleFrames(double(pAudioSource->sampleRate()) / double(kStreamUnitsPerSecond)) {
         // The stream units should actually be much shorter than
         // sample frames to minimize jitter and rounding. Even a
         // frame at 192 kHz has a length of about 5000 ns >> 100 ns.
@@ -55,7 +53,7 @@ class StreamUnitConverter final {
     double m_fromStreamUnitsToSampleFrames;
 };
 
-class SoundSourceMediaFoundation: public SoundSource {
+class SoundSourceMediaFoundation : public SoundSource {
   public:
     explicit SoundSourceMediaFoundation(const QUrl& url);
     ~SoundSourceMediaFoundation() override;
@@ -88,7 +86,7 @@ class SoundSourceMediaFoundation: public SoundSource {
     ReadAheadSampleBuffer m_sampleBuffer;
 };
 
-class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
+class SoundSourceProviderMediaFoundation : public SoundSourceProvider {
   public:
     QString getName() const override;
 
@@ -98,6 +96,5 @@ class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
 
 #endif // MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H

@@ -434,7 +434,6 @@
                 </State>
                 <Connection>
                   <ConfigKey>[Master],skin_settings</ConfigKey>
-                  <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>

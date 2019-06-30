@@ -13,9 +13,8 @@
 #if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif
-#include <taglib/wavfile.h>
 #include <taglib/aifffile.h>
-
+#include <taglib/wavfile.h>
 
 namespace mixxx {
 
@@ -41,10 +40,10 @@ const QString kSafelyWritableOrigFileSuffix = "_orig";
 // http://paulbourke.net/dataformats/audio/
 //
 //
-class AiffFile: public TagLib::RIFF::AIFF::File {
+class AiffFile : public TagLib::RIFF::AIFF::File {
   public:
     explicit AiffFile(TagLib::FileName fileName)
-        : TagLib::RIFF::AIFF::File(fileName) {
+            : TagLib::RIFF::AIFF::File(fileName) {
     }
 
     bool importTrackMetadataFromTextChunks(TrackMetadata* pTrackMetadata) /*non-const*/ {
@@ -52,7 +51,7 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
             return false; // nothing to do
         }
         bool imported = false;
-        for(unsigned int i = 0; i < chunkCount(); ++i) {
+        for (unsigned int i = 0; i < chunkCount(); ++i) {
             const TagLib::ByteVector chunkId(TagLib::RIFF::AIFF::File::chunkName(i));
             if (chunkId == "NAME") {
                 pTrackMetadata->refTrackInfo().setTitle(decodeChunkText(
@@ -112,9 +111,9 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
     }
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "Importing"
-                << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
-                << "from file" << m_fileName
-                << "with type" << m_fileType;
+                        << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
+                        << "from file" << m_fileName
+                        << "with type" << m_fileType;
     }
 
     // Rationale: If a file contains different types of tags only
@@ -124,8 +123,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
     // is read and data in subsequent tags is ignored.
 
     switch (m_fileType) {
-    case taglib::FileType::MP3:
-    {
+    case taglib::FileType::MP3: {
         TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
             const TagLib::ID3v2::Tag* pID3v2Tag =
@@ -153,8 +151,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::MP4:
-    {
+    case taglib::FileType::MP4: {
         TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
             const TagLib::MP4::Tag* pMP4Tag = file.tag();
@@ -173,8 +170,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::FLAC:
-    {
+    case taglib::FileType::FLAC: {
         TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         // Read cover art directly from the file first. Will be
         // overwritten with cover art contained in on of the tags.
@@ -208,8 +204,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::OGG:
-    {
+    case taglib::FileType::OGG: {
         TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
             TagLib::Ogg::XiphComment* pXiphComment = file.tag();
@@ -229,15 +224,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         break;
     }
 #if (TAGLIB_HAS_OPUSFILE)
-    case taglib::FileType::OPUS:
-    {
+    case taglib::FileType::OPUS: {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
             TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                 return afterImport(ImportResult::Succeeded);
+                return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
@@ -250,8 +244,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         break;
     }
 #endif // TAGLIB_HAS_OPUSFILE
-    case taglib::FileType::WV:
-    {
+    case taglib::FileType::WV: {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
             const TagLib::APE::Tag* pAPETag =
@@ -271,8 +264,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::WAV:
-    {
+    case taglib::FileType::WAV: {
         TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
@@ -296,8 +288,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-    case taglib::FileType::AIFF:
-    {
+    case taglib::FileType::AIFF: {
         AiffFile file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (taglib::readAudioProperties(pTrackMetadata, file)) {
 #if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
@@ -320,9 +311,9 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
     }
     default:
         kLogger.warning()
-            << "Cannot import track metadata"
-            << "from file" << m_fileName
-            << "with unknown or unsupported type" << m_fileType;
+                << "Cannot import track metadata"
+                << "from file" << m_fileName
+                << "with unknown or unsupported type" << m_fileType;
         return afterImport(ImportResult::Failed);
     }
 
@@ -340,21 +331,23 @@ namespace {
 // Encapsulates subtle differences between TagLib::File::save()
 // and variants of this function in derived subclasses.
 class TagSaver {
-public:
-    virtual ~TagSaver() {}
+  public:
+    virtual ~TagSaver() {
+    }
 
     virtual bool hasModifiedTags() const = 0;
 
     virtual bool saveModifiedTags() = 0;
 };
 
-class MpegTagSaver: public TagSaver {
-public:
+class MpegTagSaver : public TagSaver {
+  public:
     MpegTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTagsBitmask(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTagsBitmask(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~MpegTagSaver() override {}
+    ~MpegTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTagsBitmask != TagLib::MPEG::File::NoTags;
@@ -368,7 +361,7 @@ public:
         return m_file.save(m_modifiedTagsBitmask);
     }
 
-private:
+  private:
     static int exportTrackMetadata(TagLib::MPEG::File* pFile, const TrackMetadata& trackMetadata) {
         int modifiedTagsBitmask = TagLib::MPEG::File::NoTags;
         if (pFile->isOpen()) {
@@ -394,13 +387,14 @@ private:
     int m_modifiedTagsBitmask;
 };
 
-class Mp4TagSaver: public TagSaver {
-public:
+class Mp4TagSaver : public TagSaver {
+  public:
     Mp4TagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~Mp4TagSaver() override {}
+    ~Mp4TagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -410,23 +404,23 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::MP4::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
-                && taglib::exportTrackMetadataIntoMP4Tag(pFile->tag(), trackMetadata);
+        return pFile->isOpen() && taglib::exportTrackMetadataIntoMP4Tag(pFile->tag(), trackMetadata);
     }
 
     TagLib::MP4::File m_file;
     bool m_modifiedTags;
 };
 
-class FlacTagSaver: public TagSaver {
-public:
+class FlacTagSaver : public TagSaver {
+  public:
     FlacTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~FlacTagSaver() override {}
+    ~FlacTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -436,7 +430,7 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::FLAC::File* pFile, const TrackMetadata& trackMetadata) {
         bool modifiedTags = false;
         if (pFile->isOpen()) {
@@ -458,13 +452,14 @@ private:
     bool m_modifiedTags;
 };
 
-class OggTagSaver: public TagSaver {
-public:
+class OggTagSaver : public TagSaver {
+  public:
     OggTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~OggTagSaver() override {}
+    ~OggTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -474,10 +469,9 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
-                && taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+        return pFile->isOpen() && taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
     }
 
     TagLib::Ogg::Vorbis::File m_file;
@@ -485,13 +479,14 @@ private:
 };
 
 #if (TAGLIB_HAS_OPUSFILE)
-class OpusTagSaver: public TagSaver {
-public:
+class OpusTagSaver : public TagSaver {
+  public:
     OpusTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~OpusTagSaver() override {}
+    ~OpusTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -501,10 +496,9 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::Ogg::Opus::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
-                && taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+        return pFile->isOpen() && taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
     }
 
     TagLib::Ogg::Opus::File m_file;
@@ -512,13 +506,14 @@ private:
 };
 #endif // TAGLIB_HAS_OPUSFILE
 
-class WavPackTagSaver: public TagSaver {
-public:
+class WavPackTagSaver : public TagSaver {
+  public:
     WavPackTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~WavPackTagSaver() override {}
+    ~WavPackTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -528,10 +523,9 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::WavPack::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
-                && taglib::exportTrackMetadataIntoAPETag(pFile->APETag(true), trackMetadata);
+        return pFile->isOpen() && taglib::exportTrackMetadataIntoAPETag(pFile->APETag(true), trackMetadata);
     }
 
     TagLib::WavPack::File m_file;
@@ -548,13 +542,14 @@ bool exportTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMe
     return true;
 }
 
-class WavTagSaver: public TagSaver {
-public:
+class WavTagSaver : public TagSaver {
+  public:
     WavTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~WavTagSaver() override {}
+    ~WavTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -564,7 +559,7 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::RIFF::WAV::File* pFile, const TrackMetadata& trackMetadata) {
         bool modifiedTags = false;
         if (pFile->isOpen()) {
@@ -583,11 +578,11 @@ private:
     bool m_modifiedTags;
 };
 
-class AiffTagSaver: public TagSaver {
-public:
+class AiffTagSaver : public TagSaver {
+  public:
     AiffTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
-        : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
-          m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
+            : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
+              m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
     ~AiffTagSaver() override {
     }
@@ -600,10 +595,9 @@ public:
         return m_file.save();
     }
 
-private:
+  private:
     static bool exportTrackMetadata(TagLib::RIFF::AIFF::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
-                && taglib::exportTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
+        return pFile->isOpen() && taglib::exportTrackMetadataIntoID3v2Tag(pFile->tag(), trackMetadata);
     }
 
     TagLib::RIFF::AIFF::File m_file;
@@ -627,22 +621,53 @@ private:
  */
 class SafelyWritableFile final {
   public:
-    SafelyWritableFile(QString origFileName, bool useTemporaryFile)
-        : m_origFileName(std::move(origFileName)) {
+    SafelyWritableFile(QString origFileName, bool useTemporaryFile) {
+        // Both file names remain uninitialized until all prerequisite operations
+        // in the constructor have been completed successfully. Otherwise failure
+        // to create the temporary file will not be handled correctly!
+        // See also: https://bugs.launchpad.net/mixxx/+bug/1815305
+        DEBUG_ASSERT(m_origFileName.isNull());
         DEBUG_ASSERT(m_tempFileName.isNull());
         if (useTemporaryFile) {
-            QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
-            QFile origFile(m_origFileName);
-            if (origFile.copy(tempFileName)) {
-                m_tempFileName = std::move(tempFileName);
-            } else {
+            QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
+            QFile origFile(origFileName);
+            if (!origFile.copy(tempFileName)) {
                 kLogger.warning()
                         << origFile.errorString()
-                        << "- Failed to copy original into temporary file before writing:"
-                        << origFile.fileName()
+                        << "- Failed to clone original into temporary file before writing:"
+                        << origFileName
                         << "->"
                         << tempFileName;
+                // Abort constructor
+                return;
             }
+            QFile tempFile(tempFileName);
+            DEBUG_ASSERT(tempFile.exists());
+            // Both file sizes are expected to be equal after successfully
+            // copying the file contents.
+            VERIFY_OR_DEBUG_ASSERT(origFile.size() == tempFile.size()) {
+                kLogger.warning()
+                        << "Failed to verify size after cloning original into temporary file before writing:"
+                        << origFile.size()
+                        << "<>"
+                        << tempFile.size();
+                // Cleanup
+                if (tempFile.exists() && !tempFile.remove()) {
+                    kLogger.warning()
+                            << tempFile.errorString()
+                            << "- Failed to remove temporary file:"
+                            << tempFileName;
+                }
+                // Abort constructor
+                return;
+            }
+            // Successfully cloned original into temporary file for writing - finish initialization
+            m_origFileName = std::move(origFileName);
+            m_tempFileName = std::move(tempFileName);
+        } else {
+            // Directly write into original file - finish initialization
+            m_origFileName = std::move(origFileName);
+            DEBUG_ASSERT(m_tempFileName.isNull());
         }
     }
     ~SafelyWritableFile() {
@@ -651,10 +676,16 @@ class SafelyWritableFile final {
 
     const QString& fileName() const {
         if (m_tempFileName.isNull()) {
+            // If m_tempFileName has not been initialized then no temporary
+            // copy was requested in the constructor.
             return m_origFileName;
         } else {
             return m_tempFileName;
         }
+    }
+
+    bool isReady() const {
+        return !fileName().isEmpty();
     }
 
     bool commit() {
@@ -706,9 +737,9 @@ class SafelyWritableFile final {
         if (oldFile.exists()) {
             if (!oldFile.remove()) {
                 kLogger.warning()
-                    << oldFile.errorString()
-                    << "- Failed to remove backup file after writing:"
-                    << oldFile.fileName();
+                        << oldFile.errorString()
+                        << "- Failed to remove backup file after writing:"
+                        << oldFile.fileName();
                 return false;
             }
         }
@@ -723,10 +754,7 @@ class SafelyWritableFile final {
             return; // nothing to do
         }
         QFile tempFile(m_tempFileName);
-        if (!tempFile.exists()) {
-            return; // nothing to do
-        }
-        if (!tempFile.remove()) {
+        if (tempFile.exists() && !tempFile.remove()) {
             kLogger.warning()
                     << tempFile.errorString()
                     << "- Failed to remove temporary file:"
@@ -751,61 +779,60 @@ MetadataSourceTagLib::exportTrackMetadata(
     // identify files in the log file that might have caused a
     // crash while exporting metadata.
     kLogger.debug() << "Exporting track metadata"
-            << "into file" << m_fileName
-            << "with type" << m_fileType;
+                    << "into file" << m_fileName
+                    << "with type" << m_fileType;
 
     SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
+    if (!safelyWritableFile.isReady()) {
+        kLogger.warning()
+                << "Unable to export track metadata into file"
+                << m_fileName
+                << "- Please check file permissions and storage space";
+        return afterExport(ExportResult::Failed);
+    }
 
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
-    case taglib::FileType::MP3:
-    {
+    case taglib::FileType::MP3: {
         pTagSaver = std::make_unique<MpegTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::MP4:
-    {
+    case taglib::FileType::MP4: {
         pTagSaver = std::make_unique<Mp4TagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::FLAC:
-    {
+    case taglib::FileType::FLAC: {
         pTagSaver = std::make_unique<FlacTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::OGG:
-    {
+    case taglib::FileType::OGG: {
         pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
 #if (TAGLIB_HAS_OPUSFILE)
-    case taglib::FileType::OPUS:
-    {
+    case taglib::FileType::OPUS: {
         pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
 #endif // TAGLIB_HAS_OPUSFILE
-    case taglib::FileType::WV:
-    {
+    case taglib::FileType::WV: {
         pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::WAV:
-    {
+    case taglib::FileType::WAV: {
         pTagSaver = std::make_unique<WavTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-    case taglib::FileType::AIFF:
-    {
+    case taglib::FileType::AIFF: {
         pTagSaver = std::make_unique<AiffTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     default:
         kLogger.warning()
-            << "Cannot export track metadata"
-            << "into file" << m_fileName
-            << "with unknown or unsupported type"
-            << m_fileType;
+                << "Cannot export track metadata"
+                << "into file" << m_fileName
+                << "with unknown or unsupported type"
+                << m_fileType;
         return afterExport(ExportResult::Unsupported);
     }
 

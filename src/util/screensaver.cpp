@@ -18,6 +18,7 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 **/
 
 #include "util/screensaver.h"
+#include "util/assert.h"
 
 #if defined(Q_OS_MAC)
 #  include "util/mac.h"
@@ -325,7 +326,7 @@ void ScreenSaverHelper::triggerUserActivity()
 }
 void ScreenSaverHelper::inhibitInternal()
 {
-    DEBUG_ASSERT(!"Screensaver suspending not implemented")
+    DEBUG_ASSERT(!"Screensaver suspending not implemented");
 }
 void ScreenSaverHelper::uninhibitInternal()
 {

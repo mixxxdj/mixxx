@@ -27,7 +27,7 @@
 //
 //	Effect:	Flanger. 1st and 2nd knob modify Depth and Delay.
 //
-//	Cue: 	Don't set Cue accidentally at the end of the song (return to the lastest cue).
+//	Cue: 	Don't set Cue accidentally at the end of the song (return to the latest cue).
 //		LED ON when stopped. LED OFF when playing.
 //		LED Blink at Beat time in the ultimates 30 seconds of song.
 //

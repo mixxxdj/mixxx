@@ -1,8 +1,8 @@
 #include "sources/soundsourcemp3.h"
 #include "sources/mp3decoding.h"
 
-#include "util/math.h"
 #include "util/logger.h"
+#include "util/math.h"
 
 #include <id3tag.h>
 
@@ -72,7 +72,6 @@ AudioSignal::SampleRate getSampleRateByIndex(int sampleRateIndex) {
     }
 }
 
-
 const CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
 
 inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
@@ -80,11 +79,10 @@ inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
 }
 
 // Optimization: Reserve initial capacity for seek frame list
-const SINT kMinutesPerFile = 10; // enough for the majority of files (tunable)
-const SINT kSecondsPerMinute = 60; // fixed
+const SINT kMinutesPerFile = 10;        // enough for the majority of files (tunable)
+const SINT kSecondsPerMinute = 60;      // fixed
 const SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
-const SINT kSeekFrameListCapacity = kMinutesPerFile
-        * kSecondsPerMinute * kMaxMp3FramesPerSecond;
+const SINT kSeekFrameListCapacity = kMinutesPerFile * kSecondsPerMinute * kMaxMp3FramesPerSecond;
 
 inline QString formatHeaderFlags(int headerFlags) {
     return QString("0x%1").arg(headerFlags, 4, 16, QLatin1Char('0'));
@@ -92,13 +90,13 @@ inline QString formatHeaderFlags(int headerFlags) {
 
 void logFrameHeader(QDebug logger, const mad_header& madHeader) {
     logger << "MP3 frame header |"
-            << "layer:" << madHeader.layer
-            << "mode:" << madHeader.mode
-            << "#channels:" << MAD_NCHANNELS(&madHeader)
-            << "#samples:" << MAD_NSBSAMPLES(&madHeader)
-            << "bitrate:" << madHeader.bitrate
-            << "samplerate:" << madHeader.samplerate
-            << "flags:" << formatHeaderFlags(madHeader.flags);
+           << "layer:" << madHeader.layer
+           << "mode:" << madHeader.mode
+           << "#channels:" << MAD_NCHANNELS(&madHeader)
+           << "#samples:" << MAD_NSBSAMPLES(&madHeader)
+           << "bitrate:" << madHeader.bitrate
+           << "samplerate:" << madHeader.samplerate
+           << "flags:" << formatHeaderFlags(madHeader.flags);
 }
 
 inline bool isRecoverableError(const mad_stream& madStream) {
@@ -128,14 +126,14 @@ bool decodeFrameHeader(
         if (isUnrecoverableError(*pMadStream)) {
             DEBUG_ASSERT(!isStreamValid(*pMadStream));
             kLogger.warning() << "Unrecoverable MP3 header decoding error:"
-                    << mad_stream_errorstr(pMadStream);
+                              << mad_stream_errorstr(pMadStream);
             return false;
         }
-    #ifndef QT_NO_DEBUG_OUTPUT
+#ifndef QT_NO_DEBUG_OUTPUT
         // Logging of MP3 frame headers should only be enabled
         // for debugging purposes.
         logFrameHeader(kLogger.debug(), *pMadHeader);
-    #endif
+#endif
         if (isRecoverableError(*pMadStream)) {
             if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
                 long tagsize = id3_tag_query(pMadStream->this_frame,
@@ -149,7 +147,7 @@ bool decodeFrameHeader(
                 }
             }
             kLogger.warning() << "Recoverable MP3 header decoding error:"
-                    << mad_stream_errorstr(pMadStream);
+                              << mad_stream_errorstr(pMadStream);
             logFrameHeader(kLogger.warning(), *pMadHeader);
             return false;
         }
@@ -263,25 +261,32 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
         if (0 >= madFrameLength) {
             kLogger.warning() << "Skipping MP3 frame with invalid length"
-                    << madFrameLength
-                    << "in:" << m_file.fileName();
+                              << madFrameLength
+                              << "in:" << m_file.fileName();
             // Skip frame
             continue;
         }
 
         const ChannelCount madChannelCount(MAD_NCHANNELS(&madHeader));
-        if (maxChannelCount.valid() && (madChannelCount != maxChannelCount)) {
-            kLogger.warning() << "Differing number of channels"
-                    << madChannelCount << "<>" << maxChannelCount
-                    << "in some MP3 frame headers:"
+        if (madChannelCount.valid()) {
+            if (maxChannelCount.valid() && (madChannelCount != maxChannelCount)) {
+                kLogger.warning()
+                        << "Differing number of channels"
+                        << madChannelCount << "<>" << maxChannelCount
+                        << "in MP3 frame headers:"
+                        << m_file.fileName();
+            }
+            maxChannelCount = math_max(madChannelCount, maxChannelCount);
+        } else {
+            kLogger.warning()
+                    << "Missing number of channels in MP3 frame header:"
                     << m_file.fileName();
         }
-        maxChannelCount = math_max(madChannelCount, maxChannelCount);
 
         const int sampleRateIndex = getIndexBySampleRate(SampleRate(madSampleRate));
         if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
-                    << madSampleRate;
+                              << madSampleRate;
             // Abort
             mad_header_finish(&madHeader);
             return OpenResult::Failed;
@@ -313,7 +318,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         DEBUG_ASSERT(!MAD_RECOVERABLE(m_madStream.error));
         if (MAD_ERROR_BUFLEN != m_madStream.error) {
             kLogger.warning() << "Unrecoverable MP3 header error:"
-                    << mad_stream_errorstr(&m_madStream);
+                              << mad_stream_errorstr(&m_madStream);
             // Abort
             return OpenResult::Failed;
         }
@@ -321,8 +326,8 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     if (m_seekFrameList.empty()) {
         // This is not a working MP3 file.
-        kLogger.warning() << "SSMP3: This is not a working MP3 file:"
-                << m_file.fileName();
+        kLogger.warning() << "This is not a working MP3 file:"
+                          << m_file.fileName();
         // Abort
         return OpenResult::Failed;
     }
@@ -342,7 +347,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     if (differentRates > 1) {
         kLogger.warning() << "Differing sample rate in some headers:"
-                   << m_file.fileName();
+                          << m_file.fileName();
         for (int i = 0; i < kSampleRateCount; ++i) {
             if (0 < headerPerSampleRate[i]) {
                 kLogger.warning() << headerPerSampleRate[i] << "MP3 headers with sample rate" << getSampleRateByIndex(i);
@@ -354,15 +359,24 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         kLogger.warning() << "Mixxx tries to plays it with the most common sample rate for this file";
     }
 
-    if (mostCommonSampleRateIndex < kSampleRateCount) {
-        setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
-    } else {
-        kLogger.warning() << "No single valid sample rate in header";
+    // Initialize the AudioSource
+    if (mostCommonSampleRateIndex > kSampleRateCount) {
+        kLogger.warning()
+                << "Unknown sample rate in MP3 file:"
+                << m_file.fileName();
         // Abort
         return OpenResult::Failed;
     }
-
-    // Initialize the AudioSource
+    setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
+    if (!maxChannelCount.valid() || (maxChannelCount > kChannelCountMax)) {
+        kLogger.warning()
+                << "Invalid number of channels"
+                << maxChannelCount
+                << "in MP3 file:"
+                << m_file.fileName();
+        // Abort
+        return OpenResult::Failed;
+    }
     setChannelCount(maxChannelCount);
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
@@ -432,8 +446,7 @@ void SoundSourceMp3::restartDecoding(
     }
 
     // Fill input buffer
-    mad_stream_buffer(&m_madStream, seekFrame.pInputData,
-            m_fileSize - (seekFrame.pInputData - m_pFileData));
+    mad_stream_buffer(&m_madStream, seekFrame.pInputData, m_fileSize - (seekFrame.pInputData - m_pFileData));
 
     if (frameIndexMin() < seekFrame.frameIndex) {
         // Muting is done here to eliminate potential pops/clicks
@@ -443,8 +456,7 @@ void SoundSourceMp3::restartDecoding(
         mad_synth_mute(&m_madSynth);
     }
 
-    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false)
-            && isStreamValid(m_madStream)) {
+    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false) && isStreamValid(m_madStream)) {
         m_curFrameIndex = seekFrame.frameIndex;
     } else {
         // Failure -> Seek to EOF
@@ -512,7 +524,6 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 
 ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if ((m_curFrameIndex != firstFrameIndex)) {
@@ -523,8 +534,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
         // some consistency checks
         DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < firstFrameIndex));
         DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > firstFrameIndex));
-        if ((frameIndexMax() <= m_curFrameIndex) || // out of range
-                (firstFrameIndex < m_curFrameIndex) || // seek backward
+        if ((frameIndexMax() <= m_curFrameIndex) ||                                    // out of range
+                (firstFrameIndex < m_curFrameIndex) ||                                 // seek backward
                 (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
             // Adjust the seek frame index for prefetching
@@ -546,9 +557,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
         DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
-        if (!precedingFrames.empty()
-                && (precedingFrames != readSampleFramesClamped(
-                        WritableSampleFrames(precedingFrames)).frameIndexRange())) {
+        if (!precedingFrames.empty() && (precedingFrames != readSampleFramesClamped(WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -613,14 +622,14 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                         }
                         if (m_curFrameIndex < frameIndexMax()) {
                             kLogger.warning() << "Failed to decode the end of the MP3 stream"
-                                    << m_curFrameIndex << "<" << frameIndexMax();
+                                              << m_curFrameIndex << "<" << frameIndexMax();
                         }
                     }
                     break;
                 }
                 if (isUnrecoverableError(m_madStream)) {
                     kLogger.warning() << "Unrecoverable MP3 frame decoding error:"
-                            << mad_stream_errorstr(&m_madStream);
+                                      << mad_stream_errorstr(&m_madStream);
                     // Abort decoding
                     break;
                 }
@@ -638,7 +647,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                             }
                         } else {
                             kLogger.info() << "Recoverable MP3 frame decoding error:"
-                                    << mad_stream_errorstr(&m_madStream);
+                                           << mad_stream_errorstr(&m_madStream);
                         }
                     }
                     // Continue decoding
@@ -658,8 +667,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
             if (madFrameChannelCount != channelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
-                        << madFrameChannelCount << "<>" << channelCount()
-                        << " - aborting";
+                                  << madFrameChannelCount << "<>" << channelCount()
+                                  << " - aborting";
                 abortReading = true;
             }
 #endif
@@ -667,11 +676,11 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             // Once decoded the frame is synthesized to PCM samples
             mad_synth_frame(&m_madSynth, &m_madFrame);
 #ifndef QT_NO_DEBUG_OUTPUT
-            const SINT madSynthSampleRate =  m_madSynth.pcm.samplerate;
+            const SINT madSynthSampleRate = m_madSynth.pcm.samplerate;
             if (madSynthSampleRate != sampleRate()) {
                 kLogger.warning() << "Reading MP3 data with different sample rate"
-                        << madSynthSampleRate << "<>" << sampleRate()
-                        << " - aborting";
+                                  << madSynthSampleRate << "<>" << sampleRate()
+                                  << " - aborting";
                 abortReading = true;
             }
 #endif
@@ -697,7 +706,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             DEBUG_ASSERT(madSynthChannelCount <= channelCount());
             if (madSynthChannelCount != channelCount()) {
                 kLogger.warning() << "Reading MP3 data with different number of channels"
-                        << madSynthChannelCount << "<>" << channelCount();
+                                  << madSynthChannelCount << "<>" << channelCount();
             }
             if (madSynthChannelCount == 1) {
                 // MP3 frame contains a mono signal

@@ -155,6 +155,15 @@ Controls:
             </Connection>
           </WidgetGroup>
 
+          <!-- AutoDJ Cues -->
+          <WidgetGroup>
+            <Size>64f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
           <!-- deck controls toggle -->
           <WidgetGroup>
             <Size>15f,20f</Size>

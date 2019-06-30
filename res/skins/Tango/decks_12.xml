@@ -11,6 +11,7 @@ Variables:
   <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
   <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
   <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>

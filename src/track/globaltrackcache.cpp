@@ -41,6 +41,7 @@ class EvictAndSaveFunctor {
     }
 
     void operator()(Track* plainPtr) {
+        Q_UNUSED(plainPtr); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
         // functor and the owning reference counting object.
@@ -133,6 +134,11 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
     m_pInstance->relocateTracks(pRelocator);
 }
 
+void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
+    DEBUG_ASSERT(m_pInstance);
+    return m_pInstance->purgeTrackId(trackId);
+}
+
 void GlobalTrackCacheLocker::deactivateCache() const {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->deactivate();
@@ -216,6 +222,7 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
+    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 
@@ -333,7 +340,7 @@ void GlobalTrackCache::deactivate() {
 
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr= j->second->getPlainPtr();
         m_pSaver->saveCachedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
     }
@@ -578,6 +585,17 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(m_tracksById.find(trackId) != m_tracksById.end());
 
     return trackRefWithId;
+}
+
+void GlobalTrackCache::purgeTrackId(TrackId trackId) {
+    DEBUG_ASSERT(trackId.isValid());
+
+    const auto trackById(m_tracksById.find(trackId));
+    if (m_tracksById.end() != trackById) {
+        Track* track = trackById->second->getPlainPtr();
+        track->resetId();
+        m_tracksById.erase(trackById);
+    }
 }
 
 void GlobalTrackCache::evictAndSave(

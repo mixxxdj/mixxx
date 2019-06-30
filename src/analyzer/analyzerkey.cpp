@@ -1,7 +1,7 @@
 #include "analyzer/analyzerkey.h"
 
-#include <QtDebug>
 #include <QVector>
+#include <QtDebug>
 
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarykey.h"
@@ -58,8 +58,9 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     m_iCurrentSample = 0;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
+    bool bShouldAnalyze = shouldAnalyze(tio);
 
+    DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
         if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
@@ -80,7 +81,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     return bShouldAnalyze;
 }
 
-bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
 
@@ -90,7 +91,7 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
         QString subVersion = keys.getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            pluginID, bPreferencesFastAnalysisEnabled);
+                pluginID, bPreferencesFastAnalysisEnabled);
         QString newVersion = KeyFactory::getPreferredVersion();
         QString newSubVersion = KeyFactory::getPreferredSubVersion(extraVersionInfo);
 
@@ -98,69 +99,56 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
             // If the version and settings have not changed then if the world is
             // sane, re-analyzing will do nothing.
             qDebug() << "Keys version/sub-version unchanged since previous analysis. Not analyzing.";
-            return true;
-        } else if (m_bPreferencesReanalyzeEnabled) {
             return false;
-        } else {
+        }
+        if (!m_bPreferencesReanalyzeEnabled) {
             qDebug() << "Track has previous key detection result that is not up"
                      << "to date with latest settings but user preferences"
                      << "indicate we should not re-analyze it.";
-            return true;
+            return false;
         }
-    } else {
-        // If we got here, we want to analyze this track.
-        return false;
     }
+    return true;
 }
 
-void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_pPlugin) {
-        return;
+bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
+        return false;
     }
 
     m_iCurrentSample += iLen;
     if (m_iCurrentSample > m_iMaxSamplesToProcess) {
-        return;
+        return true; // silently ignore remaining samples
     }
 
-    bool success = m_pPlugin->process(pIn, iLen);
-    if (!success) {
-        m_pPlugin.reset();
-    }
+    return m_pPlugin->processSamples(pIn, iLen);
 }
 
-void AnalyzerKey::cleanup(TrackPointer tio) {
-    Q_UNUSED(tio);
+void AnalyzerKey::cleanup() {
     m_pPlugin.reset();
 }
 
-void AnalyzerKey::finalize(TrackPointer tio) {
-    if (!m_pPlugin) {
+void AnalyzerKey::storeResults(TrackPointer tio) {
+    VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return;
     }
 
-    bool success = m_pPlugin->finalize();
-    qDebug() << "Key Detection" << (success ? "complete" : "failed");
-
-    if (!success) {
-        m_pPlugin.reset();
+    if (!m_pPlugin->finalize()) {
+        qWarning() << "Key detection failed";
         return;
     }
 
     KeyChangeList key_changes = m_pPlugin->getKeyChanges();
-    m_pPlugin.reset();
-
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-        m_pluginId, m_bPreferencesFastAnalysisEnabled);
+            m_pluginId, m_bPreferencesFastAnalysisEnabled);
     Keys track_keys = KeyFactory::makePreferredKeys(
-        key_changes, extraVersionInfo,
-        m_iSampleRate, m_iTotalSamples);
+            key_changes, extraVersionInfo, m_iSampleRate, m_iTotalSamples);
     tio->setKeys(track_keys);
 }
 
 // static
 QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
-    QString pluginId, bool bPreferencesFastAnalysis) {
+        QString pluginId, bool bPreferencesFastAnalysis) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
     if (bPreferencesFastAnalysis) {

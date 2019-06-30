@@ -2,6 +2,8 @@
 #define DLGCOVERARTFULLSIZE_H
 
 #include <QDialog>
+#include <QTimer>
+#include <QPoint>
 
 #include "library/ui_dlgcoverartfullsize.h"
 #include "library/coverart.h"
@@ -18,7 +20,9 @@ class DlgCoverArtFullSize
     virtual ~DlgCoverArtFullSize();
 
     void init(TrackPointer pTrack);
-    void mousePressEvent(QMouseEvent* /* unused */) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* ) override;
+    void mouseMoveEvent(QMouseEvent* ) override;
     void resizeEvent(QResizeEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
 
@@ -38,6 +42,9 @@ class DlgCoverArtFullSize
     TrackPointer m_pLoadedTrack;
     BaseTrackPlayer* m_pPlayer;
     WCoverArtMenu* m_pCoverMenu;
+    QTimer m_clickTimer;
+    QPoint m_dragStartPosition;
+    bool m_coverPressed;
 };
 
 #endif // DLGCOVERARTFULLSIZE_H

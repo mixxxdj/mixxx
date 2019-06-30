@@ -13,36 +13,33 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _CHANGEDETECTIONFUNCTION_
-#define _CHANGEDETECTIONFUNCTION_
-
-//#define DEBUG_CHANGE_DETECTION_FUNCTION 1
+#ifndef QM_DSP_CHANGEDETECTIONFUNCTION_H
+#define QM_DSP_CHANGEDETECTIONFUNCTION_H
 
 #include "TCSgram.h"
 
 #include <valarray>
-using std::valarray;
 
-typedef	valarray<double> ChangeDistance;
+typedef std::valarray<double> ChangeDistance;
 
 struct ChangeDFConfig
 {
-	int smoothingWidth;
+    int smoothingWidth;
 };
 
 class ChangeDetectionFunction
 {
 public:
-	ChangeDetectionFunction(ChangeDFConfig);
-	~ChangeDetectionFunction();
-	ChangeDistance process(const TCSGram& rTCSGram);
+    ChangeDetectionFunction(ChangeDFConfig);
+    ~ChangeDetectionFunction();
+    ChangeDistance process(const TCSGram& rTCSGram);
 private:
-	void setFilterWidth(const int iWidth);
-	
+    void setFilterWidth(const int iWidth);
+        
 private:
-	valarray<double> m_vaGaussian;
-	double m_dFilterSigma;
-	int m_iFilterWidth;
+    std::valarray<double> m_vaGaussian;
+    double m_dFilterSigma;
+    int m_iFilterWidth;
 };
 
 #endif // _CHANGDETECTIONFUNCTION_

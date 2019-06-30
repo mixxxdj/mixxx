@@ -132,6 +132,7 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
+    void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
@@ -142,6 +143,7 @@ class EngineBuffer : public EngineObject {
     bool isTrackLoaded();
     TrackPointer getLoadedTrack() const;
 
+    double getExactPlayPos();
     double getVisualPlayPos();
     double getTrackSamples();
 
@@ -224,6 +226,9 @@ class EngineBuffer : public EngineObject {
     // to prevent pops.
     void readToCrossfadeBuffer(const int iBufferSize);
 
+    // Copy the play position from the given buffer
+    void seekCloneBuffer(EngineBuffer* pOtherBuffer);
+
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos, bool adjustingPhase);
 
@@ -238,6 +243,8 @@ class EngineBuffer : public EngineObject {
     // Holds the name of the control group
     QString m_group;
     UserSettingsPointer m_pConfig;
+
+    friend class CueControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
@@ -380,6 +387,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedSeekPosition;
+    QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
     QAtomicInt m_iTrackLoading;

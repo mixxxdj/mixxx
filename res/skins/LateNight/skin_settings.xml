@@ -66,6 +66,13 @@ Description:
                 <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
               </Template>
 
+              <!-- Intro & Outro cues toggle -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+                <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
+              </Template>
+
               <!-- Rate Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">rate_toggle</SetVariable>

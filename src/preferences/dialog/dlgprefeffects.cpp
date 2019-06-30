@@ -35,15 +35,9 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     // Highlight first row
     availableEffectsList->selectRow(0);
 
-  #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    availableEffectsList->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
-    availableEffectsList->setColumnWidth(1, 200);
-    availableEffectsList->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
-  #else
     availableEffectsList->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     availableEffectsList->setColumnWidth(1, 200);
     availableEffectsList->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-  #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 }
 
 DlgPrefEffects::~DlgPrefEffects() {

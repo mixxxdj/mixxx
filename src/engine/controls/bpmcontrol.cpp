@@ -624,7 +624,7 @@ double BpmControl::getNearestPositionInPhase(
             if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
                 // "this" track is playing, or just starting
                 // only match phase if the sync target is playing as well
-                // else use the previouse phase of "this" track before the seek
+                // else use the previous phase of "this" track before the seek
                 pOtherEngineBuffer = getEngineBuffer();
             }
         }
@@ -642,10 +642,7 @@ double BpmControl::getNearestPositionInPhase(
             return dThisPosition;
         }
 
-        double dOtherLength = ControlObject::getControl(
-                ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-        double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
-        double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
+        double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
         if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
                                         NULL, NULL, NULL, &dOtherBeatFraction)) {

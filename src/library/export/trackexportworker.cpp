@@ -1,5 +1,4 @@
 #include "library/export/trackexportworker.h"
-#include "util/compatibility.h"
 
 #include <QFileInfo>
 #include <QMessageBox>

@@ -18,9 +18,9 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
   public:
     static AnalyzerPluginInfo pluginInfo() {
         return AnalyzerPluginInfo(
-            "qm-tempotracker",
-            QObject::tr("Queen Mary University London"),
-            QObject::tr("Queen Mary Tempo and Beat Tracker"));
+                "qm-tempotracker",
+                QObject::tr("Queen Mary University London"),
+                QObject::tr("Queen Mary Tempo and Beat Tracker"));
     }
 
     AnalyzerQueenMaryBeats();
@@ -31,7 +31,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     }
 
     bool initialize(int samplerate) override;
-    bool process(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
     bool supportsBeatTracking() const override {
@@ -50,6 +50,6 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     QVector<double> m_resultBeats;
 };
 
-}  // namepsace mixxx
+} // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H */

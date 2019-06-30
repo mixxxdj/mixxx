@@ -17,44 +17,13 @@ Variables:
     <Children>
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
-              <!-- QuickFx enable button at the SIDE when an EQ is loaded
-              AND when EQ Kill buttons are visible -->
-              <WidgetGroup>
-                <ObjectName>AlignVCenter</ObjectName>
-                <SizePolicy>min,me</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <ObjectName>AlignVCenter</ObjectName>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <Template src="skin:button_2state.xml">
-                        <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                        <SetVariable name="ObjectName">QuickFxEnableButton_Side</SetVariable>
-                        <SetVariable name="Size">12f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey>[EqualizerRack1_[Channel<Variable name="chanNum"/>]_Effect1],loaded</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
               <!-- QuickEffect knob + Enable indicator underneath -->
               <WidgetGroup>
                 <SizePolicy>min,min</SizePolicy>
@@ -80,6 +49,37 @@ Variables:
                   </Template>
                 </Children>
               </WidgetGroup>
+
+              <!-- QuickFx enable button at the SIDE when an EQ is loaded
+              AND when EQ Kill buttons are visible -->
+              <WidgetGroup>
+                <ObjectName>AlignVCenter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>QuickFXSide</ObjectName>
+                    <Size>12f,24f</Size>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:button_2state.xml">
+                        <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
+                        <SetVariable name="ObjectName">QuickFXButton</SetVariable>
+                        <SetVariable name="Size">12f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel<Variable name="chanNum"/>]_Effect1],loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
               
             </Children>
           </WidgetGroup>
@@ -91,14 +91,14 @@ Variables:
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup>
-                <ObjectName>AlignVCenter</ObjectName>
-                <SizePolicy>min,me</SizePolicy>
+                <ObjectName>QuickFXBottom</ObjectName>
+                <Size>30f,16f</Size>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                    <SetVariable name="ObjectName">QuickFxEnableButton_Bottom</SetVariable>
-                    <SetVariable name="Size">30f,16f</SetVariable>
+                    <SetVariable name="ObjectName">QuickFXButton</SetVariable>
+                    <SetVariable name="Size">24f,12f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
                   </Template>
                 </Children>
@@ -118,14 +118,14 @@ Variables:
 
           <!-- QuickFx enable button BELOW when no EQ plugin is loaded -->
           <WidgetGroup>
-            <ObjectName>AlignVCenter</ObjectName>
+            <ObjectName>QuickFXBottom</ObjectName>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                <SetVariable name="ObjectName">QuickFxEnableButton_Bottom</SetVariable>
-                <SetVariable name="Size">30f,16f</SetVariable>
+                <SetVariable name="ObjectName">QuickFXButton</SetVariable>
+                <SetVariable name="Size">24f,12f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
               </Template>
             </Children>

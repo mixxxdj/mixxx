@@ -13,8 +13,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef BEATSPECTRUM_H
-#define BEATSPECTRUM_H
+#ifndef QM_DSP_BEATSPECTRUM_H
+#define QM_DSP_BEATSPECTRUM_H
 
 #include <vector>
 

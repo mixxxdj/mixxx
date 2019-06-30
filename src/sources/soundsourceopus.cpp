@@ -35,10 +35,10 @@ constexpr int kCurrentStreamLink = -1; // get ... of the current (stream) link
 
 // Parameter for op_pcm_total() and op_bitrate()
 // See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
-constexpr int kEntireStreamLink  = -1; // get ... of the whole/entire stream
+constexpr int kEntireStreamLink = -1; // get ... of the whole/entire stream
 
 class OggOpusFileOwner {
-public:
+  public:
     explicit OggOpusFileOwner(OggOpusFile* pFile)
             : m_pFile(pFile) {
     }
@@ -57,7 +57,8 @@ public:
         m_pFile = nullptr;
         return pFile;
     }
-private:
+
+  private:
     OggOpusFile* m_pFile;
 };
 
@@ -129,7 +130,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
             1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
 
 #ifndef TAGLIB_HAS_OPUSFILE
-    const OpusTags *l_ptrOpusTags = op_tags(pOggOpusFile, -1);
+    const OpusTags* l_ptrOpusTags = op_tags(pOggOpusFile, -1);
     bool hasDate = false;
     for (int i = 0; i < l_ptrOpusTags->comments; ++i) {
         QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
@@ -279,7 +280,6 @@ void SoundSourceOpus::close() {
 
 ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -312,9 +312,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
         DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
-        if (!precedingFrames.empty()
-                && (precedingFrames != readSampleFramesClamped(
-                        WritableSampleFrames(precedingFrames)).frameIndexRange())) {
+        if (!precedingFrames.empty() && (precedingFrames != readSampleFramesClamped(WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -362,7 +360,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
             numberOfFramesRemaining -= readResult;
         } else {
             kLogger.warning() << "Failed to read sample data from OggOpus file:"
-                    << readResult;
+                              << readResult;
             break; // abort
         }
     }
