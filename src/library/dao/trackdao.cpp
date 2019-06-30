@@ -1643,7 +1643,7 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             if (query.next()) {
                 TrackId newTrackId(query.value(newTrackIdColumn));
                 query.prepare("DELETE FROM library WHERE id=:newid");
-                query.bindValue(":newid", newTrackLocationId.toVariant());
+                query.bindValue(":newid", newTrackId.toVariant());
                 if (!query.exec()) {
                     // Should not happen!
                     LOG_FAILED_QUERY(query);
