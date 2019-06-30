@@ -1604,10 +1604,12 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         if (!newTrackQuery.exec()) {
             // Should not happen!
             LOG_FAILED_QUERY(newTrackQuery);
+            continue;
         }
         // WTF duplicate tracks?
         if (newTrackQuery.size() > 1) {
             LOG_FAILED_QUERY(newTrackQuery) << "Result size was greater than 1.";
+            continue;
         }
 
         DbId newTrackLocationId;
