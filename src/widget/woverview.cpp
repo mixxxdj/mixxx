@@ -340,30 +340,30 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     ScopedTimer t("WOverview::paintEvent");
 
-    std::unique_ptr<QPainter> pPainter = std::make_unique<QPainter>(this);
-    pPainter->fillRect(rect(), m_qColorBackground);
+    QPainter painter(this);
+    painter.fillRect(rect(), m_qColorBackground);
 
     if (!m_backgroundPixmap.isNull()) {
-        pPainter->drawPixmap(rect(), m_backgroundPixmap);
+        painter.drawPixmap(rect(), m_backgroundPixmap);
     }
 
     if (m_pCurrentTrack) {
         // Refer to util/ScopePainter.h to understand the semantics of
         // ScopePainter.
-        drawEndOfTrackBackground(pPainter.get());
-        drawAxis(pPainter.get());
-        drawWaveformPixmap(pPainter.get());
-        drawEndOfTrackFrame(pPainter.get());
-        drawAnalyzerProgress(pPainter.get());
+        drawEndOfTrackBackground(&painter);
+        drawAxis(&painter);
+        drawWaveformPixmap(&painter);
+        drawEndOfTrackFrame(&painter);
+        drawAnalyzerProgress(&painter);
 
         double trackSamples = m_trackSamplesControl->get();
         if (m_trackLoaded && trackSamples > 0) {
             const float offset = 1.0f;
             const float gain = static_cast<float>(length() - 2) / m_trackSamplesControl->get();
 
-            drawRangeMarks(pPainter.get(), offset, gain);
-            drawMarks(pPainter.get(), offset, gain);
-            drawCurrentPosition(pPainter.get());
+            drawRangeMarks(&painter, offset, gain);
+            drawMarks(&painter, offset, gain);
+            drawCurrentPosition(&painter);
         }
     }
 }
