@@ -18,17 +18,15 @@ class PainterScope final {
 
     explicit PainterScope(QPainter* pPainter)
             : m_pPainter(pPainter) {
-        if (m_pPainter) {
-            m_pPainter->save();
-        }
+        DEBUG_ASSERT(m_pPainter);
+        m_pPainter->save();
     }
 
     ~PainterScope() {
-        if (m_pPainter) {
-            m_pPainter->restore();
-        }
+        DEBUG_ASSERT(m_pPainter);
+        m_pPainter->restore();
     }
 
   private:
-    QPainter* m_pPainter;
+    QPainter* const m_pPainter;
 };
