@@ -1562,7 +1562,7 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
     // is sometimes truncated to nearest integer, tolerance of 1 second is used.
     QSqlQuery newTrackQuery(m_database);
     newTrackQuery.prepare(QString(
-            "SELECT libray.id as track_id, track_locations.id as location_id, "
+            "SELECT library.id as track_id, track_locations.id as location_id, "
             "track_locations.location "
             "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
             "WHERE track_locations.location IN (%1) AND "
