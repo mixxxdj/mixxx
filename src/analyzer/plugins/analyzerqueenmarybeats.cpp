@@ -85,8 +85,29 @@ bool AnalyzerQueenMaryBeats::finalize() {
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
 
+    // In some tracks a beat at 0:00 is detected when a noise floor starts.
+    // Here we check the level and the position for plausibility and remove
+    // the beat if this is the case.
+    size_t firstBeat = 0;
+    if (beats.size() >= 3) {
+        if (m_detectionResults.at(beats.at(0)) <
+            (m_detectionResults.at(beats.at(0)) +
+                    m_detectionResults.at(beats.at(0))) / 4) {
+            // the beat is not half es high than the average of the two
+            // following beats. Skip it.
+            firstBeat = 1;
+        } else {
+            int diff = (beats.at(1) - beats.at(0)) - (beats.at(2) - beats.at(1));
+            // we don't allow a signifcant tempo change after the first beat
+            if (diff > 2 || diff < -2) {
+                // firt beat is off grid. Skip it.
+                firstBeat = 1;
+            }
+        }
+    }
+
     m_resultBeats.reserve(beats.size());
-    for (size_t i = 0; i < beats.size(); ++i) {
+    for (size_t i = firstBeat; i < beats.size(); ++i) {
         double result = beats[i] * kStepSize;
         m_resultBeats.push_back(result);
     }
