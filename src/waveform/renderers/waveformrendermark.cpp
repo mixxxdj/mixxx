@@ -100,8 +100,10 @@ void WaveformRenderMark::onSetTrack() {
     if (!trackInfo) {
         return;
     }
-    connect(trackInfo.get(), SIGNAL(cuesUpdated(void)),
-                  this, SLOT(slotCuesUpdated(void)));
+    connect(trackInfo.get(),
+            &Track::cuesUpdated,
+            this,
+            &WaveformRenderMark::slotCuesUpdated);
 }
 
 void WaveformRenderMark::slotCuesUpdated() {
