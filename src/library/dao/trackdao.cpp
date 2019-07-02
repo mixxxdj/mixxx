@@ -1637,6 +1637,8 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                     << oldTrackLocation;
             continue;
         case 1:
+            DEBUG_ASSERT(newTrackId.isValid());
+            DEBUG_ASSERT(newTrackLocationId.isValid());
             kLogger.info()
                     << "Found moved track location:"
                     << oldTrackLocation
@@ -1653,22 +1655,12 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         }
 
         TrackId oldTrackId(oldTrackQuery.value(oldTrackIdColumn));
+        DEBUG_ASSERT(oldTrackId.isValid());
         DbId oldTrackLocationId(oldTrackQuery.value(oldLocationIdColumn));
+        DEBUG_ASSERT(oldTrackLocationId.isValid());
 
-        // Update the location foreign key for the existing row in the
-        // library table to point to the correct row in the track_locations
-        // table.
-        {
-            QSqlQuery query(m_database);
-            query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
-            query.bindValue(":newloc", newTrackLocationId.toVariant());
-            query.bindValue(":oldid", oldTrackId.toVariant());
-            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-                LOG_FAILED_QUERY(query);
-                // Last chance to skip this entry
-                continue;
-            }
-        }
+        // The queries ensure that this assertion is always true (fs_deleted=0/1)!
+        DEBUG_ASSERT(oldTrackId != newTrackId);
 
         // The library scanner will have added a new row to the Library
         // table which corresponds to the track in the new location. We need
@@ -1682,13 +1674,29 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                 LOG_FAILED_QUERY(query);
             }
         }
-        // Remove old, orphaned row from track_locations table
-        {
-            QSqlQuery query(m_database);
-            query.prepare("DELETE FROM track_locations WHERE id=:id");
-            query.bindValue(":id", oldTrackLocationId.toVariant());
-            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-                LOG_FAILED_QUERY(query);
+        if (oldTrackLocationId != newTrackLocationId) {
+            // Update the location foreign key for the existing row in the
+            // library table to point to the correct row in the track_locations
+            // table.
+            {
+                QSqlQuery query(m_database);
+                query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
+                query.bindValue(":newloc", newTrackLocationId.toVariant());
+                query.bindValue(":oldid", oldTrackId.toVariant());
+                VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+                    LOG_FAILED_QUERY(query);
+                    // Last chance to skip this entry
+                    continue;
+                }
+            }
+            // Remove old, orphaned row from track_locations table
+            {
+                QSqlQuery query(m_database);
+                query.prepare("DELETE FROM track_locations WHERE id=:id");
+                query.bindValue(":id", oldTrackLocationId.toVariant());
+                VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+                    LOG_FAILED_QUERY(query);
+                }
             }
         }
 
