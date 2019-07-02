@@ -48,7 +48,7 @@ class LoopingControl : public EngineControl {
     // sample, if set.
     void hintReader(HintVector* pHintList) override;
 
-    void notifySeek(double dNewPlaypos, double dSyncedNewPlayPos, bool adjustingPhase) override;
+    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
 
     bool isLoopingEnabled();
 

@@ -430,10 +430,10 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(double dNewPlayPos, double dSyncedNewPlayPos, bool adjustingPhase) {
+void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
-    m_filepos_play = dSyncedNewPlayPos;
+    m_filepos_play = newpos;
 
     if (m_rate_old != 0.0) {
         // Before seeking, read extra buffer for crossfading
@@ -449,7 +449,7 @@ void EngineBuffer::setNewPlaypos(double dNewPlayPos, double dSyncedNewPlayPos, b
 
     // Must hold the engineLock while using m_engineControls
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(dNewPlayPos, m_filepos_play, adjustingPhase);
+        pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -1169,7 +1169,14 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (syncPosition != m_filepos_play) {
-        setNewPlaypos(position, syncPosition, adjustingPhase);
+        if (seekType & SEEK_PHASE) {
+            // inform controllers about the seek position itself
+            // and do the phase shift afterwards
+            // this prevents loops from getting disabled because the synced position is in front of the loop
+            setNewPlaypos(position, false);
+            adjustingPhase = true;
+        }
+        setNewPlaypos(syncPosition, adjustingPhase);
     }
 }
 

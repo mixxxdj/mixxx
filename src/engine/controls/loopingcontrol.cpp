@@ -769,7 +769,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos, double dSyncedNewPlayPos, bool adjustingPhase) {
+void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
     if (m_bLoopingEnabled && !adjustingPhase) {

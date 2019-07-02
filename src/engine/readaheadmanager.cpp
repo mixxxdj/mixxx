@@ -254,7 +254,7 @@ double ReadAheadManager::getFilePlaypositionFromLog(
         // (Not looping control)
         if (shouldNotifySeek) {
             if (m_pRateControl) {
-                m_pRateControl->notifySeek(entry.virtualPlaypositionStart, 0, false);
+                m_pRateControl->notifySeek(entry.virtualPlaypositionStart, false);
             }
         }
 
