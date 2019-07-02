@@ -33,11 +33,14 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/file.h"
+#include "util/logger.h"
 #include "util/timer.h"
 #include "util/math.h"
 
 
 namespace {
+
+mixxx::Logger kLogger("TrackDAO");
 
 enum { UndefinedRecordIndex = -2 };
 
@@ -1545,7 +1548,7 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
     // When it's called from libraryscanner.cpp, there already is a transaction
     // started!
 
-    if (!addedTracks.size()) {
+    if (addedTracks.isEmpty()) {
         // We have no moved track.
         // We can only guarantee for new tracks that the user has not
         // edited metadata, which we have to preserve
@@ -1553,137 +1556,146 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         return true;
     }
 
-    QSqlQuery deletedTrackQuery(m_database);
-    QSqlQuery newTrackQuery(m_database);
-    QSqlQuery query(m_database);
-    QString filename;
-    // rather use duration then filesize as an indicator of changes. The filesize
-    // can change by adding more ID3v2 tags
-    int duration = -1;
-
-    // Query tracks, where we need a successor for
-    deletedTrackQuery.prepare("SELECT track_locations.id, filename, duration FROM track_locations "
-                  "INNER JOIN library ON track_locations.id=library.location "
-                  "WHERE fs_deleted=1");
-
-    if (!deletedTrackQuery.exec()) {
-        LOG_FAILED_QUERY(deletedTrackQuery);
-    }
-
     // Query possible successors
     // NOTE: Successors are identified by filename and duration (in seconds).
     // Since duration is stored as double-precision floating-point and since it
     // is sometimes truncated to nearest integer, tolerance of 1 second is used.
-    newTrackQuery.prepare(
-            QString("SELECT track_locations.id FROM track_locations "
-                    "INNER JOIN library ON track_locations.id=library.location "
-                    "WHERE track_locations.location IN (%1) AND "
-                    "filename=:filename AND "
-                    "ABS(duration - :duration) < 1 AND "
-                    "fs_deleted=0").arg(
-                            SqlStringFormatter::formatList(m_database, addedTracks)));
+    QSqlQuery newTrackQuery(m_database);
+    newTrackQuery.prepare(QString(
+            "SELECT libray.id as track_id, track_locations.id as location_id, "
+            "track_locations.location "
+            "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
+            "WHERE track_locations.location IN (%1) AND "
+            "filename=:filename AND "
+            "ABS(duration - :duration) < 1 AND "
+            "fs_deleted=0").arg(
+                    SqlStringFormatter::formatList(m_database, addedTracks)));
 
-    QSqlRecord queryRecord = deletedTrackQuery.record();
-    const int idColumn = queryRecord.indexOf("id");
-    const int filenameColumn = queryRecord.indexOf("filename");
-    const int durationColumn = queryRecord.indexOf("duration");
+    // Query tracks, where we need a successor for
+    QSqlQuery oldTrackQuery(m_database);
+    oldTrackQuery.prepare(
+            "SELECT library.id as track_id, track_locations.id as location_id, "
+            "track_locations.location, filename, duration "
+            "FROM library INNER JOIN track_locations ON library.location=track_locations.id "
+            "WHERE fs_deleted=1");
+    VERIFY_OR_DEBUG_ASSERT(oldTrackQuery.exec()) {
+        LOG_FAILED_QUERY(oldTrackQuery);
+        return false;
+    }
+    QSqlRecord oldTrackQueryRecord = oldTrackQuery.record();
+    const int oldTrackIdColumn = oldTrackQueryRecord.indexOf("track_id");
+    const int oldLocationIdColumn = oldTrackQueryRecord.indexOf("location_id");
+    const int oldLocationColumn = oldTrackQueryRecord.indexOf("location");
+    const int filenameColumn = oldTrackQueryRecord.indexOf("filename");
+    const int durationColumn = oldTrackQueryRecord.indexOf("duration");
 
     // For each track that's been "deleted" on disk...
-    while (deletedTrackQuery.next()) {
+    while (oldTrackQuery.next()) {
         if (*pCancel) {
             return false;
         }
-        DbId oldTrackLocationId(deletedTrackQuery.value(idColumn));
-        filename = deletedTrackQuery.value(filenameColumn).toString();
-        duration = deletedTrackQuery.value(durationColumn).toInt();
+        QString oldTrackLocation = oldTrackQuery.value(oldLocationColumn).toString();
+        QString filename = oldTrackQuery.value(filenameColumn).toString();
+        // rather use duration then filesize as an indicator of changes. The filesize
+        // can change by adding more ID3v2 tags
+        const int duration = oldTrackQuery.value(durationColumn).toInt();
 
-        qDebug() << "TrackDAO::detectMovedTracks looking for a successor of" << filename << duration;
+        kLogger.info()
+                << "Looking for substitute of missing track location"
+                << oldTrackLocation;
 
         newTrackQuery.bindValue(":filename", filename);
         newTrackQuery.bindValue(":duration", duration);
-        if (!newTrackQuery.exec()) {
-            // Should not happen!
+        VERIFY_OR_DEBUG_ASSERT(newTrackQuery.exec()) {
             LOG_FAILED_QUERY(newTrackQuery);
             continue;
         }
-        // WTF duplicate tracks?
-        if (newTrackQuery.size() > 1) {
-            LOG_FAILED_QUERY(newTrackQuery) << "Result size was greater than 1.";
+        int newTrackLocationCount = 0;
+        TrackId newTrackId;
+        DbId newTrackLocationId;
+        QString newTrackLocation;
+        while (newTrackQuery.next()) {
+            newTrackLocation = newTrackQuery.value(
+                    newTrackQuery.record().indexOf("location")).toString();
+            VERIFY_OR_DEBUG_ASSERT(newTrackLocation != oldTrackLocation) {
+                continue;
+            }
+            kLogger.info()
+                    << "Found potential moved track location:"
+                    << newTrackLocation;
+            ++newTrackLocationCount;
+            newTrackId = TrackId(newTrackQuery.value(
+                    newTrackQuery.record().indexOf("track_id")));
+            newTrackLocationId = DbId(newTrackQuery.value(
+                    newTrackQuery.record().indexOf("location_id")));
+            DEBUG_ASSERT(newTrackLocationId.isValid());
+        }
+        switch (newTrackLocationCount) {
+        case 0:
+            kLogger.info()
+                    << "Found no substitute for missing track location"
+                    << oldTrackLocation;
+            continue;
+        case 1:
+            kLogger.info()
+                    << "Found moved track location:"
+                    << oldTrackLocation
+                    << "->"
+                    << newTrackLocation;
+            break;
+        default:
+            kLogger.warning()
+                    << "Found too many ("
+                    << newTrackLocationCount
+                    << ") potential substitutes for missing track location"
+                    << oldTrackLocation;
             continue;
         }
 
-        DbId newTrackLocationId;
-        const int newTrackLocationIdColumn = newTrackQuery.record().indexOf("id");
-        while (newTrackQuery.next()) {
-            newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
+        TrackId oldTrackId(oldTrackQuery.value(oldTrackIdColumn));
+        DbId oldTrackLocationId(oldTrackQuery.value(oldLocationIdColumn));
+
+        // Update the location foreign key for the existing row in the
+        // library table to point to the correct row in the track_locations
+        // table.
+        {
+            QSqlQuery query(m_database);
+            query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
+            query.bindValue(":newloc", newTrackLocationId.toVariant());
+            query.bindValue(":oldid", oldTrackId.toVariant());
+            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+                LOG_FAILED_QUERY(query);
+                // Last chance to skip this entry
+                continue;
+            }
         }
 
-        //If we found a moved track...
-        if (newTrackLocationId.isValid()) {
-            qDebug() << "Found moved track!" << filename;
-
-            // The library scanner will have added a new row to the Library
-            // table which corresponds to the track in the new location. We need
-            // to remove that so we don't end up with two rows in the library
-            // table for the same track.
-            query.prepare("SELECT id FROM library WHERE location=:location");
-            query.bindValue(":location", newTrackLocationId.toVariant());
-            if (!query.exec()) {
-                // Should not happen!
+        // The library scanner will have added a new row to the Library
+        // table which corresponds to the track in the new location. We need
+        // to remove that so we don't end up with two rows in the library
+        // table for the same track.
+        {
+            QSqlQuery query(m_database);
+            query.prepare("DELETE FROM library WHERE id=:newid");
+            query.bindValue(":newid", newTrackId.toVariant());
+            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
                 LOG_FAILED_QUERY(query);
-            }
-            const int newTrackIdColumn = query.record().indexOf("id");
-            if (query.next()) {
-                TrackId newTrackId(query.value(newTrackIdColumn));
-                query.prepare("DELETE FROM library WHERE id=:newid");
-                query.bindValue(":newid", newTrackId.toVariant());
-                if (!query.exec()) {
-                    // Should not happen!
-                    LOG_FAILED_QUERY(query);
-                }
-                // Delete the track
-                query.prepare("DELETE FROM library WHERE id=:newid");
-                query.bindValue(":newid", newTrackId.toVariant());
-                if (!query.exec()) {
-                    // Should not happen!
-                    LOG_FAILED_QUERY(query);
-                }
-                // We collect all the new tracks the where added to BaseTrackCache as well
-                pTracksMovedSetNew->insert(newTrackId);
-            }
-
-            // Update the location foreign key for the existing row in the
-            // library table to point to the correct row in the track_locations
-            // table.
-            query.prepare("SELECT id FROM library WHERE location=:location");
-            query.bindValue(":location", oldTrackLocationId.toVariant());
-            if (!query.exec()) {
-                // Should not happen!
-                LOG_FAILED_QUERY(query);
-            }
-            const int oldTrackIdColumn = query.record().indexOf("id");
-            if (query.next()) {
-                TrackId oldTrackId(query.value(oldTrackIdColumn));
-                query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
-                query.bindValue(":newloc", newTrackLocationId.toVariant());
-                query.bindValue(":oldid", oldTrackId.toVariant());
-                if (!query.exec()) {
-                    // Should not happen!
-                    LOG_FAILED_QUERY(query);
-                }
-
-                // Remove old row from track_locations table
-                query.prepare("DELETE FROM track_locations WHERE id=:id");
-                query.bindValue(":id", oldTrackLocationId.toVariant());
-                if (!query.exec()) {
-                    // Should not happen!
-                    LOG_FAILED_QUERY(query);
-                }
-
-                // We collect all the old tracks that has to be updated in BaseTrackCache as well
-                pTracksMovedSetOld->insert(oldTrackId);
             }
         }
+        // Remove old, orphaned row from track_locations table
+        {
+            QSqlQuery query(m_database);
+            query.prepare("DELETE FROM track_locations WHERE id=:id");
+            query.bindValue(":id", oldTrackLocationId.toVariant());
+            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+                LOG_FAILED_QUERY(query);
+            }
+        }
+
+        // We collect all the old tracks that has to be updated in BaseTrackCache
+        pTracksMovedSetOld->insert(oldTrackId);
+        // We collect collect all the new tracks the where added and deleted to BaseTrackCache
+        pTracksMovedSetNew->insert(newTrackId);
     }
     return true;
 }
