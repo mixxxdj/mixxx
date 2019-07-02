@@ -51,6 +51,7 @@ class LoopingControl : public EngineControl {
     void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
 
     bool isLoopingEnabled();
+    double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
   public slots:
     void slotLoopIn(double pressed);

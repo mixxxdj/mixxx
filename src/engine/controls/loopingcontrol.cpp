@@ -807,6 +807,38 @@ bool LoopingControl::isLoopingEnabled() {
     return m_bLoopingEnabled;
 }
 
+double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos) {
+    // no loop, no adjustment
+    if (!m_bLoopingEnabled) {
+        return dSyncedPlayPos;
+    }
+
+    LoopSamples loopSamples = m_loopSamples.getValue();
+
+    // if the request itself is outside loop do nothing
+    // loop will be disabled later by notifySeek(...)
+    if (dRequestedPlaypos < loopSamples.start || dRequestedPlaypos >= loopSamples.end) {
+        return dSyncedPlayPos;
+    }
+
+    // the requested position is inside the loop (e.g hotcue at start)
+
+    // the synced position is in front of the loop
+    // adjust the synced position to same amount in front of the loop end
+    if (dSyncedPlayPos <= loopSamples.start) {
+        return loopSamples.end - (loopSamples.start - dSyncedPlayPos);
+    }
+
+    // the synced position is behind the loop
+    // adjust the synced position to same amount behind the loop start
+    if (dSyncedPlayPos >= loopSamples.end) {
+        return loopSamples.start + (dSyncedPlayPos - loopSamples.end);
+    }
+
+    // both, requested and synced position are inside the loop -> do nothing
+    return dSyncedPlayPos;
+}
+
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), &Track::beatsUpdated,
