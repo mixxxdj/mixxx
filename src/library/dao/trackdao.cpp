@@ -1534,6 +1534,22 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     }
 }
 
+namespace {
+    // Computed the longest match from the right of both strings
+    int matchStringSuffix(const QString& str1, const QString& str2) {
+        int matchLength = 0;
+        int minLength = math_min(str1.length(), str2.length());
+        while (matchLength < minLength) {
+            if (str1[str1.length() - matchLength - 1] != str2[str2.length() - matchLength - 1]) {
+                // first mismatch
+                break;
+            }
+            ++matchLength;
+        }
+        return matchLength;
+    }
+}
+
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and
 // files size exists in the track_locations table. That means the file has
@@ -1613,46 +1629,41 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         const auto newTrackIdColumn = newTrackQuery.record().indexOf("track_id");
         const auto newTrackLocationIdColumn = newTrackQuery.record().indexOf("location_id");
         const auto newTrackLocationColumn = newTrackQuery.record().indexOf("location");
-        int newTrackLocationCount = 0;
+        int newTrackLocationSuffixMatch = 0;
         TrackId newTrackId;
         DbId newTrackLocationId;
         QString newTrackLocation;
         while (newTrackQuery.next()) {
-            newTrackLocation = newTrackQuery.value(newTrackLocationColumn).toString();
-            VERIFY_OR_DEBUG_ASSERT(newTrackLocation != oldTrackLocation) {
+            const auto nextTrackLocation =
+                    newTrackQuery.value(newTrackLocationColumn).toString();
+            VERIFY_OR_DEBUG_ASSERT(nextTrackLocation != oldTrackLocation) {
                 continue;
             }
             kLogger.info()
                     << "Found potential moved track location:"
-                    << newTrackLocation;
-            ++newTrackLocationCount;
-            newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
-            newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
-            DEBUG_ASSERT(newTrackLocationId.isValid());
+                    << nextTrackLocation;
+            const auto nextSuffixMatch =
+                    matchStringSuffix(nextTrackLocation, oldTrackLocation);
+            DEBUG_ASSERT(nextSuffixMatch >= filename.length());
+            if (nextSuffixMatch > newTrackLocationSuffixMatch) {
+                newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
+                newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
+                newTrackLocation = nextTrackLocation;
+            }
         }
-        switch (newTrackLocationCount) {
-        case 0:
+        if (newTrackLocation.isEmpty()) {
             kLogger.info()
                     << "Found no substitute for missing track location"
                     << oldTrackLocation;
             continue;
-        case 1:
-            DEBUG_ASSERT(newTrackId.isValid());
-            DEBUG_ASSERT(newTrackLocationId.isValid());
-            kLogger.info()
-                    << "Found moved track location:"
-                    << oldTrackLocation
-                    << "->"
-                    << newTrackLocation;
-            break;
-        default:
-            kLogger.warning()
-                    << "Found too many ("
-                    << newTrackLocationCount
-                    << ") potential substitutes for missing track location"
-                    << oldTrackLocation;
-            continue;
         }
+        DEBUG_ASSERT(newTrackId.isValid());
+        DEBUG_ASSERT(newTrackLocationId.isValid());
+        kLogger.info()
+                << "Found moved track location:"
+                << oldTrackLocation
+                << "->"
+                << newTrackLocation;
 
         TrackId oldTrackId(oldTrackQuery.value(oldTrackIdColumn));
         DEBUG_ASSERT(oldTrackId.isValid());
