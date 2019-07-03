@@ -48,7 +48,7 @@ class SoundSourceProxyTest: public MixxxTest {
                 // that fixed this bug is unknown.
                 << "-itunes-12.3.0-aac.m4a"
                 << "-itunes-12.7.0-aac.m4a"
-#if defined(__FFMPEG4__) || defined(__COREAUDIO__)
+#if defined(__FFMPEG__) || defined(__COREAUDIO__)
                 << "-itunes-12.7.0-alac.m4a"
 #endif
                 << "-png.mp3"
@@ -81,24 +81,9 @@ class SoundSourceProxyTest: public MixxxTest {
         return filePaths;
     }
 
-    enum class OpenAudioSourceMode {
-        Default,
-        DisableFFmpeg,
-    };
-
-    static mixxx::AudioSourcePointer openAudioSource(const QString& filePath, OpenAudioSourceMode mode = OpenAudioSourceMode::Default) {
+    static mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
         auto pTrack = Track::newTemporary(filePath);
         SoundSourceProxy proxy(pTrack);
-
-        // TODO(XXX): Fix SoundSourceFFmpeg to avoid this special case handling
-        if ((mode == OpenAudioSourceMode::DisableFFmpeg) &&
-                proxy.getSoundSourceProvider() &&
-                (proxy.getSoundSourceProvider()->getName() == "FFmpeg")) {
-            qWarning()
-                    << "Disabling test for FFmpeg:"
-                    << filePath;
-            return mixxx::AudioSourcePointer();
-        }
 
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
@@ -416,7 +401,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
         qDebug() << "Seek boundaries test:" << filePath;
 
         // TODO(XXX): Fix SoundSourceFFmpeg and re-enable testing
-        mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath, OpenAudioSourceMode::DisableFFmpeg));
+        mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
         // Obtaining an AudioSource may fail for unsupported file formats,
         // even if the corresponding file extension is supported, e.g.
         // AAC vs. ALAC in .m4a files
