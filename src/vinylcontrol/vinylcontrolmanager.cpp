@@ -34,7 +34,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     }
 
     connect(&m_vinylControlEnabledMapper,
-            qOverload<int>(&QSignalMapper::mapped),
+            QOverload<int>::of(&QSignalMapper::mapped),
             this,
             &VinylControlManager::slotVinylControlEnabledChanged);
 }
