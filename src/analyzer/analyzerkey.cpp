@@ -76,6 +76,8 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
         } else {
+            // This must not happen, because we have already verified above
+            // that the PlugInId is valid
             DEBUG_ASSERT(false);
         }
 

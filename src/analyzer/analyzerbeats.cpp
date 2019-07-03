@@ -110,6 +110,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerSoundTouchBeats>();
         } else {
+            // This must not happen, because we have already verified above
+            // that the PlugInId is valid
             DEBUG_ASSERT(false);
         }
 
