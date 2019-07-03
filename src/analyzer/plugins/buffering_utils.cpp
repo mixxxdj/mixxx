@@ -27,12 +27,11 @@ bool DownmixAndOverlapHelper::processStereoSamples(const CSAMPLE* pInput, size_t
 bool DownmixAndOverlapHelper::finalize() {
     // We need to append at least m_windowSize / 2 - m_stepSize silence
     // to have a valid analysis results for the last track samples.
+    // Since we go in fixed steps up to "m_stepSize - 1" samples remains
+    // unrocessed. That th reason we use "m_windowSize / 2 - 1" below
+    // instead of "m_windowSize / 2 - m_stepSize"
     size_t framesToFillWindow = m_windowSize - m_bufferWritePosition;
-    size_t numInputFrames = framesToFillWindow;
-    if (numInputFrames < m_windowSize / 2 - 1) {
-        // -1 ensures that silence < m_stepSize ramains unprocessed
-        numInputFrames = m_windowSize / 2 - 1;
-    }
+    size_t numInputFrames = math_max(framesToFillWindow, m_windowSize / 2 - 1);
     return processInner(nullptr, numInputFrames);
 }
 
