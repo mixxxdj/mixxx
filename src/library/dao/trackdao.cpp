@@ -1610,13 +1610,15 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             LOG_FAILED_QUERY(newTrackQuery);
             continue;
         }
+        const auto newTrackIdColumn = newTrackQuery.record().indexOf("track_id");
+        const auto newTrackLocationIdColumn = newTrackQuery.record().indexOf("location_id");
+        const auto newTrackLocationColumn = newTrackQuery.record().indexOf("location");
         int newTrackLocationCount = 0;
         TrackId newTrackId;
         DbId newTrackLocationId;
         QString newTrackLocation;
         while (newTrackQuery.next()) {
-            newTrackLocation = newTrackQuery.value(
-                    newTrackQuery.record().indexOf("location")).toString();
+            newTrackLocation = newTrackQuery.value(newTrackLocationColumn).toString();
             VERIFY_OR_DEBUG_ASSERT(newTrackLocation != oldTrackLocation) {
                 continue;
             }
@@ -1624,10 +1626,8 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                     << "Found potential moved track location:"
                     << newTrackLocation;
             ++newTrackLocationCount;
-            newTrackId = TrackId(newTrackQuery.value(
-                    newTrackQuery.record().indexOf("track_id")));
-            newTrackLocationId = DbId(newTrackQuery.value(
-                    newTrackQuery.record().indexOf("location_id")));
+            newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
+            newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
             DEBUG_ASSERT(newTrackLocationId.isValid());
         }
         switch (newTrackLocationCount) {
@@ -1659,8 +1659,9 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         DbId oldTrackLocationId(oldTrackQuery.value(oldLocationIdColumn));
         DEBUG_ASSERT(oldTrackLocationId.isValid());
 
-        // The queries ensure that this assertion is always true (fs_deleted=0/1)!
+        // The queries ensure that the following assertions are always true (fs_deleted=0/1)!
         DEBUG_ASSERT(oldTrackId != newTrackId);
+        DEBUG_ASSERT(oldTrackLocationId != newTrackLocationId);
 
         // The library scanner will have added a new row to the Library
         // table which corresponds to the track in the new location. We need
@@ -1672,31 +1673,30 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             query.bindValue(":newid", newTrackId.toVariant());
             VERIFY_OR_DEBUG_ASSERT(query.exec()) {
                 LOG_FAILED_QUERY(query);
+                // Last chance to skip this entry, i.e. nothing has been
+                // deleted or updated yet!
+                continue;
             }
         }
-        if (oldTrackLocationId != newTrackLocationId) {
-            // Update the location foreign key for the existing row in the
-            // library table to point to the correct row in the track_locations
-            // table.
-            {
-                QSqlQuery query(m_database);
-                query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
-                query.bindValue(":newloc", newTrackLocationId.toVariant());
-                query.bindValue(":oldid", oldTrackId.toVariant());
-                VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-                    LOG_FAILED_QUERY(query);
-                    // Last chance to skip this entry
-                    continue;
-                }
+        // Update the location foreign key for the existing row in the
+        // library table to point to the correct row in the track_locations
+        // table.
+        {
+            QSqlQuery query(m_database);
+            query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
+            query.bindValue(":newloc", newTrackLocationId.toVariant());
+            query.bindValue(":oldid", oldTrackId.toVariant());
+            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+                LOG_FAILED_QUERY(query);
             }
-            // Remove old, orphaned row from track_locations table
-            {
-                QSqlQuery query(m_database);
-                query.prepare("DELETE FROM track_locations WHERE id=:id");
-                query.bindValue(":id", oldTrackLocationId.toVariant());
-                VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-                    LOG_FAILED_QUERY(query);
-                }
+        }
+        // Remove old, orphaned row from track_locations table
+        {
+            QSqlQuery query(m_database);
+            query.prepare("DELETE FROM track_locations WHERE id=:id");
+            query.bindValue(":id", oldTrackLocationId.toVariant());
+            VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+                LOG_FAILED_QUERY(query);
             }
         }
 
