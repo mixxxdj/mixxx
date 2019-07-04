@@ -1645,7 +1645,8 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             const auto nextSuffixMatch =
                     matchStringSuffix(nextTrackLocation, oldTrackLocation);
             DEBUG_ASSERT(nextSuffixMatch >= filename.length());
-            if (nextSuffixMatch > newTrackLocationSuffixMatch) {
+            if (newTrackLocationSuffixMatch < nextSuffixMatch) {
+                newTrackLocationSuffixMatch = nextSuffixMatch;
                 newTrackId = TrackId(newTrackQuery.value(newTrackIdColumn));
                 newTrackLocationId = DbId(newTrackQuery.value(newTrackLocationIdColumn));
                 newTrackLocation = nextTrackLocation;
