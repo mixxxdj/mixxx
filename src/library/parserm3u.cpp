@@ -97,8 +97,10 @@ QList<QString> ParserM3u::parse(QString sFilename)
 QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
     QString textline;
     while (!(textline = stream->readLine().trimmed()).isEmpty()) {
-        if (textline.startsWith("#")) {
-            // Skip comments
+        if (textline.contains("#")) {
+            // Skip all lines with comments or special tags that are
+            // prefixed with the reserved character '#'. In file URLs
+            // this special character needs to be encoded as "%23".
             continue;
         }
         QString trackLocation = playlistEntrytoLocalFile(textline);
