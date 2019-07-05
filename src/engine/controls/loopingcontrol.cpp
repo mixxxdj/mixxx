@@ -822,17 +822,34 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     }
 
     // the requested position is inside the loop (e.g hotcue at start)
+    double loopSize = loopSamples.end - loopSamples.start;
 
     // the synced position is in front of the loop
     // adjust the synced position to same amount in front of the loop end
     if (dSyncedPlayPos <= loopSamples.start) {
-        return loopSamples.end - (loopSamples.start - dSyncedPlayPos);
+        double adjustment = loopSamples.start - dSyncedPlayPos;
+
+        // if the adjustment is larger then the loop subtract N times the loopsize
+        // prevents jumping in front of the loop
+        // works like modulo on doubles
+        int numLoopsInAdjustment = adjustment / loopSize;
+        adjustment = adjustment - (numLoopsInAdjustment * loopSize);
+
+        return loopSamples.end - adjustment;
     }
 
     // the synced position is behind the loop
     // adjust the synced position to same amount behind the loop start
     if (dSyncedPlayPos >= loopSamples.end) {
-        return loopSamples.start + (dSyncedPlayPos - loopSamples.end);
+        double adjustment = dSyncedPlayPos - loopSamples.end;
+
+        // if the adjustment is larger then the loop subtract N times the loopsize
+        // prevents jumping behind the loop
+        // works like modulo on doubles
+        int numLoopsInAdjustment = adjustment / loopSize;
+        adjustment = adjustment - (numLoopsInAdjustment * loopSize);
+
+        return loopSamples.start + adjustment;
     }
 
     // both, requested and synced position are inside the loop -> do nothing
