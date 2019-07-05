@@ -769,13 +769,12 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
+void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
-    if (m_bLoopingEnabled && !adjustingPhase) {
+    if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
-        // Do not jump out of a loop if we adjust a phase (lp1743010)
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
                 dNewPlaypos < loopSamples.start) {
