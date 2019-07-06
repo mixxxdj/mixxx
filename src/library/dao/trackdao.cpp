@@ -1244,9 +1244,13 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
             "INNER JOIN track_locations ON library.location = track_locations.id "
             "WHERE library.id = %2").arg(columnsStr, trackId.toString()));
 
-    if (!query.exec() || !query.next()) {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << QString("getTrack(%1)").arg(trackId.toString());
+        return TrackPointer();
+    }
+    if (!query.next()) {
+        qDebug() << "Track with id =" << trackId << "not found";
         return TrackPointer();
     }
 
