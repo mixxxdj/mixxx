@@ -11,6 +11,7 @@
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
+    // First one below is the default
     analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
     return analyzers;
 }
@@ -39,7 +40,17 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
-    m_pluginId = m_keySettings.getKeyPluginId();
+
+    if (AnalyzerKey::availablePlugins().size() > 0) {
+        m_pluginId = AnalyzerKey::availablePlugins().at(0).id; // first is default
+        QString pluginId = m_keySettings.getKeyPluginId();
+        for (const auto& info : AnalyzerKey::availablePlugins()) {
+            if (info.id == pluginId) {
+                m_pluginId = pluginId; // configured Plug-In available
+                break;
+            }
+        }
+    }
 
     qDebug() << "AnalyzerKey preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -65,19 +76,23 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
         } else {
-            // Default to our built-in key detector.
-            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
+            // This must not happen, because we have already verified above
+            // that the PlugInId is valid
+            DEBUG_ASSERT(false);
         }
-        bShouldAnalyze = m_pPlugin->initialize(sampleRate);
-    }
 
-    if (bShouldAnalyze) {
-        qDebug() << "Key calculation started with plugin" << m_pluginId;
-    } else {
-        qDebug() << "Key calculation will not start.";
-        m_pPlugin.reset();
+        if (m_pPlugin) {
+            if (m_pPlugin->initialize(sampleRate)) {
+                qDebug() << "Key calculation started with plugin" << m_pluginId;
+            } else {
+                qDebug() << "Key calculation will not start.";
+                m_pPlugin.reset();
+                bShouldAnalyze = false;
+            }
+        } else {
+            bShouldAnalyze = false;
+        }
     }
-
     return bShouldAnalyze;
 }
 

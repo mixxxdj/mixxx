@@ -19,7 +19,8 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
         return AnalyzerPluginInfo(
                 "mixxxbpmdetection",
                 "Olli Parviainen",
-                QObject::tr("SoundTouch BPM Detector (Legacy)"));
+                QObject::tr("SoundTouch BPM Detector (Legacy)"),
+                false);
     }
 
     AnalyzerSoundTouchBeats();

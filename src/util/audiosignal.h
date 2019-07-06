@@ -61,8 +61,7 @@ public:
             return (kValueMin <= m_value) && (m_value <= kValueMax);
         }
 
-        /*implicit*/ operator SINT() const {
-            DEBUG_ASSERT(m_value >= 0); // unsigned value
+        /*implicit*/ constexpr operator SINT() const {
             return m_value;
         }
 
@@ -106,8 +105,7 @@ public:
             return (kValueMin <= m_value) && (m_value <= kValueMax);
         }
 
-        /*implicit*/ operator SINT() const {
-            DEBUG_ASSERT(m_value >= 0); // unsigned value
+        /*implicit*/ constexpr operator SINT() const {
             return m_value;
         }
 
