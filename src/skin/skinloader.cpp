@@ -24,8 +24,8 @@
 SkinLoader::SkinLoader(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_defaultCueColor(),
-          m_coSkinLoaded(ConfigKey("[Skin]", "reloaded")),
-          m_coFallbackCueColorId(ConfigKey("[Skin]", "fallback_cue_color_id")) {
+          m_cpSkinLoaded(ConfigKey("[Skin]", "reloaded"), this),
+          m_cpFallbackCueColorId(ConfigKey("[Skin]", "fallback_cue_color_id"), this) {
 }
 
 SkinLoader::~SkinLoader() {
@@ -135,8 +135,8 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
             parser.m_pContext->getControllersFallbackCueColor();
 
     pControllerManager->setDefaultCueColor(controllersDefaultCueColor);
-    m_coFallbackCueColorId.set(controllersFallbackColor->m_iId);
-    m_coSkinLoaded.set(1);
+    m_cpFallbackCueColorId.set(controllersFallbackColor->m_iId);
+    m_cpSkinLoaded.set(1);
     return skin;
 }
 

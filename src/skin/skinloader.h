@@ -1,12 +1,11 @@
 #ifndef SKINLOADER_H
 #define SKINLOADER_H
 
-#include <QWidget>
-#include <QList>
 #include <QDir>
+#include <QList>
+#include <QWidget>
 
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
+#include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 
 class KeyboardEventFilter;
@@ -17,6 +16,7 @@ class VinylControlManager;
 class EffectsManager;
 class RecordingManager;
 class LaunchImage;
+class SkinControlObjects;
 
 class SkinLoader : public QObject {
     Q_OBJECT
@@ -48,8 +48,8 @@ class SkinLoader : public QObject {
 
     QColor m_defaultCueColor;
 
-    ControlPushButton m_coSkinLoaded;
-    ControlObject m_coFallbackCueColorId;
+    ControlProxy m_cpSkinLoaded;
+    ControlProxy m_cpFallbackCueColorId;
 };
 
 #endif /* SKINLOADER_H */

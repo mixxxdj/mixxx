@@ -186,6 +186,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     initializeWindow();
 
+    // These COs must be loaded before SkinLoader, because it uses them.
+    m_pSkinControlObjects = std::make_unique<SkinControlObjects>();
     // First load launch image to show a the user a quick responds
     m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
@@ -647,6 +649,10 @@ void MixxxMainWindow::finalize() {
     VERIFY_OR_DEBUG_ASSERT(pMenuBar.isNull()) {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
+    
+    qDebug() << t.elapsed(false).debugMillisWithUnit()
+        << "deleting skin control objects";
+    m_pSkinControlObjects.reset();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
     m_pLibrary->stopFeatures();

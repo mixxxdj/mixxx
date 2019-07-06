@@ -27,8 +27,10 @@
 #include "preferences/constants.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#include "util/memory.h"
 #include "util/timer.h"
 #include "util/db/dbconnectionpool.h"
+#include "skin/skincontrolobjects.h"
 #include "soundio/sounddeviceerror.h"
 
 class ChannelHandleFactory;
@@ -153,6 +155,7 @@ class MixxxMainWindow : public QMainWindow {
     // The skin loader.
     // TODO(rryan): doesn't need to be a member variable
     SkinLoader* m_pSkinLoader;
+    std::unique_ptr<SkinControlObjects> m_pSkinControlObjects;
 
     // The sound manager
     SoundManager* m_pSoundManager;
