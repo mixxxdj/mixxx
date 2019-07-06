@@ -27,19 +27,19 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        QFileInfo fileInfo) {
+        TrackFile trackFile) {
     SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            QFileInfo(fileInfo), true);
+            trackFile.asFileInfo(), true);
     return extractEmbeddedCover(
-            std::move(fileInfo), std::move(pToken));
+            std::move(trackFile), std::move(pToken));
 }
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        QFileInfo fileInfo,
+        TrackFile trackFile,
         SecurityTokenPointer pToken) {
     return SoundSourceProxy::importTemporaryCoverImage(
-            std::move(fileInfo), std::move(pToken));
+            std::move(trackFile), std::move(pToken));
 }
 
 //static
@@ -49,8 +49,8 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
             qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
             return QImage();
         }
-        const QFileInfo fileInfo(info.trackLocation);
-        return extractEmbeddedCover(fileInfo);
+        const TrackFile trackFile(info.trackLocation);
+        return extractEmbeddedCover(trackFile);
     } else if (info.type == CoverInfo::FILE) {
         if (info.trackLocation.isEmpty()) {
             qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
@@ -60,18 +60,16 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
             return QImage(info.coverLocation);
         }
 
-        QFileInfo track(info.trackLocation);
-        QFileInfo cover(track.dir(), info.coverLocation);
-
-        if (!cover.exists()) {
+        QFileInfo coverFile(TrackFile(info.trackLocation).directory(), info.coverLocation);
+        QString coverFilePath = coverFile.filePath();
+        if (!coverFile.exists()) {
             qDebug() << "CoverArtUtils::loadCover FILE cover does not exist:"
-                     << info.coverLocation << info.trackLocation;
+                     << coverFilePath;
             return QImage();
         }
-        QString coverPath = cover.filePath();
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            cover, true);
-        return QImage(coverPath);
+            coverFile, true);
+        return QImage(coverFilePath);
     } else if (info.type == CoverInfo::NONE) {
         return QImage();
     } else {
@@ -88,8 +86,8 @@ CoverInfo CoverArtUtils::guessCoverInfo(const Track& track) {
     coverInfo.trackLocation = track.getLocation();
     coverInfo.source = CoverInfo::GUESSED;
 
-    const QFileInfo fileInfo(track.getFileInfo());
-    QImage image = extractEmbeddedCover(fileInfo, track.getSecurityToken());
+    const auto trackFile = track.getFileInfo();
+    QImage image = extractEmbeddedCover(trackFile, track.getSecurityToken());
     if (!image.isNull()) {
         // TODO() here we my introduce a duplicate hash code
         coverInfo.hash = calculateHash(image);
@@ -100,7 +98,7 @@ CoverInfo CoverArtUtils::guessCoverInfo(const Track& track) {
     }
 
     QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
-            fileInfo.absolutePath());
+            trackFile.directory());
     coverInfo = selectCoverArtForTrack(track, possibleCovers);
     if (coverInfo.type == CoverInfo::FILE) {
         qDebug() << "CoverArtUtils::guessCover found file art" << coverInfo;
@@ -136,17 +134,14 @@ CoverInfo CoverArtUtils::selectCoverArtForTrack(
         const Track& track,
         const QLinkedList<QFileInfo>& covers) {
 
-    const QString trackBaseName = track.getFileInfo().baseName();
-    const QString albumName = track.getAlbum();
-    const QString trackLocation = track.getLocation();
     CoverInfoRelative coverInfoRelative =
-            selectCoverArtForTrack(trackBaseName, albumName, covers);
-    return CoverInfo(coverInfoRelative, trackLocation);
+            selectCoverArtForTrack(track.getFileInfo(), track.getAlbum(), covers);
+    return CoverInfo(coverInfoRelative, track.getLocation());
 }
 
 //static
 CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
-        const QString& trackBaseName,
+        const TrackFile& trackFile,
         const QString& albumName,
         const QLinkedList<QFileInfo>& covers) {
     CoverInfoRelative coverInfoRelative;
@@ -172,7 +167,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         foreach (const QFileInfo& file, covers) {
             const QString coverBaseName = file.baseName();
             if (bestType > TRACK_BASENAME &&
-                coverBaseName.compare(trackBaseName,
+                coverBaseName.compare(trackFile.baseName(),
                                       Qt::CaseInsensitive) == 0) {
                 bestType = TRACK_BASENAME;
                 bestInfo = &file;
