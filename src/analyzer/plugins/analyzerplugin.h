@@ -12,12 +12,17 @@ namespace mixxx {
 struct AnalyzerPluginInfo {
     AnalyzerPluginInfo(const QString& id,
             const QString& author,
-            const QString& name)
-            : id(id), author(author), name(name) {
+            const QString& name,
+            bool isConstantTempoSupported)
+            : id(id),
+              author(author),
+              name(name),
+              constantTempoSupported(isConstantTempoSupported) {
     }
     QString id;
     QString author;
     QString name;
+    bool constantTempoSupported;
 };
 
 class AnalyzerPlugin {

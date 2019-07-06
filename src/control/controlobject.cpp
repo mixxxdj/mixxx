@@ -39,8 +39,10 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
     // getControl can fail and return a NULL control even with the create flag.
     if (m_pControl) {
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(privateValueChanged(double, QObject*)),
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObject::privateValueChanged,
                 Qt::DirectConnection);
     }
 }

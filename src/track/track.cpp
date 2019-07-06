@@ -771,8 +771,10 @@ void Track::setCuePoint(CuePosition cue) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
             pLoadCue->setType(Cue::LOAD);
-            connect(pLoadCue.get(), SIGNAL(updated()),
-                    this, SLOT(slotCueUpdated()));
+            connect(pLoadCue.get(),
+                    &Cue::updated,
+                    this,
+                    &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
         pLoadCue->setPosition(position);
@@ -799,8 +801,7 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue(m_record.getId()));
-    connect(pCue.get(), SIGNAL(updated()),
-            this, SLOT(slotCueUpdated()));
+    connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
@@ -872,8 +873,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
-        connect(pCue.get(), SIGNAL(updated()),
-                this, SLOT(slotCueUpdated()));
+        connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
         if (pCue->getType() == Cue::LOAD) {
             m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
