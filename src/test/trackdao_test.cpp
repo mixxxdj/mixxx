@@ -14,19 +14,23 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QString filename("file.mp3");
 
-    TrackFile oldFile(QDir::tempPath() + "/old", filename);
-    TrackFile newFile(QDir::tempPath() + "/new", filename);
+    TrackFile oldFile(QDir::tempPath() + "/old/dir1", filename);
+    TrackFile newFile(QDir::tempPath() + "/new/dir1", filename);
+    TrackFile otherFile(QDir::tempPath() + "/new", filename);
 
     TrackPointer pOldTrack = Track::newTemporary(oldFile);
     TrackPointer pNewTrack = Track::newTemporary(newFile);
+    TrackPointer pOtherTrack = Track::newTemporary(otherFile);
 
     // Arbitrary duration
     pOldTrack->setDuration(135);
     pNewTrack->setDuration(135.7);
+    pOtherTrack->setDuration(135.7);
 
     trackDAO.addTracksPrepare();
     TrackId oldId = trackDAO.addTracksAddTrack(pOldTrack, false);
     TrackId newId = trackDAO.addTracksAddTrack(pNewTrack, false);
+    trackDAO.addTracksAddTrack(pOtherTrack, false);
     trackDAO.addTracksFinish(false);
 
     // Mark as missing
@@ -45,5 +49,5 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     EXPECT_THAT(tracksMovedSetNew, UnorderedElementsAre(newId));
 
     QSet<QString> trackLocations = trackDAO.getTrackLocations();
-    EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location()));
+    EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location(), otherFile.location()));
 }
