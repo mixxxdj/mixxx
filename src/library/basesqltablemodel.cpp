@@ -20,7 +20,6 @@
 #include "track/trackmetadata.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
-#include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
@@ -1094,7 +1093,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
             continue;
         }
         rows.insert(index.row());
-        QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
+        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;

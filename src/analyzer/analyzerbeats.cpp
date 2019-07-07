@@ -16,8 +16,9 @@
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
-    plugins.append(mixxx::AnalyzerSoundTouchBeats::pluginInfo());
+    // First one below is the default
     plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
+    plugins.append(mixxx::AnalyzerSoundTouchBeats::pluginInfo());
     return plugins;
 }
 
@@ -66,7 +67,17 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
-    m_pluginId = m_bpmSettings.getBeatPluginId();
+
+    if (AnalyzerBeats::availablePlugins().size() > 0) {
+        m_pluginId = AnalyzerBeats::availablePlugins().at(0).id; // first is default
+        QString pluginId = m_bpmSettings.getBeatPluginId();
+        for (const auto& info : AnalyzerBeats::availablePlugins()) {
+            if (info.id == pluginId) {
+                m_pluginId = pluginId; // configured Plug-In available
+                break;
+            }
+        }
+    }
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -91,24 +102,31 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     // if we can load a stored track don't reanalyze it
     bool bShouldAnalyze = shouldAnalyze(tio);
 
+
+    DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
-        if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
+        if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
+        } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerSoundTouchBeats>();
-        } else if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id) {
-            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
         } else {
-            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
+            // This must not happen, because we have already verified above
+            // that the PlugInId is valid
+            DEBUG_ASSERT(false);
         }
-        bShouldAnalyze = m_pPlugin->initialize(m_iSampleRate);
-    }
 
-    if (bShouldAnalyze) {
-        qDebug() << "Beat calculation started with plugin" << m_pluginId;
-    } else {
-        qDebug() << "Beat calculation will not start";
-        m_pPlugin.reset();
+        if (m_pPlugin) {
+            if (m_pPlugin->initialize(sampleRate)) {
+                qDebug() << "Beat calculation started with plugin" << m_pluginId;
+            } else {
+                qDebug() << "Beat calculation will not start.";
+                m_pPlugin.reset();
+                bShouldAnalyze = false;
+            }
+        } else {
+            bShouldAnalyze = false;
+        }
     }
-
     return bShouldAnalyze;
 }
 

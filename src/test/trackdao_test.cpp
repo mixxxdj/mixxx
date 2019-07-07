@@ -14,8 +14,8 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QString filename("file.mp3");
 
-    QString oldFile(QDir::tempPath() + "/old/" + filename);
-    QString newFile(QDir::tempPath() + "/new/" + filename);
+    TrackFile oldFile(QDir::tempPath() + "/old", filename);
+    TrackFile newFile(QDir::tempPath() + "/new", filename);
 
     TrackPointer pOldTrack = Track::newTemporary(oldFile);
     TrackPointer pNewTrack = Track::newTemporary(newFile);
@@ -32,12 +32,12 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     // Mark as missing
     QSqlQuery query(dbConnection());
     query.prepare("UPDATE track_locations SET fs_deleted=1 WHERE location=:location");
-    query.bindValue(":location", oldFile);
+    query.bindValue(":location", oldFile.location());
     query.exec();
 
     QSet<TrackId> tracksMovedSetOld;
     QSet<TrackId> tracksMovedSetNew;
-    QStringList addedTracks(newFile);
+    QStringList addedTracks(newFile.location());
     bool cancel = false;
     trackDAO.detectMovedTracks(&tracksMovedSetOld, &tracksMovedSetNew, addedTracks, &cancel);
 
@@ -45,5 +45,5 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     EXPECT_THAT(tracksMovedSetNew, UnorderedElementsAre(newId));
 
     QSet<QString> trackLocations = trackDAO.getTrackLocations();
-    EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile));
+    EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location()));
 }

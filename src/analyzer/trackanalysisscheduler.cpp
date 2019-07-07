@@ -198,20 +198,24 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         break;
     case AnalyzerThreadState::Busy:
         DEBUG_ASSERT(trackId.isValid());
-        DEBUG_ASSERT(m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end());
-        DEBUG_ASSERT(analyzerProgress != kAnalyzerProgressUnknown);
-        DEBUG_ASSERT(analyzerProgress < kAnalyzerProgressDone);
-        worker.onAnalyzerProgress(analyzerProgress);
-        emit trackProgress(trackId, analyzerProgress);
+        // Ignore delayed signals for tracks that are no longer pending
+        if (m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end()) {
+            DEBUG_ASSERT(analyzerProgress != kAnalyzerProgressUnknown);
+            DEBUG_ASSERT(analyzerProgress < kAnalyzerProgressDone);
+            worker.onAnalyzerProgress(analyzerProgress);
+            emit trackProgress(trackId, analyzerProgress);
+        }
         break;
     case AnalyzerThreadState::Done:
         DEBUG_ASSERT(trackId.isValid());
-        DEBUG_ASSERT(m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end());
-        DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
-                || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
-        m_pendingTrackIds.erase(trackId);
-        worker.onAnalyzerProgress(analyzerProgress);
-        emit trackProgress(trackId, analyzerProgress);
+        // Ignore delayed signals for tracks that are no longer pending
+        if (m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end()) {
+            DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
+                    || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
+            m_pendingTrackIds.erase(trackId);
+            worker.onAnalyzerProgress(analyzerProgress);
+            emit trackProgress(trackId, analyzerProgress);
+        }
         break;
     case AnalyzerThreadState::Exit:
         DEBUG_ASSERT(!trackId.isValid());
