@@ -1,5 +1,4 @@
 #include <QDirIterator>
-#include <QFile>
 #include <QMutexLocker>
 
 #include <atomic>
@@ -23,10 +22,10 @@ constexpr bool kLogStats = false;
 std::atomic<int> s_numberOfInstances;
 
 SecurityTokenPointer openSecurityToken(
-        const QFileInfo& fileInfo,
+        const TrackFile& trackFile,
         SecurityTokenPointer pSecurityToken = SecurityTokenPointer()) {
     if (pSecurityToken.isNull()) {
-        return Sandbox::openSecurityToken(fileInfo, true);
+        return Sandbox::openSecurityToken(trackFile.asFileInfo(), true);
     } else {
         return pSecurityToken;
     }
@@ -60,7 +59,7 @@ mixxx::Bpm getActualBpm(
 } // anonymous namespace
 
 Track::Track(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken,
         TrackId trackId)
         : m_qMutex(QMutex::Recursive),
@@ -94,7 +93,7 @@ Track::~Track() {
 
 //static
 TrackPointer Track::newTemporary(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken) {
     return std::make_shared<Track>(
             std::move(fileInfo),
@@ -103,7 +102,7 @@ TrackPointer Track::newTemporary(
 
 //static
 TrackPointer Track::newDummy(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         TrackId trackId) {
     return std::make_shared<Track>(
             std::move(fileInfo),
@@ -112,11 +111,11 @@ TrackPointer Track::newDummy(
 }
 
 void Track::relocate(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken) {
     QMutexLocker lock(&m_qMutex);
-    m_fileInfo = fileInfo;
-    m_pSecurityToken = pSecurityToken;
+    m_pSecurityToken = openSecurityToken(fileInfo, std::move(pSecurityToken));
+    m_fileInfo = std::move(fileInfo);
     // The track does not need to be marked as dirty,
     // because this function will always be called with
     // the updated location from the database.
@@ -189,120 +188,9 @@ void Track::getTrackRecord(
     }
 }
 
-QString Track::getLocation() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return TrackRef::location(m_fileInfo);
-}
-
 QString Track::getCanonicalLocation() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-
-    // Note: We return here the cached value, that was calculated just after 
-    // init this Track object. This will avoid repeated use of the time 
-    // consuming file IO.
-    // We ignore the case when the user changes a symbolic link to 
-    // point a file to an other location, since this is a user action.
-    // We also don't care if a file disappears while Mixxx is running. Opening 
-    // a non-existent file is already handled and doesn't cause any malfunction.
-    QString loc = TrackRef::canonicalLocation(m_fileInfo);
-    if (loc.isEmpty()) {
-        // we see here an empty path because the file did not exist  
-        // when creating the track object.
-        // The user might have restored the track in the meanwhile.
-        // So try again it again. 
-        m_fileInfo.refresh();
-        loc = TrackRef::canonicalLocation(m_fileInfo);
-    }
-    return loc;
-}
-
-QUrl Track::getLocationUrl() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return TrackRef::locationUrl(m_fileInfo);
-}
-
-QUrl Track::getCanonicalLocationUrl() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return TrackRef::canonicalLocationUrl(m_fileInfo);
-}
-
-QString Track::getLocationUri() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return TrackRef::locationUri(m_fileInfo);
-}
-
-QString Track::getCanonicalLocationUri() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return TrackRef::canonicalLocationUri(m_fileInfo);
-}
-
-QString Track::getDirectory() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absolutePath();
-}
-
-QString Track::getFileName() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.fileName();
-}
-
-int Track::getFileSize() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.size();
-}
-
-QDateTime Track::getFileModifiedTime() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.lastModified();
-}
-
-QDateTime Track::getFileCreationTime() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.created();
-}
-
-bool Track::exists() const {
-    // Copying QFileInfo is thread-safe due to "implicit sharing"
-    // (copy-on write). But operating on a single instance of QFileInfo
-    // might not be thread-safe due to internal caching!
-    QMutexLocker lock(&m_qMutex);
-    // return here a fresh calculated value to be sure
-    // the file is not deleted or gone with an USB-Stick
-    // because it will probably stop the Auto-DJ
-    return QFile::exists(m_fileInfo.absoluteFilePath());
+    return /*mutable*/ m_fileInfo.freshCanonicalLocation(); // non-const
 }
 
 mixxx::ReplayGain Track::getReplayGain() const {
@@ -771,8 +659,10 @@ void Track::setCuePoint(CuePosition cue) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
             pLoadCue->setType(Cue::LOAD);
-            connect(pLoadCue.get(), SIGNAL(updated()),
-                    this, SLOT(slotCueUpdated()));
+            connect(pLoadCue.get(),
+                    &Cue::updated,
+                    this,
+                    &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
         pLoadCue->setPosition(position);
@@ -799,8 +689,7 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue(m_record.getId()));
-    connect(pCue.get(), SIGNAL(updated()),
-            this, SLOT(slotCueUpdated()));
+    connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
@@ -872,8 +761,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
-        connect(pCue.get(), SIGNAL(updated()),
-                this, SLOT(slotCueUpdated()));
+        connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
         if (pCue->getType() == Cue::LOAD) {
             m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
@@ -1028,7 +916,7 @@ CoverInfoRelative Track::getCoverInfo() const {
 
 CoverInfo Track::getCoverInfoWithLocation() const {
     QMutexLocker lock(&m_qMutex);
-    return CoverInfo(m_record.getCoverInfo(), m_fileInfo.absoluteFilePath());
+    return CoverInfo(m_record.getCoverInfo(), m_fileInfo.location());
 }
 
 quint16 Track::getCoverHash() const {

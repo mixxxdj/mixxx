@@ -191,8 +191,8 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    auto pTrack = Track::newTemporary(
-            kTestDir.absoluteFilePath("artist.mp3"));
+    auto pTrack = Track::newTemporary(TrackFile(
+            kTestDir, "artist.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
@@ -200,8 +200,8 @@ TEST_F(SoundSourceProxyTest, readArtist) {
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    auto pTrack = Track::newTemporary(
-            kTestDir.absoluteFilePath("TOAL_TPE2.mp3"));
+    auto pTrack = Track::newTemporary(TrackFile(
+            kTestDir, "TOAL_TPE2.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));

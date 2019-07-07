@@ -127,7 +127,7 @@ void AnalyzerThread::doRun() {
 
     while (waitUntilWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
-        kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
+        kLogger.debug() << "Analyzing" << m_currentTrack->getFileInfo();
 
         // Get the audio
         const auto audioSource =
@@ -135,7 +135,7 @@ void AnalyzerThread::doRun() {
         if (!audioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << m_currentTrack->getLocation();
+                    << m_currentTrack->getFileInfo();
             emitDoneProgress(kAnalyzerProgressUnknown);
             continue;
         }

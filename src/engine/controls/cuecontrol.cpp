@@ -1671,8 +1671,10 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The id of the predefined color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color_id"));
-    connect(m_hotcueColor, SIGNAL(valueChanged(double)),
-            this, SLOT(slotHotcueColorChanged(double)),
+    connect(m_hotcueColor,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueColorChanged,
             Qt::DirectConnection);
 
     m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));

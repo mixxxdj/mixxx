@@ -50,28 +50,13 @@ class BeatDetectionSettings {
                               BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED, false);
 
     QString getBeatPluginId() const {
-        QString plugin_id = m_pConfig->getValue<QString>(ConfigKey(
-            VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
-        if (plugin_id.isEmpty()) {
-            return getBeatPluginIdDefault();
-        }
-        // TODO(rryan): Update to new plugins based on VAMP ones.
-        return plugin_id;
+        return m_pConfig->getValue<QString>(ConfigKey(
+                VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
     }
     void setBeatPluginId(const QString& plugin_id) {
         m_pConfig->setValue(
-            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID),
-            plugin_id);
-    }
-    QString getBeatPluginIdDefault() const {
-        return "qm-tempotracker";
-    }
-    void setBeatPluginIdDefault() {
-        setBeatPluginId(getBeatPluginIdDefault());
-    }
-
-    bool isFixedTempoSupportedByPlugin(const QString& pluginId) {
-        return pluginId == "qm-tempotracker";
+                ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID),
+                plugin_id);
     }
 
   private:
