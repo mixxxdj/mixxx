@@ -157,9 +157,10 @@ class MixxxBuild(object):
         # Try fallback to pkg-config on Linux
         if not os.path.isdir(default_qtdir) and self.platform == 'linux':
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
                 try:
-                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
+                    import subprocess
+                    pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
+                    default_qtdir = subprocess.check_output(pkg_config_cmd).decode(sys.stdout.encoding)
                 finally:
                     pass
 
@@ -211,18 +212,18 @@ class MixxxBuild(object):
         self.read_environment_variables()
 
         # Now that environment variables have been read, we can detect the compiler.
+        import shlex
         import subprocess
-        process = subprocess.Popen("%s %s" %(self.env['CC'], '--version'), stdout=subprocess.PIPE, shell=True) # nosec
-        (stdout, stderr) = process.communicate()
-        self.compiler_is_gcc = 'gcc' in stdout.lower()
-        self.compiler_is_clang = 'clang' in stdout.lower()
+        cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
+        cc_version = subprocess.check_output(cc_version_cmd).decode(sys.stdout.encoding)
+        self.compiler_is_gcc = 'gcc' in cc_version.lower()
+        self.compiler_is_clang = 'clang' in cc_version.lower()
 
         # Determine the major compiler version (only GCC)
         if self.compiler_is_gcc:
             self.gcc_major_version = None
-            process = subprocess.Popen("%s %s" %(self.env['CC'], '-dumpversion'), stdout=subprocess.PIPE, shell=True) # nosec
-            (stdout, stderr) = process.communicate()
-            gcc_version = stdout
+            gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
+            gcc_version = subprocess.check_output(gcc_version_cmd).decode(sys.stdout.encoding)
             # If match is None we don't know the version.
             if not gcc_version is None:
                 version_split = gcc_version.split('.')
