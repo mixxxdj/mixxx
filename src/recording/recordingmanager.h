@@ -55,9 +55,9 @@ class RecordingManager : public QObject
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
+    void slotSetRecording(bool recording);
 
   private slots:
-    void slotSetRecording(bool recording);
     void slotToggleRecording(double v);
 
   private:

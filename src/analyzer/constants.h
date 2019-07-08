@@ -11,7 +11,7 @@ namespace mixxx {
 // fixed number of channels like the engine does, usually 2 = stereo.
 constexpr mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::kEngineChannelCount;
 constexpr SINT kAnalysisFramesPerBlock = 4096;
-const SINT kAnalysisSamplesPerBlock =
+constexpr SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
 // Only analyze the first minute in fast-analysis mode.

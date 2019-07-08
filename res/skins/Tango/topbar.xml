@@ -335,8 +335,6 @@ Description:
                 <TooltipId>skin_settings</TooltipId>
                 <ObjectName>SkinSettingsToggler</ObjectName>
                 <Size>24f,24f</Size>
-                <!-- This is used to work around Bug 1795663 on OSX -->
-                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>

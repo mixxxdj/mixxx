@@ -110,7 +110,7 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     if (!pAudioSource) {
         qDebug()
                 << "Failed to open file for fingerprinting"
-                << pTrack->getLocation();
+                << pTrack->getFileInfo();
         return QString();
     }
 

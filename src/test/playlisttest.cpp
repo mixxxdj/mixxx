@@ -12,21 +12,21 @@ class PlaylistTest : public testing::Test {};
 TEST_F(PlaylistTest, Normalize) {
     ParserM3u parser;
 
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("file:///foo/bar.mp3").toStdString().c_str(),
-            "/foo/bar.mp3");
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("file:foo/bar.mp3").toStdString().c_str(),
-            "foo/bar.mp3");
+    EXPECT_EQ(parser.playlistEntryToTrackFile("file:///foo/bar.mp3"),
+            TrackFile("/foo/bar.mp3"));
+    EXPECT_EQ(parser.playlistEntryToTrackFile("file:foo/bar.mp3"),
+            TrackFile("foo/bar.mp3"));
 #ifdef Q_OS_WIN
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("file:///c:/foo/bar.mp3").toStdString().c_str(),
-            "c:/foo/bar.mp3");
+    EXPECT_EQ(parser.playlistEntryToTrackFile("file:///c:/foo/bar.mp3"),
+            TrackFile("c:/foo/bar.mp3"));
 #else
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("file:///c:/foo/bar.mp3").toStdString().c_str(),
-            "/c:/foo/bar.mp3");
+    EXPECT_EQ(parser.playlistEntryToTrackFile("file:///c:/foo/bar.mp3"),
+            TrackFile("/c:/foo/bar.mp3"));
 #endif
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("file:///foo%20/bar.mp3").toStdString().c_str(),
-            "/foo /bar.mp3");
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("c:/foo/bar.mp3").toStdString().c_str(),
-            "c:/foo/bar.mp3");
-    EXPECT_STREQ(parser.playlistEntrytoLocalFile("c:\\foo\\bar.mp3").toStdString().c_str(),
-            "c:/foo/bar.mp3");
+    EXPECT_EQ(parser.playlistEntryToTrackFile("file:///foo%20/bar.mp3"),
+            TrackFile("/foo /bar.mp3"));
+    EXPECT_EQ(parser.playlistEntryToTrackFile("c:/foo/bar.mp3"),
+            TrackFile("c:/foo/bar.mp3"));
+    EXPECT_EQ(parser.playlistEntryToTrackFile("c:\\foo\\bar.mp3"),
+            TrackFile("c:/foo/bar.mp3"));
 }

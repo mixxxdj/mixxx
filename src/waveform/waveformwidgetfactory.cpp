@@ -957,10 +957,14 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_vsyncThread->setVSyncType(m_vSyncType);
     m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 
-    connect(m_vsyncThread, SIGNAL(vsyncRender()),
-            this, SLOT(render()));
-    connect(m_vsyncThread, SIGNAL(vsyncSwap()),
-            this, SLOT(swap()));
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncRender,
+            this,
+            &WaveformWidgetFactory::render);
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncSwap,
+            this,
+            &WaveformWidgetFactory::swap);
 
     m_vsyncThread->start(QThread::NormalPriority);
 }
