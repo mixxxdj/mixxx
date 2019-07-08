@@ -1243,7 +1243,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 }
 
 QString SoundSourceProviderFFmpeg::getName() const {
-    return "FFmpeg4";
+    return "FFmpeg";
 }
 
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
