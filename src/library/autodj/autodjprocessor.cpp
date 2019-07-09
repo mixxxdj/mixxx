@@ -12,6 +12,7 @@
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 const double kTransitionPreferenceDefault = 10.0;
+const double kKeepPosition = -1.0;
 
 const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
@@ -994,7 +995,9 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
     } else {
         calculateTransition(getOtherDeck(pDeck, true), pDeck);
-        pDeck->setPlayPosition(pDeck->startPos);
+        if (pDeck->startPos != kKeepPosition) {
+            pDeck->setPlayPosition(pDeck->startPos);
+        }
     }
 }
 
@@ -1083,11 +1086,15 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
         if (leftDeck.isPlaying()) {
             calculateTransition(&leftDeck, &rightDeck);
-            rightDeck.setPlayPosition(rightDeck.startPos);
+            if (rightDeck.startPos != kKeepPosition) {
+                rightDeck.setPlayPosition(rightDeck.startPos);
+            }
         }
         if (rightDeck.isPlaying()) {
             calculateTransition(&rightDeck, &leftDeck);
-            leftDeck.setPlayPosition(leftDeck.startPos);
+            if (leftDeck.startPos != kKeepPosition) {
+                leftDeck.setPlayPosition(leftDeck.startPos);
+            }
         }
     }
 }
