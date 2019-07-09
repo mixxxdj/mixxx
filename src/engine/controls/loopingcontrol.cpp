@@ -82,6 +82,12 @@ LoopingControl::LoopingControl(QString group,
             Qt::DirectConnection);
     m_pLoopExitButton->set(0);
 
+    m_pLoopToggleButton = new ControlPushButton(ConfigKey(group, "loop_toggle"));
+    connect(m_pLoopToggleButton, &ControlObject::valueChanged,
+            this, &LoopingControl::slotLoopToggle,
+            Qt::DirectConnection);
+    m_pLoopToggleButton->set(0);
+
     m_pReloopToggleButton = new ControlPushButton(ConfigKey(group, "reloop_toggle"));
     connect(m_pReloopToggleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotReloopToggle,
@@ -211,6 +217,7 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopInButton;
     delete m_pLoopInGotoButton;
     delete m_pLoopExitButton;
+    delete m_pLoopToggleButton;
     delete m_pReloopToggleButton;
     delete m_pReloopAndStopButton;
     delete m_pCOLoopEnabled;
@@ -752,6 +759,33 @@ void LoopingControl::slotLoopExit(double val) {
     // If we're looping, stop looping
     if (m_bLoopingEnabled) {
         setLoopingEnabled(false);
+    }
+}
+
+void LoopingControl::slotLoopToggle(double val) {
+    if (!m_pTrack || val <= 0.0) {
+        return;
+    }
+
+    // If we're looping, stop looping
+    if (m_bLoopingEnabled) {
+        // If loop roll was active, also disable slip.
+        if (m_bLoopRollActive) {
+            m_pSlipEnabled->set(0);
+            m_bLoopRollActive = false;
+            m_activeLoopRolls.clear();
+        }
+        setLoopingEnabled(false);
+        //qDebug() << "loop_toggle looping off";
+    } else {
+        // If we're not looping, enable the loop.
+        // In contrast to the reloop_toggle CO, we do not jump in any case.
+        LoopSamples loopSamples = m_loopSamples.getValue();
+        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
+                loopSamples.start <= loopSamples.end) {
+            setLoopingEnabled(true);
+        }
+        //qDebug() << "loop_toggle looping on";
     }
 }
 
