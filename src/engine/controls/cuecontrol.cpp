@@ -277,6 +277,9 @@ void CueControl::createControls() {
         connect(pControl, &HotcueControl::hotcueGotoAndStop,
                 this, &CueControl::hotcueGotoAndStop,
                 Qt::DirectConnection);
+        connect(pControl, &HotcueControl::hotcueReloop,
+                this, &CueControl::hotcueReloop,
+                Qt::DirectConnection);
         connect(pControl, &HotcueControl::hotcueActivate,
                 this, &CueControl::hotcueActivate,
                 Qt::DirectConnection);
@@ -759,6 +762,46 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
                 m_pPlay->set(1.0);
             }
         }
+    }
+}
+
+void CueControl::hotcueReloop(HotcueControl* pControl, double v) {
+    if (!v)
+        return;
+
+    QMutexLocker lock(&m_mutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    CuePointer pCue(pControl->getCue());
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
+    if (!pCue) {
+        return;
+    }
+
+    double startPosition = pCue->getPosition();
+    if (startPosition == -1) {
+        return;
+    }
+
+    double endPosition = startPosition + pCue->getLength();
+    if (startPosition >= endPosition) {
+        return;
+    }
+
+    setLoop(startPosition, endPosition, true);
+    if (!isPlayingByPlayButton()) {
+        // cueGoto is processed asynchrony.
+        // avoid a wrong cue set if seek by cueGoto is still pending
+        m_bPreviewing = false;
+        m_iCurrentlyPreviewingHotcues = 0;
+        // don't move the cue point to the hot cue point in DENON mode
+        m_bypassCueSetByPlay = true;
+        m_pPlay->set(1.0);
     }
 }
 
@@ -1987,6 +2030,11 @@ HotcueControl::HotcueControl(QString group, int i)
             this, &HotcueControl::slotHotcueGotoAndStop,
             Qt::DirectConnection);
 
+    m_hotcueReloop = new ControlPushButton(keyForControl(i, "reloop"));
+    connect(m_hotcueReloop, &ControlObject::valueChanged,
+            this, &HotcueControl::slotHotcueReloop,
+            Qt::DirectConnection);
+
     m_hotcueActivate = new ControlPushButton(keyForControl(i, "activate"));
     connect(m_hotcueActivate, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueActivate,
@@ -2024,6 +2072,7 @@ HotcueControl::~HotcueControl() {
     delete m_hotcueGoto;
     delete m_hotcueGotoAndPlay;
     delete m_hotcueGotoAndStop;
+    delete m_hotcueReloop;
     delete m_hotcueActivate;
     delete m_hotcueActivateCue;
     delete m_hotcueActivateLoop;
@@ -2053,6 +2102,10 @@ void HotcueControl::slotHotcueGotoAndPlay(double v) {
 
 void HotcueControl::slotHotcueGotoAndStop(double v) {
     emit(hotcueGotoAndStop(this, v));
+}
+
+void HotcueControl::slotHotcueReloop(double v) {
+    emit(hotcueReloop(this, v));
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
