@@ -878,14 +878,15 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     // Within this function, the outro refers to the outro of the currently
     // playing track and the intro refers to the intro of the next track.
-    double outroStart = getOutroStartPosition(pFromDeck);
-    if (outroStart <= 0.0) {
-        outroStart = fromTrackDuration;
-    }
 
     double outroEnd = getOutroEndPosition(pFromDeck);
     if (outroEnd <= 0.0) {
         outroEnd = getLastSoundPosition(pFromDeck);
+    }
+
+    double outroStart = getOutroStartPosition(pFromDeck);
+    if (outroStart <= 0.0) {
+        outroStart = outroEnd;
     }
 
     double outroLength = outroEnd - outroStart;
@@ -897,7 +898,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double introEnd = getIntroEndPosition(pToDeck);
     if (introEnd <= 0.0) {
-        introEnd = 0.0;
+        introEnd = introStart;
     }
 
     double introLength = introEnd - introStart;
