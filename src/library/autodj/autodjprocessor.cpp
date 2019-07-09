@@ -909,7 +909,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     // the full range with the end and beginning markers), use the length of
     // that range as the transition time as a best guess. Only fall back to the
     // fixed number of seconds from the spinbox as a last resort.
-    if (m_transitionMode == TransitionMode::AlignIntroOutroStart) {
+    switch (m_transitionMode) {
+    case TransitionMode::AlignIntroOutroStart:
         pToDeck->startPos = introStart;
         if (outroLength > 0 && introLength > 0) {
             pFromDeck->fadeBeginPos = outroStart;
@@ -923,7 +924,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
-    } else if (m_transitionMode == TransitionMode::AlignIntroOutroEnd) {
+        break;
+    case TransitionMode::AlignIntroOutroEnd:
         if (outroLength > 0 && introLength > 0) {
             if (outroLength < introLength) {
                 pFromDeck->fadeBeginPos = outroStart;
@@ -945,13 +947,16 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
-    } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
+        break;
+    case TransitionMode::FixedSkipSilence:
         useFixedFadeTime(pFromDeck, pToDeck,
                          getLastSoundPosition(pFromDeck), getFirstSoundPosition(pToDeck));
-    } else if (m_transitionMode == TransitionMode::FixedLoadAtCue) {
+        break;
+    case TransitionMode::FixedLoadAtCue:
         useFixedFadeTime(pFromDeck, pToDeck,
                          getLastSoundPosition(pFromDeck), getMainCuePosition(pToDeck));
-    } else {
+        break;
+    default:
         useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, 0);
     }
 
