@@ -116,6 +116,7 @@ class DeckAttributes : public QObject {
     double startPos;
     double fadeBeginPos;
     double fadeDuration;
+    bool loading; // The data is inconsitence during loading a deck
 
   private:
     EngineChannel::ChannelOrientation m_orientation;

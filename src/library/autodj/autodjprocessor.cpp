@@ -16,15 +16,17 @@ const double kKeepPosition = -1.0;
 
 const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
-static const bool sDebug = false;
+static const bool sDebug = true; // false;
 
 DeckAttributes::DeckAttributes(int index,
                                BaseTrackPlayer* pPlayer,
                                EngineChannel::ChannelOrientation orientation)
         : index(index),
           group(pPlayer->getGroup()),
+          startPos(kKeepPosition),
           fadeBeginPos(1.0),
           fadeDuration(0.0),
+          loading(false),
           m_orientation(orientation),
           m_playPos(group, "playposition"),
           m_play(group, "play"),
@@ -516,8 +518,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // playing.
                 loadNextTrackFromQueue(rightDeck);
 
-                // Set crossfade thresholds for left deck.
-                calculateTransition(&leftDeck, &rightDeck);
+                // Note: calculateTransition() is called in playerTrackLoaded()
             } else {
                 // At least right Deck is playing
                 // Set crossfade thresholds for right deck.
@@ -735,7 +736,7 @@ void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, doubl
         qDebug() << this << "playerIntroStartChanged" << pAttributes->group << position;
     }
 
-    if (!pAttributes->isPlaying()) {
+    if (!pAttributes->loading && !pAttributes->isPlaying()) {
         calculateTransition(getOtherDeck(pAttributes, true), pAttributes);
     }
 }
@@ -745,7 +746,7 @@ void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double 
         qDebug() << this << "playerIntroEndChanged" << pAttributes->group << position;
     }
 
-    if (!pAttributes->isPlaying()) {
+    if (!pAttributes->loading && !pAttributes->isPlaying()) {
         calculateTransition(getOtherDeck(pAttributes, true), pAttributes);
     }
 }
@@ -755,7 +756,7 @@ void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, doubl
         qDebug() << this << "playerOutroStartChanged" << pAttributes->group << position;
     }
 
-    if (pAttributes->isPlaying()) {
+    if (!pAttributes->loading && pAttributes->isPlaying()) {
         calculateTransition(pAttributes, getOtherDeck(pAttributes, false));
     }
 }
@@ -765,7 +766,7 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
         qDebug() << this << "playerOutroEndChanged" << pAttributes->group << position;
     }
 
-    if (pAttributes->isPlaying()) {
+    if (!pAttributes->loading && pAttributes->isPlaying()) {
         calculateTransition(pAttributes, getOtherDeck(pAttributes, false));
     }
 }
@@ -990,6 +991,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
                  << (pTrack ? pTrack->getLocation() : "(null)");
     }
 
+    pDeck->loading = false;
+
     double duration = pTrack->getDuration();
     if (duration < 0.2) {
         qWarning() << "Skip track with" << duration << "Duration"
@@ -1015,6 +1018,8 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
                  << "new:"<< (pNewTrack ? pNewTrack->getLocation() : "(null)")
                  << "old:"<< (pOldTrack ? pOldTrack->getLocation() : "(null)");
     }
+
+    pDeck->loading = true;
 
     // The Deck is loading an new track
 
@@ -1091,17 +1096,19 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
 
-        if (leftDeck.isPlaying()) {
+        if (leftDeck.isPlaying() && !rightDeck.isPlaying()) {
             calculateTransition(&leftDeck, &rightDeck);
             if (rightDeck.startPos != kKeepPosition) {
                 rightDeck.setPlayPosition(rightDeck.startPos);
             }
-        }
-        if (rightDeck.isPlaying()) {
+        } else if (rightDeck.isPlaying() && !leftDeck.isPlaying()) {
             calculateTransition(&rightDeck, &leftDeck);
             if (leftDeck.startPos != kKeepPosition) {
                 leftDeck.setPlayPosition(leftDeck.startPos);
             }
+        } else {
+            // user has manually started the other deck or dtopped both.
+            // don't know what to do.
         }
     }
 }
