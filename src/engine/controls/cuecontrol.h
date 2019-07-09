@@ -68,11 +68,13 @@ class HotcueControl : public QObject {
 
   private slots:
     void slotHotcueSet(double v);
+    void slotHotcueSetCue(double v);
     void slotHotcueSetLoop(double v);
     void slotHotcueGoto(double v);
     void slotHotcueGotoAndPlay(double v);
     void slotHotcueGotoAndStop(double v);
     void slotHotcueActivate(double v);
+    void slotHotcueActivateCue(double v);
     void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
@@ -82,11 +84,13 @@ class HotcueControl : public QObject {
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v);
+    void hotcueSetCue(HotcueControl* pHotcue, double v);
     void hotcueSetLoop(HotcueControl* pHotcue, double v);
     void hotcueGoto(HotcueControl* pHotcue, double v);
     void hotcueGotoAndPlay(HotcueControl* pHotcue, double v);
     void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
     void hotcueActivate(HotcueControl* pHotcue, double v);
+    void hotcueActivateCue(HotcueControl* pHotcue, double v);
     void hotcueActivateLoop(HotcueControl* pHotcue, double v);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
@@ -109,11 +113,13 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueColor;
     // Hotcue button controls
     ControlObject* m_hotcueSet;
+    ControlObject* m_hotcueSetCue;
     ControlObject* m_hotcueSetLoop;
     ControlObject* m_hotcueGoto;
     ControlObject* m_hotcueGotoAndPlay;
     ControlObject* m_hotcueGotoAndStop;
     ControlObject* m_hotcueActivate;
+    ControlObject* m_hotcueActivateCue;
     ControlObject* m_hotcueActivateLoop;
     ControlObject* m_hotcueActivatePreview;
     ControlObject* m_hotcueClear;
@@ -148,12 +154,14 @@ class CueControl : public EngineControl {
     void trackCuesUpdated();
     void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
+    void hotcueSetCue(HotcueControl* pControl, double v);
     void hotcueSetLoop(HotcueControl* pControl, double v);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
     void hotcueGotoAndStop(HotcueControl* pControl, double v);
     void hotcueLoopToggle(HotcueControl* pControl, double v);
     void hotcueActivate(HotcueControl* pControl, double v);
+    void hotcueActivateCue(HotcueControl* pControl, double v);
     void hotcueActivateLoop(HotcueControl* pControl, double v);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void hotcueClear(HotcueControl* pControl, double v);
@@ -219,6 +227,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pClosestBeat;
     ControlProxy* m_pLoopStartPosition;
     ControlProxy* m_pLoopEndPosition;
+    ControlProxy* m_pLoopEnabled;
     ControlProxy* m_pLoopToggle;
     bool m_bypassCueSetByPlay;
 
