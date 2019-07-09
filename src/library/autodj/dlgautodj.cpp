@@ -3,10 +3,10 @@
 #include "library/autodj/dlgautodj.h"
 
 #include "library/playlisttablemodel.h"
-#include "widget/wtracktableview.h"
 #include "util/assert.h"
-#include "util/duration.h"
 #include "util/compatibility.h"
+#include "util/duration.h"
+#include "widget/wtracktableview.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
