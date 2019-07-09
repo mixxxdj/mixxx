@@ -859,6 +859,22 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double fromTrackDuration = pFromDeck->duration();
     double toTrackDuration = pToDeck->duration();
 
+    VERIFY_OR_DEBUG_ASSERT(fromTrackDuration > 0) {
+        // Playing Track has no duration. This should not happen, because short
+        // tracks are skipped after load. Play ToDeck emmediately.
+        pFromDeck->fadeBeginPos = 0;
+        pFromDeck->fadeDuration = 0;
+        pToDeck->startPos = kKeepPosition;
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(toTrackDuration > 0) {
+        // Playing Track has no duration. This should not happen, because short
+        // tracks are skipped after load.
+        pToDeck->startPos = kKeepPosition;
+        // Disable AutoDJ.
+        toggleAutoDJ(false);
+    }
+
     // Within this function, the outro refers to the outro of the currently
     // playing track and the intro refers to the intro of the next track.
     double outroStart = getOutroStartPosition(pFromDeck);
@@ -947,15 +963,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double maxFadeTime = toDeckOutroStart - pToDeck->startPos;
     if (pFromDeck->fadeDuration > maxFadeTime) {
         pFromDeck->fadeDuration = maxFadeTime;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(fromTrackDuration > 0) {
-        pFromDeck->fadeBeginPos = fromTrackDuration;
-        pFromDeck->fadeDuration = 0;
-    }
-    VERIFY_OR_DEBUG_ASSERT(toTrackDuration > 0) {
-        pFromDeck->fadeDuration = 0;
-        pToDeck->startPos = 0;
     }
 
     // These are expected to be a fraction of the track length.
