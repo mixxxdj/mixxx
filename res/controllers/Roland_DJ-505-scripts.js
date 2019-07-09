@@ -1113,6 +1113,7 @@ DJ505.PadSection = function(deck, offset) {
         "roll": new DJ505.RollMode(deck, offset),
         "sampler": new DJ505.SamplerMode(deck, offset),
         "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
+        "loop": new DJ505.SavedLoopMode(deck, offset),
         "pitchplay": new DJ505.PitchPlayMode(deck, offset),
     };
     this.offset = offset;
@@ -1167,11 +1168,9 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
     case DJ505.PadMode.VELOCITYSAMPLER:
         mode = this.modes.velocitysampler;
         break;
-    // FIXME: Loop mode can be added as soon as Saved Loops are
-    // implemented: https://bugs.launchpad.net/mixxx/+bug/692926
-    //case DJ505.PadMode.LOOP:
-    //    mode = this.modes.loop;
-    //    break;
+    case DJ505.PadMode.LOOP:
+        mode = this.modes.loop;
+        break;
     case DJ505.PadMode.PITCHPLAY:
         mode = this.modes.pitchplay;
         break;
@@ -1293,6 +1292,9 @@ DJ505.HotcueMode = function(deck, offset) {
             off: this.color + DJ505.PadColor.DIM_MODIFIER,
             colorMapper: DJ505.PadColorMap,
             outConnect: false,
+            unshift: function() {
+                this.inKey = "hotcue_" + this.number + "_activatecue";
+            },
         });
     }
     this.paramMinusButton = new components.Button({
@@ -1597,6 +1599,40 @@ DJ505.RollMode.prototype.setLoopSize = function(loopSize) {
     }
     this.reconnectComponents();
 };
+
+DJ505.SavedLoopMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = DJ505.PadMode.ROLL;
+    this.color = DJ505.PadColor.GREEN;
+
+    this.PerformancePad = function(n) {
+        this.midi = [0x94 + offset, 0x14 + n];
+        this.number = n + 8 + 1;
+
+        components.Button.call(this);
+    };
+    this.PerformancePad.prototype = new components.Button({
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        outConnect: false,
+        on: this.color,
+        unshift: function() {
+            this.outKey = "hotcue_" + this.number + "_enabled";
+            this.inKey = "hotcue_" + this.number + "_activateloop";
+        },
+        shift: function() {
+            this.inKey = "hotcue_" + this.number + "_gotoandloop";
+        },
+    });
+
+    this.pads = new components.ComponentContainer();
+    for (var n = 0; n <= 7; n++) {
+        this.pads[n] = new this.PerformancePad(n);
+    }
+};
+DJ505.SavedLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DJ505.SamplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);
