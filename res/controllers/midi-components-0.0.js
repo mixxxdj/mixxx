@@ -317,8 +317,8 @@
         output: function(value) {
             var outval = this.outValueScale(value);
             // WARNING: outputColor only handles hotcueColors
-            // and there is no hotcueColor for turning the controller
-            // off. so s`send()` is responsible for turning the 
+            // and there is no hotcueColor for turning the LED
+            // off. So the `send()` function is responsible for turning the 
             // actual LED off.
             if (this.colorIdKey !== undefined && outval !== this.off) {
                 this.outputColor(engine.getValue(this.group, this.colorIdKey));
