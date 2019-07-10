@@ -250,7 +250,8 @@ class AutoDJProcessor : public QObject {
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateTransition(DeckAttributes* pFromDeck,
-                             DeckAttributes* pToDeck);
+            DeckAttributes* pToDeck,
+            bool fadeNow);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
                           double endPoint, double startPoint);
     DeckAttributes* getOtherDeck(DeckAttributes* pFromDeck,
