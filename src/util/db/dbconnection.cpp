@@ -289,6 +289,9 @@ bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
                 << "Failed to install custom 3-arg LIKE function for SQLite3:"
                 << result;
     }
+#else
+    Q_UNUSED(database);
+    Q_UNUSED(pCollator);
 #endif // __SQLITE3__
     return true;
 }

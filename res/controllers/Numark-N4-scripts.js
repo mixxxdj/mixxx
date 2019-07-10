@@ -201,7 +201,7 @@ NumarkN4.topContainer = function (channel) {
     applyHotcuePage: function (layer, displayFeedback) {
       // ES3 doesn't allow default values in the function signature
       // Could be replaced after migration to QJSEngine by "displayFeedback=true"
-      // in the function argments.
+      // in the function arguments.
       if (displayFeedback == undefined) {
         displayFeedback = true;
       }
@@ -291,7 +291,7 @@ NumarkN4.MixerTemplate = function () {
     midi: [0xB0,0x50],
     input: function (channel, control, value, status, group) {
       this.output(value);
-      //just "echos" the midi since the controller knows the deck its on itself but doesnt update the corresponing leds.
+      //just "echos" the midi since the controller knows the deck its on itself but doesn't update the corresponding leds.
     },
   });
   this.deckChangeR = new components.Button ({
@@ -350,7 +350,7 @@ NumarkN4.MixerTemplate = function () {
       this.inKey="MoveVertical";
     },
     input: function (midiChannel,control,value,status,group) {
-      this.inSetValue(value===0x01?this.stepsize:-this.stepsize); // value "rescaling"; possibly inefficent.
+      this.inSetValue(value===0x01?this.stepsize:-this.stepsize); // value "rescaling"; possibly ineffiecent.
     },
   });
   this.navigationEncoderButton = new components.Button({
@@ -437,7 +437,7 @@ NumarkN4.Deck = function (channel) {
     },
   });
 
-  // NOTE: THE ORIENATION BUTTONS BEHAVE REALLY WIERD AND THE FOLLOWING IS REALLY CONFUSING BUT WORKS!
+  // NOTE: THE ORIENTATION BUTTONS BEHAVE REALLY WEIRD AND THE FOLLOWING IS REALLY CONFUSING BUT WORKS!
   this.orientationButtonLeft = new components.Button({
     midi:[0x90,0x32+channel*2,0xB0,0x42+channel*2],
     key: "orientation",
@@ -586,7 +586,7 @@ NumarkN4.Deck = function (channel) {
     // loaded into a deck without previously ejecting, a new timer would get
     // spawned which conflicted with the old (still running) timers.
     if (!this.previouslyLoaded) {
-      //timer is more efficent is this case than a callback because it would be called too often.
+      //timer is more efficient is this case than a callback because it would be called too often.
       theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
     }
     this.previouslyLoaded=value;
@@ -639,7 +639,7 @@ NumarkN4.Deck = function (channel) {
     }
   });
   this.bpmSlider = new components.Pot({
-    midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifing input MSB
+    midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifying input MSB
     inKey: "rate",
     group: theDeck.group,
     invert: false,

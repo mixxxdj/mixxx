@@ -4,17 +4,18 @@
  * @date April 15, 2011
  */
 
+#include "vinylcontrol/vinylcontrolmanager.h"
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
+#include "util/compatibility.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
-
-#include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,
@@ -23,7 +24,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
           m_iTimerId(-1),
-          m_pNumDecks(NULL),
+          m_pNumDecks(nullptr),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
@@ -32,8 +33,10 @@ VinylControlManager::VinylControlManager(QObject* pParent,
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
     }
 
-    connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
-            this, SLOT(slotVinylControlEnabledChanged(int)));
+    connect(&m_vinylControlEnabledMapper,
+            QOverload<int>::of(&QSignalMapper::mapped),
+            this,
+            &VinylControlManager::slotVinylControlEnabledChanged);
 }
 
 VinylControlManager::~VinylControlManager() {

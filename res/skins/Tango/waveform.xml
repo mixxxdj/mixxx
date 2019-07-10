@@ -33,10 +33,54 @@ Variables:
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
           <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
+          <Color>#666666</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
+        <MarkRange>
+          <StartControl>intro_start_position</StartControl>
+          <EndControl>intro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <Mark>
+          <Control>intro_start_position</Control>
+          <Text>|&#9698;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>intro_end_position</Control>
+          <Text>&#9698;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_start_position</Control>
+          <Text>|&#9699;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <Text>&#9699;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
         <Mark>
           <Control>cue_point</Control>
           <Text>Q</Text>
@@ -71,6 +115,7 @@ Variables:
           - if you change from a skin which supports more hotcues than buttons are in the current skin
           (and has them activated)
         -->
+        <!--
         <Mark>
           <Control>cue_point</Control>
           <Text>C</Text>
@@ -78,6 +123,7 @@ Variables:
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
+        -->
       </Visual>
 
       <WidgetGroup><!-- Transparent container for beatgrid buttons -->

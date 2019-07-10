@@ -1,6 +1,6 @@
 <!--
 Description:
-  A minmal deck container, visible when the library is maximized 
+  A minimal deck container, visible when the library is maximized
   | overview          | track title                    | Cover/ | Play/ |   loop   |
   |                   | elapsed/remaining | key | BPM  | Spinny | Pause | indicator|
 Variables:
@@ -14,6 +14,7 @@ Variables:
     <Size>504me,45f</Size>
     <Children>
       <WidgetGroup>
+        <ObjectName>DeckContainerMini</ObjectName>
         <Layout>horizontal</Layout>
         <Size>i,40f</Size>
         <Children>
@@ -94,7 +95,7 @@ Variables:
             <MaximumSize>280,40</MaximumSize>
             <Children>
 
-              <WidgetGroup><!-- Time + Title -->
+              <WidgetGroup><!-- Time / Title -->
                 <Layout>horizontal</Layout>
                 <Size>-1me,20f</Size>
                 <Children>
@@ -119,43 +120,91 @@ Variables:
                     <Channel><Variable name="chanNum"/></Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Time / Title -->
 
               <WidgetGroup><!-- BPM / Key / by / Artist -->
                 <Layout>horizontal</Layout>
                 <Size>200min,20f</Size>
                 <Children>
 
-                  <Number>
-                    <TooltipId>visual_bpm</TooltipId>
-                    <ObjectName>BpmLabelMini</ObjectName>
+                  <WidgetGroup><!-- BPM display & invisble sync button -->
+                    <ObjectName>BpmMini</ObjectName>
+                    <Layout>stacked</Layout>
                     <MinimumSize>50,20</MinimumSize>
                     <MaximumSize>65,20</MaximumSize>
                     <SizePolicy>min,me</SizePolicy>
-                    <Channel><Variable name="chanNum" /></Channel>
-                    <NumberOfDigits>2</NumberOfDigits>
-                    <Alignment>left</Alignment>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                    </Connection>
-                  </Number>
+                    <Children>
+                      <Template src="skin:button_2state_right.xml">
+                        <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                        <SetVariable name="ObjectName">SyncButtonOverlayMini</SetVariable>
+                        <SetVariable name="Size">50me,20f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+                      </Template><!--    -->
+                      <Number>
+                        <ObjectName>BpmLabelMini</ObjectName>
+                        <MinimumSize>50,19</MinimumSize>
+                        <MaximumSize>65,19</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <NumberOfDigits>1</NumberOfDigits>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </Number>
+                    </Children>
+                  </WidgetGroup><!-- /BPM display & invisble sync button -->
 
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                  <Key>
-                    <TooltipId>visual_key</TooltipId>
-                    <ObjectName>KeyDisplayMini</ObjectName>
-                    <Channel><Variable name="chanNum"/></Channel>
-                    <SizePolicy>e,me</SizePolicy>
+                  <WidgetGroup><!-- Key Display/Match -->
+                    <ObjectName>KeyDisplayMatch</ObjectName>
+                    <Layout>stacked</Layout>
+                    <SizePolicy>e,f</SizePolicy>
                     <MinimumSize>30,20</MinimumSize>
                     <MaximumSize>55,20</MaximumSize>
                     <Alignment>center</Alignment>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                    </Connection>
-                  </Key>
+                    <Children>
+                      <!-- KeyMatch, transparent -->
+                      <Template src="skin:button_1state_right.xml">
+                        <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+                        <SetVariable name="ObjectName">KeyMatchMini</SetVariable>
+                        <SetVariable name="Size">30me,20f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
+                      </Template>
 
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                      <!-- Show/light up if key is not original, like with script.
+                            Not working, only once per skin load.
+                          Tried different controls: pitch (from script), pitch_adjust, ...
+                      <WidgetGroup>
+                        <ObjectName>KeyOffsetWarning</ObjectName>
+                        <Size>50f,13f</Size>
+                        <Layout>horizontal</Layout>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                          <Transform><Not/><IsEqual>1</IsEqual></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup> -->
+
+                      <Key><!-- Actual Key display -->
+                        <TooltipId>visual_key</TooltipId>
+                        <ObjectName>KeyDisplay</ObjectName>
+                        <Channel><Variable name="chanNum"/></Channel>
+                        <SizePolicy>e,f</SizePolicy>
+                        <MinimumSize>30,19</MinimumSize>
+                        <MaximumSize>55,19</MaximumSize>
+                        <Alignment>center</Alignment>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                        </Connection>
+                      </Key>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],key_display_match</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /Key Display/Match -->
 
                   <Label>
                     <ObjectName>TrackBy</ObjectName>
@@ -169,13 +218,13 @@ Variables:
                     <ObjectName>TrackTitleMini</ObjectName>
                     <Size>100min,20f</Size>
                     <Property>artist</Property>
-                    <Alignment>right</Alignment>
+                    <Alignment>left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="chanNum"/></Channel>
                   </TrackProperty>
 
                 </Children>
-              </WidgetGroup><!-- Key / BPM / PlayPos -->
+              </WidgetGroup><!-- BPM / Key / by / Artist -->
 
             </Children>
           </WidgetGroup>

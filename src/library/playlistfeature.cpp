@@ -90,7 +90,6 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
-    //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
@@ -173,7 +172,7 @@ void PlaylistFeature::buildPlaylistList() {
             playlistTableModel.index(row, durationColumn)).toInt();
         m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
                                         .arg(name, QString::number(count),
-                                                mixxx::Duration::formatSeconds(duration))));
+                                                mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS))));
     }
 }
 

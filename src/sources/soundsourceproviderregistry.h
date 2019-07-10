@@ -8,7 +8,7 @@
 namespace mixxx {
 
 class SoundSourceProviderRegistration {
-public:
+  public:
     const SoundSourceProviderPointer& getProvider() const {
         return m_pProvider;
     }
@@ -16,13 +16,13 @@ public:
         return m_providerPriority;
     }
 
-private:
+  private:
     friend class SoundSourceProviderRegistry;
     SoundSourceProviderRegistration(
             SoundSourceProviderPointer pProvider,
             SoundSourceProviderPriority providerPriority)
-        : m_pProvider(pProvider),
-          m_providerPriority(providerPriority) {
+            : m_pProvider(pProvider),
+              m_providerPriority(providerPriority) {
     }
 
     SoundSourceProviderPointer m_pProvider;
@@ -31,7 +31,7 @@ private:
 
 // Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
-public:
+  public:
     // Registers a provider for all supported file extensions
     // with their cooperative priority hint.
     void registerProvider(
@@ -63,7 +63,7 @@ public:
     QList<SoundSourceProviderRegistration> getRegistrationsForFileExtension(
             const QString& fileExtension) const;
 
-private:
+  private:
     void addRegistrationForFileExtension(
             const QString& fileExtension,
             SoundSourceProviderRegistration registration);

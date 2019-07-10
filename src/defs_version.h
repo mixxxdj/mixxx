@@ -53,6 +53,7 @@
     // In that case, this value is used
 
     // READ ABOVE CAREFULLY BEFORE CHANGING!
-    // USE 3 DIGITS VERSION ONLY /!\ _
-    #define MIXXX_VERSION "2.3.0-alpha-pre"
+    // USE 3 DIGITS VERSION ONLY !
+    // CHANGE IN ACTUAL VERSION FILE
+    #include "_version.h"
 #endif

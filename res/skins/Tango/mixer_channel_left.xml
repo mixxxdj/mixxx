@@ -97,7 +97,7 @@ Variables:
         <Children>
           <Template src="skin:vumeter_mixer.xml"/>
 
-          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
             <ObjectName>PflBoxLeft</ObjectName>

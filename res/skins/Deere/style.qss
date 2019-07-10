@@ -23,8 +23,8 @@
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
 #DeckControls {
-  padding: 5px 7.5px 2px 7.5px;
-  /* background-color: #456789; */
+  padding: 5px 7.5px 2px 7.5px;  /*
+  background-color: #456789;  */
 }
 
 #CrossfaderContainer {
@@ -154,6 +154,9 @@
 }
 #TEST3 {
   background-color: #114522;
+}
+#TEST4 {
+  background-color: #225487;
 }
 
 #AlignLeft {
@@ -1107,6 +1110,10 @@ WBeatSpinBox,
   border: none;
 }
 
+#EffectEnableButton {
+  image: url(skin:/icon/ic_power_48px.svg) no-repeat center center;
+}
+
 WEffectSelector {
   color: #c1cabe;
   background-color: #444342;
@@ -1241,10 +1248,6 @@ WWidget, WLabel {
   color: #D2D2D2;
 }
 
-#DeckMixer1, #DeckMixer2, #DeckMixer3, #DeckMixer4 {
-  background-color: #333333;
-}
-
 WNumberRate {
   font-size: 13px;
 }
@@ -1263,51 +1266,34 @@ WNumberRate {
   background-color: #333333;
 }
 
-#DeckMixer_Column2, #DeckMixer_Column3 {
-  /* qproperty-layoutSpacing: 5; */
-  /* background-color: #006596; */
-}
-
 #CircleButton, #QuickEffectKillButton {
   border: 3px solid #333333;
   border-radius: 2px;
 }
 
-#QuickEffectKillButton[value="0"] {
-  background-color: #006596;
+#EQKillButton,
+#QuickEffectKillButton {
+  border-radius: 2px;
+  border: 0px;
+  margin: 1px;
 }
 
-#QuickEffectKillButton[value="1"] {
-  background-color: #4B4B4B;
-}
+#EQKillButton[value="1"] {
+  background-color: #bb0000;
+  }
+  #EQKillButton[value="1"]:hover {
+    background-color: #e30000;
+  }
 
 #SmallCircleButton {
   border: 2px solid #333333;
   border-radius: 1px;
 }
 
-#DeckControls_SplitWaveforms_4Decks #channel_VuMeter_Group,
-#DeckControls_StackedWaveforms_4Decks #channel_VuMeter_Group {
-  /* padding-bottom: 5px; */
-  /* background-color: #116611; */
-}
-
-#DeckMixer_ColumnCondensed {
-  padding: 0px 5px 0px 5px;
-  qproperty-layoutAlignment: 'AlignHCenter';
-  /* background-color: #911661; */
-}
-
-/* pad 4 deck mixer columns left/right
-to avoid EQ kill buttons from shifting center of rest of column */
-#4DecksMixerCol2ContainerRight {
-  qproperty-layoutAlignment: 'AlignLeft';
-  padding-right: 6px;
-}
-
-#4DecksMixerCol2ContainerLeft {
-  qproperty-layoutAlignment: 'AlignRight';
-  padding-left: 6px;
+#MixerStrip_4Decks {
+  padding: 0px 5px;
+  qproperty-layoutAlignment: 'AlignHCenter';  /* 
+  background-color: #911661; */
 }
 
 #ButtonContainer {
@@ -1315,25 +1301,22 @@ to avoid EQ kill buttons from shifting center of rest of column */
   padding: 3px 0px 3px 0px;
 }
 
-#CondensedButtonContainerRight {
+#MixerButtonContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
+  padding: 0px 0px 0px 9px; /*
+  background-color: #456313;  */
 }
 
-#CondensedButtonContainerLeft {
+#MixerButtonContainerLeft {
   qproperty-layoutAlignment: 'AlignRight';
+  padding: 0px 9px 0px 0px;
 }
 
-#4DecksMixerCondensedMonoMeterLeft {
-  padding-left: 3px;
-  padding-right: 4px;
+#4DecksMixerMonoMeterLeft {
+  padding: 0px 3px 0px 4px;
 }
-#4DecksMixerCondensedMonoMeterRight {
-  padding-left: 4px;
-  padding-right: 3px;
-}
-
-#CondensedVolumeAndMonoMeter {
-  padding-bottom: 5px;
+#4DecksMixerMonoMeterRight {
+  padding: 0px 4px 0px 3px;
 }
 
 #channel_VuMeter_Group {
@@ -1540,6 +1523,113 @@ WPushButton[value="2"]:hover {
     color: #FDFDFD;
     background-color: #0080BE;
     border: 0px solid #0080BE;
+}
+
+/* Hotcue Color: No Color */
+#HotcueButton[value="1"][highlight="0"],
+#HotcueButton[value="2"][highlight="0"] {
+    background-color: #006596;
+}
+
+#HotcueButton[value="1"][highlight="0"]:hover,
+#HotcueButton[value="2"][highlight="0"]:hover {
+    background-color: #0080BE;
+}
+
+/* Hotcue Color: Red */
+#HotcueButton[value="1"][highlight="1"],
+#HotcueButton[value="2"][highlight="1"] {
+    background-color: #c50a08;
+}
+
+#HotcueButton[value="1"][highlight="1"]:hover,
+#HotcueButton[value="2"][highlight="1"]:hover {
+    background-color: #e50c08;
+}
+
+/* Hotcue Color: Green */
+#HotcueButton[value="1"][highlight="2"],
+#HotcueButton[value="2"][highlight="2"] {
+    background-color: #32be44;
+}
+
+#HotcueButton[value="1"][highlight="2"]:hover,
+#HotcueButton[value="2"][highlight="2"]:hover {
+    background-color: #52de64;
+}
+
+/* Hotcue Color: Blue */
+#HotcueButton[value="1"][highlight="3"],
+#HotcueButton[value="2"][highlight="3"] {
+    background-color: #0044ff;
+}
+
+#HotcueButton[value="1"][highlight="3"]:hover,
+#HotcueButton[value="2"][highlight="3"]:hover {
+    background-color: #0064ff;
+}
+
+/* Hotcue Color: Yellow */
+#HotcueButton[value="1"][highlight="4"],
+#HotcueButton[value="2"][highlight="4"] {
+    color: #4B4B4B;
+    background-color: #f8d200;
+}
+
+#HotcueButton[value="1"][highlight="4"]:hover,
+#HotcueButton[value="2"][highlight="4"]:hover {
+    color: #4B4B4B;
+    background-color: #f8f200;
+}
+
+/* Hotcue Color: Celeste */
+#HotcueButton[value="1"][highlight="5"],
+#HotcueButton[value="2"][highlight="5"] {
+    color: #4B4B4B;
+    background-color: #42d4f4;
+}
+
+#HotcueButton[value="1"][highlight="5"]:hover,
+#HotcueButton[value="2"][highlight="5"]:hover {
+    color: #4B4B4B;
+    background-color: #62f4f4;
+}
+
+/* Hotcue Color: Purple */
+#HotcueButton[value="1"][highlight="6"],
+#HotcueButton[value="2"][highlight="6"] {
+    background-color: #af00cc;
+}
+
+#HotcueButton[value="1"][highlight="6"]:hover,
+#HotcueButton[value="2"][highlight="6"]:hover {
+    background-color: #cf00ec;
+}
+
+/* Hotcue Color: Pink */
+#HotcueButton[value="1"][highlight="7"],
+#HotcueButton[value="2"][highlight="7"] {
+    color: #4B4B4B;
+    background-color: #fca6d7;
+}
+
+#HotcueButton[value="1"][highlight="7"]:hover,
+#HotcueButton[value="2"][highlight="7"]:hover {
+    color: #4B4B4B;
+    background-color: #fcc6f7;
+}
+
+/* Hotcue Color: White */
+#HotcueButton[value="1"][highlight="8"],
+#HotcueButton[value="2"][highlight="8"] {
+    color: #4B4B4B;
+    background-color: #f2f2ff;
+}
+
+#HotcueButton[value="1"][highlight="8"]:hover,
+#HotcueButton[value="2"][highlight="8"]:hover {
+    color: #4B4B4B;
+    background-color: #ffffff;
 }
 
 /*"Enabled" state, e.g. for recording status

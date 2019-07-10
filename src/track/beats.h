@@ -1,6 +1,7 @@
 #ifndef BEATS_H
 #define BEATS_H
 
+#include <QObject>
 #include <QString>
 #include <QList>
 #include <QByteArray>
@@ -26,7 +27,8 @@ class BeatIterator {
 // Beats is a pure abstract base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
-class Beats {
+class Beats : public QObject {
+    Q_OBJECT
   public:
     Beats() { }
     virtual ~Beats() { }
@@ -164,6 +166,9 @@ class Beats {
     virtual void setBpm(double dBpm) = 0;
 
     virtual SINT getSampleRate() const = 0;
+
+  signals:
+    void updated();
 };
 
 #endif /* BEATS_H */

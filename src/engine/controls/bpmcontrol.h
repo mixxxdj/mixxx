@@ -154,7 +154,7 @@ class BpmControl : public EngineControl {
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
 
-    TapFilter m_tapFilter; // threadsave
+    TapFilter m_tapFilter; // threadsafe
 
     // used in the engine thread only
     double m_dSyncInstantaneousBpm;

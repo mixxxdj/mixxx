@@ -27,6 +27,8 @@ it afterwards for proper functioning
 
 #include <gtest/gtest.h>
 
+#include "track/trackfile.h"
+
 class Parser : public QObject {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName) {
@@ -56,8 +58,8 @@ protected:
     bool isBinary(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
-    // reads URLs an plain Parth and retuns a local file path
-    QString playlistEntrytoLocalFile(const QString& playlistEntry);
+    // reads URLs an plain Part and returns a local file path
+    TrackFile playlistEntryToTrackFile(const QString& playlistEntry);
 
     FRIEND_TEST(PlaylistTest, Normalize);
 };

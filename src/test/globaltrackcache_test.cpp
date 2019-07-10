@@ -12,8 +12,8 @@ namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-const QFileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
-const QFileInfo kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
+const TrackFile kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
+const TrackFile kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
 
 class TrackTitleThread: public QThread {
   public:

@@ -31,6 +31,7 @@
 #include "skin/skincontext.h"
 
 class PlayerManager;
+class PainterScope;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
@@ -41,7 +42,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalyzerProgress(TrackId trackId,
+            AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -86,20 +88,31 @@ class WOverview : public WWidget, public TrackDropTarget {
     float m_waveformPeak;
 
     int m_diffGain;
+    qreal m_devicePixelRatio;
 
   private slots:
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void onRateSliderChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
 
   private:
-    // Append the waveform overview pixmap according to available data in waveform
+    // Append the waveform overview pixmap according to available data
+    // in waveform
     virtual bool drawNextPixmapPart() = 0;
-    void paintText(const QString &text, QPainter *painter);
+    void drawEndOfTrackBackground(QPainter* pPainter);
+    void drawAxis(QPainter* pPainter);
+    void drawWaveformPixmap(QPainter* pPainter);
+    void drawEndOfTrackFrame(QPainter* pPainter);
+    void drawAnalyzerProgress(QPainter* pPainter);
+    void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
+    void drawMarks(QPainter* pPainter, const float offset, const float gain);
+    void drawCurrentPosition(QPainter* pPainter);
+    void paintText(const QString& text, QPainter* pPainter);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }
@@ -113,6 +126,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
+    ControlProxy* m_pRateDirControl;
+    ControlProxy* m_pRateRangeControl;
+    ControlProxy* m_pRateSliderControl;
+    ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
 
     // Current active track

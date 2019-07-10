@@ -1,5 +1,4 @@
 #include "library/export/trackexportworker.h"
-#include "util/compatibility.h"
 
 #include <QFileInfo>
 #include <QMessageBox>
@@ -20,35 +19,35 @@ QString rewriteFilename(const QFileInfo& fileinfo, int index) {
 // and skips if they refer to the same disk location.  Returns a map from
 // QString (the destination possibly-munged filenames) to QFileinfo (the source
 // file information).
-QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
+QMap<QString, TrackFile> createCopylist(const QList<TrackPointer>& tracks) {
     // QMap is a non-obvious return value, but it's easy for callers to use
     // in practice and is the best object for producing the final list
     // efficiently.
-    QMap<QString, QFileInfo> copylist;
+    QMap<QString, TrackFile> copylist;
     for (const auto& it : tracks) {
         if (it->getCanonicalLocation().isEmpty()) {
             qWarning()
                     << "File not found or inaccessible while exporting"
-                    << it->getLocation();
+                    << it->getFileInfo();
             // Skip file
             continue;
         }
 
         // When obtaining the canonical location the file info of the
         // track might have been refreshed. Get it now.
-        const auto fileInfo = it->getFileInfo();
+        const auto trackFile = it->getFileInfo();
 
-        const auto fileName = fileInfo.fileName();
+        const auto fileName = trackFile.fileName();
         auto destFileName = fileName;
         int duplicateCounter = 0;
         do {
             const auto duplicateIter = copylist.find(destFileName);
             if (duplicateIter == copylist.end()) {
                 // Usual case -- haven't seen this filename before, so add it.
-                copylist[destFileName] = fileInfo;
+                copylist[destFileName] = trackFile;
                 break;
             }
-            if (fileInfo.canonicalFilePath() == duplicateIter->canonicalFilePath()) {
+            if (trackFile.canonicalLocation() == duplicateIter->canonicalLocation()) {
                 // Silently ignore and skip duplicate files that point
                 // to the same location on disk
                 break;
@@ -58,11 +57,11 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
                         << "Failed to generate a unique file name from"
                         << fileName
                         << "while exporting"
-                        << it->getLocation();
+                        << trackFile.location();
                 break;
             }
             // Next round
-            destFileName = rewriteFilename(fileInfo, duplicateCounter);
+            destFileName = rewriteFilename(trackFile.asFileInfo(), duplicateCounter);
         } while (!destFileName.isEmpty());
     }
     return copylist;
@@ -72,14 +71,14 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
 
 void TrackExportWorker::run() {
     int i = 0;
-    QMap<QString, QFileInfo> copy_list = createCopylist(m_tracks);
+    QMap<QString, TrackFile> copy_list = createCopylist(m_tracks);
     for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
         // We emit progress twice per loop, which may seem excessive, but it
         // guarantees that we emit a sane progress before we start and after
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
         emit(progress(it->fileName(), i, copy_list.size()));
-        copyFile(*it, it.key());
+        copyFile((*it).asFileInfo(), it.key());
         if (m_bStop.load()) {
             emit(canceled());
             return;

@@ -8,7 +8,6 @@
 #ifndef BEATMAP_H_
 #define BEATMAP_H_
 
-#include <QObject>
 #include <QMutex>
 
 #include "track/track.h"
@@ -19,8 +18,7 @@
 
 typedef QList<mixxx::track::io::Beat> BeatList;
 
-class BeatMap : public QObject, public Beats {
-    Q_OBJECT
+class BeatMap final : public Beats {
   public:
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track.
@@ -84,9 +82,6 @@ class BeatMap : public QObject, public Beats {
     SINT getSampleRate() const override {
         return m_iSampleRate;
     }
-
-  signals:
-    void updated();
 
   private:
     BeatMap(const BeatMap& other);

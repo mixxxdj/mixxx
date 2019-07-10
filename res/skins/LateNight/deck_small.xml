@@ -30,6 +30,7 @@
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
+                <MinimumSize>200,40</MinimumSize>
                 <MaximumSize>250,40</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>

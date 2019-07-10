@@ -9,6 +9,7 @@
 #include "track/keyutils.h"
 #include "track/globaltrackcache.h"
 #include "util/performancetimer.h"
+#include "util/compatibility.h"
 
 namespace {
 
@@ -221,7 +222,7 @@ void BaseTrackCache::resetRecentTrack() const {
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getLocation();
+        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
     }
 
     if (!pTrack) {

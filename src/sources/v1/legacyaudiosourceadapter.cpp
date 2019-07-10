@@ -4,7 +4,6 @@
 
 #include "util/logger.h"
 
-
 namespace mixxx {
 
 namespace {
@@ -16,13 +15,12 @@ const Logger kLogger("LegacyAudioSourceAdapter");
 LegacyAudioSourceAdapter::LegacyAudioSourceAdapter(
         AudioSource* pOwner,
         LegacyAudioSource* pImpl)
-    : m_pOwner(pOwner),
-      m_pImpl(pImpl) {
+        : m_pOwner(pOwner),
+          m_pImpl(pImpl) {
 }
 
 ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     const SINT seekFrameIndex = m_pImpl->seekSampleFrame(firstFrameIndex);

@@ -231,10 +231,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         }
         //: Displayed when no effect is selected
         box->addItem(tr("None"), QVariant(QString("")));
-        if (selectedEffectId.isNull()) {
+        if (selectedEffectId.isEmpty()) {
             currentIndex = availableEQEffects.size(); // selects "None"
-        }
-        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
+        } else if (currentIndex < 0 && !selectedEffectName.isEmpty() ) {
             // current selection is not part of the new list
             // So we need to add it
             box->addItem(selectedEffectName, QVariant(selectedEffectId));
@@ -261,10 +260,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         }
         //: Displayed when no effect is selected
         box->addItem(tr("None"), QVariant(QString("")));
-        if (selectedEffectId.isNull()) {
+        if (selectedEffectId.isEmpty()) {
             currentIndex = availableQuickEffects.size(); // selects "None"
-        }
-        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
+        } else if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
             // So we need to add it
             box->addItem(selectedEffectName, QVariant(selectedEffectId));
@@ -372,13 +370,13 @@ void DlgPrefEQ::slotResetToDefaults() {
                pCombo->findData(kDefaultQuickEffectId));
     }
     loadSettings();
-    CheckBoxBypass->setChecked(Qt::Unchecked);
-    CheckBoxEqOnly->setChecked(Qt::Checked);
-    CheckBoxSingleEqEffect->setChecked(Qt::Checked);
+    CheckBoxBypass->setChecked(false);
+    CheckBoxEqOnly->setChecked(true);
+    CheckBoxSingleEqEffect->setChecked(true);
     m_bEqAutoReset = false;
-    CheckBoxEqAutoReset->setChecked(Qt::Unchecked);
+    CheckBoxEqAutoReset->setChecked(false);
     m_bGainAutoReset = false;
-    CheckBoxGainAutoReset->setChecked(Qt::Unchecked);
+    CheckBoxGainAutoReset->setChecked(false);
     slotUpdate();
     slotApply();
 }

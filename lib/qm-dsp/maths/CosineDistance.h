@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,13 +12,11 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef COSINEDISTANCE_H
-#define COSINEDISTANCE_H
+#ifndef QM_DSP_COSINEDISTANCE_H
+#define QM_DSP_COSINEDISTANCE_H
 
 #include <vector>
 #include <math.h>
-
-using std::vector;
 
 class CosineDistance
 {
@@ -27,7 +24,8 @@ public:
     CosineDistance() { }
     ~CosineDistance() { }
 
-    double distance(const vector<double> &v1, const vector<double> &v2);
+    double distance(const std::vector<double> &v1,
+                    const std::vector<double> &v2);
 
 protected:
     double dist, dDenTot, dDen1, dDen2, dSum1;

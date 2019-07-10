@@ -11,7 +11,7 @@
  * 1. argument represents a name shown in the sidebar view later on
  * 2. argument represents the absolute path of this tree item
  * 3. argument is a library feature object.
- *    This is necessary because in sidebar.cpp we hanlde 'activateChid' events
+ *    This is necessary because in sidebar.cpp we handle 'activateChid' events
  * 4. the parent TreeItem object
  *    The constructor does not add this TreeItem object to the parent's child list
  *

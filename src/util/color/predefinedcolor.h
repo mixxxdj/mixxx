@@ -1,5 +1,4 @@
-#ifndef PREDEFINEDCOLOR_H
-#define PREDEFINEDCOLOR_H
+#pragma once
 
 #include <QColor>
 
@@ -34,5 +33,3 @@ class PredefinedColor final {
     const int m_iId;
 };
 typedef std::shared_ptr<const PredefinedColor> PredefinedColorPointer;
-
-#endif /* PREDEFINEDCOLOR_H */

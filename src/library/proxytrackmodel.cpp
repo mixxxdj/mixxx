@@ -23,6 +23,16 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
+TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) {
+    return (m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
+            : TrackModel::sortColumnIdFromColumnIndex(index));
+}
+
+int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
+    return (m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
+            : TrackModel::columnIndexFromSortColumnId(sortColumn));
+}
+
 TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();

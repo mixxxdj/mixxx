@@ -8,6 +8,7 @@
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
+#include "engine/controls/cuecontrol.h"
 #include "library/playlisttablemodel.h"
 #include "track/track.h"
 #include "util/class.h"
@@ -61,11 +62,42 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
+    SeekOnLoadMode seekOnLoadMode() const {
+        return seekOnLoadModeFromDouble(m_seekOnLoadMode.get());
+    }
+
+    void setSeekOnLoadMode(SeekOnLoadMode mode) {
+        m_seekOnLoadMode.set(mode);
+    }
+
+    double introStartPosition() const {
+        return m_introStartPos.get();
+    }
+
+    double outroStartPosition() const {
+        return m_outroStartPos.get();
+    }
+
+    double outroEndPosition() const {
+        return m_outroEndPos.get();
+    }
+
+    int sampleRate() const {
+        return m_sampleRate.get();
+    }
+
+    double duration() const {
+        return m_duration.get();
+    }
+
     TrackPointer getLoadedTrack() const;
 
   signals:
     void playChanged(DeckAttributes* pDeck, bool playing);
     void playPositionChanged(DeckAttributes* pDeck, double playPosition);
+    void introStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
+    void outroStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
+    void outroEndPositionChanged(DeckAttributes* pDeck, double outroEndPosition);
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
@@ -73,6 +105,9 @@ class DeckAttributes : public QObject {
   private slots:
     void slotPlayPosChanged(double v);
     void slotPlayChanged(double v);
+    void slotIntroStartPositionChanged(double v);
+    void slotOutroStartPositionChanged(double v);
+    void slotOutroEndPositionChanged(double v);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotPlayerEmpty();
@@ -80,6 +115,7 @@ class DeckAttributes : public QObject {
   public:
     int index;
     QString group;
+    double startPos;
     double posThreshold;
     double fadeDuration;
 
@@ -88,6 +124,12 @@ class DeckAttributes : public QObject {
     ControlProxy m_playPos;
     ControlProxy m_play;
     ControlProxy m_repeat;
+    ControlProxy m_seekOnLoadMode;
+    ControlProxy m_introStartPos;
+    ControlProxy m_outroStartPos;
+    ControlProxy m_outroEndPos;
+    ControlProxy m_sampleRate;
+    ControlProxy m_duration;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -160,6 +202,9 @@ class AutoDJProcessor : public QObject {
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);
     void playerPlayChanged(DeckAttributes* pDeck, bool playing);
+    void playerIntroStartChanged(DeckAttributes* pDeck, double position);
+    void playerOutroStartChanged(DeckAttributes* pDeck, double position);
+    void playerOutroEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
@@ -176,6 +221,12 @@ class AutoDJProcessor : public QObject {
     // every time)
     double getCrossfader() const;
     void setCrossfader(double value, bool right);
+
+    // Following functions return seconds computed from samples or -1 if
+    // track in deck has invalid sample rate (<= 0)
+    double getIntroStartPosition(DeckAttributes* pDeck);
+    double getOutroStartPosition(DeckAttributes* pDeck);
+    double getOutroEndPosition(DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
@@ -198,7 +249,6 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user
-    double m_nextTransitionTime; // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
 

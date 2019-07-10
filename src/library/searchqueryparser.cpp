@@ -1,5 +1,7 @@
 #include "library/searchqueryparser.h"
 
+#include "util/compatibility.h"
+
 #include "track/keyutils.h"
 
 const char* kNegatePrefix = "-";
@@ -102,7 +104,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
 
         if (quote_index == 0) {
             // We have found an explicit empty string ""
-            // return it as "" to distingish it from anunfinished empty string
+            // return it as "" to distinguish it from an unfinished empty string
             argument = kMissingFieldSearchTerm;
         } else {
             // Slice off the quote and everything after.
@@ -260,5 +262,5 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
         parseTokens(tokens, searchColumns, pQuery.get());
     }
 
-    return std::move(pQuery);
+    return pQuery;
 }

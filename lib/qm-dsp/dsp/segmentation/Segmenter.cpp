@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 /*
  *  Segmenter.cpp
  *
@@ -16,16 +17,17 @@
 
 #include "Segmenter.h"
 
+using std::ostream;
+
 ostream& operator<<(ostream& os, const Segmentation& s)
 {
-	os << "structure_name : begin_time end_time\n";
-	
-	for (int i = 0; i < s.segments.size(); i++)
-	{
-		Segment seg = s.segments[i];
-		os << std::fixed << seg.type << ':' << '\t' << std::setprecision(6) << seg.start / static_cast<double>(s.samplerate) 
-			<< '\t' << std::setprecision(6) << seg.end / static_cast<double>(s.samplerate) << "\n";
-	}
-	
-	return os;
+    os << "structure_name : begin_time end_time\n";
+        
+    for (int i = 0; i < int(s.segments.size()); i++) {
+        Segment seg = s.segments[i];
+        os << std::fixed << seg.type << ':' << '\t' << std::setprecision(6) << seg.start / static_cast<double>(s.samplerate) 
+           << '\t' << std::setprecision(6) << seg.end / static_cast<double>(s.samplerate) << "\n";
+    }
+    
+    return os;
 }

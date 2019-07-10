@@ -73,6 +73,7 @@
       <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
 
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
@@ -272,7 +273,7 @@
     <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>
       <Children>
-        <Template src="skin:overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">1</SetVariable>
         </Template>
       </Children>
@@ -281,7 +282,7 @@
     <SingletonDefinition>
       <ObjectName>Overview2</ObjectName>
       <Children>
-        <Template src="skin:overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">2</SetVariable>
         </Template>
       </Children>

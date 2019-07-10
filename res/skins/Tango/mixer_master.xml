@@ -1,0 +1,119 @@
+<!--
+Description:
+	Container for Master mixer in topbar.
+-->
+<Template>
+  <WidgetGroup><!-- Master Mixer -->
+    <ObjectName>MixerbarSection</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>-1min,28f</Size>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MasterMixerLabel</ObjectName>
+        <Size>24f,24f</Size>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>MixerbarKnob</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <KnobComposed>
+            <TooltipId>master_gain</TooltipId>
+            <Size>26f,22f</Size>
+            <Knob>knobs_sliders/knob_yellow.svg</Knob>
+            <BackPath>knobs_sliders/knob_bg_master.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <KnobCenterYOffset>2.000</KnobCenterYOffset>
+            <Connection>
+              <ConfigKey>[Master],gain</ConfigKey>
+            </Connection>
+          </KnobComposed>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>MixerbarKnob</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <KnobComposed>
+            <TooltipId>booth_gain</TooltipId>
+            <Size>26f,22f</Size>
+            <Knob>knobs_sliders/knob_yellow.svg</Knob>
+            <BackPath>knobs_sliders/knob_bg_booth.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <KnobCenterYOffset>2.000</KnobCenterYOffset>
+            <Connection>
+              <ConfigKey>[Master],booth_gain</ConfigKey>
+            </Connection>
+          </KnobComposed>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],booth_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <SliderComposed>
+        <TooltipId>balance</TooltipId>
+        <ObjectName>MixerbarSlider</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Handle>knobs_sliders/balance_handle.svg</Handle>
+        <Slider>knobs_sliders/balance_scale.svg</Slider>
+        <Horizontal>true</Horizontal>
+        <Connection>
+          <ConfigKey>[Master],balance</ConfigKey>
+        </Connection>
+      </SliderComposed>
+
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- FX assignment buttons -->
+        <ObjectName>FxMasterToggles</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>FxMasterToggles</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_master_button.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+              <Template src="skin:fx_master_button.xml">
+                <SetVariable name="FxUnit">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>FxMasterToggles</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_master_button.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
+              <Template src="skin:fx_master_button.xml">
+                <SetVariable name="FxUnit">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- /FX assignment buttons -->
+
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /Master Mixer -->
+</Template>
