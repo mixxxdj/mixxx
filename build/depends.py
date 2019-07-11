@@ -127,6 +127,19 @@ class UPower(Dependence):
         build.env.ParseConfig(
                 'pkg-config upower-glib --silence-errors --cflags --libs')
 
+class CtlraLibrary(Dependence):
+    """Ctlra library is used to access modern controller devices"""
+    def configure(self, build, conf):
+        if not build.platform_is_linux:
+            return
+
+        #libs = ['openav_ctlra']
+        #if not conf.CheckLib(libs):
+        #    raise Exception('Did not find OpenAV Ctlra library')
+
+        build.env.ParseConfig(
+                'pkg-config openav_ctlra --silence-errors --cflags --libs')
+
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):

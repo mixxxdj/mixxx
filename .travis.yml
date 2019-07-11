@@ -47,11 +47,16 @@ addons:
       - scons
       - qtkeychain-dev
       - liblilv-dev
+      - python3
+      - python3-pip
+
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame sound-touch; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip && unzip -q ninja-linux.zip -d build; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install python3; fi
 
 install:
   ####
@@ -64,6 +69,7 @@ install:
 
   #####
   # Ubuntu Trusty Build
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then source ./build/build-ctlra.sh; fi
 
   ####
   # OS X Build
@@ -80,7 +86,7 @@ install:
   # build.  Turning off optimizations to see if that speeds up compile times.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 localecompare=0" ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1 ctlra=1" ; fi
 
   ####
   # Common Build

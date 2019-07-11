@@ -119,6 +119,43 @@ class HID(Feature):
 
         return sources
 
+class Ctlra(Feature):
+    INTERNAL_LINK = False
+
+    def description(self):
+        return "Ctlra controller support"
+
+    def enabled(self, build):
+        is_default = 1 if build.platform_is_linux else 0
+        build.flags['ctlra'] = util.get_flags(build.env, 'ctlra', 1)
+        if int(build.flags['ctlra']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('ctlra', 'Set to 1 to enable Ctlra controller support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.ParseConfig(
+            'pkg-config openav_ctlra --silence-errors --cflags --libs')
+
+        if build.platform_is_linux:
+            build.env.Append(CPPDEFINES='__CTLRA__')
+            pass
+
+    def sources(self, build):
+        if build.platform_is_linux:
+            sources = ['src/controllers/ctlra/ctlraenumerator.cpp',
+                       'src/controllers/ctlra/ctlracontroller.cpp']
+            return sources
+        return []
+
+    def depends(self, build):
+        if build.platform_is_linux:
+            return [depends.CtlraLibrary]
+        return []
 
 class Bulk(Feature):
     def description(self):
