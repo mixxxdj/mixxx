@@ -280,7 +280,6 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
     if (!m_pLibraryWidget) {
         return;
     }
-
     if (v > 0) {
         auto activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
@@ -389,14 +388,16 @@ void LibraryControl::slotMoveFocus(double v) {
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
-    // Ensure a valid widget has the keyboard focus
+    // Ensure a valid library widget has the keyboard focus.
+    // QApplication::focusWidget() is not sufficient here because it
+    // would return any focussed widget like WOverview, WWaveform, QSpinBox
+    if (m_pLibraryWidget && !m_pLibraryWidget->hasFocus() &&
+            m_pSidebarWidget && !m_pSidebarWidget->hasFocus()) {
+        setLibraryFocus();
+    }
     auto focusWidget = QApplication::focusWidget();
     if (!focusWidget) {
-        setLibraryFocus();
-        focusWidget = QApplication::focusWidget();
-        if (!focusWidget) {
-            return;
-        }
+        return;
     }
     // Send the event pointer to the currently focused widget
     for (auto i = 0; i < event.count(); ++i) {
@@ -405,12 +406,10 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
 }
 
 void LibraryControl::setLibraryFocus() {
-    if (m_pSidebarWidget) {
-        // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
-        m_pSidebarWidget->setFocus();
-        QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-        QApplication::sendEvent(m_pSidebarWidget, &event);
-    }
+    // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+    m_pSidebarWidget->setFocus();
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+    QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
@@ -463,9 +462,8 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Focus the library if this is a leaf node in the tree
-    if (m_pSidebarWidget->hasFocus()) {
-        if (m_pSidebarWidget && v > 0
-                && m_pSidebarWidget->isLeafNodeSelected()) {
+    if (m_pSidebarWidget && m_pSidebarWidget->hasFocus()) {
+        if (v > 0 && m_pSidebarWidget->isLeafNodeSelected()) {
             setLibraryFocus();
         } else {
             // Otherwise toggle the sidebar item expanded state
