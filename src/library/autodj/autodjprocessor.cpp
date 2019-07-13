@@ -457,12 +457,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         return;
     }
 
-    // 95% playback is when we crossfade and do stuff
-    // const double posThreshold = 0.95;
-
-    // 0.05; // 5% playback is crossfade duration
-    const double thisFadeDuration = pAttributes->fadeDuration;
-
     // qDebug() << "player" << pAttributes->group << "PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
         // nothing to do
@@ -577,6 +571,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             emitAutoDJStateChanged(m_eState);
         }
 
+        const double thisFadeDuration = thisDeck.fadeDuration;
         double posFadeEnd = math_min(1.0, thisDeck.fadeBeginPos + thisFadeDuration);
         if (thisPlayPosition >= posFadeEnd) {
             // If this track has passed the end of its target fade then we stop
