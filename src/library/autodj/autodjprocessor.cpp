@@ -919,13 +919,14 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     switch (m_transitionMode) {
     case TransitionMode::AlignIntroOutroStart:
         pToDeck->startPos = introStart;
-        if (outroLength > 0 && introLength > 0) {
+        if (outroLength > 0) {
             pFromDeck->fadeBeginPos = outroStart;
-            pFromDeck->fadeDuration = math_min(outroLength, introLength);
-        } else if (outroLength > 0 && introLength <= 0) {
-            pFromDeck->fadeBeginPos = outroStart;
-            pFromDeck->fadeDuration = outroLength;
-        } else if (outroLength <= 0 && introLength > 0) {
+            if (introLength > 0) {
+                pFromDeck->fadeDuration = math_min(outroLength, introLength);
+            } else {
+                pFromDeck->fadeDuration = outroLength;
+            }
+        } else if (introLength > 0) {
             pFromDeck->fadeBeginPos = outroEnd - introLength;
             pFromDeck->fadeDuration = introLength;
         } else {
@@ -933,23 +934,17 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
         break;
     case TransitionMode::AlignIntroOutroEnd:
-        if (outroLength > 0 && introLength > 0) {
-            if (outroLength < introLength) {
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeDuration = outroLength;
-                pToDeck->startPos = introEnd - outroLength;
+        if (introLength > 0) {
+            if (outroLength > 0) {
+                pFromDeck->fadeDuration = math_min(outroLength, introLength);
             } else {
-                pFromDeck->fadeBeginPos = outroEnd - introLength;
                 pFromDeck->fadeDuration = introLength;
-                pToDeck->startPos = introStart;
             }
-        } else if (outroLength > 0 && introLength <= 0) {
+            pFromDeck->fadeBeginPos = outroEnd - pFromDeck->fadeDuration;
+            pToDeck->startPos = introEnd - pFromDeck->fadeDuration;
+        } else if (outroLength > 0) {
             pFromDeck->fadeBeginPos = outroStart;
             pFromDeck->fadeDuration = outroLength;
-            pToDeck->startPos = introStart;
-        } else if (outroLength <= 0 && introLength > 0) {
-            pFromDeck->fadeBeginPos = outroEnd - introLength;
-            pFromDeck->fadeDuration = introLength;
             pToDeck->startPos = introStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
@@ -981,6 +976,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     getMainCuePosition(pToDeck));
         }
         break;
+    case TransitionMode::FixedFullTrack:
     default:
         if (fadeNow) {
             useFixedFadeTime(pFromDeck, pToDeck, outroEnd, 0);
