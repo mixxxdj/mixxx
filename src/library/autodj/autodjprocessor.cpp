@@ -25,7 +25,7 @@ DeckAttributes::DeckAttributes(int index,
           group(pPlayer->getGroup()),
           startPos(kKeepPosition),
           fadeBeginPos(1.0),
-          fadeDuration(0.0),
+          fadeEndPos(1.0),
           loading(false),
           m_orientation(orientation),
           m_playPos(group, "playposition"),
@@ -534,7 +534,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // This avoids starting a fade back before the new track is
             // loaded into the otherDeck
             thisDeck.fadeBeginPos = 1.0;
-            thisDeck.fadeDuration = 0.0;
+            thisDeck.fadeEndPos = 1.0;
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(otherDeck);
             emitAutoDJStateChanged(m_eState);
@@ -571,9 +571,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             emitAutoDJStateChanged(m_eState);
         }
 
-        const double thisFadeDuration = thisDeck.fadeDuration;
-        double posFadeEnd = math_min(1.0, thisDeck.fadeBeginPos + thisFadeDuration);
-        if (thisPlayPosition >= posFadeEnd) {
+        if (thisPlayPosition >= thisDeck.fadeEndPos) {
             // If this track has passed the end of its target fade then we stop
             // it. We don't handle mode switches here since that's handled by
             // the next playerPositionChanged call otherDeck (see the
@@ -589,7 +587,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // adjustment.
             double crossfadeEdgeValue = -1.0;
             double adjustment = 2 * (thisPlayPosition - thisDeck.fadeBeginPos) /
-                    (posFadeEnd - thisDeck.fadeBeginPos);
+                    (thisDeck.fadeEndPos - thisDeck.fadeBeginPos);
             bool isLeft = thisDeck.isLeft();
             if (!isLeft) {
                 crossfadeEdgeValue = 1.0;
@@ -852,7 +850,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // Playing Track has no duration. This should not happen, because short
         // tracks are skipped after load. Play ToDeck emmediately.
         pFromDeck->fadeBeginPos = 0;
-        pFromDeck->fadeDuration = 0;
+        pFromDeck->fadeEndPos = 0;
         pToDeck->startPos = kKeepPosition;
         return;
     }
@@ -917,29 +915,29 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         if (outroLength > 0) {
             pFromDeck->fadeBeginPos = outroStart;
             if (introLength > 0) {
-                pFromDeck->fadeDuration = math_min(outroLength, introLength);
+                pFromDeck->fadeEndPos = pFromDeck->fadeBeginPos + math_min(outroLength, introLength);
             } else {
-                pFromDeck->fadeDuration = outroLength;
+                pFromDeck->fadeEndPos = outroEnd;
             }
         } else if (introLength > 0) {
             pFromDeck->fadeBeginPos = outroEnd - introLength;
-            pFromDeck->fadeDuration = introLength;
+            pFromDeck->fadeEndPos = outroEnd;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
         break;
     case TransitionMode::AlignIntroOutroEnd:
         if (introLength > 0) {
+            pFromDeck->fadeEndPos = outroEnd;
             if (outroLength > 0) {
-                pFromDeck->fadeDuration = math_min(outroLength, introLength);
+                pFromDeck->fadeBeginPos = pFromDeck->fadeEndPos - math_min(outroLength, introLength);
             } else {
-                pFromDeck->fadeDuration = introLength;
+                pFromDeck->fadeBeginPos = math_max(pFromDeck->fadeEndPos - introLength, 0.0);
             }
-            pFromDeck->fadeBeginPos = outroEnd - pFromDeck->fadeDuration;
-            pToDeck->startPos = introEnd - pFromDeck->fadeDuration;
+            pToDeck->startPos = introEnd - (pFromDeck->fadeEndPos - pFromDeck->fadeBeginPos);
         } else if (outroLength > 0) {
             pFromDeck->fadeBeginPos = outroStart;
-            pFromDeck->fadeDuration = outroLength;
+            pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
@@ -987,13 +985,13 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         toDeckOutroStart = getOutroEndPosition(pToDeck);
     }
     double maxFadeTime = toDeckOutroStart - pToDeck->startPos;
-    if (pFromDeck->fadeDuration > maxFadeTime) {
-        pFromDeck->fadeDuration = maxFadeTime;
+    if ((pFromDeck->fadeEndPos - pFromDeck->fadeBeginPos) > maxFadeTime) {
+        pFromDeck->fadeEndPos = pFromDeck->fadeBeginPos + maxFadeTime;
     }
 
     // These are expected to be a fraction of the track length.
     pFromDeck->fadeBeginPos /= fromTrackDuration;
-    pFromDeck->fadeDuration /= fromTrackDuration;
+    pFromDeck->fadeEndPos /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
 }
 
@@ -1001,12 +999,12 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes
                                        double endPoint, double startPoint) {
     if (m_transitionTime > 0.0) {
         pFromDeck->fadeBeginPos = endPoint - m_transitionTime;
-        pFromDeck->fadeDuration = m_transitionTime;
+        pFromDeck->fadeEndPos = endPoint;
         pToDeck->startPos = startPoint;
     } else {
         pFromDeck->fadeBeginPos = endPoint;
-        pFromDeck->fadeDuration = m_transitionTime;
-        pToDeck->startPos = startPoint + m_transitionTime;
+        pFromDeck->fadeEndPos = endPoint + m_transitionTime;;
+        pToDeck->startPos = startPoint - m_transitionTime;
     }
 }
 
