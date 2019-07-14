@@ -10,15 +10,28 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "control/controlproxy.h"
+#include "track/bpm.h"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/duration.h"
 
 namespace {
-const int kMinBpm = 30;
-// Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
-const int kFilterLength = 5;
+
+const double kBpmRangeMin = 1.0;
+// TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
+const double kBpmRangeMax = 200.0;
+const double kBpmRangeStep = 1.0;
+const double kBpmRangeSmallStep = 0.1;
+
+const double kBpmAdjustMin = kBpmRangeMin;
+const double kBpmAdjustMax = mixxx::Bpm::kValueMax;
+const double kBpmAdjustStep = 0.01;
+
+// Maximum allowed interval between beats (calculated from kBpmTapMin).
+const double kBpmTapMin = 30.0;
+const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
+const int kBpmTapFilterLength = 5;
+
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
 const int kLocalBpmSpan = 4;
@@ -28,7 +41,7 @@ const SINT kSamplesPerFrame = 2;
 BpmControl::BpmControl(QString group,
                        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_tapFilter(this, kFilterLength, kMaxInterval),
+          m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
           m_dLastSyncAdjustment(1.0),
           m_sGroup(group) {
@@ -78,12 +91,12 @@ BpmControl::BpmControl(QString group,
             this, SLOT(slotTranslateBeatsLater(double)),
             Qt::DirectConnection);
 
-    // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
+    // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
     // bpm_down controls.
-    // bpm_up / bpm_down steps by 1
-    // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    // bpm_up / bpm_down steps by kBpmRangeStep
+    // bpm_up_small / bpm_down_small steps by kBpmRangeSmallStep
+    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), kBpmRangeMin, kBpmRangeMax, kBpmRangeStep, kBpmRangeSmallStep, true);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateRateSlider()),
             Qt::DirectConnection);
@@ -172,16 +185,22 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
 void BpmControl::slotAdjustBeatsFaster(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = math_min(200.0, pBeats->getBpm() + .01);
-        pBeats->setBpm(new_bpm);
+        double bpm = pBeats->getBpm();
+        if (bpm < kBpmAdjustMax) {
+            double new_bpm = math_min(kBpmAdjustMax, bpm + kBpmAdjustStep);
+            pBeats->setBpm(new_bpm);
+        }
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = math_max(10.0, pBeats->getBpm() - .01);
-        pBeats->setBpm(new_bpm);
+        double bpm = pBeats->getBpm();
+        if (bpm > kBpmAdjustMin) {
+            double new_bpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
+            pBeats->setBpm(new_bpm);
+        }
     }
 }
 
