@@ -448,8 +448,8 @@ void AutoDJProcessor::controlSkipNext(double value) {
 void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                                             double thisPlayPosition) {
     if (sDebug) {
-        qDebug() << this << "playerPositionChanged" << pAttributes->group
-                 << thisPlayPosition;
+        //qDebug() << this << "playerPositionChanged" << pAttributes->group
+        //         << thisPlayPosition;
     }
 
     // Auto-DJ needs at least two decks
@@ -993,6 +993,11 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->fadeBeginPos /= fromTrackDuration;
     pFromDeck->fadeEndPos /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
+
+    if (sDebug) {
+        qDebug() << this << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
+                << pToDeck->startPos;
+    }
 }
 
 void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
