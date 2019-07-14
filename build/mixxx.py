@@ -212,23 +212,27 @@ class MixxxBuild(object):
         self.read_environment_variables()
 
         # Now that environment variables have been read, we can detect the compiler.
-        import shlex
-        import subprocess
-        cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
-        cc_version = subprocess.check_output(cc_version_cmd).decode(sys.stdout.encoding)
-        self.compiler_is_gcc = 'gcc' in cc_version.lower()
-        self.compiler_is_clang = 'clang' in cc_version.lower()
+        if self.toolchain_is_msvs:
+            self.compiler_is_gcc = False
+            self.compiler_is_clang = False
+        else:
+            import shlex
+            import subprocess
+            cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
+            cc_version = subprocess.check_output(cc_version_cmd).decode(sys.stdout.encoding)
+            self.compiler_is_gcc = 'gcc' in cc_version.lower()
+            self.compiler_is_clang = 'clang' in cc_version.lower()
 
-        # Determine the major compiler version (only GCC)
-        if self.compiler_is_gcc:
-            self.gcc_major_version = None
-            gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
-            gcc_version = subprocess.check_output(gcc_version_cmd).decode(sys.stdout.encoding)
-            # If match is None we don't know the version.
-            if not gcc_version is None:
-                version_split = gcc_version.split('.')
-                if version_split:
-                    self.gcc_major_version = int(version_split[0])
+            # Determine the major compiler version (only GCC)
+            if self.compiler_is_gcc:
+                self.gcc_major_version = None
+                gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
+                gcc_version = subprocess.check_output(gcc_version_cmd).decode(sys.stdout.encoding)
+                # If match is None we don't know the version.
+                if not gcc_version is None:
+                    version_split = gcc_version.split('.')
+                    if version_split:
+                        self.gcc_major_version = int(version_split[0])
 
         self.virtualize_build_dir()
 
