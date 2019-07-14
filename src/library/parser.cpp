@@ -12,6 +12,7 @@
 //
 
 #include <QtDebug>
+#include <QDir>
 #include <QFile>
 #include <QIODevice>
 #include <QUrl>
@@ -146,11 +147,24 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-TrackFile Parser::playlistEntryToTrackFile(const QString& playlistEntry) {
+std::pair<TrackFile, bool> Parser::playlistEntryToTrackFile(
+        const QString& playlistEntry,
+        const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
-        return TrackFile::fromUrl(QUrl(playlistEntry));
+        auto trackFile = TrackFile::fromUrl(QUrl(playlistEntry));
+        return std::make_pair(trackFile, trackFile.checkFileExists());
     }
-
-    return TrackFile(QString(playlistEntry).replace('\\', '/'));
+    auto filePath = QString(playlistEntry).replace('\\', '/');
+    auto trackFile = TrackFile(filePath);
+    if (trackFile.checkFileExists()) {
+        return std::make_pair(trackFile, true);
+    } else {
+        if (basePath.isEmpty()) {
+            // No base path
+            return std::make_pair(trackFile, false);
+        }
+        // Try relative to base path
+        trackFile = TrackFile(QDir(basePath), filePath);
+        return std::make_pair(trackFile, trackFile.checkFileExists());
+    }
 }
-
