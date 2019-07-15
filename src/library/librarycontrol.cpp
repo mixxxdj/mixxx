@@ -391,12 +391,14 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     // Ensure a valid library widget has the keyboard focus.
     // QApplication::focusWidget() is not sufficient here because it
     // would return any focussed widget like WOverview, WWaveform, QSpinBox
-    if (m_pLibraryWidget && !m_pLibraryWidget->hasFocus() &&
-            m_pSidebarWidget && !m_pSidebarWidget->hasFocus()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget && m_pLibraryWidget) {
+        return;
+    }
+    if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus()) {
         setLibraryFocus();
     }
     auto focusWidget = QApplication::focusWidget();
-    if (!focusWidget) {
+    VERIFY_OR_DEBUG_ASSERT(focusWidget) {
         return;
     }
     // Send the event pointer to the currently focused widget
@@ -407,6 +409,9 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
 
 void LibraryControl::setLibraryFocus() {
     // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
+    }
     m_pSidebarWidget->setFocus();
     QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
     QApplication::sendEvent(m_pSidebarWidget, &event);
