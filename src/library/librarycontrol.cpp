@@ -391,7 +391,10 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     // Ensure a valid library widget has the keyboard focus.
     // QApplication::focusWidget() is not sufficient here because it
     // would return any focussed widget like WOverview, WWaveform, QSpinBox
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget && m_pLibraryWidget) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
     if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus()) {
