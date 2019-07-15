@@ -16,24 +16,24 @@
 
 namespace {
 
-const double kBpmRangeMin = 1.0;
+constexpr double kBpmRangeMin = 1.0;
 // TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
-const double kBpmRangeMax = 200.0;
-const double kBpmRangeStep = 1.0;
-const double kBpmRangeSmallStep = 0.1;
+constexpr double kBpmRangeMax = 200.0;
+constexpr double kBpmRangeStep = 1.0;
+constexpr double kBpmRangeSmallStep = 0.1;
 
-const double kBpmAdjustMin = kBpmRangeMin;
-const double kBpmAdjustStep = 0.01;
+constexpr double kBpmAdjustMin = kBpmRangeMin;
+constexpr double kBpmAdjustStep = 0.01;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
-const double kBpmTapMin = 30.0;
+constexpr double kBpmTapMin = 30.0;
 const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
-const int kBpmTapFilterLength = 5;
+constexpr int kBpmTapFilterLength = 5;
 
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
-const int kLocalBpmSpan = 4;
-const SINT kSamplesPerFrame = 2;
+constexpr int kLocalBpmSpan = 4;
+constexpr SINT kSamplesPerFrame = 2;
 }
 
 BpmControl::BpmControl(QString group,
