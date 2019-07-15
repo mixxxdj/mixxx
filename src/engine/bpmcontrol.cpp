@@ -10,7 +10,6 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "control/controlproxy.h"
-#include "track/bpm.h"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/duration.h"
@@ -24,7 +23,6 @@ const double kBpmRangeStep = 1.0;
 const double kBpmRangeSmallStep = 0.1;
 
 const double kBpmAdjustMin = kBpmRangeMin;
-const double kBpmAdjustMax = mixxx::Bpm::kValueMax;
 const double kBpmAdjustStep = 0.01;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
@@ -185,11 +183,8 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
 void BpmControl::slotAdjustBeatsFaster(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
-        if (bpm < kBpmAdjustMax) {
-            double new_bpm = math_min(kBpmAdjustMax, bpm + kBpmAdjustStep);
-            pBeats->setBpm(new_bpm);
-        }
+        double new_bpm = pBeats->getBpm() + kBpmAdjustStep;
+        pBeats->setBpm(new_bpm);
     }
 }
 
