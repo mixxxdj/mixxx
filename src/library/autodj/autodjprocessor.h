@@ -137,8 +137,8 @@ class AutoDJProcessor : public QObject {
   public:
     enum AutoDJState {
         ADJ_IDLE = 0,
-        ADJ_P1FADING,
-        ADJ_P2FADING,
+        ADJ_LEFT_FADING,
+        ADJ_RIGHT_FADING,
         ADJ_ENABLE_P1LOADED,
         ADJ_ENABLE_P1PLAYING,
         ADJ_DISABLED

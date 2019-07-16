@@ -519,8 +519,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // from (P1 or P2) to stop playing. Once we are playing and the other deck
     // is not playing -- we switch the crossfader fully to this deck's side,
     // switch to IDLE mode and load the next track into the other deck.
-    if ((m_eState == ADJ_P1FADING && thisDeck.isRight()) ||
-        (m_eState == ADJ_P2FADING && thisDeck.isLeft())) {
+    if ((m_eState == ADJ_LEFT_FADING && thisDeck.isRight()) ||
+        (m_eState == ADJ_RIGHT_FADING && thisDeck.isLeft())) {
         // Once P1 or P2 has stopped switch out of fading mode to idle.
         if (thisDeckPlaying && !otherDeckPlaying) {
             // Force crossfader all the way to this side.
@@ -567,7 +567,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             removeLoadedTrackFromTopOfQueue(otherDeck);
 
             // Set the state as FADING.
-            m_eState = thisDeck.isLeft() ? ADJ_P1FADING : ADJ_P2FADING;
+            m_eState = thisDeck.isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
             emitAutoDJStateChanged(m_eState);
         }
 

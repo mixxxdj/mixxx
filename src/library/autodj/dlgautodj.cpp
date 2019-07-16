@@ -208,8 +208,8 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
 
         // If fading, you can't hit fade now.
-        if (state == AutoDJProcessor::ADJ_P1FADING ||
-                state == AutoDJProcessor::ADJ_P2FADING ||
+        if (state == AutoDJProcessor::ADJ_LEFT_FADING ||
+                state == AutoDJProcessor::ADJ_RIGHT_FADING ||
                 state == AutoDJProcessor::ADJ_ENABLE_P1LOADED) {
             pushButtonFadeNow->setEnabled(false);
         } else {
