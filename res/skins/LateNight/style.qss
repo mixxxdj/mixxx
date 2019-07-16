@@ -528,7 +528,6 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
-#SpecialCueButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SettingsButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
@@ -540,15 +539,12 @@ WEffectButtonParameter*/
 }
 
 #VinylButton[displayValue="1"],
-#SpecialCueButton[displayValue="1"],
 #VinylButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
 #SettingsButton[displayValue="1"],
 #FxAssignButton[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
   color: #0e0e0e;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
