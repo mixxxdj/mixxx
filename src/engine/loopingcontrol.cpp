@@ -452,6 +452,49 @@ void LoopingControl::hintReader(HintVector* pHintList) {
     }
 }
 
+double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos) {
+    // no loop, no adjustment
+    if (!m_bLoopingEnabled) {
+        return dSyncedPlayPos;
+    }
+
+    LoopSamples loopSamples = m_loopSamples.getValue();
+
+    // if the request itself is outside loop do nothing
+    // loop will be disabled later by notifySeek(...)
+    if (dRequestedPlaypos < loopSamples.start || dRequestedPlaypos >= loopSamples.end) {
+        return dSyncedPlayPos;
+    }
+
+    // the requested position is inside the loop (e.g hotcue at start)
+    double loopSize = loopSamples.end - loopSamples.start;
+
+    // the synced position is in front of the loop
+    // adjust the synced position to same amount in front of the loop end
+    if (dSyncedPlayPos <= loopSamples.start) {
+        double adjustment = loopSamples.start - dSyncedPlayPos;
+
+        // prevents jumping in front of the loop if loop is smaller than adjustment
+        adjustment = fmod(adjustment, loopSize);
+
+        return loopSamples.end - adjustment;
+    }
+
+    // the synced position is behind the loop
+    // adjust the synced position to same amount behind the loop start
+    if (dSyncedPlayPos >= loopSamples.end) {
+        double adjustment = dSyncedPlayPos - loopSamples.end;
+
+        // prevents jumping behind the loop if loop is smaller than adjustment
+        adjustment = fmod(adjustment, loopSize);
+
+        return loopSamples.start + adjustment;
+    }
+
+    // both, requested and synced position are inside the loop -> do nothing
+    return dSyncedPlayPos;
+}
+
 void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
     BeatsPointer pBeats = m_pBeats;
@@ -767,10 +810,10 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
+void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
-    if (m_bLoopingEnabled && !adjustingPhase) {
+    if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
         // Do not jump out of a loop if we adjust a phase (lp1743010)
