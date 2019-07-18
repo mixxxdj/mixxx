@@ -503,6 +503,7 @@ class Ebur128Mit(Dependence):
             env.Append(CPPPATH=['#%s/ebur128' % self.INTERNAL_PATH])
             import sys
             if not conf.CheckHeader('sys/queue.h') or sys.platform.startswith('openbsd'):
+                # OpenBSD's queue.h lacks the STAILQ_* macros
                 env.Append(CPPPATH=['#%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
