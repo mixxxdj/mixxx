@@ -47,8 +47,9 @@ class LoopingControl : public EngineControl {
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
     void hintReader(HintVector* pHintList) override;
+    double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
+    void notifySeek(double dNewPlaypos) override;
 
     bool isLoopingEnabled();
 
