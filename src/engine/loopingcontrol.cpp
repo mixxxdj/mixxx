@@ -461,7 +461,8 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     LoopSamples loopSamples = m_loopSamples.getValue();
 
     // if the request itself is outside loop do nothing
-    // loop will be disabled later by notifySeek(...)
+    // loop will be disabled later by notifySeek(...) as is was explicitly requested by the user
+    // if the requested position is the exact end of a loop it should also be disabled later by notifySeek(...)
     if (dRequestedPlaypos < loopSamples.start || dRequestedPlaypos >= loopSamples.end) {
         return dSyncedPlayPos;
     }
@@ -471,7 +472,7 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
 
     // the synced position is in front of the loop
     // adjust the synced position to same amount in front of the loop end
-    if (dSyncedPlayPos <= loopSamples.start) {
+    if (dSyncedPlayPos < loopSamples.start) {
         double adjustment = loopSamples.start - dSyncedPlayPos;
 
         // prevents jumping in front of the loop if loop is smaller than adjustment

@@ -1177,9 +1177,8 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        double syncPosition = position;
         double requestedPosition = position;
-        syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        double syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
