@@ -55,10 +55,10 @@
                         <Connection>
                           <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
                         </Connection>
-			<Connection>
-			  <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
-			  <BindProperty>visible</BindProperty>
-			</Connection>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
                       </Number>
                     </Children>
                   </WidgetGroup>
