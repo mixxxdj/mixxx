@@ -179,7 +179,7 @@ WSpinny {/*
 }
 
 WTime {
-  font-size: 13px/13px;
+  font-size: 14px/14px;
 }
 
 #LatencyLabel {
