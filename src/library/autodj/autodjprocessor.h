@@ -234,7 +234,7 @@ class AutoDJProcessor : public QObject {
     // right side. (prevents AutoDJ logic from having to check for hamster mode
     // every time)
     double getCrossfader() const;
-    void setCrossfader(double value, bool right);
+    void setCrossfader(double value);
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
@@ -270,6 +270,7 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
+    double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
 

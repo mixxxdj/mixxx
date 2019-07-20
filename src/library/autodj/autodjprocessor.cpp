@@ -97,15 +97,16 @@ TrackPointer DeckAttributes::getLoadedTrack() const {
 }
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
-                                 UserSettingsPointer pConfig,
-                                 PlayerManagerInterface* pPlayerManager,
-                                 int iAutoDJPlaylistId,
-                                 TrackCollection* pTrackCollection)
+        UserSettingsPointer pConfig,
+        PlayerManagerInterface* pPlayerManager,
+        int iAutoDJPlaylistId,
+        TrackCollection* pTrackCollection)
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
+          m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
@@ -185,23 +186,11 @@ double AutoDJProcessor::getCrossfader() const {
     return m_pCOCrossfader->get();
 }
 
-void AutoDJProcessor::setCrossfader(double value, bool right) {
+void AutoDJProcessor::setCrossfader(double value) {
     if (m_pCOCrossfaderReverse->get() > 0.0) {
         value *= -1.0;
-        right = !right;
     }
-    double current_value = m_pCOCrossfader->get();
-    if (right) {
-        // ignore if we move slider left
-        if (value > current_value) {
-            m_pCOCrossfader->set(value);
-        }
-    } else {
-        // ignore if we move slider right
-        if (value < current_value) {
-            m_pCOCrossfader->set(value);
-        }
-    }
+    m_pCOCrossfader->set(value);
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
@@ -382,7 +371,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_eState = ADJ_ENABLE_P1LOADED;
 
             // Move crossfader to the left.
-            setCrossfader(-1.0, false);
+            setCrossfader(-1.0);
 
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
@@ -398,14 +387,14 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 // Load track into the right deck.
                 emitLoadTrackToPlayer(nextTrack, deck2.group, false);
                 // Move crossfader to the left.
-                setCrossfader(-1.0, false);
+                setCrossfader(-1.0);
             } else {
                 // Update fade thresholds for the right deck.
                 calculateTransition(&deck2, &deck1, false);
                 // Load track into the left deck.
                 emitLoadTrackToPlayer(nextTrack, deck1.group, false);
                 // Move crossfader to the right.
-                setCrossfader(1.0, true);
+                setCrossfader(1.0);
             }
         }
         emitAutoDJStateChanged(m_eState);
@@ -526,9 +515,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         if (!otherDeckPlaying) {
             // Force crossfader all the way to the (non fading) toDeck.
             if (m_eState == ADJ_RIGHT_FADING) {
-                setCrossfader(-1.0, false);
+                setCrossfader(-1.0);
             } else {
-                setCrossfader(1.0, true);
+                setCrossfader(1.0);
             }
             m_eState = ADJ_IDLE;
             // Invalidate threshold calculated for the old otherDeck
@@ -539,8 +528,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(otherDeck);
             emitAutoDJStateChanged(m_eState);
+            return;
         }
-        return;
     }
 
     if (m_eState == ADJ_IDLE && thisDeck.isRepeat()) {
@@ -550,16 +539,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
     // If we are past this deck's posThreshold then:
     // - transition into fading mode, play the other deck and fade to it.
-    // - check if we've passed the fade end point and stop the deck
+    // - check if fading is done and stop the deck
     // - update the crossfader
-    // TODO(rryan): We need to investigate the chain of events that occur when
-    // the track we are fading to crosses its posThreshold before we are done
-    // fading to it.
     if (thisPlayPosition >= thisDeck.fadeBeginPos) {
         if (m_eState == ADJ_IDLE && (thisDeckPlaying ||
-                                     thisDeck.fadeBeginPos >= 1.0)) {
+                                            thisPlayPosition >= 1.0)) {
             if (!otherDeckPlaying) {
-                calculateTransition(&otherDeck, &thisDeck, false);
                 otherDeck.play();
             }
 
@@ -567,34 +552,50 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // that was "on deck" from the top of the queue.
             removeLoadedTrackFromTopOfQueue(otherDeck);
 
+            m_transitionProgress = 0.0;
             // Set the state as FADING.
             m_eState = thisDeck.isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
             emitAutoDJStateChanged(m_eState);
         }
 
-        if (thisPlayPosition >= thisDeck.fadeEndPos) {
-            // If this track has passed the end of its target fade then we stop
-            // it. We don't handle mode switches here since that's handled by
+        double crossfaderTarget;
+        if (m_eState == ADJ_LEFT_FADING) {
+            crossfaderTarget = 1.0;
+        } else if (m_eState == ADJ_RIGHT_FADING) {
+            crossfaderTarget = -1.0;
+        } else {
+            // this happens if the not playing track is cued into the autro region,
+            // calulated for the swapped rolls.
+            return;
+        }
+
+        double currentCrossfader = getCrossfader();
+
+        if (currentCrossfader == crossfaderTarget) {
+            // We are done, the fading (from) track is silenced.
+            // We don't handle mode switches here since that's handled by
             // the next playerPositionChanged call otherDeck (see the
             // P1/P2FADING case above).
             thisDeck.stop();
         } else {
-            // We are past this deck's posThreshold but before its
-            // posThreshold+fadeDuration, we move the crossfader linearly with
-            // movements in this track's play position.
-
-            // If thisDeck is left, the new crossfade value is -1 plus the
-            // adjustment.  If thisDeck is right, the new value is 1.0 minus the
-            // adjustment.
-            double crossfadeEdgeValue = -1.0;
-            double adjustment = 2 * (thisPlayPosition - thisDeck.fadeBeginPos) /
+            // We are in Fading state.
+            // Calcuate the current transitionProgress, the place between begin
+            // and end position and the step we have taken since the last call
+            double transitionProgress = (thisPlayPosition - thisDeck.fadeBeginPos) /
                     (thisDeck.fadeEndPos - thisDeck.fadeBeginPos);
-            bool isLeft = thisDeck.isLeft();
-            if (!isLeft) {
-                crossfadeEdgeValue = 1.0;
-                adjustment *= -1.0;
+            double transitionStep = transitionProgress - m_transitionProgress;
+            if (transitionStep > 0.0) {
+                // We have made progress. Beackwards seek pause the transitions
+                // forward seeks speed up the transitions. Seeks > EndPos end the
+                // transition immediately
+                double remainingCrossfader = crossfaderTarget - currentCrossfader;
+                double adjustment = remainingCrossfader /
+                        (1.0 - m_transitionProgress) * transitionStep;
+                // we move the crossfader linearly with
+                // movements in this track's play position.
+                setCrossfader(currentCrossfader + adjustment);
             }
-            setCrossfader(crossfadeEdgeValue + adjustment, isLeft);
+            m_transitionProgress = transitionProgress;
         }
     }
 }
