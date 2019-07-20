@@ -160,7 +160,7 @@ class MixxxBuild(object):
                 try:
                     import subprocess
                     pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
-                    default_qtdir = subprocess.check_output(pkg_config_cmd).decode(sys.stdout.encoding)
+                    default_qtdir = subprocess.check_output(pkg_config_cmd).decode()
                 finally:
                     pass
 
@@ -219,7 +219,7 @@ class MixxxBuild(object):
             import shlex
             import subprocess
             cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
-            cc_version = subprocess.check_output(cc_version_cmd).decode(sys.stdout.encoding)
+            cc_version = subprocess.check_output(cc_version_cmd).decode()
             self.compiler_is_gcc = 'gcc' in cc_version.lower()
             self.compiler_is_clang = 'clang' in cc_version.lower()
 
@@ -227,7 +227,7 @@ class MixxxBuild(object):
             if self.compiler_is_gcc:
                 self.gcc_major_version = None
                 gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
-                gcc_version = subprocess.check_output(gcc_version_cmd).decode(sys.stdout.encoding)
+                gcc_version = subprocess.check_output(gcc_version_cmd).decode()
                 # If match is None we don't know the version.
                 if not gcc_version is None:
                     version_split = gcc_version.split('.')
