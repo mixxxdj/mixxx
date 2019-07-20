@@ -158,16 +158,18 @@ class MixxxBuild(object):
 
         # Try fallback to pkg-config on Linux
         if not os.path.isdir(default_qtdir) and self.platform == 'linux':
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                try:
-                    pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
-                    default_qtdir = subprocess.check_output(pkg_config_cmd).decode()
-                finally:
-                    pass
+            pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
+            try:
+                output = subprocess.check_output(pkg_config_cmd)
+            except FileNotFoundError:
+                # pkg-config is not installed
+                pass
+            else:
+                default_qtdir = output.decode().rstrip()
 
         # Ugly hack to check the qtdir argument
-        qtdir = Script.ARGUMENTS.get('qtdir',
-                                     os.environ.get('QTDIR', default_qtdir))
+        qtdir = Script.ARGUMENTS.get(
+            'qtdir', os.environ.get('QTDIR', default_qtdir)).rstrip()
 
         # Validate the specified qtdir exists
         if not os.path.isdir(qtdir):

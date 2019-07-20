@@ -211,13 +211,16 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                try:
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    if os.path.isdir(core):
-                        return core
+        pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
+        try:
+            output = subprocess.check_output(pkg_config_cmd)
+        except FileNotFoundError:
+            # pkg-config is not installed
+            pass
+        else:
+            core = output.decode().rstrip()
+            if os.path.isdir(core):
+                return core
 
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
