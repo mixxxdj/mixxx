@@ -650,10 +650,10 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     return m_childModel.index(selected_row, 0);
 }
 
-void BasePlaylistFeature::updateChildModel(int playlistId) {
+void BasePlaylistFeature::updateChildModel(int changedPlaylistId) {
     // the following call fetches whole m_playlistList.
     // Anything may have change due to a concurrent Mixxx instance.
-    updatePlaylistList(playlistId);
+    reloadPlaylistInPlaylistList(changedPlaylistId);
 
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
@@ -661,7 +661,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 
-        if (playlistId == playlist_id) {
+        if (changedPlaylistId == playlist_id) {
             TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
             item->setLabel(playlist_name);
             item->setData(playlist_id);

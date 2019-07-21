@@ -41,7 +41,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
  protected:
     void buildPlaylistList() override;
-    void updatePlaylistList(int playlist_id) override;
+    void reloadPlaylistInPlaylistList(int playlist_id) override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   private:

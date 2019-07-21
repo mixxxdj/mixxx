@@ -19,6 +19,28 @@
 #include "util/dnd.h"
 #include "util/duration.h"
 
+namespace {
+
+QString createPlaylistLable(
+        const QSqlTableModel& playlistTableModel,
+        int row,
+        int nameColumn,
+        int countColumn,
+        int durationColumn) {
+    QString name = playlistTableModel.data(
+        playlistTableModel.index(row, nameColumn)).toString();
+    int count = playlistTableModel.data(
+        playlistTableModel.index(row, countColumn)).toInt();
+    int duration = playlistTableModel.data(
+        playlistTableModel.index(row, durationColumn)).toInt();
+    return QString("%1 (%2) %3").arg(name, QString::number(count),
+            mixxx::Duration::formatSeconds(duration));
+}
+
+
+}
+
+
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
                                  UserSettingsPointer pConfig)
@@ -164,20 +186,13 @@ void PlaylistFeature::buildPlaylistList() {
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
-        int count = playlistTableModel.data(
-            playlistTableModel.index(row, countColumn)).toInt();
-        int duration = playlistTableModel.data(
-            playlistTableModel.index(row, durationColumn)).toInt();
-        m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
-                                        .arg(name, QString::number(count),
-                                                mixxx::Duration::formatSeconds(duration))));
+                playlistTableModel.index(row, idColumn)).toInt();
+        m_playlistList.append(qMakePair(id, createPlaylistLable(
+                playlistTableModel, row, nameColumn, countColumn, durationColumn)));
     }
 }
 
-void PlaylistFeature::updatePlaylistList(int playlist_id) {
+void PlaylistFeature::reloadPlaylistInPlaylistList(int playlist_id) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("PlaylistsCountsDurations");
@@ -192,23 +207,17 @@ void PlaylistFeature::updatePlaylistList(int playlist_id) {
     int countColumn = record.indexOf("count");
     int durationColumn = record.indexOf("durationSeconds");
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        QString name = playlistTableModel.data(
-                playlistTableModel.index(row, nameColumn)).toString();
-        int count = playlistTableModel.data(
-                playlistTableModel.index(row, countColumn)).toInt();
-        int duration = playlistTableModel.data(
-                playlistTableModel.index(row, durationColumn)).toInt();
+    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
+    if (playlistTableModel.rowCount() > 0) {
         for (auto it = m_playlistList.begin();
                 it != m_playlistList.end(); ++it) {
             if (it->first == playlist_id) {
-                it->second = QString("%1 (%2) %3").arg(name,
-                        QString::number(count),
-                        mixxx::Duration::formatSeconds(duration));
+                it->second = createPlaylistLable(
+                        playlistTableModel, 0, nameColumn,
+                        countColumn, durationColumn);
                 break;
             }
         }
-        break;
     }
 }
 

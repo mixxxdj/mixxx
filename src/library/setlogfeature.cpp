@@ -145,7 +145,7 @@ void SetlogFeature::buildPlaylistList() {
     }
 }
 
-void SetlogFeature::updatePlaylistList(int playlist_id) {
+void SetlogFeature::reloadPlaylistInPlaylistList(int playlist_id) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
@@ -158,9 +158,10 @@ void SetlogFeature::updatePlaylistList(int playlist_id) {
     QSqlRecord record = playlistTableModel.record();
     int nameColumn = record.indexOf("name");
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
+    if (playlistTableModel.rowCount() > 0) {
         QString name = playlistTableModel.data(
-                playlistTableModel.index(row, nameColumn)).toString();
+                playlistTableModel.index(0, nameColumn)).toString();
         for (auto it = m_playlistList.begin();
                 it != m_playlistList.end(); ++it) {
             if (it->first == playlist_id) {
@@ -168,7 +169,6 @@ void SetlogFeature::updatePlaylistList(int playlist_id) {
                 break;
             }
         }
-        break;
     }
 }
 
