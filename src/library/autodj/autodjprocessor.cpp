@@ -219,12 +219,12 @@ void AutoDJProcessor::fadeNow() {
     if (leftDeck.isPlaying() &&
             (!rightDeck.isPlaying() || crossfader < 0.0)) {
         // Make sure leftDeck.fadeDuration is up to date.
-        calculateTransition(&leftDeck, &rightDeck, true);
+        calculateTransition(&leftDeck, &rightDeck, true, false);
         // Repeat is disabled by FadeNow but disables auto Fade
         leftDeck.setRepeat(false);
     } else if (rightDeck.isPlaying()) {
         // Make sure rightDeck.fadeDuration is up to date.
-        calculateTransition(&rightDeck, &leftDeck, true);
+        calculateTransition(&rightDeck, &leftDeck, true, false);
         // Repeat is disabled by FadeNow but disables auto Fade
         rightDeck.setRepeat(false);
     }
@@ -382,15 +382,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // until the playing deck crosses posThreshold to start fading.
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
-                // Update fade thresholds for the left deck.
-                calculateTransition(&deck1, &deck2, false);
                 // Load track into the right deck.
                 emitLoadTrackToPlayer(nextTrack, deck2.group, false);
                 // Move crossfader to the left.
                 setCrossfader(-1.0);
             } else {
-                // Update fade thresholds for the right deck.
-                calculateTransition(&deck2, &deck1, false);
                 // Load track into the left deck.
                 emitLoadTrackToPlayer(nextTrack, deck1.group, false);
                 // Move crossfader to the right.
@@ -495,9 +491,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
                 // Note: calculateTransition() is called in playerTrackLoaded()
             } else {
-                // At least right Deck is playing
+                // At least right deck is playing
                 // Set crossfade thresholds for right deck.
-                calculateTransition(&rightDeck, &leftDeck, false);
+                calculateTransition(&rightDeck, &leftDeck, false, false);
             }
             emitAutoDJStateChanged(m_eState);
         }
@@ -532,9 +528,15 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         }
     }
 
-    if (m_eState == ADJ_IDLE && thisDeck.isRepeat()) {
-        // repeat pauses auto DJ
-        return;
+    if (m_eState == ADJ_IDLE) {
+        if (!thisDeckPlaying) {
+            // this is a cueing seek, recalculate the transition, from the
+            // new position
+            calculateTransition(&otherDeck, &thisDeck, false, false);
+        } else if (thisDeck.isRepeat()) {
+            // repeat pauses auto DJ
+            return;
+        }
     }
 
     // If we are past this deck's posThreshold then:
@@ -542,20 +544,21 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // - check if fading is done and stop the deck
     // - update the crossfader
     if (thisPlayPosition >= thisDeck.fadeBeginPos) {
-        if (m_eState == ADJ_IDLE && (thisDeckPlaying ||
-                                            thisPlayPosition >= 1.0)) {
-            if (!otherDeckPlaying) {
-                otherDeck.play();
+        if (m_eState == ADJ_IDLE) {
+            if (thisDeckPlaying || thisPlayPosition >= 1.0) {
+                if (!otherDeckPlaying) {
+                    otherDeck.play();
+                }
+
+                // Now that we have started the other deck playing, remove the track
+                // that was "on deck" from the top of the queue.
+                removeLoadedTrackFromTopOfQueue(otherDeck);
+
+                m_transitionProgress = 0.0;
+                // Set the state as FADING.
+                m_eState = thisDeck.isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
+                emitAutoDJStateChanged(m_eState);
             }
-
-            // Now that we have started the other deck playing, remove the track
-            // that was "on deck" from the top of the queue.
-            removeLoadedTrackFromTopOfQueue(otherDeck);
-
-            m_transitionProgress = 0.0;
-            // Set the state as FADING.
-            m_eState = thisDeck.isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
-            emitAutoDJStateChanged(m_eState);
         }
 
         double crossfaderTarget;
@@ -714,7 +717,7 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     // This is required because the user may have loaded a track or changed play
     // manually
     if (playing) {
-        calculateTransition(pAttributes, getOtherDeck(pAttributes), false);
+        calculateTransition(pAttributes, getOtherDeck(pAttributes), false, false);
     }
 }
 
@@ -724,7 +727,7 @@ void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, doubl
     }
 
     if (!pAttributes->loading && !pAttributes->isPlaying()) {
-        calculateTransition(getOtherDeck(pAttributes, true), pAttributes, false);
+        calculateTransition(getOtherDeck(pAttributes, true), pAttributes, false, false);
     }
 }
 
@@ -734,7 +737,7 @@ void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double 
     }
 
     if (!pAttributes->loading && !pAttributes->isPlaying()) {
-        calculateTransition(getOtherDeck(pAttributes, true), pAttributes, false);
+        calculateTransition(getOtherDeck(pAttributes, true), pAttributes, false, false);
     }
 }
 
@@ -744,7 +747,7 @@ void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, doubl
     }
 
     if (!pAttributes->loading && pAttributes->isPlaying()) {
-        calculateTransition(pAttributes, getOtherDeck(pAttributes, false), false);
+        calculateTransition(pAttributes, getOtherDeck(pAttributes, false), false, false);
     }
 }
 
@@ -754,7 +757,7 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
     }
 
     if (!pAttributes->loading && pAttributes->isPlaying()) {
-        calculateTransition(pAttributes, getOtherDeck(pAttributes, false), false);
+        calculateTransition(pAttributes, getOtherDeck(pAttributes, false), false, false);
     }
 }
 
@@ -828,7 +831,8 @@ double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttri
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
-        bool fadeNow) {
+        bool fadeNow,
+        bool seek) {
     if (pFromDeck == nullptr) {
         return;
     }
@@ -892,13 +896,18 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double outroLength = outroEnd - outroStart;
 
-    double introStart = getIntroStartPosition(pToDeck);
-    if (introStart <= 0.0) {
-        introStart = getFirstSoundPosition(pToDeck);
+    double introStart;
+    if (seek) {
+        introStart = getIntroStartPosition(pToDeck);
+        if (introStart <= 0.0) {
+            introStart = getFirstSoundPosition(pToDeck);
+        }
+    } else {
+        introStart = pToDeck->playPosition() * toTrackDuration;
     }
 
     double introEnd = getIntroEndPosition(pToDeck);
-    if (introEnd <= 0.0) {
+    if (introEnd < introStart) {
         introEnd = introStart;
     }
 
@@ -1042,7 +1051,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         // (ADJ_ENABLE_P1LOADED state) then play the track.
         loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
     } else {
-        calculateTransition(getOtherDeck(pDeck, true), pDeck, false);
+        calculateTransition(getOtherDeck(pDeck, true), pDeck, false, true);
         if (pDeck->startPos != kKeepPosition) {
             pDeck->setPlayPosition(pDeck->startPos);
         }
@@ -1116,10 +1125,10 @@ void AutoDJProcessor::setTransitionTime(int time) {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
         if (leftDeck.isPlaying()) {
-            calculateTransition(&leftDeck, &rightDeck, false);
+            calculateTransition(&leftDeck, &rightDeck, false, false);
         }
         if (rightDeck.isPlaying()) {
-            calculateTransition(&rightDeck, &leftDeck, false);
+            calculateTransition(&rightDeck, &leftDeck, false, false);
         }
     }
 }
@@ -1135,12 +1144,12 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         DeckAttributes& rightDeck = *m_decks[1];
 
         if (leftDeck.isPlaying() && !rightDeck.isPlaying()) {
-            calculateTransition(&leftDeck, &rightDeck, false);
+            calculateTransition(&leftDeck, &rightDeck, false, true);
             if (rightDeck.startPos != kKeepPosition) {
                 rightDeck.setPlayPosition(rightDeck.startPos);
             }
         } else if (rightDeck.isPlaying() && !leftDeck.isPlaying()) {
-            calculateTransition(&rightDeck, &leftDeck, false);
+            calculateTransition(&rightDeck, &leftDeck, false, true);
             if (leftDeck.startPos != kKeepPosition) {
                 leftDeck.setPlayPosition(leftDeck.startPos);
             }
