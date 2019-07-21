@@ -21,7 +21,6 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gdb
       - libavformat-dev
       - libchromaprint-dev
       - libfaad-dev
@@ -32,6 +31,7 @@ addons:
       - libmodplug-dev
       - libmp3lame-dev
       - libmp4v2-dev
+      - libopus-dev
       - libopusfile-dev
       - libportmidi-dev
       - libprotobuf-dev
@@ -52,7 +52,7 @@ addons:
       - protobuf-compiler
       - qt5-default
       - qtscript5-dev
-      - qtkeychain-dev
+      - qt5keychain-dev
       - scons
   homebrew:
     update: true
@@ -82,15 +82,12 @@ addons:
       - wavpack
 
 install:
-  ####
-  # Common build prerequisites
-
   # Build flags common to OS X and Linux.
   # Parallel builds are important for avoiding OSX build timeouts.
   # We turn off verbose output to avoid going over the 4MB output limit.
-  - export COMMON="-j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+  # TODO(2019-07-21): Add "ffmpeg=1" if FFmpeg 4.x becomes available in Ubuntu
+  - export COMMON_FLAGS="-j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
 
-  #####
   # Ubuntu Xenial build prerequisites
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export EXTRA_FLAGS="localecompare=1"; fi
 
@@ -105,11 +102,10 @@ install:
   # NOTE(rryan): 2016-11-15 we are experiencing Travis timeouts for the OSX
   # build.  Turning off optimizations to see if that speeds up compile times.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
+  # TODO(2019-07-21): Move "ffmpeg=1" into COMMON_FLAGS if FFmpeg 4.x becomes available in Ubuntu
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export EXTRA_FLAGS="ffmpeg=1 optimize=none asan=0 localecompare=0"; fi
 
-  ####
-  # Common build
-  - scons $COMMON $EXTRA_FLAGS
+  - scons $COMMON_FLAGS $EXTRA_FLAGS
 
 before_script:
   # Virtual X (Xvfb) is needed for analyzer waveform tests
