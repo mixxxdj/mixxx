@@ -37,7 +37,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
 
     // initialized in a new generic slot(get new history playlist purpose)
-    emit(slotGetNewPlaylist());
+    slotGetNewPlaylist();
 }
 
 SetlogFeature::~SetlogFeature() {
