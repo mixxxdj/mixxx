@@ -1,4 +1,3 @@
-#include <QtAlgorithms>
 #include <QtDebug>
 
 #include "library/banshee/bansheeplaylistmodel.h"

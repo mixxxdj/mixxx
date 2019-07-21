@@ -73,7 +73,7 @@ QString KeyFactory::getPreferredSubVersion(
             it.key(), kSubVersionKeyValueSeparator, it.value());
     }
 
-    qSort(fragments);
+    std::sort(fragments.begin(), fragments.end());
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
 }
 
