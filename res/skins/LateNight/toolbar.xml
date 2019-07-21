@@ -196,7 +196,7 @@
         <Children>
           <Time>
             <TooltipId>time</TooltipId>
-            <ShowSeconds>false</ShowSeconds>
+            <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
       </WidgetGroup>
