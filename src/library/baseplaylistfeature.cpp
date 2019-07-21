@@ -708,8 +708,8 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-            it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+            it != m_playlistList.constEnd(); ++it, ++row) {
         TreeItem* playlist = rootItem->child(row);
         if (playlist == nullptr) {
             continue;
