@@ -527,10 +527,10 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
-#BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"],
+#FxAssignButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
-#FxAssignButton[displayValue="0"] {
+#BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"] {
   color: #ddd;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
@@ -539,11 +539,11 @@ WEffectButtonParameter*/
 
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
+#FxAssignButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
-#SettingsButton[displayValue="1"],
-#FxAssignButton[displayValue="1"] {
+#SettingsButton[displayValue="1"] {
   color: #0e0e0e;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
@@ -1094,60 +1094,53 @@ border: 0px;
   padding: 2px 0px 0px 2px;
 }
 
-#MicContainer, #AuxContainer {
+#MicRack, #AuxRack {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   background-color: #1e1e1e;
+  padding: 4px;
+  qproperty-layoutSpacing: 5;
+  }
+  #MicRack {
+    margin: 5px 5px 0px 0px;
+  }
+  #AuxRack {
+    margin: 5px 0px 0px 5px;
+  }
+
+#MicAuxUnit {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #585858;
+  border-bottom: 1px solid #585858;
 }
 
-#MicContainer {
-  margin: 5px 5px 0px 0px;
-  padding: 1px 6px 3px 6px;
-}
-
-#AuxContainer {
-  margin: 5px 0px 0px 5px;
-  padding: 1px 0px 3px 6px;
+#MicAuxInterior {
+  padding: 0px 2px 3px 2px;
 }
 
 #MicTitle {
-  qproperty-alignment: 'AlignLeft | AlignTop';
-  text-transform: uppercase;
-  font-size: 15px/17px;
-}
-
-#MicBorder {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  margin: 1px 6px 1px 0px;
-}
-
-#MicInterior {
-  padding: 0px 3px 2px 3px;
-}
-
-#MicSubTitle {
   qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
-  text-align: center;
-}
-
-#MicDuckingTitle {
-  qproperty-alignment: 'AlignCenter | AlignTop';
-  font-size: 12px/13px;
-  font-weight: bold;
-  color: #585858;
   text-align: center;
 }
 
 #MicDuckingContainer {
-  margin: 0px 0px 3px 0px;
+  qproperty-alignment: 'AlignCenter | AlignTop'; /*
+  background-color: #548731;  */
 }
 
-#MicDuckingButton[displayValue="0"] {
-  color: #ddd;
-  }
+#MicDuckingStrengthKnob {
+  margin: 2px 0px;
+}
 
+/* styled like GuiToggleButton, VinylButton etc */
+#MicDuckingButton {
+  }
+  #MicDuckingButton[displayValue="0"] {
+    color: #ddd;
+  }
   #MicDuckingButton[displayValue="1"],
   #MicDuckingButton[displayValue="2"] {
     color: #0e0e0e;
@@ -1195,12 +1188,6 @@ border: 0px;
 #SamplerDeck {
   border: 1px solid #585858;
   background-color: #1e1e1e;
-}
-
-#SamplerExpandbutton {
-}
-
-#SamplerMainControls {
 }
 
 #SamplerText {
