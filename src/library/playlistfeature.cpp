@@ -177,6 +177,41 @@ void PlaylistFeature::buildPlaylistList() {
     }
 }
 
+void PlaylistFeature::updatePlaylistList(int playlist_id) {
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    playlistTableModel.setTable("PlaylistsCountsDurations");
+    QString filter = "id=" + QString::number(playlist_id);
+    playlistTableModel.setFilter(filter);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+        QString name = playlistTableModel.data(
+                playlistTableModel.index(row, nameColumn)).toString();
+        int count = playlistTableModel.data(
+                playlistTableModel.index(row, countColumn)).toInt();
+        int duration = playlistTableModel.data(
+                playlistTableModel.index(row, durationColumn)).toInt();
+        for (auto it = m_playlistList.begin();
+                it != m_playlistList.end(); ++it) {
+            if (it->first == playlist_id) {
+                it->second = QString("%1 (%2) %3").arg(name,
+                        QString::number(count),
+                        mixxx::Duration::formatSeconds(duration));
+                break;
+            }
+        }
+        break;
+    }
+}
+
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));

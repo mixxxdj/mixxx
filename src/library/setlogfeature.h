@@ -33,8 +33,9 @@ public:
     void slotGetNewPlaylist();
 
   protected:
-    void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
+    void buildPlaylistList() override;
+    void updatePlaylistList(int playlist_id) override;
+    void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
