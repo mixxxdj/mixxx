@@ -67,8 +67,13 @@ class TrackFile {
     qint64 fileSize() const {
         return m_fileInfo.size();
     }
+
     QDateTime fileCreated() const {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        return m_fileInfo.birthTime();
+#else
         return m_fileInfo.created();
+#endif
     }
     QDateTime fileLastModified() const {
         return m_fileInfo.lastModified();
