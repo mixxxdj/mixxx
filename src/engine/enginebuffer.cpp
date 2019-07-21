@@ -1125,7 +1125,8 @@ void EngineBuffer::processSeek(bool paused) {
     // call anyway again.
 
     SeekRequests seekType = static_cast<SeekRequest>(
-            m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
+            m_iSeekQueued.loadAcquire());
+
     double position = m_queuedSeekPosition.getValue();
 
     // Don't allow the playposition to go past the end.
@@ -1169,6 +1170,7 @@ void EngineBuffer::processSeek(bool paused) {
     if (position != m_filepos_play) {
         setNewPlaypos(position);
     }
+    m_iSeekQueued.storeRelease(SEEK_NONE);
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
@@ -1282,6 +1284,11 @@ bool EngineBuffer::isTrackLoaded() {
         return true;
     }
     return false;
+}
+
+bool EngineBuffer::isSeekQueued(double* pSeekPosition) {
+    *pSeekPosition = m_queuedSeekPosition.getValue();
+    return m_iSeekQueued.load() != SEEK_NONE;
 }
 
 void EngineBuffer::slotEjectTrack(double v) {
