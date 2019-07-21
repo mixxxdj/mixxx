@@ -1213,7 +1213,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // in ascending order. This is necessary because if track A is above track B in
         // the table, and you remove track A, the model index for track B will change.
         // Sorting the indices first means we don't have to worry about this.
-        //std::sort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
+        //std::sort(m_selectedIndices.begin(), m_selectedIndices.end(), std::greater<QModelIndex>());
         std::sort(selectedRows.begin(), selectedRows.end());
         int maxRow = 0;
         int minRow = 0;
@@ -1240,7 +1240,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                 // to make the algorithm below work as it is
                 std::sort(selectedRows.begin(),
                       selectedRows.end(),
-                      qGreater<int>());
+                      std::greater<int>());
             } else {
                if (destRow > maxRow) {
                    // If we're moving the tracks _down_,
