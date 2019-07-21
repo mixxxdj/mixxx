@@ -20,6 +20,7 @@ addons:
       - libfaad-dev
       - libflac-dev
       - libid3tag0-dev
+      - liblilv-dev
       - libmad0-dev
       - libmodplug-dev
       - libmp3lame-dev
@@ -30,6 +31,7 @@ addons:
       - libqt5opengl5-dev
       - libqt5sql5-sqlite
       - libqt5svg5-dev
+      - libqt5x11extras5-dev
       - librubberband-dev
       - libshout3-dev
       - libsndfile1-dev
@@ -43,15 +45,39 @@ addons:
       - protobuf-compiler
       - qt5-default
       - qtscript5-dev
-      - libqt5x11extras5-dev
-      - scons
       - qtkeychain-dev
-      - liblilv-dev
+      - scons
+  homebrew:
+    update: true
+    packages:
+      - chromaprint
+      - faad2
+      - ffmpeg
+      - flac
+      - lame
+      - libsndfile
+      - libogg libvorbis
+      - libshout
+      - libmodplug
+      - libid3tag
+      - libmad
+      - lilv
+      - mp4v2
+      - opusfile
+      - portaudio
+      - portmidi
+      - protobuf
+      - qt
+      - rubberband
+      - scons
+      - sound-touch
+      - taglib
+      - wavpack
+
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame sound-touch; fi
 
 install:
   ####
