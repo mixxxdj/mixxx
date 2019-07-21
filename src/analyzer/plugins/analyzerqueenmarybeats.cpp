@@ -91,8 +91,8 @@ bool AnalyzerQueenMaryBeats::finalize() {
     size_t firstBeat = 0;
     if (beats.size() >= 3) {
         if (m_detectionResults.at(beats.at(0)) <
-            (m_detectionResults.at(beats.at(0)) +
-                    m_detectionResults.at(beats.at(0))) / 4) {
+                (m_detectionResults.at(beats.at(1)) +
+                m_detectionResults.at(beats.at(2))) / 4) {
             // the beat is not half es high than the average of the two
             // following beats. Skip it.
             firstBeat = 1;
@@ -100,7 +100,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
             int diff = (beats.at(1) - beats.at(0)) - (beats.at(2) - beats.at(1));
             // we don't allow a signifcant tempo change after the first beat
             if (diff > 2 || diff < -2) {
-                // firt beat is off grid. Skip it.
+                // first beat is off grid. Skip it.
                 firstBeat = 1;
             }
         }
