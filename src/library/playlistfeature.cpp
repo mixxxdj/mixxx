@@ -90,7 +90,6 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
-    //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 

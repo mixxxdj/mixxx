@@ -1093,7 +1093,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
             continue;
         }
         rows.insert(index.row());
-        QUrl url = TrackRef::locationUrl(getTrackLocation(index));
+        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;

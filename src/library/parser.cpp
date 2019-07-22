@@ -38,32 +38,30 @@ long Parser::countParsed() {
 }
 
 bool Parser::isBinary(QString filename) {
+    char firstByte;
     QFile file(filename);
-
-    if (file.open(QIODevice::ReadOnly)) {
-        char c;
-        unsigned char uc;
-
-        if(!file.getChar(&c))
-        {
-          qDebug() << "Parser: Error reading stream on " << filename;
-          return true; //should this raise an exception?
+    if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {
+        // If starting byte is not an ASCII character then the file
+        // probably contains binary data.
+        if (firstByte >= 32 && firstByte <= 126) {
+            // Valid ASCII character
+            return false;
         }
-
-        uc = uchar(c);
-
-        if(!(33<=uc && uc<=127))  //Starting byte is no character
-        {
-            file.close();
+        // Check for UTF-8 BOM
+        if (firstByte == static_cast<char>(0xEF)) {
+            char nextChar;
+            if (file.getChar(&nextChar) &&
+                    nextChar == static_cast<char>(0xBB) &&
+                    file.getChar(&nextChar) &&
+                    nextChar == static_cast<char>(0xBF)) {
+                // UTF-8 text file
+                return false;
+            }
             return true;
         }
-
-    } else{
-        qDebug() << "Parser: Could not open file: " << filename;
     }
-    //qDebug(QString("Parser: textstream starting character is: %1").arg(i));
-    file.close();
-    return false;
+    qDebug() << "Parser: Error reading from" << filename;
+    return true; //should this raise an exception?
 }
 
 // The following public domain code is taken from
@@ -148,11 +146,11 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-QString Parser::playlistEntrytoLocalFile(const QString& playlistEntry) {
+TrackFile Parser::playlistEntryToTrackFile(const QString& playlistEntry) {
     if (playlistEntry.startsWith("file:")) {
-        return QUrl(playlistEntry).toLocalFile();
+        return TrackFile::fromUrl(QUrl(playlistEntry));
     }
 
-    return QString(playlistEntry).replace('\\', '/');
+    return TrackFile(QString(playlistEntry).replace('\\', '/'));
 }
 

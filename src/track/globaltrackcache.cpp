@@ -162,7 +162,7 @@ TrackPointer GlobalTrackCacheLocker::lookupTrackByRef(
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken)
         : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
     DEBUG_ASSERT(m_pInstance);
@@ -170,7 +170,7 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         TrackId trackId,
         SecurityTokenPointer pSecurityToken)
         : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
@@ -279,23 +279,21 @@ void GlobalTrackCache::relocateTracks(
             ++i) {
         const QString oldCanonicalLocation = i->first;
         Track* plainPtr = i->second->getPlainPtr();
-        QFileInfo fileInfo = plainPtr->getFileInfo();
-        // The file info has to be refreshed, otherwise it might return
-        // a cached and outdated absolute and canonical location!
-        fileInfo.refresh();
+        auto fileInfo = plainPtr->getFileInfo();
         TrackRef trackRef = TrackRef::fromFileInfo(
                 fileInfo,
                 plainPtr->getId());
         if (!trackRef.hasCanonicalLocation() && trackRef.hasId() && pRelocator) {
-            fileInfo = pRelocator->relocateCachedTrack(
+            auto relocatedFileInfo = pRelocator->relocateCachedTrack(
                         trackRef.getId(),
                         fileInfo);
-            if (fileInfo != plainPtr->getFileInfo()) {
-                plainPtr->relocate(fileInfo);
+            if (fileInfo != relocatedFileInfo) {
+                plainPtr->relocate(relocatedFileInfo);
+                trackRef = TrackRef::fromFileInfo(
+                        relocatedFileInfo,
+                        trackRef.getId());
+                fileInfo = std::move(relocatedFileInfo);
             }
-            trackRef = TrackRef::fromFileInfo(
-                    fileInfo,
-                    trackRef.getId());
         }
         if (!trackRef.hasCanonicalLocation()) {
             kLogger.warning()
@@ -445,7 +443,7 @@ TrackPointer GlobalTrackCache::revive(
 
 void GlobalTrackCache::resolve(
         GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-        QFileInfo /*in*/ fileInfo,
+        TrackFile /*in*/ fileInfo,
         TrackId trackId,
         SecurityTokenPointer pSecurityToken) {
     DEBUG_ASSERT(pCacheResolver);

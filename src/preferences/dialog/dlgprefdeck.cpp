@@ -20,6 +20,7 @@
 #include "mixxx.h"
 #include "defs_urls.h"
 #include "util/duration.h"
+#include "util/compatibility.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;

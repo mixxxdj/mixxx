@@ -60,11 +60,6 @@ class DragAndDropHelper final {
             QWidget* pDragSource,
             QString sourceIdentifier);
 
-    static QUrl urlFromLocation(
-            const QString& trackLocation) {
-        return QUrl::fromLocalFile(trackLocation);
-    }
-
     static void handleTrackDragEnterEvent(
             QDragEnterEvent* event,
             const QString& group,

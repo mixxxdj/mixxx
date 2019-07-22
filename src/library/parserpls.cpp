@@ -114,18 +114,18 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath) {
             ++iPos;
 
             QString filename = textline.right(textline.length() - iPos);
-            QString trackLocation = playlistEntrytoLocalFile(filename);
+            TrackFile trackFile = playlistEntryToTrackFile(filename);
 
-            if(QFile::exists(trackLocation)) {
-                return trackLocation;
+            if(trackFile.checkFileExists()) {
+                return trackFile.location();
             } else {
                 // Try relative to pls dir
-                QString rel = QDir(basepath).filePath(trackLocation);
+                QString rel = QDir(basepath).filePath(trackFile.location());
                 if (QFile::exists(rel)) {
                     return rel;
                 }
                 // We couldn't match this to a real file so ignore it
-                qWarning() << trackLocation << "not found";
+                qWarning() << trackFile.location() << "not found";
             }
         }
         textline = stream->readLine();

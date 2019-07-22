@@ -24,9 +24,9 @@ private:
     friend class GlobalTrackCache;
     // Try to determine and return the relocated file info
     // or otherwise return just the provided file info.
-    virtual QFileInfo relocateCachedTrack(
+    virtual TrackFile relocateCachedTrack(
             TrackId trackId,
-            QFileInfo fileInfo) = 0;
+            TrackFile fileInfo) = 0;
 
 protected:
     virtual ~GlobalTrackCacheRelocator() {}
@@ -110,10 +110,10 @@ protected:
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheResolver(
-                QFileInfo fileInfo,
+                TrackFile fileInfo,
                 SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     GlobalTrackCacheResolver(
-                QFileInfo fileInfo,
+                TrackFile fileInfo,
                 TrackId trackId,
                 SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
@@ -199,7 +199,7 @@ private:
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-            QFileInfo /*in*/ fileInfo,
+            TrackFile /*in*/ fileInfo,
             TrackId /*in*/ trackId,
             SecurityTokenPointer /*in*/ pSecurityToken);
 

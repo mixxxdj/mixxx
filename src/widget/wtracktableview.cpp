@@ -1290,7 +1290,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         for (const QFileInfo& fileInfo : fileList) {
-            fileLocationList.append(TrackRef::location(fileInfo));
+            fileLocationList.append(TrackFile(fileInfo).location());
         }
 
         // Drag-and-drop from an external application

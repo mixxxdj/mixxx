@@ -88,6 +88,9 @@ class parented_ptr {
 
   private:
     T* m_ptr;
+
+    template<typename>
+    friend class parented_ptr;
 };
 
 namespace {
