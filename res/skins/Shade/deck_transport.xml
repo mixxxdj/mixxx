@@ -470,6 +470,7 @@
         <Children>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
+            <ObjectName>HotcueButton</ObjectName>
             <Pos>0,0</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -501,9 +502,14 @@
               <ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_enabled</ConfigKey>
               <ConnectValueFromWidget>false</ConnectValueFromWidget>
             </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_color_id</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
           </PushButton>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
+            <ObjectName>HotcueButton</ObjectName>
             <Pos>21,0</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -535,9 +541,14 @@
               <ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_enabled</ConfigKey>
               <ConnectValueFromWidget>false</ConnectValueFromWidget>
             </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_color_id</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
           </PushButton>
           <PushButton>
             <TooltipId>hotcue</TooltipId>
+            <ObjectName>HotcueButton</ObjectName>
             <Pos>0,21</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -569,8 +580,13 @@
               <ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_enabled</ConfigKey>
               <ConnectValueFromWidget>false</ConnectValueFromWidget>
             </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_color_id</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
           </PushButton>
           <PushButton>
+            <ObjectName>HotcueButton</ObjectName>
             <TooltipId>hotcue</TooltipId>
             <Pos>21,21</Pos>
             <Style></Style>
@@ -602,6 +618,10 @@
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_enabled</ConfigKey>
               <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_color_id</ConfigKey>
+              <BindProperty>highlight</BindProperty>
             </Connection>
           </PushButton>
         </Children>

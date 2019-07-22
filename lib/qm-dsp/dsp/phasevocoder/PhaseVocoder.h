@@ -13,8 +13,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef PHASEVOCODER_H
-#define PHASEVOCODER_H
+#ifndef QM_DSP_PHASEVOCODER_H
+#define QM_DSP_PHASEVOCODER_H
 
 class FFTReal;
 

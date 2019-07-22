@@ -25,10 +25,10 @@ Variables:
     <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
     <PlayPosColor>#FF4300</PlayPosColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-    <EndOfTrackColor>#EA0085</EndOfTrackColor>
+    <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
     <DefaultMark>
       <Align>bottom|right</Align>
-      <Color>#00FF00</Color>
+      <Color>#666666</Color>
       <TextColor>#FFFFFF</TextColor>
       <Text> %1 </Text>
     </DefaultMark>
@@ -56,12 +56,16 @@ Variables:
       <EndControl>intro_end_position</EndControl>
       <Color>#0000FF</Color>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>after</DurationTextLocation>
     </MarkRange>
     <MarkRange>
       <StartControl>outro_start_position</StartControl>
       <EndControl>outro_end_position</EndControl>
       <Color>#0000FF</Color>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>before</DurationTextLocation>
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>

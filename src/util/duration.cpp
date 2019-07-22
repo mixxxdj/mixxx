@@ -46,6 +46,10 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
     if (days > 0) {
         durationString = QString("%1:").arg(days * 24 + t.hour()) % durationString;
     }
+    // remove leading 0
+    if (durationString.at(0) == '0' && durationString.at(1) != ':') {
+        durationString = durationString.right(durationString.length() - 1);
+    }
 
     // The format string gives us milliseconds but we want
     // centiseconds. Slice one character off.

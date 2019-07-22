@@ -178,6 +178,10 @@ void DlgAnalysis::onTrackAnalysisSchedulerProgress(
     }
 }
 
+void DlgAnalysis::onTrackAnalysisSchedulerFinished() {
+    slotAnalysisActive(false);
+}
+
 void DlgAnalysis::showRecentSongs() {
     m_pAnalysisLibraryTableModel->showRecentSongs();
 }

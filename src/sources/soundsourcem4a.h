@@ -18,7 +18,7 @@
 
 namespace mixxx {
 
-class SoundSourceM4A: public SoundSource {
+class SoundSourceM4A : public SoundSource {
   public:
     explicit SoundSourceM4A(const QUrl& url);
     ~SoundSourceM4A() override;
@@ -65,8 +65,8 @@ class SoundSourceM4A: public SoundSource {
     LibFaadLoader* m_pFaad;
 };
 
-class SoundSourceProviderM4A: public SoundSourceProvider {
-public:
+class SoundSourceProviderM4A : public SoundSourceProvider {
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

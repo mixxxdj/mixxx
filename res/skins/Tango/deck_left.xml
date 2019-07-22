@@ -41,7 +41,7 @@ Variables:
                 </Children>
               </WidgetGroup>
 
-              <Template src="skin:deck_row_comment_left.xml"/>
+              <Template src="skin:deck_row_comment_fx_left.xml"/>
 
               <WidgetGroup><!-- Parallel Artist + Time -->
                 <Layout>horizontal</Layout>

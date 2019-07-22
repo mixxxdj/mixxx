@@ -24,6 +24,32 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
+              <!-- QuickEffect knob + Enable indicator underneath -->
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>stacked</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>QuickEffectRack_super1</TooltipId>
+                    <Size>30f,26f</Size>
+                    <Knob>knobs_sliders/knob_blue.svg</Knob>
+                    <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey><Variable name="QuickFxGroup"/>,super1</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
+                    <SetVariable name="Size">30f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
               <!-- QuickFx enable button at the SIDE when an EQ is loaded
               AND when EQ Kill buttons are visible -->
               <WidgetGroup>
@@ -54,32 +80,6 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-
-              <!-- QuickEffect knob + Enable indicator underneath -->
-              <WidgetGroup>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>stacked</Layout>
-                <Children>
-                  <KnobComposed>
-                    <TooltipId>QuickEffectRack_super1</TooltipId>
-                    <Size>30f,26f</Size>
-                    <Knob>knobs_sliders/knob_blue.svg</Knob>
-                    <BackPath>knobs_sliders/knob_bg.svg</BackPath>
-                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                    <KnobCenterYOffset>2.000</KnobCenterYOffset>
-                    <Connection>
-                      <ConfigKey><Variable name="QuickFxGroup"/>,super1</ConfigKey>
-                    </Connection>
-                  </KnobComposed>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
-                    <SetVariable name="Size">30f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
               
             </Children>
           </WidgetGroup>
@@ -92,7 +92,7 @@ Variables:
             <Children>
               <WidgetGroup>
                 <ObjectName>QuickFXBottom</ObjectName>
-                <Size>30f,20f</Size>
+                <Size>30f,16f</Size>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:button_2state.xml">

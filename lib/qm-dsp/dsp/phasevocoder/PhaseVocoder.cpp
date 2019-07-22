@@ -105,17 +105,17 @@ void PhaseVocoder::reset()
 }
 
 void PhaseVocoder::getMagnitudes(double *mag)
-{	
+{       
     for (int i = 0; i < m_n/2 + 1; i++) {
-	mag[i] = sqrt(m_real[i] * m_real[i] + m_imag[i] * m_imag[i]);
+        mag[i] = sqrt(m_real[i] * m_real[i] + m_imag[i] * m_imag[i]);
     }
 }
 
 void PhaseVocoder::getPhases(double *theta)
 {
     for (int i = 0; i < m_n/2 + 1; i++) {
-	theta[i] = atan2(m_imag[i], m_real[i]);
-    }	
+        theta[i] = atan2(m_imag[i], m_real[i]);
+    }   
 }
 
 void PhaseVocoder::unwrapPhases(double *theta, double *unwrapped)

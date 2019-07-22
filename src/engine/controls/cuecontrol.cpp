@@ -551,6 +551,11 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
 
+    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
+        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
+        pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
+    };
+
     // If quantize is enabled and we are not playing, jump to the cue point
     // since it's not necessarily where we currently are. TODO(XXX) is this
     // potentially invalid for vinyl control?
@@ -1666,8 +1671,10 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The id of the predefined color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color_id"));
-    connect(m_hotcueColor, SIGNAL(valueChanged(double)),
-            this, SLOT(slotHotcueColorChanged(double)),
+    connect(m_hotcueColor,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueColorChanged,
             Qt::DirectConnection);
 
     m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));

@@ -78,5 +78,7 @@ WLibrary QRadioButton::indicator:checked {
  background: url(skin:/btn/btn_lib_radio_button_on_dark.svg) center center;
 }
 
-
-
+/* Hotcue Color: No Color */
+#HotcueButton[highlight="0"] {
+    background-color: #b39a00;
+}

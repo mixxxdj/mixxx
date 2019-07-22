@@ -14,7 +14,7 @@ BatteryLinux::~BatteryLinux() {
 }
 
 void BatteryLinux::read() {
-    m_iMinutesLeft = 0;
+    m_iMinutesLeft = Battery::TIME_UNKNOWN;
     m_dPercentage = 0.0;
     m_chargingState = Battery::UNKNOWN;
 
@@ -89,9 +89,11 @@ void BatteryLinux::read() {
         }
 
         m_dPercentage = percentage;
-        if (m_chargingState == CHARGING) {
+
+        // upower tells us the remainging time in seconds (0 if unknown)
+        if (m_chargingState == CHARGING && timeToFull > 0) {
           m_iMinutesLeft = timeToFull / 60;
-        } else if (m_chargingState == DISCHARGING) {
+        } else if (m_chargingState == DISCHARGING && timeToEmpty > 0) {
           m_iMinutesLeft = timeToEmpty / 60;
         }
         break;
