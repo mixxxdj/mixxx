@@ -1,13 +1,7 @@
 <Template>
   <WidgetGroup>
-    <Size>0e,64f</Size>
-    <BackPath>style/style_bg_deck_botom_mid.png</BackPath>
-    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-  </WidgetGroup>
-  <WidgetGroup>
-    <Size>243f,64f</Size>
-    <BackPath>style/style_bg_deck_botom_mid.png</BackPath>
-    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+    <Size>243f,59f</Size>
+    <Style>QGroupBox { border: 0px solid red;} QWidget { margin: 0; padding: 0; }</Style>
     <Children>
         <!--
       **********************************************
@@ -468,162 +462,22 @@
         <Pos>197,14</Pos>
         <Size>43f,43f</Size>
         <Children>
-          <PushButton>
-            <TooltipId>hotcue</TooltipId>
-            <ObjectName>HotcueButton</ObjectName>
-            <Pos>0,0</Pos>
-            <Style></Style>
-            <NumberStates>2</NumberStates>
-            <LeftClickIsPushButton>true</LeftClickIsPushButton>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Pressed>skin:/btn/btn_hotcue_1_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_1.png</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed>skin:/btn/btn_hotcue_1_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_1_over.png</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_activate</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_clear</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_enabled</ConfigKey>
-              <ConnectValueFromWidget>false</ConnectValueFromWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_color_id</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-            </Connection>
-          </PushButton>
-          <PushButton>
-            <TooltipId>hotcue</TooltipId>
-            <ObjectName>HotcueButton</ObjectName>
-            <Pos>21,0</Pos>
-            <Style></Style>
-            <NumberStates>2</NumberStates>
-            <LeftClickIsPushButton>true</LeftClickIsPushButton>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Pressed>skin:/btn/btn_hotcue_2_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_2.png</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed>skin:/btn/btn_hotcue_2_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_2_over.png</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_activate</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_clear</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_enabled</ConfigKey>
-              <ConnectValueFromWidget>false</ConnectValueFromWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_color_id</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-            </Connection>
-          </PushButton>
-          <PushButton>
-            <TooltipId>hotcue</TooltipId>
-            <ObjectName>HotcueButton</ObjectName>
-            <Pos>0,21</Pos>
-            <Style></Style>
-            <NumberStates>2</NumberStates>
-            <LeftClickIsPushButton>true</LeftClickIsPushButton>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Pressed>skin:/btn/btn_hotcue_3_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_3.png</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed>skin:/btn/btn_hotcue_3_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_3_over.png</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_activate</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_clear</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_enabled</ConfigKey>
-              <ConnectValueFromWidget>false</ConnectValueFromWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_color_id</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-            </Connection>
-          </PushButton>
-          <PushButton>
-            <ObjectName>HotcueButton</ObjectName>
-            <TooltipId>hotcue</TooltipId>
-            <Pos>21,21</Pos>
-            <Style></Style>
-            <NumberStates>2</NumberStates>
-            <LeftClickIsPushButton>true</LeftClickIsPushButton>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Pressed>skin:/btn/btn_hotcue_4_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_4.png</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed>skin:/btn/btn_hotcue_4_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_4_over.png</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_activate</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_clear</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_enabled</ConfigKey>
-              <ConnectValueFromWidget>false</ConnectValueFromWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_color_id</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-            </Connection>
-          </PushButton>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">1</SetVariable>
+            <SetVariable name="pos">0,0</SetVariable>
+          </Template>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">2</SetVariable>
+            <SetVariable name="pos">21,0</SetVariable>
+          </Template>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">3</SetVariable>
+            <SetVariable name="pos">0,21</SetVariable>
+          </Template>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">4</SetVariable>
+            <SetVariable name="pos">21,21</SetVariable>
+          </Template>
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>

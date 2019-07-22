@@ -1,7 +1,6 @@
 <Template>
   <WidgetGroup>
-    <Size>105f,64f</Size>
-    <BackPath>style/style_bg_deck_botom_mid.png</BackPath>
+    <Size>105f,59f</Size>
     <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
     <Children>
         <!--
@@ -72,7 +71,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>EffectUnit_<Variable name="group"/>_enabled</TooltipId>
+        <TooltipId>EffectUnit_<Variable name="effectgroup"/>_enabled</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
@@ -87,7 +86,7 @@
         </State>
           <Pos>4,35</Pos>
         <Connection>
-          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[<Variable name="group"/>]_enable</ConfigKey>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[<Variable name="effectgroup"/>]_enable</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
