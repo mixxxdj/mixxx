@@ -591,7 +591,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // We have made progress.
                 // Backward seeks pause the transitions; forward seeks speed up
                 // the transitions. If there has been a seek beyond endPos, end
-                // the transition immediately."
+                // the transition immediately.
                 double remainingCrossfader = crossfaderTarget - currentCrossfader;
                 double adjustment = remainingCrossfader /
                         (1.0 - m_transitionProgress) * transitionStep;
