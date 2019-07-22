@@ -531,7 +531,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     if (m_eState == ADJ_IDLE) {
         if (!thisDeckPlaying) {
             // this is a cueing seek, recalculate the transition, from the
-            // new position
+            // new position.
+            // This can be our own seek to startPos or a random seek by a user.
+            // we need to call calculateTransition() because we are not sure.
             calculateTransition(&otherDeck, &thisDeck, false, false);
         } else if (thisDeck.isRepeat()) {
             // repeat pauses auto DJ
@@ -893,7 +895,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         if (outroStart <= 0.0) {
             // Assume a zero length outro.
             // The outroEnd is automatically placed by AnalyzerSilence, so use
-            // that as a fallback if the user has not placed outroStart".
+            // that as a fallback if the user has not placed outroStart.
             outroStart = outroEnd;
         }
     }
@@ -1060,6 +1062,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     } else {
         calculateTransition(getOtherDeck(pDeck, true), pDeck, false, true);
         if (pDeck->startPos != kKeepPosition) {
+            // Note: this seek will trigger the playerPositionChanged slot
+            // which may calls the calculateTransition() again without seek = true;
             pDeck->setPlayPosition(pDeck->startPos);
         }
     }
@@ -1153,11 +1157,15 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         if (leftDeck.isPlaying() && !rightDeck.isPlaying()) {
             calculateTransition(&leftDeck, &rightDeck, false, true);
             if (rightDeck.startPos != kKeepPosition) {
+                // Note: this seek will trigger the playerPositionChanged slot
+                // which may calls the calculateTransition() again without seek = true;
                 rightDeck.setPlayPosition(rightDeck.startPos);
             }
         } else if (rightDeck.isPlaying() && !leftDeck.isPlaying()) {
             calculateTransition(&rightDeck, &leftDeck, false, true);
             if (leftDeck.startPos != kKeepPosition) {
+                // Note: this seek will trigger the playerPositionChanged slot
+                // which may calls the calculateTransition() again without seek = true;
                 leftDeck.setPlayPosition(leftDeck.startPos);
             }
         } else {
