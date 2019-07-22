@@ -887,7 +887,7 @@ WBeatSpinBox,
 /* End spacing for toolbar */
 
 #Time {
-  font: bold 12px;
+  font: bold 13px;
 }
 
 #KnobLabelH, #HeadSplit {

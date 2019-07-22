@@ -7,7 +7,6 @@
 #include <QStringBuilder>
 #include <QDir>
 #include <QFileInfo>
-#include <QtAlgorithms>
 
 #include "sources/soundsourceproxy.h"
 #include "preferences/usersettings.h"
@@ -151,7 +150,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
 
     QStringList dirs = directoryDao.getDirs();
     EXPECT_EQ(2, dirs.size());
-    qSort(dirs);
+    std::sort(dirs.begin(), dirs.end());
     EXPECT_THAT(dirs, ElementsAre(test2, testnew));
 }
 
