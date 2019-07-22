@@ -18,8 +18,8 @@
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
         <DefaultMark>
-          <Align>top</Align>
-          <Color>#00FF00</Color>
+          <Align>top|right</Align>
+          <Color>#FF0000</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>

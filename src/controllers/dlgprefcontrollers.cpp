@@ -107,7 +107,7 @@ void DlgPrefControllers::setupControllerWidgets() {
     // treepane on the left.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    qSort(controllerList.begin(), controllerList.end(), controllerCompare);
+    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(
