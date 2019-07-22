@@ -502,9 +502,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
     // In FADING states, we expect that both tracks are playing.
     // Normally the the fading fromDeck stops after the transition is over and
-    // we need to replace it with a new track from the cue. In the rare case the
+    // we need to replace it with a new track from the queue. In the rare case the
     // toDeck stops first, we replace this one and stop the transition.
-    // Than we switch the crossfader fully to the new track side,
+    // Then we switch the crossfader fully to the new track side,
     // switch to IDLE mode and load the next track into the other deck.
     if (m_eState == ADJ_LEFT_FADING || m_eState == ADJ_RIGHT_FADING) {
         // Once P1 or P2 has stopped switch out of fading mode to idle.
@@ -567,8 +567,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         } else if (m_eState == ADJ_RIGHT_FADING) {
             crossfaderTarget = -1.0;
         } else {
-            // this happens if the not playing track is cued into the autro region,
-            // calulated for the swapped rolls.
+            // this happens if the not playing track is cued into the outro region,
+            // calculated for the swapped roles.
             return;
         }
 
@@ -582,13 +582,13 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             thisDeck.stop();
         } else {
             // We are in Fading state.
-            // Calcuate the current transitionProgress, the place between begin
+            // Calculate the current transitionProgress, the place between begin
             // and end position and the step we have taken since the last call
             double transitionProgress = (thisPlayPosition - thisDeck.fadeBeginPos) /
                     (thisDeck.fadeEndPos - thisDeck.fadeBeginPos);
             double transitionStep = transitionProgress - m_transitionProgress;
             if (transitionStep > 0.0) {
-                // We have made progress. Beackwards seek pause the transitions
+                // We have made progress. Backwards seek pause the transitions
                 // forward seeks speed up the transitions. Seeks > EndPos end the
                 // transition immediately
                 double remainingCrossfader = crossfaderTarget - currentCrossfader;
@@ -854,7 +854,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     VERIFY_OR_DEBUG_ASSERT(fromTrackDuration > 0) {
         // Playing Track has no duration. This should not happen, because short
-        // tracks are skipped after load. Play ToDeck emmediately.
+        // tracks are skipped after load. Play ToDeck immediately.
         pFromDeck->fadeBeginPos = 0;
         pFromDeck->fadeEndPos = 0;
         pToDeck->startPos = kKeepPosition;
@@ -1154,7 +1154,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
                 leftDeck.setPlayPosition(leftDeck.startPos);
             }
         } else {
-            // user has manually started the other deck or dtopped both.
+            // user has manually started the other deck or stopped both.
             // don't know what to do.
         }
     }
