@@ -21,9 +21,6 @@ from it and overwrite the parse function and add class specific functions to
 it afterwards for proper functioning
 **/
 
-// TODO (C++17): Replace std::pair with std::optional
-#include <utility>
-
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -59,10 +56,8 @@ protected:
     bool isBinary(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
-    // reads URLs an plain Part and returns a local file path
     // Resolve an absolute or relative file path
-    // TODO (C++17): Replace std::pair with std::optional
-    std::pair<TrackFile, bool> playlistEntryToTrackFile(
+    TrackFile playlistEntryToTrackFile(
             const QString& playlistEntry,
             const QString& basePath = QString());
 };

@@ -147,24 +147,19 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-std::pair<TrackFile, bool> Parser::playlistEntryToTrackFile(
+TrackFile Parser::playlistEntryToTrackFile(
         const QString& playlistEntry,
         const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
-        auto trackFile = TrackFile::fromUrl(QUrl(playlistEntry));
-        return std::make_pair(trackFile, trackFile.checkFileExists());
+        // URLs are always absolute
+        return TrackFile::fromUrl(QUrl(playlistEntry));
     }
     auto filePath = QString(playlistEntry).replace('\\', '/');
     auto trackFile = TrackFile(filePath);
-    if (trackFile.checkFileExists()) {
-        return std::make_pair(trackFile, true);
+    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+        return trackFile;
     } else {
-        if (basePath.isEmpty()) {
-            // No base path
-            return std::make_pair(trackFile, false);
-        }
-        // Try relative to base path
-        trackFile = TrackFile(QDir(basePath), filePath);
-        return std::make_pair(trackFile, trackFile.checkFileExists());
+        // Fallback: Relative to base path
+        return TrackFile(QDir(basePath), filePath);
     }
 }

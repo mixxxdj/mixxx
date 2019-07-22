@@ -100,12 +100,12 @@ QString ParserM3u::getFilePath(QTextStream* stream, const QString& basePath) {
             // Skip comments
             continue;
         }
-        auto optTrackFile = playlistEntryToTrackFile(textline, basePath);
-        if (optTrackFile.second) {
-            return optTrackFile.first.location();
+        auto trackFile = playlistEntryToTrackFile(textline, basePath);
+        if (trackFile.checkFileExists()) {
+            return trackFile.location();
         }
         // We couldn't match this to a real file so ignore it
-        qWarning() << optTrackFile.first << "not found";
+        qWarning() << trackFile << "not found";
     }
     // Signal we reached the end
     return QString();

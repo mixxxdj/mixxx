@@ -16,7 +16,7 @@ class DummyParser : public Parser {
     QString playlistEntryToFilePath(
             const QString& playlistEntry,
             const QString& basePath = QString()) {
-        return playlistEntryToTrackFile(playlistEntry, basePath).first.asFileInfo().filePath();
+        return playlistEntryToTrackFile(playlistEntry, basePath).asFileInfo().filePath();
     }
 };
 
