@@ -588,9 +588,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     (thisDeck.fadeEndPos - thisDeck.fadeBeginPos);
             double transitionStep = transitionProgress - m_transitionProgress;
             if (transitionStep > 0.0) {
-                // We have made progress. Backwards seek pause the transitions
-                // forward seeks speed up the transitions. Seeks > EndPos end the
-                // transition immediately
+                // We have made progress.
+                // Backward seeks pause the transitions; forward seeks speed up
+                // the transitions. If there has been a seek beyond endPos, end
+                // the transition immediately."
                 double remainingCrossfader = crossfaderTarget - currentCrossfader;
                 double adjustment = remainingCrossfader /
                         (1.0 - m_transitionProgress) * transitionStep;
@@ -890,6 +891,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     } else {
         outroStart = getOutroStartPosition(pFromDeck);
         if (outroStart <= 0.0) {
+            // Assume a zero length outro.
+            // The outroEnd is automatically placed by AnalyzerSilence, so use
+            // that as a fallback if the user has not placed outroStart".
             outroStart = outroEnd;
         }
     }
@@ -908,6 +912,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double introEnd = getIntroEndPosition(pToDeck);
     if (introEnd < introStart) {
+        // introEnd is invalid. Assume a zero length intro.
+        // The introStart is automatically placed by AnalyzerSilence, so use
+        // that as a fallback if the user has not placed introEnd.
         introEnd = introStart;
     }
 
