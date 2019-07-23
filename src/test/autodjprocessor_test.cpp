@@ -44,7 +44,6 @@ class FakeDeck : public BaseTrackPlayer {
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
-              seekOnLoadMode(ConfigKey(group, "seekonload_mode")),
               introStartPos(ConfigKey(group, "intro_start_position")),
               outroStartPos(ConfigKey(group, "outro_start_position")),
               outroEndPos(ConfigKey(group, "outro_end_position")) {
@@ -98,7 +97,6 @@ class FakeDeck : public BaseTrackPlayer {
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;
-    ControlObject seekOnLoadMode;
     ControlObject introStartPos;
     ControlObject outroStartPos;
     ControlObject outroEndPos;
@@ -280,9 +278,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_ENABLE_P1LOADED, pProcessor->getState());
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
     // Sets crossfader left and deck 1 playing.
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     // ADJ_ENABLE_P1LOADED logic does not set play directly. It waits for the
@@ -336,9 +331,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_ENABLE_P1LOADED, pProcessor->getState());
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
     // Sets crossfader left.
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     // ADJ_ENABLE_P1LOADED logic does not set play directly. It waits for the
@@ -409,9 +401,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_ENABLE_P1LOADED, pProcessor->getState());
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
     // Sets crossfader left.
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     // ADJ_ENABLE_P1LOADED logic does not set play directly. It waits for the
@@ -487,10 +476,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
-
     EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
@@ -531,10 +516,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
-
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
 
     // No change to the crossfader or play states.
     EXPECT_DOUBLE_EQ(-1, master.crossfader.get());
@@ -590,10 +571,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
-
     // No change to the crossfader or play states.
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
@@ -636,10 +613,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
-
     // No change to the crossfader or play states.
     EXPECT_DOUBLE_EQ(1, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
@@ -680,10 +653,6 @@ TEST_F(AutoDJProcessorTest, EnabledDisabledSuccess) {
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_ENABLE_P1LOADED, pProcessor->getState());
-
-    // Makes decks 1 and 2 load tracks at intro cue point.
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::IntroStart), deck2.seekOnLoadMode.get());
 
     err = pProcessor->toggleAutoDJ(false);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
@@ -733,13 +702,13 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
-    // Expect that we will transition into P2FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P2FADING));
+    // Expect that we will transition into RIGHT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_RIGHT_FADING));
 
     // Pretend the track is over (should trigger an instant-fade).
     deck2.playposition.set(1.0);
 
-    EXPECT_EQ(AutoDJProcessor::ADJ_P2FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_RIGHT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
@@ -815,13 +784,13 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
-    // Expect that we will transition into P2FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P2FADING));
+    // Expect that we will transition into RIGHT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_RIGHT_FADING));
 
     // Pretend the track is over (should trigger an instant-fade).
     deck2.playposition.set(1.0);
 
-    EXPECT_EQ(AutoDJProcessor::ADJ_P2FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_RIGHT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
@@ -909,13 +878,13 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Pretend the track is over (should trigger an instant-fade).
     deck1.playposition.set(1.0);
 
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
@@ -991,13 +960,13 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Pretend the track is over (should trigger an instant-fade).
     deck1.playposition.set(1.0);
 
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
@@ -1090,12 +1059,12 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Seek track to 55 % it should fade
     deck1.playposition.set(0.55);
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     EXPECT_LT(-1.0, master.crossfader.get());
 
@@ -1107,7 +1076,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
 
     // Seek track to End
     deck1.playposition.set(1.0);
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     qDebug() << "master.crossfader.get()" << master.crossfader.get();
 
@@ -1163,14 +1132,14 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Seek track in deck1 to its end.
     deck1.playposition.set(1.0);
 
-    // We should have transitioned into P1FADING.
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    // We should have transitioned into LEFT_FADING.
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     // The track should have been seeked back by the duration of transition.
     EXPECT_DOUBLE_EQ(-0.1, deck2.playposition.get());
@@ -1227,13 +1196,13 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     // Seek deck 2 to the very end 99 %
     deck2.playposition.set(0.99);
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Seek track to 99 % it should fade
     // not 100 % because the final step is done by deck2
     deck1.playposition.set(0.99);
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     EXPECT_LT(-1.0, master.crossfader.get());
 
@@ -1295,12 +1264,12 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_RespectIntroCue) {
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Seek the outgoing track to where outro end cue is placed. It should fade.
     deck1.playposition.set(0.9);
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     // The incoming track should have been seeked back.
     EXPECT_DOUBLE_EQ(-0.15, deck2.playposition.get());
@@ -1371,12 +1340,12 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_RespectOutroCue) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
 
-    // Expect that we will transition into P1FADING mode.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
 
     // Seek track to 55 %. It should fade.
     deck1.playposition.set(0.55);
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     EXPECT_LT(-1.0, master.crossfader.get());
 

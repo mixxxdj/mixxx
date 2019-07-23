@@ -113,9 +113,10 @@ class DeckAttributes : public QObject {
   public:
     int index;
     QString group;
-    double startPos;
-    double fadeBeginPos;
-    double fadeDuration;
+    double startPos; // Set in toDeck nature
+    double fadeBeginPos; // set in fromDeck nature
+    double fadeEndPos; // set in fromDeck nature
+    bool loading;      // The data is inconsistent during loading a deck
 
   private:
     EngineChannel::ChannelOrientation m_orientation;
@@ -136,8 +137,8 @@ class AutoDJProcessor : public QObject {
   public:
     enum AutoDJState {
         ADJ_IDLE = 0,
-        ADJ_P1FADING,
-        ADJ_P2FADING,
+        ADJ_LEFT_FADING,
+        ADJ_RIGHT_FADING,
         ADJ_ENABLE_P1LOADED,
         ADJ_ENABLE_P1PLAYING,
         ADJ_DISABLED
@@ -233,7 +234,7 @@ class AutoDJProcessor : public QObject {
     // right side. (prevents AutoDJ logic from having to check for hamster mode
     // every time)
     double getCrossfader() const;
-    void setCrossfader(double value, bool right);
+    void setCrossfader(double value);
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
@@ -249,7 +250,9 @@ class AutoDJProcessor : public QObject {
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateTransition(DeckAttributes* pFromDeck,
-                             DeckAttributes* pToDeck);
+            DeckAttributes* pToDeck,
+            bool fadeNow,
+            bool seekToStartPoint);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
                           double endPoint, double startPoint);
     DeckAttributes* getOtherDeck(DeckAttributes* pFromDeck,
@@ -268,6 +271,7 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
+    double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
 

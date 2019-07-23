@@ -7,7 +7,6 @@ class CueControlTest : public BaseSignalPathTest {
         BaseSignalPathTest::SetUp();
 
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
-        m_pSeekOnLoadMode = std::make_unique<ControlProxy>(m_sGroup1, "seekonload_mode");
         m_pCuePoint = std::make_unique<ControlProxy>(m_sGroup1, "cue_point");
         m_pIntroStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_position");
         m_pIntroStartEnabled = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_enabled");
@@ -55,7 +54,6 @@ class CueControlTest : public BaseSignalPathTest {
     }
 
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
-    std::unique_ptr<ControlProxy> m_pSeekOnLoadMode;
     std::unique_ptr<ControlProxy> m_pCuePoint;
     std::unique_ptr<ControlProxy> m_pIntroStartPosition;
     std::unique_ptr<ControlProxy> m_pIntroStartEnabled;

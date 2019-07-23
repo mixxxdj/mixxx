@@ -6,21 +6,20 @@
 #include <QLocale>
 #include <QDesktopWidget>
 
-#include "mixer/basetrackplayer.h"
-#include "preferences/dialog/dlgprefdeck.h"
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "widget/wnumberpos.h"
-#include "engine/enginebuffer.h"
-#include "engine/controls/ratecontrol.h"
-#include "mixer/playermanager.h"
-#include "mixer/playerinfo.h"
-#include "control/controlobject.h"
-#include "mixxx.h"
 #include "defs_urls.h"
-#include "util/duration.h"
+#include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "mixxx.h"
+#include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/usersettings.h"
 #include "util/compatibility.h"
+#include "util/duration.h"
+#include "widget/wnumberpos.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
