@@ -835,7 +835,7 @@ double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttri
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
         bool fadeNow,
-        bool seek) {
+        bool seekToStartPoint) {
     if (pFromDeck == nullptr) {
         return;
     }
@@ -903,7 +903,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double outroLength = outroEnd - outroStart;
 
     double introStart;
-    if (seek) {
+    if (seekToStartPoint) {
         introStart = getIntroStartPosition(pToDeck);
         if (introStart <= 0.0) {
             introStart = getFirstSoundPosition(pToDeck);
