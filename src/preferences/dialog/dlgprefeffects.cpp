@@ -35,15 +35,9 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     // Highlight first row
     availableEffectsList->selectRow(0);
 
-  #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    availableEffectsList->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
-    availableEffectsList->setColumnWidth(1, 200);
-    availableEffectsList->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
-  #else
     availableEffectsList->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     availableEffectsList->setColumnWidth(1, 200);
     availableEffectsList->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-  #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 }
 
 DlgPrefEffects::~DlgPrefEffects() {
@@ -86,10 +80,10 @@ void DlgPrefEffects::clear() {
 void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selected) {
     QString effectId = m_availableEffectsModel.data(selected, Qt::UserRole).toString();
 
-    if (effectId == QVariant().toString())
-        return;
-
     EffectManifestPointer pManifest = m_pEffectsManager->getEffectManifest(effectId);
+    if (!pManifest) {
+        return;
+    }
 
     effectName->setText(pManifest->name());
     effectAuthor->setText(pManifest->author());

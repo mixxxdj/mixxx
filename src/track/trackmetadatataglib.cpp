@@ -249,7 +249,7 @@ bool parseReplayGainGain(
         // the replay gain.
         if (ratio == ReplayGain::kRatio0dB) {
             // special case
-            kLogger.debug() << "Ignoring possibly undefined gain:" << dbGain;
+            kLogger.info() << "Ignoring possibly undefined gain:" << dbGain;
             ratio = ReplayGain::kRatioUndefined;
         }
         pReplayGain->setRatio(ratio);
@@ -564,7 +564,11 @@ int removeUserTextIdentificationFrames(
                         toQString(pFrame->description()));
                 if (0 == frameDescription.compare(
                         description, Qt::CaseInsensitive)) {
-                    kLogger.debug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
+                    if (kLogger.debugEnabled()) {
+                        kLogger.debug()
+                                << "Removing ID3v2 TXXX frame:"
+                                << toQString(pFrame->description());
+                    }
                     // After removing a frame the result of frameListMap()
                     // is no longer valid!!
                     pTag->removeFrame(pFrame, false); // remove an unowned frame
@@ -818,6 +822,7 @@ bool readAudioProperties(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file) {
     if (!file.isValid()) {
+        kLogger.warning() << "Cannot read audio properties from inaccessible/unreadable/invalid file:" << file.name();
         return false;
     }
     if (!pTrackMetadata) {
@@ -838,7 +843,9 @@ bool readAudioProperties(
 QImage importCoverImageFromVorbisCommentPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
     if (pictures.isEmpty()) {
-        kLogger.debug() << "VorbisComment picture list is empty";
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "VorbisComment picture list is empty";
+        }
         return QImage();
     }
 
@@ -876,6 +883,23 @@ QImage importCoverImageFromVorbisCommentPictureList(
     return QImage();
 }
 
+template<typename T>
+const T* downcastID3v2Frame(TagLib::ID3v2::Frame* frame) {
+    DEBUG_ASSERT(frame);
+    // We need to use a safe dynamic_cast at runtime instead of an unsafe
+    // static_cast at compile time to detect unexpected frame subtypes!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    const T* downcastFrame = dynamic_cast<T*>(frame);
+    VERIFY_OR_DEBUG_ASSERT(downcastFrame) {
+        // This should only happen when reading corrupt or malformed files
+        kLogger.warning()
+                << "Unexpected ID3v2"
+                << frame->frameID().data()
+                << "frame type";
+    }
+    return downcastFrame;
+}
+
 void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) {
     if (!pCoverArt) {
         return; // nothing to do
@@ -883,18 +907,18 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
 
     const auto iterAPIC = tag.frameListMap().find("APIC");
     if ((iterAPIC == tag.frameListMap().end()) || iterAPIC->second.isEmpty()) {
-        kLogger.debug()
-                << "No cover art: None or empty list of ID3v2 APIC frames";
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "No cover art: None or empty list of ID3v2 APIC frames";
+        }
         return; // abort
     }
 
     const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
     for (const auto coverArtType: kPreferredID3v2PictureTypes) {
         for (const auto pFrame: pFrames) {
-            const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
-                    static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
-            DEBUG_ASSERT(pApicFrame); // trust TagLib
-            if (pApicFrame->type() == coverArtType) {
+            const auto* pApicFrame =
+                    downcastID3v2Frame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
+            if (pApicFrame && (pApicFrame->type() == coverArtType)) {
                 QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
                 if (image.isNull()) {
                     kLogger.warning()
@@ -911,18 +935,19 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
 
     // Fallback: No best match -> Simply select the 1st loadable image
     for (const auto pFrame: pFrames) {
-        const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
-                static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
-        DEBUG_ASSERT(pApicFrame); // trust TagLib
-        const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
-        if (image.isNull()) {
-            kLogger.warning()
-                    << "Failed to load image from ID3v2 APIC frame of type"
-                    << pApicFrame->type();
-            continue;
-        } else {
-            *pCoverArt = image;
-            return; // success
+        const auto* pApicFrame =
+                downcastID3v2Frame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
+        if (pApicFrame) {
+            const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
+            if (image.isNull()) {
+                kLogger.warning()
+                        << "Failed to load image from ID3v2 APIC frame of type"
+                        << pApicFrame->type();
+                continue;
+            } else {
+                *pCoverArt = image;
+                return; // success
+            }
         }
     }
 }
@@ -1026,9 +1051,9 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
             }
         }
     }
-
-    kLogger.debug()
-            << "No cover art found in VorbisComment tag";
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "No cover art found in VorbisComment tag";
+    }
 }
 
 void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
@@ -1183,22 +1208,42 @@ void importTrackMetadataFromID3v2Tag(
         double bpmValue = pTrackMetadata->getTrackInfo().getBpm().getValue();
         // Some software use (or used) to write decimated values without comma,
         // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        double bpmValueOriginal = bpmValue;
-        while (bpmValue > Bpm::kValueMax) {
-            bpmValue /= 10.0;
-        }
-        if (bpmValue != bpmValueOriginal) {
+        if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
+            // Considered out of range, don't try to adjust it
             kLogger.warning()
-                    << " Changing BPM on"
-                    << pTrackMetadata->getTrackInfo().getArtist()
-                    << "-"
-                    << pTrackMetadata->getTrackInfo().getTitle()
-                    << "from"
-                    << bpmValueOriginal
-                    << "to"
+                    << "Ignoring invalid bpm value"
                     << bpmValue;
+            bpmValue = Bpm::kValueUndefined;
+        } else {
+            double bpmValueOriginal = bpmValue;
+            DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
+            bool adjusted = false;
+            while (bpmValue > Bpm::kValueMax) {
+                double bpmValueAdjusted = bpmValue / 10;
+                if (bpmValueAdjusted < bpmValue) {
+                    bpmValue = bpmValueAdjusted;
+                    adjusted = true;
+                    continue;
+                }
+                // Ensure that the loop always terminates even for invalid
+                // values like Inf and NaN!
+                kLogger.warning()
+                        << "Ignoring invalid bpm value"
+                        << bpmValueOriginal;
+                bpmValue = Bpm::kValueUndefined;
+                break;
+            }
+            if (adjusted) {
+                kLogger.info()
+                        << "Adjusted bpm value from"
+                        << bpmValueOriginal
+                        << "to"
+                        << bpmValue;
+            }
         }
-        pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        if (bpmValue != Bpm::kValueUndefined) {
+            pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        }
     }
 
     const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);
@@ -2235,8 +2280,6 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
     // Write track number/total pair
-    QString trackNumberText;
-    QString trackTotalText;
     TrackNumbers parsedTrackNumbers;
     const TrackNumbers::ParseResult parseResult =
             TrackNumbers::parseFromStrings(

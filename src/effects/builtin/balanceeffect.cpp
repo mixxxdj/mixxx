@@ -5,7 +5,6 @@
 namespace {
     const double kMaxCornerHz = 500;
     const double kMinCornerHz = 16;
-    const unsigned int kStartupSamplerate = 44100;
 } // anonymous namespace
 
 // static
@@ -110,11 +109,9 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
                                const CSAMPLE* pInput, CSAMPLE* pOutput,
                                const mixxx::EngineParameters& bufferParameters,
                                const EffectEnableState enableState,
-                               const GroupFeatureState& groupFeatures,
-                               const EffectChainMixMode mixMode) {
+                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(mixMode);
 
     CSAMPLE_GAIN balance = 0;
     CSAMPLE_GAIN midSide = 0;

@@ -16,9 +16,11 @@
 #include "bytearrayclass.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
+#include "controllers/colorjsproxy.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
+#include "util/memory.h"
 
 // Forward declaration(s)
 class Controller;
@@ -57,18 +59,22 @@ class ScriptConnectionInvokableWrapper : public QObject {
     //Q_PROPERTY(ConfigKey key READ key)
     // There's little use in exposing the function...
     //Q_PROPERTY(QScriptValue function READ function)
+    Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
     ScriptConnectionInvokableWrapper(ScriptConnection conn) {
         m_scriptConnection = conn;
         m_idString = conn.id.toString();
+        m_isConnected = true;
     }
     const QString& readId() const { return m_idString; }
-    Q_INVOKABLE void disconnect();
+    bool readIsConnected() const { return m_isConnected; }
+    Q_INVOKABLE bool disconnect();
     Q_INVOKABLE void trigger();
 
   private:
     ScriptConnection m_scriptConnection;
     QString m_idString;
+    bool m_isConnected;
 };
 
 class ControllerEngine : public QObject {
@@ -97,7 +103,7 @@ class ControllerEngine : public QObject {
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
     // Disconnect a ScriptConnection
-    void removeScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection conn);
     void triggerScriptConnection(const ScriptConnection conn);
 
   protected:
@@ -204,6 +210,7 @@ class ControllerEngine : public QObject {
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
     ByteArrayClass* m_pBaClass;
+    std::unique_ptr<ColorJSProxy> m_pColorJSProxy;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;

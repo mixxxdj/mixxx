@@ -1,6 +1,5 @@
-#include <QtAlgorithms>
-
 #include "controllers/controlleroutputmappingtablemodel.h"
+
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 #include "controllers/delegates/controldelegate.h"
@@ -76,7 +75,7 @@ void ControllerOutputMappingTableModel::removeMappings(QModelIndexList indices) 
     foreach (const QModelIndex& index, indices) {
         rows.append(index.row());
     }
-    qSort(rows);
+    std::sort(rows.begin(), rows.end());
 
     int lastRow = -1;
     while (!rows.empty()) {
@@ -233,7 +232,7 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                mapping.controlKey = qVariantValue<ConfigKey>(value);
+                mapping.controlKey = value.value<ConfigKey>();
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:

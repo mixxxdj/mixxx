@@ -17,7 +17,7 @@ class WaveformRendererPreroll : public WaveformRendererAbstract {
 
   private:
     QColor m_color;
-
+    
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };
 

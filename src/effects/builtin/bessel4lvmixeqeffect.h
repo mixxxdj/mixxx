@@ -9,8 +9,8 @@
 #include "effects/builtin/lvmixeqbase.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbessel4.h"
-#include "engine/enginefilterdelay.h"
+#include "engine/filters/enginefilterbessel4.h"
+#include "engine/filters/enginefilterdelay.h"
 #include "util/class.h"
 #include "util/types.h"
 #include "util/defs.h"
@@ -37,8 +37,7 @@ class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGrou
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

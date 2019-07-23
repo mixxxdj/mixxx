@@ -32,7 +32,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     } else {
         // Prepare is expected to fail for a fresh database
         // when the schema is still empty!
-        kLogger.debug()
+        kLogger.info()
                 << "Failed to prepare query:"
                 << "Returning default value"
                 << defaultValue
@@ -43,7 +43,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
 }
 
 bool SettingsDAO::setValue(const QString& name, const QVariant& value) {
-    if (!qVariantCanConvert<QString>(value)) {
+    if (!value.canConvert(QMetaType::QString)) {
         return false;
     }
 

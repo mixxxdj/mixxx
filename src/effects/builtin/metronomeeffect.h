@@ -6,7 +6,7 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterpansingle.h"
+#include "engine/filters/enginefilterpansingle.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -39,8 +39,7 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatures);
   private:
     EngineEffectParameter* m_pBpmParameter;
     EngineEffectParameter* m_pSyncParameter;

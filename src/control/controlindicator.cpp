@@ -9,9 +9,11 @@ ControlIndicator::ControlIndicator(ConfigKey key)
     // Tick time in audio buffer resolution
     m_pCOTGuiTickTime = new ControlProxy("[Master]", "guiTickTime", this);
     m_pCOTGuiTick50ms = new ControlProxy("[Master]", "guiTick50ms", this);
-    m_pCOTGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
-    connect(this, SIGNAL(blinkValueChanged()),
-            this, SLOT(slotBlinkValueChanged()));
+    m_pCOTGuiTick50ms->connectValueChanged(this, &ControlIndicator::slotGuiTick50ms);
+    connect(this,
+            &ControlIndicator::blinkValueChanged,
+            this,
+            &ControlIndicator::slotBlinkValueChanged);
 }
 
 ControlIndicator::~ControlIndicator() {

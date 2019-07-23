@@ -19,14 +19,17 @@
 class ReverbGroupState : public EffectState {
   public:
     ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters) {
+        : EffectState(bufferParameters),
+          sendPrevious(0) {
     }
 
     void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
         sampleRate = bufferParameters.sampleRate();
+        sendPrevious = 0;
     }
 
     float sampleRate;
+    float sendPrevious;
     MixxxPlateX2 reverb{};
 };
 
@@ -44,8 +47,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {
@@ -56,7 +58,6 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     EngineEffectParameter* m_pBandWidthParameter;
     EngineEffectParameter* m_pDampingParameter;
     EngineEffectParameter* m_pSendParameter;
-    EngineEffectParameter* m_pDryWetParameter;
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };

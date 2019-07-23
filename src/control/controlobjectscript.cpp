@@ -10,11 +10,15 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)),
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
-        connect(this, SIGNAL(trigger(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)),
+        connect(this,
+                &ControlObjectScript::trigger,
+                this,
+                &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
     }
 
@@ -35,7 +39,7 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     return true;
 }
 
-void ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
+bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     bool success = m_scriptConnections.removeOne(conn);
     if (success) {
         controllerDebug("Disconnected (" +
@@ -48,16 +52,21 @@ void ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     }
     if (m_scriptConnections.isEmpty()) {
         // no ScriptConnections left, so disconnect signals
-        disconnect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)));
-        disconnect(this, SIGNAL(trigger(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)));
+        disconnect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObjectScript::slotValueChanged);
+        disconnect(this,
+                &ControlObjectScript::trigger,
+                this,
+                &ControlObjectScript::slotValueChanged);
     }
+    return success;
 }
 
 void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {
     // Make a local copy of m_scriptConnections because items are removed within the loop.
-    QList<ScriptConnection> connections = m_scriptConnections;
+    const QList<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {
         if (conn.callback.strictlyEquals(function)) {
             removeScriptConnection(conn);
@@ -70,7 +79,7 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // This allows a script to disconnect a callback from inside the
     // the callback. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
-    QList<ScriptConnection> connections = m_scriptConnections;
+    const QList<ScriptConnection> connections = m_scriptConnections;
     for (auto&& conn: connections) {
         conn.executeCallback(value);
     }

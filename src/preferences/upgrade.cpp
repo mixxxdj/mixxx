@@ -24,12 +24,12 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
+#include "preferences/beatdetectionsettings.h"
 #include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
-#include "track/beat_preferences.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "util/db/dbconnectionpooler.h"
@@ -342,9 +342,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
 
         bool reanalyze_choice = askReanalyzeBeats();
-        config->set(ConfigKey(BPM_CONFIG_KEY,
-                              BPM_REANALYZE_WHEN_SETTINGS_CHANGE),
-                    ConfigValue(reanalyze_choice));
+        BeatDetectionSettings bpmSettings(config);
+        bpmSettings.setReanalyzeWhenSettingsChange(reanalyze_choice);
 
         if (successful) {
             qDebug() << "Upgrade Successful";
@@ -432,7 +431,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 bool Upgrade::askReScanLibrary() {
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
+    msgBox.setIconPixmap(QPixmap(":/images/mixxx_icon.svg"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
     msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
                       "Do you want to scan your library for cover files now?"));
@@ -464,7 +463,7 @@ bool Upgrade::askReanalyzeBeats() {
     QString generateNew = QMessageBox::tr("Generate New Beatgrids");
 
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
+    msgBox.setIconPixmap(QPixmap(":/images/mixxx_icon.svg"));
     msgBox.setWindowTitle(windowTitle);
     msgBox.setText(QString("<html><h2>%1</h2><p>%2</p><p>%3</p><p>%4</p></html>")
                    .arg(mainHeading, paragraph1, paragraph2, paragraph3));

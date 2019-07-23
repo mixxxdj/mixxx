@@ -4,7 +4,6 @@
 
 static const double kMinCorner = 0.0003; // 13 Hz @ 44100
 static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
-static const unsigned int kStartupSamplerate = 44100;
 
 // static
 QString MoogLadder4FilterEffect::getId() {
@@ -102,12 +101,9 @@ void MoogLadder4FilterEffect::processChannel(
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures,
-        const EffectChainMixMode mixMode) {
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(mixMode);
-
 
     double resonance = m_pResonance->value();
     double hpf;

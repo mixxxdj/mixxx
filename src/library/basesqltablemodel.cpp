@@ -1,8 +1,8 @@
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
-#include <QtAlgorithms>
 #include <QtDebug>
 #include <QUrl>
+#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
@@ -11,6 +11,7 @@
 #include "library/starrating.h"
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
+#include "library/locationdelegate.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
@@ -18,7 +19,6 @@
 #include "track/trackmetadata.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
-#include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
@@ -48,6 +48,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
+    // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
@@ -109,6 +110,41 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
+}
+
+void BaseSqlTableModel::initSortColumnMapping() {
+    // Add a bijective mapping between the SortColumnIds and column indices
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        m_columnIndexBySortColumnId[i] = -1;
+    }
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+
+    m_sortColumnIdByColumnIndex.clear();
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
+        m_sortColumnIdByColumnIndex.insert(m_columnIndexBySortColumnId[sortColumn], sortColumn);
+    }
 }
 
 void BaseSqlTableModel::setHeaderProperties(
@@ -396,9 +432,23 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableColumnCache.setColumns(m_tableColumns);
 
     initHeaderData();
+    initSortColumnMapping();
 
     m_bInitialized = true;
 }
+
+int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+        return -1;
+    }
+
+    return m_columnIndexBySortColumnId[column];
+}
+
+TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) {
+    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::SORTCOLUMN_INVALID);
+}
+
 
 const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
@@ -653,15 +703,15 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = mixxx::Duration::formatSeconds(duration);
+                    value = mixxx::Duration::formatTime(duration);
                 } else {
                     value = QString();
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
+                if (value.canConvert(QMetaType::Int))
                     value = qVariantFromValue(StarRating(value.toInt()));
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-                if (qVariantCanConvert<int>(value))
+                if (value.canConvert(QMetaType::Int))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
@@ -673,6 +723,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 QDateTime gmtDate = value.toDateTime();
                 gmtDate.setTimeSpec(Qt::UTC);
                 value = gmtDate.toLocalTime();
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+                if (role == Qt::DisplayRole) {
+                    value = value.toDouble() == 0.0
+                            ? "-" : QString("%1").arg(value.toDouble(), 0, 'f', 1);
+                }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
@@ -717,7 +772,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = index.sibling(
                     row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value)) {
+                if (value.canConvert(QMetaType::Int)) {
                     value = qVariantFromValue(StarRating(value.toInt()));
                 }
             }
@@ -946,7 +1001,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
             pTrack->resetPlayCounter();
         }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
-        StarRating starRating = qVariantValue<StarRating>(value);
+        StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         pTrack->setKeyText(value.toString(),
@@ -1037,7 +1092,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
             continue;
         }
         rows.insert(index.row());
-        QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
+        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;
@@ -1049,14 +1104,19 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    DEBUG_ASSERT(pTableView);
+
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
+        return new StarDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-        return new BPMDelegate(pParent);
+        return new BPMDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pTableView, i);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) {
+        return new LocationDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);
+        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
         connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
                 this, SLOT(refreshCell(int, int)));
         return pCoverDelegate;

@@ -2,7 +2,7 @@
 Description:
   Size-aware container that decides whether Star Rating fits in between
   HotCues and deck controls, to avoid squeezed deck controls and on the
-  other hand let HotCue buttons auto-shrink only if necessesary.
+  other hand let HotCue buttons auto-shrink only if necessary.
   It contains spacers for 4/8 HotCues, each deck control button i.e. separate
   Cue, keylock, quantize etc.
 
@@ -10,11 +10,7 @@ Description:
   skin settings menu.
 
 Controls:
-  [Tango],stars_fit_stack0
-    Its current page is set to '0' in skin.xml so that 'stars_wont_fit' is triggered
-  [Tango],stars_fit_stack1
-    Its current page is set to '1' in skin.xml so that 'stars_fit' is triggered
-    for size bigger than 83px.
+  [Tango],starrating_fits   controls Star visibility in deck_buttons_left/right.xml
 
 -->
 <Template>
@@ -43,7 +39,7 @@ Controls:
             <ObjectName>SizeTest</ObjectName>
             <Size>106f,20f</Size>
             <Connection>
-              <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -63,7 +59,7 @@ Controls:
                 <Layout>horizontal</Layout>
                 <Size>96f,20f</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -94,7 +90,7 @@ Controls:
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -126,8 +122,6 @@ Controls:
         <Children>
 
           <!-- Play button -->
-          <!-- here and for Cue button we the 1px borders.
-              Virtually no one uses Mixxx on WinXP in windowed mode... -->
           <WidgetGroup><Size>50f,20f</Size></WidgetGroup>
 
           <!-- Separate Cue button -->
@@ -150,13 +144,22 @@ Controls:
               <WidgetGroup><!-- HotCues 5-8 at minimum size -->
                 <Size>64f,20f</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- AutoDJ Cues -->
+          <WidgetGroup>
+            <Size>64f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_intro_outro_cues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -281,7 +284,7 @@ Controls:
                 <MaximumSize>82,0</MaximumSize>
                 <Children>
                   <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,20f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Tango],starrating_fits"><Size>1f,20f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
@@ -290,7 +293,7 @@ Controls:
                 <MinimumSize>83,0</MinimumSize>
                 <MaximumSize>-1,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,20f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Tango],starrating_fits"><Size>1f,20f</Size></WidgetGroup>
                   <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>

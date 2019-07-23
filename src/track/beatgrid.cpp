@@ -55,8 +55,7 @@ BeatGrid::BeatGrid(
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
-        : QObject(),
-          m_mutex(QMutex::Recursive),
+        : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
           m_grid(other.m_grid),
@@ -264,8 +263,8 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
     if (!isValid() || startSample > stopSample) {
         return std::unique_ptr<BeatIterator>();
     }
-    // qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
-    //          << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
+    //qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
+    //         << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
     double curBeat = findNextBeat(startSample);
     if (curBeat == -1.0) {
         return std::unique_ptr<BeatIterator>();

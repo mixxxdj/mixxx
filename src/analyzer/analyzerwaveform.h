@@ -2,19 +2,20 @@
 #define ANALYZER_ANALYZERWAVEFORM_H
 
 #include <QImage>
+#include <QSqlDatabase>
 
 #include <limits>
 
 #include "analyzer/analyzer.h"
-#include "waveform/waveform.h"
+#include "library/dao/analysisdao.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
+#include "waveform/waveform.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
 
 class EngineFilterIIRBase;
-class AnalysisDao;
 
 inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
@@ -136,27 +137,27 @@ struct WaveformStride {
 
 class AnalyzerWaveform : public Analyzer {
   public:
-    explicit AnalyzerWaveform(
-            AnalysisDao* pAnalysisDao);
+    AnalyzerWaveform(
+            UserSettingsPointer pConfig,
+            QSqlDatabase dbConnection);
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE *buffer, const int bufferLength) override;
-    void cleanup(TrackPointer tio) override;
-    void finalize(TrackPointer tio) override;
+    bool processSamples(const CSAMPLE* buffer, const int bufferLength) override;
+    void storeResults(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
-    void storeCurentStridePower();
+    bool shouldAnalyze(TrackPointer tio) const;
+
+    void storeCurrentStridePower();
     void resetCurrentStride();
 
     void createFilters(int sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
-    AnalysisDao* m_pAnalysisDao;
-
-    bool m_skipProcessing;
+    mutable AnalysisDao m_analysisDao;
 
     WaveformPointer m_waveform;
     WaveformPointer m_waveformSummary;

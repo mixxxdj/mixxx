@@ -113,8 +113,6 @@ void EffectParameter::setValue(double value) {
         qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
 
-    m_value = value;
-
     updateEngineState();
     emit(valueChanged(m_value));
 }

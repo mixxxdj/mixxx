@@ -13,7 +13,8 @@
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+          m_cancelImport(false),
+          m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -100,7 +101,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.png");
+    return m_icon;
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {
@@ -272,7 +273,6 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     QString album;
     QString year;
     QString genre;
-    QString location;
     QUrl locationUrl;
 
     int bpm = 0;
@@ -324,7 +324,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
             if (xml.name() == "location") {
-                locationUrl = QUrl::fromEncoded(xml.readElementText().toUtf8());
+                locationUrl = QUrl(xml.readElementText());
                 continue;
             }
         }
@@ -334,8 +334,8 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
         }
     }
 
-    location = locationUrl.toLocalFile();
-
+    const auto trackFile = TrackFile::fromUrl(locationUrl);
+    QString location = trackFile.location();
     if (location.isEmpty()) {
         // here in case of smb:// location
         // TODO(XXX) QUrl does not support SMB:// locations does Mixxx?
@@ -374,19 +374,14 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
         //read next XML element
         xml.readNext();
         if (xml.isStartElement() && xml.name() == "location") {
-            QString location = xml.readElementText();
-            location.remove("file://");
-            QByteArray strlocbytes = location.toUtf8();
-            QUrl locationUrl = QUrl::fromEncoded(strlocbytes);
-            location = locationUrl.toLocalFile();
+            const auto trackFile = TrackFile::fromUrl(xml.readElementText());
 
             //get the ID of the file in the rhythmbox_library table
             int track_id = -1;
             QSqlQuery finder_query(m_database);
             finder_query.prepare("select id from rhythmbox_library where location=:path");
-            finder_query.bindValue(":path", location);
+            finder_query.bindValue(":path", trackFile.location());
             bool success = finder_query.exec();
-
 
             if (success) {
                 const int idColumn = finder_query.record().indexOf("id");

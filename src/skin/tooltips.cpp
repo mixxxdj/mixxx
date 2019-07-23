@@ -388,6 +388,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Prevents the pitch from changing when the rate changes.")
             << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
+    add("hotcue_toggle")
+        <<tr("Changes the number of hotcue buttons displayed in the deck");
+
+    // Show Rate Control
+    add("rate_toggle")
+        <<tr("Toggle visibility of Rate Control");
+
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
     add("quantize")
@@ -417,16 +424,26 @@ void Tooltips::addStandardTooltips() {
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
+    QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
+    QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
+            "OR preview from it (Denon mode).");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
-            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point, OR go to cue point and play after release (CUP mode)."))
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
-                                                                    "OR preview from it (Denon mode)."))
-            << tr("Hint: Change the default cue mode in Preferences -> Interface.")
+            << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
+            << cueHint
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
+    add("cue_gotoandplay_cue_default")
+            << tr("Play")
+            << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))
+            << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
+            << cueHint
+            << quantizeSnap;
 
-    add("pfl")
+      add("pfl")
             << tr("Headphone")
             << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
@@ -714,6 +731,38 @@ void Tooltips::addStandardTooltips() {
             << tr("Star Rating")
             << tr("Assign ratings to individual tracks by clicking the stars.");
 
+    // Intro & outro cues
+    add("show_intro_outro_cues")
+            << tr("Show/hide intro & outro markers and associated buttons.");
+
+    add("intro_start")
+            << tr("Intro Start Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("intro_end")
+            << tr("Intro End Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("outro_start")
+            << tr("Outro Start Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("outro_end")
+            << tr("Outro End Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
     // Effect Unit Controls
     add("EffectUnit_clear")
             << tr("Clear Unit")
@@ -736,9 +785,9 @@ void Tooltips::addStandardTooltips() {
     add("EffectUnit_mix_mode")
             << tr("Mix Mode")
             << tr("Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit") + "\n"
-            << tr("D/W mode: Mix knob crossfades between dry and wet\n"
+            << tr("Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet\n"
                   "Use this to change the sound of the track with EQ and filter effects.") + "\n"
-            << tr("D+W mode: Mix knob adds wet to dry\n"
+            << tr("Dry+Wet mode (flat dry line): Mix knob adds wet to dry\n"
                   "Use this to change only the effected (wet) signal with EQ and filter effects.");
 
     add("EffectUnit_super1")

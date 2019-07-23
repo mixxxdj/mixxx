@@ -4,6 +4,7 @@
 
 #include "util/sample.h"
 #include "util/math.h"
+#include "util/rampingvalue.h"
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
 
@@ -27,6 +28,10 @@ QString EchoEffect::getId() {
 // static
 EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setAddDryToWet(true);
+    pManifest->setEffectRampsFromDry(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Echo"));
     pManifest->setShortName(QObject::tr("Echo"));
@@ -82,8 +87,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
-        "How much of the signal to send into the delay buffer\n"
-        "When the effect unit is in D+W mode, keep this turned up all the way"));
+        "How much of the signal to send into the delay buffer"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -135,15 +139,14 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures,
-                                const EffectChainMixMode mixMode) {
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
-    double send_amount = m_pSendParameter->value();
-    double feedback_amount = m_pFeedbackParameter->value();
+    double send_current = m_pSendParameter->value();
+    double feedback_current = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_frames;
@@ -177,25 +180,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     int read_position = gs.write_position;
     decrementRing(&read_position, delay_samples, gs.delay_buf.size());
 
+    RampingValue<CSAMPLE_GAIN> send(send_current, gs.prev_send,
+                                    bufferParameters.framesPerBuffer());
     // Feedback the delay buffer and then add the new input.
-    const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
-            bufferParameters.framesPerBuffer();
-    const CSAMPLE_GAIN send_start = gs.prev_send + send_delta;
 
-    const CSAMPLE_GAIN feedback_delta = (feedback_amount - gs.prev_feedback) /
-            bufferParameters.framesPerBuffer();
-    const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
-
-    const bool addDry = mixMode == EffectChainMixMode::DrySlashWet;
+    RampingValue<CSAMPLE_GAIN> feedback(feedback_current, gs.prev_feedback,
+                                        bufferParameters.framesPerBuffer());
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (unsigned int i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
-        CSAMPLE_GAIN send_ramped = send_start
-                + send_delta * i / bufferParameters.channelCount();
-        CSAMPLE_GAIN feedback_ramped = feedback_start
-                + feedback_delta * i / bufferParameters.channelCount();
+        CSAMPLE_GAIN send_ramped = send.getNext();
+        CSAMPLE_GAIN feedback_ramped = feedback.getNext();
 
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
@@ -225,21 +222,17 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] =  (addDry ? pInput[i] : 0) +
-                    ((bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
-                    (1 + pingpong_frac));
+            pOutput[i] = (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
+                         (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = (addDry ? pInput[i + 1] : 0) +
-                    (bufferedSampleRight * (1 - pingpong_frac));
+            pOutput[i + 1] = bufferedSampleRight * (1 - pingpong_frac);
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] = (addDry ? pInput[i] : 0) +
-                    (bufferedSampleLeft * (1 - pingpong_frac));
+            pOutput[i] = bufferedSampleLeft * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (addDry ? pInput[i + 1] : 0) +
-                    ((bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
-                    (1 + pingpong_frac));
+            pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
+                             (1 + pingpong_frac);
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),
@@ -251,11 +244,17 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         }
     }
 
+    // The ramping of the send parameter handles ramping when enabling, so
+    // this effect must handle ramping to dry when disabling itself (instead
+    // of being handled by EngineEffect::process).
     if (enableState == EffectEnableState::Disabling) {
+        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
         gs.delay_buf.clear();
+        gs.prev_send = 0;
+    } else {
+        gs.prev_send = send_current;
     }
 
-    gs.prev_send = send_amount;
-    gs.prev_feedback = feedback_amount;
+    gs.prev_feedback = feedback_current;
     gs.prev_delay_samples = delay_samples;
 }

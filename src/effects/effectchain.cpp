@@ -353,7 +353,7 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
     pChain->setName(name);
     pChain->setDescription(description);
     EffectChainMixMode mixMode = mixModeFromString(mixModeStr);
-    if (mixMode != EffectChainMixMode::NumMixModes) {
+    if (mixMode < EffectChainMixMode::NumMixModes) {
         pChain->setMixMode(mixMode);
     }
 

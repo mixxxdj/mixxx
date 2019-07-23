@@ -41,14 +41,13 @@ class MockEffectProcessor : public EffectProcessor {
     MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
           const EffectStatesMap* pStatesMap));
     MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
-    MOCK_METHOD8(process, void(const ChannelHandle& inputHandle,
+    MOCK_METHOD7(process, void(const ChannelHandle& inputHandle,
                                const ChannelHandle& outputHandle,
                                const CSAMPLE* pInput,
                                CSAMPLE* pOutput,
                                const mixxx::EngineParameters& bufferParameters,
                                const EffectEnableState enableState,
-                               const GroupFeatureState& groupFeatures,
-                               const EffectChainMixMode mixMode));
+                               const GroupFeatureState& groupFeatures));
 
 };
 

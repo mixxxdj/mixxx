@@ -97,7 +97,7 @@ class EffectsManager : public QObject {
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setup();
 
-    // Reloads all effect to the slots to update parameter assignements
+    // Reloads all effect to the slots to update parameter assignments
     void refeshAllRacks();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes

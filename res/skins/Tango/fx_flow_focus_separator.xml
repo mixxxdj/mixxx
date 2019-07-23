@@ -13,7 +13,7 @@ Variables:
   widthRight    : distance between arrow and right border
   FxRack_FxUnit :
   FxTop         : Effect slot above separator
-  FxBottom      : Effect slot belwo seperator
+  FxBottom      : Effect slot below separator
 -->
 <Template>
   <WidgetGroup>

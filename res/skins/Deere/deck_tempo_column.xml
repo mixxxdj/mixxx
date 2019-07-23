@@ -15,7 +15,7 @@
         <ObjectName>TempoControlButtons</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:left_2state_button.xml">
+          <Template src="skin:left_right_2state_button.xml">
             <SetVariable name="TooltipId">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">DeckSync</SetVariable>
             <SetVariable name="MinimumSize">-1,18</SetVariable>
@@ -28,6 +28,7 @@
             <SetVariable name="state_1_pressed"></SetVariable>
             <SetVariable name="state_1_unpressed"></SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
 
           <WidgetGroup>

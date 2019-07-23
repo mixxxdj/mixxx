@@ -48,8 +48,11 @@ class EngineEffect : public EffectsRequestHandler {
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const EffectEnableState chainEnableState,
-                 const GroupFeatureState& groupFeatures,
-                 const EffectChainMixMode mixMode);
+                 const GroupFeatureState& groupFeatures);
+
+    const EffectManifestPointer getManifest() const {
+        return m_pManifest;
+    }
 
   private:
     QString debugString() const {

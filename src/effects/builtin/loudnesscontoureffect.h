@@ -6,7 +6,7 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -47,8 +47,7 @@ class LoudnessContourEffect
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     LoudnessContourEffect(const LoudnessContourEffect&) = delete;

@@ -21,7 +21,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     explicit WLibrary(QWidget* parent);
 
     // registerView is used to add a view to the LibraryWidget which the widget
-    // can disply on request via showView(). To switch to a given view, call
+    // can display on request via showView(). To switch to a given view, call
     // showView with the name provided here. WLibraryWidget takes ownership of
     // the view and is in charge of deleting it. Returns whether or not the
     // registration was successful. Registered widget must implement the

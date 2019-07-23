@@ -11,7 +11,6 @@
 #include <QMutexLocker>
 
 #include "util/class.h"
-#include "util/compatibility.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
@@ -100,7 +99,7 @@ class Waveform {
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
     int getCompletion() const {
-        return load_atomic(m_completion);
+        return m_completion.load();
     }
     void setCompletion(int completion) {
         m_completion = completion;

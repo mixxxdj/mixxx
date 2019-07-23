@@ -191,7 +191,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
         beats, N, 1, SampleRate, &frequency_table);
 
     // Get the median BPM.
-    qSort(average_bpm_list);
+    std::sort(average_bpm_list.begin(), average_bpm_list.end());
     const double median = computeSampleMedian(average_bpm_list);
 
     /*
@@ -332,7 +332,7 @@ double BeatUtils::calculateOffset(
         for (int i = 0; i < beats2.size(); i += 4) {
             double beats2_beat = beats2.at(i);
             QVector<double>::const_iterator it = qUpperBound(
-                beats1.begin(), beats1.end(), beats2_beat);
+                beats1.constBegin(), beats1.constEnd(), beats2_beat);
             if (fabs(*it - beats2_beat - offset) <= beatLength1Epsilon) {
                 freq++;
             }

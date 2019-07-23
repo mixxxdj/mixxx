@@ -30,6 +30,7 @@ using std::fabs;
 #define math_max std::max
 #define math_min std::min
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
+#define math_min3(a, b, c) math_min(math_min((a), (b)), (c))
 
 // Restrict value to the range [min, max]. Undefined behavior if min > max.
 template <typename T>

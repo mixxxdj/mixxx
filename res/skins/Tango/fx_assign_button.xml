@@ -12,7 +12,6 @@ Variables:
     <ObjectName>FxAssignButton</ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text>FX&#8202;<Variable name="FxUnit"/></Text>

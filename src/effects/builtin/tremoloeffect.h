@@ -33,8 +33,7 @@ class TremoloEffect : public EffectProcessorImpl<TremoloState> {
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures,
-                        const EffectChainMixMode mixMode) override;
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

@@ -41,7 +41,7 @@ const int COLUMN_REPLAYGAIN = 20;
 // TODO(XXX): Editing track metadata outside of the table view
 // (e.g. in the property dialog) does not update the table view!
 // Editing single fields in the table view works as expected.
-class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
+class BrowseTableModel final : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
   public:
@@ -69,6 +69,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
     bool isColumnSortable(int column) override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
 
   public slots:
     void slotClear(BrowseTableModel*);
@@ -84,6 +86,9 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;
+    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::NUM_SORTCOLUMNIDS];
+    QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
+
 };
 
 #endif

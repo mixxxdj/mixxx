@@ -11,18 +11,16 @@ class AnalyzerEbur128 : public Analyzer {
     AnalyzerEbur128(UserSettingsPointer pConfig);
     virtual ~AnalyzerEbur128();
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE* pIn, const int iLen) override;
-    void cleanup(TrackPointer tio) override;
-    void finalize(TrackPointer tio) override;
-
-  private:
-    void cleanup();
-    bool isInitialized() const {
-        return m_pState != nullptr;
+    static bool isEnabled(const ReplayGainSettings& rgSettings) {
+        return rgSettings.isAnalyzerEnabled(2);
     }
 
+    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    void storeResults(TrackPointer tio) override;
+    void cleanup() override;
+
+  private:
     ReplayGainSettings m_rgSettings;
     ebur128_state* m_pState;
 };

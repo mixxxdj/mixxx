@@ -125,15 +125,15 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
-    double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
-    double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));
-    return 1 - (dbParamter / m_minDB);
+    double linParameter = (dValue - m_dMinValue) / m_dValueRange;
+    double dbParameter = ratio2db(linParameter + m_minOffset * (1 - linParameter));
+    return 1 - (dbParameter / m_minDB);
 }
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
-    double dbParamter = (1 - dParam) * m_minDB;
-    double linPrameter = (db2ratio(dbParamter) - m_minOffset) / (1 - m_minOffset);
-    return m_dMinValue + (linPrameter * m_dValueRange);
+    double dbParameter = (1 - dParam) * m_minDB;
+    double linParameter = (db2ratio(dbParameter) - m_minOffset) / (1 - m_minOffset);
+    return m_dMinValue + (linParameter * m_dValueRange);
 }
 
 ControlLogInvPotmeterBehavior::ControlLogInvPotmeterBehavior(

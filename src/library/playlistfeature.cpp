@@ -23,7 +23,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
                                  UserSettingsPointer pConfig)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "PLAYLISTHOME") {
+                              "PLAYLISTHOME"),
+          m_icon(":/images/library/ic_library_playlist.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
 
@@ -41,7 +42,7 @@ QVariant PlaylistFeature::title() {
 }
 
 QIcon PlaylistFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_playlist.png");
+    return m_icon;
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -89,7 +90,6 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
-    //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
@@ -172,13 +172,13 @@ void PlaylistFeature::buildPlaylistList() {
             playlistTableModel.index(row, durationColumn)).toInt();
         m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
                                         .arg(name, QString::number(count),
-                                                mixxx::Duration::formatSeconds(duration))));
+                                                mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS))));
     }
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));
     } else {
         item->setIcon(QIcon());
     }

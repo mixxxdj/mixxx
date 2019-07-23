@@ -119,7 +119,7 @@
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <group>[Channel1]</group>
                 <key>LPD8RK.hotcueButton</key>
                 <status>0x90</status>
@@ -261,7 +261,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x07</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -270,7 +270,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x03</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -279,7 +279,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x06</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -288,7 +288,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x02</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -297,7 +297,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x05</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -306,7 +306,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x01</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -315,7 +315,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x04</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -324,7 +324,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC0</status>
                 <midino>0x00</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -437,7 +437,7 @@
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <group>[Channel2]</group>
                 <key>LPD8RK.hotcueButton</key>
                 <status>0x91</status>
@@ -579,7 +579,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x07</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -588,7 +588,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x03</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -597,7 +597,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x06</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -606,7 +606,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x02</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -615,7 +615,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x05</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -624,7 +624,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x01</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -633,7 +633,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x04</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -642,7 +642,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC1</status>
                 <midino>0x00</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -757,7 +757,7 @@
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <group>[Sampler1]</group>
                 <key>LPD8RK.hotcueButton</key>
                 <status>0x92</status>
@@ -899,7 +899,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x07</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -908,7 +908,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x03</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -917,7 +917,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x06</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -926,7 +926,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x02</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -935,7 +935,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x05</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -944,7 +944,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x01</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -953,7 +953,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x04</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -962,7 +962,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC2</status>
                 <midino>0x00</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1077,7 +1077,7 @@
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <group>[Sampler2]</group>
                 <key>LPD8RK.hotcueButton</key>
                 <status>0x93</status>
@@ -1219,7 +1219,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x07</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1228,7 +1228,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x03</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1237,7 +1237,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x06</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1246,7 +1246,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x02</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1255,7 +1255,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x05</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1264,7 +1264,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x01</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1273,7 +1273,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x04</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>
@@ -1282,7 +1282,7 @@
                 <key>LPD8RK.progChng</key>
                 <status>0xC3</status>
                 <midino>0x00</midino>
-		<options>
+        <options>
                     <script-binding/>
                 </options>
             </control>

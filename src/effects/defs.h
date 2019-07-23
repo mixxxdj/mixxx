@@ -27,8 +27,8 @@ inline uint qHash(SignalProcessingStage stage) {
 };
 
 enum class EffectChainMixMode {
-    DrySlashWet = 0,
-    DryPlusWet,
+    DrySlashWet = 0, // Crossfade between dry and wet
+    DryPlusWet, // Add wet to dry
     NumMixModes // The number of mix modes. Also used to represent "unknown".
 };
 

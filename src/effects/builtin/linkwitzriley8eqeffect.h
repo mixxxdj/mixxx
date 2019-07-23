@@ -8,7 +8,7 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterlinkwitzriley8.h"
+#include "engine/filters/enginefilterlinkwitzriley8.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -53,8 +53,7 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

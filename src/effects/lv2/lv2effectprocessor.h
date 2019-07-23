@@ -51,8 +51,7 @@ class LV2EffectProcessor : public EffectProcessor {
             const CSAMPLE* pInput, CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
-            const GroupFeatureState& groupFeatures,
-            const EffectChainMixMode mixMode) override;
+            const GroupFeatureState& groupFeatures) override;
   private:
     LV2EffectGroupState* createGroupState(const mixxx::EngineParameters& bufferParameters);
 

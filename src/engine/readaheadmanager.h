@@ -10,7 +10,7 @@
 
 #include "util/types.h"
 #include "util/math.h"
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 
 class LoopingControl;
 class RateControl;
@@ -125,6 +125,7 @@ class ReadAheadManager {
     double m_currentPosition;
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
+    bool m_cacheMissHappened;
 };
 
 #endif // READAHEADMANGER_H
