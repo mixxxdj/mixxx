@@ -675,7 +675,8 @@ int Track::getSampleRate() const {
 }
 
 void Track::setPhraseBegin(double phraseBegin) {
-    double dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(phraseBegin);
+    double closestBeatSample = m_pBeats->findClosestBeat(phraseBegin);
+    double dFirstPhraseBegin = m_pBeats->calculateFirstPhraseSample(closestBeatSample);
     m_pBeats->setFirstPhraseBegin(dFirstPhraseBegin);
 }
 

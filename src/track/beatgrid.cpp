@@ -1,5 +1,6 @@
 #include <QMutexLocker>
 #include <QtDebug>
+#include <cmath>
 
 #include "track/beatgrid.h"
 #include "util/math.h"
@@ -37,16 +38,18 @@ class BeatGridIterator : public BeatIterator {
         BeatData beat;
         beat.sample = m_dCurrentSample;
 
-        if (m_dPhraseBeginSample > m_dCurrentSample || m_dCurrentSample > m_dEndSample)
+        if (m_dPhraseBeginSample > m_dCurrentSample || m_dCurrentSample > m_dEndSample) {
             beat.phraseNumber = beat.beatNumber = beat.barNumber = -1;
-        else {
+        } else {
             beat.beatNumber = static_cast<int>((m_dCurrentSample - m_dPhraseBeginSample) / m_dBeatLength);
             // If we are at a bar start, set bar number and check for phrase.
             if (std::remainder(beat.beatNumber, m_beatsPerBar) == 0) {
                 beat.barNumber = beat.beatNumber / m_beatsPerBar;
                 beat.phraseNumber = (std::remainder(beat.barNumber, m_barsPerPhrase) == 0 ? beat.barNumber / m_barsPerPhrase : -1);
-            } else
-                beat.barNumber = beat.phraseNumber = -1;
+            } else {
+                beat.barNumber = -1;
+                beat.phraseNumber = -1;
+            }
         }
 
         m_dCurrentSample += m_dBeatLength;
@@ -296,7 +299,8 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
         return std::unique_ptr<BeatIterator>();
     }
     double m_firstPhraseBegin = firstPhraseSample();
-    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample, m_firstPhraseBegin, kBeatsPerBar, kBarsPerPhrase);
+    return std::make_unique<BeatGridIterator>(
+            m_dBeatLength, curBeat, stopSample, m_firstPhraseBegin, kBeatsPerBar, kBarsPerPhrase);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -339,10 +343,8 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
 }
 
 double BeatGrid::calculateFirstPhraseSample(double phraseSample) const {
-    return (static_cast<int>(std::round((phraseSample - firstBeatSample()) / m_dBeatLength)) %
-                   (kBeatsPerBar * kBarsPerPhrase)) *
-            m_dBeatLength +
-            firstBeatSample();
+    double samplesPerPhrase = kBeatsPerBar * kBarsPerPhrase * m_dBeatLength;
+    return std::fmod(phraseSample, samplesPerPhrase);
 }
 
 void BeatGrid::addBeat(double dBeatSample) {
