@@ -259,6 +259,40 @@
        id="radialGradient4192-55"
        xlink:href="#linearGradient950"
        inkscape:collect="always" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5282"
+       id="radialGradient4275"
+       cx="121.17975"
+       cy="1021.6929"
+       fx="121.17976"
+       fy="1021.6929"
+       r="29.787664"
+       gradientTransform="matrix(0.39126883,0.00237277,-0.00205292,0.3399727,-24.031222,675.57079)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5187"
+       id="radialGradient4204-9-8-3"
+       cx="740.67114"
+       cy="257.08102"
+       fx="740.67114"
+       fy="257.08102"
+       r="32.034878"
+       gradientTransform="matrix(-5.5287299,-0.108715,-0.48018251,-1.200858,4239.7016,1412.446)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient5187"
+       inkscape:collect="always">
+      <stop
+         id="stop5183"
+         offset="0"
+         style="stop-color:#323232;stop-opacity:1" />
+      <stop
+         id="stop5185"
+         offset="1"
+         style="stop-color:#1a1a1a;stop-opacity:1" />
+    </linearGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -267,9 +301,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6538097"
-     inkscape:cx="72.768793"
-     inkscape:cy="11.449262"
+     inkscape:zoom="3.9978472"
+     inkscape:cx="9.4450509"
+     inkscape:cy="41.489308"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -351,7 +385,7 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
     </g>
     <g
        id="g4435"
-       transform="matrix(1.1206965,0,0,1.1206965,-20.825443,-120.94612)">
+       transform="matrix(1.062442,0,0,1.062442,-11.349709,-62.414745)">
       <g
          id="text4402-5"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.44180202px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -446,5 +480,11 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
         </g>
       </g>
     </g>
+    <path
+       id="rect4183-39-9-2"
+       d="m 12.060486,1014.0075 v 19.2994 h 19.29636 l 0.003,-19.2994 z"
+       style="opacity:1;fill:url(#radialGradient4275);fill-opacity:1;stroke:url(#radialGradient4204-9-8-3);stroke-width:0.70063412;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
   </g>
 </svg>

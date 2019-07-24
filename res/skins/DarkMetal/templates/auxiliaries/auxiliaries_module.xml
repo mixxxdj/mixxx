@@ -49,10 +49,18 @@
 			</Connection>
 			</KnobComposed>	
 			
+			<!-- Label: Channel Number -->	
+			<Label>
+			<ObjectName>AuxiliaryLabel</ObjectName>
+			<Pos>19,10</Pos>
+			<Size>10,10</Size>
+			<Text><Variable name="audiochannel"/></Text>
+			</Label>	
+			
 			<!-- Mute: -->
 			<PushButton>
 			<Tooltip>Mute</Tooltip><!-- Tooltip -->
-			<Pos>12,6</Pos>
+			<Pos>34,6</Pos>
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
@@ -73,7 +81,7 @@
 			<!-- Headphones: -->
 			<PushButton>
 			<Tooltip>Headphones</Tooltip><!-- Tooltip -->
-			<Pos>34,6</Pos>
+			<Pos>56,6</Pos>
 			<NumberStates>2</NumberStates>
 			<State>
 			<Number>0</Number>
@@ -94,7 +102,7 @@
 			<!-- M,L,R: -->			
 			<PushButton>
 			<TooltipId>orientation</TooltipId><!-- Tooltip -->
-			<Pos>53,8</Pos>
+			<Pos>76,8</Pos>
 			<NumberStates>3</NumberStates>
 			<State>
 			<Number>0</Number>
@@ -115,15 +123,7 @@
 			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],orientation</ConfigKey>
 			<ButtonState>LeftButton</ButtonState>
 			</Connection>
-			</PushButton>	
-			
-			<!-- Label: Channel Number -->	
-			<Label>
-			<ObjectName>AuxiliaryLabel</ObjectName>
-			<Pos>80,11</Pos>
-			<Size>10,10</Size>
-			<Text>AU <Variable name="audiochannel"/></Text>
-			</Label>			
+			</PushButton>		
 
 		</Children>
 		<Connection>

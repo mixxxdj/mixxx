@@ -877,6 +877,63 @@
        r="51.351246"
        gradientTransform="matrix(-0.62513155,0,0,-0.06467061,210.82001,1105.8734)"
        gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5514"
+       id="radialGradient5516"
+       cx="104.76067"
+       cy="1029.8619"
+       fx="104.76067"
+       fy="1029.8619"
+       r="59.84766"
+       gradientTransform="matrix(0.63762456,0,0,1.8092028,18.248431,-833.31566)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5514">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0.5"
+         offset="0"
+         id="stop5510" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="1"
+         id="stop5512" />
+    </linearGradient>
+    <radialGradient
+       r="32.034878"
+       fy="229.92647"
+       fx="767.797"
+       cy="229.92648"
+       cx="767.797"
+       gradientTransform="matrix(-3.5592144e-5,0.25349081,-74.723489,-0.01105539,17307.476,837.78758)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient5011-6"
+       xlink:href="#linearGradient5027"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient5027"
+       inkscape:collect="always">
+      <stop
+         id="stop5023"
+         offset="0"
+         style="stop-color:#3c3c3c;stop-opacity:1" />
+      <stop
+         id="stop5025"
+         offset="1"
+         style="stop-color:#3c3c3c;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5514"
+       id="radialGradient5516-6"
+       cx="146.11993"
+       cy="1029.8619"
+       fx="146.11993"
+       fy="1029.8619"
+       r="59.84766"
+       gradientTransform="matrix(-0.63404172,0,0,-1.8092028,257.79446,2893.1427)"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -886,8 +943,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.848485"
-     inkscape:cx="116.2267"
-     inkscape:cy="-0.028224722"
+     inkscape:cx="141.69857"
+     inkscape:cy="3.6842752"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -924,7 +981,8 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Layer 2"
-     style="display:none">
+     style="display:none"
+     sodipodi:insensitive="true">
     <rect
        style="display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.3690505;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
        id="rect4579"
@@ -949,6 +1007,29 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        cx="72.478439"
        d=""
        inkscape:connector-curvature="0" />
+    <g
+       transform="translate(0.49969,3e-4)"
+       id="g4704">
+      <rect
+         style="opacity:0.5;fill:url(#radialGradient5516);fill-opacity:1;stroke:none;stroke-width:0.14425354;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect5508"
+         width="60"
+         height="31.134375"
+         x="64.533897"
+         y="1014.3463" />
+      <rect
+         style="opacity:0.5;fill:url(#radialGradient5516-6);fill-opacity:1;stroke:none;stroke-width:0.14425354;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect5508-5"
+         width="60"
+         height="31.134375"
+         x="125.24831"
+         y="1014.3463" />
+      <path
+         style="display:inline;opacity:1;fill:url(#radialGradient5011-6);fill-opacity:1;stroke:none;stroke-width:0.51991236;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m 63.555,1013.5416 v 32.6406 h 93.9785 28.91212 v -32.6406 z m 1.59765,1.3203 h 119.69532 v 30 H 65.15265 Z"
+         id="rect4183-9-9-8"
+         inkscape:connector-curvature="0" />
+    </g>
     <g
        id="g4681"
        transform="translate(25.7395)">

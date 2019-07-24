@@ -33,9 +33,9 @@
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient846">
+       id="linearGradient846-1">
       <stop
-         style="stop-color:#d29bff;stop-opacity:1"
+         style="stop-color:#e6afff;stop-opacity:1"
          offset="0"
          id="stop842" />
       <stop
@@ -75,15 +75,15 @@
        id="EMFhbasepattern" />
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient846"
+       xlink:href="#linearGradient846-1"
        id="radialGradient848"
-       cx="-15.48443"
+       cx="-15.484431"
        cy="1040.2847"
-       fx="-15.48443"
+       fx="-15.484431"
        fy="1040.2847"
        r="8.5454998"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(4.6151457,0,0,4.4151425,87.12483,-3556.643)" />
+       gradientTransform="matrix(6.8365529,2.2881728e-6,-2.2473256e-6,6.7145106,121.5244,-5948.6404)" />
     <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4526"
@@ -95,6 +95,17 @@
        r="8.5454998"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(4.8154774,0,0,4.6067925,91.613662,-3752.669)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient846-1"
+       id="radialGradient848-6"
+       cx="-15.48443"
+       cy="1040.2847"
+       fx="-15.48443"
+       fy="1040.2847"
+       r="8.5454998"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(4.9277213,0,0,4.7141721,91.964887,-3867.7192)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -103,9 +114,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="45.335862"
-     inkscape:cx="5.4177168"
-     inkscape:cy="3.3711696"
+     inkscape:zoom="22.667931"
+     inkscape:cx="1.1630416"
+     inkscape:cy="0.41056674"
      inkscape:document-units="px"
      inkscape:current-layer="g4498"
      showgrid="false"
@@ -150,9 +161,27 @@
       <circle
          cx="15.661922"
          cy="1036.3622"
+         r="13.098354"
+         id="path823-7-6"
+         style="opacity:0.5;fill:url(#radialGradient848-6);fill-opacity:1;stroke:none;stroke-width:2.9992702;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         cx="15.661922"
+         cy="1036.3622"
          r="12.267499"
          id="path823-7"
          style="opacity:1;fill:url(#radialGradient848);fill-opacity:1;stroke:none;stroke-width:2.80902004;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         cx="15.661922"
+         cy="1036.3622"
+         r="5.9398208"
+         id="path823-7-7"
+         style="opacity:0.5;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.36010408;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <circle
+         cx="15.661922"
+         cy="1036.3622"
+         r="2.7759817"
+         id="path823-7-7-2"
+         style="opacity:0.5;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.6356461;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

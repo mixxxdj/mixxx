@@ -70,9 +70,9 @@
 	-->
 
 	<manifest>
-	<title>Dark Metal v.2.9.7</title>
+	<title>Dark Metal v.2.9.8</title>
 	<author>Jorge Rosa - jorge.bigarte@gmail.com</author>
-	<version>2.9.7</version>
+	<version>2.9.8</version>
 	<description>Dark Metal - Colors - SVG - Resizable</description>
 	<language>en</language>
 	<license>Creative Commons - Attribution 3.0 Unported</license>
@@ -162,8 +162,8 @@
 	<!-- <attribute persist="true" config_key="[StrobesModule0],show">1</attribute> --> <!-- Channel: Master -->
 	<attribute persist="true" config_key="[StrobesModule1],show">1</attribute>
 	<attribute persist="true" config_key="[StrobesModule2],show">1</attribute>
-	<attribute persist="true" config_key="[StrobesModule3],show">0</attribute>
-	<attribute persist="true" config_key="[StrobesModule4],show">0</attribute>
+	<attribute persist="true" config_key="[StrobesModule3],show">1</attribute>
+	<attribute persist="true" config_key="[StrobesModule4],show">1</attribute>
 	
 	<!-- Microphones: (Rack + Modules) -->
 	<attribute persist="true" config_key="[ToolBarMicros],show">0</attribute>

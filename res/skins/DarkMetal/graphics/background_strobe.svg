@@ -667,17 +667,6 @@
        r="46.056641" />
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5027"
-       id="radialGradient5011"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(-3.5592144e-5,2.0856001,-74.72349,-0.00591225,17307.478,-570.09572)"
-       cx="767.797"
-       cy="229.93727"
-       fx="767.797"
-       fy="229.93726"
-       r="32.034878" />
-    <radialGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient5448"
        id="radialGradient5156"
        gradientUnits="userSpaceOnUse"
@@ -1716,6 +1705,17 @@
        fx="44.875"
        fy="1030.4872"
        r="13.125" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5027"
+       id="radialGradient5011-6"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-3.5592144e-5,2.0856001,-74.72349,-0.00591225,17307.478,-570.0957)"
+       cx="767.797"
+       cy="229.93727"
+       fx="767.797"
+       fy="229.93726"
+       r="32.034878" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1724,9 +1724,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.0000001"
-     inkscape:cx="157.94595"
-     inkscape:cy="-19.875084"
+     inkscape:zoom="5.6568544"
+     inkscape:cx="120.5177"
+     inkscape:cy="0.13239475"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1785,12 +1785,6 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
     <path
-       inkscape:connector-curvature="0"
-       id="rect4183-9-9"
-       d="m 186.44546,1013.5416 v 32.6412 H 157.53413 63.554719 v -32.6411 z"
-       style="opacity:1;fill:url(#radialGradient5011);fill-opacity:1;stroke:none;stroke-width:0.51991236;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       sodipodi:nodetypes="cccccc" />
-    <path
        style="opacity:1;fill:url(#linearGradient5158);fill-opacity:1;stroke:none;stroke-width:1.58737254;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="M 184.84755,1044.8622 H 65.152631 v -30 H 184.84755 Z"
        id="rect4183-39"
@@ -1843,7 +1837,7 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
            inkscape:connector-curvature="0" />
       </g>
       <g
-         transform="matrix(1.8380386,0,0,1.8380386,17.608149,-864.70526)"
+         transform="matrix(2.2376493,0,0,2.2376493,15.256664,-1277.5719)"
          id="text5123"
          style="font-style:normal;font-weight:normal;font-size:2.32574725px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:url(#linearGradient5142);fill-opacity:1;stroke:none;stroke-width:0.05814368"
          aria-label="220V">
@@ -2599,5 +2593,10 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
            sodipodi:nodetypes="cccccccc" />
       </g>
     </g>
+    <path
+       style="opacity:1;fill:url(#radialGradient5011-6);fill-opacity:1;stroke:none;stroke-width:0.51991236;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 63.554778,1013.5419 v 32.6406 h 93.978512 28.91211 v -32.6406 z m 1.597656,1.3203 H 184.84775 v 30 H 65.152434 Z"
+       id="rect4183-9-9-8"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

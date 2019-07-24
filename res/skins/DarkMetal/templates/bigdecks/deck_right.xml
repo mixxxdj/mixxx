@@ -1296,13 +1296,13 @@
 					<NumberStates>2</NumberStates>
 					<State>
 					<Number>0</Number>
-					<Pressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>_pressed.svg</Pressed>
-					<Unpressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>_pressed.svg</Unpressed>
+					<Pressed>skin:graphics/btn_expand_deck_pressed.svg</Pressed>
+					<Unpressed>skin:graphics/btn_expand_deck_pressed.svg</Unpressed>
 					</State>
 					<State>
 					<Number>1</Number>
-					<Pressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>.svg</Pressed>
-					<Unpressed>skin:graphics/btn_expand_deck_<Variable name="audiochannel"/>.svg</Unpressed>
+					<Pressed>skin:graphics/btn_expand_deck.svg</Pressed>
+					<Unpressed>skin:graphics/btn_expand_deck.svg</Unpressed>
 					</State>
 					<Connection>
 					<ConfigKey>[Deck<Variable name="decktohide"/>],show</ConfigKey>

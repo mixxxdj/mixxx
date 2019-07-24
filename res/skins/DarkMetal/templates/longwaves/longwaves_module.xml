@@ -20,8 +20,8 @@
 		<SizePolicy>me,f</SizePolicy>
 		<Layout>horizontal</Layout>
 		<Children>
-		
-		
+
+
 		<WidgetGroup> <!-- Button: Play + Display: Deck X -->
 		<MinimumSize>29,29</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
@@ -31,13 +31,13 @@
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Pressed>
-		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Unpressed>
+		<Pressed>skin:graphics/btn_longwave_play.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_play.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Unpressed>
+		<Pressed>skin:graphics/btn_longwave_play_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_play_pressed.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel"/>],play</ConfigKey>
@@ -53,7 +53,7 @@
 		</PushButton>
 		</Children>
 		</WidgetGroup>		
-
+	
 		<WidgetGroup> <!-- Button: To start -->
 		<MinimumSize>29,29</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
@@ -97,6 +97,14 @@
 		</Connection>
 		</PushButton>
 		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,23</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
 		</WidgetGroup>		
 						
 		<Visual>
@@ -151,7 +159,14 @@
 		</Mark>							
 		</Visual>		
 
-
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,23</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
 		<WidgetGroup> <!-- Button: Fast forward -->
 		<MinimumSize>29,29</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
@@ -206,13 +221,13 @@
 		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Pressed>
-		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Unpressed>
+		<Pressed>skin:graphics/btn_longwave_play.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_play.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Unpressed>
+		<Pressed>skin:graphics/btn_longwave_play_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_play_pressed.svg</Unpressed>
 		</State>
 		<Connection>
 		<ConfigKey>[Channel<Variable name="audiochannel"/>],play</ConfigKey>
@@ -228,7 +243,7 @@
 		</PushButton>
 		</Children>
 		</WidgetGroup>		
-
+		
 		</Children>	
 		</WidgetGroup>
 		

@@ -114,7 +114,8 @@
 			<Unpressed>skin:graphics/btn_ducking.svg</Unpressed>
 			</State>
 			<Connection>
-			<ConfigKey>[Microphone<Variable name="audiochannel"/>],talkoverDucking</ConfigKey>
+			<!-- <ConfigKey>[Microphone<Variable name="audiochannel"/>],talkoverDucking</ConfigKey> -->
+			<ConfigKey>[Master],talkoverDucking</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 			</Connection>
@@ -135,7 +136,8 @@
 			<MinAngle>-130</MinAngle>
 			<MaxAngle>130</MaxAngle>
 			<Connection>
-			<ConfigKey>[Channel<Variable name="audiochannel"/>],duckStrength</ConfigKey>
+			<!-- <ConfigKey>[Channel<Variable name="audiochannel"/>],duckStrength</ConfigKey> -->
+			<ConfigKey>[Master],duckStrength</ConfigKey>
 			</Connection>
 		</KnobComposed>		
 		
