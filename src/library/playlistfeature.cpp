@@ -22,21 +22,12 @@
 namespace {
 
 QString createPlaylistLable(
-        const QSqlTableModel& playlistTableModel,
-        int row,
-        int nameColumn,
-        int countColumn,
-        int durationColumn) {
-    QString name = playlistTableModel.data(
-        playlistTableModel.index(row, nameColumn)).toString();
-    int count = playlistTableModel.data(
-        playlistTableModel.index(row, countColumn)).toInt();
-    int duration = playlistTableModel.data(
-        playlistTableModel.index(row, durationColumn)).toInt();
+        QString name,
+        int count,
+        int duration) {
     return QString("%1 (%2) %3").arg(name, QString::number(count),
             mixxx::Duration::formatSeconds(duration));
 }
-
 
 }
 
@@ -187,8 +178,14 @@ void PlaylistFeature::buildPlaylistList() {
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
                 playlistTableModel.index(row, idColumn)).toInt();
-        m_playlistList.append(qMakePair(id, createPlaylistLable(
-                playlistTableModel, row, nameColumn, countColumn, durationColumn)));
+        QString name = playlistTableModel.data(
+                playlistTableModel.index(row, nameColumn)).toString();
+        int count = playlistTableModel.data(
+                playlistTableModel.index(row, countColumn)).toInt();
+        int duration = playlistTableModel.data(
+                playlistTableModel.index(row, durationColumn)).toInt();
+        m_playlistList.append(qMakePair(id, 
+                createPlaylistLable(name, count, duration)));
     }
 }
 
@@ -209,12 +206,16 @@ void PlaylistFeature::reloadPlaylistInPlaylistList(int playlist_id) {
 
     DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
     if (playlistTableModel.rowCount() > 0) {
+        QString name = playlistTableModel.data(
+                playlistTableModel.index(0, nameColumn)).toString();
+        int count = playlistTableModel.data(
+                playlistTableModel.index(0, countColumn)).toInt();
+        int duration = playlistTableModel.data(
+                playlistTableModel.index(0, durationColumn)).toInt();
         for (auto it = m_playlistList.begin();
                 it != m_playlistList.end(); ++it) {
             if (it->first == playlist_id) {
-                it->second = createPlaylistLable(
-                        playlistTableModel, 0, nameColumn,
-                        countColumn, durationColumn);
+                it->second = createPlaylistLable(name, count, duration);
                 break;
             }
         }
