@@ -189,11 +189,11 @@ void PlaylistFeature::buildPlaylistList() {
     }
 }
 
-void PlaylistFeature::reloadPlaylistInPlaylistList(int playlist_id) {
+void PlaylistFeature::reloadPlaylistInPlaylistList(int playlistId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("PlaylistsCountsDurations");
-    QString filter = "id=" + QString::number(playlist_id);
+    QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
@@ -214,7 +214,7 @@ void PlaylistFeature::reloadPlaylistInPlaylistList(int playlist_id) {
                 playlistTableModel.index(0, durationColumn)).toInt();
         for (auto it = m_playlistList.begin();
                 it != m_playlistList.end(); ++it) {
-            if (it->first == playlist_id) {
+            if (it->first == playlistId) {
                 it->second = createPlaylistLable(name, count, duration);
                 break;
             }
@@ -222,8 +222,8 @@ void PlaylistFeature::reloadPlaylistInPlaylistList(int playlist_id) {
     }
 }
 
-void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
-    if (m_playlistDao.isPlaylistLocked(playlist_id)) {
+void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));
     } else {
         item->setIcon(QIcon());

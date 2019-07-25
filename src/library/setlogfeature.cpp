@@ -145,11 +145,11 @@ void SetlogFeature::buildPlaylistList() {
     }
 }
 
-void SetlogFeature::reloadPlaylistInPlaylistList(int playlist_id) {
+void SetlogFeature::reloadPlaylistInPlaylistList(int playlistId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
-    QString filter = "id=" + QString::number(playlist_id);
+    QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
@@ -164,7 +164,7 @@ void SetlogFeature::reloadPlaylistInPlaylistList(int playlist_id) {
                 playlistTableModel.index(0, nameColumn)).toString();
         for (auto it = m_playlistList.begin();
                 it != m_playlistList.end(); ++it) {
-            if (it->first == playlist_id) {
+            if (it->first == playlistId) {
                 it->second = name;
                 break;
             }
@@ -172,10 +172,10 @@ void SetlogFeature::reloadPlaylistInPlaylistList(int playlist_id) {
     }
 }
 
-void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
-    if (playlist_id == m_playlistId) {
+void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
+    if (playlistId == m_playlistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
-    } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
+    } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
     } else {
         item->setIcon(QIcon());
