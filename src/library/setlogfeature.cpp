@@ -162,13 +162,7 @@ void SetlogFeature::reloadPlaylistInPlaylistList(int playlistId) {
     if (playlistTableModel.rowCount() > 0) {
         QString name = playlistTableModel.data(
                 playlistTableModel.index(0, nameColumn)).toString();
-        for (auto it = m_playlistList.begin();
-                it != m_playlistList.end(); ++it) {
-            if (it->first == playlistId) {
-                it->second = name;
-                break;
-            }
-        }
+        replacePlaylistLabel(playlistId, name);
     }
 }
 

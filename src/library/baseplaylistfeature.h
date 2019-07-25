@@ -79,6 +79,7 @@ class BasePlaylistFeature : public LibraryFeature {
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
+    void replacePlaylistLabel(int playlistId, const QString& label);
 
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;

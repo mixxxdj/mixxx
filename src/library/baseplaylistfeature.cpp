@@ -626,7 +626,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
          it != m_playlistList.end(); ++it, ++row) {
         int playlist_id = it->first;
-        QString playlist_name = it->second;
+        QString playlistLabel = it->second;
 
         if (selected_id == playlist_id) {
             // save index for selection
@@ -635,7 +635,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, playlist_name, playlist_id);
+        TreeItem* item = new TreeItem(this, playlistLabel, playlist_id);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
 
         decorateChild(item, playlist_id);
@@ -658,14 +658,14 @@ void BasePlaylistFeature::updateChildModel(int changedPlaylistId) {
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
          it != m_playlistList.end(); ++it, ++row) {
-        int playlist_id = it->first;
-        QString playlist_name = it->second;
+        int playlistId = it->first;
+        QString playlistLable = it->second;
 
-        if (changedPlaylistId == playlist_id) {
-            TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
-            item->setLabel(playlist_name);
-            item->setData(playlist_id);
-            decorateChild(item, playlist_id);
+        if (changedPlaylistId == playlistId) {
+            TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlistId));
+            item->setLabel(playlistLable);
+            item->setData(playlistId);
+            decorateChild(item, playlistId);
         }
     }
 }
@@ -691,6 +691,16 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
         }
     }
     return QModelIndex();
+}
+
+void BasePlaylistFeature::replacePlaylistLabel(int playlistId,
+        const QString& label) {
+    for (auto it = m_playlistList.begin(); it != m_playlistList.end(); ++it) {
+        if (it->first == playlistId) {
+            it->second = label;
+            break;
+        }
+    }
 }
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {

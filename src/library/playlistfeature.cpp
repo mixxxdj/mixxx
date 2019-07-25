@@ -212,13 +212,7 @@ void PlaylistFeature::reloadPlaylistInPlaylistList(int playlistId) {
                 playlistTableModel.index(0, countColumn)).toInt();
         int duration = playlistTableModel.data(
                 playlistTableModel.index(0, durationColumn)).toInt();
-        for (auto it = m_playlistList.begin();
-                it != m_playlistList.end(); ++it) {
-            if (it->first == playlistId) {
-                it->second = createPlaylistLable(name, count, duration);
-                break;
-            }
-        }
+        replacePlaylistLabel(playlistId, createPlaylistLable(name, count, duration));
     }
 }
 
