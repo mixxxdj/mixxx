@@ -21,7 +21,7 @@
 
 namespace {
 
-QString createPlaylistLable(
+QString createPlaylistLabel(
         QString name,
         int count,
         int duration) {
@@ -29,7 +29,7 @@ QString createPlaylistLable(
             mixxx::Duration::formatSeconds(duration));
 }
 
-}
+} // anonymous namespace
 
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
@@ -140,7 +140,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void PlaylistFeature::buildPlaylistList() {
-    m_playlistList.clear();
+    m_playlistLabels.clear();
 
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
@@ -184,8 +184,10 @@ void PlaylistFeature::buildPlaylistList() {
                 playlistTableModel.index(row, countColumn)).toInt();
         int duration = playlistTableModel.data(
                 playlistTableModel.index(row, durationColumn)).toInt();
-        m_playlistList.append(qMakePair(id, 
-                createPlaylistLable(name, count, duration)));
+        IdAndLabel idAndLabel;
+        idAndLabel.id = id; 
+        idAndLabel.label = createPlaylistLabel(name, count, duration);
+        m_playlistLabels.append(idAndLabel);
     }
 }
 
@@ -212,7 +214,7 @@ void PlaylistFeature::reloadPlaylistInPlaylistList(int playlistId) {
                 playlistTableModel.index(0, countColumn)).toInt();
         int duration = playlistTableModel.data(
                 playlistTableModel.index(0, durationColumn)).toInt();
-        replacePlaylistLabel(playlistId, createPlaylistLable(name, count, duration));
+        replacePlaylistLabel(playlistId, createPlaylistLabel(name, count, duration));
     }
 }
 

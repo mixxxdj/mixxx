@@ -623,22 +623,21 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     int selected_row = -1;
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int playlist_id = it->first;
-        QString playlistLabel = it->second;
+    for (auto it = m_playlistLabels.constBegin();
+             it != m_playlistLabels.constEnd(); ++it, ++row) {
+        int playlistId = it->id;
+        QString playlistLabel = it->label;
 
-        if (selected_id == playlist_id) {
+        if (selected_id == playlistId) {
             // save index for selection
             selected_row = row;
-            m_childModel.index(selected_row, 0);
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, playlistLabel, playlist_id);
-        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
+        TreeItem* item = new TreeItem(this, playlistLabel, playlistId);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
 
-        decorateChild(item, playlist_id);
+        decorateChild(item, playlistId);
         data_list.append(item);
     }
 
@@ -656,10 +655,10 @@ void BasePlaylistFeature::updateChildModel(int changedPlaylistId) {
     reloadPlaylistInPlaylistList(changedPlaylistId);
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int playlistId = it->first;
-        QString playlistLable = it->second;
+    for (auto it = m_playlistLabels.constBegin();
+         it != m_playlistLabels.constEnd(); ++it, ++row) {
+        int playlistId = it->id;
+        QString playlistLable = it->label;
 
         if (changedPlaylistId == playlistId) {
             TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlistId));
@@ -676,15 +675,15 @@ void BasePlaylistFeature::updateChildModel(int changedPlaylistId) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_childModel.removeRows(0, m_playlistList.size());
+    m_childModel.removeRows(0, m_playlistLabels.size());
 }
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int current_id = it->first;
-        QString playlist_name = it->second;
+    for (auto it = m_playlistLabels.constBegin();
+            it != m_playlistLabels.constEnd(); ++it, ++row) {
+        int current_id = it->id;
+        QString playlist_name = it->label;
 
         if (playlistId == current_id) {
             return m_childModel.index(row, 0);
@@ -695,9 +694,9 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
 
 void BasePlaylistFeature::replacePlaylistLabel(int playlistId,
         const QString& label) {
-    for (auto it = m_playlistList.begin(); it != m_playlistList.end(); ++it) {
-        if (it->first == playlistId) {
-            it->second = label;
+    for (auto it = m_playlistLabels.begin(); it != m_playlistLabels.end(); ++it) {
+        if (it->id == playlistId) {
+            it->label = label;
             break;
         }
     }
@@ -719,14 +718,14 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
-    for (auto it = m_playlistList.constBegin();
-            it != m_playlistList.constEnd(); ++it, ++row) {
+    for (auto it = m_playlistLabels.constBegin();
+            it != m_playlistLabels.constEnd(); ++it, ++row) {
         TreeItem* playlist = rootItem->child(row);
         if (playlist == nullptr) {
             continue;
         }
 
-        int playlistId = it->first;
+        int playlistId = it->id;
         bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
         playlist->setBold(shouldBold);
     }

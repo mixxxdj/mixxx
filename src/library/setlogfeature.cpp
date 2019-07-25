@@ -121,7 +121,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 
 void SetlogFeature::buildPlaylistList() {
-    m_playlistList.clear();
+    m_playlistLabels.clear();
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
@@ -141,7 +141,10 @@ void SetlogFeature::buildPlaylistList() {
             playlistTableModel.index(row, idColumn)).toInt();
         QString name = playlistTableModel.data(
             playlistTableModel.index(row, nameColumn)).toString();
-        m_playlistList.append(qMakePair(id, name));
+        IdAndLabel idAndLabel;
+        idAndLabel.id = id;
+        idAndLabel.label = name;
+        m_playlistLabels.append(idAndLabel);
     }
 }
 
