@@ -139,7 +139,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void PlaylistFeature::buildPlaylistList() {
+void PlaylistFeature::createPlaylistLabels() {
     m_playlistLabels.clear();
 
     QString queryString = QString(
@@ -191,7 +191,7 @@ void PlaylistFeature::buildPlaylistList() {
     }
 }
 
-void PlaylistFeature::reloadPlaylistInPlaylistList(int playlistId) {
+void PlaylistFeature::updatePlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("PlaylistsCountsDurations");

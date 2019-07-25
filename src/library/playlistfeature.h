@@ -40,8 +40,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
  protected:
-    void buildPlaylistList() override;
-    void reloadPlaylistInPlaylistList(int playlist_id) override;
+    void createPlaylistLabels() override;
+    void updatePlaylistLabel(int playlist_id) override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   private:

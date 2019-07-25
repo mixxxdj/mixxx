@@ -618,7 +618,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
   * This method queries the database and does dynamic insertion
 */
 QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
-    buildPlaylistList();
+    createPlaylistLabels();
     QList<TreeItem*> data_list;
     int selected_row = -1;
 
@@ -652,7 +652,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 void BasePlaylistFeature::updateChildModel(int changedPlaylistId) {
     // the following call fetches whole m_playlistList.
     // Anything may have change due to a concurrent Mixxx instance.
-    reloadPlaylistInPlaylistList(changedPlaylistId);
+    updatePlaylistLabel(changedPlaylistId);
 
     int row = 0;
     for (auto it = m_playlistLabels.constBegin();
