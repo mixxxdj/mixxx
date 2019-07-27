@@ -29,11 +29,6 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setPixmap(m_defaultCover);
 }
 
-WCoverArtLabel::~WCoverArtLabel() {
-    delete m_pCoverMenu;
-    delete m_pDlgFullSize;
-}
-
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
                                  QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();

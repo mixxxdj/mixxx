@@ -1,7 +1,7 @@
-#ifndef DLGCOVERARTFULLSIZE_H
-#define DLGCOVERARTFULLSIZE_H
+#pragma once
 
 #include <QDialog>
+#include <QPointer>
 
 #include "library/ui_dlgcoverartfullsize.h"
 #include "library/coverart.h"
@@ -14,8 +14,8 @@ class DlgCoverArtFullSize
           public Ui::DlgCoverArtFullSize {
     Q_OBJECT
   public:
-    DlgCoverArtFullSize(QWidget* parent = nullptr, BaseTrackPlayer* pPlayer = nullptr);
-    virtual ~DlgCoverArtFullSize();
+    explicit DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer = nullptr);
+    ~DlgCoverArtFullSize() override = default;
 
     void init(TrackPointer pTrack);
     void mousePressEvent(QMouseEvent* /* unused */) override;
@@ -37,7 +37,5 @@ class DlgCoverArtFullSize
     QPixmap m_pixmap;
     TrackPointer m_pLoadedTrack;
     BaseTrackPlayer* m_pPlayer;
-    WCoverArtMenu* m_pCoverMenu;
+    QPointer<WCoverArtMenu> m_pCoverMenu;
 };
-
-#endif // DLGCOVERARTFULLSIZE_H
