@@ -41,7 +41,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
  protected:
     void createPlaylistLabels() override;
-    void updatePlaylistLabel(int playlist_id) override;
+    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   private:

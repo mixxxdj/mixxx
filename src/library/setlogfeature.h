@@ -34,8 +34,8 @@ public:
 
   protected:
     void createPlaylistLabels() override;
-    void updatePlaylistLabel(int playlist_id) override;
-    void decorateChild(TreeItem *pChild, int playlist_id) override;
+    QString fetchPlaylistLabel(int playlistId) override;
+    void decorateChild(TreeItem *pChild, int playlistId) override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

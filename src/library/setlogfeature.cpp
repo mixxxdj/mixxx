@@ -148,7 +148,7 @@ void SetlogFeature::createPlaylistLabels() {
     }
 }
 
-void SetlogFeature::updatePlaylistLabel(int playlistId) {
+QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
@@ -163,10 +163,10 @@ void SetlogFeature::updatePlaylistLabel(int playlistId) {
 
     DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
     if (playlistTableModel.rowCount() > 0) {
-        QString name = playlistTableModel.data(
+        return playlistTableModel.data(
                 playlistTableModel.index(0, nameColumn)).toString();
-        replacePlaylistLabel(playlistId, name);
     }
+    return QString();
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {

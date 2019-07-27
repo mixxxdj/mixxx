@@ -690,6 +690,13 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     return QModelIndex();
 }
 
+void BasePlaylistFeature::updatePlaylistLabel(int playlistId) {
+    QString label = fetchPlaylistLabel(playlistId);
+    if (!label.isNull()) {
+        replacePlaylistLabel(playlistId, label);
+    }
+}
+
 void BasePlaylistFeature::replacePlaylistLabel(int playlistId,
         const QString& label) {
     for (auto it = m_playlistLabels.begin(); it != m_playlistLabels.end(); ++it) {
