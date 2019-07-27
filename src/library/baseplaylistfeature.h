@@ -77,7 +77,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
-    virtual void createPlaylistLabels() = 0;
+    virtual void createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) = 0;
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
     void updatePlaylistLabel(int playlistId);
     virtual void decorateChild(TreeItem *pChild, int playlistId) = 0;
@@ -105,7 +105,6 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pExportTrackFilesAction;
     QAction *m_pDuplicatePlaylistAction;
     QAction *m_pAnalyzePlaylistAction;
-    QList<IdAndLabel> m_playlistLabels;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
@@ -117,6 +116,7 @@ class BasePlaylistFeature : public LibraryFeature {
   private:
     virtual QString getRootViewHtml() const = 0;
 
+    QList<IdAndLabel> m_playlistLabels;
     QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
 };

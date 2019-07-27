@@ -139,9 +139,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void PlaylistFeature::createPlaylistLabels() {
-    m_playlistLabels.clear();
-
+void PlaylistFeature::createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
         "AS SELECT "
@@ -187,7 +185,7 @@ void PlaylistFeature::createPlaylistLabels() {
         IdAndLabel idAndLabel;
         idAndLabel.id = id; 
         idAndLabel.label = createPlaylistLabel(name, count, duration);
-        m_playlistLabels.append(idAndLabel);
+        pPlaylistLabels->append(idAndLabel);
     }
 }
 

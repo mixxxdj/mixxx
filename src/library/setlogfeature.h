@@ -33,7 +33,7 @@ public:
     void slotGetNewPlaylist();
 
   protected:
-    void createPlaylistLabels() override;
+    void createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) override;
     QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem *pChild, int playlistId) override;
 

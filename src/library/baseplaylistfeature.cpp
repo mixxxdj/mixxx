@@ -618,7 +618,8 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
   * This method queries the database and does dynamic insertion
 */
 QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
-    createPlaylistLabels();
+    m_playlistLabels.clear();
+    createPlaylistLabels(&m_playlistLabels);
     QList<TreeItem*> data_list;
     int selected_row = -1;
 
