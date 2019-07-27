@@ -79,7 +79,6 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void clearChildModel();
     virtual void createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) = 0;
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
-    void updatePlaylistLabel(int playlistId);
     virtual void decorateChild(TreeItem *pChild, int playlistId) = 0;
     virtual void addToAutoDJ(bool bTop);
 
@@ -87,7 +86,6 @@ class BasePlaylistFeature : public LibraryFeature {
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
-    void replacePlaylistLabel(int playlistId, const QString& label);
 
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
@@ -116,7 +114,6 @@ class BasePlaylistFeature : public LibraryFeature {
   private:
     virtual QString getRootViewHtml() const = 0;
 
-    QList<IdAndLabel> m_playlistLabels;
     QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
 };
