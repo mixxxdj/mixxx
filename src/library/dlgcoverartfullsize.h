@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QDialog>
-#include <QPointer>
 
 #include "library/ui_dlgcoverartfullsize.h"
 #include "library/coverart.h"
 #include "mixer/basetrackplayer.h"
 #include "track/track.h"
 #include "widget/wcoverartmenu.h"
+#include "util/parented_ptr.h"
 
 class DlgCoverArtFullSize
         : public QDialog,
@@ -37,5 +37,5 @@ class DlgCoverArtFullSize
     QPixmap m_pixmap;
     TrackPointer m_pLoadedTrack;
     BaseTrackPlayer* m_pPlayer;
-    QPointer<WCoverArtMenu> m_pCoverMenu;
+    parented_ptr<WCoverArtMenu> m_pCoverMenu;
 };
