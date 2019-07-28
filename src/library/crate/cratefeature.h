@@ -19,6 +19,8 @@
 
 #include "preferences/usersettings.h"
 
+#include "util/parented_ptr.h"
+
 // forward declaration(s)
 class Library;
 class TrackCollection;
@@ -108,21 +110,17 @@ class CrateFeature : public LibraryFeature {
     QModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
 
-    // FIXME(XXX): std::unique_ptr is wrong! Qt takes ownership
-    // of these actions. Should be replaced with the appropriate
-    // variant of parented_ptr as soon as it becomes available.
-    // See also: https://github.com/mixxxdj/mixxx/pull/1161
-    std::unique_ptr<QAction> m_pCreateCrateAction;
-    std::unique_ptr<QAction> m_pDeleteCrateAction;
-    std::unique_ptr<QAction> m_pRenameCrateAction;
-    std::unique_ptr<QAction> m_pLockCrateAction;
-    std::unique_ptr<QAction> m_pDuplicateCrateAction;
-    std::unique_ptr<QAction> m_pAutoDjTrackSourceAction;
-    std::unique_ptr<QAction> m_pImportPlaylistAction;
-    std::unique_ptr<QAction> m_pCreateImportPlaylistAction;
-    std::unique_ptr<QAction> m_pExportPlaylistAction;
-    std::unique_ptr<QAction> m_pExportTrackFilesAction;
-    std::unique_ptr<QAction> m_pAnalyzeCrateAction;
+    parented_ptr<QAction> m_pCreateCrateAction;
+    parented_ptr<QAction> m_pDeleteCrateAction;
+    parented_ptr<QAction> m_pRenameCrateAction;
+    parented_ptr<QAction> m_pLockCrateAction;
+    parented_ptr<QAction> m_pDuplicateCrateAction;
+    parented_ptr<QAction> m_pAutoDjTrackSourceAction;
+    parented_ptr<QAction> m_pImportPlaylistAction;
+    parented_ptr<QAction> m_pCreateImportPlaylistAction;
+    parented_ptr<QAction> m_pExportPlaylistAction;
+    parented_ptr<QAction> m_pExportTrackFilesAction;
+    parented_ptr<QAction> m_pAnalyzeCrateAction;
 };
 
 
