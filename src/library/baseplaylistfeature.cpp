@@ -618,15 +618,13 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
   * This method queries the database and does dynamic insertion
 */
 QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
-    QList<IdAndLabel> playlistLabels = createPlaylistLabels();
     QList<TreeItem*> data_list;
     int selected_row = -1;
 
     int row = 0;
-    for (auto it = playlistLabels.constBegin();
-             it != playlistLabels.constEnd(); ++it, ++row) {
-        int playlistId = it->id;
-        QString playlistLabel = it->label;
+    for (const IdAndLabel& idAndLabel : createPlaylistLabels()) {
+        int playlistId = idAndLabel.id;
+        QString playlistLabel = idAndLabel.label;
 
         if (selected_id == playlistId) {
             // save index for selection
@@ -639,6 +637,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 
         decorateChild(item, playlistId);
         data_list.append(item);
+
+        ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
@@ -706,10 +706,11 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
         if (!pTreeItem->hasChildren()) { // leaf node
             bool ok;
             int playlistId = pTreeItem->getData().toInt(&ok);
-            if (ok) {
-                bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
-                pTreeItem->setBold(shouldBold);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                continue;
             }
+            bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
+            pTreeItem->setBold(shouldBold);
         }
     }
 
