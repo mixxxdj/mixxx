@@ -187,8 +187,9 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
 void BpmControl::slotAdjustBeatsFaster(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = pBeats->getBpm() + kBpmAdjustStep;
-        pBeats->setBpm(new_bpm);
+        double bpm = pBeats->getBpm();
+        double adjustedBpm = bpm + kBpmAdjustStep;
+        pBeats->setBpm(adjustedBpm);
     }
 }
 
@@ -196,10 +197,8 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
-        if (bpm > kBpmAdjustMin) {
-            double new_bpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-            pBeats->setBpm(new_bpm);
-        }
+        double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
+        pBeats->setBpm(adjustedBpm);
     }
 }
 
