@@ -119,7 +119,8 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     menu.exec(globalPos);
 }
 
-void SetlogFeature::createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) {
+QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
+    QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
@@ -139,11 +140,12 @@ void SetlogFeature::createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) {
             playlistTableModel.index(row, idColumn)).toInt();
         QString name = playlistTableModel.data(
             playlistTableModel.index(row, nameColumn)).toString();
-        IdAndLabel idAndLabel;
+        BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = id;
         idAndLabel.label = name;
-        pPlaylistLabels->append(idAndLabel);
+        playlistLabels.append(idAndLabel);
     }
+    return playlistLabels;
 }
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {

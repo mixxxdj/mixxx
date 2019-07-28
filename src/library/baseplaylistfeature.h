@@ -77,7 +77,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
-    virtual void createPlaylistLabels(QList<IdAndLabel>* pPlaylistLabels) = 0;
+    virtual QList<IdAndLabel> createPlaylistLabels() = 0;
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
     virtual void decorateChild(TreeItem *pChild, int playlistId) = 0;
     virtual void addToAutoDJ(bool bTop);
