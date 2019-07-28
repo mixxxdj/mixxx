@@ -90,7 +90,9 @@ bool AnalyzerQueenMaryBeats::finalize() {
     // the beat if this is the case.
     size_t firstBeat = 0;
     if (beats.size() >= 3) {
-        if (m_detectionResults.at(beats.at(0)) <
+        if (beats.at(0) <= 0) {
+            firstBeat = 1;
+        } else if (m_detectionResults.at(beats.at(0)) <
                 (m_detectionResults.at(beats.at(1)) +
                 m_detectionResults.at(beats.at(2))) / 4) {
             // the beat is not half es high than the average of the two
@@ -108,7 +110,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
 
     m_resultBeats.reserve(beats.size());
     for (size_t i = firstBeat; i < beats.size(); ++i) {
-        double result = beats[i] * kStepSize;
+        double result = (beats.at(i) * kStepSize) - kStepSize / 2;
         m_resultBeats.push_back(result);
     }
 
