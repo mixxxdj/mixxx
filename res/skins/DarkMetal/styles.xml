@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8" [standalone = "yes"] ?>
+<!DOCTYPE skin>
+<?mixxx set conf FOR styles.qss?>
+<!-- Define main settings: -->
+<note mixxx="/usr/share/applications/mixxx.desktop">
+  <from><ObjectName>Mixxx</ObjectName>
+	<Background><BgColor>#000000</BgColor></Background>
+	<Style src="skin:styles.qss"/></from>
+<?xml-stylesheet type="qss" href="styles.qss"? skin="Dark Metal v.2.9.8" target="_Self"?>
+<script type="text/css" src="/usr/share/mixxx/skins/DarkMetal/" xml:script="/usr/share/mixxx/skins/DarkMetal/" lang="en">
+<fade>
+<styles.xml>
+  <p><i><b><![CDATA[(Rack=Bottom)]]></b></i></p>
+	
+		<i priority="2" transformation="1/2/3/4"/><b ratio="1.5" fade="4"/>
+</fade>
+</styles.xml>
+
+<Audio-volume>
+  <p>#MixerPanel</p>
+  <styles.xml>
+  <exec_call><a href="#TextsFontsNormalBright"><p style="digital;" priority="1" src="line19.column9;"/></a></exec>
+  
+  <exec_call><a href="#TextsFontsNormalDark"><p style="digital;" priority="1" src="line19.column9;"/></a></exec>
+  
+  <exec_call><a href="#EffectsOptions"><p style="color:'ff703d';" priority="1" src="line366.column9;"/></a></exec>
+  
+  <exec_call><a href="#LibraryArea"><p style="default;" priority="1" src="line533.column9;"/></a></exec>
+  <p><![CDATA[#MixerPanel {
+	qproperty-layoutAlignment:'AlignCenter | AlignTop';
+	border:0px solid #000000; margin:0; padding:0;
+	background:url(skin:graphics/background_mixer.svg) no-repeat;
+	}]]></p>
+	<p>
+	<b>
+		<text>background:url(skin:graphics/background_mixer.svg)</text>
+        </b>
+	</p>
+	<b ratio="1,5" volume="Normalize+0db"/>
+  </styles.xml>
+</Audio-volume>
+<!--normal-->
+
+<Audio-volume>
+  <p>#Mixxx</p>
+  <exec_call><a href="#Rack30"><p style="bold;" priority="1" src="line571.column9;"/></a></exec>
+  <exec_call><a href="#Rack500"><p style="bold;" priority="1" src="line575.column9;"/></a></exec>
+  
+  <exec_call><a href="#LibraryArea"><p style="default;" priority="1" src="line533.column9;"/></a></exec>
+  <exec_GOTO><a href="#LibrarySettings"><p style="Transparencies;" absolute-position="Middle;" onclick="image:url(skin:graphics/library_arrow_down.svg) / TranslateY;" priority="1" src="line536.column9;"/></a></GOTO>
+  <div><a href="#LibraryCoverArt"><input><img src='./file*' style="Aspect:'1/1'_join_to_{ background:'border 1px solid#555555'; };"></image></input></a></div>
+  <styles.xml>
+  <p><b><i><![CDATA[#Mixxx {
+	font:Normal 10px/12px 'default'; font-family:'default'; keep_current; text:'Normal | Bright | Dark'; wordWrap:false; align:'center';
+	]]></i></b></p>
+	<p>
+        <b>
+		<text>qproperty-layout:'Apply | Exec';
+	Apply:url(skin:styles.qss);
+	}</text>
+        </b>
+	</p>
+        <b ratio="1" value="true"/>
+  </styles.xml>
+</Audio-Volume>
+<!--normal-->
+
+<Audio-volume>
+  <p>#Effect,#EffectsModule,#EffectParameterButton</p>
+  <div><exec_call><a href="#Rack"><p style="bold;" priority="1" src="line571.column9;"/></a></exec></div>
+  
+  <exec_call><a href="#EffectsOptions"><p style="color:'ff703d';" priority="1" src="line571.column9;"/></a></exec>
+  
+  <p>#Effect,#EffectsModule,#EffectParameterButton</p>
+  <styles.xml>
+  <p><i><![CDATA[#Effect,#EffectsModule,#EffectParameterButton {
+	font:10px/12px;]]><i></p>
+	<p>
+        <b>
+		<txt>background:transparent;<txt>
+        </b>
+	</p>
+   <p><i><![CDATA[ color:#484848;
+	qproperty-layoutValign:'Top'; tiled;
+	qproperty-alignment:'AlignLeft | AlignTop';
+	qproperty-layoutSize-ParameterButton:'fitted';
+	}]]><i></p>
+	
+        <i ratio="0.5" aspect="Wide"/><b ratio="0.5" volume="Normalize+4db"/>
+  </styles.xml>
+</Audio-volume>
+<!--normal-->
+<!-- <attribute config_key="[EffectRack1],num_effectunits">4</attribute> -->
+</script>
+<styles:head>
+<!-- mixxx -->
+</styles:head>
+<styles:p>
+<body:"font='regular / default';fonts-size='10';">
+<style:"script='text/css';qss;">
+<css-xml:enable,transition>< exec:sinc="sin(x)/x; | value:'min=0; max=10;'/ x='0', Y='1';"></exec>
+  <Audio-volume:normalize>
+    <Effect:normalized>
+      <enabled:EffectUnit_play_rate_sound_next><sound:"F='24hz';/ _n2='19';" | rate:"48000='37h';/ *h='1-37 h'" | play="F+(h1-h37);" / n2="'5'_+0.4%_volume;"></sound>
+	<disabled:Audio-volume=normalized_#MixerPanel>
+        <'#1'play:	><priority='1'>
+	<'#2'play:	><priority='2'>
+	
+	<'#3'play:	><priority='1'>
+	<'#4'play:	><priority='2'>
+          <refresh:"next_ratio_Audio-volume">
+	  	</refresh:"next_ratio_Audio-volume">
+        </'#1'play:	><priority='1'>
+	</'#2'play:	><priority='2'>
+	
+	</'#3'play:	><priority='1'>
+	</'#4'play:	><priority='2'>
+	</disabled:Audio-volume=normalized_#MixerPanel>
+      </enabled:EffectUnit_play_rate_sound_next><sound:"F='24hz';/ _n2='19';" | rate:"48000='37h';/ *h='1-37 h'" | play="F+(h1-h37);" / n2="'5'_+0.4%_volume;"></sound>
+    </Effect:normalized>
+  </Audio-volume:normalize>
+</css-xml:enable,transition>< exec:sinc="sin(x)/x; | value:'min=0; max=10;'/ x='0', Y='1';"></exec>
+<style:"script='text/css';qss;">
+</body:"font='regular | default';fonts-size='10';">
+</styles:p>
+
+<!-- SCHEMES COLORS: -->
+<Color>
+<p>Bright</p>
+<p><b>Dark</b></p>
+  <styles.xml>
+	
+		<color saturate='48%' Lightness='66%'/><b-color saturate='50%' Lightness='66%'/>
+	
+</styles.xml>
+</Color>
+<Blue 1 - Normal>
+<styles:blue>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:blue>
+</Blue 1 - Normal>
+
+<Blue 2 - Jeans>
+<styles:blue>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:blue>
+</Blue 2 - Jeans>	
+
+<Blue 3 - Dark>
+<styles:blue>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:blue>
+</Blue 3 - Dark>	
+
+<Blue 4 - Soft>
+<styles:blue>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:blue>
+</Blue 4 - Soft>
+
+<Brown 1 - Soft>
+<styles:maroon>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:maroon>
+</Brown 1 - Soft>
+
+<Brown 2 - Chocolatte>
+<styles:maroon>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:maroon>
+</Brown 2 - Chocolatte>
+
+<Brown 3 - Dark>
+<styles:maroon>
+<body:"font='regular / default';fonts-size='11';">
+<style:"script='text/css';qss;">
+ <css-xml:enabled>
+  <Color:#ff707a>
+	</Color:#ff707a>
+ </css-xml:enabled>
+</style:"script='text/css';qss;">
+</body:"font='regular / default';fonts-size='11';">
+</styles:maroon>
+</Brown 3 - Dark>
+
+<content>
+
+      <styles.qss="Apply_skin_styles,exec,in,out-Audio-volume-conf-Color">
+
+ </content>
+  <to>/usr/share/mixxx/skins/DarkMetal/styles.qss</to>
+
+</note>
