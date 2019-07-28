@@ -39,8 +39,6 @@
             </State>
             <Connection>
               <ConfigKey>[Master],skin_settings</ConfigKey>
-              <!-- This is used to work around Bug 1795663 on OSX -->
-              <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
@@ -115,6 +113,12 @@
             <SetVariable name="skinsetting">[Skin],show_8_hotcues</SetVariable>
           </Template>
 
+          <Template src="skin:skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+            <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_intro_outro_cues</SetVariable>
+          </Template>
+          
           <Template src="skin:skinsettings_button.xml">
             <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>

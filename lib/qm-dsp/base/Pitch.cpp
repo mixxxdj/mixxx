@@ -18,8 +18,8 @@
 
 float
 Pitch::getFrequencyForPitch(int midiPitch,
-			    float centsOffset,
-			    float concertA)
+                            float centsOffset,
+                            float concertA)
 {
     float p = float(midiPitch) + (centsOffset / 100);
     return concertA * powf(2.0, (p - 69.0) / 12.0);
@@ -27,8 +27,8 @@ Pitch::getFrequencyForPitch(int midiPitch,
 
 int
 Pitch::getPitchForFrequency(float frequency,
-			    float *centsOffsetReturn,
-			    float concertA)
+                            float *centsOffsetReturn,
+                            float concertA)
 {
     float p = 12.0 * (log(frequency / (concertA / 2.0)) / log(2.0)) + 57.0;
 
@@ -36,8 +36,8 @@ Pitch::getPitchForFrequency(float frequency,
     float centsOffset = (p - midiPitch) * 100.0;
 
     if (centsOffset >= 50.0) {
-	midiPitch = midiPitch + 1;
-	centsOffset = -(100.0 - centsOffset);
+        midiPitch = midiPitch + 1;
+        centsOffset = -(100.0 - centsOffset);
     }
     
     if (centsOffsetReturn) *centsOffsetReturn = centsOffset;

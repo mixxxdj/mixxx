@@ -138,6 +138,8 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
                 m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerProgress);
+        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,
+                m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerFinished);
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
                 this, &AnalysisFeature::onTrackAnalysisSchedulerProgress);
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,

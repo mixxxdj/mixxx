@@ -24,9 +24,7 @@ LibFaadLoader::LibFaadLoader()
           m_neAACDecGetErrorMessage(nullptr) {
     // Load shared library
     QStringList libnames;
-#ifdef __LINUX__
-    libnames << "libfaad.so.2";
-#elif __WINDOWS__
+#ifdef __WINDOWS__
     // http://www.rarewares.org/aac-decoders.php
     libnames << "libfaad2.dll";
 #elif __APPLE__
@@ -37,11 +35,8 @@ LibFaadLoader::LibFaadLoader()
     // Using MacPorts ('sudo port install faad2' command):
     libnames << "/opt/local/lib/libfaad2.dylib";
 #else
-    DEBUG_ASSERT(!"OS not implemented");
-    return;
+    libnames << "libfaad.so";
 #endif
-
-
 
     for (const auto& libname : libnames) {
         m_pLibrary.reset();
@@ -74,15 +69,14 @@ LibFaadLoader::LibFaadLoader()
     m_neAACDecGetErrorMessage = reinterpret_cast<NeAACDecGetErrorMessage_t>(
             m_pLibrary->resolve("NeAACDecGetErrorMessage"));
 
-    if (    !m_neAACDecOpen ||
+    if (!m_neAACDecOpen ||
             !m_neAACDecGetCurrentConfiguration ||
             !m_neAACDecSetConfiguration ||
             !m_neAACDecInit2 ||
             !m_neAACDecClose ||
             !m_neAACDecPostSeekReset ||
             !m_neAACDecDecode2 ||
-            !m_neAACDecGetErrorMessage
-    ) {
+            !m_neAACDecGetErrorMessage) {
         kLogger.debug() << "NeAACDecOpen:" << m_neAACDecOpen;
         kLogger.debug() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
         kLogger.debug() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;

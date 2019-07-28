@@ -1,6 +1,6 @@
 
-#ifndef NAN_INF_H
-#define NAN_INF_H
+#ifndef QM_DSP_NAN_INF_H
+#define QM_DSP_NAN_INF_H
 
 #define ISNAN(x) (sizeof(x) == sizeof(double) ? ISNANd(x) : ISNANf(x))
 static inline int ISNANf(float x) { return x != x; }

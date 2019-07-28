@@ -25,7 +25,7 @@ it afterwards for proper functioning
 #include <QString>
 #include <QList>
 
-#include <gtest/gtest.h>
+#include "track/trackfile.h"
 
 class Parser : public QObject {
   public:
@@ -56,10 +56,10 @@ protected:
     bool isBinary(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
-    // reads URLs an plain Part and returns a local file path
-    QString playlistEntrytoLocalFile(const QString& playlistEntry);
-
-    FRIEND_TEST(PlaylistTest, Normalize);
+    // Resolve an absolute or relative file path
+    TrackFile playlistEntryToTrackFile(
+            const QString& playlistEntry,
+            const QString& basePath = QString());
 };
 
 #endif

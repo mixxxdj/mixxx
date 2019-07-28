@@ -219,11 +219,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
 }
 
 void BroadcastProfile::adoptDefaultValues() {
-#ifdef __QTKEYCHAIN__
-    m_secureCredentials = true;
-#else
     m_secureCredentials = false;
-#endif
     m_enabled = false;
 
     m_host = QString();

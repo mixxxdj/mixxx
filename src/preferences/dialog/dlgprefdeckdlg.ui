@@ -33,6 +33,16 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelAutoHotcueColors">
+        <property name="text">
+          <string>Auto hot cue colors</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxAssignHotcueColors</cstring>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelPositionDisplay">
         <property name="enabled">
@@ -52,7 +62,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1" colspan="2">
+      <item row="5" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
         <property name="text">
          <string>Do not load tracks into playing decks</string>
@@ -67,6 +77,17 @@
         </property>
         <property name="text">
          <string>Jump to main cue point on track load</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAssignHotcueColors">
+        <property name="toolTip">
+        <string>Automatically assigns a predefined color to a newly created hot cue point, based on
+            its index.</string>
+        </property>
+        <property name="text">
+         <string>Assign predefined colors to newly created hot cue points</string>
         </property>
        </widget>
       </item>
@@ -142,10 +163,10 @@ CUP mode:
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="labelPlayingTrackProtection">
         <property name="text">
-         <string>Pla&amp;ying track protection</string>
+         <string>Playing track protection</string>
         </property>
         <property name="buddy">
          <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>

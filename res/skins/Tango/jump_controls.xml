@@ -31,8 +31,8 @@ Variables:
                 <SetVariable name="TooltipId">beatjump_backward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">backward.svg</SetVariable>
+                <SetVariable name="state_0_pressed">beatjump_backward_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">beatjump_backward.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_backward</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_backward</SetVariable>
               </Template>
@@ -43,8 +43,8 @@ Variables:
                 <SetVariable name="TooltipId">beatjump_forward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">forward.svg</SetVariable>
+                <SetVariable name="state_0_pressed">beatjump_forward_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">beatjump_forward.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_forward</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_forward</SetVariable>
               </Template>

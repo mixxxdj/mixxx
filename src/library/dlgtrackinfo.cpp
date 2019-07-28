@@ -8,8 +8,8 @@
 #include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/dao/cue.h"
 #include "track/beatfactory.h"
+#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/duration.h"
@@ -142,7 +142,7 @@ void DlgTrackInfo::cueDelete() {
     }
 
     QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
-    qSort(rowsList);
+    std::sort(rowsList.begin(), rowsList.end());
 
     QListIterator<int> it(rowsList);
     it.toBack();
@@ -277,7 +277,8 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        if (pCue->getType() == Cue::CUE) {
+        Cue::CueType type = pCue->getType();
+        if (type == Cue::CUE || type == Cue::INTRO || type == Cue::OUTRO) {
             listPoints.push_back(pCue);
         }
     }
@@ -321,6 +322,25 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
 
+        // Decode cue type to display text
+        QString cueType;
+        switch (pCue->getType()) {
+            case Cue::CUE:
+                cueType = "Hotcue";
+                break;
+            case Cue::INTRO:
+                cueType = "Intro";
+                break;
+            case Cue::OUTRO:
+                cueType = "Outro";
+                break;
+            default:
+                break;
+        }
+
+        QTableWidgetItem* typeItem = new QTableWidgetItem(cueType);
+        // Make the type read only
+        typeItem->setFlags(Qt::NoItemFlags);
 
         QComboBox* colorComboBox = new QComboBox();
         const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
@@ -342,9 +362,10 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
-        cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
-        cueTable->setCellWidget(row, 3, colorComboBox);
-        cueTable->setItem(row, 4, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setItem(row, 2, typeItem);
+        cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
+        cueTable->setCellWidget(row, 4, colorComboBox);
+        cueTable->setItem(row, 5, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
     cueTable->setSortingEnabled(true);
@@ -388,9 +409,9 @@ void DlgTrackInfo::saveTrack() {
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
-        QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-        QWidget* colorWidget = cueTable->cellWidget(row, 3);
-        QTableWidgetItem* labelItem = cueTable->item(row, 4);
+        QTableWidgetItem* hotcueItem = cueTable->item(row, 3);
+        QWidget* colorWidget = cueTable->cellWidget(row, 4);
+        QTableWidgetItem* labelItem = cueTable->item(row, 5);
 
         VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorWidget && labelItem) {
             qWarning() << "unable to retrieve cells from cueTable row";
@@ -557,9 +578,9 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // almost all cases.
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
-            double cue = m_pLoadedTrack->getCuePoint();
+            CuePosition cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = BeatFactory::makeBeatGrid(
-                    *m_pLoadedTrack, spinBpm->value(), cue);
+                    *m_pLoadedTrack, spinBpm->value(), cue.getPosition());
         } else {
             m_pBeatsClone.clear();
         }
@@ -591,9 +612,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        double cue = m_pLoadedTrack->getCuePoint();
+        CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = BeatFactory::makeBeatGrid(
-                *m_pLoadedTrack, value, cue);
+                *m_pLoadedTrack, value, cue.getPosition());
     }
 
     double oldValue = m_pBeatsClone->getBpm();

@@ -9,6 +9,18 @@
 * Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
 * Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
+* Add mapping for Roland DJ-505
+
+## [2.2.1](https://launchpad.net/mixxx/+milestone/2.2.1) (2019-04-22)
+
+* Include all fixes from Mixxx 2.1.7 and 2.1.8
+* Fix high CPU usage on MAC due to preview column lp:1812763
+* Fix HID controller output on Windows with common-hid-packet-parser.js
+* Fix rendering slow down by not using QStylePainter in WSpinny lp:1530720
+* Fix broken Mic mute button lp:1782568
+* added quick effect enable button to the control picker menu
+* Fix Cover Window close issue with empty cover arts
+* Fix Numark Mixtrack 3 mapping. #2057
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 

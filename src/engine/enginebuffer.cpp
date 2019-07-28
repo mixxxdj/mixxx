@@ -430,7 +430,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
+void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
@@ -449,7 +449,7 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
 
     // Must hold the engineLock while using m_engineControls
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_filepos_play, adjustingPhase);
+        pControl->notifySeek(m_filepos_play);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -1138,14 +1138,12 @@ void EngineBuffer::processSeek(bool paused) {
         seekType |= SEEK_PHASE;
     }
 
-    bool adjustingPhase = false;
     switch (seekType) {
         case SEEK_NONE:
             return;
         case SEEK_PHASE:
             // only adjust phase
             position = m_filepos_play;
-            adjustingPhase = true;
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1164,10 +1162,12 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        double requestedPosition = position;
+        double syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
-        setNewPlaypos(position, adjustingPhase);
+        setNewPlaypos(position);
     }
 }
 
