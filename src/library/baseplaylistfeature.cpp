@@ -651,7 +651,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 }
 
 void BasePlaylistFeature::updateChildModel(int playlistId) {
-    QString playlistLable = fetchPlaylistLabel(playlistId);
+    QString playlistLabel = fetchPlaylistLabel(playlistId);
 
     QVariant variantId = QVariant(playlistId);
 
@@ -661,7 +661,7 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
         DEBUG_ASSERT(pTreeItem != nullptr);
         if (!pTreeItem->hasChildren() && // leaf node
                 pTreeItem->getData() == variantId) {
-            pTreeItem->setLabel(playlistLable);
+            pTreeItem->setLabel(playlistLabel);
             decorateChild(pTreeItem, playlistId);
         }
     }
