@@ -69,7 +69,7 @@ Description:
           <WidgetGroup><!-- Decks | 12 buttons/rows 13-17px, 1 fixed row 15px -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,205</MinimumSize>
-            <MaximumSize>200,260</MaximumSize>
+            <MaximumSize>200,280</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -88,6 +88,11 @@ Description:
                 <SetVariable name="text">Symmetric Time/Duration</SetVariable>
                 <SetVariable name="Setting">[Tango],symmetric_time</SetVariable>
               </Template>
+
+              <WidgetGroup><!-- Expanding spacer -->
+                <MaximumSize>i,15</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+              </WidgetGroup>
 
               <WidgetGroup><!-- HotCue settings -->
                 <MinimumSize>182,13</MinimumSize>
@@ -156,6 +161,11 @@ Description:
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
                 <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
+              </Template>
+
+              <Template src="skin:../Tango/skin_settings_button_2state.xml">
+                <SetVariable name="text">Track Comment</SetVariable>
+                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Permanent deck controls -->
@@ -271,6 +281,11 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Permanent deck controls -->
 
+              <WidgetGroup><!-- Expanding spacer -->
+                <MaximumSize>i,15</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+              </WidgetGroup>
+
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
                 <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
@@ -318,10 +333,10 @@ Description:
                 </Children>
               </WidgetGroup><!-- Pitch/Key submenu -->
 
-              <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                <SetVariable name="text">Track Comment</SetVariable>
-                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
-              </Template>
+              <WidgetGroup><!-- Expanding spacer -->
+                <MaximumSize>i,15</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+              </WidgetGroup>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Spinny</SetVariable>
@@ -747,7 +762,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,45</MinimumSize>
-            <MaximumSize>200,72</MaximumSize>
+            <MaximumSize>200,84</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
