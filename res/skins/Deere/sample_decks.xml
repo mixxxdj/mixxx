@@ -49,12 +49,6 @@
          minimum size of the current stack widget. -->
     <SizePolicy>me,f</SizePolicy>
     <Children>
-      <!-- FIXME
-          Although the minimum size is now tracked correctly, the border
-          applied via qss is not added to child widgets size but substracted
-          from the WidgetStack's usable height.
-          Creating the border with fixed-size WidgetGroups solves this.
-      <WidgetGroup><Size>-1me,2f</Size></WidgetGroup> -->
 
       <WidgetStack currentpage="[Skin],sampler_row_current" persist="true">
         <ObjectName>SampleDecksContainer</ObjectName>
