@@ -37,7 +37,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
 
     // initialized in a new generic slot(get new history playlist purpose)
-    emit(slotGetNewPlaylist());
+    slotGetNewPlaylist();
 }
 
 SetlogFeature::~SetlogFeature() {
@@ -119,9 +119,8 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     menu.exec(globalPos);
 }
 
-
-void SetlogFeature::buildPlaylistList() {
-    m_playlistList.clear();
+QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
+    QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
@@ -141,14 +140,39 @@ void SetlogFeature::buildPlaylistList() {
             playlistTableModel.index(row, idColumn)).toInt();
         QString name = playlistTableModel.data(
             playlistTableModel.index(row, nameColumn)).toString();
-        m_playlistList.append(qMakePair(id, name));
+        BasePlaylistFeature::IdAndLabel idAndLabel;
+        idAndLabel.id = id;
+        idAndLabel.label = name;
+        playlistLabels.append(idAndLabel);
     }
+    return playlistLabels;
 }
 
-void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
-    if (playlist_id == m_playlistId) {
+QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    playlistTableModel.setTable("Playlists");
+    QString filter = "id=" + QString::number(playlistId);
+    playlistTableModel.setFilter(filter);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+
+    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
+    if (playlistTableModel.rowCount() > 0) {
+        return playlistTableModel.data(
+                playlistTableModel.index(0, nameColumn)).toString();
+    }
+    return QString();
+}
+
+void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
+    if (playlistId == m_playlistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
-    } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
+    } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
     } else {
         item->setIcon(QIcon());
