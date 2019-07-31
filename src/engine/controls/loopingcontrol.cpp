@@ -1010,7 +1010,7 @@ void LoopingControl::updateBeatLoopingControls() {
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
     // if a seek was queued in the engine buffer move the current sample to its position
     double p_seekPosition = 0;
-    if (getEngineBuffer()->isSeekQueued(&p_seekPosition)) {
+    if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
         // seek position is already quantized if quantization is enabled
         m_currentSample.setValue(p_seekPosition);
     }

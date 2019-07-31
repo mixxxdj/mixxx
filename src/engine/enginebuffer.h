@@ -141,7 +141,9 @@ class EngineBuffer : public EngineObject {
 
     QString getGroup();
     bool isTrackLoaded();
-    bool isSeekQueued(double* pSeekPosition);
+    // return true if a seek is currently cueued but not yet processed, false otherwise
+    // if no seek was queued, the seek position is set to -1
+    bool getQueuedSeekPosition(double* pSeekPosition);
     TrackPointer getLoadedTrack() const;
 
     double getExactPlayPos();
