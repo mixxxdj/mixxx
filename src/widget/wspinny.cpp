@@ -313,7 +313,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull() && vSyncThread) {
+    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
         m_pVisualPlayPos->getPlaySlipAtNextVSync(
                 vSyncThread,
                 &m_dAngleCurrentPlaypos,
