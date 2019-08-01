@@ -455,22 +455,22 @@ METADATA
      CREATE TABLE IF NOT EXISTS rekordbox_library (
         id INTEGER primary key AUTOINCREMENT,
         rb_id integer,
-        artist varchar(48), title varchar(48),
-        album varchar(48), year varchar(16),
-        genre varchar(32), tracknumber varchar(3),
-        location varchar(512) UNIQUE,
-        comment varchar(60),
+        artist text, title text,
+        album text, year text,
+        genre text, tracknumber text,
+        location text UNIQUE,
+        comment text,
         duration integer,
         bitrate integer,
         bpm float,
-        key varchar(6),
+        key text,
         rating integer,
-        analyze_path varchar(512) UNIQUE,
-        device varchar(48)
+        analyze_path text UNIQUE,
+        device text
         );
       CREATE TABLE IF NOT EXISTS rekordbox_playlists (
         id INTEGER primary key,
-        name varchar(100) UNIQUE
+        name text UNIQUE
         );
       CREATE TABLE IF NOT EXISTS rekordbox_playlist_tracks (
         id INTEGER primary key AUTOINCREMENT,

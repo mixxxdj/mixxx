@@ -49,6 +49,7 @@ void clearTable(QSqlDatabase &database, QString tableName) {
     }
 }
 
+// This function is executed in a separate thread other than the main thread
 QList<TreeItem *> findRekordboxDevices(RekordboxFeature *rekordboxFeature) {
     QThread *thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -172,7 +173,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t *deviceString) {
         return QString::fromStdString(longUtf16beString->text());
     }
 
-    return QString("");
+    return QString();
 }
 
 int createDevicePLaylist(QSqlDatabase &database, QString devicePath) {
@@ -220,18 +221,18 @@ void insertTrack(
         QString devicePath,
         QString device,
         int audioFilesCount) {
-    int rbID = (int)track->id();
+    int rbID = static_cast<int>(track->id());
     QString title = getText(track->title());
     QString artist = artistsMap[track->artist_id()];
     QString album = albumsMap[track->album_id()];
     QString year = QString::number(track->year());
     QString genre = genresMap[track->genre_id()];
     QString location = devicePath + getText(track->file_path());
-    float bpm = (float)track->tempo() / 100.0;
-    int bitrate = (int)track->bitrate();
+    float bpm = static_cast<float>(track->tempo() / 100.0);
+    int bitrate = static_cast<int>(track->bitrate());
     QString key = keysMap[track->key_id()];
-    int playtime = (int)track->duration();
-    int rating = (int)track->rating();
+    int playtime = static_cast<int>(track->duration());
+    int rating = static_cast<int>(track->rating());
     QString comment = getText(track->comment());
     QString tracknumber = QString::number(track->track_number());
     QString anlzPath = devicePath + getText(track->analyze_path());
@@ -294,7 +295,17 @@ void buildPlaylistTree(
         QString playlistPath,
         QString device);
 
-QString parseDeviceDB(QSqlDatabase &database, TreeItem *deviceItem) {
+QString parseDeviceDB(TrackCollection *trackCollection, TreeItem *deviceItem) {
+    QSqlDatabase database = QSqlDatabase::cloneDatabase(trackCollection->database(),
+            "REKORDBOX_PARSER");
+
+    //Open the database connection in this thread.
+    if (!database.open()) {
+        qDebug() << "Failed to open database for Rekordbox parser."
+                 << database.lastError();
+        return QString();
+    }
+
     QString device = deviceItem->getLabel();
     QString devicePath = deviceItem->getData().toList()[0].toString();
 
@@ -558,7 +569,7 @@ void buildPlaylistTree(
 
                 queryInsertIntoPlaylistTracks.bindValue(":playlist_id", playlistID);
                 queryInsertIntoPlaylistTracks.bindValue(":track_id", trackID);
-                queryInsertIntoPlaylistTracks.bindValue(":position", (int)trackIndex);
+                queryInsertIntoPlaylistTracks.bindValue(":position", static_cast<int>(trackIndex));
 
                 if (!queryInsertIntoPlaylistTracks.exec()) {
                     LOG_FAILED_QUERY(queryInsertIntoPlaylistTracks)
@@ -865,7 +876,7 @@ void RekordboxFeature::activateChild(const QModelIndex &index) {
         // Mixxx shutdown.
         QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
-        m_tracksFuture = QtConcurrent::run(parseDeviceDB, m_database, item);
+        m_tracksFuture = QtConcurrent::run(parseDeviceDB, m_pTrackCollection, item);
         m_tracksFutureWatcher.setFuture(m_tracksFuture);
 
         // This device is now a playlist element, future activations should treat is

@@ -50,14 +50,14 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
             TrackCollection* pTrackCollection,
             QSharedPointer<BaseTrackCache> trackSource);
     TrackPointer getTrack(const QModelIndex& index) const override;
-    virtual bool isColumnHiddenByDefault(int column);
+    bool isColumnHiddenByDefault(int column) override;
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
     RekordboxFeature(QObject* parent, TrackCollection*);
-    virtual ~RekordboxFeature();
+    ~RekordboxFeature() override;
 
     QVariant title();
     QIcon getIcon();
@@ -79,7 +79,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
 
   private:
     QString formatRootViewHtml() const;
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
 
     TreeItemModel m_childModel;
     TrackCollection* m_pTrackCollection;
