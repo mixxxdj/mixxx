@@ -10,6 +10,7 @@
 #include "library/rekordbox/rekordbox_pdb.h"
 #include "library/rekordbox/rekordboxfeature.h"
 
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
@@ -18,6 +19,8 @@
 #include "track/keyfactory.h"
 #include "util/file.h"
 #include "util/sandbox.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 #include "waveform/waveform.h"
 
 #include "widget/wlibrary.h"
@@ -295,17 +298,7 @@ void buildPlaylistTree(
         QString playlistPath,
         QString device);
 
-QString parseDeviceDB(TrackCollection *trackCollection, TreeItem *deviceItem) {
-    QSqlDatabase database = QSqlDatabase::cloneDatabase(trackCollection->database(),
-            "REKORDBOX_PARSER");
-
-    //Open the database connection in this thread.
-    if (!database.open()) {
-        qDebug() << "Failed to open database for Rekordbox parser."
-                 << database.lastError();
-        return QString();
-    }
-
+QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *deviceItem) {
     QString device = deviceItem->getLabel();
     QString devicePath = deviceItem->getData().toList()[0].toString();
 
@@ -315,6 +308,17 @@ QString parseDeviceDB(TrackCollection *trackCollection, TreeItem *deviceItem) {
 
     if (!QFile(dbPath).exists()) {
         return devicePath;
+    }
+
+    // The pooler limits the lifetime all thread-local connections, that should be closed immediately before exiting this function.
+    const mixxx::DbConnectionPooler dbConnectionPooler(dbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(dbConnectionPool);
+
+    //Open the database connection in this thread.
+    if (!database.open()) {
+        qDebug() << "Failed to open database for Rekordbox parser."
+                 << database.lastError();
+        return QString();
     }
 
     //Give thread a low priority
@@ -484,6 +488,8 @@ QString parseDeviceDB(TrackCollection *trackCollection, TreeItem *deviceItem) {
     qDebug() << "Found: " << audioFilesCount << " audio files in Rekordbox device " << device;
 
     transaction.commit();
+
+    database.close();
 
     return devicePath;
 }
@@ -876,7 +882,7 @@ void RekordboxFeature::activateChild(const QModelIndex &index) {
         // Mixxx shutdown.
         QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
-        m_tracksFuture = QtConcurrent::run(parseDeviceDB, m_pTrackCollection, item);
+        m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library*>(parent())->dbConnectionPool(), item);
         m_tracksFutureWatcher.setFuture(m_tracksFuture);
 
         // This device is now a playlist element, future activations should treat is
