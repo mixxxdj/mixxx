@@ -9,8 +9,8 @@ static const QSize s_labelDisplaySize = QSize(100, 100);
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
-          m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize(this, nullptr)),
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)),
+          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this)),
           m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
@@ -30,8 +30,7 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
 }
 
 WCoverArtLabel::~WCoverArtLabel() {
-    delete m_pCoverMenu;
-    delete m_pDlgFullSize;
+    // Nothing to do
 }
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,

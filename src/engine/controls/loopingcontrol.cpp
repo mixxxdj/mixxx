@@ -5,11 +5,12 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/enginebuffer.h"
+#include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -478,6 +479,11 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
         // prevents jumping in front of the loop if loop is smaller than adjustment
         adjustment = fmod(adjustment, loopSize);
 
+        // if the synced position is exactly the start of the loop we would end up at the exact end
+        // as this would disable the loop in notifySeek() replace it with the start of the loop
+        if (adjustment == 0) {
+            return loopSamples.start;
+        }
         return loopSamples.end - adjustment;
     }
 
@@ -818,7 +824,7 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
     if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
-        // Do not jump out of a loop if we adjust a phase (lp1743010)
+        // Jumping to the exact end of a loop is considered jumping out.
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
                 dNewPlaypos < loopSamples.start) {
@@ -826,8 +832,8 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
             setLoopingEnabled(false);
         }
         if (currentSample <= loopSamples.end &&
-                dNewPlaypos > loopSamples.end) {
-            // jumping out a loop or over a catching loop forward
+                dNewPlaypos >= loopSamples.end) {
+            // jumping out or to the exact end of a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
     }
@@ -1002,6 +1008,13 @@ void LoopingControl::updateBeatLoopingControls() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+    // if a seek was queued in the engine buffer move the current sample to its position
+    double p_seekPosition = 0;
+    if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
+        // seek position is already quantized if quantization is enabled
+        m_currentSample.setValue(p_seekPosition);
+    }
+
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {
