@@ -17,10 +17,10 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "track/keyfactory.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/file.h"
 #include "util/sandbox.h"
-#include "util/db/dbconnectionpooler.h"
-#include "util/db/dbconnectionpooled.h"
 #include "waveform/waveform.h"
 
 #include "widget/wlibrary.h"
@@ -882,7 +882,7 @@ void RekordboxFeature::activateChild(const QModelIndex &index) {
         // Mixxx shutdown.
         QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
-        m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library*>(parent())->dbConnectionPool(), item);
+        m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library *>(parent())->dbConnectionPool(), item);
         m_tracksFutureWatcher.setFuture(m_tracksFuture);
 
         // This device is now a playlist element, future activations should treat is
