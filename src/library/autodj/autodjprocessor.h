@@ -159,6 +159,7 @@ class AutoDJProcessor : public QObject {
         FixedFullTrack = 2,
         FixedSkipSilence = 3,
         FixedLoadAtCue = 4,
+        LimitedIntroOutroStart = 5
     };
 
     AutoDJProcessor(QObject* pParent,

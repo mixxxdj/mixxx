@@ -885,10 +885,12 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // Assume that the outro starts now and equals the given transition time
         // but do not pass the original outroEnd
         outroStart = pFromDeck->playPosition() * fromTrackDuration;
+        // if one uses fadeNow with a gap transition we take this time for fading here
+        double transitionTime = fabs(m_transitionTime);
         if (outroEnd > outroStart) {
-            outroEnd = math_min(outroEnd, outroStart + m_transitionTime);
+            outroEnd = math_min(outroEnd, outroStart + transitionTime);
         } else {
-            outroEnd = math_min(fromTrackDuration, outroStart + m_transitionTime);
+            outroEnd = math_min(fromTrackDuration, outroStart + transitionTime);
         }
     } else {
         outroStart = getOutroStartPosition(pFromDeck);
@@ -995,6 +997,92 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     pToDeck,
                     getLastSoundPosition(pFromDeck),
                     getMainCuePosition(pToDeck));
+        }
+        break;
+    case TransitionMode::LimitedIntroOutroStart:
+        // Uses a simple set of rules:
+        // * outro start starts fade if set
+        // * intro length is limited by transition time
+        // * fade time is the minimum of all
+        // no re-cuing of "to track" if no intro end is set. (legacy mode)
+
+        // Use cases:
+        //
+        // By default only intro start and outro end are set. In this case fade
+        // starts at outro end - transitionTime. The new track is not recued,
+        // the deck preferences are used to set the start point.
+        //
+        // If the track has for instance a boring long outro the user can
+        // manually set the outro start. This set the fade start in any case.
+        // The fade time is now set by the outo length or the tranitonTime.
+        // The shorter is selected.
+        //
+        // If the track has a poisend end or something the user can adjust the
+        // outro end. It is never played bejond that point.
+        //
+        // The user can override the deck track load preferences by setting a
+        // intro end point and adjust the intro start. Fading starts at intro
+        // start or intro end - transitionTime, depending on which is shorter.
+        // The transition is always finished before passing intro out.
+        // This can for instance be useful to ensure that fading is over before
+        // vocals start.
+
+        // outro            xxxxxxx
+        // intro            xxxxx
+        // transitionTime   xxxxxxx
+        // fade             xxxxx
+
+        // outro             xxx
+        // intro           xxxxxxx
+        // transitionTime    xxxxx
+        // fade              xxx
+
+        // outro            xxxxxxx
+        // intro          xxxxx
+        // transitionTime   xxx
+        // fade             xxx
+
+        // outro          xxx
+        // intro                  xxx
+        // negativeTime      -----
+        // fade              xxxxx
+
+        // Negative transitionTimes are working but not too reasonable.
+        // Note: In the negative transitionTime case we play bejond outro end.
+        // TODO: It would be nice to fade out the last beat outro, add the silence gap
+        // and fade in the first beat into.
+
+        if (m_transitionTime <= 0) {
+            // play track including full intro and outro with an adjustable gap
+            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
+        } else {
+            double fadeLength = m_transitionTime;
+            if (outroLength > 0 && outroLength < fadeLength) {
+                fadeLength = outroLength;
+            }
+            if (introLength == 0) {
+                // Intro not set, don't re-cue the track
+                pToDeck->startPos = kKeepPosition;
+            } else if (introLength > m_transitionTime) {
+                // Intro is too long, cut some time from the beginning
+                pToDeck->startPos = introEnd - m_transitionTime;
+            } else {
+                // Intro is fine, play entirely
+                pToDeck->startPos = introStart;
+                if (introLength < fadeLength) {
+                    // Use full intro for fading if it is the shortest time.
+                    // This guarantees not to fade beyond intro end.
+                    fadeLength = introLength;
+                }
+            }
+            if (outroLength > 0) {
+                // If an outroStart cue is set: Us it!
+                pFromDeck->fadeBeginPos = outroStart;
+                pFromDeck->fadeEndPos = outroStart + fadeLength;
+            } else {
+                pFromDeck->fadeBeginPos = outroEnd - fadeLength;
+                pFromDeck->fadeEndPos = outroEnd;
+            }
         }
         break;
     case TransitionMode::FixedFullTrack:
