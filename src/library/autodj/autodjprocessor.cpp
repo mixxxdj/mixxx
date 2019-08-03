@@ -777,7 +777,11 @@ double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
-    return samplePositionToSeconds(pDeck->outroEndPosition(), pDeck);
+    double outroEnd = samplePositionToSeconds(pDeck->outroEndPosition(), pDeck);
+    if (outroEnd <= 0.0) {
+        outroEnd = getLastSoundPosition(pDeck);
+    }
+    return outroEnd;
 }
 
 double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
@@ -877,9 +881,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double outroStart;
 
     double outroEnd = getOutroEndPosition(pFromDeck);
-    if (outroEnd <= 0.0) {
-        outroEnd = getLastSoundPosition(pFromDeck);
-    }
 
     if (fadeNow) {
         // Assume that the outro starts now and equals the given transition time
@@ -1098,6 +1099,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->fadeBeginPos /= fromTrackDuration;
     pFromDeck->fadeEndPos /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
+
+    DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1);
 
     if (sDebug) {
         qDebug() << this << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
