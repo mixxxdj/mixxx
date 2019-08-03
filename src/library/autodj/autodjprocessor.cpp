@@ -765,7 +765,11 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
-    return samplePositionToSeconds(pDeck->introStartPosition(), pDeck);
+    double introStart = samplePositionToSeconds(pDeck->introStartPosition(), pDeck);
+    if (introStart <= 0.0) {
+        introStart = getFirstSoundPosition(pDeck);
+    }
+    return introStart;
 }
 
 double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
@@ -908,9 +912,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double introStart;
     if (seekToStartPoint) {
         introStart = getIntroStartPosition(pToDeck);
-        if (introStart <= 0.0) {
-            introStart = getFirstSoundPosition(pToDeck);
-        }
     } else {
         introStart = pToDeck->playPosition() * toTrackDuration;
     }
