@@ -1112,19 +1112,27 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 }
 
-void AutoDJProcessor::useFixedFadeTime(
-        DeckAttributes* pFromDeck,
-        DeckAttributes* pToDeck,
-        double endPoint,
-        double startPoint) {
+void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
+        DeckAttributes* pToDeck, double endPoint, double startPoint) {
     if (m_transitionTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
-        // before the next one starts.
+        // before the next transition starts.
         double toDeckOutroStart = getOutroStartPosition(pToDeck);
-        if (toDeckOutroStart <= 0) {
-            toDeckOutroStart = math_min(getOutroEndPosition(pToDeck), pToDeck->duration() / 2);
+        if (toDeckOutroStart <= startPoint) {
+            // we are already to late
+            double end = getOutroEndPosition(pToDeck);
+            if (end <= startPoint) {
+                end = pToDeck->duration();
+                VERIFY_OR_DEBUG_ASSERT(end > startPoint) {
+                    // as last resort move start point
+                    startPoint = pToDeck->duration() - 1;
+                }
+            }
+            // use the remaining time for fad to this dack ende fade to the next
+            toDeckOutroStart = (end - startPoint) / 2 + startPoint;
         }
-        double transitionTime = math_min(toDeckOutroStart - startPoint, m_transitionTime);
+        double transitionTime = math_min(toDeckOutroStart - startPoint,
+                m_transitionTime);
 
         pFromDeck->fadeBeginPos = endPoint - transitionTime;
         pFromDeck->fadeEndPos = endPoint;
