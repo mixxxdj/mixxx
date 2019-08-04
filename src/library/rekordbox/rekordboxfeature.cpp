@@ -310,12 +310,13 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
         return devicePath;
     }
 
-    // The pooler limits the lifetime all thread-local connections, that should be closed immediately before exiting this function.
+    // The pooler limits the lifetime all thread-local connections,
+    // that should be closed immediately before exiting this function.
     const mixxx::DbConnectionPooler dbConnectionPooler(dbConnectionPool);
     QSqlDatabase database = mixxx::DbConnectionPooled(dbConnectionPool);
 
     //Open the database connection in this thread.
-    if (!database.open()) {
+    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
         qDebug() << "Failed to open database for Rekordbox parser."
                  << database.lastError();
         return QString();
@@ -383,21 +384,17 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
     bool folderOrPlaylistFound = false;
 
     for (int tableOrderIndex = 0; tableOrderIndex < totalTables; tableOrderIndex++) {
-        bool done = false;
+        //       bool done = false;
 
         for (
                 std::vector<rekordbox_pdb_t::table_t *>::iterator table = reckordboxDB.tables()->begin();
                 table != reckordboxDB.tables()->end();
                 ++table) {
             if ((*table)->type() == tableOrder[tableOrderIndex]) {
-                if (done)
-                    break;
-
                 uint16_t lastIndex = (*table)->last_page()->index();
                 rekordbox_pdb_t::page_ref_t *currentRef = (*table)->first_page();
-                bool moreLeft = true;
 
-                do {
+                while (true) {
                     rekordbox_pdb_t::page_t *page = currentRef->body();
 
                     if (page->is_data_page()) {
@@ -414,45 +411,45 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
                                     case rekordbox_pdb_t::PAGE_TYPE_KEYS: {
                                         // Key found, update map
                                         rekordbox_pdb_t::key_row_t *key =
-                                                (rekordbox_pdb_t::key_row_t *)(*rowRef)->body();
+                                                static_cast<rekordbox_pdb_t::key_row_t *>((*rowRef)->body());
                                         keysMap[key->id()] = getText(key->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_GENRES: {
                                         // Genre found, update map
                                         rekordbox_pdb_t::genre_row_t *genre =
-                                                (rekordbox_pdb_t::genre_row_t *)(*rowRef)->body();
+                                                static_cast<rekordbox_pdb_t::genre_row_t *>((*rowRef)->body());
                                         genresMap[genre->id()] = getText(genre->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ARTISTS: {
                                         // Artist found, update map
                                         rekordbox_pdb_t::artist_row_t *artist =
-                                                (rekordbox_pdb_t::artist_row_t *)(*rowRef)->body();
+                                                static_cast<rekordbox_pdb_t::artist_row_t *>((*rowRef)->body());
                                         artistsMap[artist->id()] = getText(artist->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ALBUMS: {
                                         // Album found, update map
                                         rekordbox_pdb_t::album_row_t *album =
-                                                (rekordbox_pdb_t::album_row_t *)(*rowRef)->body();
+                                                static_cast<rekordbox_pdb_t::album_row_t *>((*rowRef)->body());
                                         albumsMap[album->id()] = getText(album->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES: {
                                         // Playlist to track mapping found, update map
                                         rekordbox_pdb_t::playlist_entry_row_t *playlistEntry =
-                                                (rekordbox_pdb_t::playlist_entry_row_t *)(*rowRef)->body();
+                                                static_cast<rekordbox_pdb_t::playlist_entry_row_t *>((*rowRef)->body());
                                         playlistTrackMap[playlistEntry->playlist_id()][playlistEntry->entry_index()] =
                                                 playlistEntry->track_id();
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_TRACKS: {
                                         // Track found, insert into database
                                         insertTrack(
-                                                database, (rekordbox_pdb_t::track_row_t *)(*rowRef)->body(), query, queryInsertIntoDevicePlaylistTracks, artistsMap, albumsMap, genresMap, keysMap, devicePath, device, audioFilesCount);
+                                                database, static_cast<rekordbox_pdb_t::track_row_t *>((*rowRef)->body()), query, queryInsertIntoDevicePlaylistTracks, artistsMap, albumsMap, genresMap, keysMap, devicePath, device, audioFilesCount);
 
                                         audioFilesCount++;
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_TREE: {
                                         // Playlist tree node found, update map
                                         rekordbox_pdb_t::playlist_tree_row_t *playlistTree =
-                                                (rekordbox_pdb_t::playlist_tree_row_t *)(*rowRef)->body();
+                                                static_cast<rekordbox_pdb_t::playlist_tree_row_t *>((*rowRef)->body());
 
                                         playlistNameMap[playlistTree->id()] = getText(playlistTree->name());
                                         playlistIsFolderMap[playlistTree->id()] = playlistTree->is_folder();
@@ -469,12 +466,11 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
                     }
 
                     if (currentRef->index() == lastIndex) {
-                        moreLeft = false;
+                        break;
                     } else {
                         currentRef = page->next_page();
                     }
-                } while (moreLeft);
-                done = true;
+                }
             }
         }
     }
@@ -488,8 +484,6 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
     qDebug() << "Found: " << audioFilesCount << " audio files in Rekordbox device " << device;
 
     transaction.commit();
-
-    database.close();
 
     return devicePath;
 }
@@ -553,7 +547,7 @@ void buildPlaylistTree(
 
         if (playlistTrackMap.count(childID)) {
             // Add playlist tracks for children
-            for (uint32_t trackIndex = 1; trackIndex <= (uint32_t)playlistTrackMap[childID].size(); trackIndex++) {
+            for (uint32_t trackIndex = 1; trackIndex <= static_cast<uint32_t>(playlistTrackMap[childID].size()); trackIndex++) {
                 uint32_t rbTrackID = playlistTrackMap[childID][trackIndex];
 
                 int trackID = -1;
