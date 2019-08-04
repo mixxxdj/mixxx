@@ -350,6 +350,13 @@
                         this.outputColor(id);
                     }
                 });
+                this.connections[2] = engine.makeConnection('[Skin]','reloaded', function () {
+                  this.colors[0] = (typeof this.colors[0] === 'object') ?
+                    color.predefinedColorFromId(0) :
+                    this.colors[engine.getValue('[Skin]','fallback_cue_color_id')];
+                  this.connections[1].trigger();
+                });
+                this.connections[2].trigger();
             }
         },
     });
