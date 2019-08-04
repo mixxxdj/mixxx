@@ -582,6 +582,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // the next playerPositionChanged call otherDeck (see the
             // P1/P2FADING case above).
             thisDeck.stop();
+            m_transitionProgress = 1.0;
         } else {
             // We are in Fading state.
             // Calculate the current transitionProgress, the place between begin
@@ -602,6 +603,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 setCrossfader(currentCrossfader + adjustment);
             }
             m_transitionProgress = transitionProgress;
+            // if we are at 1.0 here, we need an additional callback until the last
+            // step is processed and we can stop the deck. 
         }
     }
 }
