@@ -133,14 +133,14 @@ MC4000.Deck = function (channel) {
 
 /// Callback to set the FX wet/dry value
 MC4000.fxWetDry = function(midichan, control, value, status, group) {
-	var numTicks = (value < 0x40) ? value: (value - 0x80);
-	var newVal = engine.getValue(group, "mix") + numTicks/64.0*2;
-	engine.setValue(group, "mix", Math.max(0, Math.min(1, newVal)));
+    var numTicks = (value < 0x40) ? value: (value - 0x80);
+    var newVal = engine.getValue(group, "mix") + numTicks/64.0*2;
+    engine.setValue(group, "mix", Math.max(0, Math.min(1, newVal)));
 };
 
 /// Callback to set the headphone split mode
 MC4000.headphoneSplit = function (channel, control, value, status, group) {
-	engine.setValue(group, "headSplit", Math.min(value, 1.0));
+    engine.setValue(group, "headSplit", Math.min(value, 1.0));
 }
 
 /// Callback to set the left Vu Meter

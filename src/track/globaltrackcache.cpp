@@ -133,6 +133,11 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
     m_pInstance->relocateTracks(pRelocator);
 }
 
+void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
+    DEBUG_ASSERT(m_pInstance);
+    return m_pInstance->purgeTrackId(trackId);
+}
+
 void GlobalTrackCacheLocker::deactivateCache() const {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->deactivate();
@@ -333,7 +338,7 @@ void GlobalTrackCache::deactivate() {
 
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr= j->second->getPlainPtr();
         m_pSaver->saveCachedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
     }
@@ -578,6 +583,17 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(m_tracksById.find(trackId) != m_tracksById.end());
 
     return trackRefWithId;
+}
+
+void GlobalTrackCache::purgeTrackId(TrackId trackId) {
+    DEBUG_ASSERT(trackId.isValid());
+
+    const auto trackById(m_tracksById.find(trackId));
+    if (m_tracksById.end() != trackById) {
+        Track* track = trackById->second->getPlainPtr();
+        track->resetId();
+        m_tracksById.erase(trackById);
+    }
 }
 
 void GlobalTrackCache::evictAndSave(

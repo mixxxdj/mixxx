@@ -14,24 +14,38 @@
 #include "util/math.h"
 #include "util/duration.h"
 
-const int kMinBpm = 30;
-// Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
-const int kFilterLength = 5;
+namespace {
+
+constexpr double kBpmRangeMin = 1.0;
+// TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
+constexpr double kBpmRangeMax = 200.0;
+constexpr double kBpmRangeStep = 1.0;
+constexpr double kBpmRangeSmallStep = 0.1;
+
+constexpr double kBpmAdjustMin = kBpmRangeMin;
+constexpr double kBpmAdjustStep = 0.01;
+
+// Maximum allowed interval between beats (calculated from kBpmTapMin).
+constexpr double kBpmTapMin = 30.0;
+const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
+constexpr int kBpmTapFilterLength = 5;
+
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
-const int kLocalBpmSpan = 4;
+constexpr int kLocalBpmSpan = 4;
+constexpr SINT kSamplesPerFrame = 2;
+}
 
 BpmControl::BpmControl(QString group,
-                       UserSettingsPointer pConfig) :
-        EngineControl(group, pConfig),
-        m_dSyncTargetBeatDistance(0.0),
-        m_dSyncInstantaneousBpm(0.0),
-        m_dLastSyncAdjustment(1.0),
-        m_resetSyncAdjustment(false),
-        m_dUserOffset(0.0),
-        m_tapFilter(this, kFilterLength, kMaxInterval),
-        m_sGroup(group) {
+                       UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
+          m_dSyncInstantaneousBpm(0.0),
+          m_dLastSyncAdjustment(1.0),
+          m_sGroup(group) {
+    m_dSyncTargetBeatDistance.setValue(0.0);
+    m_dUserOffset.setValue(0.0);
+
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
@@ -75,12 +89,16 @@ BpmControl::BpmControl(QString group,
             this, SLOT(slotTranslateBeatsLater(double)),
             Qt::DirectConnection);
 
-    // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
+    // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
     // bpm_down controls.
-    // bpm_up / bpm_down steps by 1
-    // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    // bpm_up / bpm_down steps by kBpmRangeStep
+    // bpm_up_small / bpm_down_small steps by kBpmRangeSmallStep
+    m_pEngineBpm = new ControlLinPotmeter(
+            ConfigKey(group, "bpm"),
+            kBpmRangeMin, kBpmRangeMax,
+            kBpmRangeStep, kBpmRangeSmallStep,
+            true);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateRateSlider()),
             Qt::DirectConnection);
@@ -122,7 +140,7 @@ BpmControl::BpmControl(QString group,
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
-    m_pSyncMode = ControlObject::getControl(ConfigKey(group, "sync_mode"));
+    m_pSyncMode = new ControlProxy(group, "sync_mode", this);
 }
 
 BpmControl::~BpmControl() {
@@ -145,58 +163,61 @@ double BpmControl::getBpm() const {
     return m_pEngineBpm->get();
 }
 
-void BpmControl::slotFileBpmChanged(double bpm) {
-    Q_UNUSED(bpm);
+void BpmControl::slotFileBpmChanged(double file_bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
-    if (m_pBeats) {
+    //qDebug() << "BpmControl::slotFileBpmChanged" << file_bpm;
+    BeatsPointer pBeats = m_pBeats;
+    if (pBeats) {
         const double beats_bpm =
-                m_pBeats->getBpmAroundPosition(getCurrentSample(),
-                                               kLocalBpmSpan);
+                pBeats->getBpmAroundPosition(
+                        getSampleOfTrack().current, kLocalBpmSpan);
         if (beats_bpm != -1) {
             m_pLocalBpm->set(beats_bpm);
         } else {
-            m_pLocalBpm->set(bpm);
+            m_pLocalBpm->set(file_bpm);
         }
     } else {
-        m_pLocalBpm->set(bpm);
-    }
-    if (getSyncMode() == SYNC_NONE) {
-        slotUpdateEngineBpm();
+        m_pLocalBpm->set(file_bpm);
     }
     resetSyncAdjustment();
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
-        m_pBeats->setBpm(new_bpm);
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
+        double bpm = pBeats->getBpm();
+        double adjustedBpm = bpm + kBpmAdjustStep;
+        pBeats->setBpm(adjustedBpm);
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
-        m_pBeats->setBpm(new_bpm);
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
+        double bpm = pBeats->getBpm();
+        double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
+        pBeats->setBpm(adjustedBpm);
     }
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
-    if (v > 0 && m_pTrack && m_pBeats &&
-            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = m_pTrack->getSampleRate() * -.01;
-        m_pBeats->translate(translate_dist);
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats &&
+            (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = getSampleOfTrack().rate * -.01;
+        pBeats->translate(translate_dist);
     }
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
-    if (v > 0 && m_pTrack && m_pBeats &&
-            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats &&
+            (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = m_pTrack->getSampleRate() * .01;
-        m_pBeats->translate(translate_dist);
+        const int translate_dist = getSampleOfTrack().rate * .01;
+        pBeats->translate(translate_dist);
     }
 }
 
@@ -216,10 +237,14 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     if (numSamples < 4)
         return;
 
+    BeatsPointer pBeats = m_pBeats;
+    if (!pBeats)
+        return;
+
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / calcRateRatio();
-    m_pBeats->setBpm(averageBpm);
+    pBeats->setBpm(averageBpm);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -260,8 +285,8 @@ bool BpmControl::syncTempo() {
     double fOtherBpm = pOtherEngineBuffer->getBpm();
     double fOtherLocalBpm = pOtherEngineBuffer->getLocalBpm();
 
-    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm;
-    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm;
+    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisLocalBpm;
+    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherLocalBpm;
 
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011
@@ -383,14 +408,14 @@ double BpmControl::calcSyncedRate(double userTweak) {
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
     if (!m_pQuantize->get() || getSyncMode() == SYNC_MASTER ||
-            m_pBeats == NULL || m_pReverseButton->get()) {
+            !m_pBeats || m_pReverseButton->get()) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
 
     // Now we need to get our beat distance so we can figure out how
     // out of phase we are.
-    double dThisPosition = getCurrentSample();
+    double dThisPosition = getSampleOfTrack().current;
     double dBeatLength;
     double my_percentage;
     if (!BpmControl::getBeatContextNoLookup(dThisPosition,
@@ -417,8 +442,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 }
 
 double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSync) {
-    if (m_resetSyncAdjustment) {
-        m_resetSyncAdjustment = false;
+    int resetSyncAdjustment = m_resetSyncAdjustment.fetchAndStoreRelaxed(0);
+    if (resetSyncAdjustment) {
         m_dLastSyncAdjustment = 1.0;
     }
 
@@ -435,7 +460,7 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     // than modular 1.0 beat fractions. This will allow sync to work across loop
     // boundaries too.
 
-    double master_percentage = m_dSyncTargetBeatDistance;
+    double master_percentage = m_dSyncTargetBeatDistance.getValue();
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
@@ -450,9 +475,9 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     if (userTweakingSync) {
         // Don't do anything else, leave it
         adjustment = 1.0;
-        m_dUserOffset = shortest_distance;
+        m_dUserOffset.setValue(shortest_distance);
     } else {
-        double error = shortest_distance - m_dUserOffset;
+        double error = shortest_distance - m_dUserOffset.getValue();
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
         // Threshold above which sync is really, really bad, so much so that we
@@ -498,7 +523,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     double dNextBeat = m_pNextBeat->get();
 
     if (dPrevBeat == -1 || dNextBeat == -1) {
-        return 0.0 - m_dUserOffset;
+        return 0.0 - m_dUserOffset.getValue();
     }
 
     double dBeatLength = dNextBeat - dPrevBeat;
@@ -509,7 +534,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     if (dBeatPercentage < 0) ++dBeatPercentage;
     if (dBeatPercentage > 1) --dBeatPercentage;
 
-    return dBeatPercentage - m_dUserOffset;
+    return dBeatPercentage - m_dUserOffset.getValue();
 }
 
 // static
@@ -569,13 +594,18 @@ bool BpmControl::getBeatContextNoLookup(
     return true;
 }
 
-double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing) {
+double BpmControl::getNearestPositionInPhase(
+        double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
-    if (!m_pBeats) {
+    BeatsPointer pBeats = m_pBeats;
+    if (!pBeats) {
         return dThisPosition;
     }
+
+    SyncMode syncMode = getSyncMode();
+
     // Master buffer is always in sync!
-    if (getSyncMode() == SYNC_MASTER) {
+    if (syncMode == SYNC_MASTER) {
         return dThisPosition;
     }
 
@@ -587,7 +617,7 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
         // There's a chance the COs might be out of date, so do a lookup.
         // TODO: figure out a way so that quantized control can take care of
         // this so this call isn't necessary.
-        if (!getBeatContext(m_pBeats, dThisPosition,
+        if (!getBeatContext(pBeats, dThisPosition,
                             &dThisPrevBeat, &dThisNextBeat,
                             &dThisBeatLength, NULL)) {
             return dThisPosition;
@@ -601,22 +631,24 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
     }
 
     double dOtherBeatFraction;
-    if (getSyncMode() == SYNC_FOLLOWER) {
+    if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
-        dOtherBeatFraction = m_dSyncTargetBeatDistance;
+        dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-        if (pOtherEngineBuffer == NULL) {
-            return dThisPosition;
+        if (playing) {
+            if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+                // "this" track is playing, or just starting
+                // only match phase if the sync target is playing as well
+                // else use the previouse phase of "this" track before the seek
+                pOtherEngineBuffer = getEngineBuffer();
+            }
         }
 
-        if (playing) {
-            // "this" track is playing, or just starting
-            // only match phase if the sync target is playing as well
-            if (pOtherEngineBuffer->getSpeed() == 0.0) {
-                return dThisPosition;
-            }
+        if (!pOtherEngineBuffer) {
+            // no suitable sync buffer found
+            return dThisPosition;
         }
 
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
@@ -658,13 +690,13 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
     // infinite beatgrids because the assumption that findNthBeat(-2) always
     // works will be wrong then.
 
-    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
+    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
     if (this_near_next == other_near_next) {
         dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
         dNewPlaypos += dThisNextBeat;
     } else {  //!this_near_next && other_near_next
-        dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
+        dThisPrevBeat = pBeats->findNthBeat(dThisPosition, -2);
         dNewPlaypos += dThisPrevBeat;
     }
 
@@ -738,8 +770,8 @@ void BpmControl::slotUpdateRateSlider() {
     m_pRateSlider->set(dRateSlider);
 }
 
-void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+// called from an engine worker thread
+void BpmControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
@@ -760,41 +792,45 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 }
 
 void BpmControl::slotUpdatedTrackBeats() {
-    if (m_pTrack) {
+    TrackPointer pTrack = m_pTrack;
+    if (pTrack) {
         resetSyncAdjustment();
-        m_pBeats = m_pTrack->getBeats();
+        m_pBeats = pTrack->getBeats();
     }
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        double currentSample = getCurrentSample();
-        double closestBeat = m_pBeats->findClosestBeat(currentSample);
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        double currentSample = getSampleOfTrack().current;
+        double closestBeat = pBeats->findClosestBeat(currentSample);
         int delta = currentSample - closestBeat;
         if (delta % 2 != 0) {
             delta--;
         }
-        m_pBeats->translate(delta);
+        pBeats->translate(delta);
     }
 }
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
-        m_dUserOffset = 0.0;
+        m_dUserOffset.setValue(0.0);
 
-        double offset = getPhaseOffset(getCurrentSample());
-        m_pBeats->translate(-offset);
+        double offset = getPhaseOffset(getSampleOfTrack().current);
+        pBeats->translate(-offset);
     }
 }
 
 double BpmControl::updateLocalBpm() {
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
-    if (m_pBeats) {
-        local_bpm = m_pBeats->getBpmAroundPosition(getCurrentSample(),
-                                                   kLocalBpmSpan);
+    BeatsPointer pBeats = m_pBeats;
+    if (pBeats) {
+        local_bpm = pBeats->getBpmAroundPosition(
+                getSampleOfTrack().current, kLocalBpmSpan);
         if (local_bpm == -1) {
             local_bpm = m_pFileBpm->get();
         }
@@ -809,16 +845,16 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beat_distance = getBeatDistance(getCurrentSample());
+    double beat_distance = getBeatDistance(getSampleOfTrack().current);
     m_pThisBeatDistance->set(beat_distance);
-    if (getSyncMode() == SYNC_NONE) {
-        m_dUserOffset = 0.0;
+    if (!isSynchronized()) {
+        m_dUserOffset.setValue(0.0);
     }
     return beat_distance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
-    m_dSyncTargetBeatDistance = beatDistance;
+    m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
@@ -827,30 +863,32 @@ void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
 
 void BpmControl::resetSyncAdjustment() {
     // Immediately edit the beat distance to reflect the new reality.
-    double new_distance = m_pThisBeatDistance->get() + m_dUserOffset;
+    double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     m_pThisBeatDistance->set(new_distance);
-    m_dUserOffset = 0.0;
+    m_dUserOffset.setValue(0.0);
     m_resetSyncAdjustment = true;
 }
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
-    if (!m_pBeats) {
+    SampleOfTrack sot = getSampleOfTrack();
+    if (!sot.rate || !m_pBeats) {
         return;
     }
 
     // Get the current position of this deck.
-    double dThisPosition = getCurrentSample();
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     double dThisBeatFraction;
-    if (getBeatContextNoLookup(dThisPosition,
+    if (getBeatContextNoLookup(sot.current,
                        dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_beat_length_sec = true;
-        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)  
-        pGroupFeatures->beat_length_sec = dThisBeatLength / m_pTrack->getSampleRate() / 2 * calcRateRatio();
+
+        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
+        pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
+                / sot.rate / calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
@@ -858,7 +896,6 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 }
 
 double BpmControl::calcRateRatio() const {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
-            m_pRateSlider->get();
-    return rateRatio;
+    return std::max(1e-6,
+            1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get());
 }

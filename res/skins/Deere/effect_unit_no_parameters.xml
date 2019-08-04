@@ -11,7 +11,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
     <MinimumSize>-1,65</MinimumSize>
     <MaximumSize>-1,75</MaximumSize>
@@ -20,7 +20,7 @@ Variables:
       <WidgetGroup>
         <ObjectName>EffectUnitNoParameters</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>min,max</SizePolicy>
         <Children>
 
           <WidgetGroup>
@@ -47,8 +47,7 @@ Variables:
           <WidgetGroup>
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
-            <MaximumSize>100,70</MaximumSize>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <WidgetGroup>

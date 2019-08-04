@@ -26,26 +26,27 @@
 class EngineSync : public BaseSyncableListener {
   public:
     explicit EngineSync(UserSettingsPointer pConfig);
-    virtual ~EngineSync();
+    ~EngineSync() override;
 
     // Used by Syncables to tell EngineSync it wants to be enabled in a
     // specific mode. If the state change is accepted, EngineSync calls
     // Syncable::notifySyncModeChanged.
-    void requestSyncMode(Syncable* pSyncable, SyncMode state);
+    void requestSyncMode(Syncable* pSyncable, SyncMode state) override;
 
     // Used by Syncables to tell EngineSync it wants to be enabled in any mode
     // (master/follower).
-    void requestEnableSync(Syncable* pSyncable, bool enabled);
+    void requestEnableSync(Syncable* pSyncable, bool enabled) override;
 
     // Syncables notify EngineSync directly about various events. EngineSync
     // does not have a say in whether these succeed or not, they are simply
     // notifications.
-    void notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged=false);
-    void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm);
-    void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
-    void notifyPlaying(Syncable* pSyncable, bool playing);
-    void notifyScratching(Syncable* pSyncable, bool scratching);
-    void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm);
+    void notifyBpmChanged(Syncable* pSyncable, double bpm) override;
+    void requestBpmUpdate(Syncable* pSyncable, double bpm) override;
+    void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) override;
+    void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
+    void notifyPlaying(Syncable* pSyncable, bool playing) override;
+    void notifyScratching(Syncable* pSyncable, bool scratching) override;
+    void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) override;
 
     // Used to pick a sync target for non-master-sync mode.
     EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;

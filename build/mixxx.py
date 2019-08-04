@@ -196,7 +196,8 @@ class MixxxBuild(object):
             # support x64.
             # In SConscript.env we use the MSVS tool to let you generate a
             # Visual Studio solution. Consider removing this.
-            tools.extend(['msvs'])
+            tools.extend(['msvs', 'signtool'])
+            toolpath.append('#/build/windows/')
             # SCons's built-in Qt tool attempts to link 'qt' into your binary if
             # you don't do this.
             extra_arguments['QT_LIB'] = ''
@@ -487,19 +488,23 @@ class MixxxBuild(object):
         virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
         virtual_sconsign_file = os.path.join(
             branch_build_dir, 'sconsign.dblite')
+        virtual_sconf_temp_dir = os.path.join(
+            branch_build_dir, 'sconf_temp')
         virtual_custom_file = os.path.join(branch_build_dir, 'custom.py')
         old_branch_build_dir = ''
         old_virtual_build_dir = ''
         old_virtual_sconsign_file = ''
+        old_virtual_sconf_temp_dir = ''
         old_virtual_custom_file = ''
 
         # Clean up symlinks from our original method of virtualizing.
         if os.path.islink(self.build_dir):
-            print("os.unlink" + self.build_dir)
+            print("os.unlink " + self.build_dir)
             os.unlink(self.build_dir)
 
         sconsign_file = '.sconsign.dblite'
         sconsign_branch_file = '.sconsign.branch'  # contains the branch name of last build
+        sconf_temp_dir = '.sconf_temp'  # contains the configure test files
         custom_file = 'cache/custom.py'  # contains custom build flags
         sconsign_branch = ''
         is_branch_different = True
@@ -515,7 +520,7 @@ class MixxxBuild(object):
             # nothing to do
             return
 
-        print("branch has changed" + sconsign_branch + "->" + branch_name)
+        print("branch has changed %s -> %s" % (sconsign_branch, branch_name))
 
         if sconsign_branch:
             old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
@@ -523,6 +528,8 @@ class MixxxBuild(object):
                 old_branch_build_dir, self.build_dir)
             old_virtual_sconsign_file = os.path.join(
                 old_branch_build_dir, 'sconsign.dblite')
+            old_virtual_sconf_temp_dir = os.path.join(
+                old_branch_build_dir, 'sconf_temp')
             old_virtual_custom_file = os.path.join(
                 old_branch_build_dir, 'custom.py')
             if os.path.isdir(self.build_dir):
@@ -530,18 +537,23 @@ class MixxxBuild(object):
                     raise Exception("%s already exists. "
                                     "build virtualization cannot continue. Please "
                                     "move or delete it." % old_virtual_build_dir)
-                print("shutil.move" + self.build_dir + old_virtual_build_dir)
+                print("shutil.move %s -> %s" % (self.build_dir, old_virtual_build_dir))
                 # move build dir from last build to cache, named with the old
                 # branch name
                 shutil.move(self.build_dir, old_virtual_build_dir)
 
             if os.path.isfile(sconsign_file):
-                print("shutil.move" + sconsign_file + old_virtual_sconsign_file)
-                # move sconsdign-dblite as well
+                print("shutil.move %s -> %s" % (sconsign_file, old_virtual_sconsign_file))
+                # move sconsdign.dblite as well
                 shutil.move(sconsign_file, old_virtual_sconsign_file)
 
+            if os.path.isdir(sconf_temp_dir):
+                print("shutil.move %s -> %s" % (sconf_temp_dir, old_virtual_sconf_temp_dir))
+                # move sconf_temp dir as well
+                shutil.move(sconf_temp_dir, old_virtual_sconf_temp_dir)
+
             if os.path.isfile(custom_file):
-                print("shutil.move" + custom_file + old_virtual_custom_file)
+                print("shutil.move %s -> %s" % (custom_file, old_virtual_custom_file))
                 # and move custom.py
                 shutil.move(custom_file, old_virtual_custom_file)
 
@@ -549,7 +561,8 @@ class MixxxBuild(object):
             # to avoid a new copy after an exception below
             os.remove(sconsign_branch_file)
 
-        # Now there should be no folder self.build_dir or file sconsign_file.
+        # Now there should be no folder self.build_dir, .sconsign.dblite, or
+        # .sconf_temp directory.
         if os.path.isdir(branch_build_dir):
             if os.path.isdir(virtual_build_dir):
                 # found a build_dir in cache from a previous build
@@ -557,21 +570,28 @@ class MixxxBuild(object):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % self.build_dir)
-                print("shutil.move" + virtual_build_dir + self.build_dir)
+                print("shutil.move %s -> %s" % (virtual_build_dir, self.build_dir))
                 shutil.move(virtual_build_dir, self.build_dir)
             if os.path.isfile(virtual_sconsign_file):
                 if os.path.isfile(sconsign_file):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % sconsign_file)
-                print("shutil.move" + virtual_sconsign_file + sconsign_file)
+                print("shutil.move %s -> %s" % (virtual_sconsign_file, sconsign_file))
                 shutil.move(virtual_sconsign_file, sconsign_file)
+            if os.path.isdir(virtual_sconf_temp_dir):
+                if os.path.isdir(sconf_temp_dir):
+                    raise Exception('%s exists without a .sconsign.branch file so '
+                                    'build virtualization cannot continue. Please '
+                                    'move or delete it.' % sconf_temp_dir)
+                print("shutil.move %s -> %s" % (virtual_sconf_temp_dir, sconf_temp_dir))
+                shutil.move(virtual_sconf_temp_dir, sconf_temp_dir)
             if os.path.isfile(virtual_custom_file):
                 if os.path.isfile(custom_file):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % custom_file)
-                print("shutil.move" +  virtual_custom_file + custom_file)
+                print("shutil.move %s -> %s" % (virtual_custom_file, custom_file))
                 shutil.move(virtual_custom_file, custom_file)
         else:
             # no cached build dir found, assume this is a branch from the old branch
@@ -583,21 +603,28 @@ class MixxxBuild(object):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % self.build_dir)
-                    print("shutil.copytree" + old_virtual_build_dir + self.build_dir)
+                    print("shutil.copytree %s -> %s" % (old_virtual_build_dir, self.build_dir))
                     shutil.copytree(old_virtual_build_dir, self.build_dir)
                 if os.path.isfile(old_virtual_sconsign_file):
                     if os.path.isfile(sconsign_file):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % sconsign_file)
-                    print("shutil.copy" + virtual_sconsign_file + sconsign_file)
+                    print("shutil.copy %s -> %s" % (old_virtual_sconsign_file, sconsign_file))
                     shutil.copy(old_virtual_sconsign_file, sconsign_file)
+                if os.path.isdir(old_virtual_sconf_temp_dir):
+                    if os.path.isdir(sconf_temp_dir):
+                        raise Exception('%s exists without a .sconsign.branch file so '
+                                        'build virtualization cannot continue. Please '
+                                        'move or delete it.' % sconf_temp_dir)
+                    print("shutil.copytree %s -> %s" % (old_virtual_sconf_temp_dir, sconf_temp_dir))
+                    shutil.copytree(old_virtual_sconf_temp_dir, sconf_temp_dir)
                 if os.path.isfile(old_virtual_custom_file):
                     if os.path.isfile(custom_file):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % custom_file)
-                    print("shutil.copy" + virtual_custom_file + custom_file)
+                    print("shutil.copy %s -> %s" % (old_virtual_custom_file, custom_file))
                     shutil.copy(old_virtual_custom_file, custom_file)
 
             # create build dir in cache folder for later move

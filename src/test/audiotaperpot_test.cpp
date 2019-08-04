@@ -20,7 +20,7 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(1.0, catpb.parameterToValue(neutralParameter));
         // Parameter 1 is always maxDB
-        ASSERT_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
+        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
         // value 1 is always on a Integer midi value
         double neutralMidi = catpb.valueToMidiParameter(1);
         ASSERT_EQ(0.0, fmod(neutralMidi, 1));
@@ -41,7 +41,7 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(1.0, catpb.parameterToValue(neutralParameter));
         // Parameter 1 is always maxDB
-        ASSERT_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
+        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
         // value 1 is always on a Integer midi value
         double neutralMidi = catpb.valueToMidiParameter(1);
         ASSERT_EQ(0.0, fmod(neutralMidi, 1));
@@ -62,7 +62,7 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(1.0, catpb.parameterToValue(neutralParameter));
         // Parameter 1 is always maxDB
-        ASSERT_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
+        ASSERT_DOUBLE_EQ(db2ratio(maxDB), catpb.parameterToValue(1));
         // value 1 is always on a Integer midi value
         double neutralMidi = catpb.valueToMidiParameter(1);
         ASSERT_EQ(0.0, fmod(neutralMidi, 1));

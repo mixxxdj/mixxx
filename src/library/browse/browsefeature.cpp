@@ -32,7 +32,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL) {
+          m_pLastRightClickedItem(NULL),
+          m_icon(":/images/library/ic_library_computer.svg") {
     connect(this, SIGNAL(requestAddDir(QString)),
             parent, SLOT(slotRequestAddDir(QString)));
 
@@ -199,7 +200,7 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_computer.svg");
+    return m_icon;
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
@@ -216,7 +217,7 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
-    emit(restoreSearch(QString()));
+    emit disableSearch();
     emit(enableCoverArtDisplay(false));
 }
 

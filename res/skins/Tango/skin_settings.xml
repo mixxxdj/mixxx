@@ -36,12 +36,24 @@ Description:
               <!-- push Close button to far right -->
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/button_2state.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">20f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SkinSettingsClose</ObjectName>
+                <Size>20f,24f</Size>
+                <!-- This is used to work around Bug 1795663 on OSX -->
+                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup>
 
@@ -159,7 +171,7 @@ Description:
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
-                    <Text>Permanent Deck controls:</Text>
+                    <Text>Permanent Deck Controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup><!-- Permanent deck control icons -->
@@ -204,7 +216,7 @@ Description:
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_icon">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_1_icon">xfader_visible.svg</SetVariable>
+                        <SetVariable name="state_1_icon">xfader_center_attention.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
@@ -467,9 +479,9 @@ Description:
             <Size>200f,21f</Size>
             <Text>Mixer</Text>
           </Label>
-          <WidgetGroup><!-- 5 buttons -->
+          <WidgetGroup><!-- 6 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>200,78</MinimumSize>
+            <MinimumSize>200,82</MinimumSize>
             <MaximumSize>220,120</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
@@ -530,10 +542,10 @@ Description:
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- EQ knobs -->
+              <WidgetGroup><!-- EQ knobs, EQ Kill buttons, Crossfader -->
                 <Layout>stacked</Layout>
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>182,17</MaximumSize>
+                <MinimumSize>182,39</MinimumSize>
+                <MaximumSize>182,51</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
@@ -542,8 +554,8 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,17</MaximumSize>
+                    <MinimumSize>182,39</MinimumSize>
+                    <MaximumSize>182,51</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
@@ -552,56 +564,54 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ &amp; QuickEffect Knobs</SetVariable>
-                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                  	<Layout>vertical</Layout>
+                  	<Children>
+		                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
+		                    <SetVariable name="text">EQ &amp; QuickEffect Knobs</SetVariable>
+		                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
+		                  </Template>
+
+				              <WidgetGroup><!-- EQ Kill buttons -->
+				                <Layout>stacked</Layout>
+				                <MinimumSize>182,13</MinimumSize>
+				                <MaximumSize>182,17</MaximumSize>
+				                <SizePolicy>me,me</SizePolicy>
+				                <Children>
+				                  <!-- index 0 due to bug -->
+				                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+				                  <WidgetGroup><!-- translucent cover when EQ knobs are hidden -->
+				                    <ObjectName>SubmenuCover</ObjectName>
+				                    <Layout>vertical</Layout>
+				                    <MinimumSize>182,13</MinimumSize>
+				                    <MaximumSize>182,17</MaximumSize>
+				                    <SizePolicy>me,me</SizePolicy>
+				                    <Connection>
+				                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+				                      <Transform><Not/></Transform>
+				                      <BindProperty>visible</BindProperty>
+				                    </Connection>
+				                  </WidgetGroup>
+
+				                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
+				                    <SetVariable name="text">EQ Kill Buttons</SetVariable>
+				                    <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
+				                  </Template>
+
+				                </Children>
+				              </WidgetGroup><!-- /EQ Kill buttons -->
+
+								      <Template src="skin:../Tango/skin_settings_button_2state.xml">
+								        <SetVariable name="text">Crossfader</SetVariable>
+								        <SetVariable name="Setting">[Master],show_xfader</SetVariable>
+								      </Template>
+
+										</Children>
+									</WidgetGroup>
 
                 </Children>
-              </WidgetGroup><!-- /EQ knobs -->
-
-              <WidgetGroup><!-- EQ Kill buttons -->
-                <Layout>stacked</Layout>
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>182,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when EQ knobs are hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ Kill Buttons</SetVariable>
-                    <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- /EQ Kill buttons -->
+              </WidgetGroup><!-- /EQ knobs, EQ Kill buttons, Crossfader -->
 
               <WidgetGroup><!-- Permanent Level Meters -->
                 <Layout>stacked</Layout>
@@ -630,11 +640,6 @@ Description:
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Permanent Level Meters -->
-
-              <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                <SetVariable name="text">Crossfader</SetVariable>
-                <SetVariable name="Setting">[Master],show_xfader</SetVariable>
-              </Template>
             </Children>
           </WidgetGroup><!-- /Mixer -->
 

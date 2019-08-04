@@ -24,10 +24,8 @@ class WaveformWidgetAbstractHandle {
 
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
-    bool isActive() const { return m_active;}
 
   private:
-    bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
 
@@ -72,7 +70,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
-    bool isOpenGLAvailable() const { return m_openGLAvailable;}
+    bool isOpenGlAvailable() const { return m_openGlAvailable;}
+    bool isOpenGlesAvailable() const { return m_openGlesAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
@@ -113,14 +112,11 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
 
-    // Returns the devicePixelRatio for the current window. This is the scaling
-    // factor between screen pixels and "device independent pixels". For
-    // example, on macOS with a retina display the ratio is 2.
-    static float getDevicePixelRatio();
-
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
+    void renderSpinnies();
+    void swapSpinnies();
 
   protected:
     WaveformWidgetFactory();
@@ -156,12 +152,14 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
-    bool m_openGLAvailable;
+    bool m_openGlAvailable;
+    bool m_openGlesAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
+    GuiTick* m_pGuiTick;  // not owned
 
     //Debug
     PerformanceTimer m_time;

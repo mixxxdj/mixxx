@@ -114,7 +114,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    std::unique_ptr<ControlProxy> m_pBPM;
+    std::unique_ptr<ControlProxy> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;

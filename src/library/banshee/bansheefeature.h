@@ -53,6 +53,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFuture<TreeItem*> m_future;
     QString m_title;
     bool m_cancelImport;
+    QIcon m_icon;
 
     static QString m_databaseFile;
 

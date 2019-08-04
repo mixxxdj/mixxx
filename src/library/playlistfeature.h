@@ -40,11 +40,13 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
  protected:
-    void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
+    QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
+    QString fetchPlaylistLabel(int playlistId) override;
+    void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   private:
     QString getRootViewHtml() const;
+    QIcon m_icon;
 };
 
 #endif /* PLAYLISTFEATURE_H */

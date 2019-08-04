@@ -325,7 +325,11 @@ class Track : public QObject {
   private:
     // Set a unique identifier for the track. Only used by
     // GlobalTrackCacheResolver!
-    void initId(TrackId id); // write-once
+    void initId(TrackId id);
+    // Reset the unique identifier after purged from library
+    // which undos a previous add. Only used by
+    // GlobalTrackCacheResolver!
+    void resetId();
 
     void relocate(
             QFileInfo fileInfo,
@@ -359,7 +363,7 @@ class Track : public QObject {
     mutable QMutex m_qMutex;
 
     // The file
-    QFileInfo m_fileInfo;
+    mutable QFileInfo m_fileInfo;
 
     SecurityTokenPointer m_pSecurityToken;
 

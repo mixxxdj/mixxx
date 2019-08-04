@@ -478,8 +478,20 @@ public:
 
 private:
     static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen()
-                && taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && (TAGLIB_PATCH_VERSION == 1)
+        // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
+        // when writing tags: https://github.com/taglib/taglib/issues/864
+        // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
+        Q_UNUSED(pFile);
+        Q_UNUSED(trackMetadata);
+        kLogger.warning()
+                << "Skipping export of metadata into Ogg file due to serious bug in TagLib 1.11.1"
+                << "(https://github.com/taglib/taglib/issues/864)";
+        return false;
+#else
+        return pFile->isOpen() &&
+                taglib::exportTrackMetadataIntoXiphComment(pFile->tag(), trackMetadata);
+#endif
     }
 
     TagLib::Ogg::Vorbis::File m_file;
@@ -629,22 +641,53 @@ private:
  */
 class SafelyWritableFile final {
   public:
-    SafelyWritableFile(QString origFileName, bool useTemporaryFile)
-        : m_origFileName(std::move(origFileName)) {
+    SafelyWritableFile(QString origFileName, bool useTemporaryFile) {
+        // Both file names remain uninitialized until all prerequisite operations
+        // in the constructor have been completed successfully. Otherwise failure
+        // to create the temporary file will not be handled correctly!
+        // See also: https://bugs.launchpad.net/mixxx/+bug/1815305
+        DEBUG_ASSERT(m_origFileName.isNull());
         DEBUG_ASSERT(m_tempFileName.isNull());
         if (useTemporaryFile) {
-            QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
-            QFile origFile(m_origFileName);
-            if (origFile.copy(tempFileName)) {
-                m_tempFileName = std::move(tempFileName);
-            } else {
+            QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
+            QFile origFile(origFileName);
+            if (!origFile.copy(tempFileName)) {
                 kLogger.warning()
                         << origFile.errorString()
-                        << "- Failed to copy original into temporary file before writing:"
-                        << origFile.fileName()
+                        << "- Failed to clone original into temporary file before writing:"
+                        << origFileName
                         << "->"
                         << tempFileName;
+                // Abort constructor
+                return;
             }
+            QFile tempFile(tempFileName);
+            DEBUG_ASSERT(tempFile.exists());
+            // Both file sizes are expected to be equal after successfully
+            // copying the file contents.
+            VERIFY_OR_DEBUG_ASSERT(origFile.size() == tempFile.size()) {
+                kLogger.warning()
+                        << "Failed to verify size after cloning original into temporary file before writing:"
+                        << origFile.size()
+                        << "<>"
+                        << tempFile.size();
+                // Cleanup
+                if (tempFile.exists() && !tempFile.remove()) {
+                    kLogger.warning()
+                            << tempFile.errorString()
+                            << "- Failed to remove temporary file:"
+                            << tempFileName;
+                }
+                // Abort constructor
+                return;
+            }
+            // Successfully cloned original into temporary file for writing - finish initialization
+            m_origFileName = std::move(origFileName);
+            m_tempFileName = std::move(tempFileName);
+        } else {
+            // Directly write into original file - finish initialization
+            m_origFileName = std::move(origFileName);
+            DEBUG_ASSERT(m_tempFileName.isNull());
         }
     }
     ~SafelyWritableFile() {
@@ -653,10 +696,16 @@ class SafelyWritableFile final {
 
     const QString& fileName() const {
         if (m_tempFileName.isNull()) {
+            // If m_tempFileName has not been initialized then no temporary
+            // copy was requested in the constructor.
             return m_origFileName;
         } else {
             return m_tempFileName;
         }
+    }
+
+    bool isReady() const {
+        return !fileName().isEmpty();
     }
 
     bool commit() {
@@ -725,10 +774,7 @@ class SafelyWritableFile final {
             return; // nothing to do
         }
         QFile tempFile(m_tempFileName);
-        if (!tempFile.exists()) {
-            return; // nothing to do
-        }
-        if (!tempFile.remove()) {
+        if (tempFile.exists() && !tempFile.remove()) {
             kLogger.warning()
                     << tempFile.errorString()
                     << "- Failed to remove temporary file:"
@@ -757,6 +803,13 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "with type" << m_fileType;
 
     SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
+    if (!safelyWritableFile.isReady()) {
+        kLogger.warning()
+                << "Unable to export track metadata into file"
+                << m_fileName
+                << "- Please check file permissions and storage space";
+        return afterExport(ExportResult::Failed);
+    }
 
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {

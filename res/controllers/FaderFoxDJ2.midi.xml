@@ -51,7 +51,7 @@
         <key>jog</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
-	<options><diff/></options>
+    <options><diff/></options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -73,19 +73,19 @@
         <options><diff/></options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x90</status>
-	<midino>0x0F</midino>
+    <group>[Channel1]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x90</status>
+    <midino>0x0F</midino>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x80</status>
-	<midino>0x0F</midino>
+    <group>[Channel1]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x80</status>
+    <midino>0x0F</midino>
       </control>
 
-  <!-- Transport Buttons -->	
+  <!-- Transport Buttons -->    
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
@@ -382,7 +382,7 @@
         <key>jog</key>
         <status>0xB0</status>
         <midino>0x0F</midino>
-	<options><diff/></options>
+    <options><diff/></options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -402,19 +402,19 @@
         <status>0xB0</status>
         <midino>0x1c</midino>
         <options><diff/>
-	</options>
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x90</status>
-	<midino>0x10</midino>
+    <group>[Channel2]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x90</status>
+    <midino>0x10</midino>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x80</status>
-	<midino>0x10</midino>
+    <group>[Channel2]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x80</status>
+    <midino>0x10</midino>
       </control>
 
   <!-- Transport Buttons -->
@@ -696,43 +696,43 @@
 <!-- JOYSTICK -->
 
       <control>
-	<group>[EffectRack1_EffectUnit1]</group>
-	<key>mix</key>
-	<status>0xB0</status>
-	<midino>0x04</midino>
+    <group>[EffectRack1_EffectUnit1]</group>
+    <key>mix</key>
+    <status>0xB0</status>
+    <midino>0x04</midino>
       </control>
       <control>
-	<group>[EffectRack1_EffectUnit1]</group>
-	<key>super1</key>
-	<status>0xB0</status>
-	<midino>0x06</midino>
+    <group>[EffectRack1_EffectUnit1]</group>
+    <key>super1</key>
+    <status>0xB0</status>
+    <midino>0x06</midino>
       </control>
       <control>
-	<group>[EffectRack1_EffectUnit2]</group>
-	<key>mix</key>
-	<status>0xB0</status>
-	<midino>0x14</midino>
+    <group>[EffectRack1_EffectUnit2]</group>
+    <key>mix</key>
+    <status>0xB0</status>
+    <midino>0x14</midino>
       </control>
       <control>
-	<group>[EffectRack1_EffectUnit2]</group>
-	<key>super1</key>
-	<status>0xB0</status>
-	<midino>0x16</midino>
+    <group>[EffectRack1_EffectUnit2]</group>
+    <key>super1</key>
+    <status>0xB0</status>
+    <midino>0x16</midino>
       </control>
 
 <!-- PLAYLIST -->
 
       <control>
-	<group>[Playlist]</group>
-	<key>SelectNextTrack</key>
-	<status>0x90</status>
-	<midino>0x0B</midino>
+    <group>[Playlist]</group>
+    <key>SelectNextTrack</key>
+    <status>0x90</status>
+    <midino>0x0B</midino>
       </control>
       <control>
-	<group>[Playlist]</group>
-	<key>SelectPrevTrack</key>
-	<status>0x90</status>
-	<midino>0x0C</midino>
+    <group>[Playlist]</group>
+    <key>SelectPrevTrack</key>
+    <status>0x90</status>
+    <midino>0x0C</midino>
       </control>
     </controls>
   </controller>

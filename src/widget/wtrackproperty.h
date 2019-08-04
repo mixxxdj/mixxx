@@ -8,9 +8,10 @@
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class WTrackProperty : public WLabel {
+class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);

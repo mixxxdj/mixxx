@@ -20,7 +20,8 @@ RecordingFeature::RecordingFeature(Library* pLibrary,
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager),
+          m_icon(":/images/library/ic_library_recordings.svg") {
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -32,7 +33,7 @@ QVariant RecordingFeature::title() {
 }
 
 QIcon RecordingFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_recordings.svg");
+    return m_icon;
 }
 
 TreeItemModel* RecordingFeature::getChildModel() {

@@ -39,6 +39,7 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
         m_diffGain(0),
+        m_devicePixelRatio(1.0),
         m_group(pGroup),
         m_pConfig(pConfig),
         m_endOfTrack(false),
@@ -96,9 +97,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            m_markRanges.push_back(WaveformMarkRange());
+            m_markRanges.push_back(WaveformMarkRange(m_group, child, context, m_signalColors));
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, context, m_signalColors);
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
@@ -205,7 +205,7 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
+    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
@@ -332,7 +332,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     // Rotate pixmap
                     croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
                 }
-                m_waveformImageScaled = croppedImage.scaled(size(), Qt::IgnoreAspectRatio,
+                m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                                                            Qt::IgnoreAspectRatio,
                                                             Qt::SmoothTransformation);
                 m_diffGain = diffGain;
             }
@@ -577,32 +578,17 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
 
+    m_devicePixelRatio = getDevicePixelRatioF(this);
+
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
+    Init();
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group,
-                                             m_playControl->get() > 0.0,
-                                             m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
-                                             m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

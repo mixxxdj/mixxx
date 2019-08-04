@@ -57,7 +57,9 @@ int TreeItem::parentRow() const {
 
 TreeItem* TreeItem::child(int row) const {
     DEBUG_ASSERT(row >= 0);
-    DEBUG_ASSERT(row < m_children.size());
+    VERIFY_OR_DEBUG_ASSERT(row < m_children.size()) {
+        return nullptr;
+    }
     return m_children[row];
 }
 

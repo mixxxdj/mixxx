@@ -33,8 +33,9 @@ public:
     void slotGetNewPlaylist();
 
   protected:
-    void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
+    QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
+    QString fetchPlaylistLabel(int playlistId) override;
+    void decorateChild(TreeItem *pChild, int playlistId) override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
@@ -50,6 +51,7 @@ public:
     QAction* m_pGetNewPlaylist;
     int m_playlistId;
     WLibrary* m_libraryWidget;
+    QIcon m_icon;
 };
 
 #endif // SETLOGFEATURE_H

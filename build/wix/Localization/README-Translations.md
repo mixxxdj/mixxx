@@ -24,13 +24,13 @@ Updating translations from Transifex
 
 First, pull new translations from Transifex
 
-`$ tx pull -r mixxxdj-windows-installer.mixxxpot -a --minimum-perc=60`
+`$ tx pull -r mixxxdj-windows-installer.mixxxpot -a --minimum-perc=1`
 
 Then, rebuild wxl files from po files
 
 ```
 $ cd build/wix/Localization
-build/wix/Localization$ for i in po/*.po; do destfile=${i#po/}; /path/to/po2wxl.py -l Language -f -p 60 $i mixxx_${destfile%.po}.wxl; done
+build/wix/Localization$ for i in po/*.po; do destfile=${i#po/}; /path/to/po2wxl.py -l Language -f -p 1 $i mixxx_${destfile%.po}.wxl; done
 ```
 
 Explanations for the above line :

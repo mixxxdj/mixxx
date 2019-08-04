@@ -7,7 +7,7 @@
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3907</forums>
     </info>
     <controller id="Hercules DJControl Instinct MID" port="">
-	<scriptfiles>
+    <scriptfiles>
             <file functionprefix="HCInstinct" filename="Hercules-DJ-Control-Instinct-scripts.js"/>
         </scriptfiles>
         <controls>
@@ -790,16 +790,6 @@
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0x41</midino>
-                <group>[Master]</group>
-                <key>headVolume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <status>0x90</status>
                 <midino>0x1f</midino>
                 <group>[Sampler2]</group>
@@ -1034,16 +1024,6 @@
                 <midino>0x39</midino>
                 <group>[Playlist]</group>
                 <key>SelectPrevPlaylist</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x41</midino>
-                <group>[Master]</group>
-                <key>headVolume</key>
                 <description></description>
                 <options>
                     <normal/>

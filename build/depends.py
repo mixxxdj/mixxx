@@ -23,6 +23,16 @@ class PortAudio(Dependence):
 
     def sources(self, build):
         return ['soundio/sounddeviceportaudio.cpp']
+        
+class OSXFilePathUrlBackport(Dependence):
+
+    def configure(self, build, conf):
+        return
+
+    def sources(self, build):
+    	if build.platform_is_osx:
+        	return ['util/filepathurl.mm']
+        return []
 
 
 class PortMIDI(Dependence):
@@ -93,6 +103,13 @@ class CoreServices(Dependence):
             return
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
+
+class Foundation(Dependence):
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Foundation.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Foundation')
 
 class IOKit(Dependence):
     """Used for battery measurements and controlling the screensaver on OS X and iOS."""
@@ -245,6 +262,7 @@ class Qt(Dependence):
             'QtTest',
             'QtXml',
         ]
+
         if qt5:
             qt_modules.extend([
                 # Keep alphabetized.
@@ -306,6 +324,9 @@ class Qt(Dependence):
                 raise Exception('Qt >= 5.0 not found')
             elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
+
+            if not conf.CheckLib('Qt5X11Extras'):
+                raise Exception('Could not find Qt5X11Extras or its development headers')
 
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
@@ -695,10 +716,9 @@ class Reverb(Dependence):
 
 class QtKeychain(Dependence):
     def configure(self, build, conf):
-        libs = ['qtkeychain']
-        if not conf.CheckLib(libs):
+        if not conf.CheckLib(['qt5keychain']):
             raise Exception(
-                "Could not find qtkeychain.")
+                "Could not find qt5keychain.")
 
 class MixxxCore(Feature):
 
@@ -1231,6 +1251,7 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
+                   "util/widgetrendertimer.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1452,7 +1473,10 @@ class MixxxCore(Feature):
             # Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
-                build.env.Append(CPPPATH=['/usr/local/include'])
+                # Use -isystem instead of -I to avoid compiler warnings from
+                # system libraries. This cuts down on Mixxx's compilation output
+                # significantly when using Homebrew installed to /usr/local.
+                build.env.Append(CCFLAGS=['-isystem', '/usr/local/include'])
 
             # Non-standard libpaths for fink and certain (most?) darwin ports
             if os.path.isdir('/sw/include'):
@@ -1521,8 +1545,8 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices, Foundation, IOKit,
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, OSXFilePathUrlBackport]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
