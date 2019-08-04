@@ -38,10 +38,13 @@ class BeatGridIterator : public BeatIterator {
         BeatData beat;
         beat.sample = m_dCurrentSample;
 
-        if (m_dPhraseBeginSample > m_dCurrentSample || m_dCurrentSample > m_dEndSample) {
-            beat.phraseNumber = beat.beatNumber = beat.barNumber = -1;
+        if (m_dCurrentSample < m_dPhraseBeginSample  || m_dCurrentSample > m_dEndSample) {
+            beat.phraseNumber = -1;
+            beat.beatNumber = -1;
+            beat.barNumber = -1;
         } else {
-            beat.beatNumber = static_cast<int>((m_dCurrentSample - m_dPhraseBeginSample) / m_dBeatLength);
+            beat.beatNumber = static_cast<int>(round((m_dCurrentSample - m_dPhraseBeginSample) / m_dBeatLength));
+
             // If we are at a bar start, set bar number and check for phrase.
             if (std::remainder(beat.beatNumber, m_beatsPerBar) == 0) {
                 beat.barNumber = beat.beatNumber / m_beatsPerBar;
@@ -233,13 +236,11 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 
     double dClosestBeat;
     if (n > 0) {
-        // We're going forward, so use ceil to round up to the next multiple of
-        // m_dBeatLength
+        // We're going forward
         dClosestBeat = nextBeat * m_dBeatLength + firstBeatSample();
         n = n - 1;
     } else {
-        // We're going backward, so use floor to round down to the next multiple
-        // of m_dBeatLength
+        // We're going backward
         dClosestBeat = prevBeat * m_dBeatLength + firstBeatSample();
         n = n + 1;
     }
@@ -342,7 +343,7 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     return bpm();
 }
 
-double BeatGrid::calculateFirstPhraseSample(double phraseSample) const {
+double BeatGrid::getSamplesSincePhraseStart(double phraseSample) const {
     double samplesPerPhrase = kBeatsPerBar * kBarsPerPhrase * m_dBeatLength;
     return std::fmod(phraseSample, samplesPerPhrase);
 }

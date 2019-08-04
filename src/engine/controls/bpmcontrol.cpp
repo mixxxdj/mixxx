@@ -115,8 +115,8 @@ BpmControl::BpmControl(QString group,
             this, &BpmControl::slotBeatsTranslate,
             Qt::DirectConnection);
 
-    m_pButtonPhraseMark = new ControlObject(ConfigKey(group, "set_phrase_mark"));
-    connect(m_pButtonPhraseMark, &ControlObject::valueChanged, this, &BpmControl::slotSetPhraseMark, Qt::DirectConnection);
+    m_pSetPraseMark = new ControlObject(ConfigKey(group, "phrasemark_set"));
+    connect(m_pSetPraseMark, &ControlObject::valueChanged, this, &BpmControl::slotSetPhraseMark, Qt::DirectConnection);
 
     m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(group, "beats_translate_match_alignment"));
     connect(m_pBeatsTranslateMatchAlignment, &ControlObject::valueChanged,
@@ -801,8 +801,8 @@ void BpmControl::slotBeatsTranslate(double v) {
 void BpmControl::slotSetPhraseMark(double v) {
     if (v > 0) {
         TrackPointer pTrack = m_pTrack;
-        double currentSample = getSampleOfTrack().current;
         if (pTrack) {
+            double currentSample = getSampleOfTrack().current;
             pTrack->setPhraseBegin(currentSample);
         }
     }

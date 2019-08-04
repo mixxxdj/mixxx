@@ -146,8 +146,8 @@ class BpmControl : public EngineControl {
     // playposition.
     ControlPushButton* m_pTranslateBeats;
 
-    // Button that sets a phrase mark to the closest beat.
-    ControlObject* m_pButtonPhraseMark;
+    // Control that sets a phrase mark to the closest beat.
+    ControlObject* m_pSetPraseMark;
 
     // Button that translates beats to match another playing deck
     ControlPushButton* m_pBeatsTranslateMatchAlignment;

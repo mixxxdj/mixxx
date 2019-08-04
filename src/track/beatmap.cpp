@@ -423,9 +423,9 @@ double BeatMap::getBpmRange(double startSample, double stopSample) const {
     return calculateBpm(startBeat, stopBeat);
 }
 
-double BeatMap::calculateFirstPhraseSample(double phraseSample) const {
+double BeatMap::getSamplesSincePhraseStart(double phraseSample) const {
     Q_UNUSED(phraseSample);
-    DEBUG_ASSERT(!"BeatMap::calculateFirstPhraseSample() not implemented");
+    DEBUG_ASSERT(!"BeatMap::getSamplesSincePhraseStart() not implemented");
     return 0.0;
 }
 

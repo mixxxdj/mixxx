@@ -142,7 +142,7 @@ class Beats : public QObject {
     // BPM returns -1.
     virtual double getBpmAroundPosition(double curSample, int n) const = 0;
 
-    virtual double calculateFirstPhraseSample(double phraseSample) const = 0;
+    virtual double getSamplesSincePhraseStart(double phraseSample) const = 0;
 
     virtual double getMaxBpm() const {
         return kMaxBpm;
