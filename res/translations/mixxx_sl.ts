@@ -9409,7 +9409,7 @@ Popolnoma na desni: konec periode efekta</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
         <source>Error setting tls mode:</source>
-        <translation type="unfinished"/>
+        <translation>Napaka pri nastavljanju tega modusa:</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>

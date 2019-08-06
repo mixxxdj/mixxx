@@ -9414,7 +9414,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
         <source>Error setting tls mode:</source>
-        <translation type="unfinished"/>
+        <translation>Error en configurar el mode tls:</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>

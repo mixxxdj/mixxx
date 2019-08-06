@@ -2057,12 +2057,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
         <source>Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</source>
-        <translation type="unfinished"/>
+        <translation>Zaťukejte pro seřízení tempa (a fáze při zapnuté kvantizaci), podržte pro trvalé seřízení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="117"/>
         <source>One-time beat sync tempo (and phase with quantize enabled)</source>
-        <translation type="unfinished"/>
+        <translation>Jednorázové seřízení rytmu tempa (a fáze při zapnuté kvantizaci)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="127"/>
@@ -2390,7 +2390,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
         <source>Choose the currently selected item and advance forward one pane if appropriate</source>
-        <translation type="unfinished"/>
+        <translation>Zvolte nyní vybranou položku a jděte dopředu o jeden výřez okna</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
@@ -2405,12 +2405,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="462"/>
         <source>Deck %1 Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Přehrávač %1 Tlačítko pro povolení rychlého efektu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="463"/>
         <source>Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Tlačítko pro povolení rychlého efektu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
@@ -2425,12 +2425,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="510"/>
         <source>Mix Mode Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout režim míchání</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="511"/>
         <source>Toggle effect unit between D/W and D+W modes</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout efektovou jednotku mezi režimy D/W a D+W</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="516"/>
@@ -3667,7 +3667,8 @@ Zkusil jste se naučit: %1,%2</translation>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="203"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server can&apos;t have the same mountpoint.</source>
-        <translation type="unfinished"/>
+        <translation>&apos;%1&apos; má týž přípojný bod Icecast jako &apos;%2&apos;.
+Dvě zdrojová připojení ke stejnému serveru nemohou mít týž přípojný bod.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="263"/>
@@ -4333,12 +4334,12 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="267"/>
         <source>Keep metaknob position</source>
-        <translation type="unfinished"/>
+        <translation>Zachovat polohu meta-regulátoru</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="277"/>
         <source>Reset metaknob to effect default</source>
-        <translation type="unfinished"/>
+        <translation>Vrátit meta-regulátor na výchozí hodnotu efektu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="33"/>
@@ -5158,7 +5159,7 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2dlg.ui" line="30"/>
         <source>Discovered LV2 effects</source>
-        <translation type="unfinished"/>
+        <translation>Objevené přídavné moduly LV2</translation>
     </message>
 </context>
 <context>
@@ -5360,7 +5361,7 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="262"/>
         <source>Search-as-you-type timeout:</source>
-        <translation type="unfinished"/>
+        <translation>Prodleva pro okamžité hledání:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="272"/>
@@ -5973,7 +5974,7 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
         <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
-        <translation type="unfinished"/>
+        <translation>Použijte hodiny zvukové karty pro nachystání pro živé obecenstvo a nejnižší časy prodlevy.&lt;br&gt;Použijte síťové hodiny pro vysílání bez živého obecenstva.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
@@ -6416,12 +6417,12 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="483"/>
         <source>Beat grid opacity</source>
-        <translation type="unfinished"/>
+        <translation>Neprůhlednost rytmické mřížky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="506"/>
         <source>Set amount of opacity on beat grid lines.</source>
-        <translation type="unfinished"/>
+        <translation>Nastavit množství neprůhlednosti čar rytmické mřížky.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="509"/>
@@ -6431,12 +6432,12 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="522"/>
         <source>Play marker position</source>
-        <translation type="unfinished"/>
+        <translation>Poloha značky přehrávání</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="529"/>
         <source>Moves the play marker position on the waveforms to the left, right or center (default).</source>
-        <translation type="unfinished"/>
+        <translation>Posune polohu značky přehrávání na průběhových křivkách doleva, doprava nebo na střed (výchozí).</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="434"/>
@@ -6499,7 +6500,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="254"/>
         <source>LV2 Plugins</source>
-        <translation type="unfinished"/>
+        <translation>Moduly LV2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="275"/>
@@ -8216,7 +8217,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="40"/>
         <source>Stores the input signal in a temporary buffer and outputs it after a short time</source>
-        <translation type="unfinished"/>
+        <translation>Uchovává vstupní signál v dočasné vyrovnávací paměti a po krátké době provádí jeho výstup</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="48"/>
@@ -8235,7 +8236,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="76"/>
         <source>How much the echoed sound bounces between the left and right sides of the stereo field</source>
-        <translation type="unfinished"/>
+        <translation>Jak moc se odražený zvuk odráží mezi levou a pravou stranou pole sterea</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="101"/>
@@ -8248,7 +8249,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="103"/>
         <source>Round the Time parameter to the nearest 1/4 beat.</source>
-        <translation type="unfinished"/>
+        <translation>Zaokrouhlit parametr času na nejbližší 1/4 doby.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="114"/>
@@ -8264,7 +8265,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="116"/>
         <source>When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3.</source>
-        <translation type="unfinished"/>
+        <translation>Když je povolen parametr kvantizace, dělit zaokrouhlené čtvrtinové doby parametru času třemi.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="18"/>
@@ -8280,7 +8281,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="28"/>
         <source>Low Pass Filter Cutoff</source>
-        <translation type="unfinished"/>
+        <translation>Přerušení filtru nízké pásmové propusti</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="29"/>
@@ -8303,12 +8304,13 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="45"/>
         <source>Resonance of the filters
 Default: flat top</source>
-        <translation type="unfinished"/>
+        <translation>Zvučnost filtrů
+Výchozí: plochý vršek</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="57"/>
         <source>High Pass Filter Cutoff</source>
-        <translation type="unfinished"/>
+        <translation>Přerušení filtru vysokého pásma</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="58"/>
@@ -8351,25 +8353,28 @@ Default: flat top</source>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="31"/>
         <source>Mixes the input with a delayed, pitch modulated copy of itself to create comb filtering</source>
-        <translation type="unfinished"/>
+        <translation>Smíchá vstup se zpožděnou, výškově (tón) modulovanou kopií sebe sama pro vytvoření hřebenového filtrování</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="39"/>
         <source>Speed of the LFO (low frequency oscillator)
 32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected
 1/32 - 4 Hz if no tempo is detected</source>
-        <translation type="unfinished"/>
+        <translation>Rychlost nízkokmitočtového kmitání - LFO (nízkokmitočtový oscilátor)
+32 - 1/4 doby zaokrouhleno na 1/2 doby na cyklus LFO, pokud je rozpoznáno tempo
+1/32 - 4 Hz, pokud není rozpoznáno tempo</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="53"/>
         <source>Delay amplitude of the LFO (low frequency oscillator)</source>
-        <translation type="unfinished"/>
+        <translation>Rozkmit zpoždění nízkokmitočtového kmitání - LFO (nízkokmitočtový oscilátor)</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="66"/>
         <source>Delay offset of the LFO (low frequency oscillator).
 With width at zero, this allows for manually sweeping over the entire delay range.</source>
-        <translation type="unfinished"/>
+        <translation>Posun zpoždění nízkokmitočtového kmitání - LFO (nízkokmitočtový oscilátor)
+Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="78"/>
@@ -8396,7 +8401,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="107"/>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="99"/>
         <source>Divide rounded 1/2 beats of the Period parameter by 3.</source>
-        <translation type="unfinished"/>
+        <translation>Dělit zaokrouhlené půlové doby parametru periody třemi.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="91"/>
@@ -8432,7 +8437,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="31"/>
         <source>Set the beats per minute value of the click sound</source>
-        <translation type="unfinished"/>
+        <translation>Nastaví hodnotu pro dob na minutu zvuku klepnutí</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="43"/>
@@ -8515,7 +8520,8 @@ With width at zero, this allows for manually sweeping over the entire delay rang
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="42"/>
         <source>Bandwidth of the low pass filter at the input.
 Higher values result in less attenuation of high frequencies.</source>
-        <translation type="unfinished"/>
+        <translation>Šířka pásma filtru nízkého pásma na vstupu.
+Vyšší hodnoty vedou k menšímu ztlumení vysokých kmitočtů.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="69"/>
@@ -8967,12 +8973,12 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="24"/>
         <source>Adjust the left/right balance and stereo width</source>
-        <translation type="unfinished"/>
+        <translation>Přizpůsobit rovnováhu mezi levým a pravým kanálem a šířku sterea</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="32"/>
         <source>Adjust balance between left and right channels</source>
-        <translation type="unfinished"/>
+        <translation>Upraví vyvážení mezi levým a pravým kanálem</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="44"/>
@@ -8983,12 +8989,12 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="62"/>
         <source>Bypass Fr.</source>
-        <translation type="unfinished"/>
+        <translation>Vyloučení kmitočtu</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="61"/>
         <source>Bypass Frequency</source>
-        <translation type="unfinished"/>
+        <translation>Kmitočet pro vyloučení nežádoucího kmitočtu</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/balanceeffect.cpp" line="20"/>
@@ -9189,7 +9195,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="53"/>
         <source>Unknown status</source>
-        <translation type="unfinished"/>
+        <translation>Neznámý stav</translation>
     </message>
 </context>
 <context>
@@ -9229,7 +9235,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="277"/>
         <source>Low Disk Space Warning</source>
-        <translation type="unfinished"/>
+        <translation>Upozornění na nízký stav místa na disku</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="278"/>
@@ -9390,7 +9396,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
         <source>Error setting tls mode:</source>
-        <translation type="unfinished"/>
+        <translation>Chyba při nastavování režimu TLS:</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
@@ -9440,17 +9446,17 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="336"/>
         <source>Error setting stream IRC!</source>
-        <translation type="unfinished"/>
+        <translation>Chyba při nastavování kanálu IRC!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
         <source>Error setting stream AIM!</source>
-        <translation type="unfinished"/>
+        <translation>Chyba při nastavování proudu AIM!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
         <source>Error setting stream ICQ!</source>
-        <translation type="unfinished"/>
+        <translation>Chyba při nastavování ICQ proudu!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
@@ -10289,7 +10295,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="396"/>
         <source>Toggle visibility of Rate Control</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout viditelnost ovládání rychlosti</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="419"/>
@@ -11941,7 +11947,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wcoverartmenu.cpp" line="25"/>
         <source>Clear cover</source>
         <comment>clears the set cover art -- does not touch files on disk</comment>
-        <translation type="unfinished"/>
+        <translation>Smazat obal</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="30"/>
@@ -12120,12 +12126,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="177"/>
         <source>Show Skin Settings Menu</source>
-        <translation type="unfinished"/>
+        <translation>Ukázat nabídku nastavení vzhledu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="178"/>
         <source>Show the Skin Settings Menu of the currently selected Skin</source>
-        <translation type="unfinished"/>
+        <translation>Ukázat nabídku nastavení vzhledu nyní vybraného vzhledu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
@@ -12563,12 +12569,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
         <source>Remove from Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Odstranit ze seznamu skladeb</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
         <source>Remove from Crate</source>
-        <translation type="unfinished"/>
+        <translation>Odstranit z přepravky</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="435"/>

@@ -2405,12 +2405,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="462"/>
         <source>Deck %1 Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Botó d&apos;activació d&apos;efecte ràpid de la platina %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="463"/>
         <source>Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Botó d&apos;efecte ràpid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
@@ -5362,7 +5362,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="262"/>
         <source>Search-as-you-type timeout:</source>
-        <translation type="unfinished"/>
+        <translation>Temps d’espera a la cerca en escriure:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="272"/>
@@ -9414,7 +9414,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
         <source>Error setting tls mode:</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha produït un error en configurar el mode tls:</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
@@ -11185,7 +11185,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="392"/>
         <source>Changes the number of hotcue buttons displayed in the deck</source>
-        <translation type="unfinished"/>
+        <translation>Canvia el nombre de marques directes mostrades al reproductor</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="415"/>

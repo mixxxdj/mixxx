@@ -1278,7 +1278,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
         <source>Volume</source>
-        <translation>卷</translation>
+        <translation>音量</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
@@ -1505,7 +1505,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="113"/>
         <source>Sync Master</source>
-        <translation>同步大師</translation>
+        <translation>同步主要輸出</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="116"/>

@@ -2395,7 +2395,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Добавить в очередь AutoDJ (заменить)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
@@ -3099,7 +3099,7 @@ If no track sources are configured, the track is added from the library instead.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="76"/>
         <source>Skip the next track in the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>Пропустить следующий трек в очереди Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="79"/>
@@ -3563,7 +3563,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="32"/>
         <source>Add a track to the end of the Auto DJ queue once it is played, instead of removing it.</source>
-        <translation type="unfinished"/>
+        <translation>Добавить трек в конец очереди Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="46"/>
@@ -5185,7 +5185,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="252"/>
         <source>Delete Track Metadata</source>
-        <translation>Удаление метаданных трек</translation>
+        <translation>Удалить метаданные трека</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="254"/>
@@ -6518,7 +6518,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferencesdlg.ui" line="14"/>
         <source>Preferences</source>
-        <translation>Предпочтения</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferencesdlg.ui" line="48"/>
@@ -6641,12 +6641,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="563"/>
         <source>&amp;Apply</source>
-        <translation>&amp; Применить</translation>
+        <translation>&amp;Применить</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="570"/>
         <source>&amp;Close</source>
-        <translation>&amp; Закрыть</translation>
+        <translation>&amp;Закрыть</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="96"/>
@@ -6699,7 +6699,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Отмена</translation>
+        <translation>&amp;Отмена</translation>
     </message>
 </context>
 <context>
@@ -6893,12 +6893,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
         <source>Import Metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Импортировать метаданные из MusicBrainz</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
         <source>Import Metadata from File</source>
-        <translation type="unfinished"/>
+        <translation>Импортировать метаданные из файла</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="547"/>
@@ -6994,7 +6994,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="841"/>
@@ -7016,12 +7016,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
-        <translation>&amp; Применить</translation>
+        <translation>&amp;Применить</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Отмена</translation>
+        <translation>&amp;Отмена</translation>
     </message>
 </context>
 <context>
@@ -11676,7 +11676,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="681"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
-        <translation>Информация загружается из тегов метаданных трек.</translation>
+        <translation>Информация загружается из тегов метаданных трека.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="683"/>
@@ -11998,7 +11998,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="77"/>
         <source>&amp;File</source>
-        <translation>&amp; Файл</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="79"/>
@@ -12018,7 +12018,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="109"/>
         <source>&amp;Exit</source>
-        <translation>&amp; Выхода</translation>
+        <translation>&amp;Выход</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="110"/>
@@ -12033,12 +12033,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="125"/>
         <source>&amp;Library</source>
-        <translation>&amp; Библиотека</translation>
+        <translation>&amp;Библиотека</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="127"/>
         <source>&amp;Rescan Library</source>
-        <translation>&amp; Сканирование библиотеки</translation>
+        <translation>&amp;Сканирование библиотеки</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="128"/>
@@ -12048,7 +12048,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="142"/>
         <source>Create &amp;New Playlist</source>
-        <translation>Создание &amp; новый плейлист</translation>
+        <translation>Создать &amp;новый плейлист</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="143"/>
@@ -12184,7 +12184,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="270"/>
         <source>&amp;Full Screen</source>
-        <translation>&amp; Полный экран</translation>
+        <translation>&amp;Полный экран</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="271"/>
@@ -12259,7 +12259,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="393"/>
         <source>&amp;Preferences</source>
-        <translation>&amp; Предпочтения</translation>
+        <translation>&amp;Предпочтения</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="394"/>
@@ -12404,7 +12404,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="580"/>
         <source>&amp;About</source>
-        <translation>&amp; Около</translation>
+        <translation>&amp; О программе</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="581"/>
@@ -12632,12 +12632,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="464"/>
         <source>Import From File Tags</source>
-        <translation type="unfinished"/>
+        <translation>Импортировать из тегов файла</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="468"/>
         <source>Import From MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Импортировать из MusicBrainz</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="472"/>

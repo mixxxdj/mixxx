@@ -2405,12 +2405,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="462"/>
         <source>Deck %1 Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Deck %1 Quick-Effekt Aktivierungstaste</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="463"/>
         <source>Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Quick-Effekt Aktivierungstaste</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
@@ -9413,7 +9413,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
         <source>Error setting tls mode:</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Aktivieren des TLS Modus:</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
@@ -10522,7 +10522,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="748"/>
         <source>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</source>
-        <translation>Passen Sie die Mischung des unverarbeiteten (Dry) Eingangssignal mit dem verarbeiteten (Wet) Ausgangssignal der Effekteinheit an</translation>
+        <translation>Passen Sie die Mischung des unverarbeiteten (Dry) Eingangssignals mit dem verarbeiteten (Wet) Ausgangssignal der Effekteinheit an</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="749"/>
@@ -10542,7 +10542,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="755"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
-        <translation>Stellen Sie ein, wie das unverarbeitete (Dry) Eingangssignal mit dem verarbeitetem (Wet) Ausgangssignal der Effekteinheit gemischt wird</translation>
+        <translation>Stellen Sie ein, wie das unverarbeitete (Dry) Eingangssignal mit dem verarbeiteten (Wet) Ausgangssignal der Effekteinheit gemischt wird</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="756"/>
@@ -10561,12 +10561,12 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="795"/>
         <source>Route the left crossfader bus through this effect unit.</source>
-        <translation>Den linken Crossfader-Bus durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Den linken Crossfader-Bus durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="800"/>
         <source>Route the right crossfader bus through this effect unit.</source>
-        <translation>Den rechten Crossfader-Bus durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Den rechten Crossfader-Bus durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="866"/>
@@ -10749,27 +10749,27 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="790"/>
         <source>Route the master mix through this effect unit.</source>
-        <translation>Den Master-Mix durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Den Master-Mix durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="805"/>
         <source>Route this deck through the indicated effect unit.</source>
-        <translation>Dieses Deck durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Dieses Deck durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="810"/>
         <source>Route this sampler through the indicated effect unit.</source>
-        <translation>Diesen Sampler durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Diesen Sampler durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="815"/>
         <source>Route this microphone through the indicated effect unit.</source>
-        <translation>Dieses Mikrofon durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Dieses Mikrofon durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="820"/>
         <source>Route this auxiliary input through the indicated effect unit.</source>
-        <translation>Diesen Aux-Eingang durch die angegebenen Effekteinheit führen.</translation>
+        <translation>Diesen Aux-Eingang durch die angegebene Effekteinheit führen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="830"/>
