@@ -20,6 +20,7 @@ BinPackParameters: false
 ConstructorInitializerIndentWidth: 8
 ContinuationIndentWidth: 8
 IndentCaseLabels: false
+DerivePointerAlignment: false
 ReflowComments: false
 SpaceAfterTemplateKeyword: false
 SpacesBeforeTrailingComments: 1
