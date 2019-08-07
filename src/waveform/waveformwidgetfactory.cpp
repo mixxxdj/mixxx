@@ -146,7 +146,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             // Either GL or GL ES Version is set, not both.
             qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
         } else {
-            qDebug() << "QOpenGLContext::currentContext() retuns nullptr";
+            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
             qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
         }
 #endif
