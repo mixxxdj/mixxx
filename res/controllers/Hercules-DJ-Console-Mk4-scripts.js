@@ -242,13 +242,13 @@ HerculesMk4.pitchbend = function (midino, control, value, status, group) {
         }
     }
     else { // Pitchbend -
-        HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]=HerculesMk4.toglePitchSensitivity(group,HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]);
+        HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]=HerculesMk4.togglePitchSensitivity(group,HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]);
     }
 
 };
 
 
-HerculesMk4.toglePitchSensitivity=function (group,sensitivity) {
+HerculesMk4.togglePitchSensitivity=function (group,sensitivity) {
     sensitivity=sensitivity+2;
 
     if(sensitivity>5){
