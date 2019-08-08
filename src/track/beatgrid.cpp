@@ -343,9 +343,9 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     return bpm();
 }
 
-double BeatGrid::getSamplesSincePhraseStart(double phraseSample) const {
+double BeatGrid::calculateFirstPhraseSample(double quantizedPhraseBegin) const {
     double samplesPerPhrase = kBeatsPerBar * kBarsPerPhrase * m_dBeatLength;
-    return std::fmod(phraseSample, samplesPerPhrase);
+    return std::fmod(quantizedPhraseBegin, samplesPerPhrase);
 }
 
 void BeatGrid::addBeat(double dBeatSample) {

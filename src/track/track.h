@@ -117,7 +117,7 @@ class Track : public QObject {
     int getSampleRate() const;
     // Get first phrase mark within this track
     double getFirstPhraseBegin() const;
-    void setPhraseBegin(double dPhraseBegin);
+    void setPhraseBegin(double dPhraseBeginSample);
 
     // Sets the bitrate
     void setBitrate(int);

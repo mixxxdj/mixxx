@@ -674,10 +674,11 @@ int Track::getSampleRate() const {
     return m_record.getMetadata().getSampleRate();
 }
 
-void Track::setPhraseBegin(double phraseBegin) {
-    double closestBeatSample = m_pBeats->findClosestBeat(phraseBegin);
-    double dFirstPhraseBegin = m_pBeats->getSamplesSincePhraseStart(closestBeatSample);
-    m_pBeats->setFirstPhraseBegin(dFirstPhraseBegin);
+void Track::setPhraseBegin(double dPhraseBeginSample) {
+    double dQuantizedPhraseBegin = m_pBeats->findClosestBeat(dPhraseBeginSample);
+    double dFirstQuantizedPhraseBegin =
+        m_pBeats->getSamplesSincePhraseStart(dQuantizedPhraseBegin);
+    m_pBeats->setFirstPhraseBegin(dFirstQuantizedPhraseBegin);
 }
 
 void Track::setChannels(int iChannels) {
