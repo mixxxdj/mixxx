@@ -90,7 +90,7 @@ void BatteryLinux::read() {
 
         m_dPercentage = percentage;
 
-        // upower tells us the remainging time in seconds (0 if unknown)
+        // upower tells us the remaining time in seconds (0 if unknown)
         if (m_chargingState == CHARGING && timeToFull > 0) {
           m_iMinutesLeft = timeToFull / 60;
         } else if (m_chargingState == DISCHARGING && timeToEmpty > 0) {
