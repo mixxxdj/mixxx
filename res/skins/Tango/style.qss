@@ -163,7 +163,8 @@ WWidgetGroup {
     background-color: #0f0f0f;
   }
   #SkinSettingsButton[displayValue="0"],
-  #SkinSettingsButtonMulti[displayValue="0"] {
+  #SkinSettingsButtonMulti[displayValue="0"],
+  #SkinSettingsLabel {
     color: #d2d2d2;
   }
   #SkinSettingsButton[displayValue="1"],

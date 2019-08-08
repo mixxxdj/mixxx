@@ -30,7 +30,7 @@
  *
  * When the DJ-505 receives a SysEx message, the controller is put in "Serato"
  * mode.  However, in order to keep the DJ-505 in this mode, it seems to be
- * necessary to regularily send a "keep-alive" MIDI message (0xBF 0x64 0x00).
+ * necessary to regularly send a "keep-alive" MIDI message (0xBF 0x64 0x00).
  * Otherwise the device will switch back to "Standalone mode" after
  * approximately 1.5 seconds.
  *
@@ -996,7 +996,7 @@ DJ505.PadSection = function (deck, offset) {
      * [SAMPLER] (press twice)        0x0F         Aquamarine       Green        Pitch Play
      * [SHIFT] + [SAMPLER]            0x0C         Magenta          Purple       Velocity Sampler
      *
-     * The Pad and Mode Butttons support 31 different LED states:
+     * The Pad and Mode Buttons support 31 different LED states:
      *
      *   MIDI value Color          MIDI value Color
      *   ---------- -----          ---------- -----

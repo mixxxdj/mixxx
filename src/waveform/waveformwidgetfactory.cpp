@@ -108,7 +108,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
-          m_vsyncThread(NULL),
+          m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
           m_frameCnt(0),
@@ -147,7 +147,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             // Either GL or GL ES Version is set, not both.
             qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
         } else {
-            qDebug() << "QOpenGLContext::currentContext() retuns nullptr";
+            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
             qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
         }
 #endif
@@ -642,7 +642,7 @@ void WaveformWidgetFactory::render() {
 
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
-        emit(renderSpinnies());
+        emit(renderSpinnies(m_vsyncThread));
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
@@ -971,10 +971,14 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_vsyncThread->setVSyncType(m_vSyncType);
     m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 
-    connect(m_vsyncThread, SIGNAL(vsyncRender()),
-            this, SLOT(render()));
-    connect(m_vsyncThread, SIGNAL(vsyncSwap()),
-            this, SLOT(swap()));
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncRender,
+            this,
+            &WaveformWidgetFactory::render);
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncSwap,
+            this,
+            &WaveformWidgetFactory::swap);
 
     m_vsyncThread->start(QThread::NormalPriority);
 }

@@ -501,7 +501,9 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['#%s/ebur128' % self.INTERNAL_PATH])
-            if not conf.CheckHeader('sys/queue.h'):
+            import sys
+            if not conf.CheckHeader('sys/queue.h') or sys.platform.startswith('openbsd'):
+                # OpenBSD's queue.h lacks the STAILQ_* macros
                 env.Append(CPPPATH=['#%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
@@ -1162,6 +1164,7 @@ class MixxxCore(Feature):
                    "src/track/replaygain.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
+                   "src/track/trackfile.cpp",
                    "src/track/trackmetadata.cpp",
                    "src/track/trackmetadatataglib.cpp",
                    "src/track/tracknumbers.cpp",

@@ -127,7 +127,7 @@ void AnalyzerThread::doRun() {
 
     while (waitUntilWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
-        kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
+        kLogger.debug() << "Analyzing" << m_currentTrack->getFileInfo();
 
         // Get the audio
         const auto audioSource =
@@ -135,7 +135,7 @@ void AnalyzerThread::doRun() {
         if (!audioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << m_currentTrack->getLocation();
+                    << m_currentTrack->getFileInfo();
             emitDoneProgress(kAnalyzerProgressUnknown);
             continue;
         }
@@ -256,7 +256,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         }
 
         // 2nd: step: Analyze chunk of decoded audio data
-        if (readableSampleFrames.frameLength() == mixxx::kAnalysisFramesPerBlock) {
+        if (readableSampleFrames.frameLength() == mixxx::kAnalysisFramesPerBlock ||
+                remainingFrames.empty()) {
             // Complete chunk of audio samples has been read for analysis
             for (auto&& analyzer : m_analyzers) {
                 analyzer.processSamples(
@@ -267,19 +268,13 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                 result = AnalysisResult::Complete;
             }
         } else {
-            // Partial chunk of audio samples has been read.
-            // This should only happen at the end of an audio stream,
-            // otherwise a decoding error must have occurred.
-            if (remainingFrames.empty()) {
-                result = AnalysisResult::Complete;
-            } else {
-                // EOF not reached -> Maybe a corrupt file?
-                kLogger.warning()
-                        << "Aborting analysis after failure to read sample data:"
-                        << "expected frames =" << inputFrameIndexRange
-                        << ", actual frames =" << readableSampleFrames.frameIndexRange();
-                result = AnalysisResult::Partial;
-            }
+            // Partial chunk of audio samples has been read, but not the final.
+            // A decoding error must have occurred, maybe a corrupt file?
+            kLogger.warning()
+                    << "Aborting analysis after failure to read sample data:"
+                    << "expected frames =" << inputFrameIndexRange
+                    << ", actual frames =" << readableSampleFrames.frameIndexRange();
+            result = AnalysisResult::Partial;
         }
 
         // Don't check again for paused/stopped and simply finish the

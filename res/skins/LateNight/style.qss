@@ -179,7 +179,7 @@ WSpinny {/*
 }
 
 WTime {
-  font-size: 13px/13px;
+  font-size: 14px/14px;
 }
 
 #LatencyLabel {
@@ -399,7 +399,7 @@ WTime {
   #BpmTextSmall {
     margin: 0px 1px 0px 0px;
   }
-  
+
 
 #ArtistText,
 #TitleText,
@@ -506,7 +506,6 @@ WEffectButtonParameter*/
 }
 
 #VinylButton,
-#SpecialCueButton,
 #FxAssignButton,
 #GuiToggleButton,
 #BroadcastButton,
@@ -528,11 +527,10 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
-#SpecialCueButton[displayValue="0"],
-#BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"],
+#FxAssignButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
-#FxAssignButton[displayValue="0"] {
+#BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"] {
   color: #ddd;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
@@ -540,15 +538,12 @@ WEffectButtonParameter*/
 }
 
 #VinylButton[displayValue="1"],
-#SpecialCueButton[displayValue="1"],
 #VinylButton[displayValue="2"],
+#FxAssignButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
-#SettingsButton[displayValue="1"],
-#FxAssignButton[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
+#SettingsButton[displayValue="1"] {
   color: #0e0e0e;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
@@ -559,8 +554,93 @@ WEffectButtonParameter*/
   image: url(skin:/buttons/btn_settings_off.svg) no-repeat left center;
 }
 
+#HotcueButton,
 #SpecialCueButton {
-  margin: 0px 2px 2px 0px;
+  /* limit background to button surface resulting from SVG backpath.
+    border width wouldn't be applied.
+    otoh, margin would set in the colored background area and not
+    crop the SVG background image set in xml button template.
+    border-width:  1px 3px 3px 1px;*/
+  margin: 1px 3px 3px 1px;
+  /* just to be sure the colored background doesn't overlap the rounded SVG border */
+  border-radius: 1px;
+  /* ronso0
+  TEST pixel fonts instead of icons
+  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+  font-size: tried a lot of integers as well as .5 values
+  didn't I didn't find the magic, unintuitive floating point value that would align
+  font pixels to actual button size in pixels to make the fonts look sharp.
+
+  font-family: "Acknowledge TT (BRK)";
+  font-family: "Bulky Pixels";
+  font-family: "Irresistor";
+  font-family: "Visitor TT1 BRK";
+  font-family: "Boxy Bold";
+  font-family: "Pixel Intv";
+  font-size: 13px;
+  color: #eee;
+  */
+}
+
+#HotcueButton[displayValue="0"],
+#SpecialCueButton[displayValue="0"] {
+  background-color: #1d1d1d;
+}
+
+#SpecialCueButton[displayValue="1"] {
+  background-color: #0000D4;
+}
+
+/* Hotcue Color: Red
+   this is also the default color if Auto-Color
+   in Preferences > Decks is Off */
+#HotcueButton[displayValue="1"][highlight="0"],
+#HotcueButton[displayValue="2"][highlight="0"],
+#HotcueButton[displayValue="1"][highlight="1"],
+#HotcueButton[displayValue="2"][highlight="1"] {
+  background-color: #db0000;
+}
+
+/* Hotcue Color: Green */
+#HotcueButton[displayValue="1"][highlight="2"],
+#HotcueButton[displayValue="2"][highlight="2"] {
+  background-color: #32be44;
+}
+
+/* Hotcue Color: Blue */
+#HotcueButton[displayValue="1"][highlight="3"],
+#HotcueButton[displayValue="2"][highlight="3"] {
+  background-color: #0044ff;
+}
+
+/* Hotcue Color: Yellow */
+#HotcueButton[displayValue="1"][highlight="4"],
+#HotcueButton[displayValue="2"][highlight="4"] {
+  background-color: #f8d200;
+}
+
+/* Hotcue Color: Celeste */
+#HotcueButton[displayValue="1"][highlight="5"],
+#HotcueButton[displayValue="2"][highlight="5"] {
+  background-color: #42d4f4;
+}
+
+/* Hotcue Color: Purple */
+#HotcueButton[displayValue="1"][highlight="6"],
+#HotcueButton[displayValue="2"][highlight="6"] {
+  background-color: #af00cc;
+}
+
+/* Hotcue Color: Pink */
+#HotcueButton[displayValue="1"][highlight="7"],
+#HotcueButton[displayValue="2"][highlight="7"] {
+  background-color: #fca6d7;
+}
+
+/* Hotcue Color: White */
+#HotcueButton[displayValue="1"][highlight="8"],
+#HotcueButton[displayValue="2"][highlight="8"] {
+  background-color: #f2f2ff;
 }
 
 #SettingsButton[displayValue="1"] {
@@ -848,13 +928,6 @@ WBeatSpinBox,
   margin: 2px;
 }
 
-#PreviewPlayOverview {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
-}
-
 #PreviewPlay {
   padding: 3px 1px 1px 3px;
   border-right: 1px solid #585858;
@@ -1021,60 +1094,53 @@ border: 0px;
   padding: 2px 0px 0px 2px;
 }
 
-#MicContainer, #AuxContainer {
+#MicRack, #AuxRack {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   background-color: #1e1e1e;
+  padding: 4px;
+  qproperty-layoutSpacing: 5;
+  }
+  #MicRack {
+    margin: 5px 5px 0px 0px;
+  }
+  #AuxRack {
+    margin: 5px 0px 0px 5px;
+  }
+
+#MicAuxUnit {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #585858;
+  border-bottom: 1px solid #585858;
 }
 
-#MicContainer {
-  margin: 5px 5px 0px 0px;
-  padding: 1px 6px 3px 6px;
-}
-
-#AuxContainer {
-  margin: 5px 0px 0px 5px;
-  padding: 1px 0px 3px 6px;
+#MicAuxInterior {
+  padding: 0px 2px 3px 2px;
 }
 
 #MicTitle {
-  qproperty-alignment: 'AlignLeft | AlignTop';
-  text-transform: uppercase;
-  font-size: 15px/17px;
-}
-
-#MicBorder {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  margin: 1px 6px 1px 0px;
-}
-
-#MicInterior {
-  padding: 0px 3px 2px 3px;
-}
-
-#MicSubTitle {
   qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
-  text-align: center;
-}
-
-#MicDuckingTitle {
-  qproperty-alignment: 'AlignCenter | AlignTop';
-  font-size: 12px/13px;
-  font-weight: bold;
-  color: #585858;
   text-align: center;
 }
 
 #MicDuckingContainer {
-  margin: 0px 0px 3px 0px;
+  qproperty-alignment: 'AlignCenter | AlignTop'; /*
+  background-color: #548731;  */
 }
 
-#MicDuckingButton[displayValue="0"] {
-  color: #ddd;
-  }
+#MicDuckingStrengthKnob {
+  margin: 2px 0px;
+}
 
+/* styled like GuiToggleButton, VinylButton etc */
+#MicDuckingButton {
+  }
+  #MicDuckingButton[displayValue="0"] {
+    color: #ddd;
+  }
   #MicDuckingButton[displayValue="1"],
   #MicDuckingButton[displayValue="2"] {
     color: #0e0e0e;
@@ -1122,12 +1188,6 @@ border: 0px;
 #SamplerDeck {
   border: 1px solid #585858;
   background-color: #1e1e1e;
-}
-
-#SamplerExpandbutton {
-}
-
-#SamplerMainControls {
 }
 
 #SamplerText {

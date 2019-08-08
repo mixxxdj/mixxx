@@ -40,8 +40,6 @@ Description:
                 <TooltipId>skin_settings</TooltipId>
                 <ObjectName>SkinSettingsClose</ObjectName>
                 <Size>20f,24f</Size>
-                <!-- This is used to work around Bug 1795663 on OSX -->
-                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -159,6 +157,7 @@ Description:
                 <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
               </Template>
 
+              
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
                 <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
@@ -655,7 +654,7 @@ Description:
           <WidgetGroup><!-- 2 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,26</MinimumSize>
-            <MaximumSize>200,54</MaximumSize>
+            <MaximumSize>200,62</MaximumSize>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>

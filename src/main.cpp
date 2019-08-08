@@ -124,7 +124,7 @@ int main(int argc, char * argv[]) {
 #endif
 
     // When the last window is closed, terminate the Qt event loop.
-    QObject::connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+    QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
 
     int result = runMixxx(&app, args);
 
