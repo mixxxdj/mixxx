@@ -1,4 +1,4 @@
-==== 2.2.2 2019-08-XX ====
+==== 2.2.2 2019-08-08 ====
 
 * Fix battery widget with upower <= 0.99.7. #2221
 * Fix BPM adjust in BpmControl. lp:1836480
