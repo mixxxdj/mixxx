@@ -45,7 +45,7 @@ void BatteryLinux::read() {
     VERIFY_OR_DEBUG_ASSERT(devices) {
       return;
     }
-    devices = g_ptr_array_new_with_free_func((GDestroyNotify) g_object_unref);
+    g_ptr_array_set_free_func(devices, (GDestroyNotify) g_object_unref);
 #endif
 
     for (guint i = 0; i < devices->len; ++i) {
