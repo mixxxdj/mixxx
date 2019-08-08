@@ -28,6 +28,8 @@ class DownmixAndOverlapHelper {
     bool finalize();
 
   private:
+    bool processInner(const CSAMPLE* pInput, size_t numInputFrames);
+
     std::vector<double> m_buffer;
     // The window size in frames.
     size_t m_windowSize = 0;
