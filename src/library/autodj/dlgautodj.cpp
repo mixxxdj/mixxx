@@ -8,6 +8,11 @@
 #include "util/duration.h"
 #include "widget/wtracktableview.h"
 
+namespace {
+const char* kPreferenceGroupName = "[Auto DJ]";
+const char* kRepeatPlaylistPreference = "Requeue";
+} // anonymous namespace
+
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
                      Library* pLibrary,
@@ -20,7 +25,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
           // no sorting
           m_pTrackTableView(new WTrackTableView(this, pConfig,
                                                 pTrackCollection, false)),
-          m_pAutoDJTableModel(NULL) {
+          m_pAutoDJTableModel(nullptr),
+          m_pConfig(pConfig) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -99,6 +105,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     );
     fadeModeCombobox->setToolTip(fadeModeTooltip);
     fadeModeLabel->setToolTip(fadeModeTooltip);
+
+    repeatPlaylistCheckbox->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference)));
+    connect(repeatPlaylistCheckbox, &QCheckBox::stateChanged,
+            this, &DlgAutoDJ::slotRepeatPlaylistChanged);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
@@ -222,6 +233,11 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
 void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
     m_pAutoDJProcessor->setTransitionMode(static_cast<AutoDJProcessor::TransitionMode>(
           fadeModeCombobox->itemData(comboboxIndex).toInt()));
+}
+
+void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
+    m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
+            static_cast<bool>(checkState));
 }
 
 void DlgAutoDJ::updateSelectionInfo() {

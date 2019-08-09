@@ -42,6 +42,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
     void slotTransitionModeChanged(int comboboxIndex);
+    void slotRepeatPlaylistChanged(int checkedState);
 
   signals:
     void addRandomButton(bool buttonChecked);
@@ -53,6 +54,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     AutoDJProcessor* m_pAutoDJProcessor;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
+    UserSettingsPointer m_pConfig;
 };
 
 #endif //DLGAUTODJ_H

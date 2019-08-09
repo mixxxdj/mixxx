@@ -149,6 +149,16 @@ If no track sources are configured, the track is added from the library instead.
       <widget class="QComboBox" name="fadeModeCombobox"/>
      </item>
      <item>
+       <widget class="QCheckBox" name="repeatPlaylistCheckbox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="repeatPlaylistLabel">
+       <property name="text">
+        <string>Repeat playlist</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
