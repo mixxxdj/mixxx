@@ -950,12 +950,26 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     getFirstSoundPosition(pToDeck));
         }
         break;
-    // Let the full outro and intro play; do not cut off any part of either.
-    // Use the outroLength or introLength as the transition time, whichever is
-    // shorter. If only the outro or intro length is marked but not both, use
-    // the one that is marked for the transition time. If neither is marked,
-    // fall back to the transition time from the spinbox.
     case TransitionMode::IntroOutroSmooth:
+        // Let the full outro and intro play; do not cut off any part of either.
+        //
+        // In the diagrams below,
+        // - is part of a track outside the outro/intro,
+        // o is part of the outro
+        // i is part of the intro
+        // | marks the boundaries of the transition
+        //
+        // When outro > intro:
+        // ------ooo|ooo|
+        //          |iii|------
+        //
+        // When outro < intro:
+        // ------|ooo|
+        //       |iii|iii-----
+        //
+        // If only the outro or intro length is marked but not both, use the one
+        // that is marked for the transition time. If neither is marked, fall
+        // back to the transition time from the spinbox.
         if (outroLength > 0 && introLength > 0) {
             if (outroLength > introLength) {
                 pFromDeck->fadeBeginPos = outroEnd - introLength;
@@ -980,14 +994,28 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     getFirstSoundPosition(pToDeck));
         }
         break;
-    // Start fading at the outroStart and end fading at the introEnd, cutting
-    // off some of the outro or intro (whichever is longer) to minimize the
-    // transition time.
-    // Use the outroLength or introLength as the transition time, whichever is
-    // shorter. If only the outro or intro length is marked but not both, use
-    // the one that is marked for the transition time. If neither is marked,
-    // fall back to the transition time from the spinbox.
     case TransitionMode::IntroOutroQuick:
+        // Start fading at the outroStart and end fading at the introEnd,
+        // cutting off some of the outro or intro (whichever is longer) to
+        // minimize the transition time.
+        //
+        // In the diagrams below,
+        // - is part of a track outside the outro/intro,
+        // o is part of the outro
+        // i is part of the intro
+        // | marks the boundaries of the transition
+        //
+        // When outro > intro:
+        // ------|ooo|ooo
+        //       |iii|------
+        //
+        // When outro < intro:
+        // ------|ooo|
+        //    iii|iii|------
+        //
+        // If only the outro or intro length is marked but not both, use the one
+        // that is marked for the transition time. If neither is marked, fall
+        // back to the transition time from the spinbox.
         if (outroLength > 0 && introLength > 0) {
             if (outroLength > introLength) {
                 pFromDeck->fadeBeginPos = outroStart;
