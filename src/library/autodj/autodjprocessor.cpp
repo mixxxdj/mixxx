@@ -1068,9 +1068,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             if (introLength == 0) {
                 // Intro not set, don't re-cue the track
                 pToDeck->startPos = kKeepPosition;
-            } else if (introLength > m_transitionTime) {
+            } else if (introLength > fadeLength) {
                 // Intro is too long, cut some time from the beginning
-                pToDeck->startPos = introEnd - m_transitionTime;
+                pToDeck->startPos = introEnd - fadeLength;
             } else {
                 // Intro is fine, play entirely
                 pToDeck->startPos = introStart;
