@@ -161,7 +161,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 
     int configuredTransitionMode = m_pConfig->getValue(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
-            static_cast<int>(TransitionMode::AlignIntroOutroStart));
+            static_cast<int>(TransitionMode::IntroOutroSmooth));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
 }
 
