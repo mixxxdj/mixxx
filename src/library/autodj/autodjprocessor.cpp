@@ -937,47 +937,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     // that range as the transition time as a best guess. Only fall back to the
     // fixed number of seconds from the spinbox as a last resort.
     switch (m_transitionMode) {
-    case TransitionMode::AlignIntroOutroStart:
-        pToDeck->startPos = introStart;
-        if (outroLength > 0) {
-            pFromDeck->fadeBeginPos = outroStart;
-            if (introLength > 0 && introLength < outroLength) {
-                pFromDeck->fadeEndPos = pFromDeck->fadeBeginPos + introLength;
-            } else if (pToDeck->startPos + outroLength >= toTrackDuration) {
-                pFromDeck->fadeEndPos = pFromDeck->fadeBeginPos +
-                        toTrackDuration - pToDeck->startPos;
-            } else {
-                pFromDeck->fadeEndPos = outroEnd;
-            }
-        } else if (introLength > 0) {
-            pFromDeck->fadeBeginPos = outroEnd - introLength;
-            pFromDeck->fadeEndPos = outroEnd;
-        } else {
-            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
-        }
-        break;
-    case TransitionMode::AlignIntroOutroEnd:
-        if (introLength > 0) {
-            pFromDeck->fadeEndPos = outroEnd;
-            if (outroLength > 0) {
-                pFromDeck->fadeBeginPos = pFromDeck->fadeEndPos - math_min(outroLength, introLength);
-            } else {
-                pFromDeck->fadeBeginPos = math_max(pFromDeck->fadeEndPos - introLength, 0.0);
-            }
-            pToDeck->startPos = introEnd - (pFromDeck->fadeEndPos - pFromDeck->fadeBeginPos);
-        } else if (outroLength > 0) {
-            pToDeck->startPos = introStart;
-            pFromDeck->fadeEndPos = outroEnd;
-            if (pToDeck->startPos + outroLength >= toTrackDuration) {
-                pFromDeck->fadeBeginPos = pFromDeck->fadeEndPos -
-                        toTrackDuration + pToDeck->startPos;
-            } else {
-                pFromDeck->fadeBeginPos = outroStart;
-            }
-        } else {
-            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
-        }
-        break;
     case TransitionMode::FixedSkipSilence:
         if (fadeNow) {
             useFixedFadeTime(pFromDeck,

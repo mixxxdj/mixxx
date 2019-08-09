@@ -75,10 +75,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
-    fadeModeCombobox->addItem(tr("Align intro + outro start"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
-    fadeModeCombobox->addItem(tr("Align intro + outro end"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroEnd));
     fadeModeCombobox->addItem(tr("Intro/Outro (smooth transition)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroSmooth));
     fadeModeCombobox->addItem(tr("Intro/Outro (quick transition)"),
