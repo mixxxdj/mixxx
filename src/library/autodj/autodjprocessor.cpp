@@ -950,19 +950,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     getFirstSoundPosition(pToDeck));
         }
         break;
-    case TransitionMode::FixedLoadAtCue:
-        if (fadeNow) {
-            useFixedFadeTime(pFromDeck,
-                    pToDeck,
-                    outroEnd,
-                    getMainCuePosition(pToDeck));
-        } else {
-            useFixedFadeTime(pFromDeck,
-                    pToDeck,
-                    getLastSoundPosition(pFromDeck),
-                    getMainCuePosition(pToDeck));
-        }
-        break;
     // Let the full outro and intro play; do not cut off any part of either.
     // Use the outroLength or introLength as the transition time, whichever is
     // shorter. If only the outro or intro length is marked but not both, use

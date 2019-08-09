@@ -157,8 +157,7 @@ class AutoDJProcessor : public QObject {
         IntroOutroSmooth = 1,
         IntroOutroQuick = 2,
         FixedFullTrack = 3,
-        FixedSkipSilence = 4,
-        FixedLoadAtCue = 5
+        FixedSkipSilence = 4
     };
 
     AutoDJProcessor(QObject* pParent,
