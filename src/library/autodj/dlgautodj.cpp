@@ -85,6 +85,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->addItem(tr("Fixed time (start at cue)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedLoadAtCue));
+    fadeModeCombobox->addItem(tr("Limited intro + outro start"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::LimitedIntroOutroStart));
     fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getTransitionMode()));
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgAutoDJ::slotTransitionModeChanged);

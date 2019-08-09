@@ -184,7 +184,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
         int iPos = valueToPosition(parameter);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            qDebug() << "WOverview::onConnectedControlChanged" << parameter << ">>" << m_iPos;
+            // qDebug() << "WOverview::onConnectedControlChanged" << parameter << ">>" << m_iPos;
             update();
         }
     }

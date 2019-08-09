@@ -116,7 +116,7 @@ class DeckAttributes : public QObject {
     double startPos; // Set in toDeck nature
     double fadeBeginPos; // set in fromDeck nature
     double fadeEndPos; // set in fromDeck nature
-    bool loading;      // The data is inconsistent during loading a deck
+    bool loading; // The data is inconsistent during loading a deck
 
   private:
     EngineChannel::ChannelOrientation m_orientation;
@@ -159,6 +159,7 @@ class AutoDJProcessor : public QObject {
         FixedFullTrack = 2,
         FixedSkipSilence = 3,
         FixedLoadAtCue = 4,
+        LimitedIntroOutroStart = 5
     };
 
     AutoDJProcessor(QObject* pParent,
