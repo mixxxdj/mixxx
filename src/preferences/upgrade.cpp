@@ -411,7 +411,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
     else {
-        // Vesrion seems to be never or equal v"1.12" so, no special upgrade required, just update the value.
+        // Version seems to be never or equal v"1.12" so, no special upgrade required, just update the value.
         configVersion = MIXXX_VERSION;
         config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
     }
