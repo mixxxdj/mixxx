@@ -1006,31 +1006,32 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         break;
     case TransitionMode::LimitedIntroOutroStart:
         // Uses a simple set of rules:
-        // * outro start starts fade if set
-        // * intro length is limited by transition time
-        // * fade time is the minimum of all
-        // no re-cuing of "to track" if no intro end is set. (legacy mode)
+        // * Fading starts at outro end if that is set.
+        // * Fade time is the outro length, intro length, or transition time,
+        //   whichever is shortest.
+        // * Always finish fading before the intro end if that is set.
+        // Do not re-cue "to track" if no intro end is set. (legacy mode)
 
         // Use cases:
         //
         // By default only intro start and outro end are set. In this case fade
-        // starts at outro end - transitionTime. The new track is not recued,
-        // the deck preferences are used to set the start point.
+        // starts at outro end - transitionTime. The new track is not recued;
+        // the deck load preference is used to set the start point.
         //
         // If the track has for instance a boring long outro the user can
-        // manually set the outro start. This set the fade start in any case.
-        // The fade time is now set by the outo length or the tranitonTime.
+        // manually set the outro start. Fading starts there in any case.
+        // The fade time is now set by the outro length or the transitonTime.
         // The shorter is selected.
         //
-        // If the track has a poisend end or something the user can adjust the
-        // outro end. It is never played bejond that point.
+        // If the track has an ugly ending or something the user can adjust the
+        // outro end to cut it off. It is never played beyond that point.
         //
-        // The user can override the deck track load preferences by setting a
+        // The user can override the deck track load preference by setting an
         // intro end point and adjust the intro start. Fading starts at intro
         // start or intro end - transitionTime, depending on which is shorter.
         // The transition is always finished before passing intro out.
         // This can for instance be useful to ensure that fading is over before
-        // vocals start.
+        // drums or vocals start.
 
         // outro            xxxxxxx
         // intro            xxxxx
@@ -1119,7 +1120,7 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
         // before the next transition starts.
         double toDeckOutroStart = getOutroStartPosition(pToDeck);
         if (toDeckOutroStart <= startPoint) {
-            // we are already to late
+            // we are already too late
             double end = getOutroEndPosition(pToDeck);
             if (end <= startPoint) {
                 end = pToDeck->duration();
@@ -1128,7 +1129,7 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
                     startPoint = pToDeck->duration() - 1;
                 }
             }
-            // use the remaining time for fad to this dack ende fade to the next
+            // use the remaining time for fading
             toDeckOutroStart = (end - startPoint) / 2 + startPoint;
         }
         double transitionTime = math_min(toDeckOutroStart - startPoint,
