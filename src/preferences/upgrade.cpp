@@ -250,15 +250,14 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         configVersion = "1.8.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
     }
-
-    if (configVersion.startsWith("1.8.0~beta1") ||
+    else if (configVersion.startsWith("1.8.0~beta1") ||
         configVersion.startsWith("1.8.0~beta2")) {
         qDebug() << "Upgrading from v1.8.0~beta...";
         // Upgrade tasks go here
         configVersion = "1.8.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
     }
-    if (configVersion.startsWith("1.8") || configVersion.startsWith("1.9.0beta1")) {
+    else if (configVersion.startsWith("1.8") || configVersion.startsWith("1.9.0beta1")) {
         qDebug() << "Upgrading from" << configVersion << "...";
         // Upgrade tasks go here
 #ifdef __APPLE__
@@ -309,7 +308,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
     }
-    if (configVersion.startsWith("1.9") || configVersion.startsWith("1.10")) {
+    else if (configVersion.startsWith("1.9") || configVersion.startsWith("1.10")) {
         qDebug() << "Upgrading from v1.9.x/1.10.x...";
 
         bool successful = true;
@@ -355,8 +354,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             qDebug() << "Upgrade Failed";
         }
     }
-
-    if (configVersion.startsWith("1.11")) {
+    else if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
         bool successful = false;
         {
@@ -412,11 +410,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             qDebug() << "Upgrade failed!\n";
         }
     }
-
-    if (configVersion.startsWith("1.12") ||
-        configVersion.startsWith("2.0") ||
-        configVersion.startsWith("2.1.0")) {
-        // No special upgrade required, just update the value.
+    else {
+        // Vesrion seems to be never or equal v"1.12" so, no special upgrade required, just update the value.
         configVersion = MIXXX_VERSION;
         config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
     }
