@@ -937,19 +937,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     // that range as the transition time as a best guess. Only fall back to the
     // fixed number of seconds from the spinbox as a last resort.
     switch (m_transitionMode) {
-    case TransitionMode::FixedSkipSilence:
-        if (fadeNow) {
-            useFixedFadeTime(pFromDeck,
-                    pToDeck,
-                    outroEnd,
-                    getFirstSoundPosition(pToDeck));
-        } else {
-            useFixedFadeTime(pFromDeck,
-                    pToDeck,
-                    getLastSoundPosition(pFromDeck),
-                    getFirstSoundPosition(pToDeck));
-        }
-        break;
     case TransitionMode::IntroOutroSmooth:
         // Let the full outro and intro play; do not cut off any part of either.
         //
@@ -1036,6 +1023,19 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pToDeck->startPos = introStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck,
+                    getLastSoundPosition(pFromDeck),
+                    getFirstSoundPosition(pToDeck));
+        }
+        break;
+    case TransitionMode::FixedSkipSilence:
+        if (fadeNow) {
+            useFixedFadeTime(pFromDeck,
+                    pToDeck,
+                    outroEnd,
+                    getFirstSoundPosition(pToDeck));
+        } else {
+            useFixedFadeTime(pFromDeck,
+                    pToDeck,
                     getLastSoundPosition(pFromDeck),
                     getFirstSoundPosition(pToDeck));
         }
