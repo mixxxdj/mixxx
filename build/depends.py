@@ -30,8 +30,8 @@ class OSXFilePathUrlBackport(Dependence):
         return
 
     def sources(self, build):
-    	if build.platform_is_osx:
-        	return ['util/filepathurl.mm']
+        if build.platform_is_osx:
+            return ['util/filepathurl.mm']
         return []
 
 
