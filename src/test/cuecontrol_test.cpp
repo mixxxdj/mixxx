@@ -261,6 +261,23 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault) {
+    // Default is to load at the intro start
+    TrackPointer pTrack = createTestTrack();
+    auto pIntro = pTrack->createAndAddCue();
+    pIntro->setType(Cue::Type::Intro);
+    pIntro->setSource(Cue::Source::Automatic);
+    pIntro->setPosition(250.0);
+    pIntro->setLength(150.0);
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(250.0, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(250.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadMainCue) {
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0, Cue::Source::Manual));
 
@@ -278,6 +295,8 @@ TEST_F(CueControlTest, SeekOnLoadDefault) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(-100.0, Cue::Source::Manual));
 
@@ -292,82 +311,6 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
 
     EXPECT_DOUBLE_EQ(-200.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-200.0, getCurrentSample());
-}
-
-TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
-    TrackPointer pTrack = createTestTrack();
-
-    loadTrack(pTrack);
-
-    EXPECT_DOUBLE_EQ(-1.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
-
-    // Set cue and check if track is seeked to it.
-    pTrack->setCuePoint(CuePosition(200.0, Cue::Source::Manual));
-    ProcessBuffer();
-
-    EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
-}
-
-TEST_F(CueControlTest, SeekOnLoadDefault_CueRecallDisabled) {
-    // Note: CueRecall uses inverse logic (0 means enabled).
-    config()->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(1));
-
-    TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0, Cue::Source::Manual));
-
-    loadTrack(pTrack);
-
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
-}
-
-TEST_F(CueControlTest, SeekOnLoadZeroPos) {
-    TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0, Cue::Source::Manual));
-
-    loadTrack(pTrack);
-
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
-}
-
-TEST_F(CueControlTest, SeekOnLoadMainCue) {
-    TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0, Cue::Source::Manual));
-
-    loadTrack(pTrack);
-
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
-
-    // Move cue and check if track is following it.
-    pTrack->setCuePoint(CuePosition(200.0, Cue::Source::Manual));
-    ProcessBuffer();
-
-    EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
-}
-
-TEST_F(CueControlTest, SeekOnLoadIntroCue) {
-    TrackPointer pTrack = createTestTrack();
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(Cue::Type::Intro);
-    pIntro->setSource(Cue::Source::Manual);
-    pIntro->setPosition(200.0);
-
-    loadTrack(pTrack);
-
-    EXPECT_DOUBLE_EQ(200.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
-
-    // Move cue and check if track is following it.
-    pIntro->setPosition(400.0);
-    ProcessBuffer();
-
-    EXPECT_DOUBLE_EQ(400.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(400.0, getCurrentSample());
 }
 
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
