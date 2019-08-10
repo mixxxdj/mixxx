@@ -346,7 +346,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
-    CuePointer pFirstSound = pNewTrack->findCueByType(Cue::Type::FirstSound);
+    CuePointer pAudibleSound = pNewTrack->findCueByType(Cue::Type::AudibleSound);
     double introEnd = m_pIntroEndPosition->get();
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
@@ -357,8 +357,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
         break;
     case SeekOnLoadMode::FirstSound:
-        if (pFirstSound) {
-            seekExact(pFirstSound->getPosition());
+        if (pAudibleSound) {
+            seekExact(pAudibleSound->getPosition());
         } else {
             seekExact(0.0);
         }

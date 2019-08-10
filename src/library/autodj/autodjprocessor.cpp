@@ -797,9 +797,9 @@ double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
         return 0;
     }
 
-    CuePointer pFromTrackFirstSound = pTrack->findCueByType(Cue::Type::FirstSound);
-    if (pFromTrackFirstSound) {
-        return samplePositionToSeconds(pFromTrackFirstSound->getPosition(), pDeck);
+    CuePointer pFromTrackAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
+    if (pFromTrackAudibleSound) {
+        return samplePositionToSeconds(pFromTrackAudibleSound->getPosition(), pDeck);
     } else {
         return 0;
     }
@@ -811,9 +811,11 @@ double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
         return 0;
     }
 
-    CuePointer pFromTrackLastSound = pTrack->findCueByType(Cue::Type::LastSound);
-    if (pFromTrackLastSound) {
-        return samplePositionToSeconds(pFromTrackLastSound->getPosition(), pDeck);
+    CuePointer pFromTrackAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
+    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
+        return samplePositionToSeconds(
+                pFromTrackAudibleSound->getPosition() + pFromTrackAudibleSound->getLength(),
+                pDeck);
     } else {
         return pDeck->duration();
     }

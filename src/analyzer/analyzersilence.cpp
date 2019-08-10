@@ -36,10 +36,9 @@ bool needsOutroCueEnd(const Cue& outroCue) {
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
-    CuePointer pFirstSound = pTrack->findCueByType(Cue::Type::FirstSound);
-    CuePointer pLastSound = pTrack->findCueByType(Cue::Type::LastSound);
+    CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
 
-    if (!pIntroCue || !pOutroCue || !pFirstSound || !pLastSound) {
+    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
         return true;
     }
     return needsIntroCueStart(*pIntroCue) || needsOutroCueEnd(*pOutroCue);
@@ -143,23 +142,12 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pOutroCue->setLength(outroEnd);
     }
 
-    CuePointer pFirstSound = pTrack->findCueByType(Cue::Type::FirstSound);
-    if (pFirstSound == nullptr) {
-        pFirstSound = pTrack->createAndAddCue();
-        pFirstSound->setType(Cue::Type::FirstSound);
-        pFirstSound->setSource(Cue::Source::Automatic);
-        pFirstSound->setPosition(introStart);
-    } else if (pFirstSound->getSource() != Cue::Source::Manual) {
-        pFirstSound->setPosition(introStart);
-    }
-
-    CuePointer pLastSound = pTrack->findCueByType(Cue::Type::LastSound);
-    if (pLastSound == nullptr) {
-        pLastSound = pTrack->createAndAddCue();
-        pLastSound->setType(Cue::Type::LastSound);
-        pLastSound->setSource(Cue::Source::Automatic);
-        pLastSound->setPosition(outroEnd);
-    } else if (pLastSound->getSource() != Cue::Source::Manual) {
-        pLastSound->setPosition(outroEnd);
+    CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
+    if (pAudibleSound == nullptr || pAudibleSound->getLength() <= 0) {
+        pAudibleSound = pTrack->createAndAddCue();
+        pAudibleSound->setType(Cue::Type::AudibleSound);
+        pAudibleSound->setSource(Cue::Source::Automatic);
+        pAudibleSound->setPosition(introStart);
+        pAudibleSound->setLength(outroEnd - introStart);
     }
 }
