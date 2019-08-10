@@ -154,8 +154,7 @@ class AutoDJProcessor : public QObject {
     };
 
     enum class TransitionMode {
-        IntroOutroSmooth,
-        IntroOutroQuick,
+        IntroOutro,
         FixedFullTrack,
         FixedSkipSilence
     };

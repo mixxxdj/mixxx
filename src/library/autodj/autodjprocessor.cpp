@@ -161,7 +161,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 
     int configuredTransitionMode = m_pConfig->getValue(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
-            static_cast<int>(TransitionMode::IntroOutroSmooth));
+            static_cast<int>(TransitionMode::IntroOutro));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
 }
 
@@ -931,16 +931,11 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double introLength = introEnd - introStart;
 
-    // For both the AlignIntroOutroStart & AlignIntroOutroEnd TransitionModes,
-    // fadeDuration is the intro or outro length, whichever is shorter. This
-    // is the best way to avoid clashing sounds overlapping. If only one track
-    // has an intro or outro range marked (not just one point of the range, but
-    // the full range with the end and beginning markers), use the length of
-    // that range as the transition time as a best guess. Only fall back to the
-    // fixed number of seconds from the spinbox as a last resort.
     switch (m_transitionMode) {
-    case TransitionMode::IntroOutroSmooth:
-        // Let the full outro and intro play; do not cut off any part of either.
+    case TransitionMode::IntroOutro:
+        // Use the outro or intro length for the transition time, whichever is
+        // shorter. Let the full outro and intro play; do not cut off any part
+        // of either.
         //
         // In the diagrams below,
         // - is part of a track outside the outro/intro,
@@ -974,52 +969,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else if (introLength > 0 && outroLength <= 0) {
-            pFromDeck->fadeBeginPos = outroEnd - introLength;
-            pFromDeck->fadeEndPos = outroEnd;
-            pToDeck->startPos = introStart;
-        } else {
-            useFixedFadeTime(pFromDeck, pToDeck,
-                    getLastSoundPosition(pFromDeck),
-                    getFirstSoundPosition(pToDeck));
-        }
-        break;
-    case TransitionMode::IntroOutroQuick:
-        // Start fading at the outroStart and end fading at the introEnd,
-        // cutting off some of the outro or intro (whichever is longer) to
-        // minimize the transition time.
-        //
-        // In the diagrams below,
-        // - is part of a track outside the outro/intro,
-        // o is part of the outro
-        // i is part of the intro
-        // | marks the boundaries of the transition
-        //
-        // When outro > intro:
-        // ------|ooo|ooo
-        //       |iii|------
-        //
-        // When outro < intro:
-        // ------|ooo|
-        //    iii|iii|------
-        //
-        // If only the outro or intro length is marked but not both, use the one
-        // that is marked for the transition time. If neither is marked, fall
-        // back to the transition time from the spinbox.
-        if (outroLength > 0 && introLength > 0) {
-            if (outroLength > introLength) {
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeEndPos = outroStart + introLength;
-                pToDeck->startPos = introStart;
-            } else {
-                pFromDeck->fadeBeginPos = outroStart;
-                pFromDeck->fadeEndPos = outroEnd;
-                pToDeck->startPos = introEnd - outroLength;
-            }
-        } else if (outroLength > 0 && introLength <= 0) {
-            pFromDeck->fadeBeginPos = outroStart;
-            pFromDeck->fadeEndPos = outroEnd;
-            pToDeck->startPos = introStart;
-        } else if (introLength < 0 && outroLength <= 0) {
             pFromDeck->fadeBeginPos = outroEnd - introLength;
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;

@@ -81,10 +81,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
-    fadeModeCombobox->addItem(tr("Intro/Outro (smooth transition)"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroSmooth));
-    fadeModeCombobox->addItem(tr("Intro/Outro (quick transition)"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroQuick));
+    fadeModeCombobox->addItem(tr("Intro/Outro"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutro));
     fadeModeCombobox->addItem(tr("Fixed time (full track)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
     fadeModeCombobox->addItem(tr("Fixed time (skip silence)"),
@@ -94,12 +92,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgAutoDJ::slotTransitionModeChanged);
     QString fadeModeTooltip = tr(
-    "Intro/Outro (smooth transition):\n"
-    "Play the full intro and outro. The intro or outro time is\n"
-    "used as the crossfade time, whichever is shorter.\n"
-    "\n"
-    "Intro/Outro (quick transition):\n"
-    "Cut off part of the intro or outro, whichever is longer.\n"
+    "Intro/Outro:\n"
     "The intro or outro time is used as the crossfade time,\n"
     "whichever is shorter.\n"
     "\n"
