@@ -115,7 +115,7 @@ CueControl::CueControl(QString group,
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
     m_pIntroStartPosition = new ControlObject(ConfigKey(group, "intro_start_position"));
-    m_pIntroStartPosition->set(-1.0);
+    m_pIntroStartPosition->set(kNoTrigger);
 
     m_pIntroStartEnabled = new ControlObject(ConfigKey(group, "intro_start_enabled"));
     m_pIntroStartEnabled->setReadOnly();
@@ -136,7 +136,7 @@ CueControl::CueControl(QString group,
             Qt::DirectConnection);
 
     m_pIntroEndPosition = new ControlObject(ConfigKey(group, "intro_end_position"));
-    m_pIntroEndPosition->set(-1.0);
+    m_pIntroEndPosition->set(kNoTrigger);
 
     m_pIntroEndEnabled = new ControlObject(ConfigKey(group, "intro_end_enabled"));
     m_pIntroEndEnabled->setReadOnly();
@@ -157,7 +157,7 @@ CueControl::CueControl(QString group,
             Qt::DirectConnection);
 
     m_pOutroStartPosition = new ControlObject(ConfigKey(group, "outro_start_position"));
-    m_pOutroStartPosition->set(-1.0);
+    m_pOutroStartPosition->set(kNoTrigger);
 
     m_pOutroStartEnabled = new ControlObject(ConfigKey(group, "outro_start_enabled"));
     m_pOutroStartEnabled->setReadOnly();
@@ -178,7 +178,7 @@ CueControl::CueControl(QString group,
             Qt::DirectConnection);
 
     m_pOutroEndPosition = new ControlObject(ConfigKey(group, "outro_end_position"));
-    m_pOutroEndPosition->set(-1.0);
+    m_pOutroEndPosition->set(kNoTrigger);
 
     m_pOutroEndEnabled = new ControlObject(ConfigKey(group, "outro_end_enabled"));
     m_pOutroEndEnabled->setReadOnly();
@@ -347,7 +347,16 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     CuePointer pAudibleSound = pNewTrack->findCueByType(Cue::Type::AudibleSound);
+    double firstSound = kNoTrigger;
+    if (pAudibleSound) {
+        firstSound = pAudibleSound->getPosition();
+    }
+
+    double introStart = m_pIntroStartPosition->get();
     double introEnd = m_pIntroEndPosition->get();
+
+    double mainCue = m_pCuePoint->get();
+
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
@@ -357,23 +366,33 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
         break;
     case SeekOnLoadMode::FirstSound:
-        if (pAudibleSound) {
-            seekExact(pAudibleSound->getPosition());
+        if (firstSound != kNoTrigger) {
+            seekExact(firstSound);
         } else {
             seekExact(0.0);
         }
         break;
     case SeekOnLoadMode::MainCue:
-        seekExact(m_pCuePoint->get());
+        if (mainCue != kNoTrigger) {
+            seekExact(mainCue);
+        } else {
+            seekExact(0.0);
+        }
         break;
     case SeekOnLoadMode::IntroStart:
-        seekExact(m_pIntroStartPosition->get());
+        if (introStart != kNoTrigger) {
+            seekExact(introStart);
+        } else {
+            seekExact(0.0);
+        }
         break;
     case SeekOnLoadMode::IntroEnd:
-        if (introEnd >= 0) {
+        if (introEnd != kNoTrigger) {
             seekExact(introEnd);
+        } else if (introStart != kNoTrigger) {
+            seekExact(introStart);
         } else {
-            seekExact(m_pIntroStartPosition->get());
+            seekExact(0.0);
         }
         break;
     default:
