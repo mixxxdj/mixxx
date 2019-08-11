@@ -807,7 +807,7 @@ void TrackDAO::afterHidingTracks(
 // up in the library views again.
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
-bool TrackDAO::onUnhidingTracks(
+bool TrackDAO::unhideTracks(
         const QList<TrackId>& trackIds) {
     QStringList idList;
     for (const auto& trackId: trackIds) {

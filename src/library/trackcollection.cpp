@@ -156,15 +156,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(trackIds)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.unhideTracks(trackIds)) {
         return false;
     }
 
