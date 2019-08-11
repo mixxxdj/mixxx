@@ -722,6 +722,16 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
         calculateTransition(thisDeck, getOtherDeck(thisDeck), false, false);
     }
 
+    // If the user manually pressed play on the "to deck" before fading, for
+    // example to adjust the intro/outro cues, and lets the deck play until the
+    // end, seek back to the start point instead of keeping the deck stopped at
+    // the end.
+    if (!playing && thisDeck->playPosition() == 1.0 && !thisDeck->isFromDeck) {
+        if (thisDeck->startPos == kKeepPosition) {
+            calculateTransition(getOtherDeck(thisDeck), thisDeck, false, true);
+        }
+        thisDeck->setPlayPosition(thisDeck->startPos);
+    }
 }
 
 void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, double position) {
