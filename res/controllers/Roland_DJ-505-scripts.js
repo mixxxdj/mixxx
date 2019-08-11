@@ -1621,9 +1621,31 @@ DJ505.SavedLoopMode = function(deck, offset) {
         unshift: function() {
             this.outKey = "hotcue_" + this.number + "_enabled";
             this.inKey = "hotcue_" + this.number + "_activateloop";
+            this.input = function (value) {
+                this.pressed = this.isPress(channel, control, value, status);
+                this.inSetValue(this.pressed);
+
+                if (this.pressed) {
+                    this.longPressTimer = engine.beginTimer(
+                        this.longPressTimeout,
+                        function () {
+                            if (this.pressed) {
+                                engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
+                            }
+                        },
+                        true
+                    );
+                } else {
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    }
+                }
+            };
         },
         shift: function() {
             this.inKey = "hotcue_" + this.number + "_gotoandloop";
+            this.input = components.Button.prototype.input;
         },
     });
 
