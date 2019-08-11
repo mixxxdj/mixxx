@@ -112,6 +112,7 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcuePosition;
     ControlObject* m_hotcueLength;
     ControlObject* m_hotcueEnabled;
+    ControlObject* m_hotcueType;
     ControlObject* m_hotcueColor;
     // Hotcue button controls
     ControlObject* m_hotcueSet;
