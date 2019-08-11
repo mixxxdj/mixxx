@@ -87,6 +87,13 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
 
+QList<TrackId> TrackCollection::getAndEnsureTrackIds(
+        const QList<QFileInfo>& files) {
+    QList<TrackId> trackIds = m_trackDao.getTrackIds(files);
+    unhideTracks(trackIds);
+    return trackIds;
+}
+
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
@@ -162,13 +169,16 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    // To update BaseTrackCache
     m_trackDao.afterUnhidingTracks(trackIds);
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
+    // To update labels of CrateFeature, because unhiding might make a
+    // crate track visible again.
+    QSet<CrateId> modifiedCrateSummaries =
+            m_crates.collectCrateIdsOfTracks(trackIds);
     emit(crateSummaryChanged(modifiedCrateSummaries));
 
     return true;

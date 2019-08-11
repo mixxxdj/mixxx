@@ -206,8 +206,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<TrackId> trackIds;
     if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->unhideTracks(trackIds);
+        trackIds = m_pTrackCollection->getAndEnsureTrackIds(files);
     } else {
         // Adds track, does not insert duplicates, handles unremoving logic.
         trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files);

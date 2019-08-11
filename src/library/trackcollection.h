@@ -66,6 +66,10 @@ class TrackCollection : public QObject,
 
     void relocateDirectory(QString oldDir, QString newDir);
 
+    // This function returns a track ID of all file in the list not already visible,
+    // it adds and unhides the tracks as well.
+    QList<TrackId> getAndEnsureTrackIds(const QList<QFileInfo>& files);
+
     bool hideTracks(const QList<TrackId>& trackIds);
     bool unhideTracks(const QList<TrackId>& trackIds);
 

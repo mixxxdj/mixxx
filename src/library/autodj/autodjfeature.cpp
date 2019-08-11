@@ -144,8 +144,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<TrackId> trackIds;
     if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->unhideTracks(trackIds);
+        trackIds = m_pTrackCollection->getAndEnsureTrackIds(files);
     } else {
         trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files);
     }
