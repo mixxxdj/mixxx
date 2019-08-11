@@ -1,3 +1,5 @@
+#include <limits>
+
 #include <gtest/gtest.h>
 
 #include "util/duration.h"
@@ -112,6 +114,8 @@ TEST_F(DurationUtilTest, formatTime) {
     formatTime("24:00:00.000", 24 * 3600);
     formatTime("24:00:01.000", 24 * 3600 + 1);
     formatTime("25:00:01.000", 25 * 3600 + 1);
+    formatTime("?", std::numeric_limits<double>::infinity());
+    formatTime("?", -1);
 }
 
 TEST_F(DurationUtilTest, formatSeconds) {

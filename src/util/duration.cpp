@@ -6,6 +6,7 @@
 
 #include "util/assert.h"
 #include "util/math.h"
+#include "util/fpclassify.h"
 
 namespace mixxx {
 
@@ -26,8 +27,8 @@ QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
-    if (dSeconds < 0.0) {
-        // negative durations are not supported
+    if (dSeconds < 0.0 || !isfinite(dSeconds)) {
+        // negative durations and isnane high values are not supported
         return kInvalidDurationString;
     }
 
