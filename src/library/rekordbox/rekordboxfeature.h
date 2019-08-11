@@ -32,7 +32,6 @@
 #include <QFutureWatcher>
 #include <QStringListModel>
 #include <QtConcurrentRun>
-#include <QtSql>
 
 #include <fstream>
 
@@ -83,8 +82,6 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
 
     TreeItemModel m_childModel;
     TrackCollection* m_pTrackCollection;
-    // A separate db connection for the worker parsing thread
-    QSqlDatabase m_database;
     RekordboxPlaylistModel* m_pRekordboxPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_devicesFutureWatcher;

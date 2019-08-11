@@ -33,7 +33,7 @@ namespace {
 const QString kPDBPath = "PIONEER/rekordbox/export.pdb";
 const QString kPLaylistPathDelimiter = "-->";
 
-void clearTable(QSqlDatabase &database, QString tableName) {
+void clearTable(QSqlDatabase& database, QString tableName) {
     QSqlQuery query(database);
     query.prepare("delete from " + tableName);
 
@@ -53,11 +53,11 @@ void clearTable(QSqlDatabase &database, QString tableName) {
 }
 
 // This function is executed in a separate thread other than the main thread
-QList<TreeItem *> findRekordboxDevices(RekordboxFeature *rekordboxFeature) {
-    QThread *thisThread = QThread::currentThread();
+QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
+    QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
-    QList<TreeItem *> foundDevices;
+    QList<TreeItem*> foundDevices;
 
 #if defined(__WINDOWS__)
     // Repopulate drive list
@@ -76,7 +76,7 @@ QList<TreeItem *> findRekordboxDevices(RekordboxFeature *rekordboxFeature) {
         QFileInfo rbDBFileInfo(drive.filePath() + kPDBPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem *foundDevice = new TreeItem(rekordboxFeature);
+            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
 
             QString displayPath = drive.filePath();
@@ -116,7 +116,7 @@ QList<TreeItem *> findRekordboxDevices(RekordboxFeature *rekordboxFeature) {
         QFileInfo rbDBFileInfo(device.filePath() + "/" + kPDBPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem *foundDevice = new TreeItem(rekordboxFeature);
+            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
 
             data << device.filePath();
@@ -135,7 +135,7 @@ QList<TreeItem *> findRekordboxDevices(RekordboxFeature *rekordboxFeature) {
         QFileInfo rbDBFileInfo(device.filePath() + "/" + kPDBPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem *foundDevice = new TreeItem(rekordboxFeature);
+            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
 
             data << device.filePath();
@@ -153,33 +153,33 @@ QList<TreeItem *> findRekordboxDevices(RekordboxFeature *rekordboxFeature) {
 }
 
 template<typename Base, typename T>
-inline bool instanceof (const T *ptr) {
-    return dynamic_cast<const Base *>(ptr) != nullptr;
+inline bool instanceof (const T* ptr) {
+    return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
 // https://github.com/Deep-Symmetry/crate-digger/blob/master/src/main/java/org/deepsymmetry/cratedigger/Database.java
 // getText is needed because the strings in the PDB file "have a variety of obscure representations".
 
-QString getText(rekordbox_pdb_t::device_sql_string_t *deviceString) {
+QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     if (instanceof <rekordbox_pdb_t::device_sql_short_ascii_t>(deviceString->body())) {
-        rekordbox_pdb_t::device_sql_short_ascii_t *shortAsciiString =
-                static_cast<rekordbox_pdb_t::device_sql_short_ascii_t *>(deviceString->body());
+        rekordbox_pdb_t::device_sql_short_ascii_t* shortAsciiString =
+                static_cast<rekordbox_pdb_t::device_sql_short_ascii_t*>(deviceString->body());
         return QString::fromStdString(shortAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_ascii_t>(deviceString->body())) {
-        rekordbox_pdb_t::device_sql_long_ascii_t *longAsciiString =
-                static_cast<rekordbox_pdb_t::device_sql_long_ascii_t *>(deviceString->body());
+        rekordbox_pdb_t::device_sql_long_ascii_t* longAsciiString =
+                static_cast<rekordbox_pdb_t::device_sql_long_ascii_t*>(deviceString->body());
         return QString::fromStdString(longAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
-        rekordbox_pdb_t::device_sql_long_utf16be_t *longUtf16beString =
-                static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t *>(deviceString->body());
+        rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
+                static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
         return QString::fromStdString(longUtf16beString->text());
     }
 
     return QString();
 }
 
-int createDevicePLaylist(QSqlDatabase &database, QString devicePath) {
+int createDevicePLaylist(QSqlDatabase& database, QString devicePath) {
     int playlistID = -1;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
@@ -213,14 +213,14 @@ int createDevicePLaylist(QSqlDatabase &database, QString devicePath) {
 }
 
 void insertTrack(
-        QSqlDatabase &database,
-        rekordbox_pdb_t::track_row_t *track,
-        QSqlQuery &query,
-        QSqlQuery &queryInsertIntoDevicePlaylistTracks,
-        QMap<uint32_t, QString> &artistsMap,
-        QMap<uint32_t, QString> &albumsMap,
-        QMap<uint32_t, QString> &genresMap,
-        QMap<uint32_t, QString> &keysMap,
+        QSqlDatabase& database,
+        rekordbox_pdb_t::track_row_t* track,
+        QSqlQuery& query,
+        QSqlQuery& queryInsertIntoDevicePlaylistTracks,
+        QMap<uint32_t, QString>& artistsMap,
+        QMap<uint32_t, QString>& albumsMap,
+        QMap<uint32_t, QString>& genresMap,
+        QMap<uint32_t, QString>& keysMap,
         QString devicePath,
         QString device,
         int audioFilesCount) {
@@ -288,17 +288,17 @@ void insertTrack(
 }
 
 void buildPlaylistTree(
-        QSqlDatabase &database,
-        TreeItem *parent,
+        QSqlDatabase& database,
+        TreeItem* parent,
         uint32_t parentID,
-        QMap<uint32_t, QString> &playlistNameMap,
-        QMap<uint32_t, bool> &playlistIsFolderMap,
-        QMap<uint32_t, QMap<uint32_t, uint32_t>> &playlistTreeMap,
-        QMap<uint32_t, QMap<uint32_t, uint32_t>> &playlistTrackMap,
+        QMap<uint32_t, QString>& playlistNameMap,
+        QMap<uint32_t, bool>& playlistIsFolderMap,
+        QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTreeMap,
+        QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTrackMap,
         QString playlistPath,
         QString device);
 
-QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *deviceItem) {
+QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* deviceItem) {
     QString device = deviceItem->getLabel();
     QString devicePath = deviceItem->getData().toList()[0].toString();
 
@@ -323,7 +323,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
     }
 
     //Give thread a low priority
-    QThread *thisThread = QThread::currentThread();
+    QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
     ScopedTransaction transaction(database);
@@ -387,69 +387,69 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
         //       bool done = false;
 
         for (
-                std::vector<rekordbox_pdb_t::table_t *>::iterator table = reckordboxDB.tables()->begin();
+                std::vector<rekordbox_pdb_t::table_t*>::iterator table = reckordboxDB.tables()->begin();
                 table != reckordboxDB.tables()->end();
                 ++table) {
             if ((*table)->type() == tableOrder[tableOrderIndex]) {
                 uint16_t lastIndex = (*table)->last_page()->index();
-                rekordbox_pdb_t::page_ref_t *currentRef = (*table)->first_page();
+                rekordbox_pdb_t::page_ref_t* currentRef = (*table)->first_page();
 
                 while (true) {
-                    rekordbox_pdb_t::page_t *page = currentRef->body();
+                    rekordbox_pdb_t::page_t* page = currentRef->body();
 
                     if (page->is_data_page()) {
                         for (
-                                std::vector<rekordbox_pdb_t::row_group_t *>::iterator rowGroup = page->row_groups()->begin();
+                                std::vector<rekordbox_pdb_t::row_group_t*>::iterator rowGroup = page->row_groups()->begin();
                                 rowGroup != page->row_groups()->end();
                                 ++rowGroup) {
                             for (
-                                    std::vector<rekordbox_pdb_t::row_ref_t *>::iterator rowRef = (*rowGroup)->rows()->begin();
+                                    std::vector<rekordbox_pdb_t::row_ref_t*>::iterator rowRef = (*rowGroup)->rows()->begin();
                                     rowRef != (*rowGroup)->rows()->end();
                                     ++rowRef) {
                                 if ((*rowRef)->present()) {
                                     switch (tableOrder[tableOrderIndex]) {
                                     case rekordbox_pdb_t::PAGE_TYPE_KEYS: {
                                         // Key found, update map
-                                        rekordbox_pdb_t::key_row_t *key =
-                                                static_cast<rekordbox_pdb_t::key_row_t *>((*rowRef)->body());
+                                        rekordbox_pdb_t::key_row_t* key =
+                                                static_cast<rekordbox_pdb_t::key_row_t*>((*rowRef)->body());
                                         keysMap[key->id()] = getText(key->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_GENRES: {
                                         // Genre found, update map
-                                        rekordbox_pdb_t::genre_row_t *genre =
-                                                static_cast<rekordbox_pdb_t::genre_row_t *>((*rowRef)->body());
+                                        rekordbox_pdb_t::genre_row_t* genre =
+                                                static_cast<rekordbox_pdb_t::genre_row_t*>((*rowRef)->body());
                                         genresMap[genre->id()] = getText(genre->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ARTISTS: {
                                         // Artist found, update map
-                                        rekordbox_pdb_t::artist_row_t *artist =
-                                                static_cast<rekordbox_pdb_t::artist_row_t *>((*rowRef)->body());
+                                        rekordbox_pdb_t::artist_row_t* artist =
+                                                static_cast<rekordbox_pdb_t::artist_row_t*>((*rowRef)->body());
                                         artistsMap[artist->id()] = getText(artist->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ALBUMS: {
                                         // Album found, update map
-                                        rekordbox_pdb_t::album_row_t *album =
-                                                static_cast<rekordbox_pdb_t::album_row_t *>((*rowRef)->body());
+                                        rekordbox_pdb_t::album_row_t* album =
+                                                static_cast<rekordbox_pdb_t::album_row_t*>((*rowRef)->body());
                                         albumsMap[album->id()] = getText(album->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES: {
                                         // Playlist to track mapping found, update map
-                                        rekordbox_pdb_t::playlist_entry_row_t *playlistEntry =
-                                                static_cast<rekordbox_pdb_t::playlist_entry_row_t *>((*rowRef)->body());
+                                        rekordbox_pdb_t::playlist_entry_row_t* playlistEntry =
+                                                static_cast<rekordbox_pdb_t::playlist_entry_row_t*>((*rowRef)->body());
                                         playlistTrackMap[playlistEntry->playlist_id()][playlistEntry->entry_index()] =
                                                 playlistEntry->track_id();
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_TRACKS: {
                                         // Track found, insert into database
                                         insertTrack(
-                                                database, static_cast<rekordbox_pdb_t::track_row_t *>((*rowRef)->body()), query, queryInsertIntoDevicePlaylistTracks, artistsMap, albumsMap, genresMap, keysMap, devicePath, device, audioFilesCount);
+                                                database, static_cast<rekordbox_pdb_t::track_row_t*>((*rowRef)->body()), query, queryInsertIntoDevicePlaylistTracks, artistsMap, albumsMap, genresMap, keysMap, devicePath, device, audioFilesCount);
 
                                         audioFilesCount++;
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_TREE: {
                                         // Playlist tree node found, update map
-                                        rekordbox_pdb_t::playlist_tree_row_t *playlistTree =
-                                                static_cast<rekordbox_pdb_t::playlist_tree_row_t *>((*rowRef)->body());
+                                        rekordbox_pdb_t::playlist_tree_row_t* playlistTree =
+                                                static_cast<rekordbox_pdb_t::playlist_tree_row_t*>((*rowRef)->body());
 
                                         playlistNameMap[playlistTree->id()] = getText(playlistTree->name());
                                         playlistIsFolderMap[playlistTree->id()] = playlistTree->is_folder();
@@ -489,13 +489,13 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem *dev
 }
 
 void buildPlaylistTree(
-        QSqlDatabase &database,
-        TreeItem *parent,
+        QSqlDatabase& database,
+        TreeItem* parent,
         uint32_t parentID,
-        QMap<uint32_t, QString> &playlistNameMap,
-        QMap<uint32_t, bool> &playlistIsFolderMap,
-        QMap<uint32_t, QMap<uint32_t, uint32_t>> &playlistTreeMap,
-        QMap<uint32_t, QMap<uint32_t, uint32_t>> &playlistTrackMap,
+        QMap<uint32_t, QString>& playlistNameMap,
+        QMap<uint32_t, bool>& playlistIsFolderMap,
+        QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTreeMap,
+        QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTrackMap,
         QString playlistPath,
         QString device) {
     for (uint32_t childIndex = 0; childIndex < (uint32_t)playlistTreeMap[parentID].size(); childIndex++) {
@@ -509,7 +509,7 @@ void buildPlaylistTree(
         data << currentPath;
         data << IS_NOT_RECORDBOX_DEVICE;
 
-        TreeItem *child = parent->appendChild(playlistItemName, QVariant(data));
+        TreeItem* child = parent->appendChild(playlistItemName, QVariant(data));
 
         // Create a playlist for this child
         QSqlQuery queryInsertIntoPlaylist(database);
@@ -589,7 +589,7 @@ void buildPlaylistTree(
     }
 }
 
-void clearDeviceTables(QSqlDatabase &database, TreeItem *child) {
+void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     ScopedTransaction transaction(database);
 
     int trackID = -1;
@@ -654,13 +654,13 @@ void clearDeviceTables(QSqlDatabase &database, TreeItem *child) {
 
 } // anonymous namespace
 
-RekordboxPlaylistModel::RekordboxPlaylistModel(QObject *parent,
-        TrackCollection *trackCollection,
+RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
+        TrackCollection* trackCollection,
         QSharedPointer<BaseTrackCache> trackSource)
         : BaseExternalPlaylistModel(parent, trackCollection, "mixxx.db.model.rekordbox.playlistmodel", "rekordbox_playlists", "rekordbox_playlist_tracks", trackSource) {
 }
 
-TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex &index) const {
+TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     qDebug() << "RekordboxTrackModel::getTrack";
 
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
@@ -685,7 +685,7 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-RekordboxFeature::RekordboxFeature(QObject *parent, TrackCollection *trackCollection)
+RekordboxFeature::RekordboxFeature(QObject* parent, TrackCollection* trackCollection)
         : BaseExternalLibraryFeature(parent, trackCollection),
           m_pTrackCollection(trackCollection),
           m_icon(":/images/library/ic_library_rekordbox.svg") {
@@ -728,21 +728,13 @@ RekordboxFeature::RekordboxFeature(QObject *parent, TrackCollection *trackCollec
 
     m_title = tr("Rekordbox");
 
-    m_database = QSqlDatabase::cloneDatabase(trackCollection->database(),
-            "REKORDBOX_SCANNER");
-
-    //Open the database connection in this thread.
-    if (!m_database.open()) {
-        qDebug() << "Failed to open database for Rekordbox scanner."
-                 << m_database.lastError();
-    } else {
-        //Clear any previous Rekordbox device entries if they exist
-        ScopedTransaction transaction(m_database);
-        clearTable(m_database, "rekordbox_playlist_tracks");
-        clearTable(m_database, "rekordbox_library");
-        clearTable(m_database, "rekordbox_playlists");
-        transaction.commit();
-    }
+    //Clear any previous Rekordbox device entries if they exist
+    QSqlDatabase database = m_pTrackCollection->database();
+    ScopedTransaction transaction(database);
+    clearTable(database, "rekordbox_playlist_tracks");
+    clearTable(database, "rekordbox_library");
+    clearTable(database, "rekordbox_playlists");
+    transaction.commit();
 
     connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
     connect(&m_tracksFutureWatcher, SIGNAL(finished()), this, SLOT(onTracksFound()));
@@ -751,23 +743,22 @@ RekordboxFeature::RekordboxFeature(QObject *parent, TrackCollection *trackCollec
 }
 
 RekordboxFeature::~RekordboxFeature() {
-    m_database.close();
     m_devicesFuture.waitForFinished();
     m_tracksFuture.waitForFinished();
     delete m_pRekordboxPlaylistModel;
 }
 
-void RekordboxFeature::bindWidget(WLibrary *libraryWidget,
-        KeyboardEventFilter *keyboard) {
+void RekordboxFeature::bindWidget(WLibrary* libraryWidget,
+        KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
-    WLibraryTextBrowser *edit = new WLibraryTextBrowser(libraryWidget);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
     libraryWidget->registerView("REKORDBOXHOME", edit);
 }
 
-void RekordboxFeature::htmlLinkClicked(const QUrl &link) {
+void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "refresh") {
         activate();
     } else {
@@ -775,8 +766,8 @@ void RekordboxFeature::htmlLinkClicked(const QUrl &link) {
     }
 }
 
-BaseSqlTableModel *RekordboxFeature::getPlaylistModelForPlaylist(QString playlist) {
-    RekordboxPlaylistModel *model = new RekordboxPlaylistModel(this, m_pTrackCollection, m_trackSource);
+BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pTrackCollection, m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }
@@ -793,7 +784,7 @@ bool RekordboxFeature::isSupported() {
     return true;
 }
 
-TreeItemModel *RekordboxFeature::getChildModel() {
+TreeItemModel* RekordboxFeature::getChildModel() {
     return &m_childModel;
 }
 
@@ -820,15 +811,6 @@ void RekordboxFeature::refreshLibraryModels() {
 void RekordboxFeature::activate() {
     qDebug() << "RekordboxFeature::activate()";
 
-    // Usually the maximum number of threads
-    // is > 2 depending on the CPU cores
-    // Unfortunately, within VirtualBox
-    // the maximum number of allowed threads
-    // is 1 at all times We'll need to increase
-    // the number to > 1, otherwise importing the music collection
-    // takes place when the GUI threads terminates, i.e., on
-    // Mixxx shutdown.
-    QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
     // Let a worker thread do the XML parsing
     m_devicesFuture = QtConcurrent::run(findRekordboxDevices, this);
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
@@ -840,12 +822,12 @@ void RekordboxFeature::activate() {
     emit(switchToView("REKORDBOXHOME"));
 }
 
-void RekordboxFeature::activateChild(const QModelIndex &index) {
+void RekordboxFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid())
         return;
 
     //access underlying TreeItem object
-    TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (!(item && item->getData().isValid())) {
         return;
     }
@@ -866,17 +848,8 @@ void RekordboxFeature::activateChild(const QModelIndex &index) {
     if (doParseDeviceDB) {
         qDebug() << "Parse Rekordbox Device DB: " << playlist;
 
-        // Usually the maximum number of threads
-        // is > 2 depending on the CPU cores
-        // Unfortunately, within VirtualBox
-        // the maximum number of allowed threads
-        // is 1 at all times We'll need to increase
-        // the number to > 1, otherwise importing the music collection
-        // takes place when the GUI threads terminates, i.e., on
-        // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
-        m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library *>(parent())->dbConnectionPool(), item);
+        m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library*>(parent())->dbConnectionPool(), item);
         m_tracksFutureWatcher.setFuture(m_tracksFuture);
 
         // This device is now a playlist element, future activations should treat is
@@ -891,15 +864,17 @@ void RekordboxFeature::activateChild(const QModelIndex &index) {
 }
 
 void RekordboxFeature::onRekordboxDevicesFound() {
-    QList<TreeItem *> foundDevices = m_devicesFuture.result();
-    TreeItem *root = m_childModel.getRootItem();
+    QList<TreeItem*> foundDevices = m_devicesFuture.result();
+    TreeItem* root = m_childModel.getRootItem();
+
+    QSqlDatabase database = m_pTrackCollection->database();
 
     if (foundDevices.size() == 0) {
         // No Rekordbox devices found
-        ScopedTransaction transaction(m_database);
-        clearTable(m_database, "rekordbox_playlist_tracks");
-        clearTable(m_database, "rekordbox_library");
-        clearTable(m_database, "rekordbox_playlists");
+        ScopedTransaction transaction(database);
+        clearTable(database, "rekordbox_playlist_tracks");
+        clearTable(database, "rekordbox_library");
+        clearTable(database, "rekordbox_playlists");
         transaction.commit();
 
         if (root->childRows() > 0) {
@@ -908,11 +883,11 @@ void RekordboxFeature::onRekordboxDevicesFound() {
         }
     } else {
         for (int deviceIndex = 0; deviceIndex < root->childRows(); deviceIndex++) {
-            TreeItem *child = root->child(deviceIndex);
+            TreeItem* child = root->child(deviceIndex);
             bool removeChild = true;
 
             for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-                TreeItem *deviceFound = foundDevices[foundDeviceIndex];
+                TreeItem* deviceFound = foundDevices[foundDeviceIndex];
 
                 if (deviceFound->getLabel() == child->getLabel()) {
                     removeChild = false;
@@ -922,20 +897,20 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
             if (removeChild) {
                 // Device has since been unmounted, cleanup DB
-                clearDeviceTables(m_database, child);
+                clearDeviceTables(database, child);
 
                 m_childModel.removeRows(deviceIndex, 1);
             }
         }
 
-        QList<TreeItem *> childrenToAdd;
+        QList<TreeItem*> childrenToAdd;
 
         for (int foundDeviceIndex = 0; foundDeviceIndex < foundDevices.size(); foundDeviceIndex++) {
-            TreeItem *deviceFound = foundDevices[foundDeviceIndex];
+            TreeItem* deviceFound = foundDevices[foundDeviceIndex];
             bool addNewChild = true;
 
             for (int deviceIndex = 0; deviceIndex < root->childRows(); deviceIndex++) {
-                TreeItem *child = root->child(deviceIndex);
+                TreeItem* child = root->child(deviceIndex);
 
                 if (deviceFound->getLabel() == child->getLabel()) {
                     // This device already exists in the TreeModel, don't add or parse is again

@@ -154,7 +154,9 @@ Library::Library(
     // dynamically appear/disappear when correctly prepared removable devices
     // are mounted/unmounted would be to have some form of timed thread to check
     // periodically. Not ideal perfomance wise.
-    addFeature(new RekordboxFeature(this, m_pTrackCollection));
+    if (pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
+        addFeature(new RekordboxFeature(this, m_pTrackCollection));
+    }
 
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
