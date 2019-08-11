@@ -17,8 +17,9 @@ XoneK2.layerButtonColors = {
     green: 0x14,
 }
 XoneK2.deckBottomButtonLayers = [
-    { name: 'loop', layerButtonNoteNumber: XoneK2.layerButtonColors.amber },
-    { name: 'hotcue', layerButtonNoteNumber: XoneK2.layerButtonColors.red } ];
+    { name: 'loop', layerButtonNoteNumber: XoneK2.layerButtonColors.green },
+    { name: 'intro_outro', layerButtonNoteNumber: XoneK2.layerButtonColors.amber },
+    { name: 'hotcue', layerButtonNoteNumber: XoneK2.layerButtonColors.red }, ];
 
 // Multiple K2s/K1s can be connected via X-Link and plugged in with one USB
 // cable. The MIDI messages of the controllers can be distinguished by setting
@@ -487,6 +488,48 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         trigger: function() {
             this.send(this.on);
         },
+        color: XoneK2.color.amber,
+    });
+
+    this.bottomButtonLayers.intro_outro = new components.ComponentContainer();
+    this.bottomButtonLayers.intro_outro[1] = new components.Button({
+        unshift: function () {
+            this.inKey = 'intro_start_activate';
+        },
+        shift: function () {
+            this.inKey = 'intro_start_clear';
+        },
+        outKey: 'intro_start_enabled',
+        color: XoneK2.color.amber,
+    });
+    this.bottomButtonLayers.intro_outro[2] = new components.Button({
+        unshift: function () {
+            this.inKey = 'intro_end_activate';
+        },
+        shift: function () {
+            this.inKey = 'intro_end_clear';
+        },
+        outKey: 'intro_end_enabled',
+        color: XoneK2.color.amber,
+    });
+    this.bottomButtonLayers.intro_outro[3] = new components.Button({
+        unshift: function () {
+            this.inKey = 'outro_start_activate';
+        },
+        shift: function () {
+            this.inKey = 'outro_start_clear';
+        },
+        outKey: 'outro_start_enabled',
+        color: XoneK2.color.amber,
+    });
+    this.bottomButtonLayers.intro_outro[4] = new components.Button({
+        unshift: function () {
+            this.inKey = 'outro_end_activate';
+        },
+        shift: function () {
+            this.inKey = 'outro_end_clear';
+        },
+        outKey: 'outro_end_enabled',
         color: XoneK2.color.amber,
     });
 
