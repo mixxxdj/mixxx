@@ -263,21 +263,21 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         unshift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                engine.setValue(this.group, "jog", direction);
+                var gain = engine.getValue(this.group, "pregain");
+                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
             };
         },
         shift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var pitch = engine.getValue(this.group, "pitch");
-                engine.setValue(this.group, "pitch", pitch + (.05 * direction));
+                engine.setValue(this.group, "jog", direction);
             };
         },
         supershift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var gain = engine.getValue(this.group, "pregain");
-                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
+                var pitch = engine.getValue(this.group, "pitch");
+                engine.setValue(this.group, "pitch", pitch + (.05 * direction));
             };
         },
     });
@@ -285,15 +285,15 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
     this.encoderPress = new components.Button({
         outKey: 'sync_enabled',
         unshift: function () {
+            this.inKey = 'pregain_set_one';
+            this.type = components.Button.prototype.types.push;
+        },
+        shift: function () {
             this.inKey = 'sync_enabled';
             this.type = components.Button.prototype.types.toggle;
         },
-        shift: function () {
-            this.inKey = 'reset_key';
-            this.type = components.Button.prototype.types.push;
-        },
         supershift: function () {
-            this.inKey = 'pregain_set_one';
+            this.inKey = 'reset_key';
             this.type = components.Button.prototype.types.push;
         },
     });
