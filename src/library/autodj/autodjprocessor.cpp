@@ -884,7 +884,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
         bool fadeNow,
         bool seekToStartPoint) {
-    if (pFromDeck == nullptr) {
+    if (pFromDeck == nullptr || pToDeck == nullptr) {
         return;
     }
 
