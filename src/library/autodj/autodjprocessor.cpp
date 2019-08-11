@@ -978,6 +978,51 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     getFirstSoundPosition(pToDeck));
         }
         break;
+    case TransitionMode::AlignIntroOutroStart:
+        // Use the outro or intro length for the transition time, whichever is
+        // shorter. If the outro is longer than the intro, cut off the end
+        // of the outro.
+        //
+        // In the diagrams below,
+        // - is part of a track outside the outro/intro,
+        // o is part of the outro
+        // i is part of the intro
+        // | marks the boundaries of the transition
+        //
+        // When outro > intro:
+        // ------|ooo|ooo
+        //       |iii|------
+        //
+        // When outro < intro:
+        // ------|ooo|
+        //       |iii|iii-----
+        //
+        // If only the outro or intro length is marked but not both, use the one
+        // that is marked for the transition time. If neither is marked, fall
+        // back to the transition time from the spinbox.
+        if (outroLength > 0 && introLength > 0) {
+            pFromDeck->fadeBeginPos = outroStart;
+            if (outroLength > introLength) {
+                // Cut off end of outro
+                pFromDeck->fadeEndPos = outroStart + introLength;
+            } else {
+                pFromDeck->fadeEndPos = outroEnd;
+            }
+            pToDeck->startPos = introStart;
+        } else if (outroLength > 0 && introLength <= 0) {
+            pFromDeck->fadeBeginPos = outroStart;
+            pFromDeck->fadeEndPos = outroEnd;
+            pToDeck->startPos = introStart;
+        } else if (introLength > 0 && outroLength <= 0) {
+            pFromDeck->fadeBeginPos = outroEnd - introLength;
+            pFromDeck->fadeEndPos = outroEnd;
+            pToDeck->startPos = introStart;
+        } else {
+            useFixedFadeTime(pFromDeck, pToDeck,
+                    getLastSoundPosition(pFromDeck),
+                    getFirstSoundPosition(pToDeck));
+        }
+        break;
     case TransitionMode::FixedSkipSilence:
         if (fadeNow) {
             useFixedFadeTime(pFromDeck,
