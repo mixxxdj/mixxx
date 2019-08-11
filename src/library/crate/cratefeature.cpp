@@ -210,7 +210,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
         m_pTrackCollection->unhideTracks(trackIds);
     } else {
         // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files);
     }
     qDebug() << "CrateFeature::dropAcceptChild adding tracks"
             << trackIds.size() << " to crate "<< crateId;

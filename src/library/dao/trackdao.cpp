@@ -688,8 +688,7 @@ TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) 
 }
 
 QList<TrackId> TrackDAO::addMultipleTracks(
-        const QList<QFileInfo>& fileInfoList,
-        bool unremove) {
+        const QList<QFileInfo>& fileInfoList) {
     // Prepare to add tracks to the database.
     // This also begins an SQL transaction.
     addTracksPrepare();
@@ -717,29 +716,26 @@ QList<TrackId> TrackDAO::addMultipleTracks(
         index++;
     }
 
-    // If imported-playlist tracks are to be unremoved, do that for all playlist
-    // tracks that were already in the database.
-    if (unremove) {
-        query.prepare("SELECT library.id FROM playlist_import, "
-                      "track_locations, library WHERE library.location = track_locations.id "
-                      "AND playlist_import.location = track_locations.location");
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
+    // Unremove all playlist tracks, that were already in the database.
+    query.prepare("SELECT library.id FROM playlist_import, "
+                  "track_locations, library WHERE library.location = track_locations.id "
+                  "AND playlist_import.location = track_locations.location");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
-        int idColumn = query.record().indexOf("id");
-        QStringList idStringList;
-        while (query.next()) {
-            TrackId trackId(query.value(idColumn));
-            idStringList.append(trackId.toString());
-        }
+    int idColumn = query.record().indexOf("id");
+    QStringList idStringList;
+    while (query.next()) {
+        TrackId trackId(query.value(idColumn));
+        idStringList.append(trackId.toString());
+    }
 
-        query.prepare(QString("UPDATE library SET mixxx_deleted=0 "
-                              "WHERE id in (%1) AND mixxx_deleted=1")
-                      .arg(idStringList.join(",")));
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
+    query.prepare(QString("UPDATE library SET mixxx_deleted=0 "
+                          "WHERE id in (%1) AND mixxx_deleted=1")
+                  .arg(idStringList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
     }
 
     // Any tracks not already in the database need to be added.
@@ -753,7 +749,7 @@ QList<TrackId> TrackDAO::addMultipleTracks(
     while (query.next()) {
         int addIndex = query.value(addIndexColumn).toInt();
         const QFileInfo fileInfo(fileInfoList.at(addIndex));
-        addTracksAddFile(fileInfo, unremove);
+        addTracksAddFile(fileInfo, true);
     }
 
     // Now that we have imported any tracks that were not already in the
@@ -768,7 +764,7 @@ QList<TrackId> TrackDAO::addMultipleTracks(
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-    int idColumn = query.record().indexOf("id");
+    idColumn = query.record().indexOf("id");
     while (query.next()) {
         TrackId trackId(query.value(idColumn));
         trackIds.append(trackId);

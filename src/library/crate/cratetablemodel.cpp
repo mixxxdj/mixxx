@@ -154,7 +154,7 @@ int CrateTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true));
+    QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList));
     if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
         select();
         return trackIds.size();

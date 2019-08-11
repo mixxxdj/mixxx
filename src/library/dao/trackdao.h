@@ -51,7 +51,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QString getTrackLocation(TrackId trackId);
 
     TrackPointer addSingleTrack(const QFileInfo& fileInfo, bool unremove);
-    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList);
 
     void addTracksPrepare();
     TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
