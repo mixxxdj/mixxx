@@ -159,7 +159,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotDisallowTrackLoadToPlayingDeckCheckbox(bool)));
 
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
-    comboBoxLoadPoint->addItem(tr("Intro end"), static_cast<int>(SeekOnLoadMode::IntroEnd));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
     comboBoxLoadPoint->addItem(tr("Beginning of track"), static_cast<int>(SeekOnLoadMode::Beginning));
