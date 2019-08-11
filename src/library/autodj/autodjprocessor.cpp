@@ -644,6 +644,15 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
 bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool play) {
     TrackPointer nextTrack = getNextTrackFromQueue();
 
+    // Don't try to mix a track into itself. This can get AutoDJ into a weird
+    // state when combined with the deck cloning feature. This situation can
+    // happen if the user repeatedly presses the "Skip track" button with the
+    // repeat playlist feature enabled.
+    if (nextTrack == getOtherDeck(&deck)->getLoadedTrack()) {
+        removeTrackFromTopOfQueue(nextTrack);
+        nextTrack = getNextTrackFromQueue();
+    }
+
     // We ran out of tracks in the queue.
     if (!nextTrack) {
         // Disable AutoDJ.
@@ -1262,7 +1271,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     }
 }
 
-DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
+DeckAttributes* AutoDJProcessor::getOtherDeck(const DeckAttributes* pThisDeck,
                                               bool playing) {
     DeckAttributes* pOtherDeck = NULL;
     if (pThisDeck->isLeft()) {
