@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
+import sys
+
 from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
@@ -208,10 +211,8 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        import sys
         if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
                 try:
                     core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
                 finally:

@@ -34,6 +34,7 @@ selection method.
 
 import os.path
 import re
+import subprocess
 import sys
 
 import SCons.Action
@@ -543,7 +544,6 @@ def _find_qtdirs(qt5dir, module):
     QT5INCDIR = os.path.join(qt5dir,"includedir")
     if sys.platform.startswith('linux'):
         if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-            import subprocess
             try:
                 if not module in ["Qt5DBus", "Qt5Assistant"]:
                     module5 = module.replace('Qt','Qt5')

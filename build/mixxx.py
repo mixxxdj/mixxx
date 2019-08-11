@@ -3,11 +3,13 @@
 from __future__ import with_statement
 
 import logging
-import platform
-import sys
 import os
+import platform
 import re
+import shlex
 import shutil
+import subprocess
+import sys
 
 import SCons
 from SCons import Script
@@ -158,7 +160,6 @@ class MixxxBuild(object):
         if not os.path.isdir(default_qtdir) and self.platform == 'linux':
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
                 try:
-                    import subprocess
                     pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
                     default_qtdir = subprocess.check_output(pkg_config_cmd).decode()
                 finally:
@@ -216,8 +217,6 @@ class MixxxBuild(object):
             self.compiler_is_gcc = False
             self.compiler_is_clang = False
         else:
-            import shlex
-            import subprocess
             cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
             cc_version = subprocess.check_output(cc_version_cmd).decode()
             self.compiler_is_gcc = 'gcc' in cc_version.lower()
