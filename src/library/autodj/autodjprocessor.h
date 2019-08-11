@@ -116,6 +116,7 @@ class DeckAttributes : public QObject {
     double startPos; // Set in toDeck nature
     double fadeBeginPos; // set in fromDeck nature
     double fadeEndPos; // set in fromDeck nature
+    bool isFromDeck;
     bool loading; // The data is inconsistent during loading a deck
 
   private:

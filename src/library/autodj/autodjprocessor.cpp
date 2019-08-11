@@ -26,6 +26,7 @@ DeckAttributes::DeckAttributes(int index,
           startPos(kKeepPosition),
           fadeBeginPos(1.0),
           fadeEndPos(1.0),
+          isFromDeck(false),
           loading(false),
           m_orientation(orientation),
           m_playPos(group, "playposition"),
@@ -545,7 +546,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // - transition into fading mode, play the other deck and fade to it.
     // - check if fading is done and stop the deck
     // - update the crossfader
-    if (thisPlayPosition >= thisDeck.fadeBeginPos) {
+    if (thisPlayPosition >= thisDeck.fadeBeginPos && thisDeck.isFromDeck) {
         if (m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 if (!otherDeckPlaying) {
@@ -711,20 +712,16 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     return true;
 }
 
-void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playing) {
+void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) {
     if (sDebug) {
-        qDebug() << this << "playerPlayChanged" << pAttributes->group << playing;
+        qDebug() << this << "playerPlayChanged" << thisDeck->group << playing;
     }
-    // We may want to do more than just calculate fade thresholds when playing
-    // state changes so keep these two as separate methods for now.
+    // In case both decks were stopped and now this one just started, make this
+    // deck the "from deck".
+    if (playing && !getOtherDeck(thisDeck)->isPlaying()) {
+        calculateTransition(thisDeck, getOtherDeck(thisDeck), false, false);
+    }
 
-    // This will calculate the Transition to the already loaded, in most cases
-    // already played other track.
-    // This is required because the user may have loaded a track or changed play
-    // manually
-    if (playing) {
-        calculateTransition(pAttributes, getOtherDeck(pAttributes), false, false);
-    }
 }
 
 void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, double position) {
@@ -732,8 +729,15 @@ void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, doubl
         qDebug() << this << "playerIntroStartChanged" << pAttributes->group << position;
     }
 
+    DeckAttributes* fromDeck;
+    if (pAttributes->isFromDeck) {
+        fromDeck = pAttributes;
+    } else {
+        fromDeck = getOtherDeck(pAttributes);
+    }
+
     if (!pAttributes->loading && !pAttributes->isPlaying()) {
-        calculateTransition(getOtherDeck(pAttributes, true), pAttributes, false, false);
+        calculateTransition(fromDeck, getOtherDeck(fromDeck, true), false, false);
     }
 }
 
@@ -742,8 +746,15 @@ void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double 
         qDebug() << this << "playerIntroEndChanged" << pAttributes->group << position;
     }
 
+    DeckAttributes* fromDeck;
+    if (pAttributes->isFromDeck) {
+        fromDeck = pAttributes;
+    } else {
+        fromDeck = getOtherDeck(pAttributes);
+    }
+
     if (!pAttributes->loading && !pAttributes->isPlaying()) {
-        calculateTransition(getOtherDeck(pAttributes, true), pAttributes, false, false);
+        calculateTransition(fromDeck, getOtherDeck(fromDeck, true), false, false);
     }
 }
 
@@ -752,8 +763,15 @@ void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, doubl
         qDebug() << this << "playerOutroStartChanged" << pAttributes->group << position;
     }
 
+    DeckAttributes* fromDeck;
+    if (pAttributes->isFromDeck) {
+        fromDeck = pAttributes;
+    } else {
+        fromDeck = getOtherDeck(pAttributes);
+    }
+
     if (!pAttributes->loading && pAttributes->isPlaying()) {
-        calculateTransition(pAttributes, getOtherDeck(pAttributes, false), false, false);
+        calculateTransition(fromDeck, getOtherDeck(fromDeck, false), false, false);
     }
 }
 
@@ -762,8 +780,15 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
         qDebug() << this << "playerOutroEndChanged" << pAttributes->group << position;
     }
 
+    DeckAttributes* fromDeck;
+    if (pAttributes->isFromDeck) {
+        fromDeck = pAttributes;
+    } else {
+        fromDeck = getOtherDeck(pAttributes);
+    }
+
     if (!pAttributes->loading && pAttributes->isPlaying()) {
-        calculateTransition(pAttributes, getOtherDeck(pAttributes, false), false, false);
+        calculateTransition(fromDeck, getOtherDeck(fromDeck, false), false, false);
     }
 }
 
@@ -1049,6 +1074,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->fadeBeginPos /= fromTrackDuration;
     pFromDeck->fadeEndPos /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
+
+    pFromDeck->isFromDeck = true;
+    pToDeck->isFromDeck = false;
 
     DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1);
 
