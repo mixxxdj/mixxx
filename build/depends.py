@@ -2,7 +2,6 @@
 
 import os
 import subprocess
-import sys
 
 from . import util
 from .mixxx import Dependence, Feature
