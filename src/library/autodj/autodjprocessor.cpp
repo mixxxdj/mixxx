@@ -586,6 +586,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             m_transitionProgress = 1.0;
         } else {
             // We are in Fading state.
+
+            // The math below will not work with a transition time of 0.
+            if (thisDeck.fadeBeginPos == thisDeck.fadeEndPos) {
+                setCrossfader(crossfaderTarget);
+                m_transitionProgress = 1.0;
+                return;
+            }
+
             // Calculate the current transitionProgress, the place between begin
             // and end position and the step we have taken since the last call
             double transitionProgress = (thisPlayPosition - thisDeck.fadeBeginPos) /
