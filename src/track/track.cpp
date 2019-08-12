@@ -653,7 +653,6 @@ void Track::setCuePoint(CuePosition cue) {
 
     // Store the cue point in a load cue
     CuePointer pLoadCue = findCueByType(Cue::Type::MainCue);
-    Cue::Source source = cue.getSource();
     double position = cue.getPosition();
     if (position != 0.0 && position != -1.0) {
         if (!pLoadCue) {
@@ -666,7 +665,6 @@ void Track::setCuePoint(CuePosition cue) {
             m_cuePoints.push_back(pLoadCue);
         }
         pLoadCue->setPosition(position);
-        pLoadCue->setSource(source);
     } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
@@ -764,7 +762,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
         if (pCue->getType() == Cue::Type::MainCue) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
+            m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
     markDirtyAndUnlock(&lock);

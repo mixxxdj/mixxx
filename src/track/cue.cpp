@@ -23,7 +23,6 @@ Cue::Cue(TrackId trackId)
         : m_bDirty(false),
           m_iId(-1),
           m_trackId(trackId),
-          m_source(Cue::Source::Unknown),
           m_type(Cue::Type::Invalid),
           m_samplePosition(-1.0),
           m_length(0.0),
@@ -33,12 +32,11 @@ Cue::Cue(TrackId trackId)
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, Cue::Source source, Cue::Type type, double position, double length,
+Cue::Cue(int id, TrackId trackId, Cue::Type type, double position, double length,
          int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
-          m_source(source),
           m_type(type),
           m_samplePosition(position),
           m_length(length),
@@ -69,19 +67,6 @@ TrackId Cue::getTrackId() const {
 void Cue::setTrackId(TrackId trackId) {
     QMutexLocker lock(&m_mutex);
     m_trackId = trackId;
-    m_bDirty = true;
-    lock.unlock();
-    emit(updated());
-}
-
-Cue::Source Cue::getSource() const {
-    QMutexLocker lock(&m_mutex);
-    return m_source;
-}
-
-void Cue::setSource(Cue::Source source) {
-    QMutexLocker lock(&m_mutex);
-    m_source = source;
     m_bDirty = true;
     lock.unlock();
     emit(updated());
@@ -190,6 +175,5 @@ double Cue::getEndPosition() const {
 }
 
 bool operator==(const CuePosition& lhs, const CuePosition& rhs) {
-    return lhs.getPosition() == rhs.getPosition() &&
-            lhs.getSource() == rhs.getSource();
+    return lhs.getPosition() == rhs.getPosition();
 }

@@ -10,8 +10,7 @@ constexpr float kSilenceThreshold = 0.001;
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
 bool shouldUpdateMainCue(CuePosition mainCue) {
-    return mainCue.getSource() != Cue::Source::Manual ||
-            mainCue.getPosition() == -1.0 ||
+    return mainCue.getPosition() == -1.0 ||
             mainCue.getPosition() == 0.0;
 }
 
@@ -23,16 +22,6 @@ bool hasOutroCueEnd(const Cue& outroCue) {
     return outroCue.getEndPosition() > 0.0;
 }
 
-bool needsIntroCueStart(const Cue& introCue) {
-    return introCue.getSource() != Cue::Source::Manual &&
-            !hasIntroCueStart(introCue);
-}
-
-bool needsOutroCueEnd(const Cue& outroCue) {
-    return outroCue.getSource() != Cue::Source::Manual &&
-            !hasOutroCueEnd(outroCue);
-}
-
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
@@ -41,7 +30,7 @@ bool shouldAnalyze(TrackPointer pTrack) {
     if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
         return true;
     }
-    return needsIntroCueStart(*pIntroCue) || needsOutroCueEnd(*pOutroCue);
+    return !hasIntroCueStart(*pIntroCue) || !hasOutroCueEnd(*pOutroCue);
 }
 
 } // anonymous namespace
@@ -117,16 +106,13 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     double outroEnd = mixxx::kAnalysisChannels * m_iSignalEnd;
 
     if (shouldUpdateMainCue(pTrack->getCuePoint())) {
-        pTrack->setCuePoint(CuePosition(introStart, Cue::Source::Automatic));
+        pTrack->setCuePoint(CuePosition(introStart));
     }
 
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
     if (!pIntroCue) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
-        pIntroCue->setSource(Cue::Source::Automatic);
-    }
-    if (pIntroCue->getSource() != Cue::Source::Manual) {
         pIntroCue->setPosition(introStart);
         pIntroCue->setLength(0.0);
     }
@@ -135,9 +121,6 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (!pOutroCue) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
-        pOutroCue->setSource(Cue::Source::Automatic);
-    }
-    if (pOutroCue->getSource() != Cue::Source::Manual) {
         pOutroCue->setPosition(-1.0);
         pOutroCue->setLength(outroEnd);
     }
@@ -146,7 +129,6 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (pAudibleSound == nullptr || pAudibleSound->getLength() <= 0) {
         pAudibleSound = pTrack->createAndAddCue();
         pAudibleSound->setType(Cue::Type::AudibleSound);
-        pAudibleSound->setSource(Cue::Source::Automatic);
         pAudibleSound->setPosition(introStart);
         pAudibleSound->setLength(outroEnd - introStart);
     }
