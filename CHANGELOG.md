@@ -11,7 +11,7 @@
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
 * Add mapping for Roland DJ-505
 
-## [2.2.2](https://launchpad.net/mixxx/+milestone/2.2.2) (2019-08-08)
+## [2.2.2](https://launchpad.net/mixxx/+milestone/2.2.2) (2019-08-10)
 
 * Fix battery widget with upower <= 0.99.7. #2221
 * Fix BPM adjust in BpmControl. lp:1836480
@@ -29,6 +29,7 @@
 * Fix FX1/2 buttons missing Mic unit in Deere (64 samplers). lp:1837716
 * Tango64: Re-enable 64 samplers. #2223
 * Numark DJ2Go re-enable note-off for deck A cue button. #2087
+* Replace Flanger with QuickEffect in keyboard mapping. #2233
 
 ## [2.2.1](https://launchpad.net/mixxx/+milestone/2.2.1) (2019-04-22)
 
