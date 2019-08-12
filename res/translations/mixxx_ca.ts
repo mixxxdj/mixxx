@@ -411,42 +411,42 @@
 <context>
     <name>BroadcastSettingsModel</name>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="126"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Enabled</source>
         <translation>Activat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="132"/>
         <source>Status</source>
         <translation>Estat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Disconnected</source>
         <translation>Desconnectat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connecting...</source>
         <translation>Connectant...</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Connected</source>
         <translation>Connectat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="184"/>
         <source>Failed</source>
         <translation>Fallada</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="187"/>
         <source>Unknown</source>
         <translation>Desconegut</translation>
     </message>
@@ -2405,12 +2405,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="462"/>
         <source>Deck %1 Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Botó d&apos;activació d&apos;efecte ràpid de la platina %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="463"/>
         <source>Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Botó d&apos;efecte ràpid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
@@ -5362,7 +5362,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="262"/>
         <source>Search-as-you-type timeout:</source>
-        <translation type="unfinished"/>
+        <translation>Temps d’espera a la cerca en escriure:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="272"/>
@@ -7069,17 +7069,17 @@ Habitualment dóna graelles de ritme més precises, però anirà pitjor en les p
 <context>
     <name>EffectSettingsModel</name>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="100"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
         <source>Visible</source>
         <translation>Visible</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="106"/>
         <source>Type</source>
         <translation>Tipus</translation>
     </message>
@@ -7195,7 +7195,7 @@ Habitualment dóna graelles de ritme més precises, però anirà pitjor en les p
 <context>
     <name>GLSLRGBWaveformWidget</name>
     <message>
-        <location filename="../../src/waveform/widgets/glslwaveformwidget.h" line="53"/>
+        <location filename="../../src/waveform/widgets/glslwaveformwidget.h" line="54"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
@@ -7334,7 +7334,7 @@ Habitualment dóna graelles de ritme més precises, però anirà pitjor en les p
         <translation>Mode segur activat</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1164"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1163"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -7343,57 +7343,57 @@ support.</source>
 OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2177"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2179"/>
         <source>activate</source>
         <translation>activa</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2182"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2184"/>
         <source>toggle</source>
         <translation>commuta</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2192"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2194"/>
         <source>right</source>
         <translation>dreta</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2197"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2199"/>
         <source>left</source>
         <translation>esquerra</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2202"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2204"/>
         <source>right small</source>
         <translation>dreta petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2207"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2209"/>
         <source>left small</source>
         <translation>esquerra petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2212"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2214"/>
         <source>up</source>
         <translation>amunt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2217"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2219"/>
         <source>down</source>
         <translation>avall</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2222"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2224"/>
         <source>up small</source>
         <translation>amunt petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2227"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2229"/>
         <source>down small</source>
         <translation>avall petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2260"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2262"/>
         <source>Shortcut</source>
         <translation>Drecera</translation>
     </message>
@@ -7559,52 +7559,52 @@ OpenGL.</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="362"/>
+        <location filename="../../src/mixxx.cpp" line="363"/>
         <source>Choose music library directory</source>
         <translation>Seleccioneu la carpeta de la biblioteca de música.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="866"/>
+        <location filename="../../src/mixxx.cpp" line="889"/>
         <source>Sound Device Busy</source>
         <translation>El dispositiu de so està ocupat</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="875"/>
+        <location filename="../../src/mixxx.cpp" line="898"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Torna-ho a provar&lt;/b&gt; després de tancar l&apos;altra aplicació o reconnectar el dispositiu d&apos;àudio</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="879"/>
-        <location filename="../../src/mixxx.cpp" line="906"/>
-        <location filename="../../src/mixxx.cpp" line="931"/>
+        <location filename="../../src/mixxx.cpp" line="902"/>
+        <location filename="../../src/mixxx.cpp" line="929"/>
+        <location filename="../../src/mixxx.cpp" line="954"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Reconfigura&lt;/b&gt; les opcions del dispositiu d&apos;àudio de Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="882"/>
-        <location filename="../../src/mixxx.cpp" line="909"/>
+        <location filename="../../src/mixxx.cpp" line="905"/>
+        <location filename="../../src/mixxx.cpp" line="932"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Obteniu &lt;b&gt;ajuda&lt;/b&gt; a la Vikipèdia de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="885"/>
-        <location filename="../../src/mixxx.cpp" line="912"/>
-        <location filename="../../src/mixxx.cpp" line="934"/>
+        <location filename="../../src/mixxx.cpp" line="908"/>
+        <location filename="../../src/mixxx.cpp" line="935"/>
+        <location filename="../../src/mixxx.cpp" line="957"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Surt&lt;/b&gt; del Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="825"/>
+        <location filename="../../src/mixxx.cpp" line="848"/>
         <source>Retry</source>
         <translation>Torna a provar</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="734"/>
+        <location filename="../../src/mixxx.cpp" line="757"/>
         <source>Cannot open database</source>
         <translation>No es pot obrir la base de dades</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="735"/>
+        <location filename="../../src/mixxx.cpp" line="758"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -7615,138 +7615,138 @@ El Mixxx necessita una implementació  QT amb suport de SQLite. Per favor, llegi
 Feu click a Acceptar per sortir.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="827"/>
-        <location filename="../../src/mixxx.cpp" line="942"/>
+        <location filename="../../src/mixxx.cpp" line="850"/>
+        <location filename="../../src/mixxx.cpp" line="965"/>
         <source>Reconfigure</source>
         <translation>Reconfigura</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="829"/>
+        <location filename="../../src/mixxx.cpp" line="852"/>
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="831"/>
-        <location filename="../../src/mixxx.cpp" line="944"/>
+        <location filename="../../src/mixxx.cpp" line="854"/>
+        <location filename="../../src/mixxx.cpp" line="967"/>
         <source>Exit</source>
         <translation>Surt</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="869"/>
-        <location filename="../../src/mixxx.cpp" line="898"/>
+        <location filename="../../src/mixxx.cpp" line="892"/>
+        <location filename="../../src/mixxx.cpp" line="921"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>El Mixxx no ha pogut obrir tots els dispositius de so configurats.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="895"/>
+        <location filename="../../src/mixxx.cpp" line="918"/>
         <source>Sound Device Error</source>
         <translation>Error del dispositiu de so</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="903"/>
+        <location filename="../../src/mixxx.cpp" line="926"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>&lt;b&gt;Reintenta&lt;/b&gt; després de corregir el problema</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="922"/>
+        <location filename="../../src/mixxx.cpp" line="945"/>
         <source>No Output Devices</source>
         <translation>No hi ha cap dispositiu de sortida</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="924"/>
+        <location filename="../../src/mixxx.cpp" line="947"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>S&apos;ha configurat el Mixxx sense cap dispositiu de so de sortida, per la qual cosa s&apos;inhabilitarà el processament d&apos;àudio.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="928"/>
+        <location filename="../../src/mixxx.cpp" line="951"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Continua&lt;/b&gt; sense cap sortida.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="940"/>
+        <location filename="../../src/mixxx.cpp" line="963"/>
         <source>Continue</source>
         <translation>Continua</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1080"/>
+        <location filename="../../src/mixxx.cpp" line="1103"/>
         <source>Load track to Deck %1</source>
         <translation>Carrega la pista a la platina %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1081"/>
+        <location filename="../../src/mixxx.cpp" line="1104"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>La platina %1 està reproduint una pista.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1083"/>
+        <location filename="../../src/mixxx.cpp" line="1106"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Esteu segur de voler carregar una nova pista?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1193"/>
+        <location filename="../../src/mixxx.cpp" line="1216"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>No hi ha cap dispositiu d&apos;entrada seleccionat per a aquest control de vinil.
 Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències de Maquinari de so.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1206"/>
+        <location filename="../../src/mixxx.cpp" line="1229"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>No hi ha cap dispositiu d&apos;entrada seleccionat per a aquest control de pas d&apos;audio.
 Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències de Maquinari de so.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1219"/>
+        <location filename="../../src/mixxx.cpp" line="1242"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>No hi ha cap dispositiu d&apos;entrada seleccionat per a aquest micròfon.
 Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències de Maquinari de so.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1296"/>
+        <location filename="../../src/mixxx.cpp" line="1319"/>
         <source>Error in skin file</source>
         <translation>Error en el fitxer d&apos;aparença</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1297"/>
+        <location filename="../../src/mixxx.cpp" line="1320"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>No es pot carregar l&apos;aparença seleccionada.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1414"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL Renderització Directa</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1392"/>
-        <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
-        <translation>La renderització Direct Rendering no està activada a la vostra màquina.&lt;br&gt;&lt;br&gt;Això significa que els gràfics d&apos;ona seran molt&lt;br&gt;&lt;b&gt;lents i poden fer anar molta CPU&lt;/b&gt;. Proveu de canviar&lt;br&gt;la configuració per activar OpenGL Direct Rendering, o desactiveu&lt;br&gt;els gràfics d&apos;ona a les preferències de Mixxx seleccionant&lt;br&gt;&quot;Buit&quot; al Tipus de forma d&apos;ona local, en la secció &quot;Gràfics d&apos;ona&quot;.&lt;br&gt;&lt;br&gt;AVÍS: Si feu anar una targeta NVIDIA,&lt;br&gt;és possible que la renderització per maquinari no es detecti, però no hauríeu&lt;br&gt;d&apos;experimentar un rendiment degradat.</translation>
+        <location filename="../../src/mixxx.cpp" line="1415"/>
+        <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1426"/>
-        <location filename="../../src/mixxx.cpp" line="1434"/>
-        <location filename="../../src/mixxx.cpp" line="1443"/>
+        <location filename="../../src/mixxx.cpp" line="1446"/>
+        <location filename="../../src/mixxx.cpp" line="1454"/>
+        <location filename="../../src/mixxx.cpp" line="1463"/>
         <source>Confirm Exit</source>
         <translation>Confirma la sortida</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1427"/>
+        <location filename="../../src/mixxx.cpp" line="1447"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Un plat està reproduint encara. Voleu sortir del Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1435"/>
+        <location filename="../../src/mixxx.cpp" line="1455"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Hi ha un reproductor de mostres que està reproduint. Segur que voleu sortir del Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <location filename="../../src/mixxx.cpp" line="1464"/>
         <source>The preferences window is still open.</source>
         <translation>La finestra de preferències està oberta encara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1445"/>
+        <location filename="../../src/mixxx.cpp" line="1465"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Descartar els canvis i sortir del Mixxx?</translation>
     </message>
@@ -7778,27 +7778,27 @@ Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències 
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="155"/>
-        <location filename="../../src/library/parserm3u.cpp" line="166"/>
+        <location filename="../../src/library/parserm3u.cpp" line="146"/>
+        <location filename="../../src/library/parserm3u.cpp" line="157"/>
         <source>Playlist Export Failed</source>
         <translation>La exportació de la llista de reproducció ha fallat</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="156"/>
+        <location filename="../../src/library/parserm3u.cpp" line="147"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>La ruta del fitxer conté caràcters no admesos a les llistes de reproducció m3u.
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="157"/>
+        <location filename="../../src/library/parserm3u.cpp" line="148"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>Prova d&apos;exporta-ho al format m3u8!
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="167"/>
+        <location filename="../../src/library/parserm3u.cpp" line="158"/>
         <source>Could not create file</source>
         <translation>No s&apos;ha pogut crear el fitxer</translation>
     </message>
@@ -7819,43 +7819,43 @@ Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències 
 <context>
     <name>PlaylistFeature</name>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="68"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="81"/>
         <source>Lock</source>
         <translation>Bloca els canvis</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="41"/>
-        <location filename="../../src/library/playlistfeature.cpp" line="236"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="54"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="278"/>
         <source>Playlists</source>
         <translation>Llistes de reproducció</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="68"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="81"/>
         <source>Unlock</source>
         <translation>Permet els canvis</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="237"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="279"/>
         <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
         <translation>Les llistes de reproducció són llistes ordenades de cançons que permeten planificar les vostres sessions de DJ.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="238"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="280"/>
         <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
         <translation>Alguns DJ preparen llistes de reproducció abans d&apos;actuar, però altres prefereixen fer-les en viu.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="239"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="281"/>
         <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you&apos;ve chosen to play.</source>
         <translation>Quan utilitzeu una llista de reproducció durant una sessió en viu, recordeu parar atenció a com reacciona l&apos;audiència a la música que heu decidit reproduir.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="240"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="282"/>
         <source>It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.</source>
         <translation>Pot ser necessari saltar algunes cançons preparades, o afegir-ne algunes de diferents per a mantenir la energia de la vostra audiència.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="241"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="283"/>
         <source>Create New Playlist</source>
         <translation>Crea una nova llista de reproducció</translation>
     </message>
@@ -9353,7 +9353,7 @@ Tot a la dreta: Al final del període</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="54"/>
-        <location filename="../../src/library/setlogfeature.cpp" line="343"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="367"/>
         <source>History</source>
         <translation>Historial</translation>
     </message>
@@ -9368,22 +9368,22 @@ Tot a la dreta: Al final del període</translation>
         <translation>Bloca els canvis</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="344"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="368"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
         <translation>La secció d&apos;històric manté automàticament una llista de les pistes que reproduïu en les vostres sessions de DJ.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="345"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="369"/>
         <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
         <translation>Això és útil per a recordar què va anar bé en les vostres sessions de DJ, compartir la llista de cançons de la sessió, o informar les reproduccions a les organizacions de drets d&apos;autor.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="346"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="370"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation>Cada cop que inicieu Mixxx, es crea una nova entrada d&apos;històric. Podeu esportar-la com a llista de reproducció en diferents formats, o reproduir-la de nou amb el DJ automàtic.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="347"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="371"/>
         <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
         <translation>Podeu unir l&apos;històric de la sessió actual amb l&apos;anterior fent clic al botó dret del ratolí i seleccionant &quot;Uneix amb l&apos;anterior&quot;</translation>
     </message>
@@ -9414,7 +9414,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
         <source>Error setting tls mode:</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha produït un error en configurar el mode tls:</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
@@ -9568,11 +9568,6 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
         <source>Filtered</source>
         <translation>Filtrat</translation>
-    </message>
-    <message>
-        <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
-        <source>Software</source>
-        <translation>Programari</translation>
     </message>
 </context>
 <context>
@@ -11185,7 +11180,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="392"/>
         <source>Changes the number of hotcue buttons displayed in the deck</source>
-        <translation type="unfinished"/>
+        <translation>Canvia el nombre de marques directes mostrades al reproductor</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="415"/>
@@ -11897,27 +11892,27 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
 <context>
     <name>VSyncThread</name>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="192"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="156"/>
         <source>Timer (Fallback)</source>
         <translation>Temporitzador (últim recurs)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="195"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="159"/>
         <source>MESA vblank_mode = 1</source>
         <translation>MESA vblank_mode = 1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="198"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="162"/>
         <source>Wait for Video sync</source>
         <translation>Espera la sincronització de vídeo</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="201"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="165"/>
         <source>Sync Control</source>
         <translation>Control de sincronització</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="204"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="168"/>
         <source>Free + 1 ms (for benchmark only)</source>
         <translation>Lliure + 1ms (només per a avaluació)</translation>
     </message>
@@ -12473,20 +12468,20 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="369"/>
+        <location filename="../../src/widget/woverview.cpp" line="371"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Preparat per reproduir, analitzant...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="372"/>
-        <location filename="../../src/widget/woverview.cpp" line="382"/>
+        <location filename="../../src/widget/woverview.cpp" line="374"/>
+        <location filename="../../src/widget/woverview.cpp" line="384"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Carregant la pista...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="376"/>
+        <location filename="../../src/widget/woverview.cpp" line="378"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalitzant...</translation>
@@ -12826,14 +12821,24 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="738"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="804"/>
         <source>(GLSL)</source>
         <translation>(GLSL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="740"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="806"/>
         <source>(GL)</source>
         <translation>(GL)</translation>
+    </message>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="816"/>
+        <source>(GLSL ES)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="818"/>
+        <source>(GL ES)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

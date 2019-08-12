@@ -86,7 +86,7 @@ QString formatMinutes(int minutes) {
 
 int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
     // See WDisplay::getActivePixmapIndex for more info on this.
-    int result = static_cast<int>(dPercentage * numPixmaps - 0.00001);
+    int result = static_cast<int>(dPercentage / 100.0 * numPixmaps);
     result = math_min(numPixmaps - 1, math_max(0, result));
     return result;
 }

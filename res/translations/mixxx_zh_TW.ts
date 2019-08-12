@@ -409,42 +409,42 @@
 <context>
     <name>BroadcastSettingsModel</name>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="126"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Enabled</source>
         <translation>啟用</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Name</source>
         <translation>名稱</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="132"/>
         <source>Status</source>
         <translation>狀態</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Disconnected</source>
         <translation>未連接</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connecting...</source>
         <translation>正在連線...</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Connected</source>
         <translation>已連線</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="184"/>
         <source>Failed</source>
         <translation>失敗</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="187"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
@@ -1278,7 +1278,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
         <source>Volume</source>
-        <translation>卷</translation>
+        <translation>音量</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
@@ -1505,7 +1505,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="113"/>
         <source>Sync Master</source>
-        <translation>同步大師</translation>
+        <translation>同步主要輸出</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="116"/>
@@ -7045,17 +7045,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectSettingsModel</name>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="100"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
         <source>Visible</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
         <source>Name</source>
         <translation>名稱</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="106"/>
         <source>Type</source>
         <translation>類型</translation>
     </message>
@@ -7171,7 +7171,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>GLSLRGBWaveformWidget</name>
     <message>
-        <location filename="../../src/waveform/widgets/glslwaveformwidget.h" line="53"/>
+        <location filename="../../src/waveform/widgets/glslwaveformwidget.h" line="54"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
@@ -7310,7 +7310,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>啟用安全模式</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1164"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1163"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -7318,57 +7318,57 @@ support.</source>
         <translation>沒有 OpenGL 支援。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2177"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2179"/>
         <source>activate</source>
         <translation>啟動</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2182"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2184"/>
         <source>toggle</source>
         <translation>切換</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2192"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2194"/>
         <source>right</source>
         <translation>權利</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2197"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2199"/>
         <source>left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2202"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2204"/>
         <source>right small</source>
         <translation>右小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2207"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2209"/>
         <source>left small</source>
         <translation>左小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2212"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2214"/>
         <source>up</source>
         <translation>向上</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2217"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2219"/>
         <source>down</source>
         <translation>向下</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2222"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2224"/>
         <source>up small</source>
         <translation>小了</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2227"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2229"/>
         <source>down small</source>
         <translation>下小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2260"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2262"/>
         <source>Shortcut</source>
         <translation>快捷方式</translation>
     </message>
@@ -7533,52 +7533,52 @@ support.</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="362"/>
+        <location filename="../../src/mixxx.cpp" line="363"/>
         <source>Choose music library directory</source>
         <translation>選擇音樂庫目錄</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="866"/>
+        <location filename="../../src/mixxx.cpp" line="889"/>
         <source>Sound Device Busy</source>
         <translation>聲音設備忙</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="875"/>
+        <location filename="../../src/mixxx.cpp" line="898"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>關閉其他應用程式或重新連接聲音設備後 &lt;b&gt;重試&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="879"/>
-        <location filename="../../src/mixxx.cpp" line="906"/>
-        <location filename="../../src/mixxx.cpp" line="931"/>
+        <location filename="../../src/mixxx.cpp" line="902"/>
+        <location filename="../../src/mixxx.cpp" line="929"/>
+        <location filename="../../src/mixxx.cpp" line="954"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;重新配置&lt;/b&gt;Mixxx 的聲音設備設置。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="882"/>
-        <location filename="../../src/mixxx.cpp" line="909"/>
+        <location filename="../../src/mixxx.cpp" line="905"/>
+        <location filename="../../src/mixxx.cpp" line="932"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>從 Mixxx Wiki 得到 &lt;b&gt;説明&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="885"/>
-        <location filename="../../src/mixxx.cpp" line="912"/>
-        <location filename="../../src/mixxx.cpp" line="934"/>
+        <location filename="../../src/mixxx.cpp" line="908"/>
+        <location filename="../../src/mixxx.cpp" line="935"/>
+        <location filename="../../src/mixxx.cpp" line="957"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;退出&lt;/b&gt;Mixxx。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="825"/>
+        <location filename="../../src/mixxx.cpp" line="848"/>
         <source>Retry</source>
         <translation>重試</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="734"/>
+        <location filename="../../src/mixxx.cpp" line="757"/>
         <source>Cannot open database</source>
         <translation>無法打開資料庫</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="735"/>
+        <location filename="../../src/mixxx.cpp" line="758"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -7589,138 +7589,138 @@ Mixxx 需要 qt 離散度與 SQLite 支援。請閱讀有關如何構建它的�
 按一下確定退出。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="827"/>
-        <location filename="../../src/mixxx.cpp" line="942"/>
+        <location filename="../../src/mixxx.cpp" line="850"/>
+        <location filename="../../src/mixxx.cpp" line="965"/>
         <source>Reconfigure</source>
         <translation>重新配置</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="829"/>
+        <location filename="../../src/mixxx.cpp" line="852"/>
         <source>Help</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="831"/>
-        <location filename="../../src/mixxx.cpp" line="944"/>
+        <location filename="../../src/mixxx.cpp" line="854"/>
+        <location filename="../../src/mixxx.cpp" line="967"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="869"/>
-        <location filename="../../src/mixxx.cpp" line="898"/>
+        <location filename="../../src/mixxx.cpp" line="892"/>
+        <location filename="../../src/mixxx.cpp" line="921"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx 無法打開所有設定好的聲音裝置。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="895"/>
+        <location filename="../../src/mixxx.cpp" line="918"/>
         <source>Sound Device Error</source>
         <translation>聲音裝置錯誤</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="903"/>
+        <location filename="../../src/mixxx.cpp" line="926"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="922"/>
+        <location filename="../../src/mixxx.cpp" line="945"/>
         <source>No Output Devices</source>
         <translation>沒有輸出裝置</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="924"/>
+        <location filename="../../src/mixxx.cpp" line="947"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx 是沒有任何輸出聲音設備配置的。沒有已配置的輸出裝置，將禁用音訊處理。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="928"/>
+        <location filename="../../src/mixxx.cpp" line="951"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;繼續&lt;/b&gt; 沒有任何產出。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="940"/>
+        <location filename="../../src/mixxx.cpp" line="963"/>
         <source>Continue</source>
         <translation>繼續</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1080"/>
+        <location filename="../../src/mixxx.cpp" line="1103"/>
         <source>Load track to Deck %1</source>
         <translation>負荷跟蹤到甲板 %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1081"/>
+        <location filename="../../src/mixxx.cpp" line="1104"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>甲板 %1 當前播放的曲目。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1083"/>
+        <location filename="../../src/mixxx.cpp" line="1106"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>你確定你想要載入一個新的軌道？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1193"/>
+        <location filename="../../src/mixxx.cpp" line="1216"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>有是沒有為此乙烯基控制項選擇的輸入的設備。
 請先在聲音硬體首選項中選擇一種輸入的設備。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1206"/>
+        <location filename="../../src/mixxx.cpp" line="1229"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>有是沒有為此直通控制項選擇的輸入的設備。
 請先在聲音硬體首選項中選擇一種輸入的設備。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1219"/>
+        <location filename="../../src/mixxx.cpp" line="1242"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>有是沒有選擇這個麥克風的輸入的設備。
 請先在聲音硬體首選項中選擇一種輸入的設備。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1296"/>
+        <location filename="../../src/mixxx.cpp" line="1319"/>
         <source>Error in skin file</source>
         <translation>皮膚檔中的錯誤</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1297"/>
+        <location filename="../../src/mixxx.cpp" line="1320"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>無法載入所選的外觀。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1414"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL 直接繪製</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1392"/>
-        <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
-        <translation>您的電腦上未啟用直接呈現。這意味著 &lt;br&gt;&lt;br&gt;波形顯示將會非常 &lt;br&gt;&lt;b&gt;慢和可能徵收重稅的你的 CPU&lt;/b&gt;。更新您的 &lt;br&gt;配置，使直接渲染，或通過選擇 &lt;br&gt;&quot;空&quot;作為波形顯示在介面一節中禁用 &lt;br&gt;波形顯示 Mixxx 首選項中的。 &lt;br&gt;&lt;br&gt;注意︰ 如果您使用 NVIDIA 硬體，&lt;br&gt;直接渲染可能不存在，但你應該不經驗 &lt;br&gt;降解性能。</translation>
+        <location filename="../../src/mixxx.cpp" line="1415"/>
+        <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1426"/>
-        <location filename="../../src/mixxx.cpp" line="1434"/>
-        <location filename="../../src/mixxx.cpp" line="1443"/>
+        <location filename="../../src/mixxx.cpp" line="1446"/>
+        <location filename="../../src/mixxx.cpp" line="1454"/>
+        <location filename="../../src/mixxx.cpp" line="1463"/>
         <source>Confirm Exit</source>
         <translation>確認退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1427"/>
+        <location filename="../../src/mixxx.cpp" line="1447"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>當前現正播放的甲板。退出 Mixxx 嗎？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1435"/>
+        <location filename="../../src/mixxx.cpp" line="1455"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>當前現正播放採樣器。退出 Mixxx 嗎？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <location filename="../../src/mixxx.cpp" line="1464"/>
         <source>The preferences window is still open.</source>
         <translation>首選項視窗是仍處於打開狀態。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1445"/>
+        <location filename="../../src/mixxx.cpp" line="1465"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>放棄所有更改並退出 Mixxx？</translation>
     </message>
@@ -7752,25 +7752,25 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="155"/>
-        <location filename="../../src/library/parserm3u.cpp" line="166"/>
+        <location filename="../../src/library/parserm3u.cpp" line="146"/>
+        <location filename="../../src/library/parserm3u.cpp" line="157"/>
         <source>Playlist Export Failed</source>
         <translation>播放清單匯出失敗</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="156"/>
+        <location filename="../../src/library/parserm3u.cpp" line="147"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>檔路徑包含 m3u 播放清單中不允許使用的字元。</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="157"/>
+        <location filename="../../src/library/parserm3u.cpp" line="148"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>而匯出 m3u8 播放清單 ！</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="167"/>
+        <location filename="../../src/library/parserm3u.cpp" line="158"/>
         <source>Could not create file</source>
         <translation>無法創建檔</translation>
     </message>
@@ -7791,43 +7791,43 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>PlaylistFeature</name>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="68"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="81"/>
         <source>Lock</source>
         <translation>鎖</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="41"/>
-        <location filename="../../src/library/playlistfeature.cpp" line="236"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="54"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="278"/>
         <source>Playlists</source>
         <translation>播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="68"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="81"/>
         <source>Unlock</source>
         <translation>解鎖</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="237"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="279"/>
         <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
         <translation>播放清單的排序清單允許您計畫您的 dj 的歌曲。</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="238"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="280"/>
         <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
         <translation>一些 Dj 構建播放清單之前他們表演，但其他人則傾向建立他們的蒼蠅。</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="239"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="281"/>
         <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you&apos;ve chosen to play.</source>
         <translation>當在一個活的 DJ 集，使用播放清單記得總是密切關注你的聽眾對音樂的反應您已經選擇玩。</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="240"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="282"/>
         <source>It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.</source>
         <translation>它可能需要跳過一些你準備播放清單中的歌曲或添加一些不同的歌曲，以保持你的聽眾的精力。</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="241"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="283"/>
         <source>Create New Playlist</source>
         <translation>創建新的播放清單</translation>
     </message>
@@ -9295,7 +9295,7 @@ Fully right: end of the effect period</source>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="54"/>
-        <location filename="../../src/library/setlogfeature.cpp" line="343"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="367"/>
         <source>History</source>
         <translation>歷史</translation>
     </message>
@@ -9310,22 +9310,22 @@ Fully right: end of the effect period</source>
         <translation>鎖</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="344"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="368"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
         <translation>歷史部分自動保留軌道你玩你的 dj 在的清單。</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="345"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="369"/>
         <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
         <translation>這是便於記憶所做的工作您的 dj、 過帳設置清單，或向許可證組織彙報你的劇本。</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="346"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="370"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation>每次你啟動 Mixxx，創建一個新的歷史截面。您可以將其匯出為各種格式的播放清單或再次玩汽車 DJ。</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="347"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="371"/>
         <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
         <translation>你可以加入當前歷史會話和前一個按右鍵並選擇&quot;與以前加入&quot;。</translation>
     </message>
@@ -9510,11 +9510,6 @@ Fully right: end of the effect period</source>
         <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
         <source>Filtered</source>
         <translation>過濾</translation>
-    </message>
-    <message>
-        <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
-        <source>Software</source>
-        <translation>軟體</translation>
     </message>
 </context>
 <context>
@@ -11837,27 +11832,27 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>VSyncThread</name>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="192"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="156"/>
         <source>Timer (Fallback)</source>
         <translation>計時器 （回退）</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="195"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="159"/>
         <source>MESA vblank_mode = 1</source>
         <translation>梅薩山 vblank_mode = 1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="198"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="162"/>
         <source>Wait for Video sync</source>
         <translation>等待視頻同步</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="201"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="165"/>
         <source>Sync Control</source>
         <translation>同步控制</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="204"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="168"/>
         <source>Free + 1 ms (for benchmark only)</source>
         <translation>免費 + 1 毫秒 （基準只）</translation>
     </message>
@@ -12413,20 +12408,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="369"/>
+        <location filename="../../src/widget/woverview.cpp" line="371"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>準備玩、 分析。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="372"/>
-        <location filename="../../src/widget/woverview.cpp" line="382"/>
+        <location filename="../../src/widget/woverview.cpp" line="374"/>
+        <location filename="../../src/widget/woverview.cpp" line="384"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>載入跟蹤。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="376"/>
+        <location filename="../../src/widget/woverview.cpp" line="378"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>最後確定。</translation>
@@ -12766,14 +12761,24 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="738"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="804"/>
         <source>(GLSL)</source>
         <translation>(GLSL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="740"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="806"/>
         <source>(GL)</source>
         <translation>(GL)</translation>
+    </message>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="816"/>
+        <source>(GLSL ES)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="818"/>
+        <source>(GL ES)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

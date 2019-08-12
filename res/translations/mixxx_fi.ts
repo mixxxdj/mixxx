@@ -409,42 +409,42 @@
 <context>
     <name>BroadcastSettingsModel</name>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="126"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Enabled</source>
         <translation>Käytössä</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Name</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="132"/>
         <source>Status</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Disconnected</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connecting...</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Connected</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="184"/>
         <source>Failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="187"/>
         <source>Unknown</source>
         <translation>Tuntematon</translation>
     </message>
@@ -7029,17 +7029,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectSettingsModel</name>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="100"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
         <source>Visible</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
         <source>Name</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
+        <location filename="../../src/preferences/effectsettingsmodel.cpp" line="106"/>
         <source>Type</source>
         <translation>Tyyppi</translation>
     </message>
@@ -7155,7 +7155,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>GLSLRGBWaveformWidget</name>
     <message>
-        <location filename="../../src/waveform/widgets/glslwaveformwidget.h" line="53"/>
+        <location filename="../../src/waveform/widgets/glslwaveformwidget.h" line="54"/>
         <source>RGB</source>
         <translation type="unfinished"/>
     </message>
@@ -7294,7 +7294,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1164"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1163"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -7302,57 +7302,57 @@ support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2177"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2179"/>
         <source>activate</source>
         <translation>aktivoi</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2182"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2184"/>
         <source>toggle</source>
         <translation>näkyvyys</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2192"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2194"/>
         <source>right</source>
         <translation>oikea</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2197"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2199"/>
         <source>left</source>
         <translation>vasen</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2202"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2204"/>
         <source>right small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2207"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2209"/>
         <source>left small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2212"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2214"/>
         <source>up</source>
         <translation>ylös</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2217"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2219"/>
         <source>down</source>
         <translation>alas</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2222"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2224"/>
         <source>up small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2227"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2229"/>
         <source>down small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2260"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2262"/>
         <source>Shortcut</source>
         <translation>Pikakuvake</translation>
     </message>
@@ -7517,52 +7517,52 @@ support.</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="362"/>
+        <location filename="../../src/mixxx.cpp" line="363"/>
         <source>Choose music library directory</source>
         <translation>Valitse musiikkikokoelman sijainti</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="866"/>
+        <location filename="../../src/mixxx.cpp" line="889"/>
         <source>Sound Device Busy</source>
         <translation>Äänilaite on varattu</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="875"/>
+        <location filename="../../src/mixxx.cpp" line="898"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Yritä uudelleen&lt;/b&gt; suljettuasi toisen ohjelman tai yhdistettyäsi äänilaitteen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="879"/>
-        <location filename="../../src/mixxx.cpp" line="906"/>
-        <location filename="../../src/mixxx.cpp" line="931"/>
+        <location filename="../../src/mixxx.cpp" line="902"/>
+        <location filename="../../src/mixxx.cpp" line="929"/>
+        <location filename="../../src/mixxx.cpp" line="954"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Määrittelle uudestaan&lt;/b&gt; Mixxx- äänilaitteidn asetukset.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="882"/>
-        <location filename="../../src/mixxx.cpp" line="909"/>
+        <location filename="../../src/mixxx.cpp" line="905"/>
+        <location filename="../../src/mixxx.cpp" line="932"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Etsi &lt;b&gt;apua&lt;/b&gt; Mixxx-wikistä.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="885"/>
-        <location filename="../../src/mixxx.cpp" line="912"/>
-        <location filename="../../src/mixxx.cpp" line="934"/>
+        <location filename="../../src/mixxx.cpp" line="908"/>
+        <location filename="../../src/mixxx.cpp" line="935"/>
+        <location filename="../../src/mixxx.cpp" line="957"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Sulje&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="825"/>
+        <location filename="../../src/mixxx.cpp" line="848"/>
         <source>Retry</source>
         <translation>Yritä uudelleen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="734"/>
+        <location filename="../../src/mixxx.cpp" line="757"/>
         <source>Cannot open database</source>
         <translation>Tietokantaa ei voida avata</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="735"/>
+        <location filename="../../src/mixxx.cpp" line="758"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -7573,135 +7573,135 @@ Mixxx vaatii QT:n SQLite tuella. Lue Qt SQL ohjain dokumentaatio sen kääntämi
 Valitse OK poistuaksesi.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="827"/>
-        <location filename="../../src/mixxx.cpp" line="942"/>
+        <location filename="../../src/mixxx.cpp" line="850"/>
+        <location filename="../../src/mixxx.cpp" line="965"/>
         <source>Reconfigure</source>
         <translation>Määrittele uudelleen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="829"/>
+        <location filename="../../src/mixxx.cpp" line="852"/>
         <source>Help</source>
         <translation>Ohje</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="831"/>
-        <location filename="../../src/mixxx.cpp" line="944"/>
+        <location filename="../../src/mixxx.cpp" line="854"/>
+        <location filename="../../src/mixxx.cpp" line="967"/>
         <source>Exit</source>
         <translation>Sulje</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="869"/>
-        <location filename="../../src/mixxx.cpp" line="898"/>
+        <location filename="../../src/mixxx.cpp" line="892"/>
+        <location filename="../../src/mixxx.cpp" line="921"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="895"/>
+        <location filename="../../src/mixxx.cpp" line="918"/>
         <source>Sound Device Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="903"/>
+        <location filename="../../src/mixxx.cpp" line="926"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="922"/>
+        <location filename="../../src/mixxx.cpp" line="945"/>
         <source>No Output Devices</source>
         <translation>Äänilaitteita ei löytynyt</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="924"/>
+        <location filename="../../src/mixxx.cpp" line="947"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Äänilaitteita ei ole määritelty mixxx-asetuksissa. Äänen käsittely ei ole käytössä, kunnes kelvollinen toistolaite on määritelty.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="928"/>
+        <location filename="../../src/mixxx.cpp" line="951"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Jatka&lt;/b&gt; määrittelemättä äänilaitteita.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="940"/>
+        <location filename="../../src/mixxx.cpp" line="963"/>
         <source>Continue</source>
         <translation>Jatka</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1080"/>
+        <location filename="../../src/mixxx.cpp" line="1103"/>
         <source>Load track to Deck %1</source>
         <translation>Lataa kappale dekkiin %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1081"/>
+        <location filename="../../src/mixxx.cpp" line="1104"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Dekki %1 soittaa kappaletta.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1083"/>
+        <location filename="../../src/mixxx.cpp" line="1106"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Haluatko varmasti ladata uuden kappaleen?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1193"/>
+        <location filename="../../src/mixxx.cpp" line="1216"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1206"/>
+        <location filename="../../src/mixxx.cpp" line="1229"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1219"/>
+        <location filename="../../src/mixxx.cpp" line="1242"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1296"/>
+        <location filename="../../src/mixxx.cpp" line="1319"/>
         <source>Error in skin file</source>
         <translation>Virhe teematiedostossa</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1297"/>
+        <location filename="../../src/mixxx.cpp" line="1320"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Valittua teemaa ei voi ladata.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1414"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL -suorapiirto</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1392"/>
-        <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
-        <translation>Suorapiirto ei ole käytössä tietokoneellasi.&lt;br&gt;&lt;br&gt;Tämän takia aaltomuotojen näyttö on &lt;b&gt;erittäin hidasta&lt;br&gt; ja kuormittaa prosessoria paljon&lt;/b&gt;. Päivitä joko asetuksesi&lt;br&gt;, jotta saat suorapiirron käyttöön, tai poista &lt;br&gt;aaltomuotojen näyttö käytöstä valitsemalla &lt;br&gt;asetuksien käyttöliittymä-osoista &quot;Ei mitään&quot; aaltomuotojen näyttötavaksi.&lt;br&gt;&lt;br&gt;Huomautus: jos käytät Nvidia -näytönohjainta,&lt;br&gt;suorapiirto ei välttämättä ole saatavilla, mutta tämä ongelma&lt;br&gt;ei silti ole nähtävissä.</translation>
+        <location filename="../../src/mixxx.cpp" line="1415"/>
+        <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1426"/>
-        <location filename="../../src/mixxx.cpp" line="1434"/>
-        <location filename="../../src/mixxx.cpp" line="1443"/>
+        <location filename="../../src/mixxx.cpp" line="1446"/>
+        <location filename="../../src/mixxx.cpp" line="1454"/>
+        <location filename="../../src/mixxx.cpp" line="1463"/>
         <source>Confirm Exit</source>
         <translation>Varmista lopetus</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1427"/>
+        <location filename="../../src/mixxx.cpp" line="1447"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Dekki soittaa kappaletta. Suljetaanko Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1435"/>
+        <location filename="../../src/mixxx.cpp" line="1455"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Näytesoitin on käynnissä. Suljetaanko mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <location filename="../../src/mixxx.cpp" line="1464"/>
         <source>The preferences window is still open.</source>
         <translation>Määritys-ikkuna on vielä auki.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1445"/>
+        <location filename="../../src/mixxx.cpp" line="1465"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Hylkää kaikki muutokset ja sulje Mixxx</translation>
     </message>
@@ -7733,27 +7733,27 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="155"/>
-        <location filename="../../src/library/parserm3u.cpp" line="166"/>
+        <location filename="../../src/library/parserm3u.cpp" line="146"/>
+        <location filename="../../src/library/parserm3u.cpp" line="157"/>
         <source>Playlist Export Failed</source>
         <translation>Soittolistan vienti epäonnistui</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="156"/>
+        <location filename="../../src/library/parserm3u.cpp" line="147"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>Tiedoston polku sisältää merkkejä, jotka eivät ole sallittu m3u-soittolistan nimissä.
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="157"/>
+        <location filename="../../src/library/parserm3u.cpp" line="148"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>Vie m3u8-soittolistaksi sen sijasta!
 </translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="167"/>
+        <location filename="../../src/library/parserm3u.cpp" line="158"/>
         <source>Could not create file</source>
         <translation>Tiedostoa ei voitu luoda</translation>
     </message>
@@ -7774,43 +7774,43 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>PlaylistFeature</name>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="68"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="81"/>
         <source>Lock</source>
         <translation>Lukitse</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="41"/>
-        <location filename="../../src/library/playlistfeature.cpp" line="236"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="54"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="278"/>
         <source>Playlists</source>
         <translation>Soittolistat</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="68"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="81"/>
         <source>Unlock</source>
         <translation>Poista lukitus</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="237"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="279"/>
         <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
         <translation>Soittolistat ovat järjestettyjä kappalelistoja, joiden avulla voit suunnitella DJ-esityksiä.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="238"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="280"/>
         <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
         <translation>Jotkut DJ:t luovat soittolistoja ennen esiintymistä, toiset rakentavat soittolistan esityksen aikana.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="239"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="281"/>
         <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you&apos;ve chosen to play.</source>
         <translation>Käyttäessäsi soittolistaa DJ-esityksen aikana, muista tarkkailla yleisön reaktioita valitsemaasi musiikkiin.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="240"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="282"/>
         <source>It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.</source>
         <translation>Voit joutua ohittamaan tai vaihtamaan valmistellulla listalla olevia kappaleita, jotta yleisön mielenkiinto säilyy.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="241"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="283"/>
         <source>Create New Playlist</source>
         <translation>Luo uusi soittolista</translation>
     </message>
@@ -9275,7 +9275,7 @@ Fully right: end of the effect period</source>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="54"/>
-        <location filename="../../src/library/setlogfeature.cpp" line="343"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="367"/>
         <source>History</source>
         <translation>Soittohistoria</translation>
     </message>
@@ -9290,22 +9290,22 @@ Fully right: end of the effect period</source>
         <translation>Lukitse</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="344"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="368"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
         <translation>Soittohistoria pitää automaattisesti kirjaa kappaleista, joita olet soittanut DJ-esityksissä.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="345"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="369"/>
         <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
         <translation>Tämä toiminto auttaa muistamaan hyvin yhteen toimineet kappaleet, julkaisemaan kappaleluetteloita tai raportoimaan soitettuja kappaleita lisensointiorganisaatioille.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="346"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="370"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation>Joka kerta kun käynnistät Mixxx:n, uusi historia luodaan. Voit käyttää sitä soittolistana useissa formaateissa tai soittaa sen uudelleen Auto DJ:n avulla.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="347"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="371"/>
         <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
         <translation>Voit liittää nykyisen ja aikaisemman soittohistorian kontekstivalikon valinnalla &quot;liitä edelliseen&quot;.</translation>
     </message>
@@ -9490,11 +9490,6 @@ Fully right: end of the effect period</source>
         <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
         <source>Filtered</source>
         <translation>Suodatettu</translation>
-    </message>
-    <message>
-        <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
-        <source>Software</source>
-        <translation>Ohjelma</translation>
     </message>
 </context>
 <context>
@@ -11817,27 +11812,27 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>VSyncThread</name>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="192"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="156"/>
         <source>Timer (Fallback)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="195"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="159"/>
         <source>MESA vblank_mode = 1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="198"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="162"/>
         <source>Wait for Video sync</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="201"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="165"/>
         <source>Sync Control</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="204"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="168"/>
         <source>Free + 1 ms (for benchmark only)</source>
         <translation type="unfinished"/>
     </message>
@@ -12393,20 +12388,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="369"/>
+        <location filename="../../src/widget/woverview.cpp" line="371"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="372"/>
-        <location filename="../../src/widget/woverview.cpp" line="382"/>
+        <location filename="../../src/widget/woverview.cpp" line="374"/>
+        <location filename="../../src/widget/woverview.cpp" line="384"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="376"/>
+        <location filename="../../src/widget/woverview.cpp" line="378"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"/>
@@ -12746,14 +12741,24 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="738"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="804"/>
         <source>(GLSL)</source>
         <translation>(GLSL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="740"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="806"/>
         <source>(GL)</source>
         <translation>(GL)</translation>
+    </message>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="816"/>
+        <source>(GLSL ES)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="818"/>
+        <source>(GL ES)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

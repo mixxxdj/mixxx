@@ -1,8 +1,8 @@
 # 
 # Translators:
 # Chee Kin Weng <rhytanbernama@gmail.com>, 2016
-# shuyu liu <liushuyu011@gmail.com>, 2017
-# shuyu liu <liushuyu011@gmail.com>, 2017
+# liushuyu011 <liushuyu011@gmail.com>, 2017
+# liushuyu011 <liushuyu011@gmail.com>, 2017
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
@@ -11,7 +11,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-12-28 14:19+0000\n"
+"PO-Revision-Date: 2019-04-17 21:53+0000\n"
 "Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
