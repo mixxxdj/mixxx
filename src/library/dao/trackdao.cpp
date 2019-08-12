@@ -139,18 +139,45 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     QList<TrackId> trackIds;
     trackIds.reserve(files.size());
 
+    // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
-    {
-        QStringList pathList;
-        pathList.reserve(files.size());
-        for (const auto& file: files) {
-            pathList << file.absoluteFilePath();
-        }
-        query.prepare(QString("SELECT library.id FROM library INNER JOIN "
-                              "track_locations ON library.location = track_locations.id "
-                              "WHERE track_locations.location in (%1)").arg(
-                                      SqlStringFormatter::formatList(m_database, pathList)));
+    query.prepare(
+            "CREATE TEMP TABLE playlist_import "
+            "(location varchar (512))");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return trackIds;
     }
+
+    QStringList pathList;
+    pathList.reserve(files.size());
+    for (const auto& file: files) {
+        pathList << "(" + SqlStringFormatter::format(m_database, file.absoluteFilePath()) + ")";
+    }
+
+    // Add all the track paths temporary to this database.
+    query.prepare(
+            "INSERT INTO playlist_import (location) "
+            "VALUES " + pathList.join(','));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    query.prepare(
+            "SELECT library.id FROM playlist_import "
+            "INNER JOIN track_locations ON playlist_import.location = track_locations.location "
+            "INNER JOIN library ON library.location = track_locations.id "
+            // the order by clause enforces the native sorting which is used anyway
+            // hopefully optimized away. TODO() verify.
+            "ORDER BY playlist_import.ROWID");
+
+    // Old syntax for a shorter but less readable query. TODO() check performance gain
+    // query.prepare(
+    //    "SELECT library.id FROM playlist_import, "
+    //    "track_locations, library WHERE library.location = track_locations.id "
+    //    "AND playlist_import.location = track_locations.location");
+    //    "ORDER BY playlist_import.ROWID");
+
     if (query.exec()) {
         const int idColumn = query.record().indexOf("id");
         while (query.next()) {
@@ -161,6 +188,12 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
             qDebug() << "TrackDAO::getTrackIds(): Found only" << trackIds.size() << "of" << files.size() << "tracks in library";
         }
     } else {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Drop the temporary playlist-import table.
+    query.prepare("DROP TABLE IF EXISTS playlist_import");
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
