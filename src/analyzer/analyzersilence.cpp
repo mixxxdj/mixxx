@@ -9,13 +9,15 @@ constexpr float kSilenceThreshold = 0.001;
 // TODO: Change the above line to:
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
+const double kCueNotSet = -1.0;
+
 bool shouldUpdateMainCue(CuePosition mainCue) {
-    return mainCue.getPosition() == -1.0 ||
+    return mainCue.getPosition() == kCueNotSet ||
             mainCue.getPosition() == 0.0;
 }
 
 bool hasIntroCueStart(const Cue& introCue) {
-    return introCue.getPosition() != -1.0;
+    return introCue.getPosition() != kCueNotSet;
 }
 
 bool hasOutroCueEnd(const Cue& outroCue) {
@@ -121,7 +123,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (!pOutroCue) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
-        pOutroCue->setPosition(-1.0);
+        pOutroCue->setPosition(kCueNotSet);
         pOutroCue->setLength(outroEnd);
     }
 
