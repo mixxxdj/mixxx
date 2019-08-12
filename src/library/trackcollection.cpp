@@ -88,8 +88,8 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 QList<TrackId> TrackCollection::getAndEnsureTrackIds(
-        const QList<QFileInfo>& files) {
-    QList<TrackId> trackIds = m_trackDao.getTrackIds(files);
+        const QList<QFileInfo>& files, bool addMissingTracks) {
+    QList<TrackId> trackIds = m_trackDao.getTrackIds(files, addMissingTracks);
     unhideTracks(trackIds);
     return trackIds;
 }

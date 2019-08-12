@@ -40,7 +40,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     TrackId getTrackId(const QString& absoluteFilePath);
-    QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
+    QList<TrackId> getTrackIds(const QList<QFileInfo>& files, bool addMissingTracks);
     QList<TrackId> getTrackIds(const QDir& dir);
 
     // WARNING: Only call this from the main thread instance of TrackDAO.

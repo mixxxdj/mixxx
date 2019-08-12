@@ -135,7 +135,8 @@ TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
     return trackId;
 }
 
-QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
+QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files,
+        bool addMissingTracks) {
     QList<TrackId> trackIds;
     trackIds.reserve(files.size());
 
@@ -161,6 +162,29 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
             "VALUES " + pathList.join(','));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+    }
+
+    if (addMissingTracks) {
+        // Prepare to add tracks to the database.
+        // This also begins an SQL transaction.
+        addTracksPrepare();
+
+        // Any tracks not already in the database need to be added.
+        query.prepare("SELECT location FROM playlist_import "
+                "WHERE NOT EXISTS (SELECT location FROM track_locations "
+                "WHERE playlist_import.location = track_locations.location)");
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+        const int locationColumn = query.record().indexOf("location");
+        while (query.next()) {
+            QString location = query.value(locationColumn).toString();
+            const QFileInfo fileInfo(location);
+            addTracksAddFile(fileInfo, true);
+        }
+
+        // Finish adding tracks to the database.
+        addTracksFinish();
     }
 
     query.prepare(

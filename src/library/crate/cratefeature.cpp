@@ -200,25 +200,26 @@ void updateTreeItemForTrackSelection(
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     CrateId crateId(crateIdFromIndex(index));
-    if (!crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<TrackId> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getAndEnsureTrackIds(files);
-    } else {
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files);
+    if (!files.size()) {
+        return false;
     }
-    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
-            << trackIds.size() << " to crate "<< crateId;
-    // remove tracks that could not be added
-    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
-        if (!trackIds.at(trackIdIndex).isValid()) {
-            trackIds.removeAt(trackIdIndex--);
-        }
+
+    // If a track is dropped onto a crate's name, but the track isn't in the
+    // library, then add the track to the library before adding it to the
+    // playlist. getAndEnsureTrackIds(), does not insert duplicates and handles
+    // unremove logic.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    bool addMissingTracks = (pSource == nullptr);
+    QList<TrackId> trackIds = m_pTrackCollection->getAndEnsureTrackIds(files, addMissingTracks);
+    if (!trackIds.size()) {
+        return false;
     }
+
     m_pTrackCollection->addCrateTracks(crateId, trackIds);
     return true;
 }

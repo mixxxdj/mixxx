@@ -68,7 +68,7 @@ class TrackCollection : public QObject,
 
     // This function returns a track ID of all file in the list not already visible,
     // it adds and unhides the tracks as well.
-    QList<TrackId> getAndEnsureTrackIds(const QList<QFileInfo>& files);
+    QList<TrackId> getAndEnsureTrackIds(const QList<QFileInfo>& files, bool addMissingTracks);
 
     bool hideTracks(const QList<TrackId>& trackIds);
     bool unhideTracks(const QList<TrackId>& trackIds);
