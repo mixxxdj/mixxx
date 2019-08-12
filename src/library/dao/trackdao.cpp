@@ -846,9 +846,10 @@ bool TrackDAO::unhideTracks(
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
     }
-    FwdSqlQuery query(m_database, QString(
+    FwdSqlQuery query(m_database,
             "UPDATE library SET mixxx_deleted=0 "
-                  "WHERE id in (%1)").arg(idList.join(",")));
+            "WHERE mixxx_deleted!=0 "
+            "AND id in (" + idList.join(",") + ")");
     return !query.hasError() && query.execPrepared();
 }
 
