@@ -2170,6 +2170,7 @@ double HotcueControl::getLength() const {
 
 void HotcueControl::setCue(CuePointer pCue) {
     setPosition(pCue->getPosition());
+    setLength(pCue->getLength());
     setColor(pCue->getColor());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
@@ -2187,6 +2188,7 @@ void HotcueControl::resetCue() {
     // in the code
     m_pCue.reset();
     setPosition(-1.0);
+    setLength(-1.0);
 }
 
 void HotcueControl::setPosition(double position) {
