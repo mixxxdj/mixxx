@@ -59,6 +59,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void mouseMoveEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
+    void leaveEvent(QEvent* event) override;
     void paintEvent(QPaintEvent * /*unused*/) override;
     void resizeEvent(QResizeEvent * /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;

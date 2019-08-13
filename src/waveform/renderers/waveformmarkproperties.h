@@ -3,6 +3,7 @@
 
 #include <QColor>
 #include <QDomNode>
+#include <QRectF>
 
 class SkinContext;
 class WaveformSignalColors;
@@ -25,6 +26,9 @@ class WaveformMarkProperties final {
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
+
+    QRectF m_renderedArea;
+    bool m_bMouseHovering;
 
   private:
     QColor m_fillColor;

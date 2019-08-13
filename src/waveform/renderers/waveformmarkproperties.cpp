@@ -45,7 +45,9 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
 WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
                                                const WaveformSignalColors& signalColors,
-                                               int hotCue) {
+                                               int hotCue)
+        : m_renderedArea(QRectF()),
+          m_bMouseHovering(false) {
     QColor color(context.selectString(node, "Color"));
     if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor

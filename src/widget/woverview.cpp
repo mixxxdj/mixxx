@@ -76,6 +76,8 @@ WOverview::WOverview(
             new ControlProxy(m_group, "track_samples", this);
     setAcceptDrops(true);
 
+    setMouseTracking(true);
+
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
 }
@@ -328,11 +330,24 @@ void WOverview::receiveCuesUpdated() {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    if (m_orientation == Qt::Horizontal) {
-        m_iPos = math_clamp(e->x(), 0, width() - 1);
-    } else {
-        m_iPos = math_clamp(e->y(), 0, height() - 1);
+    if (m_bDrag) {
+        if (m_orientation == Qt::Horizontal) {
+            m_iPos = math_clamp(e->x(), 0, width() - 1);
+        } else {
+            m_iPos = math_clamp(e->y(), 0, height() - 1);
+        }
     }
+
+    for (auto& mark : m_marks) {
+        WaveformMarkProperties markProperties = mark->getProperties();
+        if (markProperties.m_renderedArea.contains(e->pos())) {
+            markProperties.m_bMouseHovering = true;
+        } else {
+            markProperties.m_bMouseHovering = false;
+        }
+        mark->setProperties(markProperties);
+    }
+
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }
@@ -350,6 +365,17 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
     m_bDrag = true;
+}
+
+void WOverview::leaveEvent(QEvent* e) {
+    Q_UNUSED(e);
+    for (auto& mark : m_marks) {
+        WaveformMarkProperties markProperties = mark->getProperties();
+        markProperties.m_bMouseHovering = false;
+        mark->setProperties(markProperties);
+    }
+    m_bDrag = false;
+    update();
 }
 
 void WOverview::paintEvent(QPaintEvent * /*unused*/) {
@@ -571,8 +597,8 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     shadowFont.setWeight(99);
     shadowFont.setPixelSize(10 * m_scaleFactor);
 
-    for (const auto& currentMark : m_marks) {
-        const WaveformMarkProperties& markProperties = currentMark->getProperties();
+    for (auto& currentMark : m_marks) {
+        WaveformMarkProperties markProperties = currentMark->getProperties();
         if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
             // Marks are visible by default.
             if (currentMark->hasVisible() && !currentMark->isVisible()) {
@@ -602,8 +628,15 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             if (!markProperties.m_text.isEmpty()) {
                 Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
                 Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
+
                 QFontMetricsF metric(markerFont);
-                QRectF textRect = metric.tightBoundingRect(markProperties.m_text);
+                QString text = markProperties.m_text;
+                if (!markProperties.m_bMouseHovering) {
+                    // 40 pixels is an arbitrary limit
+                    text = metric.elidedText(text, Qt::ElideRight, 40);
+                }
+
+                QRectF textRect = metric.boundingRect(text);
                 QPointF textPoint;
                 if (m_orientation == Qt::Horizontal) {
                     if (halign == Qt::AlignLeft) {
@@ -641,12 +674,20 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
                 pPainter->setPen(shadowPen);
                 pPainter->setFont(shadowFont);
-                pPainter->drawText(textPoint, markProperties.m_text);
+                pPainter->drawText(textPoint, text);
 
                 pPainter->setPen(markProperties.m_textColor);
                 pPainter->setFont(markerFont);
-                pPainter->drawText(textPoint, markProperties.m_text);
+                pPainter->drawText(textPoint, text);
+
+                // QPainter::drawText starts drawing with the given QPointF as
+                // the bottom left of the text, but QRectF::moveTo takes the new
+                // top left of the QRectF.
+                QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - metric.height());
+                textRect.moveTo(textTopLeft);
+                markProperties.m_renderedArea = textRect;
             }
+            currentMark->setProperties(markProperties);
         }
     }
 }
