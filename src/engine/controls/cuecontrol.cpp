@@ -23,11 +23,11 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
 
-typedef enum {
-    HOTCUE_TYPE_NONE = -1,
-    HOTCUE_TYPE_CUE  = 0,
-    HOTCUE_TYPE_LOOP = 1,
-} HotcueType;
+enum class HotcueType {
+    NONE = -1,
+    CUE  = 0,
+    LOOP = 1,
+};
 
 CueControl::CueControl(QString group,
                        UserSettingsPointer pConfig) :
@@ -1999,7 +1999,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled->setReadOnly();
 
     m_hotcueType = new ControlObject(keyForControl(i, "type"));
-    m_hotcueType->set(HOTCUE_TYPE_NONE);
+    m_hotcueType->set(static_cast<double>(HotcueType::NONE));
     m_hotcueType->setReadOnly();
 
     // The id of the predefined color assigned to this color.
@@ -2142,7 +2142,7 @@ void HotcueControl::slotHotcueClear(double v) {
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     m_hotcueEnabled->forceSet(newPosition == -1 ? 0.0 : 1.0);
     if (newPosition == -1) {
-        m_hotcueType->forceSet(HOTCUE_TYPE_NONE);
+        m_hotcueType->forceSet(static_cast<double>(HotcueType::NONE));
     }
 
     emit(hotcuePositionChanged(this, newPosition));
@@ -2150,7 +2150,7 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 
 void HotcueControl::slotHotcueLengthChanged(double newLength) {
     if (m_hotcueEnabled->get() == 1.0) {
-        m_hotcueType->forceSet((newLength > 0) ? HOTCUE_TYPE_LOOP : HOTCUE_TYPE_CUE);
+        m_hotcueType->forceSet(static_cast<double>((newLength > 0) ? HotcueType::LOOP : HotcueType::CUE));
     }
     emit(hotcueLengthChanged(this, newLength));
 }
@@ -2195,18 +2195,18 @@ void HotcueControl::setPosition(double position) {
     m_hotcuePosition->set(position);
     if (position == -1) {
         m_hotcueEnabled->forceSet(0.0);
-        m_hotcueType->forceSet(HOTCUE_TYPE_NONE);
+        m_hotcueType->forceSet(static_cast<double>(HotcueType::NONE));
     } else {
         m_hotcueEnabled->forceSet(1.0);
-        m_hotcueType->forceSet((m_hotcueLength->get() > 0) ? HOTCUE_TYPE_LOOP : HOTCUE_TYPE_CUE);
+        m_hotcueType->forceSet(static_cast<double>((m_hotcueLength->get() > 0) ? HotcueType::LOOP : HotcueType::CUE));
     }
 }
 
 void HotcueControl::setLength(double length) {
     m_hotcueLength->set(length);
     if (m_hotcuePosition->get() == -1.0) {
-        m_hotcueType->forceSet(HOTCUE_TYPE_NONE);
+        m_hotcueType->forceSet(static_cast<double>(HotcueType::NONE));
     } else {
-        m_hotcueType->forceSet((length > 0) ? HOTCUE_TYPE_LOOP : HOTCUE_TYPE_CUE);
+        m_hotcueType->forceSet(static_cast<double>((length > 0) ? HotcueType::LOOP : HotcueType::CUE));
     }
 }
