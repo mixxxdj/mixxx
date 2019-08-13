@@ -162,7 +162,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 
     int configuredTransitionMode = m_pConfig->getValue(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
-            static_cast<int>(TransitionMode::IntroOutro));
+            static_cast<int>(TransitionMode::FullIntroOutro));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
 }
 
@@ -250,7 +250,7 @@ void AutoDJProcessor::fadeNow() {
     double spinboxTime = fabs(m_transitionTime);
 
     double fadeTime;
-    if (m_transitionMode == TransitionMode::IntroOutro
+    if (m_transitionMode == TransitionMode::FullIntroOutro
        || m_transitionMode == TransitionMode::AlignIntroOutroStart) {
         // Use the intro length as the transition time. If the user has seeked
         // away from the intro start since the track was loaded, start from
@@ -1023,7 +1023,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double introLength = introEnd - introStart;
 
     switch (m_transitionMode) {
-    case TransitionMode::IntroOutro:
+    case TransitionMode::FullIntroOutro:
         // Use the outro or intro length for the transition time, whichever is
         // shorter. Let the full outro and intro play; do not cut off any part
         // of either.
