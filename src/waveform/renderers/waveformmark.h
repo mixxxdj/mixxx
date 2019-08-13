@@ -57,7 +57,12 @@ class WaveformMark {
 
     // The m_pVisibleCos related function
     bool hasVisible() const { return m_pVisibleCos && m_pVisibleCos->valid(); }
-    bool isVisible() const { return m_pVisibleCos->get(); }
+    bool isVisible() const {
+        if (!hasVisible()) {
+            return true;
+        }
+        return m_pVisibleCos->get();
+    }
 
     template <typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
@@ -75,5 +80,9 @@ class WaveformMark {
 };
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
+
+inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
+    return lhs->getSamplePosition() < rhs->getSamplePosition();
+}
 
 #endif // WAVEFORMMARK_H

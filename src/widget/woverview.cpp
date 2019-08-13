@@ -597,97 +597,137 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     shadowFont.setWeight(99);
     shadowFont.setPixelSize(10 * m_scaleFactor);
 
-    for (auto& currentMark : m_marks) {
-        WaveformMarkProperties markProperties = currentMark->getProperties();
-        if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
-            // Marks are visible by default.
-            if (currentMark->hasVisible() && !currentMark->isVisible()) {
-                continue;
+    // Text labels are rendered so they do not overlap with other WaveformMark's
+    // labels. If the text would be too wide, it is elided. However, the user
+    // can hover the mouse cursor over a label to show the whole label text,
+    // temporarily hiding any following labels that would be drawn over it.
+    // This requires looping over the WaveformMarks twice and the marks must be
+    // sorted in the order they appear on the waveform.
+    // In the first loop, the lines are drawn and the text to render plus its
+    // location are calculated. The text must be drawn in the second loop to
+    // prevent the lines of following WaveformMarks getting drawn over it.
+    QList<WaveformMarkPointer> marksToRender;
+    for (WaveformMarkPointer mark : m_marks) {
+        if (mark->isValid() && mark->getSamplePosition() >= 0.0 && mark->isVisible()) {
+            marksToRender.append(mark);
+        }
+    }
+    std::sort(marksToRender.begin(), marksToRender.end());
+    QList<QString> textToRender;
+    QRectF expandedLabelRect;
+    int firstHoveredIndex = -1;
+
+    for (int i = 0; i < marksToRender.size(); ++i) {
+        WaveformMarkProperties markProperties = marksToRender.at(i)->getProperties();
+
+        PainterScope painterScope(pPainter);
+
+        //const float markPosition = 1.0 +
+        //        (marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
+        const float markPosition = offset + marksToRender.at(i)->getSamplePosition() * gain;
+
+        QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
+
+        QLineF line;
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
+        } else {
+            line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
+        }
+        pPainter->setPen(shadowPen);
+        pPainter->drawLine(line);
+
+        pPainter->setPen(markProperties.fillColor());
+        pPainter->drawLine(line);
+
+        if (!markProperties.m_text.isEmpty()) {
+            Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
+            Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
+
+            QFontMetricsF metric(markerFont);
+            QString text = markProperties.m_text;
+
+            // Only allow the text to overlap the following mark if the mouse is
+            // hovering over it. Otherwise, elide it if it would render over
+            // the next label.
+            if (!markProperties.m_bMouseHovering && i < marksToRender.size()-1) {
+                const float nextMarkPosition = offset + marksToRender.at(i+1)->getSamplePosition() * gain;
+                text = metric.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
+            }
+            textToRender.append(text);
+
+            // Without tracking the first hovered WaveformMark, the user could
+            // hover one mark, then drag the cursor over another, and the second
+            // one's label text would be drawn under the first.
+            if (markProperties.m_bMouseHovering && firstHoveredIndex == -1) {
+                firstHoveredIndex = i;
             }
 
-            PainterScope painterScope(pPainter);
-
-            //const float markPosition = 1.0 +
-            //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-            const float markPosition = offset + currentMark->getSamplePosition() * gain;
-
-            QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
-
-            QLineF line;
+            QRectF textRect = metric.boundingRect(text);
+            QPointF textPoint;
             if (m_orientation == Qt::Horizontal) {
-                line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
-            } else {
-                line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
+                if (halign == Qt::AlignLeft) {
+                    textPoint.setX(markPosition - textRect.width());
+                } else if (halign == Qt::AlignHCenter) {
+                    textPoint.setX(markPosition - textRect.width() / 2);
+                } else { // AlignRight
+                    textPoint.setX(markPosition + 0.5f);
+                }
+
+                if (valign == Qt::AlignTop) {
+                    textPoint.setY(textRect.height() + 0.5f);
+                } else if (valign == Qt::AlignVCenter) {
+                    textPoint.setY((textRect.height() + height()) / 2);
+                } else { // AlignBottom
+                    textPoint.setY(float(height()) - 0.5f);
+                }
+            } else { // Vertical
+                if (halign == Qt::AlignLeft) {
+                    textPoint.setX(1.0f);
+                } else if (halign == Qt::AlignHCenter) {
+                    textPoint.setX((width() - textRect.width()) / 2);
+                } else { // AlignRight
+                    textPoint.setX(width() - textRect.width());
+                }
+
+                if (valign == Qt::AlignTop) {
+                    textPoint.setY(markPosition - 1.0f);
+                } else if (valign == Qt::AlignVCenter) {
+                    textPoint.setY(markPosition + textRect.height() / 2);
+                } else { // AlignBottom
+                    textPoint.setY(markPosition + metric.ascent());
+                }
             }
+
+            // QPainter::drawText starts drawing with the given QPointF as
+            // the bottom left of the text, but QRectF::moveTo takes the new
+            // top left of the QRectF.
+            QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - metric.height());
+            textRect.moveTo(textTopLeft);
+            markProperties.m_renderedArea = textRect;
+
+            if (markProperties.m_bMouseHovering) {
+                expandedLabelRect = textRect;
+            }
+        } else {
+            // Placeholder to keep order
+            textToRender.append(QString());
+        }
+        marksToRender.at(i)->setProperties(markProperties);
+    }
+
+    for (int n = 0; n < marksToRender.size(); ++n) {
+        WaveformMarkProperties markProperties = marksToRender.at(n)->getProperties();
+        QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
+        if (!markProperties.m_renderedArea.intersects(expandedLabelRect)
+            || (markProperties.m_bMouseHovering && firstHoveredIndex == n)) {
             pPainter->setPen(shadowPen);
-            pPainter->drawLine(line);
+            pPainter->setFont(shadowFont);
+            pPainter->drawText(markProperties.m_renderedArea.bottomLeft(), textToRender.at(n));
 
-            pPainter->setPen(markProperties.fillColor());
-            pPainter->drawLine(line);
-
-            if (!markProperties.m_text.isEmpty()) {
-                Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
-                Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
-
-                QFontMetricsF metric(markerFont);
-                QString text = markProperties.m_text;
-                if (!markProperties.m_bMouseHovering) {
-                    // 40 pixels is an arbitrary limit
-                    text = metric.elidedText(text, Qt::ElideRight, 40);
-                }
-
-                QRectF textRect = metric.boundingRect(text);
-                QPointF textPoint;
-                if (m_orientation == Qt::Horizontal) {
-                    if (halign == Qt::AlignLeft) {
-                        textPoint.setX(markPosition - textRect.width());
-                    } else if (halign == Qt::AlignHCenter) {
-                        textPoint.setX(markPosition - textRect.width() / 2);
-                    } else { // AlignRight
-                        textPoint.setX(markPosition + 0.5f);
-                    }
-
-                    if (valign == Qt::AlignTop) {
-                        textPoint.setY(textRect.height() + 0.5f);
-                    } else if (valign == Qt::AlignVCenter) {
-                        textPoint.setY((textRect.height() + height()) / 2);
-                    } else { // AlignBottom
-                        textPoint.setY(float(height()) - 0.5f);
-                    }
-                } else { // Vertical
-                    if (halign == Qt::AlignLeft) {
-                        textPoint.setX(1.0f);
-                    } else if (halign == Qt::AlignHCenter) {
-                        textPoint.setX((width() - textRect.width()) / 2);
-                    } else { // AlignRight
-                        textPoint.setX(width() - textRect.width());
-                    }
-
-                    if (valign == Qt::AlignTop) {
-                        textPoint.setY(markPosition - 1.0f);
-                    } else if (valign == Qt::AlignVCenter) {
-                        textPoint.setY(markPosition + textRect.height() / 2);
-                    } else { // AlignBottom
-                        textPoint.setY(markPosition + metric.ascent());
-                    }
-                }
-
-                pPainter->setPen(shadowPen);
-                pPainter->setFont(shadowFont);
-                pPainter->drawText(textPoint, text);
-
-                pPainter->setPen(markProperties.m_textColor);
-                pPainter->setFont(markerFont);
-                pPainter->drawText(textPoint, text);
-
-                // QPainter::drawText starts drawing with the given QPointF as
-                // the bottom left of the text, but QRectF::moveTo takes the new
-                // top left of the QRectF.
-                QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - metric.height());
-                textRect.moveTo(textTopLeft);
-                markProperties.m_renderedArea = textRect;
-            }
-            currentMark->setProperties(markProperties);
+            pPainter->setPen(markProperties.m_textColor);
+            pPainter->setFont(markerFont);
+            pPainter->drawText(markProperties.m_renderedArea.bottomLeft(), textToRender.at(n));
         }
     }
 }
