@@ -196,7 +196,7 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files);
+    QList<TrackId> trackIds = m_pTrackCollection->getAndEnsureTrackIds(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

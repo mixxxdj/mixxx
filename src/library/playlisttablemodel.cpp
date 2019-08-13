@@ -89,15 +89,13 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
         QFileInfo fileInfo(fileLocation);
-        if (fileInfo.exists()) {
-            fileInfoList.append(fileInfo);
-        }
+        fileInfoList.append(fileInfo);
     }
 
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList);
+    QList<TrackId> trackIds = m_pTrackCollection->getAndEnsureTrackIds(fileInfoList, true);
 
     int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
-        trackIds, m_iPlaylistId, position);
+            trackIds, m_iPlaylistId, position);
 
     if (locations.size() - tracksAdded > 0) {
         qDebug() << "PlaylistTableModel::addTracks could not add"

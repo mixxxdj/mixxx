@@ -149,12 +149,10 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     QList<QFileInfo> fileInfoList;
     foreach(QString fileLocation, locations) {
         QFileInfo fileInfo(fileLocation);
-        if (fileInfo.exists()) {
-            fileInfoList.append(fileInfo);
-        }
+        fileInfoList.append(fileInfo);
     }
 
-    QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList));
+    QList<TrackId> trackIds = m_pTrackCollection->getAndEnsureTrackIds(fileInfoList, true);
     if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
         select();
         return trackIds.size();
