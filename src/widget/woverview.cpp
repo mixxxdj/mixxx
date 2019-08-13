@@ -302,6 +302,21 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                 markProperties.setBaseColor(newColor);
                 currentMark->setProperties(markProperties);
             }
+
+            int hotcueNumber = currentCue->getHotCue();
+            if (currentCue->getType() == Cue::CUE && hotcueNumber != WaveformMark::kNoHotCue) {
+                QString newLabel = currentCue->getLabel();
+                if (newLabel.isEmpty()) {
+                    newLabel = QString::number(hotcueNumber + 1);
+                } else {
+                  newLabel = QString("%1: %2").arg(hotcueNumber + 1).arg(newLabel);
+                }
+
+                if (markProperties.m_text != newLabel) {
+                    markProperties.m_text = newLabel;
+                    currentMark->setProperties(markProperties);
+                }
+            }
         }
     }
 }

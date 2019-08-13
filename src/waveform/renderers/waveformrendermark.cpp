@@ -123,7 +123,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         // because WaveformMarkSet stores one mark for each hotcue.
         WaveformMarkPointer pMark = m_marks.getHotCueMark(hotCue);
         if (pMark.isNull()) {
-        	continue;
+            continue;
         }
 
         WaveformMarkProperties markProperties = pMark->getProperties();

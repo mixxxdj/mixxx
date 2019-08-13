@@ -66,9 +66,8 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     QString markAlign = context.selectString(node, "Align");
     m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
 
-    if (WaveformMark::kNoHotCue != hotCue) {
-        m_text = context.selectString(node, "Text").arg(hotCue + 1);
-    } else {
+    // Hotcue text is set by the cue's label in the database, not by the skin.
+    if (hotCue == WaveformMark::kNoHotCue) {
         m_text = context.selectString(node, "Text");
     }
     m_pixmapPath = context.selectString(node, "Pixmap");
