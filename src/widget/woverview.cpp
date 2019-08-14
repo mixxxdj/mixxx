@@ -344,7 +344,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         }
     }
 
-    for (auto& mark : m_marks) {
+    for (const auto& mark : m_marks) {
         WaveformMarkProperties markProperties = mark->getProperties();
         if (markProperties.m_renderedArea.contains(e->pos())) {
             markProperties.m_bMouseHovering = true;
@@ -375,7 +375,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 
 void WOverview::leaveEvent(QEvent* e) {
     Q_UNUSED(e);
-    for (auto& mark : m_marks) {
+    for (const auto& mark : m_marks) {
         WaveformMarkProperties markProperties = mark->getProperties();
         markProperties.m_bMouseHovering = false;
         mark->setProperties(markProperties);
