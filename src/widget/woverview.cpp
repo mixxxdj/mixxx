@@ -344,10 +344,15 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         }
     }
 
-    for (const auto& mark : m_marks) {
+    // Without tracking the first hovered WaveformMark, the user could hover one
+    // mark, then drag the cursor over another, and the second one's label text
+    // would be drawn under the first.
+    bool firstMarkHovered = false;
+    for (const auto& mark : m_marksToRender) {
         WaveformMarkProperties markProperties = mark->getProperties();
-        if (markProperties.m_renderedArea.contains(e->pos())) {
+        if (markProperties.m_renderedArea.contains(e->pos()) && !firstMarkHovered) {
             markProperties.m_bMouseHovering = true;
+            firstMarkHovered = true;
         } else {
             markProperties.m_bMouseHovering = false;
         }
@@ -615,7 +620,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
     QList<QString> textToRender;
     QRectF expandedLabelRect;
-    int firstHoveredIndex = -1;
 
     for (int i = 0; i < m_marksToRender.size(); ++i) {
         WaveformMarkProperties markProperties = m_marksToRender.at(i)->getProperties();
@@ -655,13 +659,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 text = metric.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
             }
             textToRender.append(text);
-
-            // Without tracking the first hovered WaveformMark, the user could
-            // hover one mark, then drag the cursor over another, and the second
-            // one's label text would be drawn under the first.
-            if (markProperties.m_bMouseHovering && firstHoveredIndex == -1) {
-                firstHoveredIndex = i;
-            }
 
             QRectF textRect = metric.boundingRect(text);
             QPointF textPoint;
@@ -720,7 +717,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         WaveformMarkProperties markProperties = m_marksToRender.at(n)->getProperties();
         QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
         if (!markProperties.m_renderedArea.intersects(expandedLabelRect)
-            || (markProperties.m_bMouseHovering && firstHoveredIndex == n)) {
+            || markProperties.m_bMouseHovering) {
             pPainter->setPen(shadowPen);
             pPainter->setFont(shadowFont);
             pPainter->drawText(markProperties.m_renderedArea.bottomLeft(), textToRender.at(n));
