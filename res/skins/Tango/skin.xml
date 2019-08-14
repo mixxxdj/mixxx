@@ -468,26 +468,29 @@
                       <Collapsible>0,0</Collapsible>
                       <Children>
 
-                        <WidgetGroup>
-                          <Layout>vertical</Layout>
-                          <SizePolicy>me,max</SizePolicy>
-                          <Children>
-                            <SingletonContainer>
-                              <ObjectName>Waveforms_Singleton</ObjectName>
-                            </SingletonContainer>
-                          </Children>
-                          <Connection>
-                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </WidgetGroup>
-
                         <WidgetGroup><!-- Decks + FX + Samplers + Library -->
                           <Layout>vertical</Layout>
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
 
-                            <Template src="skin:../Tango/decks_12.xml"/>
+                            <!-- Show waveforms above decks with 2 decks, between
+                            decks with 4 decks. -->
+                            <WidgetGroup>
+                              <Layout>vertical</Layout>
+                              <SizePolicy>me,max</SizePolicy>
+                              <Children>
+                                <SingletonContainer>
+                                  <ObjectName>Waveforms_Singleton</ObjectName>
+                                </SingletonContainer>
+                              </Children>
+                              <Connection>
+                                <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                                <BindProperty>visible</BindProperty>
+                                <Transform><Not/></Transform>
+                              </Connection>
+                            </WidgetGroup>
+
+                            <Template src="skin:decks_12.xml"/>
 
                             <WidgetGroup>
                               <Layout>vertical</Layout>
@@ -503,7 +506,23 @@
                               </Connection>
                             </WidgetGroup>
 
-                            <Template src="skin:../Tango/decks_34.xml"/>
+                            <!-- Show waveforms above decks with 2 decks, between
+                            decks with 4 decks. -->
+                            <WidgetGroup>
+                              <Layout>vertical</Layout>
+                              <SizePolicy>me,max</SizePolicy>
+                              <Children>
+                                <SingletonContainer>
+                                  <ObjectName>Waveforms_Singleton</ObjectName>
+                                </SingletonContainer>
+                              </Children>
+                              <Connection>
+                                <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                                <BindProperty>visible</BindProperty>
+                              </Connection>
+                            </WidgetGroup>
+
+                            <Template src="skin:decks_34.xml"/>
 
                             <WidgetGroup>
                               <Layout>vertical</Layout>
