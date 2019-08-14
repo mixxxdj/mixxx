@@ -294,10 +294,12 @@ void WOverview::onRateSliderChange(double /*v*/) {
 
 // currently only updates the mark color but it could be easily extended.
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
+    m_marksToRender.clear();
     for (CuePointer currentCue: loadedCues) {
         const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
-        if (currentMark && currentMark->isValid()) {
+        if (currentMark && currentMark->isValid() && currentMark->isVisible()
+            && currentMark->getSamplePosition() >= 0.0) {
             WaveformMarkProperties markProperties = currentMark->getProperties();
             QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
             if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
@@ -307,6 +309,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
             int hotcueNumber = currentCue->getHotCue();
             if (currentCue->getType() == Cue::CUE && hotcueNumber != WaveformMark::kNoHotCue) {
+                // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
                     newLabel = QString::number(hotcueNumber + 1);
@@ -319,8 +322,11 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                     currentMark->setProperties(markProperties);
                 }
             }
+
+            m_marksToRender.append(currentMark);
         }
     }
+    std::sort(m_marksToRender.begin(), m_marksToRender.end());
 }
 
 // connecting the tracks cuesUpdated and onMarkChanged is not possible
@@ -606,25 +612,19 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     // In the first loop, the lines are drawn and the text to render plus its
     // location are calculated. The text must be drawn in the second loop to
     // prevent the lines of following WaveformMarks getting drawn over it.
-    QList<WaveformMarkPointer> marksToRender;
-    for (WaveformMarkPointer mark : m_marks) {
-        if (mark->isValid() && mark->getSamplePosition() >= 0.0 && mark->isVisible()) {
-            marksToRender.append(mark);
-        }
-    }
-    std::sort(marksToRender.begin(), marksToRender.end());
+
     QList<QString> textToRender;
     QRectF expandedLabelRect;
     int firstHoveredIndex = -1;
 
-    for (int i = 0; i < marksToRender.size(); ++i) {
-        WaveformMarkProperties markProperties = marksToRender.at(i)->getProperties();
+    for (int i = 0; i < m_marksToRender.size(); ++i) {
+        WaveformMarkProperties markProperties = m_marksToRender.at(i)->getProperties();
 
         PainterScope painterScope(pPainter);
 
         //const float markPosition = 1.0 +
-        //        (marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-        const float markPosition = offset + marksToRender.at(i)->getSamplePosition() * gain;
+        //        (m_marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
+        const float markPosition = offset + m_marksToRender.at(i)->getSamplePosition() * gain;
 
         QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
 
@@ -650,8 +650,8 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // Only allow the text to overlap the following mark if the mouse is
             // hovering over it. Otherwise, elide it if it would render over
             // the next label.
-            if (!markProperties.m_bMouseHovering && i < marksToRender.size()-1) {
-                const float nextMarkPosition = offset + marksToRender.at(i+1)->getSamplePosition() * gain;
+            if (!markProperties.m_bMouseHovering && i < m_marksToRender.size()-1) {
+                const float nextMarkPosition = offset + m_marksToRender.at(i+1)->getSamplePosition() * gain;
                 text = metric.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
             }
             textToRender.append(text);
@@ -713,11 +713,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // Placeholder to keep order
             textToRender.append(QString());
         }
-        marksToRender.at(i)->setProperties(markProperties);
+        m_marksToRender.at(i)->setProperties(markProperties);
     }
 
-    for (int n = 0; n < marksToRender.size(); ++n) {
-        WaveformMarkProperties markProperties = marksToRender.at(n)->getProperties();
+    for (int n = 0; n < m_marksToRender.size(); ++n) {
+        WaveformMarkProperties markProperties = m_marksToRender.at(n)->getProperties();
         QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
         if (!markProperties.m_renderedArea.intersects(expandedLabelRect)
             || (markProperties.m_bMouseHovering && firstHoveredIndex == n)) {
