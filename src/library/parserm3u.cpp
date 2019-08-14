@@ -81,9 +81,9 @@ QList<QString> ParserM3u::parse(QString sFilename)
         textstream.setCodec("windows-1252");
     }
 
-    const QString basepath = sFilename.section('/', 0, -2);
+    const auto basePath = sFilename.section('/', 0, -2);
     while (!textstream.atEnd()) {
-        QString sLine = getFilepath(&textstream, basepath);
+        QString sLine = getFilePath(&textstream, basePath);
         if (sLine.isEmpty()) {
             continue;
         }
@@ -93,26 +93,19 @@ QList<QString> ParserM3u::parse(QString sFilename)
     return m_sLocations;
 }
 
-
-QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
+QString ParserM3u::getFilePath(QTextStream* stream, const QString& basePath) {
     QString textline;
     while (!(textline = stream->readLine().trimmed()).isEmpty()) {
         if (textline.startsWith("#")) {
             // Skip comments
             continue;
         }
-        TrackFile trackFile = playlistEntryToTrackFile(textline);
+        auto trackFile = playlistEntryToTrackFile(textline, basePath);
         if (trackFile.checkFileExists()) {
             return trackFile.location();
-        } else {
-            // Try relative to m3u dir
-            QString rel = QDir(basepath).filePath(trackFile.location());
-            if (QFile::exists(rel)) {
-                return rel;
-            }
-            // We couldn't match this to a real file so ignore it
-            qWarning() << trackFile.location() << "not found";
         }
+        // We couldn't match this to a real file so ignore it
+        qWarning() << trackFile << "not found";
     }
     // Signal we reached the end
     return QString();

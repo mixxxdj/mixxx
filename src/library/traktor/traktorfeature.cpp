@@ -25,7 +25,7 @@ QString fromTraktorSeparators(QString path) {
 }
 
 
-} // anonymous namespace 
+} // anonymous namespace
 
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
@@ -601,7 +601,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
         musicFolder =  QDir::homePath() + "/collection.nml";
     } else { //Select the folder with the highest version as default Traktor folder
         QList<int> versions = installed_ts_map.keys();
-        qSort(versions);
+        std::sort(versions.begin(), versions.end());
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
     }
     qDebug() << "Traktor Library Location=[" << musicFolder << "]";

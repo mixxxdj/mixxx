@@ -78,7 +78,7 @@
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:../Deere/style.qss" src-mac="skin:../Deere/style-mac.qss"/>
 
-  <Size>1024me,550me</Size>
+  <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
 
   <Children>
@@ -143,7 +143,6 @@
           <!-- Traditional Blue -->
           <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
           <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -157,7 +156,6 @@
           <!-- Traditional Orange -->
           <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
           <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -171,7 +169,6 @@
           <!-- Violet -->
           <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
           <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -185,7 +182,6 @@
           <!-- Lime -->
           <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
           <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -231,6 +227,9 @@
       <Children>
         <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel1]</SetVariable>
+          <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -240,6 +239,9 @@
       <Children>
         <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel2]</SetVariable>
+          <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -249,6 +251,9 @@
       <Children>
         <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel3]</SetVariable>
+          <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -258,6 +263,9 @@
       <Children>
         <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel4]</SetVariable>
+          <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -291,7 +299,6 @@
             <WidgetGroup><!-- Parallel Waveforms -->
               <ObjectName>Waveforms</ObjectName>
               <Layout>vertical</Layout>
-              <Size>-1me,4min</Size>
               <Connection>
                 <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <BindProperty>visible</BindProperty>
@@ -357,13 +364,7 @@
           <SizePolicy>me,me</SizePolicy>
           <Children>
 
-            <WidgetGroup>
-              <SizePolicy>me,max</SizePolicy>
-              <Layout>horizontal</Layout>
-              <Children>
-                <Template src="skin:../Deere/decks_small.xml"/>
-              </Children>
-            </WidgetGroup>
+            <Template src="skin:../Deere/decks_small.xml"/>
 
             <SingletonContainer>
               <ObjectName>Library</ObjectName>
