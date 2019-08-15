@@ -6,16 +6,6 @@ Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
 Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
 -->
 <Template>
-  <SingletonDefinition>
-    <ObjectName>VuMeterMaster</ObjectName>
-    <Children>
-      <Template src="skin:vumeter_floating.xml">
-        <SetVariable name="group">[Master]</SetVariable>
-        <SetVariable name="Label">Master</SetVariable>
-      </Template>
-    </Children>
-  </SingletonDefinition>
-
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>max,min</SizePolicy>

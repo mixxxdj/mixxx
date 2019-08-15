@@ -8,9 +8,10 @@
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class WTrackProperty : public WLabel {
+class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
@@ -19,6 +20,7 @@ class WTrackProperty : public WLabel {
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

@@ -11,8 +11,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef SINC_WINDOW_H
-#define SINC_WINDOW_H
+#ifndef QM_DSP_SINC_WINDOW_H
+#define QM_DSP_SINC_WINDOW_H
 
 #include <vector>
 
@@ -33,21 +33,21 @@ public:
     SincWindow(int length, double p) : m_length(length), m_p(p) { init(); }
 
     int getLength() const {
-	return m_length;
+        return m_length;
     }
 
     const double *getWindow() const { 
-	return m_window.data();
+        return m_window.data();
     }
 
     void cut(double *src) const { 
-	cut(src, src); 
+        cut(src, src); 
     }
 
     void cut(const double *src, double *dst) const {
-	for (int i = 0; i < m_length; ++i) {
-	    dst[i] = src[i] * m_window[i];
-	}
+        for (int i = 0; i < m_length; ++i) {
+            dst[i] = src[i] * m_window[i];
+        }
     }
 
 private:

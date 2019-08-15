@@ -7,15 +7,13 @@
 
 #include "util/assert.h"
 
-
 namespace mixxx {
 
 // Base class for sound sources with a default implementation (Taglib)
 // for reading/writing metadata.
 class SoundSource
-    : public AudioSource,
-      public MetadataSourceTagLib {
-
+        : public AudioSource,
+          public MetadataSourceTagLib {
   public:
     static QString getFileExtensionFromUrl(QUrl url);
 
@@ -23,15 +21,15 @@ class SoundSource
         return m_type;
     }
 
-protected:
+  protected:
     // If no type is provided the file extension of the file referred
     // by the URL will be used as the type of the SoundSource.
     explicit SoundSource(QUrl url)
-        : SoundSource(url, getFileExtensionFromUrl(url)) {
+            : SoundSource(url, getFileExtensionFromUrl(url)) {
     }
     SoundSource(QUrl url, QString type);
 
-private:
+  private:
     QString m_type;
 };
 

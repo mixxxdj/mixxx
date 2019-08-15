@@ -41,6 +41,7 @@ class EvictAndSaveFunctor {
     }
 
     void operator()(Track* plainPtr) {
+        Q_UNUSED(plainPtr); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
         // functor and the owning reference counting object.
@@ -133,6 +134,11 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
     m_pInstance->relocateTracks(pRelocator);
 }
 
+void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
+    DEBUG_ASSERT(m_pInstance);
+    return m_pInstance->purgeTrackId(trackId);
+}
+
 void GlobalTrackCacheLocker::deactivateCache() const {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->deactivate();
@@ -156,7 +162,7 @@ TrackPointer GlobalTrackCacheLocker::lookupTrackByRef(
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken)
         : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
     DEBUG_ASSERT(m_pInstance);
@@ -164,7 +170,7 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        QFileInfo fileInfo,
+        TrackFile fileInfo,
         TrackId trackId,
         SecurityTokenPointer pSecurityToken)
         : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
@@ -216,6 +222,7 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
+    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 
@@ -272,23 +279,21 @@ void GlobalTrackCache::relocateTracks(
             ++i) {
         const QString oldCanonicalLocation = i->first;
         Track* plainPtr = i->second->getPlainPtr();
-        QFileInfo fileInfo = plainPtr->getFileInfo();
-        // The file info has to be refreshed, otherwise it might return
-        // a cached and outdated absolute and canonical location!
-        fileInfo.refresh();
+        auto fileInfo = plainPtr->getFileInfo();
         TrackRef trackRef = TrackRef::fromFileInfo(
                 fileInfo,
                 plainPtr->getId());
         if (!trackRef.hasCanonicalLocation() && trackRef.hasId() && pRelocator) {
-            fileInfo = pRelocator->relocateCachedTrack(
+            auto relocatedFileInfo = pRelocator->relocateCachedTrack(
                         trackRef.getId(),
                         fileInfo);
-            if (fileInfo != plainPtr->getFileInfo()) {
-                plainPtr->relocate(fileInfo);
+            if (fileInfo != relocatedFileInfo) {
+                plainPtr->relocate(relocatedFileInfo);
+                trackRef = TrackRef::fromFileInfo(
+                        relocatedFileInfo,
+                        trackRef.getId());
+                fileInfo = std::move(relocatedFileInfo);
             }
-            trackRef = TrackRef::fromFileInfo(
-                    fileInfo,
-                    trackRef.getId());
         }
         if (!trackRef.hasCanonicalLocation()) {
             kLogger.warning()
@@ -333,7 +338,7 @@ void GlobalTrackCache::deactivate() {
 
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr= j->second->getPlainPtr();
         m_pSaver->saveCachedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
     }
@@ -438,7 +443,7 @@ TrackPointer GlobalTrackCache::revive(
 
 void GlobalTrackCache::resolve(
         GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-        QFileInfo /*in*/ fileInfo,
+        TrackFile /*in*/ fileInfo,
         TrackId trackId,
         SecurityTokenPointer pSecurityToken) {
     DEBUG_ASSERT(pCacheResolver);
@@ -578,6 +583,17 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(m_tracksById.find(trackId) != m_tracksById.end());
 
     return trackRefWithId;
+}
+
+void GlobalTrackCache::purgeTrackId(TrackId trackId) {
+    DEBUG_ASSERT(trackId.isValid());
+
+    const auto trackById(m_tracksById.find(trackId));
+    if (m_tracksById.end() != trackById) {
+        Track* track = trackById->second->getPlainPtr();
+        track->resetId();
+        m_tracksById.erase(trackById);
+    }
 }
 
 void GlobalTrackCache::evictAndSave(

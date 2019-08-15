@@ -51,8 +51,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
     if (m_waveformWidget) {
-        m_waveformWidget->resize(width(), height(),
-                                 WaveformWidgetFactory::getDevicePixelRatio());
+        m_waveformWidget->resize(width(), height());
     }
 }
 
@@ -150,26 +149,11 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
 }
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
 }
 
 void WWaveformViewer::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_pGroup, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {

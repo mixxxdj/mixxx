@@ -19,15 +19,16 @@
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
-WSpinny::WSpinny(QWidget* parent, const QString& group,
-                 UserSettingsPointer pConfig,
-                 VinylControlManager* pVCMan,
-                 BaseTrackPlayer* pPlayer)
+WSpinny::WSpinny(
+        QWidget* parent,
+        const QString& group,
+        UserSettingsPointer pConfig,
+        VinylControlManager* pVCMan,
+        BaseTrackPlayer* pPlayer)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pPlay(nullptr),
           m_pPlayPos(nullptr),
           m_pVisualPlayPos(nullptr),
           m_pTrackSamples(nullptr),
@@ -55,7 +56,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           m_iFullRotations(0),
           m_dPrevTheta(0.),
           m_dTheta(0.),
-          m_dRotationsPerSecond(0.),
+          m_dRotationsPerSecond(MIXXX_VINYL_SPEED_33_NUM / 60),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
@@ -69,6 +70,9 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
     qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
@@ -182,8 +186,6 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
     m_qImage.fill(qRgba(0,0,0,0));
 #endif
 
-    m_pPlay = new ControlProxy(
-            m_group, "play", this);
     m_pPlayPos = new ControlProxy(
             m_group, "playposition", this);
     m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
@@ -301,7 +303,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
 }
 
-void WSpinny::render() {
+void WSpinny::render(VSyncThread* vSyncThread) {
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -311,19 +313,17 @@ void WSpinny::render() {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull()) {
-        m_pVisualPlayPos->getPlaySlipAt(0,
-                                        &m_dAngleCurrentPlaypos,
-                                        &m_dGhostAngleCurrentPlaypos);
+    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
+        m_pVisualPlayPos->getPlaySlipAtNextVSync(
+                vSyncThread,
+                &m_dAngleCurrentPlaypos,
+                &m_dGhostAngleCurrentPlaypos);
     }
 
-    QStyleOption option;
-    option.initFrom(this);
-    QStylePainter p(this);
+    QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
     p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
-    p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pBgImage) {
         p.drawImage(rect(), *m_pBgImage, m_pBgImage->rect());
@@ -397,7 +397,7 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    VSyncThread::swapGl(this, 0);
+    swapBuffers();
 }
 
 
@@ -678,26 +678,9 @@ bool WSpinny::event(QEvent* pEvent) {
 }
 
 void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_pPlay->get() > 0.0,
-                                             m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
-void WSpinny::dropEvent(QDropEvent * event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_pPlay->get() > 0.0,
-                                             m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
-    }
-    event->ignore();
+void WSpinny::dropEvent(QDropEvent* event) {
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

@@ -207,7 +207,7 @@ Variables:
                     <MarkerColor>#00FF00</MarkerColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
-                      <Color>#00FF00</Color>
+                      <Color>#666666</Color>
                       <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>

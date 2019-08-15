@@ -209,7 +209,7 @@
 						<script-binding/>
 					</options>
 				</control>
-<!--				<control>
+				<control>
 					<group>[Channel1]</group>
 					<key>NumarkDJ2Go.cue</key>
 					<status>0x80</status>
@@ -217,7 +217,7 @@
                 			<options>
 						<script-binding/>
 					</options>
-				</control> -->
+				</control>
 				<control>
 					<group>[Channel1]</group>
 					<key>NumarkDJ2Go.play</key>

@@ -1,5 +1,3 @@
-#include <QtAlgorithms>
-
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
@@ -106,7 +104,7 @@ void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
     foreach (const QModelIndex& index, indices) {
         rows.append(index.row());
     }
-    qSort(rows);
+    std::sort(rows.begin(), rows.end());
 
     int lastRow = -1;
     while (!rows.empty()) {

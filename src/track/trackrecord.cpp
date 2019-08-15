@@ -8,7 +8,6 @@ namespace mixxx {
 TrackRecord::TrackRecord(TrackId id)
         : m_id(std::move(id)),
           m_metadataSynchronized(false),
-          m_cuePoint(0.0),
           m_rating(0),
           m_bpmLocked(false) {
 }

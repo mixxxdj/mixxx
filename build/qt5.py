@@ -935,7 +935,8 @@ def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=
         try : self.AppendUnique(CPPDEFINES=moduleDefines[module])
         except: pass
     debugSuffix = ''
-    if (sys.platform.startswith("linux") or sys.platform.startswith("darwin")) and not crosscompiling :
+    if (sys.platform.startswith("linux") or sys.platform.startswith("darwin") or
+        sys.platform.find("bsd") >= 0) and not crosscompiling :
         if debug : debugSuffix = '_debug'
         # Call _find_qtdirs with QtCore to get at least one initialized for later usage with RPATH
         qt_dirs = _find_qtdirs("$QT5DIR","QtCore")

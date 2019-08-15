@@ -11,12 +11,18 @@ namespace mixxx {
 
 struct AnalyzerPluginInfo {
     AnalyzerPluginInfo(const QString& id,
-                       const QString& author,
-                       const QString& name)
-            : id(id), author(author), name(name) { }
+            const QString& author,
+            const QString& name,
+            bool isConstantTempoSupported)
+            : id(id),
+              author(author),
+              name(name),
+              constantTempoSupported(isConstantTempoSupported) {
+    }
     QString id;
     QString author;
     QString name;
+    bool constantTempoSupported;
 };
 
 class AnalyzerPlugin {
@@ -35,7 +41,7 @@ class AnalyzerPlugin {
     virtual AnalyzerPluginInfo info() const = 0;
 
     virtual bool initialize(int samplerate) = 0;
-    virtual bool process(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual bool processSamples(const CSAMPLE* pIn, const int iLen) = 0;
     virtual bool finalize() = 0;
 };
 
@@ -59,6 +65,6 @@ class AnalyzerKeyPlugin : public AnalyzerPlugin {
     virtual KeyChangeList getKeyChanges() const = 0;
 };
 
-}  // namespace mixxx
+} // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERPLUGIN_H */

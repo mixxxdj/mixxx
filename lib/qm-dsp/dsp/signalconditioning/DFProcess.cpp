@@ -27,20 +27,21 @@
 #include <cstring>
 #include <algorithm>
 
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-DFProcess::DFProcess( DFProcConfig Config )
+DFProcess::DFProcess( DFProcConfig config )
 {
     filtSrc = NULL;
-    filtDst = NULL;	
+    filtDst = NULL;     
     m_filtScratchIn = NULL;
     m_filtScratchOut = NULL;
 
     m_FFOrd = 0;
 
-    initialise( Config );
+    initialise( config );
 }
 
 DFProcess::~DFProcess()
@@ -48,40 +49,36 @@ DFProcess::~DFProcess()
     deInitialise();
 }
 
-void DFProcess::initialise( DFProcConfig Config )
+void DFProcess::initialise( DFProcConfig config )
 {
-    m_length = Config.length;
-    m_winPre = Config.winPre;
-    m_winPost = Config.winPost;
-    m_alphaNormParam = Config.AlphaNormParam;
+    m_length = config.length;
+    m_winPre = config.winPre;
+    m_winPost = config.winPost;
+    m_alphaNormParam = config.AlphaNormParam;
 
-    m_isMedianPositive = Config.isMedianPositive;
+    m_isMedianPositive = config.isMedianPositive;
 
     filtSrc = new double[ m_length ];
     filtDst = new double[ m_length ];
 
-	
-    //Low Pass Smoothing Filter Config
-    m_FilterConfigParams.ord = Config.LPOrd;
-    m_FilterConfigParams.ACoeffs = Config.LPACoeffs;
-    m_FilterConfigParams.BCoeffs = Config.LPBCoeffs;
-	
-    m_FiltFilt = new FiltFilt( m_FilterConfigParams );
-	
+    Filter::Parameters params;
+    params.a = std::vector<double>
+        (config.LPACoeffs, config.LPACoeffs + config.LPOrd + 1);
+    params.b = std::vector<double>
+        (config.LPBCoeffs, config.LPBCoeffs + config.LPOrd + 1);
+    
+    m_FiltFilt = new FiltFilt(params);
+        
     //add delta threshold
-    m_delta = Config.delta;
+    m_delta = config.delta;
 }
 
 void DFProcess::deInitialise()
 {
     delete [] filtSrc;
-
     delete [] filtDst;
-
     delete [] m_filtScratchIn;
-
     delete [] m_filtScratchOut;
-
     delete m_FiltFilt;
 }
 
@@ -109,76 +106,71 @@ void DFProcess::medianFilter(double *src, double *dst)
 
     double* scratch = new double[ m_length ];
 
-    for( i = 0; i < m_winPre; i++)
-    {
-        if (index >= m_length) break;
+    for( i = 0; i < m_winPre; i++) {
+        
+        if (index >= m_length) {
+            break;
+        }
 
-	k = i + m_winPost + 1;
+        k = i + m_winPost + 1;
 
-	for( j = 0; j < k; j++)
-	{
-	    y[ j ] = src[ j ];
-	}
-	scratch[ index ] = MathUtilities::median( y, k );
-	index++;
+        for( j = 0; j < k; j++) {
+            y[ j ] = src[ j ];
+        }
+        scratch[ index ] = MathUtilities::median( y, k );
+        index++;
     }
 
-    for(  i = 0; i + m_winPost + m_winPre < m_length; i ++)
-    {
-        if (index >= m_length) break;
+    for(  i = 0; i + m_winPost + m_winPre < m_length; i ++) {
+        
+        if (index >= m_length) {
+            break;
+        }
+                         
+        l = 0;
+        for(  j  = i; j < ( i + m_winPost + m_winPre + 1); j++) {
+            y[ l ] = src[ j ];
+            l++;
+        }
 
-			 
-	l = 0;
-	for(  j  = i; j < ( i + m_winPost + m_winPre + 1); j++)
-	{
-	    y[ l ] = src[ j ];
-	    l++;
-	}
-
-	scratch[ index++ ] = MathUtilities::median( y, (m_winPost + m_winPre + 1 ));
+        scratch[index] = MathUtilities::median( y, (m_winPost + m_winPre + 1 ));
+        index++;
     }
 
-    for( i = std::max( m_length - m_winPost, 1); i < m_length; i++)
-    {
-        if (index >= m_length) break;
+    for( i = std::max( m_length - m_winPost, 1); i < m_length; i++) {
+        
+        if (index >= m_length) {
+            break;
+        }
 
-	k = std::max( i - m_winPre, 1);
+        k = std::max( i - m_winPre, 1);
 
-	l = 0;
-	for( j = k; j < m_length; j++)
-	{
-	    y[ l ] = src[ j ];
-
-	    l++;
-	}
-		
-	scratch[ index++ ] = MathUtilities::median( y, l); 
+        l = 0;
+        for( j = k; j < m_length; j++) {
+            y[ l ] = src[ j ];
+            l++;
+        }
+                
+        scratch[index] = MathUtilities::median( y, l);
+        index++;
     }
 
-
-    for( i = 0; i < m_length; i++ )
-    {
-	//add a delta threshold used as an offset when computing the smoothed detection function
-	//(helps to discard noise when detecting peaks)	
-	val = src[ i ] - scratch[ i ] - m_delta;
-		
-	if( m_isMedianPositive )
-	{
-	    if( val > 0 )
-	    {
-		dst[ i ]  = val;
-	    }
-	    else
-	    {
-		dst[ i ]  = 0;
-	    }
-	}
-	else
-	{
-	    dst[ i ]  = val;
-	}
+    for( i = 0; i < m_length; i++ ) {
+        //add a delta threshold used as an offset when computing the smoothed detection function
+        //(helps to discard noise when detecting peaks) 
+        val = src[ i ] - scratch[ i ] - m_delta;
+                
+        if( m_isMedianPositive ) {
+            if( val > 0 ) {
+                dst[ i ]  = val;
+            } else {
+                dst[ i ]  = 0;
+            }
+        } else {
+            dst[ i ]  = val;
+        }
     }
-	
+        
     delete [] y;
     delete [] scratch;
 }
@@ -194,8 +186,7 @@ void DFProcess::removeDCNormalize( double *src, double*dst )
 
     MathUtilities::getAlphaNorm( src, m_length, m_alphaNormParam, &DFAlphaNorm );
 
-    for( unsigned int i = 0; i< m_length; i++)
-    {
-	dst[ i ] = ( src[ i ] - DFMin ) / DFAlphaNorm; 
+    for (int i = 0; i < m_length; i++) {
+        dst[ i ] = ( src[ i ] - DFMin ) / DFAlphaNorm; 
     }
 }

@@ -1,5 +1,4 @@
-#ifndef _CLUSTER_MELT_H
-#define _CLUSTER_MELT_H
+/* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 /*
  *  cluster_melt.h
  *  cluster_melt
@@ -15,6 +14,9 @@
  *
  */
 
+#ifndef QM_DSP_CLUSTER_MELT_H
+#define QM_DSP_CLUSTER_MELT_H
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -22,15 +24,15 @@
 extern "C" {
 #endif
 
-void cluster_melt(double *h,		/* normalised histograms, as a vector in row major order */
-				  int m,			/* number of dimensions (i.e. histogram bins) */
-				  int n,			/* number of histograms */
-				  double *Bsched,	/* inverse temperature schedule */
-				  int t,			/* length of schedule */
-				  int k,			/* number of clusters */
-				  int l,			/* neighbourhood limit (supply zero to use default value) */
-				  int *c			/* sequence of cluster assignments */
-);
+void cluster_melt(double *h,            /* normalised histograms, as a vector in row major order */
+                  int m,                        /* number of dimensions (i.e. histogram bins) */
+                  int n,                        /* number of histograms */
+                  double *Bsched,       /* inverse temperature schedule */
+                  int t,                        /* length of schedule */
+                  int k,                        /* number of clusters */
+                  int l,                        /* neighbourhood limit (supply zero to use default value) */
+                  int *c                        /* sequence of cluster assignments */
+    );
 
 #ifdef __cplusplus
 }

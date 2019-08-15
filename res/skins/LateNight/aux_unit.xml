@@ -1,11 +1,11 @@
 <Template>
   <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>MicBorder</ObjectName>
+    <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
-        <ObjectName>MicInterior</ObjectName>
+        <ObjectName>MicAuxInterior</ObjectName>
         <BackPath>style/background_tile.png</BackPath>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>

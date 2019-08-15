@@ -2,15 +2,13 @@
 
 #include "util/logger.h"
 
-
 namespace mixxx {
 
 namespace {
 
 const Logger kLogger("AudioSource");
 
-inline
-QUrl validateUrl(QUrl url) {
+inline QUrl validateUrl(QUrl url) {
     DEBUG_ASSERT(url.isValid());
     VERIFY_OR_DEBUG_ASSERT(url.isLocalFile()) {
         kLogger.warning()

@@ -56,9 +56,8 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(pHintList);
     }
 
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override {
+    void notifySeek(double dNewPlaypos) override {
         Q_UNUSED(dNewPlaypos);
-        Q_UNUSED(adjustingPhase);
     }
 
     void trackLoaded(TrackPointer pTrack) override {

@@ -10,6 +10,11 @@
         <Size>0min,0min</Size>
       </WidgetGroup>
 
+      <WidgetGroup>
+        <MaximumSize>80,</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
+      </WidgetGroup>
+
       <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
         <ObjectName>AlignLeftTop</ObjectName>
         <Layout>vertical</Layout>
@@ -80,7 +85,7 @@
 
       <WidgetGroup>
         <MaximumSize>80,</MaximumSize>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
 
       <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
@@ -132,7 +137,52 @@
 
       <WidgetGroup>
         <MaximumSize>80,</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Intro + Outro -->
+        <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
+        <MaximumSize>52,52</MaximumSize>
+        <Children>
+          <WidgetGroup><!-- Intro -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">intro_start</SetVariable>
+              </Template>
+
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">intro_end</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup><!-- Outro -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">outro_start</SetVariable>
+              </Template>
+
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">outro_end</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+            <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- / Intro + Outro -->
+
+      <WidgetGroup>
+        <MaximumSize>10,</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
 
       <WidgetGroup><!-- HotCues, Play, Cue, Reverse -->

@@ -284,8 +284,7 @@ void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader& xml) {
     // iTunes/Album Artwork
     // iTunes/iTunes Media <- this is the "Music Folder"
     // iTunes/iTunes Music Library.xml <- this location we already knew
-    QByteArray strlocbytes = xml.readElementText().toUtf8();
-    QString music_folder = QUrl::fromEncoded(strlocbytes).toLocalFile();
+    QString music_folder = QUrl(xml.readElementText()).toLocalFile();
 
     QString music_folder_test = music_folder;
     music_folder_test.replace(localhost_token(), "");
@@ -435,7 +434,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     if (xml.hasError()) {
         // do error handling
-        qDebug() << "Abbort processing iTunes music collection";
+        qDebug() << "Abort processing iTunes music collection";
         qDebug() << "line:" << xml.lineNumber() <<
                 "column:" << xml.columnNumber() <<
                 "error:" << xml.errorString();
@@ -577,8 +576,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader& xml, QSqlQuery& query) {
                     continue;
                 }
                 if (key == kLocation) {
-                    QByteArray strlocbytes = content.toUtf8();
-                    location = QUrl::fromEncoded(strlocbytes).toLocalFile();
+                    location = TrackFile::fromUrl(QUrl(content)).location();
                     // Replace first part of location with the mixxx iTunes Root
                     // on systems where iTunes installed it only strips //localhost
                     // on iTunes from foreign systems the mount point is replaced

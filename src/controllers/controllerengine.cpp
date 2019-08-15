@@ -185,6 +185,7 @@ void ControllerEngine::gracefulShutdown() {
         ++it;
     }
 
+    m_pColorJSProxy.reset();
     delete m_pBaClass;
     m_pBaClass = nullptr;
 }
@@ -211,6 +212,9 @@ void ControllerEngine::initializeScriptEngine() {
         // ...under the legacy name as well
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
+
+    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
+    engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
@@ -760,19 +764,22 @@ void ScriptConnection::executeCallback(double value) const {
    Purpose: (Dis)connects a ScriptConnection
    Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
     if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
+        return false;
     }
 
-    coScript->removeScriptConnection(connection);
+    return coScript->removeScriptConnection(connection);
 }
 
-void ScriptConnectionInvokableWrapper::disconnect() {
-    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+bool ScriptConnectionInvokableWrapper::disconnect() {
+    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
+    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    m_isConnected = !success;
+    return success;
 }
 
 /* -------- ------------------------------------------------------

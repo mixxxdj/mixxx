@@ -9,7 +9,7 @@
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(new WCoverArtMenu(this)) {
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*,
@@ -34,12 +34,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
     setupUi(this);
 }
 
-DlgCoverArtFullSize::~DlgCoverArtFullSize() {
-    delete m_pCoverMenu;
-}
-
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
-    if (pTrack == nullptr) {
+    if (!pTrack) {
         return;
     }
     show();
@@ -117,33 +113,29 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
         //          << pixmap.size();
         m_pixmap = pixmap;
-        if (m_pixmap.isNull()) {
-            close();
-        } else {
-            // Scale down dialog if the pixmap is larger than the screen.
-            // Use 90% of screen size instead of 100% to prevent an issue with
-            // whitespace appearing on the side when resizing a window whose
-            // borders touch the edges of the screen.
-            QSize dialogSize = m_pixmap.size();
-            const QSize availableScreenSpace =
-                QApplication::desktop()->availableGeometry().size() * 0.9;
-            if (dialogSize.height() > availableScreenSpace.height()) {
-                dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
-                                 Qt::KeepAspectRatio);
-            } else if (dialogSize.width() > availableScreenSpace.width()) {
-                dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
-                                 Qt::KeepAspectRatio);
-            }
-            QPixmap resizedPixmap = m_pixmap.scaled(size(),
-                Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            coverArt->setPixmap(resizedPixmap);
-            // center the window
-            setGeometry(QStyle::alignedRect(
-                    Qt::LeftToRight,
-                    Qt::AlignCenter,
-                    dialogSize,
-                    QApplication::desktop()->availableGeometry()));
+        // Scale down dialog if the pixmap is larger than the screen.
+        // Use 90% of screen size instead of 100% to prevent an issue with
+        // whitespace appearing on the side when resizing a window whose
+        // borders touch the edges of the screen.
+        QSize dialogSize = m_pixmap.size();
+        const QSize availableScreenSpace =
+            QApplication::desktop()->availableGeometry().size() * 0.9;
+        if (dialogSize.height() > availableScreenSpace.height()) {
+            dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
+                             Qt::KeepAspectRatio);
+        } else if (dialogSize.width() > availableScreenSpace.width()) {
+            dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
+                             Qt::KeepAspectRatio);
         }
+        QPixmap resizedPixmap = m_pixmap.scaled(size(),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        coverArt->setPixmap(resizedPixmap);
+        // center the window
+        setGeometry(QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                dialogSize,
+                QApplication::desktop()->availableGeometry()));
     }
 }
 
@@ -164,14 +156,38 @@ void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverIn
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
-    Q_UNUSED(event);
+    if (!m_pCoverMenu->isVisible() && event->button() == Qt::LeftButton) {
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+        m_coverPressed = true;
+        m_dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    }
+}
 
+void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
+    m_coverPressed = false;
     if (m_pCoverMenu->isVisible()) {
         return;
     }
 
     if (event->button() == Qt::LeftButton && isVisible()) {
-        close();
+        if (m_clickTimer.isActive()) {
+        // short press
+            close();
+        } else {
+        // long press
+            return;
+        }
+        event->accept();
+    }
+}
+
+void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
+    if (m_coverPressed) {
+        move(event->globalPos() - m_dragStartPosition);
+        event->accept();
+    } else {
+        return;
     }
 }
 

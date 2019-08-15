@@ -36,6 +36,8 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void playlistChanged(int playlistId);
 
   private:
+    void initSortColumnMapping() override;
+
     int m_iPlaylistId;
     bool m_showAll;
 };

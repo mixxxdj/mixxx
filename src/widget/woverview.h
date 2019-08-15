@@ -19,8 +19,11 @@
 #include <QList>
 
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
+
+#include "util/color/color.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -28,8 +31,9 @@
 #include "skin/skincontext.h"
 
 class PlayerManager;
+class PainterScope;
 
-class WOverview : public WWidget {
+class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
@@ -38,10 +42,12 @@ class WOverview : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalyzerProgress(TrackId trackId,
+            AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
     WOverview(
@@ -82,19 +88,31 @@ class WOverview : public WWidget {
     float m_waveformPeak;
 
     int m_diffGain;
+    qreal m_devicePixelRatio;
 
   private slots:
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void onRateSliderChange(double v);
+    void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
 
   private:
-    // Append the waveform overview pixmap according to available data in waveform
+    // Append the waveform overview pixmap according to available data
+    // in waveform
     virtual bool drawNextPixmapPart() = 0;
-    void paintText(const QString &text, QPainter *painter);
+    void drawEndOfTrackBackground(QPainter* pPainter);
+    void drawAxis(QPainter* pPainter);
+    void drawWaveformPixmap(QPainter* pPainter);
+    void drawEndOfTrackFrame(QPainter* pPainter);
+    void drawAnalyzerProgress(QPainter* pPainter);
+    void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
+    void drawMarks(QPainter* pPainter, const float offset, const float gain);
+    void drawCurrentPosition(QPainter* pPainter);
+    void paintText(const QString& text, QPainter* pPainter);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }
@@ -102,12 +120,17 @@ class WOverview : public WWidget {
         return (static_cast<double>(position) + m_b) / m_a;
     }
 
+    void updateCues(const QList<CuePointer> &loadedCues);
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
+    ControlProxy* m_pRateDirControl;
+    ControlProxy* m_pRateRangeControl;
+    ControlProxy* m_pRateSliderControl;
+    ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -125,6 +148,7 @@ class WOverview : public WWidget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 

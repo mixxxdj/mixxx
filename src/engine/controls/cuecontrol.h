@@ -1,4 +1,4 @@
-// cuecontrol.h
+﻿// cuecontrol.h
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef CUECONTROL_H
@@ -18,6 +18,23 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
+enum SeekOnLoadMode {
+    SEEK_ON_LOAD_DEFAULT = 0,  // Use CueRecall preference setting
+    SEEK_ON_LOAD_ZERO_POS = 1,  // Use 0:00.000
+    SEEK_ON_LOAD_MAIN_CUE = 2,  // Use main cue point
+    SEEK_ON_LOAD_INTRO_CUE = 3,  // Use intro cue point
+    SEEK_ON_LOAD_NUM_MODES
+};
+
+inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
+    // msvs does not allow to cast from double to an enum
+    SeekOnLoadMode mode = static_cast<SeekOnLoadMode>(int(value));
+    if (mode >= SEEK_ON_LOAD_NUM_MODES || mode < 0) {
+        return SEEK_ON_LOAD_DEFAULT;
+    }
+    return mode;
+}
+
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
@@ -30,6 +47,8 @@ class HotcueControl : public QObject {
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
+    void setColor(PredefinedColorPointer newColor);
+    PredefinedColorPointer getColor() const;
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() {
@@ -54,6 +73,7 @@ class HotcueControl : public QObject {
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
     void slotHotcuePositionChanged(double newPosition);
+    void slotHotcueColorChanged(double newColorId);
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v);
@@ -64,6 +84,7 @@ class HotcueControl : public QObject {
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
+    void hotcueColorChanged(HotcueControl* pHotcue, double newColorId);
     void hotcuePlay(double v);
 
   private:
@@ -76,6 +97,7 @@ class HotcueControl : public QObject {
     // Hotcue state controls
     ControlObject* m_hotcuePosition;
     ControlObject* m_hotcueEnabled;
+    ControlObject* m_hotcueColor;
     // Hotcue button controls
     ControlObject* m_hotcueSet;
     ControlObject* m_hotcueGoto;
@@ -99,14 +121,21 @@ class CueControl : public EngineControl {
     virtual void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
+    bool isTrackAtZeroPos();
+    bool isTrackAtIntroCue();
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
+    bool isCueRecallEnabled();
     void trackLoaded(TrackPointer pNewTrack) override;
+    SeekOnLoadMode getSeekOnLoadMode();
 
   private slots:
+    void quantizeChanged(double v);
+
     void cueUpdated();
     void trackCuesUpdated();
+    void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
@@ -117,6 +146,7 @@ class CueControl : public EngineControl {
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
 
     void cueSet(double v);
+    void cueClear(double v);
     void cueGoto(double v);
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
@@ -128,7 +158,26 @@ class CueControl : public EngineControl {
     void pause(double v);
     void playStutter(double v);
 
+    void introStartSet(double v);
+    void introStartClear(double v);
+    void introStartActivate(double v);
+    void introEndSet(double v);
+    void introEndClear(double v);
+    void introEndActivate(double v);
+    void outroStartSet(double v);
+    void outroStartClear(double v);
+    void outroStartActivate(double v);
+    void outroEndSet(double v);
+    void outroEndClear(double v);
+    void outroEndActivate(double v);
+
   private:
+    enum class QuantizeMode {
+        ClosestBeat,
+        PreviousBeat,
+        NextBeat,
+    };
+
     enum class TrackAt {
         Cue,
         End,
@@ -139,6 +188,10 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
+    void loadCuesFromTrack();
+    void reloadCuesFromTrack();
+    double quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode);
+    double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
@@ -146,6 +199,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
+    ControlObject* m_pPrevBeat;
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
@@ -156,7 +210,9 @@ class CueControl : public EngineControl {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
+    ControlObject* m_pSeekOnLoadMode;
     ControlPushButton* m_pCueSet;
+    ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
     ControlPushButton* m_pPlayStutter;
@@ -167,6 +223,31 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCuePlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
+
+    ControlObject* m_pIntroStartPosition;
+    ControlObject* m_pIntroStartEnabled;
+    ControlPushButton* m_pIntroStartSet;
+    ControlPushButton* m_pIntroStartClear;
+    ControlPushButton* m_pIntroStartActivate;
+
+    ControlObject* m_pIntroEndPosition;
+    ControlObject* m_pIntroEndEnabled;
+    ControlPushButton* m_pIntroEndSet;
+    ControlPushButton* m_pIntroEndClear;
+    ControlPushButton* m_pIntroEndActivate;
+
+    ControlObject* m_pOutroStartPosition;
+    ControlObject* m_pOutroStartEnabled;
+    ControlPushButton* m_pOutroStartSet;
+    ControlPushButton* m_pOutroStartClear;
+    ControlPushButton* m_pOutroStartActivate;
+
+    ControlObject* m_pOutroEndPosition;
+    ControlObject* m_pOutroEndEnabled;
+    ControlPushButton* m_pOutroEndSet;
+    ControlPushButton* m_pOutroEndClear;
+    ControlPushButton* m_pOutroEndActivate;
+
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
 

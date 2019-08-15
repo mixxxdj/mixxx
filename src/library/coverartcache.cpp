@@ -197,7 +197,7 @@ void CoverArtCache::guessCover(TrackPointer pTrack) {
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Guessing cover art for"
-                    << pTrack->getLocation();
+                    << pTrack->getFileInfo();
         }
         CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
         pTrack->setCoverInfo(cover);

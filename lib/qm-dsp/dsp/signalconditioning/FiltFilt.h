@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,37 +12,29 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef FILTFILT_H
-#define FILTFILT_H
+#ifndef QM_DSP_FILTFILT_H
+#define QM_DSP_FILTFILT_H
 
 #include "Filter.h"
 
 /**
  * Zero-phase digital filter, implemented by processing the data
- * through a filter specified by the given FilterConfig structure (see
+ * through a filter specified by the given filter parameters (see
  * Filter) and then processing it again in reverse.
  */
 class FiltFilt  
 {
 public:
-    FiltFilt( FilterConfig Config );
+    FiltFilt(Filter::Parameters);
     virtual ~FiltFilt();
 
-    void reset();
-    void process( double* src, double* dst, unsigned int length );
+    void process(const double *const QM_R__ src,
+                 double *const QM_R__ dst,
+                 const int length);
 
 private:
-    void initialise( FilterConfig Config );
-    void deInitialise();
-
-    unsigned int m_ord;
-
-    Filter* m_filter;
-
-    double* m_filtScratchIn;
-    double* m_filtScratchOut;
-
-    FilterConfig m_filterConfig;
+    Filter m_filter;
+    int m_ord;
 };
 
 #endif

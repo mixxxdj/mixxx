@@ -9,7 +9,7 @@
             <file functionprefix="RADIUS2000" filename="American-Audio-RADIUS-2000-scripts.js"/>
         </scriptfiles>
         <controls>
-	    <control>
+        <control>
                 <status>0xB0</status>
                 <midino>0x38</midino>
                 <group>[Playlist]</group>
@@ -18,7 +18,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <status>0xB0</status>
                 <midino>0x36</midino>
                 <group>[Playlist]</group>
