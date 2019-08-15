@@ -93,7 +93,7 @@ class LoopingControl : public EngineControl {
     void slotLoopHalve(double pressed);
 
   private:
-    enum LoopSeekMode {
+    enum class LoopSeekMode {
         CHANGED, // force the playposition to be inside the loop after adjusting it.
         MOVED_OUT,
         NONE,
