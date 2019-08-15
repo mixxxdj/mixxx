@@ -54,6 +54,7 @@ WOverview::WOverview(
         m_group(group),
         m_pConfig(pConfig),
         m_endOfTrack(false),
+        m_pCueMenu(std::make_unique<CueMenu>(this)),
         m_bDrag(false),
         m_iPos(0),
         m_orientation(Qt::Horizontal),
@@ -362,14 +363,46 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    setControlParameterUp(dValue);
-    m_bDrag = false;
+    if (e->button() == Qt::LeftButton) {
+        setControlParameterUp(dValue);
+        m_bDrag = false;
+        // Do not seek when releasing a right click. This is important to
+        // prevent accidental seeking when trying to right click a hotcue.
+    }
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
-    m_bDrag = true;
+    if (e->button() == Qt::LeftButton) {
+        m_bDrag = true;
+    } else {
+        if (m_pCurrentTrack != nullptr) {
+            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            for (const auto& pMark : m_marksToRender) {
+                if (pMark->m_bMouseHovering) {
+                    // Currently the only way WaveformMarks can be associated
+                    // with their respective Cue objects is by using the hotcue
+                    // number. If cues without assigned hotcue are drawn on
+                    // WOverview in the future, another way to associate
+                    // WaveformMarks with Cues will need to be implemented.
+                    CuePointer pHoveredCue;
+                    for (const auto& pCue : cueList) {
+                        if (pCue->getHotCue() == pMark->getHotCue()) {
+                            pHoveredCue = pCue;
+                            break;
+                        }
+                    }
+                    VERIFY_OR_DEBUG_ASSERT(pHoveredCue != nullptr) {
+                        continue;
+                    }
+                    m_pCueMenu->setCue(pHoveredCue);
+                    m_pCueMenu->setTrack(m_pCurrentTrack);
+                    m_pCueMenu->popup(e->globalPos());
+                }
+            }
+        }
+    }
 }
 
 void WOverview::leaveEvent(QEvent* e) {

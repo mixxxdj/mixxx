@@ -19,6 +19,7 @@
 #include <QList>
 
 #include "track/track.h"
+#include "widget/cuemenu.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
@@ -137,6 +138,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     // Current active track
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
+
+    std::unique_ptr<CueMenu> m_pCueMenu;
 
     // True if slider is dragged. Only used when m_bEventWhileDrag is false
     bool m_bDrag;
