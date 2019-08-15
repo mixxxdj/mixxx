@@ -571,9 +571,8 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
 
         // draw duration of range
         if (markRange.showDuration()) {
-            // TODO: replace with rate_ratio in PR #1765
-            double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
-            QString duration = mixxx::Duration::formatTime((endValue - startValue) / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio);
+            QString duration = mixxx::Duration::formatTime(
+                    samplePositionToSeconds(endValue - startValue));
 
             QFontMetrics fm(pPainter->font());
             int textWidth = fm.width(duration);
@@ -726,6 +725,25 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             pPainter->setFont(markerFont);
             pPainter->drawText(markProperties.m_renderedArea.bottomLeft(), textToRender.at(n));
         }
+        if (markProperties.m_bMouseHovering) {
+            // Show cue position when hovered
+            // TODO: hide duration of intro/outro if the cue position text would
+            // overlap
+            double markPosition = m_marksToRender.at(n)->getSamplePosition();
+            double markTime = samplePositionToSeconds(markPosition);
+            QFontMetricsF metric(markerFont);
+            Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
+            QPointF textPoint(markProperties.m_renderedArea.bottomLeft());
+            if (valign == Qt::AlignTop) {
+                textPoint.setY(float(height()) - 0.5f);
+            } else {
+                textPoint.setY(metric.height());
+            }
+
+            pPainter->setPen(markProperties.m_textColor);
+            pPainter->setFont(markerFont);
+            pPainter->drawText(textPoint, mixxx::Duration::formatTime(markTime));
+        }
     }
 }
 
@@ -779,6 +797,14 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     }
     pPainter->drawText(10 * m_scaleFactor, 12 * m_scaleFactor, text);
     pPainter->resetTransform();
+}
+
+double WOverview::samplePositionToSeconds(double sample) {
+    // TODO: replace with rate_ratio in PR #1765
+    double rateRatio = 1.0 + m_pRateDirControl->get()
+            * m_pRateRangeControl->get() * m_pRateSliderControl->get();
+    return sample / m_trackSampleRateControl->get()
+            / mixxx::kEngineChannelCount / rateRatio;
 }
 
 void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
