@@ -108,7 +108,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_group, node, context, m_signalColors);
     WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
     QColor defaultColor = defaultMark
-            ? defaultMark->getProperties().fillColor()
+            ? defaultMark->fillColor()
             : m_signalColors.getAxesColor();
     m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
 
@@ -292,19 +292,16 @@ void WOverview::onRateSliderChange(double /*v*/) {
     update();
 }
 
-// currently only updates the mark color but it could be easily extended.
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     m_marksToRender.clear();
     for (CuePointer currentCue: loadedCues) {
-        const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
+        const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
-        if (currentMark && currentMark->isValid() && currentMark->isVisible()
-            && currentMark->getSamplePosition() >= 0.0) {
-            WaveformMarkProperties markProperties = currentMark->getProperties();
+        if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
+            && pMark->getSamplePosition() >= 0.0) {
             QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
-            if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
-                markProperties.setBaseColor(newColor);
-                currentMark->setProperties(markProperties);
+            if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
+                pMark->setBaseColor(newColor);
             }
 
             int hotcueNumber = currentCue->getHotCue();
@@ -317,13 +314,12 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                   newLabel = QString("%1: %2").arg(hotcueNumber + 1).arg(newLabel);
                 }
 
-                if (markProperties.m_text != newLabel) {
-                    markProperties.m_text = newLabel;
-                    currentMark->setProperties(markProperties);
+                if (pMark->m_text != newLabel) {
+                    pMark->m_text = newLabel;
                 }
             }
 
-            m_marksToRender.append(currentMark);
+            m_marksToRender.append(pMark);
         }
     }
     std::sort(m_marksToRender.begin(), m_marksToRender.end());
@@ -348,15 +344,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // mark, then drag the cursor over another, and the second one's label text
     // would be drawn under the first.
     bool firstMarkHovered = false;
-    for (const auto& mark : m_marksToRender) {
-        WaveformMarkProperties markProperties = mark->getProperties();
-        if (markProperties.m_renderedArea.contains(e->pos()) && !firstMarkHovered) {
-            markProperties.m_bMouseHovering = true;
+    for (const auto& pMark : m_marksToRender) {
+        if (pMark->m_renderedArea.contains(e->pos()) && !firstMarkHovered) {
+            pMark->m_bMouseHovering = true;
             firstMarkHovered = true;
         } else {
-            markProperties.m_bMouseHovering = false;
+            pMark->m_bMouseHovering = false;
         }
-        mark->setProperties(markProperties);
     }
 
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
@@ -380,10 +374,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 
 void WOverview::leaveEvent(QEvent* e) {
     Q_UNUSED(e);
-    for (const auto& mark : m_marks) {
-        WaveformMarkProperties markProperties = mark->getProperties();
-        markProperties.m_bMouseHovering = false;
-        mark->setProperties(markProperties);
+    for (const auto& pMark : m_marks) {
+        pMark->m_bMouseHovering = false;
     }
     m_bDrag = false;
     update();
@@ -621,15 +613,14 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     QRectF expandedLabelRect;
 
     for (int i = 0; i < m_marksToRender.size(); ++i) {
-        WaveformMarkProperties markProperties = m_marksToRender.at(i)->getProperties();
-
+        WaveformMarkPointer pMark = m_marksToRender.at(i);
         PainterScope painterScope(pPainter);
 
         //const float markPosition = 1.0 +
         //        (m_marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
         const float markPosition = offset + m_marksToRender.at(i)->getSamplePosition() * gain;
 
-        QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
+        QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
 
         QLineF line;
         if (m_orientation == Qt::Horizontal) {
@@ -640,20 +631,20 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         pPainter->setPen(shadowPen);
         pPainter->drawLine(line);
 
-        pPainter->setPen(markProperties.fillColor());
+        pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
 
-        if (!markProperties.m_text.isEmpty()) {
-            Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
-            Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
+        if (!pMark->m_text.isEmpty()) {
+            Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
+            Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
 
             QFontMetricsF metric(markerFont);
-            QString text = markProperties.m_text;
+            QString text = pMark->m_text;
 
             // Only allow the text to overlap the following mark if the mouse is
             // hovering over it. Otherwise, elide it if it would render over
             // the next label.
-            if (!markProperties.m_bMouseHovering && i < m_marksToRender.size()-1) {
+            if (!pMark->m_bMouseHovering && i < m_marksToRender.size()-1) {
                 const float nextMarkPosition = offset + m_marksToRender.at(i+1)->getSamplePosition() * gain;
                 text = metric.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
             }
@@ -700,47 +691,46 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // top left of the QRectF.
             QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - metric.height());
             textRect.moveTo(textTopLeft);
-            markProperties.m_renderedArea = textRect;
+            pMark->m_renderedArea = textRect;
 
-            if (markProperties.m_bMouseHovering) {
+            if (pMark->m_bMouseHovering) {
                 expandedLabelRect = textRect;
             }
         } else {
             // Placeholder to keep order
             textToRender.append(QString());
         }
-        m_marksToRender.at(i)->setProperties(markProperties);
     }
 
     for (int n = 0; n < m_marksToRender.size(); ++n) {
-        WaveformMarkProperties markProperties = m_marksToRender.at(n)->getProperties();
-        QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
-        if (!markProperties.m_renderedArea.intersects(expandedLabelRect)
-            || markProperties.m_bMouseHovering) {
+        WaveformMarkPointer pMark = m_marksToRender.at(n);
+        QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
+        if (!pMark->m_renderedArea.intersects(expandedLabelRect)
+            || pMark->m_bMouseHovering) {
             pPainter->setPen(shadowPen);
             pPainter->setFont(shadowFont);
-            pPainter->drawText(markProperties.m_renderedArea.bottomLeft(), textToRender.at(n));
+            pPainter->drawText(pMark->m_renderedArea.bottomLeft(), textToRender.at(n));
 
-            pPainter->setPen(markProperties.m_textColor);
+            pPainter->setPen(pMark->m_textColor);
             pPainter->setFont(markerFont);
-            pPainter->drawText(markProperties.m_renderedArea.bottomLeft(), textToRender.at(n));
+            pPainter->drawText(pMark->m_renderedArea.bottomLeft(), textToRender.at(n));
         }
-        if (markProperties.m_bMouseHovering) {
+        if (pMark->m_bMouseHovering) {
             // Show cue position when hovered
             // TODO: hide duration of intro/outro if the cue position text would
             // overlap
             double markPosition = m_marksToRender.at(n)->getSamplePosition();
             double markTime = samplePositionToSeconds(markPosition);
             QFontMetricsF metric(markerFont);
-            Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
-            QPointF textPoint(markProperties.m_renderedArea.bottomLeft());
+            Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
+            QPointF textPoint(pMark->m_renderedArea.bottomLeft());
             if (valign == Qt::AlignTop) {
                 textPoint.setY(float(height()) - 0.5f);
             } else {
                 textPoint.setY(metric.height());
             }
 
-            pPainter->setPen(markProperties.m_textColor);
+            pPainter->setPen(pMark->m_textColor);
             pPainter->setFont(markerFont);
             pPainter->drawText(textPoint, mixxx::Duration::formatTime(markTime));
         }
