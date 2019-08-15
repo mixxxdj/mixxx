@@ -364,6 +364,14 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
+        // If a hotcue label is being hovered, jump to it instead of the point
+        // under the cursor.
+        for (const auto& pMark : m_marksToRender) {
+            if (pMark->m_bMouseHovering) {
+                dValue = pMark->getSamplePosition() / m_trackSamplesControl->get();
+                break;
+            }
+        }
         setControlParameterUp(dValue);
         m_bDrag = false;
         // Do not seek when releasing a right click. This is important to
@@ -374,13 +382,14 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
-    if (e->button() == Qt::LeftButton) {
-        m_bDrag = true;
-    } else {
-        if (m_pCurrentTrack != nullptr) {
-            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
-            for (const auto& pMark : m_marksToRender) {
-                if (pMark->m_bMouseHovering) {
+    bool dragging = true;
+    if (m_pCurrentTrack != nullptr) {
+        QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+        for (const auto& pMark : m_marksToRender) {
+            if (pMark->m_bMouseHovering) {
+                if (e->button() == Qt::LeftButton) {
+                    dragging = false;
+                } else {
                     // Currently the only way WaveformMarks can be associated
                     // with their respective Cue objects is by using the hotcue
                     // number. If cues without assigned hotcue are drawn on
@@ -402,6 +411,9 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 }
             }
         }
+    }
+    if (e->button() == Qt::LeftButton) {
+        m_bDrag = dragging;
     }
 }
 
