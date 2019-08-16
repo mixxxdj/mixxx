@@ -680,7 +680,7 @@ class LiveBroadcasting(Feature):
         if not self.enabled(build):
             return
 
-        libshout_found = conf.CheckLib(['libshout', 'shout'])
+        libshout_found = conf.CheckLib(['libshout-idjc', 'shout-idjc'])
         build.env.Append(CPPDEFINES='__BROADCAST__')
 
         if not libshout_found:
