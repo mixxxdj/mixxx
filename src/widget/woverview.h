@@ -114,7 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
     void drawCurrentPosition(QPainter* pPainter);
-    void drawMarkLabels(QPainter* pPainter);
+    void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {

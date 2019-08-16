@@ -312,7 +312,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                 if (newLabel.isEmpty()) {
                     newLabel = QString::number(hotcueNumber + 1);
                 } else {
-                  newLabel = QString("%1: %2").arg(hotcueNumber + 1).arg(newLabel);
+                    newLabel = QString("%1: %2").arg(hotcueNumber + 1).arg(newLabel);
                 }
 
                 if (pMark->m_text != newLabel) {
@@ -461,7 +461,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
             drawCurrentPosition(&painter);
-            drawMarkLabels(&painter);
+            drawMarkLabels(&painter, offset, gain);
         }
     }
 }
@@ -614,34 +614,6 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
             pPainter->drawRect(QRectF(QPointF(-2.0, startPosition),
                     QPointF(width() + 1.0, endPosition)));
         }
-
-        // draw duration of range
-        if (markRange.showDuration()) {
-            QString duration = mixxx::Duration::formatTime(
-                    samplePositionToSeconds(endValue - startValue));
-
-            QFontMetrics fm(pPainter->font());
-            int textWidth = fm.width(duration);
-            float padding = 3.0;
-            float x;
-
-            WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
-            if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
-                x = startPosition - textWidth - padding;
-            } else {
-                x = endPosition + padding;
-            }
-
-            // Ensure the right end of the text does not get cut off by
-            // the end of the track
-            if (x + textWidth > width()) {
-                x = width() - textWidth;
-            }
-
-            pPainter->setOpacity(1.0);
-            pPainter->setPen(markRange.m_durationTextColor);
-            pPainter->drawText(QPointF(x, fm.ascent()), duration);
-        }
     }
 }
 
@@ -785,13 +757,16 @@ void WOverview::drawCurrentPosition(QPainter* pPainter) {
     pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
 }
 
-void WOverview::drawMarkLabels(QPainter* pPainter) {
+void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
     markerFont.setPixelSize(10 * m_scaleFactor);
+    QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
     shadowFont.setWeight(99);
     shadowFont.setPixelSize(10 * m_scaleFactor);
+
+    QRectF cuePositionRect;
 
     for (int n = 0; n < m_marksToRender.size(); ++n) {
         WaveformMarkPointer pMark = m_marksToRender.at(n);
@@ -808,22 +783,75 @@ void WOverview::drawMarkLabels(QPainter* pPainter) {
         }
         if (pMark->m_bMouseHovering) {
             // Show cue position when hovered
-            // TODO: hide duration of intro/outro if the cue position text would
-            // overlap
             double markPosition = m_marksToRender.at(n)->getSamplePosition();
             double markTime = samplePositionToSeconds(markPosition);
-            QFontMetricsF metric(markerFont);
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
             QPointF textPoint(pMark->m_renderedArea.bottomLeft());
             if (valign == Qt::AlignTop) {
                 textPoint.setY(float(height()) - 0.5f);
             } else {
-                textPoint.setY(metric.height());
+                textPoint.setY(fontMetrics.height());
             }
+
+            QString positionString = mixxx::Duration::formatTime(markTime);
 
             pPainter->setPen(pMark->m_textColor);
             pPainter->setFont(markerFont);
-            pPainter->drawText(textPoint, mixxx::Duration::formatTime(markTime));
+            pPainter->drawText(textPoint, positionString);
+
+            cuePositionRect = fontMetrics.boundingRect(positionString);
+            // QPainter::drawText starts drawing with the given QPointF as
+            // the bottom left of the text, but QRectF::moveTo takes the new
+            // top left of the QRectF.
+            QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - fontMetrics.height());
+            cuePositionRect.moveTo(textTopLeft);
+        }
+    }
+
+    // draw duration of ranges
+    for (auto&& markRange : m_markRanges) {
+        if (markRange.showDuration()) {
+            // Active mark ranges by definition have starts/ends that are not
+            // disabled.
+            const double startValue = markRange.start();
+            const double endValue = markRange.end();
+
+            const float startPosition = offset + startValue * gain;
+            const float endPosition = offset + endValue * gain;
+
+            if (startPosition < 0.0 && endPosition < 0.0) {
+                continue;
+            }
+            QString duration = mixxx::Duration::formatTime(
+                    samplePositionToSeconds(endValue - startValue));
+
+            QRectF durationRect = fontMetrics.boundingRect(duration);
+            float padding = 3.0;
+            float x;
+
+            WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
+            if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
+                x = startPosition - durationRect.width() - padding;
+            } else {
+                x = endPosition + padding;
+            }
+
+            // Ensure the right end of the text does not get cut off by
+            // the end of the track
+            if (x + durationRect.width() > width()) {
+                x = width() - durationRect.width();
+            }
+
+            pPainter->setOpacity(1.0);
+            pPainter->setPen(markRange.m_durationTextColor);
+            // QPainter::drawText starts drawing with the given QPointF as
+            // the bottom left of the text, but QRectF::moveTo takes the new
+            // top left of the QRectF.
+            QPointF textTopLeft = QPointF(x, fontMetrics.ascent());
+            durationRect.moveTo(textTopLeft);
+            if (!durationRect.intersects(cuePositionRect)) {
+                pPainter->drawText(QPointF(x, fontMetrics.ascent()), duration);
+            }
         }
     }
 }
