@@ -68,27 +68,27 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     loadSettings();
 
     // Connections
-    connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(pluginSelected(int)));
-    connect(banalyzerenabled, SIGNAL(stateChanged(int)),
-            this, SLOT(analyzerEnabled(int)));
-    connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(fastAnalysisEnabled(int)));
-    connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(reanalyzeEnabled(int)));
+    connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &DlgPrefKey::pluginSelected);
+    connect(banalyzerenabled, &QCheckBox::stateChanged,
+            this, &DlgPrefKey::analyzerEnabled);
+    connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,
+            this, &DlgPrefKey::fastAnalysisEnabled);
+    connect(breanalyzeEnabled, &QCheckBox::stateChanged,
+            this, &DlgPrefKey::reanalyzeEnabled);
 
-    connect(radioNotationOpenKey, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationOpenKey(bool)));
-    connect(radioNotationOpenKeyAndTraditional, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationOpenKeyAndTraditional(bool)));
-    connect(radioNotationLancelot, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationLancelot(bool)));
-    connect(radioNotationLancelotAndTraditional, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationLancelotAndTraditional(bool)));
-    connect(radioNotationTraditional, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationTraditional(bool)));
-    connect(radioNotationCustom, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationCustom(bool)));
+    connect(radioNotationOpenKey, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationOpenKey);
+    connect(radioNotationOpenKeyAndTraditional, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationOpenKeyAndTraditional);
+    connect(radioNotationLancelot, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationLancelot);
+    connect(radioNotationLancelotAndTraditional, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationLancelotAndTraditional);
+    connect(radioNotationTraditional, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationTraditional);
+    connect(radioNotationCustom, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationCustom);
 }
 
 DlgPrefKey::~DlgPrefKey() {
