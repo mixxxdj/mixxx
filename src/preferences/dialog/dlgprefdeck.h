@@ -16,6 +16,10 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
+namespace {
+    constexpr bool kDefaultCloneDeckOnLoad = true;
+}
+
 namespace TrackTime {
     enum class DisplayMode {
         ELAPSED,

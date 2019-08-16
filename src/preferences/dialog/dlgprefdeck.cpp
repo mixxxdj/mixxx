@@ -30,6 +30,8 @@ constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
 constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
+// bool kDefaultCloneDeckOnLoad is defined in header file to make it available
+// to playermanager.cpp
 }
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
@@ -424,7 +426,7 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
     // Clone decks by double-tapping Load button.
-    checkBoxCloneDeckOnLoadDoubleTap->setChecked(true);
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
 
