@@ -1,7 +1,7 @@
 // encoderfdkaac.cpp
 // Created on Aug 15 2017 by Palakis
 
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDir>
 #include <QString>
 #include <QStringList>
@@ -190,9 +190,9 @@ EncoderFdkAac::~EncoderFdkAac() {
 
 QString EncoderFdkAac::buttWindowsFdkAac() {
     // Return %APPDATA%/Local path
-    QString appData = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
-    appData = QFileInfo(appData).absolutePath();
+    QString appData = QStandardPaths::writableLocation(
+            QStandardPaths::AppLocalDataLocation);
+    appData = QFileInfo(appData).absolutePath() + "/..";
 
     // Candidate paths for a butt installation
     QStringList searchPaths;
