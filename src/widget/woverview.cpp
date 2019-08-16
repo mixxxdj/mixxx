@@ -327,7 +327,9 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
     for (const auto& pMark : m_marks) {
         if (!m_marksToRender.contains(pMark)
-            && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
+            && pMark->isValid()
+            && pMark->getSamplePosition() != Cue::kPositionNotDefined
+            && pMark->isVisible()) {
             m_marksToRender.append(pMark);
         }
     }
