@@ -5,12 +5,13 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
       <WidgetGroup>
-        <SizePolicy>min,min</SizePolicy>
-        <MaximumSize>54,-1</MaximumSize>
+        <SizePolicy>min,me</SizePolicy>
+        <MaximumSize>54,</MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>54,</MaximumSize>
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>

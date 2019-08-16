@@ -13,6 +13,7 @@
           <Spinny>
             <TooltipId>spinny</TooltipId>
             <Size>40me,40me</Size>
+            <MaximumSize><Variable name="MaxSize"/></MaximumSize>
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
             <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
@@ -29,6 +30,7 @@
           <Spinny>
             <TooltipId>spinny</TooltipId>
             <Size>40me,40me</Size>
+            <MaximumSize><Variable name="MaxSize"/></MaximumSize>
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
             <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
@@ -63,6 +65,7 @@
               <CoverArt>
                 <TooltipId>coverart</TooltipId>
                 <Size>40me,40me</Size>
+                <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                 <Group><Variable name="group"/></Group>
                 <DefaultCover>style/cover_default.svg</DefaultCover>
               </CoverArt>

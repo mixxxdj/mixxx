@@ -13,15 +13,13 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef DOWNBEAT_H
-#define DOWNBEAT_H
+#ifndef QM_DSP_DOWNBEAT_H
+#define QM_DSP_DOWNBEAT_H
 
 #include <vector>
 #include <cstddef>
 
 #include "dsp/rateconversion/Decimator.h"
-
-using std::vector;
 
 class FFTReal;
 
@@ -71,8 +69,8 @@ public:
      */
     void findDownBeats(const float *audio, // downsampled
                        size_t audioLength, // after downsampling
-                       const vector<double> &beats,
-                       vector<int> &downbeats);
+                       const std::vector<double> &beats,
+                       std::vector<int> &downbeats);
 
     /**
      * Return the beat spectral difference function.  This is
@@ -83,7 +81,7 @@ public:
      * difference between region prior to the beat's nominal position
      * and the region following it.
      */
-    void getBeatSD(vector<double> &beatsd) const;
+    void getBeatSD(std::vector<double> &beatsd) const;
     
     /**
      * For your downsampling convenience: call this function
@@ -107,10 +105,10 @@ public:
     void resetAudioBuffer();
 
 private:
-    typedef vector<int> i_vec_t;
-    typedef vector<vector<int> > i_mat_t;
-    typedef vector<double> d_vec_t;
-    typedef vector<vector<double> > d_mat_t;
+    typedef std::vector<int> i_vec_t;
+    typedef std::vector<std::vector<int> > i_mat_t;
+    typedef std::vector<double> d_vec_t;
+    typedef std::vector<std::vector<double> > d_mat_t;
 
     void makeDecimators();
     double measureSpecDiff(d_vec_t oldspec, d_vec_t newspec);

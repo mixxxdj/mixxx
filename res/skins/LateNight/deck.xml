@@ -21,16 +21,17 @@
             <Children>
               <WidgetGroup>
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>103,-1</MaximumSize>
+                <MaximumSize>103,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
                     <SizePolicy>min,min</SizePolicy>
+                    <MaximumSize>103,</MaximumSize>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <SingletonContainer>
-                        <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
-                      </SingletonContainer>
+                      <Template src="skin:spinny_coverart.xml">
+                        <SetVariable name="MaxSize">102,102</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>

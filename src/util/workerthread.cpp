@@ -44,6 +44,7 @@ void WorkerThread::deleteAfterFinished() {
     if (isFinished()) {
         // Already finished or just finished in the meantime. Calling
         // deleteLater() twice is safe, though.
+        DEBUG_ASSERT(QThread::currentThread() == thread());
         deleteLater();
     }
 }

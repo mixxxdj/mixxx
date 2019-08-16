@@ -1,0 +1,96 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob.
+  Variables:
+    group
+    control: The control to connect to
+    label
+    Size
+    TooltipId
+    PotiMinAngle
+    PotiMaxAngle
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+<!-- L -->
+      <PushButton>
+        <TooltipId>orientation</TooltipId>
+        <Size>9f,15f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_left_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_left_off.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_left_<Variable name="xfaderLeft"/>.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_left_<Variable name="xfaderLeft"/>.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+          <Transform>
+            <IsEqual>0</IsEqual>
+          </Transform>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+<!-- M -->
+      <PushButton>
+        <TooltipId>orientation</TooltipId>
+        <Size>11f,15f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_mid_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_mid_off.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_mid_warning.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_mid_warning.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+          <Transform>
+            <Add>-1</Add>
+            <IsEqual>0</IsEqual>
+          </Transform>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+<!-- R -->
+      <PushButton>
+        <TooltipId>orientation</TooltipId>
+        <Size>10f,15f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_right_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_right_off.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_right_<Variable name="xfaderRight"/>.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_orientation_right_<Variable name="xfaderRight"/>.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+          <Transform>
+            <Add>-2</Add>
+            <IsEqual>0</IsEqual>
+          </Transform>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

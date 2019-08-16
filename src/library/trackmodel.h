@@ -49,6 +49,41 @@ class TrackModel {
     };
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
+    enum SortColumnId {
+        SORTCOLUMN_INVALID = -1,
+        SORTCOLUMN_ARTIST = 0,
+        SORTCOLUMN_TITLE,
+        SORTCOLUMN_ALBUM,
+        SORTCOLUMN_ALBUMARTIST,
+        SORTCOLUMN_YEAR,
+        SORTCOLUMN_GENRE,
+        SORTCOLUMN_COMPOSER,
+        SORTCOLUMN_GROUPING,
+        SORTCOLUMN_TRACKNUMBER,
+        SORTCOLUMN_FILETYPE,
+        SORTCOLUMN_NATIVELOCATION,
+        SORTCOLUMN_COMMENT,
+        SORTCOLUMN_DURATION,
+        SORTCOLUMN_BITRATE,
+        SORTCOLUMN_BPM,
+        SORTCOLUMN_REPLAYGAIN,
+        SORTCOLUMN_DATETIMEADDED,
+        SORTCOLUMN_TIMESPLAYED,
+        SORTCOLUMN_RATING,
+        SORTCOLUMN_KEY,
+        SORTCOLUMN_PREVIEW,
+        SORTCOLUMN_COVERART,
+        SORTCOLUMN_POSITION,
+        SORTCOLUMN_PLAYLISTID,
+        SORTCOLUMN_LOCATION,
+        SORTCOLUMN_FILENAME,
+        SORTCOLUMN_FILE_MODIFIED_TIME,
+        SORTCOLUMN_FILE_CREATION_TIME,
+
+        // NUM_SORTCOLUMNS should always be the last item.
+        NUM_SORTCOLUMNIDS
+    };
+
     // Deserialize and return the track at the given QModelIndex in this result
     // set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
@@ -136,6 +171,17 @@ class TrackModel {
     virtual bool isColumnSortable(int column) {
         Q_UNUSED(column);
         return true;
+    }
+
+    virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
+        Q_UNUSED(index);
+        return SORTCOLUMN_INVALID;
+
+    }
+
+    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
+        Q_UNUSED(sortColumn);
+        return -1;
     }
 
     virtual int fieldIndex(const QString& fieldName) const {

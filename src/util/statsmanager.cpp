@@ -5,7 +5,6 @@
 #include <QMetaType>
 
 #include "util/statsmanager.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
@@ -116,7 +115,7 @@ void StatsManager::writeTimeline(const QString& filename) {
     }
 
     // Sort by time.
-    qSort(m_events.begin(), m_events.end(), OrderByTime());
+    std::sort(m_events.begin(), m_events.end(), OrderByTime());
 
     mixxx::Duration last_time = m_events[0].m_time;
 

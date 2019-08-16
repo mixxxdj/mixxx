@@ -5,10 +5,10 @@
 WKey::WKey(const char* group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
-          m_preferencesUpdated("[Preferences]", "updated", this),
+          m_keyNotation("[Library]", "key_notation", this),
           m_engineKeyDistance(group, "visual_key_distance", this) {
     setValue(m_dOldValue);
-    m_preferencesUpdated.connectValueChanged(this, &WKey::preferencesUpdated);
+    m_keyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
 }
 
@@ -56,8 +56,6 @@ void WKey::setCents() {
     setValue(m_dOldValue);
 }
 
-void WKey::preferencesUpdated(double dValue) {
-    if (dValue > 0) {
-        setValue(m_dOldValue);
-    }
+void WKey::keyNotationChanged(double dValue) {
+    setValue(dValue);
 }

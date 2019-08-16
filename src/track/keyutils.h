@@ -80,7 +80,7 @@ class KeyUtils {
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
-        const KeyChangeList& key_changes, int iTotalSamples);
+        const KeyChangeList& key_changes, int iTotalSamples, int iSampleRate);
 
     static void setNotation(
         const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);

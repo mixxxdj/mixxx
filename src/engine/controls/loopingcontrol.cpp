@@ -5,11 +5,12 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/enginebuffer.h"
+#include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -452,6 +453,55 @@ void LoopingControl::hintReader(HintVector* pHintList) {
     }
 }
 
+double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos) {
+    // no loop, no adjustment
+    if (!m_bLoopingEnabled) {
+        return dSyncedPlayPos;
+    }
+
+    LoopSamples loopSamples = m_loopSamples.getValue();
+
+    // if the request itself is outside loop do nothing
+    // loop will be disabled later by notifySeek(...) as is was explicitly requested by the user
+    // if the requested position is the exact end of a loop it should also be disabled later by notifySeek(...)
+    if (dRequestedPlaypos < loopSamples.start || dRequestedPlaypos >= loopSamples.end) {
+        return dSyncedPlayPos;
+    }
+
+    // the requested position is inside the loop (e.g hotcue at start)
+    double loopSize = loopSamples.end - loopSamples.start;
+
+    // the synced position is in front of the loop
+    // adjust the synced position to same amount in front of the loop end
+    if (dSyncedPlayPos < loopSamples.start) {
+        double adjustment = loopSamples.start - dSyncedPlayPos;
+
+        // prevents jumping in front of the loop if loop is smaller than adjustment
+        adjustment = fmod(adjustment, loopSize);
+
+        // if the synced position is exactly the start of the loop we would end up at the exact end
+        // as this would disable the loop in notifySeek() replace it with the start of the loop
+        if (adjustment == 0) {
+            return loopSamples.start;
+        }
+        return loopSamples.end - adjustment;
+    }
+
+    // the synced position is behind the loop
+    // adjust the synced position to same amount behind the loop start
+    if (dSyncedPlayPos >= loopSamples.end) {
+        double adjustment = dSyncedPlayPos - loopSamples.end;
+
+        // prevents jumping behind the loop if loop is smaller than adjustment
+        adjustment = fmod(adjustment, loopSize);
+
+        return loopSamples.start + adjustment;
+    }
+
+    // both, requested and synced position are inside the loop -> do nothing
+    return dSyncedPlayPos;
+}
+
 void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
     BeatsPointer pBeats = m_pBeats;
@@ -768,13 +818,13 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
+void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
-    if (m_bLoopingEnabled && !adjustingPhase) {
+    if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
-        // Do not jump out of a loop if we adjust a phase (lp1743010)
+        // Jumping to the exact end of a loop is considered jumping out.
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
                 dNewPlaypos < loopSamples.start) {
@@ -782,8 +832,8 @@ void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
             setLoopingEnabled(false);
         }
         if (currentSample <= loopSamples.end &&
-                dNewPlaypos > loopSamples.end) {
-            // jumping out a loop or over a catching loop forward
+                dNewPlaypos >= loopSamples.end) {
+            // jumping out or to the exact end of a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
     }
@@ -819,6 +869,15 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.get(), &Track::beatsUpdated,
                 this, &LoopingControl::slotUpdatedTrackBeats);
+
+        LoopSamples loopSamples = m_loopSamples.getValue();
+        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
+            double loaded_loop_size = findBeatloopSizeForLoop(
+                loopSamples.start, loopSamples.end);
+            if (loaded_loop_size != -1) {
+                m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
+            }
+        }
     } else {
         m_pTrack.reset();
         m_pBeats.clear();
@@ -910,6 +969,22 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
             loopSamples.end < beatLoopOutPoint + 2;
 }
 
+double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
+    BeatsPointer pBeats = m_pBeats;
+    if (!pBeats) {
+        return -1;
+    }
+
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        double beatLoopOutPoint =
+            pBeats->findNBeatsFromSample(start, s_dBeatSizes[i]);
+        if (end > beatLoopOutPoint - 2 && end < beatLoopOutPoint + 2) {
+            return s_dBeatSizes[i];
+        }
+    }
+    return -1;
+}
+
 void LoopingControl::updateBeatLoopingControls() {
     // O(n) search, but there are only ~10-ish beatloop controls so this is
     // fine.
@@ -933,6 +1008,13 @@ void LoopingControl::updateBeatLoopingControls() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+    // if a seek was queued in the engine buffer move the current sample to its position
+    double p_seekPosition = 0;
+    if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
+        // seek position is already quantized if quantization is enabled
+        m_currentSample.setValue(p_seekPosition);
+    }
+
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {

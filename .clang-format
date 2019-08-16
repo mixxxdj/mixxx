@@ -1,0 +1,38 @@
+---
+BasedOnStyle: Google
+IndentWidth:  4
+TabWidth:     8
+UseTab:       Never
+# NOTE(2019-02-23, uklotzde) The column limit has been set to 0
+# to avoid eagerly reformatting of the existing code base. This
+# may later be changed to 80-100 characters per line if desired.
+ColumnLimit:  0
+---
+# Customize only those options that differ from the base style!
+# Dumping the options of the base style for comparison:
+# clang-format -style=google -dump-config > .clang-format_google
+Language:     Cpp
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignOperands: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
+ConstructorInitializerIndentWidth: 8
+ContinuationIndentWidth: 8
+IndentCaseLabels: false
+DerivePointerAlignment: false
+ReflowComments: false
+SpaceAfterTemplateKeyword: false
+SpacesBeforeTrailingComments: 1
+---
+Language: JavaScript
+# Don't format .js files yet
+DisableFormat: true
+---
+Language: Proto
+# Don't format .proto files yet
+DisableFormat: true
+...
