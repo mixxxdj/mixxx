@@ -71,7 +71,8 @@ class WaveformMark {
     Qt::Alignment m_align;
     QString m_pixmapPath;
 
-    QRectF m_renderedArea;
+    QRectF m_labelArea;
+    float m_linePosition;
     bool m_bMouseHovering;
 
   private:

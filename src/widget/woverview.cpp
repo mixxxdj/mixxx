@@ -355,8 +355,23 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // mark, then drag the cursor over another, and the second one's label text
     // would be drawn under the first.
     bool firstMarkHovered = false;
+    // Without some padding, the user would only have a single pixel width that
+    // would count as hovering over the WaveformMark.
+    float lineHoverPadding = 3.0;
     for (const auto& pMark : m_marksToRender) {
-        if (pMark->m_renderedArea.contains(e->pos()) && !firstMarkHovered) {
+        int hoveredPosition;
+        if (m_orientation == Qt::Horizontal) {
+            hoveredPosition = e->x();
+        } else {
+            hoveredPosition = e->y();
+        }
+        bool lineHovered =
+            pMark->m_linePosition >= hoveredPosition - lineHoverPadding
+            && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
+
+        if ((pMark->m_labelArea.contains(e->pos())
+            || lineHovered)
+            && !firstMarkHovered) {
             pMark->m_bMouseHovering = true;
             firstMarkHovered = true;
         } else {
@@ -651,6 +666,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         //const float markPosition = 1.0 +
         //        (m_marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
         const float markPosition = offset + m_marksToRender.at(i)->getSamplePosition() * gain;
+        pMark->m_linePosition = markPosition;
 
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
 
@@ -723,7 +739,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // top left of the QRectF.
             QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - fontMetrics.height());
             textRect.moveTo(textTopLeft);
-            pMark->m_renderedArea = textRect;
+            pMark->m_labelArea = textRect;
 
             if (pMark->m_bMouseHovering) {
                 m_expandedLabelRect = textRect;
@@ -805,16 +821,16 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     for (int n = 0; n < m_marksToRender.size(); ++n) {
         WaveformMarkPointer pMark = m_marksToRender.at(n);
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
-        if ((!pMark->m_renderedArea.intersects(m_expandedLabelRect)
-            && !pMark->m_renderedArea.intersects(m_cuePositionRect))
+        if ((!pMark->m_labelArea.intersects(m_expandedLabelRect)
+            && !pMark->m_labelArea.intersects(m_cuePositionRect))
             || pMark->m_bMouseHovering) {
             pPainter->setPen(shadowPen);
             pPainter->setFont(shadowFont);
-            pPainter->drawText(pMark->m_renderedArea.bottomLeft(), m_markLabelText.at(n));
+            pPainter->drawText(pMark->m_labelArea.bottomLeft(), m_markLabelText.at(n));
 
             pPainter->setPen(pMark->m_textColor);
             pPainter->setFont(markerFont);
-            pPainter->drawText(pMark->m_renderedArea.bottomLeft(), m_markLabelText.at(n));
+            pPainter->drawText(pMark->m_labelArea.bottomLeft(), m_markLabelText.at(n));
         }
         // Draw the position text
         if (pMark->m_bMouseHovering) {
