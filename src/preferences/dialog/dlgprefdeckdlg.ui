@@ -181,7 +181,7 @@ by double-tapping a Load button on a controller or keyboard.
 You can always drag-and-drop tracks on screen to clone a deck.</string>
         </property>
         <property name="text">
-         <string>Double-press Load button to clone</string>
+         <string>Double-press Load button to clone playing track</string>
         </property>
        </widget>
       </item>
