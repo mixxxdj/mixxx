@@ -11,7 +11,7 @@
 #define WIN32
 #endif
 // this is needed to define SHOUT_META_* macros used in version guard
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
