@@ -5,7 +5,7 @@ lang_map = af_ZA: af-ZA, am_ET: am-ET, ar_AA: ar-AA, ar_AE: ar-AE, ar_BH: ar-BH,
 [mixxxdj.mixxx2-3]
 file_filter = res/translations/mixxx_<lang>.ts
 source_file = res/translations/mixxx.ts
-source_lang = en_US
+source_lang = en
 minimum_perc = 0
 type = TS
 

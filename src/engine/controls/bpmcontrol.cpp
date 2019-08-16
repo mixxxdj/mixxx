@@ -15,20 +15,31 @@
 #include "util/duration.h"
 
 namespace {
-const int kMinBpm = 30;
-// Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
-const int kFilterLength = 5;
+
+constexpr double kBpmRangeMin = 1.0;
+// TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
+constexpr double kBpmRangeMax = 200.0;
+constexpr double kBpmRangeStep = 1.0;
+constexpr double kBpmRangeSmallStep = 0.1;
+
+constexpr double kBpmAdjustMin = kBpmRangeMin;
+constexpr double kBpmAdjustStep = 0.01;
+
+// Maximum allowed interval between beats (calculated from kBpmTapMin).
+constexpr double kBpmTapMin = 30.0;
+const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
+constexpr int kBpmTapFilterLength = 5;
+
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
-const int kLocalBpmSpan = 4;
-const SINT kSamplesPerFrame = 2;
+constexpr int kLocalBpmSpan = 4;
+constexpr SINT kSamplesPerFrame = 2;
 }
 
 BpmControl::BpmControl(QString group,
                        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_tapFilter(this, kFilterLength, kMaxInterval),
+          m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
           m_dLastSyncAdjustment(1.0),
           m_sGroup(group) {
@@ -78,12 +89,16 @@ BpmControl::BpmControl(QString group,
             this, &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
 
-    // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
+    // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
     // bpm_down controls.
-    // bpm_up / bpm_down steps by 1
-    // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    // bpm_up / bpm_down steps by kBpmRangeStep
+    // bpm_up_small / bpm_down_small steps by kBpmRangeSmallStep
+    m_pEngineBpm = new ControlLinPotmeter(
+            ConfigKey(group, "bpm"),
+            kBpmRangeMin, kBpmRangeMax,
+            kBpmRangeStep, kBpmRangeSmallStep,
+            true);
     connect(m_pEngineBpm, &ControlObject::valueChanged,
             this, &BpmControl::slotUpdateRateSlider,
             Qt::DirectConnection);
@@ -172,16 +187,18 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
 void BpmControl::slotAdjustBeatsFaster(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = math_min(200.0, pBeats->getBpm() + .01);
-        pBeats->setBpm(new_bpm);
+        double bpm = pBeats->getBpm();
+        double adjustedBpm = bpm + kBpmAdjustStep;
+        pBeats->setBpm(adjustedBpm);
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
-        double new_bpm = math_max(10.0, pBeats->getBpm() - .01);
-        pBeats->setBpm(new_bpm);
+        double bpm = pBeats->getBpm();
+        double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
+        pBeats->setBpm(adjustedBpm);
     }
 }
 
@@ -624,7 +641,7 @@ double BpmControl::getNearestPositionInPhase(
             if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
                 // "this" track is playing, or just starting
                 // only match phase if the sync target is playing as well
-                // else use the previouse phase of "this" track before the seek
+                // else use the previous phase of "this" track before the seek
                 pOtherEngineBuffer = getEngineBuffer();
             }
         }
@@ -642,10 +659,7 @@ double BpmControl::getNearestPositionInPhase(
             return dThisPosition;
         }
 
-        double dOtherLength = ControlObject::getControl(
-                ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-        double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
-        double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
+        double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
         if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
                                         NULL, NULL, NULL, &dOtherBeatFraction)) {

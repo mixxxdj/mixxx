@@ -9,11 +9,11 @@ class QGLWidget;
 // http://lists.trolltech.com/qt-interest/2008-08/thread00046-0.html
 class SharedGLContext {
   public:
-    static const QGLWidget* getWidget();
-    static void setWidget(const QGLWidget* pWidget);
+    static QGLWidget* getWidget();
+    static void setWidget(QGLWidget* pWidget);
   private:
     SharedGLContext() { }
-    static const QGLWidget* s_pSharedGLWidget;
+    static QGLWidget* s_pSharedGLWidget;
 };
 
 #endif /* WAVEFORM_SHAREDGLCONTEXT_H */

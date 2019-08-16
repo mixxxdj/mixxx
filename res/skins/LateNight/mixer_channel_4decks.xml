@@ -66,14 +66,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:button_3state.xml">
-            <SetVariable name="TooltipId">orientation</SetVariable>
-            <SetVariable name="Size">34f,15f</SetVariable>
-            <SetVariable name="state_0">orientation_deck<Variable name="deckSide"/>_left</SetVariable>
-            <SetVariable name="state_1">orientation_deck_master</SetVariable>
-            <SetVariable name="state_2">orientation_deck<Variable name="deckSide"/>_right</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
-          </Template>
+          <Template src="skin:button_xfader_deck.xml"/>
         </Children>
       </WidgetGroup>
 

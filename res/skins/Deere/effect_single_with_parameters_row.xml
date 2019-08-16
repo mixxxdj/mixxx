@@ -15,15 +15,19 @@ Variables:
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitParameters</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
+        <Size>-1me,42f</Size>
         <Layout>horizontal</Layout>
         <Children>
 
           <WidgetGroup>
             <ObjectName>EffectButtonContainer</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:effect_buttons.xml"/>
+              <Template src="skin:effect_buttons.xml">
+                <SetVariable name="SizePolicy">max,min</SetVariable>
+                <SetVariable name="EnableButtonMaxSize">22,36</SetVariable>
+              </Template>
               <Template src="skin:effect_meta_knob.xml"/>
             </Children>
           </WidgetGroup>
@@ -39,55 +43,62 @@ Variables:
             <SizePolicy>min,f</SizePolicy>
           </EffectSelector>
 
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">1</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">2</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">3</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">4</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">5</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">6</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">7</SetVariable>
-          </Template>
-          <Template src="skin:effect_parameter_knob.xml">
-            <SetVariable name="EffectParameter">8</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>EffectParameterKnobsButtons</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">4</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
 
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">1</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">2</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">3</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">4</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">5</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">6</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">7</SetVariable>
-          </Template>
-          <Template src="skin:effect_button_parameter.xml">
-            <SetVariable name="EffectButtonParameter">8</SetVariable>
-          </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">4</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="EffectButtonParameter">8</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>

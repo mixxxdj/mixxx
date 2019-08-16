@@ -34,7 +34,7 @@
         <Align></Align>
         <DefaultMark>
           <Align>top</Align>
-          <Color>#00FF00</Color>
+          <Color>#006596</Color>
           <TextColor>#000000</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
@@ -61,6 +61,50 @@
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
+        <MarkRange>
+          <StartControl>intro_start_position</StartControl>
+          <EndControl>intro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <Mark>
+          <Control>intro_start_position</Control>
+          <Text>|&#9698;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>intro_end_position</Control>
+          <Text>&#9698;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_start_position</Control>
+          <Text>|&#9699;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <Text>&#9699;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
         <!--
         The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
         - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
@@ -74,7 +118,6 @@
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
-
       </Visual>
 
       <WidgetGroup>

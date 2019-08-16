@@ -11,6 +11,17 @@
     <SizePolicy>min,f</SizePolicy>
     <Children>
 
+      <Battery>
+        <ObjectName>Battery</ObjectName>
+        <Size>24,24</Size>
+        <SizePolicy>f,f</SizePolicy>
+        <PixmapUnknown scalemode="STRETCH_ASPECT">icon/ic_battery_unknown_48px.svg</PixmapUnknown>
+        <PixmapCharged scalemode="STRETCH_ASPECT">icon/ic_battery_charged_48px.svg</PixmapCharged>
+        <NumberStates>8</NumberStates>
+        <PixmapsCharging scalemode="STRETCH_ASPECT">icon/ic_battery_charging_%1_48px.svg</PixmapsCharging>
+        <PixmapsDischarging scalemode="STRETCH_ASPECT">icon/ic_battery_discharging_%1_48px.svg</PixmapsDischarging>
+      </Battery>
+
       <WidgetGroup>
         <ObjectName>ToolBarLeft</ObjectName>
         <Layout>horizontal</Layout>
@@ -24,8 +35,8 @@
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Time</ObjectName>
-                <Size>55f,20f</Size>
-                <ShowSeconds>false</ShowSeconds>
+                <Size>58f,20f</Size>
+                <CustomFormat>hh:mm</CustomFormat>
               </Time>
 
             <Template src="skin:vumeter_latency.xml">
@@ -434,7 +445,6 @@
                 </State>
                 <Connection>
                   <ConfigKey>[Master],skin_settings</ConfigKey>
-                  <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>

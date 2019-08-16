@@ -14,76 +14,65 @@
 */
 
 #include "Framer.h"
-#include <math.h>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include <limits.h>
 
-Framer::Framer()
+Framer::Framer() :
+    m_sampleLen(0),
+    m_framesRead(0),
+    m_srcBuffer(0),
+    m_dataFrame(0),
+    m_strideFrame(0),
+    m_frameLength(0),
+    m_stepSize(0),
+    m_maxFrames(0),
+    m_srcIndex(0)
 {
-    m_dataFrame = NULL;
-    m_strideFrame = NULL;
 }
 
 Framer::~Framer()
 {
-    if( m_dataFrame != NULL )
-	delete [] m_dataFrame;
-
-    if( m_strideFrame != NULL )
-	delete [] m_strideFrame;
+    delete[] m_dataFrame;
+    delete[] m_strideFrame;
 }
 
-void Framer::configure( unsigned int frameLength, unsigned int hop )
+void Framer::configure(int frameLength, int hop)
 {
     m_frameLength = frameLength;
     m_stepSize = hop;
 
     resetCounters();
 
-    if( m_dataFrame != NULL )
-    {
-	delete [] m_dataFrame;	
-	m_dataFrame = NULL;
-    }
+    delete[] m_dataFrame;  
     m_dataFrame = new double[ m_frameLength ];
 
-    if( m_strideFrame != NULL )
-    {
-	delete [] m_strideFrame;	
-	m_strideFrame = NULL;
-    }
+    delete [] m_strideFrame;        
     m_strideFrame = new double[ m_stepSize ];
 }
 
 void Framer::getFrame(double *dst)
 {
+    if ((m_srcIndex + int64_t(m_frameLength)) < m_sampleLen) {
 
-    if( (m_ulSrcIndex + ( m_frameLength) ) < m_ulSampleLen )
-    {
-	for( unsigned int u = 0; u < m_frameLength; u++)
-	{
-	    dst[ u ] = m_srcBuffer[ m_ulSrcIndex++ ]; 
-	}	
-	m_ulSrcIndex -= ( m_frameLength - m_stepSize );
-    }
-    else
-    {
-	unsigned int rem = (m_ulSampleLen - m_ulSrcIndex );
-	unsigned int zero = m_frameLength - rem;
+        for (int i = 0; i < m_frameLength; i++) {
+            dst[i] = m_srcBuffer[m_srcIndex++]; 
+        }
+        m_srcIndex -= (m_frameLength - m_stepSize);
 
-	for( unsigned int u = 0; u < rem; u++ )
-	{
-	    dst[ u ] = m_srcBuffer[ m_ulSrcIndex++ ];
-	}
-		
-	for( unsigned int u = 0; u < zero; u++ )
-	{
-	    dst[ rem + u ] = 0;
-	}
+    } else { // m_srcIndex is within m_frameLength of m_sampleLen
 
-	m_ulSrcIndex -= (( rem - m_stepSize ) );
+        int rem = int(m_sampleLen - m_srcIndex);
+        int zero = m_frameLength - rem;
+
+        for (int i = 0; i < rem; i++) {
+            dst[i] = m_srcBuffer[m_srcIndex++];
+        }
+                
+        for (int i = 0; i < zero; i++ ) {
+            dst[rem + i] = 0.0;
+        }
+
+        m_srcIndex -= (rem - m_stepSize);
     }
 
     m_framesRead++;
@@ -92,18 +81,23 @@ void Framer::getFrame(double *dst)
 void Framer::resetCounters()
 {
     m_framesRead = 0;
-    m_ulSrcIndex = 0;
+    m_srcIndex = 0;
 }
 
-unsigned int Framer::getMaxNoFrames()
+int Framer::getMaxNoFrames()
 {
     return m_maxFrames;
 }
 
-void Framer::setSource(double *src, unsigned int length)
+void Framer::setSource(double *src, int64_t length)
 {
     m_srcBuffer = src;
-    m_ulSampleLen = length;
+    m_sampleLen = length;
 
-    m_maxFrames = (unsigned int)ceil( (double)m_ulSampleLen/(double)m_stepSize ) ;
+    int64_t maxFrames = length / int64_t(m_stepSize);
+    if (maxFrames * int64_t(m_stepSize) < length) {
+        ++maxFrames;
+    }
+    if (maxFrames > INT_MAX) maxFrames = INT_MAX;
+    m_maxFrames = maxFrames;
 }

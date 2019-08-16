@@ -61,8 +61,8 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     Q_UNUSED(index);
 
     // This will only succeed if the file actually exist.
-    QFileInfo fileInfo(location);
-    if (!fileInfo.exists()) {
+    TrackFile fileInfo(location);
+    if (!fileInfo.checkFileExists()) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "File"
                 << location
@@ -76,7 +76,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     // If the track is already contained in the library it will not insert
     // a duplicate. It also handles unremoving logic if the track has been
     // removed from the library recently and re-adds it.
-    const TrackPointer pTrack(trackDao.addSingleTrack(fileInfo, true));
+    const TrackPointer pTrack = trackDao.addSingleTrack(fileInfo, true);
     if (!pTrack) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "Failed to add track"

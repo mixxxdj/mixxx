@@ -6,6 +6,7 @@
 class Battery : public QObject {
     Q_OBJECT
   public:
+    static constexpr int TIME_UNKNOWN = -1;
     enum ChargingState {
         UNKNOWN,
         DISCHARGING,

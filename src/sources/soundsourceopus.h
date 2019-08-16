@@ -40,14 +40,14 @@ class SoundSourceOpus final : public SoundSource {
             OpenMode mode,
             const OpenParams& params) override;
 
-    OggOpusFile *m_pOggOpusFile;
+    OggOpusFile* m_pOggOpusFile;
 
     SampleBuffer m_prefetchSampleBuffer;
 
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderOpus: public SoundSourceProvider {
+class SoundSourceProviderOpus : public SoundSourceProvider {
   public:
     QString getName() const override;
 

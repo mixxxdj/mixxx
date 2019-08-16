@@ -12,8 +12,10 @@
 #include <QSharedPointer>
 #include <QRegExp>
 
+#include "../util/color/predefinedcolorsrepresentation.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
+#include "util/color/color.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
@@ -114,29 +116,8 @@ class SkinContext {
     }
 
     inline QColor selectColor(const QDomNode& node, const QString& nodeName) const {
-        // Takes a string with format #AARRGGBB and returns the corresponding QColor with alpha-channel set
-        // QT5.2 parses such strings by default in QColor::setNamedColor()
-        // TODO(MK): remove that logic once QT > 5.2 is the default
-
-        QColor color;
         QString sColorString = nodeToString(selectElement(node, nodeName));
-        if (sColorString.startsWith('#') && sColorString.length() == 9) {
-            // first extract the #RRGGBB part and parse the color from that
-            QString sRgbHex = sColorString.mid(3, 6).prepend("#");
-            color.setNamedColor(sRgbHex);
-
-            // now extract the alpha-value
-            QString sAlphaHex = sColorString.mid(1, 2);
-            bool bAlphaValueTransformed;
-            int iAlpha = sAlphaHex.toUInt(&bAlphaValueTransformed, 16);
-            if (bAlphaValueTransformed) {
-                color.setAlpha(iAlpha);
-            }
-        } else {
-            // if the given string is not in #AARRGGBB format, fall back to default QT behaviour
-            color.setNamedColor(sColorString);
-        }
-        return color;
+        return QColor(sColorString);
     }
 
     inline bool selectBool(const QDomNode& node, const QString& nodeName,
@@ -264,6 +245,20 @@ class SkinContext {
 
     double getScaleFactor() const {
         return m_scaleFactor;
+    }
+
+    PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
+        PredefinedColorsRepresentation colorRepresentation = Color::kPredefinedColorsSet.defaultRepresentation();
+        for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
+            QString sColorName(color->m_sName);
+            QColor skinRgba = selectColor(node, "Cue" + sColorName);
+            if (skinRgba.isValid()) {
+                PredefinedColorPointer originalColor = Color::kPredefinedColorsSet.predefinedColorFromName(sColorName);
+                colorRepresentation.setCustomRgba(originalColor, skinRgba);
+            }
+        }
+        colorRepresentation.setCustomRgba(Color::kPredefinedColorsSet.noColor, defaultColor);
+        return colorRepresentation;
     }
 
   private:

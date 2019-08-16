@@ -452,7 +452,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
 
 void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
     // get positions in reversed order
-    qSort(positions.begin(), positions.end(), qGreater<int>());
+    std::sort(positions.begin(), positions.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();

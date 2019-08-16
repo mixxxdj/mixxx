@@ -158,7 +158,7 @@ void BrowseThread::populateModel() {
                             filepath,
                             thisPath.token());
 
-            item = new QStandardItem(pTrack->getFileName());
+            item = new QStandardItem(pTrack->getFileInfo().fileName());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_FILENAME, item);
@@ -248,13 +248,13 @@ void BrowseThread::populateModel() {
             item->setData(location, Qt::UserRole);
             row_data.insert(COLUMN_NATIVELOCATION, item);
 
-            QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
+            QDateTime modifiedTime = pTrack->getFileInfo().fileLastModified().toLocalTime();
             item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
             item->setToolTip(item->text());
             item->setData(modifiedTime, Qt::UserRole);
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-            QDateTime creationTime = pTrack->getFileCreationTime().toLocalTime();
+            QDateTime creationTime = pTrack->getFileInfo().fileCreated().toLocalTime();
             item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
             item->setToolTip(item->text());
             item->setData(creationTime, Qt::UserRole);

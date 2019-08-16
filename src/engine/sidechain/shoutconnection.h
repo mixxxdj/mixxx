@@ -116,6 +116,7 @@ class ShoutConnection
     bool waitForRetry();
 
     void tryReconnect();
+    void insertMetaData(const char *name, const char *value);
 
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;

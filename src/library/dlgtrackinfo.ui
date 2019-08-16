@@ -817,7 +817,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
          </column>
          <column>
           <property name="text">
+           <string>Type</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
            <string>Hotcue</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Color</string>
           </property>
          </column>
          <column>

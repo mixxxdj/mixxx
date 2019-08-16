@@ -6,7 +6,6 @@
 #include <QObject>
 
 #include "util/assert.h"
-#include "util/compatibility.h"
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
@@ -41,7 +40,7 @@ class ControlRingValue {
             *value = m_value;
             m_readerSlots.fetchAndAddRelease(1);
             // We need the early return here to make the compiler
-            // aware that *value is initalised in the true case.
+            // aware that *value is initialised in the true case.
             return true;
         }
         m_readerSlots.fetchAndAddRelease(1);

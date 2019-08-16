@@ -1,6 +1,4 @@
-#ifndef _CLUSTER_SEGMENTER_H
-#define _CLUSTER_SEGMENTER_H
-
+/* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 /*
  *  cluster_segmenter.h
  *  soundbite
@@ -16,6 +14,9 @@
  *
  */
 
+#ifndef QM_DSP_CLUSTER_SEGMENTER_H
+#define QM_DSP_CLUSTER_SEGMENTER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -30,7 +31,8 @@
 extern "C" {
 #endif
 
-/* applies MPEG-7 normalisation to constant-Q features, storing normalised envelope (norm) in last feature dimension */
+/* applies MPEG-7 normalisation to constant-Q features,
+   storing normalised envelope (norm) in last feature dimension */
 void mpeg7_constq(double** features, int nframes, int ncoeff);
 
 /* converts constant-Q features to normalised chroma */
@@ -38,11 +40,15 @@ void cq2chroma(double** cq, int nframes, int ncoeff, int bins, double** chroma);
 
 void create_histograms(int* x, int nx, int m, int hlen, double* h);
 
-void cluster_segment(int* q, double** features, int frames_read, int feature_length, int nHMM_states, 
-					 int histogram_length, int nclusters, int neighbour_limit);
+void cluster_segment(int* q, double** features, int frames_read,
+                     int feature_length, int nHMM_states, 
+                     int histogram_length, int nclusters,
+                     int neighbour_limit);
 
-void constq_segment(int* q, double** features, int frames_read, int bins, int ncoeff, int feature_type, 
-			 int nHMM_states, int histogram_length, int nclusters, int neighbour_limit);
+void constq_segment(int* q, double** features, int frames_read,
+                    int bins, int ncoeff, int feature_type, 
+                    int nHMM_states, int histogram_length,
+                    int nclusters, int neighbour_limit);
 
 #ifdef __cplusplus
 }
