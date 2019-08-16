@@ -53,10 +53,18 @@ Variables:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <BeatSpinBox>
-            <TooltipId>beatjump_size</TooltipId>
-            <Value><Variable name="group"/>,beatjump_size</Value>
-          </BeatSpinBox>
+
+          <WidgetGroup>
+            <ObjectName>AlignLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>68f,22f</Size>
+            <Children>
+              <BeatSpinBox>
+                <TooltipId>beatjump_size</TooltipId>
+                <Value><Variable name="group"/>,beatjump_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
         </Children>
