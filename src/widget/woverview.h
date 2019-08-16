@@ -162,6 +162,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     std::vector<WaveformMarkRange> m_markRanges;
     QList<QString> m_markLabelText;
     QRectF m_expandedLabelRect;
+    QString m_hoveredCuePositionText;
+    QRectF m_cuePositionRect;
 
     // Coefficient value-position linear transposition
     double m_a;
