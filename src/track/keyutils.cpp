@@ -561,7 +561,7 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
         key = mixxx::track::io::key::INVALID;
     }
 
-    if (notation != LANCELOT) {
+    if (notation != LANCELOT && notation != LANCELOT_AND_TRADITIONAL) {
         return s_sortKeysCircleOfFifths[static_cast<int>(key)];
     } else {
         return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
