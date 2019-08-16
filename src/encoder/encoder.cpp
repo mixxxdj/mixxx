@@ -114,19 +114,17 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
         pEncoder = std::make_shared<EncoderVorbis>(pCallback);
 #endif
         pEncoder->setEncoderSettings(EncoderVorbisSettings(pConfig));
-    }
 #ifdef __OPUS__
-    else if (format.internalName == ENCODING_OPUS) {
+    } else if (format.internalName == ENCODING_OPUS) {
         pEncoder = std::make_shared<EncoderOpus>(pCallback);
         pEncoder->setEncoderSettings(EncoderOpusSettings(pConfig));
-    }
 #endif
     } else if (format.internalName == ENCODING_AAC ||
             format.internalName == ENCODING_HEAAC ||
             format.internalName == ENCODING_HEAACV2) {
         pEncoder = std::make_shared<EncoderFdkAac>(pCallback, format.internalName);
         pEncoder->setEncoderSettings(EncoderFdkAacSettings(pConfig));
-    else {
+    } else {
         qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);
