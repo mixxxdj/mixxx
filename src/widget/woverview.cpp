@@ -323,6 +323,14 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             m_marksToRender.append(pMark);
         }
     }
+
+    // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
+    for (const auto& pMark : m_marks) {
+        if (!m_marksToRender.contains(pMark)
+            && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
+            m_marksToRender.append(pMark);
+        }
+    }
     std::sort(m_marksToRender.begin(), m_marksToRender.end());
 }
 
