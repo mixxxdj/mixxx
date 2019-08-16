@@ -114,6 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
     void drawCurrentPosition(QPainter* pPainter);
+    void drawMarkLabels(QPainter* pPainter);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
@@ -159,6 +160,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     // List of visible WaveformMarks sorted by the order they appear in the track
     QList<WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
+    QList<QString> m_markLabelText;
+    QRectF m_expandedLabelRect;
 
     // Coefficient value-position linear transposition
     double m_a;
