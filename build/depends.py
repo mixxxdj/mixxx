@@ -1191,7 +1191,7 @@ class MixxxCore(Feature):
                    "src/encoder/encoderwave.cpp",
                    "src/encoder/encoderwavesettings.cpp",
                    'src/encoder/encoderopussettings.cpp',
-                   "src/encoder/encoderfdkaac.cpp"
+                   "src/encoder/encoderfdkaac.cpp",
                    "src/encoder/encoderfdkaacsettings.cpp",
 
                    "src/util/sleepableqthread.cpp",
