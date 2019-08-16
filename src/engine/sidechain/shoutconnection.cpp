@@ -454,12 +454,10 @@ void ShoutConnection::updateFromPreferences() {
         m_encoder = EncoderFactory::getFactory().getNewEncoder(
             EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
         m_encoder->setEncoderSettings(broadcastSettings);
-    }
 #ifdef __OPUS__
-    else if (m_format_is_opus) {
+    } else if (m_format_is_opus) {
         m_encoder = EncoderFactory::getFactory().getNewEncoder(
             EncoderFactory::getFactory().getFormatFor(ENCODING_OPUS), m_pConfig, this);
-    }
 #endif
     } else if (m_format_is_aac) {
         QString broadcastFormat = baFormat;
