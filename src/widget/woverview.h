@@ -114,6 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
     void drawCurrentPosition(QPainter* pPainter);
+    void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
@@ -123,6 +124,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     inline double positionToValue(int position) const {
         return (static_cast<double>(position) + m_b) / m_a;
     }
+    void shiftRectIfCutOff(QRectF* pRect);
 
     void updateCues(const QList<CuePointer> &loadedCues);
 
@@ -147,6 +149,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_bDrag;
     // Internal storage of slider position in pixels
     int m_iPos;
+
+    bool m_bTimeRulerActive;
+    QPointF m_timeRulerPos;
+    QRectF m_timeRulerTextArea;
+    QRectF m_timeRulerDistanceTextArea;
 
     Qt::Orientation m_orientation;
 

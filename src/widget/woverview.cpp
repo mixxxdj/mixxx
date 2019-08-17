@@ -57,6 +57,7 @@ WOverview::WOverview(
         m_pCueMenu(std::make_unique<CueMenu>(this)),
         m_bDrag(false),
         m_iPos(0),
+        m_bTimeRulerActive(false),
         m_orientation(Qt::Horizontal),
         m_a(1.0),
         m_b(0.0),
@@ -352,6 +353,14 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         }
     }
 
+    // Do not activate cue hovering while right click is held down and the
+    // button down event was not on a cue.
+    if (m_bTimeRulerActive) {
+        m_timeRulerPos = e->pos();
+        update();
+        return;
+    }
+
     // Without tracking the first hovered WaveformMark, the user could hover one
     // mark, then drag the cursor over another, and the second one's label text
     // would be drawn under the first.
@@ -402,6 +411,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
         m_bDrag = false;
         // Do not seek when releasing a right click. This is important to
         // prevent accidental seeking when trying to right click a hotcue.
+    } else if (e->button() == Qt::RightButton) {
+        m_bTimeRulerActive = false;
     }
 }
 
@@ -409,6 +420,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
     bool dragging = true;
+    bool hotcueRightClicked = false;
     if (m_pCurrentTrack != nullptr) {
         QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
         for (const auto& pMark : m_marksToRender) {
@@ -425,6 +437,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     for (const auto& pCue : cueList) {
                         if (pCue->getHotCue() == pMark->getHotCue()) {
                             pHoveredCue = pCue;
+                            hotcueRightClicked = true;
                             break;
                         }
                     }
@@ -440,6 +453,9 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
     if (e->button() == Qt::LeftButton) {
         m_bDrag = dragging;
+    } else if (e->button() == Qt::RightButton && !hotcueRightClicked) {
+        m_bTimeRulerActive = true;
+        m_timeRulerPos = e->pos();
     }
 }
 
@@ -449,6 +465,7 @@ void WOverview::leaveEvent(QEvent* e) {
         pMark->m_bMouseHovering = false;
     }
     m_bDrag = false;
+    m_bTimeRulerActive = false;
     update();
 }
 
@@ -479,6 +496,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
             drawCurrentPosition(&painter);
+            drawTimeRuler(&painter);
             drawMarkLabels(&painter, offset, gain);
         }
     }
@@ -747,11 +765,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // top left of the QRectF.
             QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - fontMetrics.height());
             textRect.moveTo(textTopLeft);
-            // If the right end of the label would get cut off, shift the label
-            // left so it fits.
-            if (textRect.right() > width()) {
-                textRect.setLeft(width() - textRect.width());
-            }
+            shiftRectIfCutOff(&textRect);
             pMark->m_labelArea = textRect;
         } else {
             // Placeholder to keep order
@@ -807,14 +821,8 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     (height() / 2) - fontMetrics.height());
             m_cueTimeDistanceRect.moveTo(distanceTextTopLeft);
 
-            // If the right end of the text would get cut off, shift text left
-            // so it fits.
-            if (m_cuePositionRect.right() > width()) {
-                m_cuePositionRect.setLeft(width() - m_cuePositionRect.width());
-            }
-            if (m_cueTimeDistanceRect.right() > width()) {
-                m_cueTimeDistanceRect.setLeft(width() - m_cueTimeDistanceRect.width());
-            }
+            shiftRectIfCutOff(&m_cuePositionRect);
+            shiftRectIfCutOff(&m_cueTimeDistanceRect);
         }
     }
 }
@@ -844,6 +852,84 @@ void WOverview::drawCurrentPosition(QPainter* pPainter) {
     pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
 }
 
+void WOverview::drawTimeRuler(QPainter* pPainter) {
+    QFont markerFont = pPainter->font();
+    markerFont.setPixelSize(10 * m_scaleFactor);
+    QFontMetricsF fontMetrics(markerFont);
+
+    QFont shadowFont = pPainter->font();
+    shadowFont.setWeight(99);
+    shadowFont.setPixelSize(10 * m_scaleFactor);
+    QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
+
+    m_timeRulerTextArea = QRectF();
+    m_timeRulerDistanceTextArea = QRectF();
+
+    if (m_bTimeRulerActive) {
+        QLineF line;
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), static_cast<float>(height()));
+        } else {
+            line.setLine(0.0, m_timeRulerPos.x(), static_cast<float>(width()), m_timeRulerPos.x());
+        }
+        pPainter->setPen(shadowPen);
+        pPainter->drawLine(line);
+
+        pPainter->setPen(Qt::green);
+        pPainter->drawLine(line);
+
+        QPointF textPoint = m_timeRulerPos;
+        QPointF textPointDistance = m_timeRulerPos;
+        double widgetPositionFraction;
+        double padding = 1.0; // spacing between line and text
+        if (m_orientation == Qt::Horizontal) {
+            textPoint = QPointF(textPoint.x() + padding, fontMetrics.height());
+            textPointDistance = QPointF(textPointDistance.x() + padding, height() / 2);
+            widgetPositionFraction = m_timeRulerPos.x() / width();
+        } else {
+            textPoint.setX(0);
+            textPointDistance.setX(0);
+            widgetPositionFraction = m_timeRulerPos.y() / height();
+        }
+        double trackSamples = m_trackSamplesControl->get();
+        double timePosition = samplePositionToSeconds(
+                widgetPositionFraction * trackSamples);
+        double timePositionTillEnd = samplePositionToSeconds(
+                (1 - widgetPositionFraction) * trackSamples);
+        double timeDistance = samplePositionToSeconds(
+                (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
+
+        QString timeText = mixxx::Duration::formatTime(timePosition)
+                + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
+        m_timeRulerTextArea = fontMetrics.boundingRect(timeText);
+        QString timeDistanceText;
+        if (timeDistance > 0) {
+            timeDistanceText = mixxx::Duration::formatTime(timeDistance);
+            m_timeRulerDistanceTextArea = fontMetrics.boundingRect(timeDistanceText);
+        }
+
+        QPointF timeTextTopLeft = QPointF(textPoint.x(),
+                textPoint.y() - fontMetrics.height());
+        m_timeRulerTextArea.moveTo(timeTextTopLeft);
+        QPointF timeDistanceTopLeft = QPointF(textPointDistance.x(),
+                textPointDistance.y() - fontMetrics.height());
+        m_timeRulerDistanceTextArea.moveTo(timeDistanceTopLeft);
+
+        shiftRectIfCutOff(&m_timeRulerTextArea);
+        shiftRectIfCutOff(&m_timeRulerDistanceTextArea);
+
+        pPainter->setPen(shadowPen);
+        pPainter->setFont(shadowFont);
+        pPainter->drawText(m_timeRulerTextArea.bottomLeft(), timeText);
+        pPainter->drawText(m_timeRulerDistanceTextArea.bottomLeft(), timeDistanceText);
+
+        pPainter->setPen(Qt::white);
+        pPainter->setFont(markerFont);
+        pPainter->drawText(m_timeRulerTextArea.bottomLeft(), timeText);
+        pPainter->drawText(m_timeRulerDistanceTextArea.bottomLeft(), timeDistanceText);
+    }
+}
+
 void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
     markerFont.setPixelSize(10 * m_scaleFactor);
@@ -858,9 +944,11 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     for (int n = 0; n < m_marksToRender.size(); ++n) {
         WaveformMarkPointer pMark = m_marksToRender.at(n);
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
-        if ((!pMark->m_labelArea.intersects(m_cuePositionRect)
-            && !pMark->m_labelArea.intersects(m_cueTimeDistanceRect))
-            || pMark->m_bMouseHovering) {
+        if (pMark->m_bMouseHovering ||
+            !(pMark->m_labelArea.intersects(m_cuePositionRect)
+              || pMark->m_labelArea.intersects(m_cueTimeDistanceRect)
+              || pMark->m_labelArea.intersects(m_timeRulerTextArea)
+              || pMark->m_labelArea.intersects(m_timeRulerDistanceTextArea))) {
 
             // If labels would overlap, only draw the first one.
             bool skip = false;
@@ -892,6 +980,11 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
         }
         // Draw the position text
         if (pMark->m_bMouseHovering) {
+            pPainter->setPen(shadowPen);
+            pPainter->setFont(shadowFont);
+            pPainter->drawText(m_cuePositionRect.bottomLeft(), m_cuePositionText);
+            pPainter->drawText(m_cueTimeDistanceRect.bottomLeft(), m_cueTimeDistanceText);
+
             pPainter->setPen(pMark->m_textColor);
             pPainter->setFont(markerFont);
             pPainter->drawText(m_cuePositionRect.bottomLeft(), m_cuePositionText);
@@ -927,11 +1020,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                 x = endPosition + padding;
             }
 
-            // Ensure the right end of the text does not get cut off by
-            // the end of the track
-            if (x + durationRect.width() > width()) {
-                x = width() - durationRect.width();
-            }
+            shiftRectIfCutOff(&durationRect);
 
             pPainter->setOpacity(1.0);
             pPainter->setPen(markRange.m_durationTextColor);
@@ -940,7 +1029,10 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             // top left of the QRectF.
             QPointF textTopLeft = QPointF(x, fontMetrics.ascent());
             durationRect.moveTo(textTopLeft);
-            if (!durationRect.intersects(m_cuePositionRect)) {
+            if (!(durationRect.intersects(m_cuePositionRect)
+                  || durationRect.intersects(m_cueTimeDistanceRect)
+                  || durationRect.intersects(m_timeRulerTextArea)
+                  || durationRect.intersects(m_timeRulerDistanceTextArea))) {
                 pPainter->drawText(QPointF(x, fontMetrics.ascent()), duration);
             }
         }
@@ -980,6 +1072,12 @@ double WOverview::samplePositionToSeconds(double sample) {
             * m_pRateRangeControl->get() * m_pRateSliderControl->get();
     return sample / m_trackSampleRateControl->get()
             / mixxx::kEngineChannelCount / rateRatio;
+}
+
+void WOverview::shiftRectIfCutOff(QRectF* pRect) {
+    if (pRect->right() > width()) {
+        pRect->setLeft(width() - pRect->width());
+    }
 }
 
 void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
