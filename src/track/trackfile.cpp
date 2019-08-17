@@ -12,23 +12,3 @@ QString TrackFile::freshCanonicalLocation() {
     }
     return loc;
 }
-
-QUrl TrackFile::toUrl() const {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    return QUrl::fromLocalFile(location());
-#else
-    if (location().isEmpty()) {
-        return QUrl();
-    } else {
-        return QUrl::fromLocalFile(location());
-    }
-#endif
-}
-
-QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    return debug << trackFile.asFileInfo();
-#else
-    return debug << trackFile.location();
-#endif
-}
