@@ -63,7 +63,8 @@ addons:
       - flac
       - lame
       - libsndfile
-      - libogg libvorbis
+      - libogg
+      - libvorbis
       - libshout
       - libmodplug
       - libid3tag

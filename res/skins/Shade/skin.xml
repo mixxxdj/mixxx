@@ -289,119 +289,52 @@
     </SingletonDefinition>
 
     <WidgetGroup>
+      <Size>0e,2f</Size>
+    </WidgetGroup>
+
+    <WidgetGroup>
       <ObjectName>DecksAndMixer</ObjectName>
       <Layout>horizontal</Layout>
       <Children>
         <WidgetGroup>
           <ObjectName>DeckLeftBorder</ObjectName>
-          <Size>3f,233f</Size>
-          <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+          <Size>3f,0min</Size>
         </WidgetGroup>
+
+        <Template src="skin:deck.xml">
+          <SetVariable name="channum">1</SetVariable>
+          <SetVariable name="effectunitnum">1</SetVariable>
+          <SetVariable name="effectgroup">BusLeft</SetVariable>
+          <SetVariable name="samplernum1">1</SetVariable>
+          <SetVariable name="samplernum2">2</SetVariable>
+          <SetVariable name="samplernum3">3</SetVariable>
+          <SetVariable name="samplernum4">4</SetVariable>
+          <SetVariable name="micnum">1</SetVariable>
+          <SetVariable name="auxnum">1</SetVariable>
+        </Template>
+
         <WidgetGroup>
-          <Size>0e,233f</Size>
-          <Layout>vertical</Layout>
-          <Children>
-            <WidgetGroup>
-              <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-              <Layout>vertical</Layout>
-              <Children>
-                <Template src="skin:deck.xml">
-                  <SetVariable name="channum">1</SetVariable>
-                </Template>
-                <WidgetGroup>
-                  <ObjectName>Deck</ObjectName>
-                  <Layout>horizontal</Layout>
-                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-                  <Children>
-                    <WidgetGroup>
-                      <ObjectName>DeckLeftBorder</ObjectName>
-                      <Size>5f,64f</Size>
-                      <BackPath>style/style_bg_deck_border.png</BackPath>
-                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-                    </WidgetGroup>
-                    <Template src="skin:deck_effect.xml">
-                      <SetVariable name="effectunitnum">1</SetVariable>
-                      <SetVariable name="group">BusLeft</SetVariable>
-                    </Template>
-                    <Template src="skin:deck_transport.xml">
-                      <SetVariable name="channum">1</SetVariable>
-                      <SetVariable name="samplernum1">1</SetVariable>
-                      <SetVariable name="samplernum2">2</SetVariable>
-                      <SetVariable name="samplernum3">3</SetVariable>
-                      <SetVariable name="samplernum4">4</SetVariable>
-                      <SetVariable name="micnum"></SetVariable>
-                      <SetVariable name="auxnum">1</SetVariable>
-                      </Template>
-                    <WidgetGroup>
-                      <ObjectName>DeckRightBorder</ObjectName>
-                      <Size>5f,64f</Size>
-                      <BackPath>style/style_bg_deck_border.png</BackPath>
-                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-                    </WidgetGroup>
-                  </Children>
-                </WidgetGroup>
-              </Children>
-            </WidgetGroup>
-          </Children>
-        </WidgetGroup>
-        <WidgetGroup>
-          <Size>261f,233f</Size>
+          <Size>261f,0min</Size>
           <Children>
             <Template src="skin:mixer_panel.xml"/>
           </Children>
         </WidgetGroup>
-        <WidgetGroup>
-          <Size>0e,233f</Size>
-          <Layout>vertical</Layout>
-          <Children>
-            <WidgetGroup>
-              <Layout>vertical</Layout>
-              <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-              <Children>
-                <Template src="skin:deck.xml">
-                  <SetVariable name="channum">2</SetVariable>
-                </Template>
-                <WidgetGroup>
-                  <ObjectName>Deck</ObjectName>
-                  <Layout>horizontal</Layout>
-                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-                  <Children>
-                    <WidgetGroup>
-                      <ObjectName>DeckLeftBorder</ObjectName>
-                      <Size>5f,64f</Size>
-                      <BackPath>style/style_bg_deck_border.png</BackPath>
-                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-                    </WidgetGroup>
 
-                    <Template src="skin:deck_effect.xml">
-                      <SetVariable name="effectunitnum">2</SetVariable>
-                      <SetVariable name="group">BusRight</SetVariable>
-                    </Template>
-                    <Template src="skin:deck_transport.xml">
-                      <SetVariable name="channum">2</SetVariable>
-                      <SetVariable name="samplernum1">5</SetVariable>
-                      <SetVariable name="samplernum2">6</SetVariable>
-                      <SetVariable name="samplernum3">7</SetVariable>
-                      <SetVariable name="samplernum4">8</SetVariable>
-                      <SetVariable name="micnum">2</SetVariable>
-                      <SetVariable name="auxnum">2</SetVariable>
-                    </Template>
-                    <WidgetGroup>
-                      <ObjectName>DeckRightBorder</ObjectName>
-                      <Size>5f,64f</Size>
-                      <BackPath>style/style_bg_deck_border.png</BackPath>
-                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-                    </WidgetGroup>
-                  </Children>
-                </WidgetGroup>
-              </Children>
-            </WidgetGroup>
-          </Children>
-        </WidgetGroup>
+        <Template src="skin:deck.xml">
+          <SetVariable name="channum">2</SetVariable>
+          <SetVariable name="effectunitnum">2</SetVariable>
+          <SetVariable name="effectgroup">BusRight</SetVariable>
+          <SetVariable name="samplernum1">5</SetVariable>
+          <SetVariable name="samplernum2">6</SetVariable>
+          <SetVariable name="samplernum3">7</SetVariable>
+          <SetVariable name="samplernum4">8</SetVariable>
+          <SetVariable name="micnum">2</SetVariable>
+          <SetVariable name="auxnum">2</SetVariable>
+        </Template>
+
         <WidgetGroup>
           <ObjectName>DeckRightBorder</ObjectName>
-          <Size>3f,233f</Size>
-          <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+          <Size>3f,0min</Size>
         </WidgetGroup>
       </Children>
       <Connection>
@@ -411,6 +344,10 @@
           <Not/>
         </Transform>
       </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup>
+      <Size>0e,2f</Size>
     </WidgetGroup>
 
     <!--

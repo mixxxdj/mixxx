@@ -53,7 +53,6 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
 }
 
 bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) {
-    DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pDetectionFunction) {
         return false;
@@ -63,8 +62,7 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) 
 }
 
 bool AnalyzerQueenMaryBeats::finalize() {
-    // TODO(rryan) if iLen is less than frame size, pad with zeros. Do we need
-    // flush support?
+    m_helper.finalize();
 
     int nonZeroCount = m_detectionResults.size();
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
@@ -72,21 +70,13 @@ bool AnalyzerQueenMaryBeats::finalize() {
     }
 
     std::vector<double> df;
-    std::vector<double> beatPeriod;
+    std::vector<double> beatPeriod(nonZeroCount);
     std::vector<double> tempi;
 
     df.reserve(nonZeroCount);
-    beatPeriod.reserve(nonZeroCount);
 
-    // NOTE(rryan): The VAMP plugin skipped the first 2 detection function
-    // results so I do as well. Not sure why.
-    for (int i = 2; i < nonZeroCount; ++i) {
+    for (int i = 0; i < nonZeroCount; ++i) {
         df.push_back(m_detectionResults.at(i));
-        beatPeriod.push_back(0.0);
-    }
-
-    if (df.empty()) {
-        return false;
     }
 
     TempoTrackV2 tt(m_iSampleRate, kStepSize);
@@ -95,10 +85,33 @@ bool AnalyzerQueenMaryBeats::finalize() {
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
 
-    m_resultBeats.resize(beats.size());
-    double* result = (double*)&m_resultBeats.at(0);
-    for (size_t i = 0; i < beats.size(); ++i) {
-        result[i] = beats[i] * kStepSize;
+    // In some tracks a beat at 0:00 is detected when a noise floor starts.
+    // Here we check the level and the position for plausibility and remove
+    // the beat if this is the case.
+    size_t firstBeat = 0;
+    if (beats.size() >= 3) {
+        if (beats.at(0) <= 0) {
+            firstBeat = 1;
+        } else if (m_detectionResults.at(beats.at(0)) <
+                (m_detectionResults.at(beats.at(1)) +
+                m_detectionResults.at(beats.at(2))) / 4) {
+            // the beat is not half es high than the average of the two
+            // following beats. Skip it.
+            firstBeat = 1;
+        } else {
+            int diff = (beats.at(1) - beats.at(0)) - (beats.at(2) - beats.at(1));
+            // we don't allow a signifcant tempo change after the first beat
+            if (diff > 2 || diff < -2) {
+                // first beat is off grid. Skip it.
+                firstBeat = 1;
+            }
+        }
+    }
+
+    m_resultBeats.reserve(beats.size());
+    for (size_t i = firstBeat; i < beats.size(); ++i) {
+        double result = (beats.at(i) * kStepSize) - kStepSize / 2;
+        m_resultBeats.push_back(result);
     }
 
     m_pDetectionFunction.reset();

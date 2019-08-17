@@ -50,14 +50,14 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
     m_valid = true;
 }
 
-double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
+double VisualPlayPosition::getAtNextVSync(VSyncThread* vSyncThread) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int refToVSync = vsyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         int offset = refToVSync - data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
@@ -70,16 +70,15 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAt(int fromNowMicros, double* pPlayPosition, double* pSlipPosition) {
+void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* pPlayPosition, double* pSlipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int elapsed = data.m_referenceTime.elapsed().toIntegerMicros();
-        int dacFromNow = elapsed - data.m_callbackEntrytoDac;
-        int offset = dacFromNow - fromNowMicros;
+        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+        int offset = refToVSync - data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;

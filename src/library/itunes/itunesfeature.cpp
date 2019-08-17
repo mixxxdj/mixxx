@@ -434,7 +434,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     if (xml.hasError()) {
         // do error handling
-        qDebug() << "Abbort processing iTunes music collection";
+        qDebug() << "Abort processing iTunes music collection";
         qDebug() << "line:" << xml.lineNumber() <<
                 "column:" << xml.columnNumber() <<
                 "error:" << xml.errorString();
