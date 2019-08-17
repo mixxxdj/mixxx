@@ -176,8 +176,7 @@ If none exists, seeks to the beginning of the track.</string>
       <item row="5" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxCloneDeckOnLoadDoubleTap">
         <property name="toolTip">
-         <string>Create a playing clone of the first playing deck Mixxx finds
-by double-tapping a Load button on a controller or keyboard.
+         <string>Create a playing clone of the first playing deck by double-tapping a Load button on a controller or keyboard.
 You can always drag-and-drop tracks on screen to clone a deck.</string>
         </property>
         <property name="text">
