@@ -1,5 +1,8 @@
 var XoneK2 = {};
 
+XoneK2.seekRateFast = 3.0;
+XoneK2.seekRateSlow = 0.5;
+
 XoneK2.decksInMiddleMidiChannel = 0xE;
 XoneK2.effectsInMiddleMidiChannel = 0xD;
 XoneK2.decksOnLeftMidiChannel = 0xC;
@@ -491,55 +494,81 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         color: XoneK2.color.amber,
     });
 
+    var CueOrSeekButton = function (options) {
+        if (options.cueName === undefined) {
+            print('ERROR! cueName not specified');
+        } else if (options.seekRate === undefined) {
+            print('ERROR! seekRate not specified');
+        }
+
+        this.outKey = options.cueName + '_enabled';
+        components.Button.call(this, options);
+    };
+    CueOrSeekButton.prototype = new components.Button({
+        unshift: function () {
+            this.inKey = this.cueName + '_activate';
+            this.input = components.Button.prototype.input;
+            engine.setValue(this.group, 'rateSearch', 0);
+        },
+        shift: function () {
+            this.input = function (channel, control, value, status) {
+                if (components.Button.prototype.isPress(channel, control, value, status)) {
+                    engine.setValue(this.group, 'rateSearch', this.seekRate);
+                } else {
+                    engine.setValue(this.group, 'rateSearch', 0);
+                }
+            };
+        },
+        supershift: function () {
+            this.inKey = this.cueName + '_clear';
+            this.input = components.Button.prototype.input;
+            engine.setValue(this.group, 'rateSearch', 0);
+        }
+    });
+
     this.bottomButtonLayers.intro_outro = new components.ComponentContainer();
-    this.bottomButtonLayers.intro_outro[1] = new components.Button({
-        unshift: function () {
-            this.inKey = 'intro_start_activate';
-        },
-        shift: function () {
-            this.inKey = 'intro_start_clear';
-        },
-        outKey: 'intro_start_enabled',
+    this.bottomButtonLayers.intro_outro[1] = new CueOrSeekButton({
+        cueName: "intro_start",
+        seekRate: XoneK2.seekRateFast,
         color: XoneK2.color.amber,
     });
-    this.bottomButtonLayers.intro_outro[2] = new components.Button({
-        unshift: function () {
-            this.inKey = 'intro_end_activate';
-        },
-        shift: function () {
-            this.inKey = 'intro_end_clear';
-        },
-        outKey: 'intro_end_enabled',
+    this.bottomButtonLayers.intro_outro[2] = new CueOrSeekButton({
+        cueName: "intro_end",
+        seekRate: -1 * XoneK2.seekRateFast,
         color: XoneK2.color.amber,
     });
-    this.bottomButtonLayers.intro_outro[3] = new components.Button({
-        unshift: function () {
-            this.inKey = 'outro_start_activate';
-        },
-        shift: function () {
-            this.inKey = 'outro_start_clear';
-        },
-        outKey: 'outro_start_enabled',
+    this.bottomButtonLayers.intro_outro[3] = new CueOrSeekButton({
+        cueName: "outro_start",
+        seekRate: XoneK2.seekRateSlow,
         color: XoneK2.color.amber,
     });
-    this.bottomButtonLayers.intro_outro[4] = new components.Button({
-        unshift: function () {
-            this.inKey = 'outro_end_activate';
-        },
-        shift: function () {
-            this.inKey = 'outro_end_clear';
-        },
-        outKey: 'outro_end_enabled',
+    this.bottomButtonLayers.intro_outro[4] = new CueOrSeekButton({
+        cueName: "outro_end",
+        seekRate: -1 * XoneK2.seekRateSlow,
         color: XoneK2.color.amber,
     });
 
     this.bottomButtonLayers.hotcue = new components.ComponentContainer();
-    for (var n = 1; n <= 4; ++n) {
-        this.bottomButtonLayers.hotcue[n] = new components.HotcueButton({
-            number: n,
-            color: XoneK2.color.red,
-        });
-    }
+    this.bottomButtonLayers.hotcue[1] = new CueOrSeekButton({
+        cueName: "hotcue_1",
+        seekRate: XoneK2.seekRateFast,
+        color: XoneK2.color.red,
+    });
+    this.bottomButtonLayers.hotcue[2] = new CueOrSeekButton({
+        cueName: "hotcue_2",
+        seekRate: -1 * XoneK2.seekRateFast,
+        color: XoneK2.color.red,
+    });
+    this.bottomButtonLayers.hotcue[3] = new CueOrSeekButton({
+        cueName: "hotcue_3",
+        seekRate: XoneK2.seekRateSlow,
+        color: XoneK2.color.red,
+    });
+    this.bottomButtonLayers.hotcue[4] = new CueOrSeekButton({
+        cueName: "hotcue_4",
+        seekRate: -1 * XoneK2.seekRateSlow,
+        color: XoneK2.color.red,
+    });
 
     var setGroup = function (component) {
         if (component.group === undefined) {
