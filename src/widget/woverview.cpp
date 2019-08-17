@@ -768,7 +768,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         // on top of the position text.
 
         // WaveformMark::m_align refers to the alignment of the label,
-        // so if the label is on bottom draw the duration on top and
+        // so if the label is on bottom draw the position text on top and
         // vice versa.
         if (pMark->m_bMouseHovering) {
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
