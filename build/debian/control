@@ -47,7 +47,8 @@ Build-Depends: debhelper (>= 9),
                libsoundtouch-dev,
                libhidapi-dev,
                libupower-glib-dev,
-               liblilv-dev
+               liblilv-dev,
+               libmodplug-dev
 Standards-Version: 3.9.8
 Homepage: http://www.mixxx.org/
 
