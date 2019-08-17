@@ -637,6 +637,7 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
 void WOverview::drawMarks(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
     markerFont.setPixelSize(10 * m_scaleFactor);
+    QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
     shadowFont.setWeight(99);
@@ -686,7 +687,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
 
-            QFontMetricsF fontMetrics(markerFont);
             QString text = pMark->m_text;
 
             // Only allow the text to overlap the following mark if the mouse is
@@ -743,42 +743,44 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
             if (pMark->m_bMouseHovering) {
                 m_expandedLabelRect = textRect;
-
-                // Show cue position when hovered
-                // The area it will be drawn in needs to be calculated here
-                // before drawMarkLabels so drawMarkLabels can avoid drawing
-                // labels over the cue position.
-                // This can happen for example if the user shows the cue position
-                // of a hotcue which is near the intro end position because the
-                // intro_end_position WaveformMark label is drawn at the top.
-                // However, the drawing of this text needs to happen in
-                // drawMarkLabels so none of the WaveformMark lines are drawn
-                // on top of the position text.
-
-                // WaveformMark::m_align refers to the alignment of the label,
-                // so if the label is on bottom draw the duration on top and
-                // vice versa.
-                Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
-                QPointF positionTextPoint(textRect.bottomLeft());
-                if (valign == Qt::AlignTop) {
-                    positionTextPoint.setY(float(height()) - 0.5f);
-                } else {
-                    positionTextPoint.setY(fontMetrics.height());
-                }
-
-                double markTime = samplePositionToSeconds(pMark->getSamplePosition());
-                m_hoveredCuePositionText = mixxx::Duration::formatTime(markTime);
-                m_cuePositionRect = fontMetrics.boundingRect(m_hoveredCuePositionText);
-                // QPainter::drawText starts drawing with the given QPointF as
-                // the bottom left of the text, but QRectF::moveTo takes the new
-                // top left of the QRectF.
-                QPointF textTopLeft = QPointF(positionTextPoint.x(),
-                        positionTextPoint.y() - fontMetrics.height());
-                m_cuePositionRect.moveTo(textTopLeft);
             }
         } else {
             // Placeholder to keep order
             m_markLabelText.append(QString());
+        }
+
+        // Show cue position when hovered
+        // The area it will be drawn in needs to be calculated here
+        // before drawMarkLabels so drawMarkLabels can avoid drawing
+        // labels over the cue position.
+        // This can happen for example if the user shows the cue position
+        // of a hotcue which is near the intro end position because the
+        // intro_end_position WaveformMark label is drawn at the top.
+        // However, the drawing of this text needs to happen in
+        // drawMarkLabels so none of the WaveformMark lines are drawn
+        // on top of the position text.
+
+        // WaveformMark::m_align refers to the alignment of the label,
+        // so if the label is on bottom draw the duration on top and
+        // vice versa.
+        if (pMark->m_bMouseHovering) {
+            Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
+            QPointF positionTextPoint(markPosition, 0);
+            if (valign == Qt::AlignTop) {
+                positionTextPoint.setY(float(height()) - 0.5f);
+            } else {
+                positionTextPoint.setY(fontMetrics.height());
+            }
+
+            double markTime = samplePositionToSeconds(pMark->getSamplePosition());
+            m_hoveredCuePositionText = mixxx::Duration::formatTime(markTime);
+            m_cuePositionRect = fontMetrics.boundingRect(m_hoveredCuePositionText);
+            // QPainter::drawText starts drawing with the given QPointF as
+            // the bottom left of the text, but QRectF::moveTo takes the new
+            // top left of the QRectF.
+            QPointF textTopLeft = QPointF(positionTextPoint.x(),
+                    positionTextPoint.y() - fontMetrics.height());
+            m_cuePositionRect.moveTo(textTopLeft);
         }
     }
 }
