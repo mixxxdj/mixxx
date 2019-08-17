@@ -696,6 +696,13 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 const float nextMarkPosition = offset + m_marksToRender.at(i+1)->getSamplePosition() * gain;
                 text = fontMetrics.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
             }
+            // Sometimes QFontMetrics::elidedText turns the QString into just an
+            // elipsis character, so always show at least the hotcue number if
+            // the label does not fit.
+            if ((text.isEmpty() || text == "…")
+                && pMark->getHotCue() != WaveformMark::kNoHotCue) {
+                text = QString::number(pMark->getHotCue()+1);
+            }
             m_markLabelText.append(text);
 
             QRectF textRect = fontMetrics.boundingRect(text);
