@@ -414,7 +414,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             if (pMark->m_bMouseHovering) {
                 if (e->button() == Qt::LeftButton) {
                     dragging = false;
-                } else {
+                } else if (pMark->getHotCue() != WaveformMark::kNoHotCue) {
                     // Currently the only way WaveformMarks can be associated
                     // with their respective Cue objects is by using the hotcue
                     // number. If cues without assigned hotcue are drawn on
