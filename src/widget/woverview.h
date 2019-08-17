@@ -161,7 +161,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     QList<WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
     QList<QString> m_markLabelText;
-    QRectF m_expandedLabelRect;
     QString m_hoveredCuePositionText;
     QRectF m_cuePositionRect;
 

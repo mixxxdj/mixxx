@@ -657,7 +657,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     // by the playhead.
 
     m_markLabelText.clear();
-    m_expandedLabelRect = QRectF();
     m_cuePositionRect = QRectF();
 
     for (int i = 0; i < m_marksToRender.size(); ++i) {
@@ -752,10 +751,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 textRect.setLeft(width() - textRect.width());
             }
             pMark->m_labelArea = textRect;
-
-            if (pMark->m_bMouseHovering) {
-                m_expandedLabelRect = textRect;
-            }
         } else {
             // Placeholder to keep order
             m_markLabelText.append(QString());
@@ -842,8 +837,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     for (int n = 0; n < m_marksToRender.size(); ++n) {
         WaveformMarkPointer pMark = m_marksToRender.at(n);
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
-        if ((!pMark->m_labelArea.intersects(m_expandedLabelRect)
-            && !pMark->m_labelArea.intersects(m_cuePositionRect))
+        if (!pMark->m_labelArea.intersects(m_cuePositionRect)
             || pMark->m_bMouseHovering) {
 
             // If labels would overlap, only draw the first one.
