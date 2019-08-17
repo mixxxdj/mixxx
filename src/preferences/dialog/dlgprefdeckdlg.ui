@@ -118,7 +118,7 @@ CUP mode:
       <item row="2" column="0">
        <widget class="QLabel" name="labelTimeDisplay">
         <property name="text">
-         <string>Time Format</string>
+         <string>Time format</string>
         </property>
        </widget>
       </item>
@@ -166,7 +166,7 @@ If none exists, seeks to the beginning of the track.</string>
       <item row="5" column="0">
        <widget class="QLabel" name="labelCloneDeckOnLoadDoubleTap">
         <property name="text">
-         <string>Clone Deck</string>
+         <string>Clone deck</string>
         </property>
         <property name="buddy">
          <cstring>checkBoxCloneDeckOnLoadDoubleTap</cstring>
