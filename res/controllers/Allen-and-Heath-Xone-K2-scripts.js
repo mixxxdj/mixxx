@@ -508,7 +508,10 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         unshift: function () {
             this.inKey = this.cueName + '_activate';
             this.input = components.Button.prototype.input;
-            engine.setValue(this.group, 'rateSearch', 0);
+            // Avoid log spam on startup
+            if (this.group !== undefined) {
+                engine.setValue(this.group, 'rateSearch', 0);
+            }
         },
         shift: function () {
             this.input = function (channel, control, value, status) {
