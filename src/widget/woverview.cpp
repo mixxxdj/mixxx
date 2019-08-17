@@ -114,6 +114,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             ? defaultMark->fillColor()
             : m_signalColors.getAxesColor();
     m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
+    m_pCueMenu->useColorSet(&m_predefinedColorsRepresentation);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {

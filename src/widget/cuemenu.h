@@ -9,7 +9,8 @@
 class CueMenu : public QMenu {
     Q_OBJECT
   public:
-    CueMenu(QWidget *parent = nullptr);
+    CueMenu(QWidget *parent = nullptr,
+            PredefinedColorsRepresentation* pColorRepresentation = nullptr);
     ~CueMenu() override;
 
     void setCue(CuePointer pCue) {
@@ -18,6 +19,12 @@ class CueMenu : public QMenu {
 
     void setTrack(TrackPointer pTrack) {
         m_pTrack = pTrack;
+    }
+
+    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
+        if (m_pColorMenu != nullptr) {
+            m_pColorMenu->useColorSet(pColorRepresentation);
+        }
     }
 
   private slots:

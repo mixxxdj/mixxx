@@ -3,13 +3,13 @@
 #include "widget/cuemenu.h"
 #include "util/color/color.h"
 
-CueMenu::CueMenu(QWidget *parent)
+CueMenu::CueMenu(QWidget *parent, PredefinedColorsRepresentation* pColorRepresentation)
         : QMenu(parent) {
     m_pEditLabel = new QAction(tr("Edit label"));
     addAction(m_pEditLabel);
     connect(m_pEditLabel, &QAction::triggered, this, &CueMenu::slotEditLabel);
 
-    m_pColorMenu = new ColorMenu(this);
+    m_pColorMenu = new ColorMenu(this, pColorRepresentation);
     connect(m_pColorMenu, &ColorMenu::colorPicked, this, &CueMenu::slotChangeCueColor);
     addMenu(m_pColorMenu);
 

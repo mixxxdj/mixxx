@@ -1,11 +1,16 @@
 #include "widget/colormenu.h"
 #include "util/color/color.h"
 
-ColorMenu::ColorMenu(QWidget *parent)
+ColorMenu::ColorMenu(QWidget *parent, PredefinedColorsRepresentation* pColorRepresentation)
         : QMenu(parent) {
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
     setTitle(tr("Set color"));
+    useColorSet(pColorRepresentation);
+}
+
+void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
+    clear();
     for (const auto& pColor : Color::kPredefinedColorsSet.allColors) {
         if (*pColor == *Color::kPredefinedColorsSet.noColor) {
             continue;
@@ -13,7 +18,11 @@ ColorMenu::ColorMenu(QWidget *parent)
 
         QAction* pColorAction = new QAction(pColor->m_sDisplayName);
         QPixmap pixmap(80, 80);
-        pixmap.fill(pColor->m_defaultRgba);
+        if (pColorRepresentation == nullptr) {
+            pixmap.fill(pColor->m_defaultRgba);
+        } else {
+            pixmap.fill(pColorRepresentation->representationFor(pColor));
+        }
         pColorAction->setIcon(QIcon(pixmap));
 
         m_pColorActions.append(pColorAction);
@@ -24,8 +33,15 @@ ColorMenu::ColorMenu(QWidget *parent)
     }
 }
 
-ColorMenu::~ColorMenu() {
+void ColorMenu::clear() {
     for (auto& pAction : m_pColorActions) {
-        delete pAction;
+        if (pAction != nullptr) {
+            delete pAction;
+        }
     }
+    m_pColorActions.clear();
+}
+
+ColorMenu::~ColorMenu() {
+    clear();
 }
