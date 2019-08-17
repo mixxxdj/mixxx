@@ -75,6 +75,7 @@ WOverview::WOverview(
     m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
+    m_playpositionControl = new ControlProxy(m_group, "playposition", this);
     setAcceptDrops(true);
 
     setMouseTracking(true);
@@ -658,6 +659,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
     m_markLabelText.clear();
     m_cuePositionRect = QRectF();
+    m_cueTimeDistanceRect = QRectF();
 
     for (int i = 0; i < m_marksToRender.size(); ++i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
@@ -779,9 +781,21 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 positionTextPoint.setY(fontMetrics.height());
             }
 
-            double markTime = samplePositionToSeconds(pMark->getSamplePosition());
-            m_hoveredCuePositionText = mixxx::Duration::formatTime(markTime);
-            m_cuePositionRect = fontMetrics.boundingRect(m_hoveredCuePositionText);
+            double markSamples = pMark->getSamplePosition();
+            double currentPositionSamples = m_playpositionControl->get() * m_trackSamplesControl->get();
+            double markTime = samplePositionToSeconds(markSamples);
+            double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
+            m_cuePositionText = mixxx::Duration::formatTime(markTime);
+            // Do not show the time until the cue point if the playhead is past
+            // the cue point.
+            if (markTimeDistance > 0) {
+                m_cueTimeDistanceText = mixxx::Duration::formatTime(markTimeDistance);
+            } else {
+                m_cueTimeDistanceText = QString();
+            }
+            m_cuePositionRect = fontMetrics.boundingRect(m_cuePositionText);
+            m_cueTimeDistanceRect = fontMetrics.boundingRect(m_cueTimeDistanceText);
+
             // QPainter::drawText starts drawing with the given QPointF as
             // the bottom left of the text, but QRectF::moveTo takes the new
             // top left of the QRectF.
@@ -789,10 +803,17 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     positionTextPoint.y() - fontMetrics.height());
             m_cuePositionRect.moveTo(textTopLeft);
 
+            QPointF distanceTextTopLeft(markPosition,
+                    (height() / 2) - fontMetrics.height());
+            m_cueTimeDistanceRect.moveTo(distanceTextTopLeft);
+
             // If the right end of the text would get cut off, shift text left
             // so it fits.
             if (m_cuePositionRect.right() > width()) {
                 m_cuePositionRect.setLeft(width() - m_cuePositionRect.width());
+            }
+            if (m_cueTimeDistanceRect.right() > width()) {
+                m_cueTimeDistanceRect.setLeft(width() - m_cueTimeDistanceRect.width());
             }
         }
     }
@@ -837,7 +858,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     for (int n = 0; n < m_marksToRender.size(); ++n) {
         WaveformMarkPointer pMark = m_marksToRender.at(n);
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
-        if (!pMark->m_labelArea.intersects(m_cuePositionRect)
+        if ((!pMark->m_labelArea.intersects(m_cuePositionRect)
+            && !pMark->m_labelArea.intersects(m_cueTimeDistanceRect))
             || pMark->m_bMouseHovering) {
 
             // If labels would overlap, only draw the first one.
@@ -872,7 +894,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
         if (pMark->m_bMouseHovering) {
             pPainter->setPen(pMark->m_textColor);
             pPainter->setFont(markerFont);
-            pPainter->drawText(m_cuePositionRect.bottomLeft(), m_hoveredCuePositionText);
+            pPainter->drawText(m_cuePositionRect.bottomLeft(), m_cuePositionText);
+            pPainter->drawText(m_cueTimeDistanceRect.bottomLeft(), m_cueTimeDistanceText);
         }
     }
 

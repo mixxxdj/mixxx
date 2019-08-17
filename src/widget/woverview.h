@@ -135,6 +135,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     ControlProxy* m_pRateSliderControl;
     ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
+    ControlProxy* m_playpositionControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -161,8 +162,10 @@ class WOverview : public WWidget, public TrackDropTarget {
     QList<WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
     QList<QString> m_markLabelText;
-    QString m_hoveredCuePositionText;
+    QString m_cuePositionText;
     QRectF m_cuePositionRect;
+    QString m_cueTimeDistanceText;
+    QRectF m_cueTimeDistanceRect;
 
     // Coefficient value-position linear transposition
     double m_a;
