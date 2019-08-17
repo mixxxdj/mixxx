@@ -441,15 +441,19 @@ class ModPlug(Feature):
     def description(self):
         return "Modplug module decoder plugin"
 
+    def default(self, build):
+        return 1 if build.platform_is_linux else 0
+
     def enabled(self, build):
-        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 0)
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', self.default(build))
         if int(build.flags['modplug']):
             return True
         return False
 
     def add_options(self, build, vars):
         vars.Add('modplug',
-                 'Set to 1 to enable libmodplug based module tracker support.', 0)
+                 'Set to 1 to enable libmodplug based module tracker support.',
+                 self.default(build))
 
     def configure(self, build, conf):
         if not self.enabled(build):
