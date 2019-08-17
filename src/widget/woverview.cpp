@@ -746,6 +746,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // top left of the QRectF.
             QPointF textTopLeft = QPointF(textPoint.x(), textPoint.y() - fontMetrics.height());
             textRect.moveTo(textTopLeft);
+            // If the right end of the label would get cut off, shift the label
+            // left so it fits.
+            if (textRect.right() > width()) {
+                textRect.setLeft(width() - textRect.width());
+            }
             pMark->m_labelArea = textRect;
 
             if (pMark->m_bMouseHovering) {
@@ -833,6 +838,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
         if ((!pMark->m_labelArea.intersects(m_expandedLabelRect)
             && !pMark->m_labelArea.intersects(m_cuePositionRect))
             || pMark->m_bMouseHovering) {
+
+
             pPainter->setPen(shadowPen);
             pPainter->setFont(shadowFont);
             pPainter->drawText(pMark->m_labelArea.bottomLeft(), m_markLabelText.at(n));
