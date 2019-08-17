@@ -302,7 +302,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
         if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
-            && pMark->getSamplePosition() >= 0.0) {
+            && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
             QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor);
@@ -686,7 +686,9 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         //const float markPosition = 1.0 +
         //        (m_marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-        const float markPosition = offset + m_marksToRender.at(i)->getSamplePosition() * gain;
+        const float markPosition = math_clamp(
+                offset + m_marksToRender.at(i)->getSamplePosition() * gain,
+                0.0, static_cast<double>(width()));
         pMark->m_linePosition = markPosition;
 
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
