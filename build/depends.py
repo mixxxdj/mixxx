@@ -906,6 +906,7 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
+                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
                    "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",

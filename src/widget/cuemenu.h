@@ -4,6 +4,7 @@
 
 #include "track/track.h"
 #include "track/cue.h"
+#include "widget/colormenu.h"
 
 class CueMenu : public QMenu {
     Q_OBJECT
@@ -22,16 +23,13 @@ class CueMenu : public QMenu {
   private slots:
     void slotEditLabel();
     void slotRemoveCue();
+    void slotChangeCueColor(PredefinedColorPointer pColor);
 
   private:
-    // This is not a Qt slot because it is connected via a lambda.
-    void changeCueColor(PredefinedColorPointer pColor);
-
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
     QAction* m_pEditLabel;
-    QMenu* m_pColorMenu;
-    QList<QAction*> m_pColorMenuActions;
+    ColorMenu* m_pColorMenu;
     QAction* m_pRemoveCue;
 };
