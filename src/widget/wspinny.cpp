@@ -19,10 +19,12 @@
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
-WSpinny::WSpinny(QWidget* parent, const QString& group,
-                 UserSettingsPointer pConfig,
-                 VinylControlManager* pVCMan,
-                 BaseTrackPlayer* pPlayer)
+WSpinny::WSpinny(
+        QWidget* parent,
+        const QString& group,
+        UserSettingsPointer pConfig,
+        VinylControlManager* pVCMan,
+        BaseTrackPlayer* pPlayer)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
           m_group(group),
@@ -54,7 +56,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           m_iFullRotations(0),
           m_dPrevTheta(0.),
           m_dTheta(0.),
-          m_dRotationsPerSecond(0.),
+          m_dRotationsPerSecond(MIXXX_VINYL_SPEED_33_NUM / 60),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
@@ -301,7 +303,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
 }
 
-void WSpinny::render() {
+void WSpinny::render(VSyncThread* vSyncThread) {
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -311,10 +313,11 @@ void WSpinny::render() {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull()) {
-        m_pVisualPlayPos->getPlaySlipAt(0,
-                                        &m_dAngleCurrentPlaypos,
-                                        &m_dGhostAngleCurrentPlaypos);
+    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
+        m_pVisualPlayPos->getPlaySlipAtNextVSync(
+                vSyncThread,
+                &m_dAngleCurrentPlaypos,
+                &m_dGhostAngleCurrentPlaypos);
     }
 
     QPainter p(this);

@@ -45,7 +45,7 @@ void BatteryLinux::read() {
     VERIFY_OR_DEBUG_ASSERT(devices) {
       return;
     }
-    devices = g_ptr_array_new_with_free_func((GDestroyNotify) g_object_unref);
+    g_ptr_array_set_free_func(devices, (GDestroyNotify) g_object_unref);
 #endif
 
     for (guint i = 0; i < devices->len; ++i) {
@@ -90,7 +90,7 @@ void BatteryLinux::read() {
 
         m_dPercentage = percentage;
 
-        // upower tells us the remainging time in seconds (0 if unknown)
+        // upower tells us the remaining time in seconds (0 if unknown)
         if (m_chargingState == CHARGING && timeToFull > 0) {
           m_iMinutesLeft = timeToFull / 60;
         } else if (m_chargingState == DISCHARGING && timeToEmpty > 0) {
