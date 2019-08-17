@@ -793,6 +793,12 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             QPointF textTopLeft = QPointF(positionTextPoint.x(),
                     positionTextPoint.y() - fontMetrics.height());
             m_cuePositionRect.moveTo(textTopLeft);
+
+            // If the right end of the text would get cut off, shift text left
+            // so it fits.
+            if (m_cuePositionRect.right() > width()) {
+                m_cuePositionRect.setLeft(width() - m_cuePositionRect.width());
+            }
         }
     }
 }
