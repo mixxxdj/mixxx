@@ -837,6 +837,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     shadowFont.setWeight(99);
     shadowFont.setPixelSize(10 * m_scaleFactor);
 
+    bool firstOverlappingLabelRendered = false;
     // Draw WaveformMark labels
     for (int n = 0; n < m_marksToRender.size(); ++n) {
         WaveformMarkPointer pMark = m_marksToRender.at(n);
@@ -845,6 +846,25 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             && !pMark->m_labelArea.intersects(m_cuePositionRect))
             || pMark->m_bMouseHovering) {
 
+            // If labels would overlap, only draw the first one.
+            bool skip = false;
+            for (const auto& otherMark : m_marksToRender) {
+                if (otherMark != pMark
+                    && pMark->m_labelArea.intersects(otherMark->m_labelArea)) {
+
+                    if (firstOverlappingLabelRendered) {
+                        skip = true;
+                        break;
+                    } else {
+                        skip = false;
+                        firstOverlappingLabelRendered = true;
+                        break;
+                    }
+                }
+            }
+            if (skip) {
+                continue;
+            }
 
             pPainter->setPen(shadowPen);
             pPainter->setFont(shadowFont);
