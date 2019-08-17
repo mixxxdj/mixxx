@@ -222,7 +222,7 @@ components.Component.prototype.send =  function (value) {
         return;
     }
     // The LEDs are turned on with a Note On MIDI message (first nybble of first byte 9)
-    // and turned off with a Note Offf MIDI message (first nybble of first byte 8).
+    // and turned off with a Note Off MIDI message (first nybble of first byte 8).
     if (value > 0) {
         midi.sendShortMsg(this.midi[0] + 0x10, this.midi[1] + this.color, value);
     } else {
