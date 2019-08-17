@@ -810,12 +810,6 @@ class LiveBroadcasting(Feature):
             return True
         return False
 
-    def internal_link(self, build):
-        build.flags['shoutcast_internal'] = util.get_flags(build.env, 'shoutcast_internal', 1)
-        if int(build.flags['shoutcast_internal']):
-            return True
-        return False
-
     def add_options(self, build, vars):
         vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
 	vars.Add('shoutcast_internal', 'Set to 1 to use internal libshout', 1)
@@ -825,8 +819,18 @@ class LiveBroadcasting(Feature):
             return
 
         build.env.Append(CPPDEFINES='__BROADCAST__')
-
-	if self.internal_link(build):
+        
+        build.flags['shoutcast_internal'] = util.get_flags(build.env, 'shoutcast_internal', 0)        
+        if build.platform_is_linux and not build.flags['shoutcast_internal']:
+            # Check if system lib is lower 2.4.2 or 2.4.3 and not suffering bug 
+            # https://bugs.launchpad.net/mixxx/+bug/1833225
+            if conf.CheckForPKG('shout', '2.3.1'):
+                print("System's libshout is too recent, using internal shout_mixxx")
+                build.flags['shoutcast_internal'] = 1
+            else:
+                print("(no) here is fine, since we need an oder version") 
+                              
+        if int(build.flags['shoutcast_internal']):
             build.env.Append(CPPPATH='include')
             build.env.Append(CPPPATH='src')
             return
@@ -842,8 +846,8 @@ class LiveBroadcasting(Feature):
             conf.CheckLib('gdi32')
 
     def sources(self, build):
-        if self.internal_link(build):
-	    # Clone our main environment so we don't change any settings in the
+        if int(build.flags['shoutcast_internal']):
+            # Clone our main environment so we don't change any settings in the
             # Mixxx environment
             libshout_env = build.env.Clone()
 
