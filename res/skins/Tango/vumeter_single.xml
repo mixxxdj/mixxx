@@ -1,0 +1,82 @@
+<!--
+Description:
+  VUMeter template for mixer VU meter and floating channel & Master VU meter
+Variables:
+  group   : [ChannelN]
+  side    : L or R
+
+
+Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
+Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>VuMeterClippingBorder</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>stacked</Layout>
+            <Size>4f,-1min</Size>
+            <Children>
+              <StatusLight>
+                <TooltipId>master_VuMeterL</TooltipId>
+                <PathStatusLight>skin:/graphics/vumeter_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_clipping.png</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
+                </Connection>
+              </StatusLight>
+              <VuMeter>
+                <PathVu>skin:/graphics/vumeter_level_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_level.png</PathBack>
+                <Horizontal>false</Horizontal>
+                <PeakHoldSize>4</PeakHoldSize>
+                <PeakHoldTime>800</PeakHoldTime>
+                <PeakFallTime>200</PeakFallTime>
+                <PeakFallStep>5</PeakFallStep>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>stacked</Layout>
+            <Size>4f,-1min</Size>
+            <Children>
+              <StatusLight>
+                <TooltipId>master_VuMeterR</TooltipId>
+                <PathStatusLight>skin:/graphics/vumeter_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_clipping.png</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
+                </Connection>
+              </StatusLight>
+              <VuMeter>
+                <PathVu>skin:/graphics/vumeter_level_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_level.png</PathBack>
+                <Horizontal>false</Horizontal>
+                <PeakHoldSize>4</PeakHoldSize>
+                <PeakHoldTime>800</PeakHoldTime>
+                <PeakFallTime>200</PeakFallTime>
+                <PeakFallStep>5</PeakFallStep>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -76,7 +76,7 @@ public:
     // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
     static int getRateRampSensitivity();
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
+    void notifySeek(double dNewPlaypos) override;
 
   public slots:
     void slotRateRangeChanged(double);

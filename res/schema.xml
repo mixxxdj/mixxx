@@ -419,7 +419,7 @@ METADATA
   <revision version="27" min_compatible="3">
     <description>
       Add cue color support. Default color is #FF0000.
-      <!-- See library/dao/cue.h. -->
+      <!-- See track/cue.h. -->
     </description>
     <sql>
       <!-- Default color is #FFFF0000 (in base 10) -->
@@ -436,6 +436,15 @@ METADATA
     <sql>
       <!-- Reset replay gain to default value -->
       UPDATE library SET replaygain=0.0 WHERE filetype='flac' COLLATE NOCASE;
+    </sql>
+  </revision>
+  <revision version="29" min_compatible="3">
+    <description>
+      Add source to cue. Default is MANUAL.
+      <!-- See track/cue.h. -->
+    </description>
+    <sql>
+      ALTER TABLE cues ADD COLUMN source INTEGER DEFAULT 2 NOT NULL;
     </sql>
   </revision>
 </schema>

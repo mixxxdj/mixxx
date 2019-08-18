@@ -28,19 +28,17 @@
             <State>
               <Number>0</Number>
               <Text><Variable name="state_0_text"/></Text>
-              <Pressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
               <Text><Variable name="state_1_text"/></Text>
-              <Pressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Master],skin_settings</ConfigKey>
-              <!-- This is used to work around Bug 1795663 on OSX -->
-              <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
@@ -52,13 +50,13 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Parallel Waveforms</SetVariable>
             <SetVariable name="skinsetting">[Deere],show_parallel_waveforms</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="text">4 Decks</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_4decks</SetVariable>
@@ -79,44 +77,50 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_coverart</SetVariable>
             <SetVariable name="text">Cover Art</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_coverart</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_spinny</SetVariable>
             <SetVariable name="text">Spinnies</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_spinnies</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Artist &amp; Track Title</SetVariable>
             <SetVariable name="skinsetting">[Deere],show_track_info</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">BPM</SetVariable>
             <SetVariable name="skinsetting">[Deere],show_bpm_info</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Star Rating</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_starrating</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">8 Hotcues</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_8_hotcues</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
-            <SetVariable name="TooltipId">how_vinylcontrol</SetVariable>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+            <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_intro_outro_cues</SetVariable>
+          </Template>
+          
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>
             <SetVariable name="skinsetting">[VinylControl],show_vinylcontrol</SetVariable>
           </Template>
@@ -124,7 +128,7 @@
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:skinsettings_category_button.xml">
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_mixer</SetVariable>
         <SetVariable name="text">Mixer</SetVariable>
         <SetVariable name="skinsetting">[Master],show_mixer</SetVariable>
@@ -136,25 +140,25 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Equalizers</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_eq_knobs</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Kill Switches</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_eq_kill_buttons</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Faders</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_faders</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Crossfader</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_xfader</SetVariable>
@@ -164,7 +168,7 @@
       </WidgetGroup>
 
       <!-- Sampler Settings -->
-      <Template src="skin:skinsettings_category_button.xml">
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_samplers</SetVariable>
         <SetVariable name="text">Samplers</SetVariable>
         <SetVariable name="skinsetting">[Samplers],show_samplers</SetVariable>
@@ -176,7 +180,7 @@
         <SizePolicy>me,max</SizePolicy>
         <Children>
 
-          <WidgetStack currentpage="[Deere],sampler_row_current" >
+          <WidgetStack currentpage="[Skin],sampler_row_current">
             <NextControl>[Deere],sampler_bank_next</NextControl>
             <PrevControl>[Deere],sampler_bank_prev</PrevControl>
             <Children>
@@ -184,7 +188,7 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:sampler_rows_selection_button.xml">
+                  <Template src="skin:../Deere/sampler_rows_selection_button.xml">
                     <SetVariable name="current">1</SetVariable>
                     <SetVariable name="next">2</SetVariable>
                     <SetVariable name="prev">8</SetVariable>
@@ -195,7 +199,7 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:sampler_rows_selection_button.xml">
+                  <Template src="skin:../Deere/sampler_rows_selection_button.xml">
                     <SetVariable name="current">2</SetVariable>
                     <SetVariable name="next">3</SetVariable>
                     <SetVariable name="prev">1</SetVariable>
@@ -275,7 +279,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:left_1state_button.xml">
+              <Template src="skin:../Deere/left_1state_button.xml">
                 <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
                 <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                 <SetVariable name="ObjectName">SamplerBankLoadButton</SetVariable>
@@ -288,7 +292,7 @@
                 <SetVariable name="left_connection_control">[Sampler],LoadSamplerBank</SetVariable>
               </Template>
 
-              <Template src="skin:left_1state_button.xml">
+              <Template src="skin:../Deere/left_1state_button.xml">
                 <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
                 <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                 <SetVariable name="ObjectName">SamplerBankSaveButton</SetVariable>
@@ -307,7 +311,7 @@
       </WidgetGroup>
 
       <!-- Effects Settings -->
-      <Template src="skin:skinsettings_category_button.xml">
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_effects</SetVariable>
         <SetVariable name="text">Effects</SetVariable>
         <SetVariable name="skinsetting">[EffectRack1],show</SetVariable>
@@ -319,13 +323,13 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Superknob</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_superknobs</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">4 Effect Units</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_4effectunits</SetVariable>
@@ -334,7 +338,7 @@
       </WidgetGroup>
 
       <!-- Library Settings -->
-      <Template src="skin:skinsettings_category_button.xml">
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_library</SetVariable>
         <SetVariable name="text">Library</SetVariable>
         <SetVariable name="skinsetting">[Skin],show_library</SetVariable>
@@ -346,13 +350,13 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_previewdeck</SetVariable>
             <SetVariable name="text">Preview Deck</SetVariable>
             <SetVariable name="skinsetting">[PreviewDeck],show_previewdeck</SetVariable>
           </Template>
 
-          <Template src="skin:skinsettings_button.xml">
+          <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_coverart</SetVariable>
             <SetVariable name="text">Cover Art</SetVariable>
             <SetVariable name="skinsetting">[Library],show_coverart</SetVariable>
@@ -360,7 +364,7 @@
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:spacer_v.xml"/>
+      <Template src="skin:../Deere/spacer_v.xml"/>
 
     </Children>
     <Connection>

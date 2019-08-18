@@ -6,26 +6,6 @@ from .mixxx import Feature
 import SCons.Script as SCons
 from . import depends
 
-class OpenGLES(Feature):
-    def description(self):
-        return "OpenGL-ES >= 2.0 support [Experimental]"
-
-    def enabled(self, build):
-        build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
-        return int(build.flags['opengles'])
-
-    def add_options(self, build, vars):
-        vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        if build.flags['opengles']:
-            build.env.Append(CPPDEFINES='__OPENGLES__')
-
-    def sources(self, build):
-        return []
-
 class HSS1394(Feature):
     def description(self):
         return "HSS1394 MIDI device support"
@@ -83,7 +63,7 @@ class HID(Feature):
         if not self.enabled(build):
             return
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
                 # No System Lib found
@@ -368,8 +348,11 @@ class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"
 
+    def default(self, build):
+        return 1 if build.platform_is_linux else 0
+
     def enabled(self, build):
-        build.flags['faad'] = util.get_flags(build.env, 'faad', 0)
+        build.flags['faad'] = util.get_flags(build.env, 'faad', self.default(build))
         if int(build.flags['faad']):
             return True
         return False
@@ -392,14 +375,9 @@ class FAAD(Feature):
             raise Exception(
                 'Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'])
-
-        if not have_faad:
-            raise Exception(
-                'Could not find libfaad or the libfaad development headers.')
-
     def sources(self, build):
-        return ['src/sources/soundsourcem4a.cpp']
+        return ['src/sources/soundsourcem4a.cpp',
+        		'src/sources/libfaadloader.cpp']
 
 
 class WavPack(Feature):
@@ -1201,7 +1179,7 @@ class Battery(Feature):
             return ["src/util/battery/batterywindows.cpp"]
         elif build.platform_is_osx:
             return ["src/util/battery/batterymac.cpp"]
-        elif build.platform_is_linux:
+        elif build.platform_is_linux or build.platform_is_bsd:
             return ["src/util/battery/batterylinux.cpp"]
         else:
             raise Exception('Battery support is not implemented for the target platform.')

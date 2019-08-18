@@ -191,7 +191,7 @@ Variables:
                 <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:deck_row_comment_right.xml"/>
+              <Template src="skin:deck_row_comment_fx_right.xml"/>
 
               <SingletonContainer>
                 <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
@@ -213,7 +213,7 @@ Variables:
                 <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:deck_row_comment_right.xml"/>
+              <Template src="skin:deck_row_comment_fx_right.xml"/>
 
               <WidgetGroup><!--
                 <ObjectName>DeckOverviewBox<Variable name="chanNum"/></ObjectName> -->

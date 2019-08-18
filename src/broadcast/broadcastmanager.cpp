@@ -29,8 +29,10 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
     m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pBroadcastEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlEnabled(double)));
+    connect(m_pBroadcastEnabled,
+            &ControlPushButton::valueChanged,
+            this,
+            &BroadcastManager::slotControlEnabled);
 
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
     m_pStatusCO->setReadOnly();
@@ -48,12 +50,18 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     // Connect add/remove profiles signals.
     // Passing the raw pointer from QSharedPointer to connect() is fine, since
     // connect is trusted that it won't delete the pointer
-    connect(m_pBroadcastSettings.data(), SIGNAL(profileAdded(BroadcastProfilePtr)),
-            this, SLOT(slotProfileAdded(BroadcastProfilePtr)));
-    connect(m_pBroadcastSettings.data(), SIGNAL(profileRemoved(BroadcastProfilePtr)),
-            this, SLOT(slotProfileRemoved(BroadcastProfilePtr)));
-    connect(m_pBroadcastSettings.data(), SIGNAL(profilesChanged()),
-            this, SLOT(slotProfilesChanged()));
+    connect(m_pBroadcastSettings.data(),
+            &BroadcastSettings::profileAdded,
+            this,
+            &BroadcastManager::slotProfileAdded);
+    connect(m_pBroadcastSettings.data(),
+            &BroadcastSettings::profileRemoved,
+            this,
+            &BroadcastManager::slotProfileRemoved);
+    connect(m_pBroadcastSettings.data(),
+            &BroadcastSettings::profilesChanged,
+            this,
+            &BroadcastManager::slotProfilesChanged);
 }
 
 BroadcastManager::~BroadcastManager() {
@@ -155,8 +163,10 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
     ShoutConnectionPtr connection(new ShoutConnection(profile, m_pConfig));
     m_pNetworkStream->addOutputWorker(connection);
 
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(slotConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastManager::slotConnectionStatusChanged);
 
     kLogger.debug() << "addConnection: created connection for profile"
                     << profile->getProfileName();
@@ -169,8 +179,10 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
 
     ShoutConnectionPtr connection = findConnectionForProfile(profile);
     if (connection) {
-        disconnect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-                   this, SLOT(slotConnectionStatusChanged(int)));
+        disconnect(profile.data(),
+                &BroadcastProfile::connectionStatusChanged,
+                this,
+                &BroadcastManager::slotConnectionStatusChanged);
 
         // Disabling the profile tells ShoutOutput's thread to disconnect
         connection->profile()->setEnabled(false);

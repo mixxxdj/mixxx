@@ -69,6 +69,8 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
     bool isColumnSortable(int column) override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
 
   public slots:
     void slotClear(BrowseTableModel*);
@@ -84,6 +86,9 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;
+    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::NUM_SORTCOLUMNIDS];
+    QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
+
 };
 
 #endif

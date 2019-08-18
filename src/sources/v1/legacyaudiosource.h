@@ -3,7 +3,6 @@
 
 #include "util/types.h"
 
-
 namespace mixxx {
 
 // The legacy API that has been deprecated.
@@ -37,6 +36,5 @@ class LegacyAudioSource {
 };
 
 } // namespace mixxx
-
 
 #endif // MIXXX_LEGACYAUDIOSOURCE_H

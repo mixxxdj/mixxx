@@ -587,7 +587,6 @@ void RateControl::resetRateTemp(void)
     setRateTemp(0.0);
 }
 
-void RateControl::notifySeek(double playPos, bool adjustingPhase) {
-    Q_UNUSED(adjustingPhase);
+void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
 }

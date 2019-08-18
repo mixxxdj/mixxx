@@ -68,62 +68,79 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
     ControlPushButton* controlUp = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up"));
     controlUp->setParent(this);
-    connect(controlUp, SIGNAL(valueChanged(double)),
-            this, SLOT(incValue(double)));
+    connect(controlUp,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::incValue);
 
     ControlPushButton* controlDown = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_down"));
     controlDown->setParent(this);
-    connect(controlDown, SIGNAL(valueChanged(double)),
-            this, SLOT(decValue(double)));
+    connect(controlDown,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::decValue);
 
     ControlPushButton* controlUpSmall = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up_small"));
     controlUpSmall->setParent(this);
-    connect(controlUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(incSmallValue(double)));
+    connect(controlUpSmall,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::incSmallValue);
 
     ControlPushButton* controlDownSmall = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_down_small"));
     controlDownSmall->setParent(this);
-    connect(controlDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(decSmallValue(double)));
+    connect(controlDownSmall,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::decSmallValue);
 
     ControlPushButton* controlDefault = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_set_default"));
     controlDefault->setParent(this);
-    connect(controlDefault, SIGNAL(valueChanged(double)),
-            this, SLOT(setToDefault(double)));
+    connect(controlDefault,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::setToDefault);
 
     ControlPushButton* controlZero = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_set_zero"));
     controlZero->setParent(this);
-    connect(controlZero, SIGNAL(valueChanged(double)),
-            this, SLOT(setToZero(double)));
+    connect(controlZero,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::setToZero);
 
     ControlPushButton* controlOne = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_set_one"));
     controlOne->setParent(this);
-    connect(controlOne, SIGNAL(valueChanged(double)),
-            this, SLOT(setToOne(double)));
+    connect(controlOne,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::setToOne);
 
     ControlPushButton* controlMinusOne = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_set_minus_one"));
     controlMinusOne->setParent(this);
-    connect(controlMinusOne, SIGNAL(valueChanged(double)),
-            this, SLOT(setToMinusOne(double)));
+    connect(controlMinusOne, &ControlPushButton::valueChanged, this, &PotmeterControls::setToMinusOne);
 
     ControlPushButton* controlToggle = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_toggle"));
     controlToggle->setParent(this);
-    connect(controlToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleValue(double)));
+    connect(controlToggle,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::toggleValue);
 
     ControlPushButton* controlMinusToggle = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_minus_toggle"));
     controlMinusToggle->setParent(this);
-    connect(controlMinusToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleMinusValue(double)));
+    connect(controlMinusToggle,
+            &ControlPushButton::valueChanged,
+            this,
+            &PotmeterControls::toggleMinusValue);
 }
 
 PotmeterControls::~PotmeterControls() {

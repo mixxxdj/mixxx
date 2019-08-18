@@ -30,6 +30,8 @@ constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
 constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
+// bool kDefaultCloneDeckOnLoad is defined in header file to make it available
+// to playermanager.cpp
 }
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
@@ -111,8 +113,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 
     m_pControlTrackTimeFormat = new ControlObject(
             ConfigKey("[Controls]", "TimeFormat"));
-    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotTimeFormatChanged(double)));
+    connect(m_pControlTrackTimeFormat, &ControlObject::valueChanged, this, &DlgPrefDeck::slotTimeFormatChanged);
 
     QLocale locale;
     // Track Display model
@@ -165,6 +166,19 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     checkBoxSeekToCue->setChecked(m_bJumpToCueOnTrackLoad);
     connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
             this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
+
+    // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
+    m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
+    connect(checkBoxCloneDeckOnLoadDoubleTap, SIGNAL(toggled(bool)),
+            this, SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
+
+    // Automatically assign a color to new hot cues
+    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
+    checkBoxAssignHotcueColors->setChecked(m_bAssignHotcueColors);
+    connect(checkBoxAssignHotcueColors, SIGNAL(toggled(bool)),
+            this, SLOT(slotAssignHotcueColorsCheckbox(bool)));
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
@@ -332,8 +346,14 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
 
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
+
     checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "CueRecall"), false));
+
+    checkBoxAssignHotcueColors->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "auto_hotcue_colors"), false));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
@@ -405,6 +425,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     // Don't load tracks into playing decks.
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
+    // Clone decks by double-tapping Load button.
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
 
@@ -490,6 +512,14 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
     m_bJumpToCueOnTrackLoad = checked;
 }
 
+void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
+    m_bCloneDeckOnLoadDoubleTap = checked;
+}
+
+void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
+    m_bAssignHotcueColors = checked;
+}
+
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     if (b == radioButtonRemaining) {
         m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
@@ -566,7 +596,11 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);
 
+    m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
+                        m_bCloneDeckOnLoadDoubleTap);
+
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
+    m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);

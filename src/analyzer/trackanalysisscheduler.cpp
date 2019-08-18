@@ -52,7 +52,6 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
         : m_library(library),
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_currentTrackNumber(0),
-          m_finishedTracksCount(0),
           m_dequeuedTracksCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
@@ -92,6 +91,9 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     // The finished() signal is emitted regardless of when the last
     // signal has been emitted
     if (allTracksFinished()) {
+        m_currentTrackProgress = kAnalyzerProgressUnknown;
+        m_currentTrackNumber = 0;
+        m_dequeuedTracksCount = 0;
         emit finished();
         return;
     }
@@ -103,65 +105,65 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     }
     m_lastProgressEmittedAt = now;
 
-    if (allTracksFinished()) {
-        m_currentTrackProgress = kAnalyzerProgressDone;
-    } else {
-        AnalyzerProgress workerProgressSum = 0;
-        int workerProgressCount = 0;
-        for (const auto& worker: m_workers) {
-            const AnalyzerProgress workerProgress = worker.analyzerProgress();
-            if (workerProgress >= kAnalyzerProgressNone) {
-                workerProgressSum += workerProgress;
-                ++workerProgressCount;
+    DEBUG_ASSERT(m_pendingTrackIds.size() <=
+            static_cast<size_t>(m_dequeuedTracksCount));
+    const int finishedTracksCount =
+            m_dequeuedTracksCount - m_pendingTrackIds.size();
+
+    AnalyzerProgress workerProgressSum = 0;
+    int workerProgressCount = 0;
+    for (const auto& worker: m_workers) {
+        const AnalyzerProgress workerProgress = worker.analyzerProgress();
+        if (workerProgress >= kAnalyzerProgressNone) {
+            workerProgressSum += workerProgress;
+            ++workerProgressCount;
+        }
+    }
+    // The following algorithm/heuristic is used for calculating the
+    // amortized analysis progress (current track number + current
+    // track progress) across all worker threads. It results in a
+    // simple and almost linear progress display when multiple threads
+    // are running in parallel. It also covers the expected behavior
+    // for the single-threaded case. The receiver of progress updates
+    // should not need to know how many threads are actually processing
+    // tracks concurrently behind the scenes.
+    if (workerProgressCount > 0) {
+        DEBUG_ASSERT(kAnalyzerProgressNone == 0);
+        DEBUG_ASSERT(kAnalyzerProgressDone == 1);
+        const int inProgressCount =
+                math_max(1, int(std::ceil(workerProgressSum)));
+        const AnalyzerProgress currentTrackProgress =
+                workerProgressSum - std::floor(workerProgressSum);
+        // The calculation of inProgressCount is only an approximation.
+        // In some situations the calculated virtual current track number
+        // = finishedTracksCount + inProgressCount exceeds the upper
+        // bound m_dequeuedTracksCount. Using the minimum of both values
+        // is an appropriate choice for reporting continuous progress.
+        const int currentTrackNumber =
+                math_min(finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
+        // The combination of the values current count (primary) and current
+        // progress (secondary) should never decrease to avoid confusion
+        if (m_currentTrackNumber < currentTrackNumber) {
+            m_currentTrackNumber = currentTrackNumber;
+            // Unconditional progress update
+            m_currentTrackProgress = currentTrackProgress;
+        } else if (m_currentTrackNumber == currentTrackNumber) {
+            // Conditional progress update if current count didn't change
+            if (m_currentTrackProgress >= kAnalyzerProgressNone) {
+                // Current progress should not decrease while the count is constant
+                m_currentTrackProgress = math_max(m_currentTrackProgress, currentTrackProgress);
+            } else {
+                // Initialize current progress
+                m_currentTrackProgress = currentTrackProgress;
             }
         }
-        // The following algorithm/heuristic is used for calculating the
-        // amortized analysis progress (current track number + current
-        // track progress) across all worker threads. It results in a
-        // simple and almost linear progress display when multiple threads
-        // are running in parallel. It also covers the expected behavior
-        // for the single-threaded case. The receiver of progress updates
-        // should not need to know how many threads are actually processing
-        // tracks concurrently behind the scenes.
-        if (workerProgressCount > 0) {
-            DEBUG_ASSERT(kAnalyzerProgressNone == 0);
-            DEBUG_ASSERT(kAnalyzerProgressDone == 1);
-            const int inProgressCount =
-                    math_max(1, int(std::ceil(workerProgressSum)));
-            const AnalyzerProgress currentTrackProgress =
-                    workerProgressSum - std::floor(workerProgressSum);
-            // The calculation of inProgressCount is only an approximation.
-            // In some situations the calculated virtual current track number
-            // = m_finishedTracksCount + inProgressCount exceeds the upper
-            // bound m_dequeuedTracksCount. Using the minimum of both values
-            // is an appropriate choice for reporting continuous progress.
-            const int currentTrackNumber =
-                    math_min(m_finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
-            // The combination of the values current count (primary) and current
-            // progress (secondary) should never decrease to avoid confusion
-            if (m_currentTrackNumber < currentTrackNumber) {
-                m_currentTrackNumber = currentTrackNumber;
-                // Unconditional progress update
-                m_currentTrackProgress = currentTrackProgress;
-            } else if (m_currentTrackNumber == currentTrackNumber) {
-                // Conditional progress update if current count didn't change
-                if (m_currentTrackProgress >= kAnalyzerProgressNone) {
-                    // Current progress should not decrease while the count is constant
-                    m_currentTrackProgress = math_max(m_currentTrackProgress, currentTrackProgress);
-                } else {
-                    // Initialize current progress
-                    m_currentTrackProgress = currentTrackProgress;
-                }
-            }
-        } else {
-            if (m_currentTrackNumber < m_finishedTracksCount) {
-                m_currentTrackNumber = m_finishedTracksCount;
-            }
+    } else {
+        if (m_currentTrackNumber < finishedTracksCount) {
+            m_currentTrackNumber = finishedTracksCount;
         }
     }
     const int totalTracksCount =
             m_dequeuedTracksCount + m_queuedTrackIds.size();
-    DEBUG_ASSERT(m_finishedTracksCount <= m_currentTrackNumber);
     DEBUG_ASSERT(m_currentTrackNumber <= m_dequeuedTracksCount);
     DEBUG_ASSERT(m_dequeuedTracksCount <= totalTracksCount);
     emit progress(
@@ -175,25 +177,49 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         AnalyzerThreadState threadState,
         TrackId trackId,
         AnalyzerProgress analyzerProgress) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "onWorkerThreadProgress"
+                << threadId
+                << int(threadState)
+                << trackId
+                << analyzerProgress;
+    }
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
+        DEBUG_ASSERT(!trackId.isValid());
+        DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         break;
     case AnalyzerThreadState::Idle:
-        worker.onThreadIdle();
+        DEBUG_ASSERT(!trackId.isValid());
+        DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
+        worker.onAnalyzerProgress(analyzerProgress);
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
-        worker.onAnalyzerProgress(trackId, analyzerProgress);
-        emit trackProgress(trackId, analyzerProgress);
+        DEBUG_ASSERT(trackId.isValid());
+        // Ignore delayed signals for tracks that are no longer pending
+        if (m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end()) {
+            DEBUG_ASSERT(analyzerProgress != kAnalyzerProgressUnknown);
+            DEBUG_ASSERT(analyzerProgress < kAnalyzerProgressDone);
+            worker.onAnalyzerProgress(analyzerProgress);
+            emit trackProgress(trackId, analyzerProgress);
+        }
         break;
     case AnalyzerThreadState::Done:
-        worker.onAnalyzerProgress(trackId, analyzerProgress);
-        emit trackProgress(trackId, analyzerProgress);
-        ++m_finishedTracksCount;
-        DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
+        DEBUG_ASSERT(trackId.isValid());
+        // Ignore delayed signals for tracks that are no longer pending
+        if (m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end()) {
+            DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
+                    || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
+            m_pendingTrackIds.erase(trackId);
+            worker.onAnalyzerProgress(analyzerProgress);
+            emit trackProgress(trackId, analyzerProgress);
+        }
         break;
     case AnalyzerThreadState::Exit:
+        DEBUG_ASSERT(!trackId.isValid());
+        DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onThreadExit();
         DEBUG_ASSERT(!worker);
         break;
@@ -203,18 +229,29 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
     emitProgressOrFinished();
 }
 
-void TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
+bool TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
                 << "Cannot schedule track with invalid id"
                 << trackId;
-        return;
+        return false;
     }
     m_queuedTrackIds.push_back(trackId);
     // Don't wake up the suspended thread now to avoid race conditions
     // if multiple threads are added in a row by calling this function
     // multiple times. The caller is responsible to finish the scheduling
     // of multiple tracks with resume().
+    return true;
+}
+
+int TrackAnalysisScheduler::scheduleTracksById(const QList<TrackId>& trackIds) {
+    int scheduledCount = 0;
+    for (auto trackId: trackIds) {
+        if (scheduleTrackById(std::move(trackId))) {
+            ++scheduledCount;
+        }
+    }
+    return scheduledCount;
 }
 
 void TrackAnalysisScheduler::suspend() {
@@ -227,16 +264,12 @@ void TrackAnalysisScheduler::suspend() {
 void TrackAnalysisScheduler::resume() {
     kLogger.debug() << "Resuming";
     for (auto& worker: m_workers) {
-        if (worker.threadIdle()) {
-            submitNextTrack(&worker);
-        }
         worker.resumeThread();
     }
 }
 
 bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
-    DEBUG_ASSERT(worker->threadIdle());
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
@@ -244,20 +277,28 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
             TrackPointer nextTrack =
                     m_library->trackCollection().getTrackDAO().getTrack(nextTrackId);
             if (nextTrack) {
-                VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
-                    // This will and must never happen! We will only submit the next
-                    // track only after the worker has signaled that it is idle. In
-                    // this case the lock-free FIFO for passing data between threads
-                    // is empty and enqueueing is expected to succeed.
-                    kLogger.critical()
-                            << "Failed to submit next track ...retrying...";
-                    // Retry to avoid skipping this track
-                    continue;
+                if (m_pendingTrackIds.insert(nextTrackId).second) {
+                    if (worker->submitNextTrack(std::move(nextTrack))) {
+                        m_queuedTrackIds.pop_front();
+                        ++m_dequeuedTracksCount;
+                        return true;
+                    } else {
+                        // The worker may already have been assigned new tasks
+                        // in the mean time, nothing to worry about.
+                        m_pendingTrackIds.erase(nextTrackId);
+                        kLogger.debug()
+                                << "Failed to submit next track - worker thread"
+                                << worker->thread()->id()
+                                << "is busy";
+                        // Early exit to avoid popping the next track from the queue (see below)!
+                        return false;
+                    }
+                } else {
+                    // This track is currently analyzed by one of the workers
+                    kLogger.debug()
+                            << "Skipping duplicate track id"
+                            << nextTrackId;
                 }
-                m_queuedTrackIds.pop_front();
-                ++m_dequeuedTracksCount;
-                worker->wakeThread();
-                return true;
             } else {
                 kLogger.warning()
                         << "Failed to load track by id"
@@ -271,18 +312,33 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         // Skip this track
         m_queuedTrackIds.pop_front();
         ++m_dequeuedTracksCount;
-        ++m_finishedTracksCount;
     }
-    DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
     return false;
 }
 
 void TrackAnalysisScheduler::stop() {
     kLogger.debug() << "Stopping";
-    m_queuedTrackIds.clear();
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
     // The worker threads are still running at this point
     // and m_workers must not be modified!
+    m_queuedTrackIds.clear();
+    m_pendingTrackIds.clear();
+    DEBUG_ASSERT((allTracksFinished()));
+}
+
+QList<TrackId> TrackAnalysisScheduler::stopAndCollectScheduledTrackIds() {
+    QList<TrackId> scheduledTrackIds;
+    scheduledTrackIds.reserve(m_queuedTrackIds.size() + m_pendingTrackIds.size());
+    for (auto queuedTrackId: m_queuedTrackIds) {
+        scheduledTrackIds.append(std::move(queuedTrackId));
+    }
+    for (auto pendingTrackId: m_pendingTrackIds) {
+        scheduledTrackIds.append(std::move(pendingTrackId));
+    }
+    // Stopping the scheduler will clear all queued and pending tracks,
+    // so we need to do this after we have collected all scheduled tracks!
+    stop();
+    return scheduledTrackIds;
 }

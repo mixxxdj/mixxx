@@ -1,100 +1,110 @@
 <!--
 Description:
-	The mixerbar, containing collapsible sections for
-	* Master
-	* Headphones (if enabled)
-	* Microphones (if enabled)
-	* Auxiliary (if enabled)
-	Mixerbar is alsways at bottom edge of screen.
-	It is centered if Library is hidden.
-	With Library visible, it can either show up below tracks table to save
-	space for treeview on the left, or full-width below Library if many
-	Mics/AUX are enabled.
+	Container for Master mixer in topbar.
 -->
 <Template>
-  <WidgetGroup><!-- Headphone Mixer -->
-    <Layout>stacked</Layout>
-    <SizePolicy>max,max</SizePolicy>
+  <WidgetGroup>
+    <ObjectName>MixerbarSection</ObjectName>
+    <Size>-1min,28f</Size>
+    <Layout>horizontal</Layout>
     <Children>
-      <!-- index 0 due to bug -->
-      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-      <!-- Headphone controls greyed out if no headphone device configured -->
       <WidgetGroup>
-        <ObjectName>GuiCover</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Label>
-            <ObjectName>UnconfiguredHeadphoneText</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <Text>No Headphone</Text>
-          </Label>
-          <Label>
-            <ObjectName>UnconfiguredHeadphoneText</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <Text>device configured!</Text>
-          </Label>
-        </Children>
-        <Connection>
-          <ConfigKey>[Master],headEnabled</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform><Not/></Transform>
-        </Connection>
+        <ObjectName>HeadphoneMixerLabel</ObjectName>
+        <Size>28f,24f</Size>
       </WidgetGroup>
 
-      <!-- actual headphone controls -->
-      <WidgetGroup>
-        <ObjectName>MixerbarSection</ObjectName>
-        <Size>-1min,28f</Size>
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- Headphone Mixer with GUI cover -->
+        <Layout>stacked</Layout>
+        <SizePolicy>max,max</SizePolicy>
         <Children>
+          <!-- index 0 due to bug -->
+          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
+          <!-- Headphone controls greyed out if no headphone device configured -->
           <WidgetGroup>
-            <ObjectName>HeadphoneMixerLabel</ObjectName>
-            <Size>28f,24f</Size>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>UnconfiguredHeadphoneTopbar</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Text>No Headphone</Text>
+              </Label>
+              <Label>
+                <ObjectName>UnconfiguredHeadphoneTopbar</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Text>device configured</Text>
+              </Label>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
           </WidgetGroup>
 
-          <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId">headphone_gain</SetVariable>
-            <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
-            <SetVariable name="Size">28f,28f</SetVariable>
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="ConfigKey">headGain</SetVariable>
-            <SetVariable name="Color">yellow</SetVariable>
-          </Template>
+          <!-- actual headphone controls -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
 
-          <SliderComposed>
-            <TooltipId>headMix</TooltipId>
-            <ObjectName>MixerbarSlider</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <Handle>knobs_sliders/headMix_handle.svg</Handle>
-            <Slider>knobs_sliders/headMix_scale.svg</Slider>
-            <Horizontal>true</Horizontal>
-            <Connection>
-              <ConfigKey>[Master],headMix</ConfigKey>
-            </Connection>
-          </SliderComposed>
+              <WidgetGroup>
+                <ObjectName>MixerbarKnob</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>headphone_gain</TooltipId>
+                    <Size>26f,22f</Size>
+                    <Knob>knobs_sliders/knob_yellow.svg</Knob>
+                    <BackPath>knobs_sliders/knob_bg_head.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey>[Master],headGain</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
 
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <SliderComposed>
+                <TooltipId>headMix</TooltipId>
+                <ObjectName>MixerbarSlider</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Handle>knobs_sliders/headMix_handle.svg</Handle>
+                <Slider>knobs_sliders/headMix_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],headMix</ConfigKey>
+                </Connection>
+              </SliderComposed>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">headSplit</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">32f,24f</SetVariable>
-            <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
-          </Template>
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">headSplit</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,22f</SetVariable>
+                <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /actual headphone controls -->
 
         </Children>
-      </WidgetGroup><!-- /actual headphone controls -->
+      </WidgetGroup>
+
     </Children>
     <Connection>
       <ConfigKey>[Tango],master_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup><!-- /Headphone Mixer -->
+  </WidgetGroup>
 </Template>

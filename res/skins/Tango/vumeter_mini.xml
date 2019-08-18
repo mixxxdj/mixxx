@@ -21,8 +21,8 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
         </Connection>
       </StatusLight>
       <VuMeter>
-        <PathVu scalemode="STRETCH">skin:/graphics/vumeter_mini_over.png</PathVu>
-        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini.png</PathBack>
+        <PathVu scalemode="STRETCH">skin:/graphics/vumeter_mini_level_over.png</PathVu>
+        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini_level.png</PathBack>
         <Horizontal>false</Horizontal>
         <PeakHoldSize>5</PeakHoldSize>
         <PeakHoldTime>500</PeakHoldTime>

@@ -5,9 +5,8 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-
 // Creates sound sources for tracks. Only intended to be used
-// in a narrow scope and not sharable between multiple threads!
+// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy {
   public:
     // Initially registers all built-in SoundSource providers. This function is
@@ -26,6 +25,7 @@ class SoundSourceProxy {
     }
 
     static bool isUrlSupported(const QUrl& url);
+    static bool isFileSupported(const TrackFile& trackFile);
     static bool isFileSupported(const QFileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
@@ -33,10 +33,10 @@ class SoundSourceProxy {
     // The following import functions ensure that the file will not be
     // written while reading it!
     static TrackPointer importTemporaryTrack(
-            QFileInfo fileInfo,
+            TrackFile trackFile,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     static QImage importTemporaryCoverImage(
-            QFileInfo fileInfo,
+            TrackFile trackFile,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
 
     explicit SoundSourceProxy(

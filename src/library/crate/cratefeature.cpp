@@ -62,47 +62,47 @@ CrateFeature::~CrateFeature() {
 }
 
 void CrateFeature::initActions() {
-    m_pCreateCrateAction = std::make_unique<QAction>(tr("Create New Crate"),this);
+    m_pCreateCrateAction = make_parented<QAction>(tr("Create New Crate"), this);
     connect(m_pCreateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
-    m_pDeleteCrateAction = std::make_unique<QAction>(tr("Remove"),this);
+    m_pDeleteCrateAction = make_parented<QAction>(tr("Remove"), this);
     connect(m_pDeleteCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
 
-    m_pRenameCrateAction = std::make_unique<QAction>(tr("Rename"),this);
+    m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
     connect(m_pRenameCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotRenameCrate()));
 
-    m_pLockCrateAction = std::make_unique<QAction>(tr("Lock"),this);
+    m_pLockCrateAction = make_parented<QAction>(tr("Lock"), this);
     connect(m_pLockCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
-    m_pImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"),this);
+    m_pImportPlaylistAction = make_parented<QAction>(tr("Import Crate"), this);
     connect(m_pImportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
-    m_pCreateImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"), this);
+    m_pCreateImportPlaylistAction = make_parented<QAction>(tr("Import Crate"), this);
     connect(m_pCreateImportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotCreateImportCrate()));
 
-    m_pExportPlaylistAction = std::make_unique<QAction>(tr("Export Crate"), this);
+    m_pExportPlaylistAction = make_parented<QAction>(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction.get(), SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
-    m_pExportTrackFilesAction = std::make_unique<QAction>(tr("Export Track Files"), this);
+    m_pExportTrackFilesAction = make_parented<QAction>(tr("Export Track Files"), this);
     connect(m_pExportTrackFilesAction.get(), SIGNAL(triggered()),
             this, SLOT(slotExportTrackFiles()));
 
-    m_pDuplicateCrateAction = std::make_unique<QAction>(tr("Duplicate"),this);
+    m_pDuplicateCrateAction = make_parented<QAction>(tr("Duplicate"), this);
     connect(m_pDuplicateCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
-    m_pAnalyzeCrateAction = std::make_unique<QAction>(tr("Analyze entire Crate"),this);
+    m_pAnalyzeCrateAction = make_parented<QAction>(tr("Analyze entire Crate"), this);
     connect(m_pAnalyzeCrateAction.get(), SIGNAL(triggered()),
             this, SLOT(slotAnalyzeCrate()));
 
-    m_pAutoDjTrackSourceAction = std::make_unique<QAction>(tr("Auto DJ Track Source"),this);
+    m_pAutoDjTrackSourceAction = make_parented<QAction>(tr("Auto DJ Track Source"), this);
     m_pAutoDjTrackSourceAction->setCheckable(true);
     connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
             this, SLOT(slotAutoDjTrackSourceChanged()));

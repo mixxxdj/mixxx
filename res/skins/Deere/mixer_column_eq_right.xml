@@ -6,107 +6,9 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer_Column1</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-
-      <!--In 4 deck mode, show the gain knob above the EQs rather than above the level meters.-->
-      <WidgetGroup>
-        <Layout>vertical</Layout>
-        <MinimumSize>40,34</MinimumSize>
-        <MaximumSize>-1,40</MaximumSize>
-        <SizePolicy>me,me</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:knob_with_button_right.xml">
-                <SetVariable name="TooltipId">pregain</SetVariable>
-                <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="color">green</SetVariable>
-                <SetVariable name="button_TooltipId">mute</SetVariable>
-                <SetVariable name="button_control">mute</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:knob.xml">
-                <SetVariable name="TooltipId">pregain</SetVariable>
-                <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="color">green</SetVariable>
-              </Template>
-
-              <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
-                <Size>0me,1min</Size>
-                <Children/>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
-            </Connection>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <!-- Spacer to push EQ knobs down with
-          - 2decks and
-          - split waveforms and
-          - no QuickEffect loaded-->
-      <WidgetGroup>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Size>0min,34f</Size>
-                <Children>
-                </Children>
-                <Connection>
-                  <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- Spacer -->
-
-      <Template src="skin:equalizer_rack_parameter_right.xml">
-        <SetVariable name="parameter">4</SetVariable>
-      </Template>
-
       <Template src="skin:equalizer_rack_parameter_right.xml">
         <SetVariable name="parameter">3</SetVariable>
       </Template>
@@ -122,10 +24,8 @@
       <Template src="skin:quick_effect_superknob_right.xml">
         <SetVariable name="TooltipId">QuickEffectRack_super1</SetVariable>
         <SetVariable name="button_TooltipId">QuickEffectRack_enabled</SetVariable>
-        <SetVariable name="QuickEffect">1</SetVariable>
         <SetVariable name="color">blue</SetVariable>
       </Template>
-
     </Children>
     <Connection>
       <ConfigKey>[Skin],show_eq_knobs</ConfigKey>

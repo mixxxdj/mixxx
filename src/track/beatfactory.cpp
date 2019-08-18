@@ -80,7 +80,7 @@ QString BeatFactory::getPreferredSubVersion(
     fragments << QString("rounding%1%2").
             arg(kSubVersionKeyValueSeparator, QString::number(0.05));
 
-    qSort(fragments);
+    std::sort(fragments.begin(), fragments.end());
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
 }
 

@@ -12,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _PITCH_H_
-#define _PITCH_H_
+#ifndef QM_DSP_PITCH_H
+#define QM_DSP_PITCH_H
 
 /**
  * Convert between musical pitch (i.e. MIDI pitch number) and
@@ -23,12 +23,12 @@ class Pitch
 {
 public:
     static float getFrequencyForPitch(int midiPitch,
-				      float centsOffset = 0,
-				      float concertA = 440.0);
+                                      float centsOffset = 0,
+                                      float concertA = 440.0);
 
     static int getPitchForFrequency(float frequency,
-				    float *centsOffsetReturn = 0,
-				    float concertA = 440.0);
+                                    float *centsOffsetReturn = 0,
+                                    float concertA = 440.0);
 };
 
 

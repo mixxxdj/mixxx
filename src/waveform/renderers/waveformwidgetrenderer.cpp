@@ -240,7 +240,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
 #endif
 
-    //qDebug() << "draw() ende" << timer.restart().formatNanosWithUnit();
+    //qDebug() << "draw() end" << timer.restart().formatNanosWithUnit();
 }
 
 void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRatio) {

@@ -9,8 +9,6 @@
 // since user config files contain these strings.
 #define VAMP_ANALYZER_KEY_LIBRARY "AnalyserKeyLibrary"
 #define VAMP_ANALYZER_KEY_PLUGIN_ID "AnalyserKeyPluginID"
-#define VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID "qm-keydetector:2"
-
 #define KEY_CONFIG_KEY "[Key]"
 
 // KEY_CONFIG_KEY Preferences
@@ -55,18 +53,9 @@ class KeyDetectionSettings {
                                       QString::number(key)), notation);
     }
 
-    QString getKeyPluginIdDefault() const {
-        return VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
-    }
-
     QString getKeyPluginId() const {
-        QString vampPlugin = m_pConfig->getValue<QString>(ConfigKey(
+        return m_pConfig->getValue<QString>(ConfigKey(
             VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
-        if (vampPlugin.isEmpty()) {
-            return getKeyPluginIdDefault();
-        }
-        // TODO(rryan): Update to new plugins based on VAMP ones.
-        return vampPlugin;
     }
 
     void setKeyPluginId(const QString& pluginId) {

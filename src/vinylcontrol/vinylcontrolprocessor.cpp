@@ -25,8 +25,10 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
           m_bReportSignalQuality(false),
           m_bQuit(false),
           m_bReloadConfig(false) {
-    connect(m_pToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleDeck(double)),
+    connect(m_pToggle,
+            &ControlPushButton::valueChanged,
+            this,
+            &VinylControlProcessor::toggleDeck,
             Qt::DirectConnection);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {

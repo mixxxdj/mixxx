@@ -315,7 +315,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
             m_pFileBpm->set(pNewTrack->getBpm());
             m_pLocalBpm->set(pNewTrack->getBpm());
             // We used to set the m_pBpm here, but that causes a signal loop whereby
-            // that was interpretted as a rate slider tweak, and the master bpm
+            // that was interpreted as a rate slider tweak, and the master bpm
             // was changed.  Instead, now we pass the suggested bpm to enginesync
             // explicitly, and it can decide what to do with it.
             m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * m_pRateRatio->get());
@@ -422,7 +422,7 @@ void SyncControl::slotFileBpmChanged() {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     //qDebug() << "SyncControl::slotFileBpmChanged";
-    
+
     // Note: bpmcontrol has updated local_bpm just before
     double local_bpm = m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
 
