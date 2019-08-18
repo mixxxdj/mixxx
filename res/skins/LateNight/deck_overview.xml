@@ -3,7 +3,7 @@
   <Overview>
     <TooltipId>waveform_overview</TooltipId>
     <Channel><Variable name="channum"/></Channel>
-    <Size>200me,40me</Size>
+    <Size>150me,40me</Size>
     <BgColor>#1E1E1E</BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
     <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
@@ -14,7 +14,7 @@
     <EndOfTrackColor>#EA0000</EndOfTrackColor>
     <DefaultMark>
       <Align>bottom|right</Align>
-      <Color>#00FF00</Color>
+      <Color>#FF0000</Color>
       <TextColor>#FFFFFF</TextColor>
       <Text> %1 </Text>
     </DefaultMark>
@@ -25,6 +25,7 @@
       <Color>#00FF00</Color>
       <DisabledColor>#FFFFFF</DisabledColor>
     </MarkRange>
+    <!--
     <Mark>
       <Control>loop_start_position</Control>
       <Text>IN</Text>
@@ -37,6 +38,62 @@
       <Text>OUT</Text>
       <Align>bottom|right</Align>
       <Color>#00FF00</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    -->
+    <MarkRange>
+      <StartControl>intro_start_position</StartControl>
+      <EndControl>intro_end_position</EndControl>
+      <Color>#0000FF</Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>after</DurationTextLocation>
+    </MarkRange>
+    <MarkRange>
+      <StartControl>outro_start_position</StartControl>
+      <EndControl>outro_end_position</EndControl>
+      <Color>#0000FF</Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>before</DurationTextLocation>
+    </MarkRange>
+    <Mark>
+      <Control>intro_start_position</Control>
+      <Text></Text>
+      <Align>top|right</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+    </Mark>
+    <Mark>
+      <Control>intro_end_position</Control>
+      <Text>&#9698;</Text>
+      <Align>top|left</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+    </Mark>
+    <Mark>
+      <Control>outro_start_position</Control>
+      <Text>&#9699;</Text>
+      <Align>top|right</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+    </Mark>
+    <Mark>
+      <Control>outro_end_position</Control>
+      <Text></Text>
+      <Align>top|left</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+    </Mark>
+    <Mark>
+      <Control>cue_point</Control>
+      <Text> C </Text>
+      <Align>top|right</Align>
+      <Color>#FF001C</Color>
       <TextColor>#FFFFFF</TextColor>
     </Mark>
     <Mark>

@@ -62,7 +62,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
                                     const QStyleOptionViewItem& option,
                                     const QModelIndex& index) const {
     // Populate the correct colors based on the styling
-    QStyleOptionViewItemV4 newOption = option;
+    QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
     StarEditor* editor = new StarEditor(parent, m_pTableView, index, newOption);

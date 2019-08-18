@@ -40,8 +40,6 @@ Description:
                 <TooltipId>skin_settings</TooltipId>
                 <ObjectName>SkinSettingsClose</ObjectName>
                 <Size>20f,24f</Size>
-                <!-- This is used to work around Bug 1795663 on OSX -->
-                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -92,7 +90,7 @@ Description:
               </Template>
 
               <WidgetGroup><!-- Expanding spacer -->
-                <MaximumSize>i,8</MaximumSize>
+                <MaximumSize>i,15</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
 
@@ -155,8 +153,19 @@ Description:
               </WidgetGroup><!-- /HotCue settings -->
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
+                <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+                <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
+              </Template>
+
+              
+              <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
                 <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
+              </Template>
+
+              <Template src="skin:../Tango/skin_settings_button_2state.xml">
+                <SetVariable name="text">Track Comment</SetVariable>
+                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Permanent deck controls -->
@@ -180,6 +189,46 @@ Description:
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- button graphics are 15x15px + 1px margin-right -->
+                      <Template src="skin:../Tango/button_2state_persist.xml">
+                        <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
+                        <SetVariable name="Size">20f,15f</SetVariable>
+                        <SetVariable name="state_0_text">Q</SetVariable>
+                        <SetVariable name="state_1_text">Q</SetVariable>
+                        <SetVariable name="ConfigKey">[Tango],separate_cue_button</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>6f,0f</Size></WidgetGroup>
+
+                      <WidgetGroup><!-- Star rating -->
+                        <Layout>stacked</Layout>
+                        <Size>16f,15f</Size>
+                        <Children>
+                          <!-- index 0 due to bug -->
+                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                          <WidgetGroup><!-- translucent cover when Stars wouldn't fit -->
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>vertical</Layout>
+                            <Size>16f,15f</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Tango],starrating_fits</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <Template src="skin:../Tango/button_2state_persist.xml">
+                            <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
+                            <SetVariable name="Size">16f,15f</SetVariable>
+                            <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
+                            <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
+                            <SetVariable name="ConfigKey">[Skin],show_starrating</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- /Star rating -->
+
+                      <WidgetGroup><Size>6f,0f</Size></WidgetGroup>
+
                       <Template src="skin:../Tango/button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
@@ -227,54 +276,13 @@ Description:
                         <SetVariable name="state_1_icon">quantize_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_quantize</SetVariable>
                       </Template>
-
-                      <WidgetGroup><Size>4f,0f</Size></WidgetGroup>
-
-                      <WidgetGroup><!-- Star rating -->
-                        <Layout>stacked</Layout>
-                        <Size>16f,15f</Size>
-                        <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                          <WidgetGroup><!-- translucent cover when Stars wouldn't fit -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>vertical</Layout>
-                            <Size>16f,15f</Size>
-                            <Connection>
-                              <ConfigKey persist="true">[Tango],starrating_fits</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
-
-                          <Template src="skin:../Tango/button_2state_persist.xml">
-                            <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                            <SetVariable name="Size">16f,15f</SetVariable>
-                            <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
-                            <SetVariable name="ConfigKey">[Skin],show_starrating</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup><!-- /Star rating -->
-
-
-                      <WidgetGroup><Size>4f,0f</Size></WidgetGroup>
-
-                      <Template src="skin:../Tango/button_2state_persist.xml">
-                        <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">28f,15f</SetVariable>
-                        <SetVariable name="state_0_text">Q</SetVariable>
-                        <SetVariable name="state_1_text">Q</SetVariable>
-                        <SetVariable name="ConfigKey">[Tango],separate_cue_button</SetVariable>
-                      </Template>
                     </Children>
                   </WidgetGroup><!-- Permanent deck control icons -->
                 </Children>
               </WidgetGroup><!-- /Permanent deck controls -->
 
               <WidgetGroup><!-- Expanding spacer -->
-                <MaximumSize>i,8</MaximumSize>
+                <MaximumSize>i,15</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
 
@@ -326,14 +334,9 @@ Description:
               </WidgetGroup><!-- Pitch/Key submenu -->
 
               <WidgetGroup><!-- Expanding spacer -->
-                <MaximumSize>i,8</MaximumSize>
+                <MaximumSize>i,15</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
-
-              <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                <SetVariable name="text">Track Comment</SetVariable>
-                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
-              </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Spinny</SetVariable>
@@ -651,7 +654,7 @@ Description:
           <WidgetGroup><!-- 2 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,26</MinimumSize>
-            <MaximumSize>200,54</MaximumSize>
+            <MaximumSize>200,62</MaximumSize>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>

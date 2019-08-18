@@ -33,37 +33,37 @@ Wavelet::getWaveletName(Type wavelet)
         case Daubechies_10: return "Daubechies 10";
         case Daubechies_20: return "Daubechies 20";
         case Daubechies_40: return "Daubechies 40";
-	case Symlet_2: return "Symlet 2";
-	case Symlet_3: return "Symlet 3";
-	case Symlet_4: return "Symlet 4";
-	case Symlet_5: return "Symlet 5";
-	case Symlet_6: return "Symlet 6";
-	case Symlet_7: return "Symlet 7";
-	case Symlet_8: return "Symlet 8";
-	case Symlet_9: return "Symlet 9";
-	case Symlet_10: return "Symlet 10";
-	case Symlet_20: return "Symlet 20";
-	case Symlet_30: return "Symlet 30";
-	case Coiflet_1: return "Coiflet 1";
-	case Coiflet_2: return "Coiflet 2";
-	case Coiflet_3: return "Coiflet 3";
-	case Coiflet_4: return "Coiflet 4";
-	case Coiflet_5: return "Coiflet 5";
-	case Biorthogonal_1_3: return "Biorthogonal 1.3";
-	case Biorthogonal_1_5: return "Biorthogonal 1.5";
-	case Biorthogonal_2_2: return "Biorthogonal 2.2";
-	case Biorthogonal_2_4: return "Biorthogonal 2.4";
-	case Biorthogonal_2_6: return "Biorthogonal 2.6";
-	case Biorthogonal_2_8: return "Biorthogonal 2.8";
-	case Biorthogonal_3_1: return "Biorthogonal 3.1";
-	case Biorthogonal_3_3: return "Biorthogonal 3.3";
-	case Biorthogonal_3_5: return "Biorthogonal 3.5";
-	case Biorthogonal_3_7: return "Biorthogonal 3.7";
-	case Biorthogonal_3_9: return "Biorthogonal 3.9";
-	case Biorthogonal_4_4: return "Biorthogonal 4.4";
-	case Biorthogonal_5_5: return "Biorthogonal 5.5";
-	case Biorthogonal_6_8: return "Biorthogonal 6.8";
-	case Meyer: return "Meyer";
+        case Symlet_2: return "Symlet 2";
+        case Symlet_3: return "Symlet 3";
+        case Symlet_4: return "Symlet 4";
+        case Symlet_5: return "Symlet 5";
+        case Symlet_6: return "Symlet 6";
+        case Symlet_7: return "Symlet 7";
+        case Symlet_8: return "Symlet 8";
+        case Symlet_9: return "Symlet 9";
+        case Symlet_10: return "Symlet 10";
+        case Symlet_20: return "Symlet 20";
+        case Symlet_30: return "Symlet 30";
+        case Coiflet_1: return "Coiflet 1";
+        case Coiflet_2: return "Coiflet 2";
+        case Coiflet_3: return "Coiflet 3";
+        case Coiflet_4: return "Coiflet 4";
+        case Coiflet_5: return "Coiflet 5";
+        case Biorthogonal_1_3: return "Biorthogonal 1.3";
+        case Biorthogonal_1_5: return "Biorthogonal 1.5";
+        case Biorthogonal_2_2: return "Biorthogonal 2.2";
+        case Biorthogonal_2_4: return "Biorthogonal 2.4";
+        case Biorthogonal_2_6: return "Biorthogonal 2.6";
+        case Biorthogonal_2_8: return "Biorthogonal 2.8";
+        case Biorthogonal_3_1: return "Biorthogonal 3.1";
+        case Biorthogonal_3_3: return "Biorthogonal 3.3";
+        case Biorthogonal_3_5: return "Biorthogonal 3.5";
+        case Biorthogonal_3_7: return "Biorthogonal 3.7";
+        case Biorthogonal_3_9: return "Biorthogonal 3.9";
+        case Biorthogonal_4_4: return "Biorthogonal 4.4";
+        case Biorthogonal_5_5: return "Biorthogonal 5.5";
+        case Biorthogonal_6_8: return "Biorthogonal 6.8";
+        case Meyer: return "Meyer";
     }
 
     return "(unknown)";
@@ -71,14 +71,14 @@ Wavelet::getWaveletName(Type wavelet)
 
 void
 Wavelet::createDecompositionFilters(Type wavelet,
-                                    std::vector<float> &lpd,
-                                    std::vector<float> &hpd)
+                                    std::vector<double> &lpd,
+                                    std::vector<double> &hpd)
 {
     lpd.clear();
     hpd.clear();
 
     int flength = 0;
-	
+        
     switch (wavelet) {
 
     case Haar: 
@@ -99,7 +99,7 @@ Wavelet::createDecompositionFilters(Type wavelet,
         hpd.push_back(-0.22414386804186);
         hpd.push_back(-0.12940952255092);
         flength = 4;
-        break;		
+        break;          
 
     case Daubechies_3:
         lpd.push_back(0.03522629188210);
@@ -588,7 +588,7 @@ Wavelet::createDecompositionFilters(Type wavelet,
         hpd.push_back(-0.00000000000000);
         flength = 80;
         break;
-			
+                        
     case Symlet_2:
         lpd.push_back(-0.12940952255092);
         lpd.push_back(0.22414386804186);
@@ -688,7 +688,7 @@ Wavelet::createDecompositionFilters(Type wavelet,
         hpd.push_back(0.01540410932703);
         flength = 12;
         break;
-			
+                        
     case Symlet_7:
         lpd.push_back(0.00268181456826);
         lpd.push_back(-0.00104738488868);
@@ -1843,7 +1843,10 @@ Wavelet::createDecompositionFilters(Type wavelet,
         break;
     }
 
-    assert(flength == lpd.size());
-    assert(flength == hpd.size());
+    // avoid compiler warning for unused value if assert is not compiled in:
+    (void)flength;
+
+    assert(flength == int(lpd.size()));
+    assert(flength == int(hpd.size()));
 }
 

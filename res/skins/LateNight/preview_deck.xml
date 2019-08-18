@@ -55,10 +55,10 @@
                         <Connection>
                           <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
                         </Connection>
-			<Connection>
-			  <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
-			  <BindProperty>visible</BindProperty>
-			</Connection>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
                       </Number>
                     </Children>
                   </WidgetGroup>
@@ -135,7 +135,7 @@
                     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
-                      <Color>#00FF00</Color>
+                      <Color>#FF0000</Color>
                       <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>

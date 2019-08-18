@@ -12,8 +12,9 @@ class SoftwareWaveformWidget : public QWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::SoftwareWaveform; }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered") + " - " + tr("Software"); }
+    static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return false; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool developerOnly() { return false; }
 

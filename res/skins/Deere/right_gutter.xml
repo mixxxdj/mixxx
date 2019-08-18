@@ -11,10 +11,6 @@
     <Children>
       <Template src="skin:deck.xml">
         <SetVariable name="i">2</SetVariable>
-        <!-- Traditional Orange -->
-        <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
-        <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-        <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -22,10 +18,6 @@
         <Children>
           <Template src="skin:deck.xml">
             <SetVariable name="i">4</SetVariable>
-            <!-- Lime -->
-            <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
-            <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-            <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
           </Template>
         </Children>
         <Connection>

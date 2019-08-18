@@ -17,6 +17,8 @@
 
 #include <cmath>
 
+using std::vector;
+
 double KLDivergence::distanceGaussian(const vector<double> &m1,
                                       const vector<double> &v1,
                                       const vector<double> &m2,

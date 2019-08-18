@@ -32,12 +32,7 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
         m_hookRx.setPattern(hooksPattern.toString());
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    // Load the config option once, here, rather than in setupSize.
-    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
-#else
     m_scaleFactor = 1.0;
-#endif
 }
 
 SkinContext::SkinContext(const SkinContext& parent)

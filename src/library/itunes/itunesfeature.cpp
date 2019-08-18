@@ -434,7 +434,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     if (xml.hasError()) {
         // do error handling
-        qDebug() << "Abbort processing iTunes music collection";
+        qDebug() << "Abort processing iTunes music collection";
         qDebug() << "line:" << xml.lineNumber() <<
                 "column:" << xml.columnNumber() <<
                 "error:" << xml.errorString();
@@ -576,7 +576,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader& xml, QSqlQuery& query) {
                     continue;
                 }
                 if (key == kLocation) {
-                    location = QUrl(content).toLocalFile();
+                    location = TrackFile::fromUrl(QUrl(content)).location();
                     // Replace first part of location with the mixxx iTunes Root
                     // on systems where iTunes installed it only strips //localhost
                     // on iTunes from foreign systems the mount point is replaced

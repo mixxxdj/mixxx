@@ -18,6 +18,13 @@
 GLSimpleWaveformWidget::GLSimpleWaveformWidget(const char* group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
+
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
@@ -31,12 +38,6 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget(const char* group, QWidget* paren
 
     setAutoBufferSwap(false);
 
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -65,8 +66,6 @@ mixxx::Duration GLSimpleWaveformWidget::render() {
     t1 = timer.restart();
     draw(&painter, NULL);
     //t2 = timer.restart();
-    //glFinish();
-    //t3 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
+    //qDebug() << "GLSimpleWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup
 }

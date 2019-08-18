@@ -12,7 +12,6 @@
 #include "util/path.h" // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/defs_controllers.h"
-#include "util/compatibility.h"
 #include "util/trace.h"
 #include "controllers/controllerdebug.h"
 #include "util/time.h"

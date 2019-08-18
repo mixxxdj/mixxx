@@ -138,6 +138,8 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
                 m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerProgress);
+        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,
+                m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerFinished);
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
                 this, &AnalysisFeature::onTrackAnalysisSchedulerProgress);
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,
@@ -146,12 +148,9 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         emit(analysisActive(true));
     }
 
-    for (const auto& trackId: trackIds) {
-        if (trackId.isValid()) {
-            m_pTrackAnalysisScheduler->scheduleTrackById(trackId);
-        }
+    if (m_pTrackAnalysisScheduler->scheduleTracksById(trackIds) > 0) {
+        m_pTrackAnalysisScheduler->resume();
     }
-    m_pTrackAnalysisScheduler->resume();
 }
 
 void AnalysisFeature::onTrackAnalysisSchedulerProgress(

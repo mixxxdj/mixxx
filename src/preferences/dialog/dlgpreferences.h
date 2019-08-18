@@ -157,8 +157,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 #endif
 
     QSize m_pageSizeHint;
-
-    ControlPushButton m_preferencesUpdated;
 };
 
 #endif

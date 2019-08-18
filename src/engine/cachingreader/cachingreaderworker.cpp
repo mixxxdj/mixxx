@@ -148,7 +148,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     emit(trackLoading());
 
     QString filename = pTrack->getLocation();
-    if (filename.isEmpty() || !pTrack->exists()) {
+    if (filename.isEmpty() || !pTrack->checkFileExists()) {
         // Must unlock before emitting to avoid deadlock
         kLogger.debug() << m_group << "loadTrack() load failed for\""
                  << filename << "\", unlocked reader lock";

@@ -73,15 +73,12 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SettingsManager* pSettingsManager,
                                Library *pLibrary)
         : m_pConfig(pSettingsManager->settings()),
-          m_pageSizeHint(QSize(0, 0)),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
+          m_pageSizeHint(QSize(0, 0)) {
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
     setupUi(this);
-#if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
-#endif
 
     connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
             this, SLOT(slotButtonPressed(QAbstractButton*)));
@@ -385,10 +382,6 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
 void DlgPreferences::onHide() {
     // Notify children that we are about to hide.
     emit(closeDlg());
-
-    // Notify other parts of Mixxx that the preferences window just saved and so
-    // preferences are likely changed.
-    m_preferencesUpdated.set(1);
 }
 
 void DlgPreferences::onShow() {

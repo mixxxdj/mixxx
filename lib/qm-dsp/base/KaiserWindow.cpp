@@ -17,27 +17,27 @@
 
 KaiserWindow::Parameters
 KaiserWindow::parametersForTransitionWidth(double attenuation,
-					   double transition)
+                                           double transition)
 {
     Parameters p;
     p.length = 1 + (attenuation > 21.0 ?
-		    ceil((attenuation - 7.95) / (2.285 * transition)) :
-		    ceil(5.79 / transition));
+                    ceil((attenuation - 7.95) / (2.285 * transition)) :
+                    ceil(5.79 / transition));
     p.beta = (attenuation > 50.0 ? 
-	      0.1102 * (attenuation - 8.7) :
-	      attenuation > 21.0 ? 
-	      0.5842 * pow(attenuation - 21.0, 0.4) + 0.07886 * (attenuation - 21.0) :
-	      0);
+              0.1102 * (attenuation - 8.7) :
+              attenuation > 21.0 ? 
+              0.5842 * pow(attenuation - 21.0, 0.4) + 0.07886 * (attenuation - 21.0) :
+              0);
     return p;
 }
 
 static double besselTerm(double x, int i)
 {
     if (i == 0) {
-	return 1;
+        return 1;
     } else {
-	double f = MathUtilities::factorial(i);
-	return pow(x/2, i*2) / (f*f);
+        double f = MathUtilities::factorial(i);
+        return pow(x/2, i*2) / (f*f);
     }
 }
 
@@ -45,7 +45,7 @@ static double bessel0(double x)
 {
     double b = 0.0;
     for (int i = 0; i < 20; ++i) {
-	b += besselTerm(x, i);
+        b += besselTerm(x, i);
     }
     return b;
 }
@@ -56,8 +56,8 @@ KaiserWindow::init()
     double denominator = bessel0(m_beta);
     bool even = (m_length % 2 == 0);
     for (int i = 0; i < (even ? m_length/2 : (m_length+1)/2); ++i) {
-	double k = double(2*i) / double(m_length-1) - 1.0;
-	m_window.push_back(bessel0(m_beta * sqrt(1.0 - k*k)) / denominator);
+        double k = double(2*i) / double(m_length-1) - 1.0;
+        m_window.push_back(bessel0(m_beta * sqrt(1.0 - k*k)) / denominator);
     }
     for (int i = 0; i < (even ? m_length/2 : (m_length-1)/2); ++i) {
         m_window.push_back(m_window[int(m_length/2) - i - 1]);

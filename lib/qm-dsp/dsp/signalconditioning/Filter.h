@@ -4,7 +4,6 @@
     QM DSP Library
 
     Centre for Digital Music, Queen Mary, University of London.
-    This file 2005-2006 Christian Landone.
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as
@@ -13,49 +12,58 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef FILTER_H
-#define FILTER_H
+#ifndef QM_DSP_FILTER_H
+#define QM_DSP_FILTER_H
 
-#ifndef NULL
-#define NULL 0
-#endif
+#include "base/Restrict.h"
 
-/**
- * Filter specification. For a filter of order ord, the ACoeffs and
- * BCoeffs arrays must point to ord+1 values each. ACoeffs provides
- * the denominator and BCoeffs the numerator coefficients of the
- * filter.
- */
-struct FilterConfig{
-    unsigned int ord;
-    double* ACoeffs;
-    double* BCoeffs;
-};
+#include <vector>
 
-/**
- * Digital filter specified through FilterConfig structure.
- */
-class Filter  
+class Filter
 {
 public:
-    Filter( FilterConfig Config );
-    virtual ~Filter();
+    struct Parameters {
+        std::vector<double> a;
+        std::vector<double> b;
+    };
+
+    /**
+     * Construct an IIR filter with numerators b and denominators
+     * a. The filter will have order b.size()-1. To make an FIR
+     * filter, leave the vector a in the param struct empty.
+     * Otherwise, a and b must have the same number of values.
+     */
+    Filter(Parameters params);
+    
+    ~Filter();
 
     void reset();
 
-    void process( double *src, double *dst, unsigned int length );
+    /**
+     * Filter the input sequence \arg in of length \arg n samples, and
+     * write the resulting \arg n samples into \arg out. There must be
+     * enough room in \arg out for \arg n samples to be written.
+     */
+    void process(const double *const QM_R__ in,
+                 double *const QM_R__ out,
+                 const int n);
 
+    int getOrder() const { return m_order; }
+    
 private:
-    void initialise( FilterConfig Config );
-    void deInitialise();
+    int m_order;
+    int m_sz;
+    std::vector<double> m_a;
+    std::vector<double> m_b;
+    std::vector<double> m_bufa;
+    std::vector<double> m_bufb;
+    int m_offa;
+    int m_offb;
+    int m_offmax;
+    bool m_fir;
 
-    unsigned int m_ord;
-
-    double* m_inBuffer;
-    double* m_outBuffer;
-
-    double* m_ACoeffs;
-    double* m_BCoeffs;
+    Filter(const Filter &); // not supplied
+    Filter &operator=(const Filter &); // not supplied
 };
-
+    
 #endif

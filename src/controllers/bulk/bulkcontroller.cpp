@@ -11,7 +11,6 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
-#include "util/compatibility.h"
 #include "util/trace.h"
 #include "util/time.h"
 

@@ -37,7 +37,7 @@
  */
 StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
                        const QModelIndex& index,
-                       const QStyleOptionViewItemV4& option)
+                       const QStyleOptionViewItem& option)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
@@ -52,7 +52,7 @@ QSize StarEditor::sizeHint() const {
 // static
 void StarEditor::renderHelper(QPainter* painter,
                               QTableView* pTableView,
-                              const QStyleOptionViewItemV4& option,
+                              const QStyleOptionViewItem& option,
                               StarRating* pStarRating) {
     painter->save();
     painter->setClipRect(option.rect);

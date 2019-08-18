@@ -67,11 +67,19 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotAnalyzePlaylist();
 
   protected:
+
+    struct IdAndLabel {
+        int id;
+        QString label;
+    };
+
+
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
-    virtual void buildPlaylistList() = 0;
-    virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
+    virtual QList<IdAndLabel> createPlaylistLabels() = 0;
+    virtual QString fetchPlaylistLabel(int playlistId) = 0;
+    virtual void decorateChild(TreeItem *pChild, int playlistId) = 0;
     virtual void addToAutoDJ(bool bTop);
 
     int playlistIdFromIndex(QModelIndex index);
@@ -95,7 +103,6 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pExportTrackFilesAction;
     QAction *m_pDuplicatePlaylistAction;
     QAction *m_pAnalyzePlaylistAction;
-    QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;

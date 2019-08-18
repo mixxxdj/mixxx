@@ -131,7 +131,7 @@ void DlgControllerLearning::populateComboBox() {
                 NamedControl(m_controlPickerMenu.controlTitleForConfigKey(key),
                              key));
     }
-    qSort(sorted_controls.begin(), sorted_controls.end(),
+    std::sort(sorted_controls.begin(), sorted_controls.end(),
           namedControlComparator);
     foreach(NamedControl control, sorted_controls)
     {

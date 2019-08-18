@@ -78,6 +78,9 @@ class LibraryControl : public QObject {
     void slotNumSamplersChanged(double v);
     void slotNumPreviewDecksChanged(double v);
 
+    void slotSortColumn(double v);
+    void slotSortColumnToggle(double v);
+
     void slotFontSize(double v);
     void slotIncrementFontSize(double v);
     void slotDecrementFontSize(double v);
@@ -116,6 +119,11 @@ class LibraryControl : public QObject {
     // Add to Auto-Dj Cueue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;
     std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
+
+    // Controls to sort the track view
+    std::unique_ptr<ControlEncoder> m_pSortColumn;
+    std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
+    std::unique_ptr<ControlPushButton> m_pSortOrder;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;

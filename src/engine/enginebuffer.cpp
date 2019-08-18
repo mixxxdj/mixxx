@@ -430,7 +430,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
+void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
@@ -449,7 +449,7 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
 
     // Must hold the engineLock while using m_engineControls
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_filepos_play, adjustingPhase);
+        pControl->notifySeek(m_filepos_play);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -809,7 +809,7 @@ void EngineBuffer::processTrackLocked(
     // (natural vinyl Pitch) when keylock is disabled and enabled.
     //
     // With preference mode KeylockMode = kCurrentKey
-    // the speedSliderPitchRatio is not reseted when keylock is enabled.
+    // the speedSliderPitchRatio is not reset when keylock is enabled.
     // This mode allows to enable keylock
     // while the track is already played. You can reset to the tracks
     // original pitch by resetting the pitch knob to center. When disabling
@@ -1125,7 +1125,8 @@ void EngineBuffer::processSeek(bool paused) {
     // call anyway again.
 
     SeekRequests seekType = static_cast<SeekRequest>(
-            m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
+            m_iSeekQueued.loadAcquire());
+
     double position = m_queuedSeekPosition.getValue();
 
     // Don't allow the playposition to go past the end.
@@ -1138,14 +1139,12 @@ void EngineBuffer::processSeek(bool paused) {
         seekType |= SEEK_PHASE;
     }
 
-    bool adjustingPhase = false;
     switch (seekType) {
         case SEEK_NONE:
             return;
         case SEEK_PHASE:
             // only adjust phase
             position = m_filepos_play;
-            adjustingPhase = true;
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1164,11 +1163,14 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        double requestedPosition = position;
+        double syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
-        setNewPlaypos(position, adjustingPhase);
+        setNewPlaypos(position);
     }
+    m_iSeekQueued.storeRelease(SEEK_NONE);
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
@@ -1282,6 +1284,16 @@ bool EngineBuffer::isTrackLoaded() {
         return true;
     }
     return false;
+}
+
+bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) {
+    bool isSeekQueued = m_iSeekQueued.loadAcquire() != SEEK_NONE;
+    if (isSeekQueued) {
+        *pSeekPosition = m_queuedSeekPosition.getValue();
+    } else {
+        *pSeekPosition = -1;
+    }
+    return isSeekQueued;
 }
 
 void EngineBuffer::slotEjectTrack(double v) {

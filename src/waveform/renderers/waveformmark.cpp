@@ -17,6 +17,11 @@ WaveformMark::WaveformMark(const QString& group,
             m_iHotCue = item.midRef(7, item.count() - 16).toInt() - 1;
         }
     }
+    QString visibilityControl = context.selectString(node, "VisibilityControl");
+    if (!visibilityControl.isEmpty()) {
+        ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
+        m_pVisibleCos = std::make_unique<ControlProxy>(key);
+    }
     m_properties = WaveformMarkProperties(node, context, signalColors, m_iHotCue);
 }
 

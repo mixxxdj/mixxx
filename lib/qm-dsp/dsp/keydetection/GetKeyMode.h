@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 /*
     Copyright (c) 2005 Centre for Digital Music ( C4DM )
                        Queen Mary Univesrity of London
@@ -9,83 +10,106 @@
     COPYING included with this distribution for more information.
  */
 
-#ifndef GETKEYMODE_H
-#define GETKEYMODE_H
+#ifndef QM_DSP_GETKEYMODE_H
+#define QM_DSP_GETKEYMODE_H
 
-
-#include "dsp/rateconversion/Decimator.h"
-#include "dsp/chromagram/Chromagram.h"
-
+class Decimator;
+class Chromagram;
 
 class GetKeyMode  
 {
 public:
-	GetKeyMode( int sampleRate, float tuningFrequency,
-		    double hpcpAverage, double medianAverage );
+    struct Config {
+        double sampleRate;
+        float tuningFrequency;
+        double hpcpAverage;
+        double medianAverage;
+        int frameOverlapFactor; // 1 = none (default, fast, but means
+                                // we skip a fair bit of input data);
+                                // 8 = normal chroma overlap
+        int decimationFactor;
 
-	virtual ~GetKeyMode();
+        Config(double _sampleRate, float _tuningFrequency) :
+            sampleRate(_sampleRate),
+            tuningFrequency(_tuningFrequency),
+            hpcpAverage(10),
+            medianAverage(10),
+            frameOverlapFactor(1),
+            decimationFactor(8) {
+        }
+    };
+    
+    GetKeyMode(Config config);
 
-	int process( double* PCMData );
+    virtual ~GetKeyMode();
 
-	double krumCorr( double* pData1, double* pData2, unsigned int length );
+    /**
+     * Process a single time-domain input sample frame of length
+     * getBlockSize(). Successive calls should provide overlapped data
+     * with an advance of getHopSize() between frames.
+     *
+     * Return a key index in the range 0-24, where 0 indicates no key
+     * detected, 1 is C major, and 13 is C minor.
+     */
+    int process(double *pcmData);
 
-	unsigned int getBlockSize() { return m_ChromaFrameSize*m_DecimationFactor; }
-	unsigned int getHopSize() { return m_ChromaHopSize*m_DecimationFactor; }
+    /**
+     * Return a pointer to an internal 24-element array containing the
+     * correlation of the chroma vector generated in the last
+     * process() call against the stored key profiles for the 12 major
+     * and 12 minor keys, where index 0 is C major and 12 is C minor.
+     */
+    double *getKeyStrengths();
 
-	double* getChroma() { return m_ChrPointer; }
-	unsigned int getChromaSize() { return m_BPO; }
-
-	double* getMeanHPCP() { return m_MeanHPCP; }
-
-	double *getKeyStrengths() { return m_keyStrengths; }
-
-	bool isModeMinor( int key ); 
+    int getBlockSize() {
+        return m_chromaFrameSize * m_decimationFactor;
+    }
+    int getHopSize() {
+        return m_chromaHopSize * m_decimationFactor;
+    }
 
 protected:
+    double krumCorr(const double *pDataNorm, const double *pProfileNorm, 
+                    int shiftProfile, int length);
 
-	double m_hpcpAverage;
-	double m_medianAverage;
-	unsigned int m_DecimationFactor;
+    double m_hpcpAverage;
+    double m_medianAverage;
+    int m_decimationFactor;
 
-	//Decimator (fixed)
-	Decimator* m_Decimator;
+    // Decimator (fixed)
+    Decimator* m_decimator;
 
-	//chroma configuration
-	ChromaConfig m_ChromaConfig;
+    // Chromagram object
+    Chromagram* m_chroma;
 
-	//Chromagram object
-	Chromagram* m_Chroma;
+    // Chromagram output pointer
+    double* m_chrPointer;
 
-	//Chromagram output pointer
-	double* m_ChrPointer;
+    // Framesize
+    int m_chromaFrameSize;
 
-	//Framesize
-	unsigned int m_ChromaFrameSize;
-	//Hop
-	unsigned int m_ChromaHopSize;
-	//Bins per octave
-	unsigned int m_BPO;
+    // Hop
+    int m_chromaHopSize;
 
+    int m_chromaBufferSize;
+    int m_medianWinSize;
+        
+    int m_bufferIndex;
+    int m_chromaBufferFilling;
+    int m_medianBufferFilling;
 
-	unsigned int m_ChromaBuffersize;
-	unsigned int m_MedianWinsize;
-	
-	unsigned int m_bufferindex;
-	unsigned int m_ChromaBufferFilling;
-	unsigned int m_MedianBufferFilling;
-	
+    double* m_decimatedBuffer;
+    double* m_chromaBuffer;
+    double* m_meanHPCP;
 
-	double* m_DecimatedBuffer;
-	double* m_ChromaBuffer;
-	double* m_MeanHPCP;
+    double* m_majProfileNorm;
+    double* m_minProfileNorm;
+    double* m_majCorr;
+    double* m_minCorr;
+    int* m_medianFilterBuffer;
+    int* m_sortedBuffer;
 
-	double* m_MajCorr;
-	double* m_MinCorr;
-	double* m_Keys;
-	int* m_MedianFilterBuffer;
-	int* m_SortedBuffer;
-
-	double *m_keyStrengths;
+    double *m_keyStrengths;
 };
 
-#endif // !defined GETKEYMODE_H
+#endif // !defined QM_DSP_GETKEYMODE_H

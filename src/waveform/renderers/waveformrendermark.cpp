@@ -49,6 +49,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (!pMark->isValid())
             continue;
 
+        if (pMark->hasVisible() && !pMark->isVisible()) {
+            continue;
+        }
+
         // Generate image on first paint can't be done in setup since we need
         // render widget to be resized yet ...
         if (pMark->m_image.isNull()) {
@@ -96,8 +100,10 @@ void WaveformRenderMark::onSetTrack() {
     if (!trackInfo) {
         return;
     }
-    connect(trackInfo.get(), SIGNAL(cuesUpdated(void)),
-                  this, SLOT(slotCuesUpdated(void)));
+    connect(trackInfo.get(),
+            &Track::cuesUpdated,
+            this,
+            &WaveformRenderMark::slotCuesUpdated);
 }
 
 void WaveformRenderMark::slotCuesUpdated() {

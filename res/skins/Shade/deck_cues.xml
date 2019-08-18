@@ -1,0 +1,54 @@
+<Template>
+  <WidgetGroup>
+    <Style>QGroupBox { border: 0px solid red;} QWidget { margin: 0; padding: 0; }</Style>
+    <BackPath>style/style_bg_deck_pane.png</BackPath>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup><!-- Hotcues 1-8 -->
+        <Layout>horizontal</Layout>
+        <Children>
+            <WidgetGroup><Size>0e,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">1</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">2</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">3</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">4</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">5</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">6</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">7</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
+          <Template src="skin:deck_hotcue_button.xml">
+            <SetVariable name="hotcue">8</SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,0e</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>0e,4f</Size>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

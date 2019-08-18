@@ -23,87 +23,7 @@
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelAutoCue">
-        <property name="text">
-         <string>Auto cue</string>
-        </property>
-        <property name="buddy">
-         <cstring>checkBoxSeekToCue</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelPositionDisplay">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="font">
-         <font/>
-        </property>
-        <property name="text">
-         <string>Track time display</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-        <property name="buddy">
-         <cstring>radioButtonElapsed</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1" colspan="2">
-       <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
-        <property name="text">
-         <string>Do not load tracks into playing decks</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QCheckBox" name="checkBoxSeekToCue">
-        <property name="toolTip">
-         <string>Automatically seeks to the first saved cue point on track load.
-            If none exists, seeks to the beginning of the track.</string>
-        </property>
-        <property name="text">
-         <string>Jump to main cue point on track load</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QRadioButton" name="radioButtonElapsed">
-          <property name="text">
-           <string>Elapsed</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupTrackTime</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioButtonRemaining">
-          <property name="text">
-           <string>Remaining</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupTrackTime</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioButtonElapsedAndRemaining">
-          <property name="text">
-           <string>Elapsed and Remaining</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupTrackTime</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </item>
+
       <item row="0" column="0">
        <widget class="QLabel" name="labelCueMode">
         <property name="text">
@@ -142,29 +62,153 @@ CUP mode:
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelPlayingTrackProtection">
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelPositionDisplay">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font/>
+        </property>
         <property name="text">
-         <string>Pla&amp;ying track protection</string>
+         <string>Track time display</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
         </property>
         <property name="buddy">
-         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
+         <cstring>radioButtonElapsed</cstring>
         </property>
        </widget>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonElapsed">
+          <property name="text">
+           <string>Elapsed</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonRemaining">
+          <property name="text">
+           <string>Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonElapsedAndRemaining">
+          <property name="text">
+           <string>Elapsed and Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="labelTimeDisplay">
         <property name="text">
-         <string>Time Format</string>
+         <string>Time format</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
        <widget class="QComboBox" name="comboBoxTimeFormat"/>
       </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelAutoCue">
+        <property name="text">
+         <string>Auto cue</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxSeekToCue</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxSeekToCue">
+        <property name="toolTip">
+         <string>Automatically seeks to the first saved cue point on track load.
+If none exists, seeks to the beginning of the track.</string>
+        </property>
+        <property name="text">
+         <string>Jump to main cue point on track load</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelPlayingTrackProtection">
+        <property name="text">
+         <string>Playing track protection</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
+        <property name="text">
+         <string>Do not load tracks into playing decks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="labelCloneDeckOnLoadDoubleTap">
+        <property name="text">
+         <string>Clone deck</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxCloneDeckOnLoadDoubleTap</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxCloneDeckOnLoadDoubleTap">
+        <property name="toolTip">
+         <string>Create a playing clone of the first playing deck by double-tapping a Load button on a controller or keyboard.
+You can always drag-and-drop tracks on screen to clone a deck.</string>
+        </property>
+        <property name="text">
+         <string>Double-press Load button to clone playing track</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="labelAutoHotcueColors">
+        <property name="text">
+          <string>Auto hot cue colors</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxAssignHotcueColors</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAssignHotcueColors">
+        <property name="toolTip">
+        <string>Automatically assigns a predefined color to a newly created hot cue point, based on
+its index.</string>
+        </property>
+        <property name="text">
+         <string>Assign predefined colors to newly created hot cue points</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
+
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBoxSpeedPitchOptions">
      <property name="title">

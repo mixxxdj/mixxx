@@ -66,6 +66,7 @@
         <file>translations/mixxx_da.qm</file>
         <file>translations/mixxx_de.qm</file>
         <file>translations/mixxx_el.qm</file>
+        <file>translations/mixxx_el-GR.qm</file>
         <file>translations/mixxx_en.qm</file>
         <file>translations/mixxx_en_GB.qm</file>
         <file>translations/mixxx_eo.qm</file>
@@ -81,6 +82,7 @@
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
         <file>translations/mixxx_he.qm</file>
+        <file>translations/mixxx_he-IL.qm</file>
         <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_hu.qm</file>
         <file>translations/mixxx_hy.qm</file>
@@ -102,6 +104,8 @@
         <file>translations/mixxx_my.qm</file>
         <file>translations/mixxx_nb.qm</file>
         <file>translations/mixxx_nl.qm</file>
+        <file>translations/mixxx_nl-BE.qm</file>
+        <file>translations/mixxx_nl-NL.qm</file>
         <file>translations/mixxx_nn.qm</file>
         <file>translations/mixxx_oc.qm</file>
         <file>translations/mixxx_pl.qm</file>
@@ -123,6 +127,7 @@
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_vi.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
+        <file>translations/mixxx_zh-HK.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
         <file>translations/mixxx_zh_TW.Big5.qm</file>
     </qresource>

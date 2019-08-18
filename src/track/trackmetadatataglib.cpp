@@ -1208,22 +1208,42 @@ void importTrackMetadataFromID3v2Tag(
         double bpmValue = pTrackMetadata->getTrackInfo().getBpm().getValue();
         // Some software use (or used) to write decimated values without comma,
         // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        double bpmValueOriginal = bpmValue;
-        while (bpmValue > Bpm::kValueMax) {
-            bpmValue /= 10.0;
-        }
-        if (bpmValue != bpmValueOriginal) {
+        if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
+            // Considered out of range, don't try to adjust it
             kLogger.warning()
-                    << " Changing BPM on"
-                    << pTrackMetadata->getTrackInfo().getArtist()
-                    << "-"
-                    << pTrackMetadata->getTrackInfo().getTitle()
-                    << "from"
-                    << bpmValueOriginal
-                    << "to"
+                    << "Ignoring invalid bpm value"
                     << bpmValue;
+            bpmValue = Bpm::kValueUndefined;
+        } else {
+            double bpmValueOriginal = bpmValue;
+            DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
+            bool adjusted = false;
+            while (bpmValue > Bpm::kValueMax) {
+                double bpmValueAdjusted = bpmValue / 10;
+                if (bpmValueAdjusted < bpmValue) {
+                    bpmValue = bpmValueAdjusted;
+                    adjusted = true;
+                    continue;
+                }
+                // Ensure that the loop always terminates even for invalid
+                // values like Inf and NaN!
+                kLogger.warning()
+                        << "Ignoring invalid bpm value"
+                        << bpmValueOriginal;
+                bpmValue = Bpm::kValueUndefined;
+                break;
+            }
+            if (adjusted) {
+                kLogger.info()
+                        << "Adjusted bpm value from"
+                        << bpmValueOriginal
+                        << "to"
+                        << bpmValue;
+            }
         }
-        pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        if (bpmValue != Bpm::kValueUndefined) {
+            pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        }
     }
 
     const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);

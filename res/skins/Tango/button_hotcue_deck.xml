@@ -37,5 +37,9 @@ Variables:
       <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_enabled</ConfigKey>
       <ConnectValueFromWidget>false</ConnectValueFromWidget>
     </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_color_id</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
   </PushButton>
 </Template>
