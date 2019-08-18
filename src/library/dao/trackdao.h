@@ -24,6 +24,14 @@ class LibraryHashDAO;
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
   public:
+
+    enum class ResolveTrackIdOption : int {
+        ResolveOnly = 0,
+        UnhideHidden = 1,
+        AddMissing = 2
+    };
+    Q_DECLARE_FLAGS(ResolveTrackIdOptions, ResolveTrackIdOption)
+
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
     TrackDAO(
@@ -40,7 +48,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     TrackId getTrackId(const QString& absoluteFilePath);
-    QList<TrackId> getTrackIds(const QList<QFileInfo>& files, bool addMissingTracks);
+    QList<TrackId> resolveTrackIds(const QList<QFileInfo>& files, ResolveTrackIdOptions options);
     QList<TrackId> getTrackIds(const QDir& dir);
 
     // WARNING: Only call this from the main thread instance of TrackDAO.
@@ -156,5 +164,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
+
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdOptions)
 
 #endif //TRACKDAO_H

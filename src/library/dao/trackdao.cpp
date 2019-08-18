@@ -135,8 +135,8 @@ TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
     return trackId;
 }
 
-QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files,
-        bool addMissingTracks) {
+QList<TrackId> TrackDAO::resolveTrackIds(const QList<QFileInfo>& files,
+        ResolveTrackIdOptions options) {
     QList<TrackId> trackIds;
     trackIds.reserve(files.size());
 
@@ -164,7 +164,7 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files,
         LOG_FAILED_QUERY(query);
     }
 
-    if (addMissingTracks) {
+    if (options & ResolveTrackIdOption::AddMissing) {
         // Prepare to add tracks to the database.
         // This also begins an SQL transaction.
         addTracksPrepare();

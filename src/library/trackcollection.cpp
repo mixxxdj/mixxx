@@ -87,10 +87,12 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
 
-QList<TrackId> TrackCollection::getAndEnsureTrackIds(
-        const QList<QFileInfo>& files, bool addMissingTracks) {
-    QList<TrackId> trackIds = m_trackDao.getTrackIds(files, addMissingTracks);
-    unhideTracks(trackIds);
+QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<QFileInfo>& files, TrackDAO::ResolveTrackIdOptions options) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(files, options);
+    if (options & TrackDAO::ResolveTrackIdOption::UnhideHidden) {
+        unhideTracks(trackIds);
+    }
     return trackIds;
 }
 

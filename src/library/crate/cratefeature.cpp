@@ -210,12 +210,14 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
 
     // If a track is dropped onto a crate's name, but the track isn't in the
     // library, then add the track to the library before adding it to the
-    // playlist. getAndEnsureTrackIds(), does not insert duplicates and handles
-    // unremove logic.
+    // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    bool addMissingTracks = (pSource == nullptr);
-    QList<TrackId> trackIds = m_pTrackCollection->getAndEnsureTrackIds(files, addMissingTracks);
+    TrackDAO::ResolveTrackIdOptions options = TrackDAO::ResolveTrackIdOption::UnhideHidden;
+    if (pSource == nullptr) {
+        options |= TrackDAO::ResolveTrackIdOption::AddMissing;
+    }
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIds(files, options);
     if (!trackIds.size()) {
         return false;
     }
