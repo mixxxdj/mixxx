@@ -233,7 +233,7 @@ int GetKeyMode::process(double *pcmData)
     }
 
     for (k = 0; k < kBinsPerOctave; k++) {
-        // The cromagram and the major and minor profiles have the has the
+        // The cromagram and the major and minor profiles have the
         // center of C at bin 1. We want to have the correlation for C result
         // also at 1. To achieve this we have to shift by one:
         m_majCorr[k] = krumCorr(m_meanHPCP, m_majProfileNorm, (int)k - 1, kBinsPerOctave);
