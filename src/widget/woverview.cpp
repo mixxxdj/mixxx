@@ -358,6 +358,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // button down event was not on a cue.
     if (m_bTimeRulerActive) {
         m_timeRulerPos = e->pos();
+        // Prevent showing times beyond the boundaries of the track when the
+        // cursor is dragged outside this widget before releasing right click.
+        if (m_timeRulerPos.x() > width()) {
+            m_timeRulerPos.setX(width());
+        } else if (m_timeRulerDistanceTextArea.y() > height()) {
+            m_timeRulerPos.setY(height());
+        }
         update();
         return;
     }
