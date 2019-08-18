@@ -7,6 +7,7 @@
 #include "control/controlproxy.h"
 #include "library/crate/crateid.h"
 #include "track/track.h"
+#include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
@@ -39,10 +40,11 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_pTouchShift(NULL) {
     registerMetaTypes();
 
-    // The global thread pool is initialized with the default
-    // number of treads. If a custom configuration is desired
-    // it should be done here before scheduling any tasks!
-    DEBUG_ASSERT(QThreadPool::globalInstance()->maxThreadCount() == QThread::idealThreadCount());
+    // Initialize the thread pool with at least 4 threads, even if
+    // less cores are available. These will be used for loading
+    // external libraries and other tasks.
+    QThreadPool::globalInstance().setMaxThreadCount(
+            math_max(4, QThread::idealThreadCount()));
 }
 
 MixxxApplication::~MixxxApplication() {
