@@ -447,7 +447,6 @@ var Deck = function(deckN) {
         // Deactivates old connections
         var sampleGroup;
         if(this.padMode == 1) {
-            // Deactivates connections
             this.padConnections.hotcue_1_enabled.deactivate();
             this.padConnections.hotcue_2_enabled.deactivate();
             this.padConnections.hotcue_3_enabled.deactivate();
@@ -458,7 +457,6 @@ var Deck = function(deckN) {
             this.padConnections.hotcue_8_enabled.deactivate();
         }
         if(this.padMode == 2) {
-            // Deactivates connections
             this.padConnections["beatloop_0.125_enabled"].deactivate();
             this.padConnections["beatloop_0.25_enabled"].deactivate();
             this.padConnections["beatloop_0.5_enabled"].deactivate();
@@ -469,11 +467,10 @@ var Deck = function(deckN) {
             this.padConnections.beatloop_16_enabled.deactivate();
         }
         if(this.padMode == 3) {
-            // Hide Sampler
+            // Hides Sampler
             this.controls.show_samplers.set(0);
             sampleGroup = 1+(this.deckNum-1)*16;
             print("Group:"+sampleGroup);
-            // Deactivates connections
             this.padConnections["s"+(sampleGroup+0)+"_play_indicator"].deactivate();
             this.padConnections["s"+(sampleGroup+1)+"_play_indicator"].deactivate();
             this.padConnections["s"+(sampleGroup+2)+"_play_indicator"].deactivate();
@@ -484,7 +481,6 @@ var Deck = function(deckN) {
             this.padConnections["s"+(sampleGroup+7)+"_play_indicator"].deactivate();
         }
         if(this.padMode == 4) {
-            // Deactivates connections
             this.padConnections["beatlooproll_0.125_activate"].deactivate();
             this.padConnections["beatlooproll_0.25_activate"].deactivate();
             this.padConnections["beatlooproll_0.5_activate"].deactivate();
@@ -495,15 +491,13 @@ var Deck = function(deckN) {
             this.padConnections.beatlooproll_16_activate.deactivate();
         }
         if(this.padMode == 5) {
-            // Deactivates connections
             this.padConnections.loop_in.deactivate();
             this.padConnections.loop_out.deactivate();
             this.padConnections.loop_enabled.deactivate();
         }
 
-        // Defines pad connections
+        // Activates pad connections
         if(set == 1) {    // Hot Cue Mode
-            // Activates connections
             this.padConnections.hotcue_1_enabled.activate();
             this.padConnections.hotcue_2_enabled.activate();
             this.padConnections.hotcue_3_enabled.activate();
@@ -514,7 +508,6 @@ var Deck = function(deckN) {
             this.padConnections.hotcue_8_enabled.activate();
         } 
         if(set == 2) {    // Auto Loop mode
-            // Activates connections
             this.padConnections["beatloop_0.125_enabled"].activate();
             this.padConnections["beatloop_0.25_enabled"].activate();
             this.padConnections["beatloop_0.5_enabled"].activate();
@@ -529,7 +522,6 @@ var Deck = function(deckN) {
             this.controls.show_samplers.set(1);
             sampleGroup = 1+(this.deckNum-1)*16;
             print("Group:"+sampleGroup);
-            // Deactivates connections
             this.padConnections["s"+(sampleGroup+0)+"_play_indicator"].activate();
             this.padConnections["s"+(sampleGroup+1)+"_play_indicator"].activate();
             this.padConnections["s"+(sampleGroup+2)+"_play_indicator"].activate();
@@ -540,7 +532,6 @@ var Deck = function(deckN) {
             this.padConnections["s"+(sampleGroup+7)+"_play_indicator"].activate();
         } 
         if(set == 4) { // Loop Roll mode
-            // Activates connections
             this.padConnections["beatlooproll_0.125_activate"].activate();
             this.padConnections["beatlooproll_0.25_activate"].activate();
             this.padConnections["beatlooproll_0.5_activate"].activate();
@@ -551,7 +542,6 @@ var Deck = function(deckN) {
             this.padConnections.beatlooproll_16_activate.activate();
         } 
         if(set == 5) { // Manual loop mode
-            // Activates connections
             this.padConnections.loop_in.activate();
             this.padConnections.loop_out.activate();
             this.padConnections.loop_enabled.activate();
@@ -977,10 +967,10 @@ var Deck = function(deckN) {
                 this.controls.loop_double.set(1);
                 break;
             case 0x0f:
-                this.controls.loop_move_b.set(1);
+                this.controls.loop_move.set(-1);
                 break;
             case 0x10:
-                this.controls.loop_move_f.set(1);
+                this.controls.loop_move.set(1);
                 break;
             }
             break;
