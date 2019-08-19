@@ -40,11 +40,11 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_pTouchShift(NULL) {
     registerMetaTypes();
 
-    // Initialize the thread pool with at least 4 threads, even if
-    // less cores are available. These will be used for loading
-    // external libraries and other tasks.
+    // Increase the size of the global thread pool to at least
+    // 4 threads, even if less cores are available. These threads
+    // will be used for loading external libraries and other tasks.
     QThreadPool::globalInstance().setMaxThreadCount(
-            math_max(4, QThread::idealThreadCount()));
+            math_max(4, QThreadPool::globalInstance().maxThreadCount()));
 }
 
 MixxxApplication::~MixxxApplication() {
