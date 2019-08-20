@@ -30,10 +30,13 @@
 
 #include <taglib/commentsframe.h>
 #include <taglib/textidentificationframe.h>
-#include <taglib/uniquefileidentifierframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 #include <taglib/unknownframe.h>
+#if defined(__EXTRA_METADATA__)
+#include <taglib/uniquefileidentifierframe.h>
+#include <taglib/generalencapsulatedobjectframe.h>
+#endif // __EXTRA_METADATA__
 
 #include <array>
 
@@ -235,6 +238,45 @@ inline TagLib::String toTagLibString(const QString& str) {
         return TagLib::String(qba.constData(), TagLib::String::UTF8);
     }
 }
+
+#if defined(__EXTRA_METADATA__)
+inline QByteArray toQByteArray(const TagLib::ByteVector& tByteVector) {
+    if (tByteVector.isNull()) {
+        // null -> null
+        return QByteArray();
+    } else {
+        return QByteArray(tByteVector.data(), tByteVector.size());
+    }
+}
+
+inline TagLib::ByteVector toTagLibByteVector(const QByteArray& bytearray) {
+    if (bytearray.isNull()) {
+        return TagLib::ByteVector::null;
+    } else {
+        return TagLib::ByteVector(bytearray.constData(), bytearray.size());
+    }
+}
+
+inline QString formatUuid(const QUuid& uuid) {
+    if (uuid.isNull()) {
+        return QString();
+    } else {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+        return uuid.toString(QUuid::WithoutBraces);
+#else
+        QString uuidWithBraces = uuid.toString();
+        DEBUG_ASSERT(uuidWithBraces.size() == 38);
+        DEBUG_ASSERT(uuidWithBraces.startsWith('{'));
+        DEBUG_ASSERT(uuidWithBraces.endsWith('}'));
+        return uuidWithBraces.mid(1, 36);
+#endif
+    }
+}
+
+inline TagLib::String toTagLibString(const QUuid& uuid) {
+    return toTagLibString(formatUuid(uuid));
+}
+#endif // __EXTRA_METADATA__
 
 inline QString formatBpm(const TrackMetadata& trackMetadata) {
     return Bpm::valueToString(trackMetadata.getTrackInfo().getBpm().getValue());
@@ -564,43 +606,6 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     return pFirstFrame;
 }
 
-// Finds the first UFID frame that with a matching owner (case-insensitive).
-// If multiple UFID frames with matching descriptions exist prefer the first
-// with a non-empty content if requested.
-TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
-        const TagLib::ID3v2::Tag& tag,
-        const QString& owner,
-        bool preferNotEmpty = true) {
-    DEBUG_ASSERT(!owner.isEmpty());
-    TagLib::ID3v2::UniqueFileIdentifierFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& ufidFrames =
-            tag.frameListMap()["UFID"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it = ufidFrames.begin();
-            it != ufidFrames.end(); ++it) {
-        auto pFrame =
-                dynamic_cast<TagLib::ID3v2::UniqueFileIdentifierFrame*>(*it);
-        if (pFrame) {
-            const QString frameOwner = toQString(pFrame->owner());
-            if (0 == frameOwner.compare(
-                    owner, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
-            }
-        }
-    }
-    // simply return the first matching frame
-    return pFirstFrame;
-}
-
 inline
 QString readFirstUserTextIdentificationFrame(
         const TagLib::ID3v2::Tag& tag,
@@ -612,19 +617,6 @@ QString readFirstUserTextIdentificationFrame(
         return toQString(pTextFrame->fieldList()[1]);
     } else {
         return QString();
-    }
-}
-
-inline
-QByteArray readFirstUniqueFileIdentifierFrame(
-        const TagLib::ID3v2::Tag& tag,
-        const QString& owner) {
-    const TagLib::ID3v2::UniqueFileIdentifierFrame* pFrame =
-            findFirstUniqueFileIdentifierFrame(tag, owner);
-    if (pFrame) {
-        return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
-    } else {
-        return QByteArray();
     }
 }
 
@@ -668,6 +660,109 @@ int removeUserTextIdentificationFrames(
     } while (repeat);
     return count;
 }
+
+#if defined(__EXTRA_METADATA__)
+// Finds the first UFID frame that with a matching owner (case-insensitive).
+// If multiple UFID frames with matching descriptions exist prefer the first
+// with a non-empty content if requested.
+TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& owner,
+        bool preferNotEmpty = true) {
+    DEBUG_ASSERT(!owner.isEmpty());
+    TagLib::ID3v2::UniqueFileIdentifierFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& ufidFrames =
+            tag.frameListMap()["UFID"];
+    for (TagLib::ID3v2::FrameList::ConstIterator it = ufidFrames.begin();
+            it != ufidFrames.end(); ++it) {
+        auto pFrame =
+                dynamic_cast<TagLib::ID3v2::UniqueFileIdentifierFrame*>(*it);
+        if (pFrame) {
+            const QString frameOwner = toQString(pFrame->owner());
+            if (0 == frameOwner.compare(
+                    owner, Qt::CaseInsensitive)) {
+                if (preferNotEmpty && pFrame->toString().isEmpty()) {
+                    // we might need the first matching frame later
+                    // even if it is empty
+                    if (!pFirstFrame) {
+                        pFirstFrame = pFrame;
+                    }
+                } else {
+                    // found what we are looking for
+                    return pFrame;
+                }
+            }
+        }
+    }
+    // simply return the first matching frame
+    return pFirstFrame;
+}
+
+inline
+QByteArray readFirstUniqueFileIdentifierFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& owner) {
+    const TagLib::ID3v2::UniqueFileIdentifierFrame* pFrame =
+            findFirstUniqueFileIdentifierFrame(tag, owner);
+    if (pFrame) {
+        return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
+    } else {
+        return QByteArray();
+    }
+}
+
+// Finds the first GEOB frame that with a matching description (case-insensitive).
+// If multiple GEOB frames with matching descriptions exist prefer the first
+// with a non-empty content if requested.
+TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjectFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description,
+        bool preferNotEmpty = true) {
+    DEBUG_ASSERT(!description.isEmpty());
+    TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& geobFrames =
+            tag.frameListMap()["GEOB"];
+    for (TagLib::ID3v2::FrameList::ConstIterator it(geobFrames.begin());
+            it != geobFrames.end(); ++it) {
+        auto pFrame =
+                dynamic_cast<TagLib::ID3v2::GeneralEncapsulatedObjectFrame*>(*it);
+        if (pFrame) {
+            const QString frameDescription(
+                    toQString(pFrame->description()));
+            if (0 == frameDescription.compare(
+                    description, Qt::CaseInsensitive)) {
+                if (preferNotEmpty && pFrame->toString().isEmpty()) {
+                    // we might need the first matching frame later
+                    // even if it is empty
+                    if (!pFirstFrame) {
+                        pFirstFrame = pFrame;
+                    }
+                } else {
+                    // found what we are looking for
+                    return pFrame;
+                }
+            }
+        }
+    }
+    // simply return the first matching frame
+    return pFirstFrame;
+}
+
+inline
+QByteArray readFirstGeneralEncapsulatedObjectFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description) {
+    const TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pGeobFrame =
+            findFirstGeneralEncapsulatedObjectFrame(tag, description);
+    if (pGeobFrame) {
+        return toQByteArray(pGeobFrame->object());
+    } else {
+        return QByteArray();
+    }
+}
+#endif // __EXTRA_METADATA__
 
 void writeID3v2TextIdentificationFrame(
         TagLib::ID3v2::Tag* pTag,
@@ -809,6 +904,36 @@ void writeID3v2UniqueFileIdentifierFrame(
                     std::make_unique<TagLib::ID3v2::UniqueFileIdentifierFrame>(
                             toTagLibString(owner),
                             TagLib::ByteVector(identifier.constData(), identifier.size()));
+            pTag->addFrame(pFrame.get());
+            // Now that the plain pointer in pFrame is owned and managed by
+            // pTag we need to release the ownership to avoid double deletion!
+            pFrame.release();
+        }
+    }
+}
+
+void writeID3v2GeneralEncapsulatedObjectFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& description,
+        const QByteArray& data) {
+    TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFrame =
+            findFirstGeneralEncapsulatedObjectFrame(*pTag, description);
+    if (pFrame) {
+        // Modify existing frame
+        if (data.isEmpty()) {
+            // Purge empty frames
+            pTag->removeFrame(pFrame);
+        } else {
+            pFrame->setDescription(toTagLibString(description));
+            pFrame->setObject(toTagLibByteVector(data));
+        }
+    } else {
+        // Add a new (non-empty) frame
+        if (!data.isEmpty()) {
+            auto pFrame =
+                    std::make_unique<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>();
+            pFrame->setDescription(toTagLibString(description));
+            pFrame->setObject(toTagLibByteVector(data));
             pTag->addFrame(pFrame.get());
             // Now that the plain pointer in pFrame is owned and managed by
             // pTag we need to release the ownership to avoid double deletion!
@@ -1526,6 +1651,13 @@ void importTrackMetadataFromID3v2Tag(
     const TagLib::ID3v2::FrameList encoderSettingsFrames(tag.frameListMap()["TSSE"]);
     if (!encoderSettingsFrames.isEmpty()) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrames));
+    }
+    // Serato tags
+    QByteArray seratoMarkers2 = readFirstGeneralEncapsulatedObjectFrame(tag, "Serato Markers2");
+    if (!seratoMarkers2.isEmpty()) {
+        kLogger.debug() << "Serato Markers2" << seratoMarkers2;
+        // TODO: Parse and import metadata from Serato
+        //parseSeratoMarkers2(pTrackMetadata, seratoMarkers2);
     }
 #endif // __EXTRA_METADATA__
 }
