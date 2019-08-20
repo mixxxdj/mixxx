@@ -265,6 +265,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
+    std::unique_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 

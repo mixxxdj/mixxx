@@ -65,7 +65,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+        m_pAutoDjEnabled(std::make_unique<ControlProxy>("[AutoDJ]", "enabled", this)) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
@@ -584,7 +585,21 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     // If not present in the config, use & set the default value
     bool cloneOnDoubleTap = m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
-    if (cloneOnDoubleTap && m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
+
+    // If AutoDJ is enabled, prevent it from cloning decks if the same track
+    // is in the AutoDJ queue twice in a row. This can happen when the option to
+    // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
+    // button repeatedly.
+    // AutoDJProcessor is initialized after PlayerManager, so check that the
+    // ControlProxy is pointing to the real ControlObject.
+    if (!m_pAutoDjEnabled->valid()) {
+        m_pAutoDjEnabled->initialize(ConfigKey("[AutoDJ]", "enabled"));
+    }
+    bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+
+    if (cloneOnDoubleTap && m_lastLoadedPlayer == group
+        && elapsed < mixxx::Duration::fromSeconds(0.5)
+        && !autoDjSkipClone) {
         // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
         // so clone another playing deck instead of loading the selected track
         pPlayer->slotCloneDeck();
