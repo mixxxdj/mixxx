@@ -5,6 +5,7 @@
 #include "library/dlgcoverartfullsize.h"
 #include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "util/compatibility.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
@@ -131,8 +132,9 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
             dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
                              Qt::KeepAspectRatio);
         }
-        QPixmap resizedPixmap = m_pixmap.scaled(size(),
+        QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
             Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
         coverArt->setPixmap(resizedPixmap);
         // center the window
         setGeometry(QStyle::alignedRect(
@@ -181,8 +183,9 @@ void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
         return;
     }
     // qDebug() << "DlgCoverArtFullSize::resizeEvent" << size();
-    QPixmap resizedPixmap = m_pixmap.scaled(size(),
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
         Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
     coverArt->setPixmap(resizedPixmap);
 }
 

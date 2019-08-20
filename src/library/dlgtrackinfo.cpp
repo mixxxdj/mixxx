@@ -10,6 +10,7 @@
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "util/compatibility.h"
 #include "util/duration.h"
 
 const int kFilterLength = 80;
