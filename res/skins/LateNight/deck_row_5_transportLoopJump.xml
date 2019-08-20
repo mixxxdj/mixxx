@@ -152,12 +152,10 @@
             <Children>
               <Template src="skin:button_special_cue.xml">
                 <SetVariable name="cue_type">intro_start</SetVariable>
-                <SetVariable name="label">|&#9698;</SetVariable>
               </Template>
 
               <Template src="skin:button_special_cue.xml">
                 <SetVariable name="cue_type">intro_end</SetVariable>
-                <SetVariable name="label">&#9698;|</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -168,12 +166,10 @@
             <Children>
               <Template src="skin:button_special_cue.xml">
                 <SetVariable name="cue_type">outro_start</SetVariable>
-                <SetVariable name="label">|&#9699;</SetVariable>
               </Template>
 
               <Template src="skin:button_special_cue.xml">
                 <SetVariable name="cue_type">outro_end</SetVariable>
-                <SetVariable name="label">&#9699;|</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

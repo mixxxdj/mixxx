@@ -25,7 +25,7 @@ QString fromTraktorSeparators(QString path) {
 }
 
 
-} // anonymous namespace 
+} // anonymous namespace
 
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
@@ -151,15 +151,6 @@ void TraktorFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Usually the maximum number of threads
-        // is > 2 depending on the CPU cores
-        // Unfortunately, within VirtualBox
-        // the maximum number of allowed threads
-        // is 1 at all times We'll need to increase
-        // the number to > 1, otherwise importing the music collection
-        // takes place when the GUI threads terminates, i.e., on
-        // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary,
                                      getTraktorMusicDatabase());
@@ -601,7 +592,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
         musicFolder =  QDir::homePath() + "/collection.nml";
     } else { //Select the folder with the highest version as default Traktor folder
         QList<int> versions = installed_ts_map.keys();
-        qSort(versions);
+        std::sort(versions.begin(), versions.end());
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
     }
     qDebug() << "Traktor Library Location=[" << musicFolder << "]";

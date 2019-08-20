@@ -1,10 +1,13 @@
 #include <QtDebug>
 #include <QTouchEvent>
+#include <QThreadPool>
+
 #include "mixxxapplication.h"
 
-#include "library/crate/crateid.h"
 #include "control/controlproxy.h"
-#include "mixxx.h"
+#include "library/crate/crateid.h"
+#include "track/track.h"
+#include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
@@ -36,6 +39,12 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_activeTouchButton(Qt::NoButton),
           m_pTouchShift(NULL) {
     registerMetaTypes();
+
+    // Increase the size of the global thread pool to at least
+    // 4 threads, even if less cores are available. These threads
+    // will be used for loading external libraries and other tasks.
+    QThreadPool::globalInstance()->setMaxThreadCount(
+            math_max(4, QThreadPool::globalInstance()->maxThreadCount()));
 }
 
 MixxxApplication::~MixxxApplication() {

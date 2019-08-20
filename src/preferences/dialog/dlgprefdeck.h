@@ -17,6 +17,10 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
+namespace {
+    constexpr bool kDefaultCloneDeckOnLoad = true;
+}
+
 namespace TrackTime {
     enum class DisplayMode {
         ELAPSED,
@@ -74,6 +78,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotCueModeCombobox(int);
     void slotSetTrackLoadMode(int comboboxIndex);
+    void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
     void slotAssignHotcueColorsCheckbox(bool);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
@@ -118,6 +123,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     int m_iCueMode;
 
     bool m_bDisallowTrackLoadToPlayingDeck;
+    bool m_bCloneDeckOnLoadDoubleTap;
     bool m_bAssignHotcueColors;
 
     int m_iRateRangePercent;

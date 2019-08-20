@@ -142,7 +142,7 @@ void DlgTrackInfo::cueDelete() {
     }
 
     QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
-    qSort(rowsList);
+    std::sort(rowsList.begin(), rowsList.end());
 
     QListIterator<int> it(rowsList);
     it.toBack();

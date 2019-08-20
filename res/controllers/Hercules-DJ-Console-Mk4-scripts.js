@@ -224,7 +224,7 @@ HerculesMk4.pfl = function (midino, control, value, status, group) {
 
 
 HerculesMk4.pitchbend = function (midino, control, value, status, group) {
-    // Pitch - : set pitch sensivity
+    // Pitch - : set pitch sensitivity
     // Pitch +:  set jog fast position
 
     //ignore when releasing the button
@@ -242,27 +242,27 @@ HerculesMk4.pitchbend = function (midino, control, value, status, group) {
         }
     }
     else { // Pitchbend -
-        HerculesMk4.sensivityPitch[HerculesMk4.deck(group)]=HerculesMk4.toglePitchSensivity(group,HerculesMk4.sensivityPitch[HerculesMk4.deck(group)]);
+        HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]=HerculesMk4.togglePitchSensitivity(group,HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]);
     }
 
 };
 
 
-HerculesMk4.toglePitchSensitivity=function (group,sensitivity) {
-    sensivity=sensivity+2;
+HerculesMk4.togglePitchSensitivity=function (group,sensitivity) {
+    sensitivity=sensitivity+2;
 
-    if(sensivity>5){
-        sensivity=1;
+    if(sensitivity>5){
+        sensitivity=1;
     }
 
 
 
-    if(sensivity==1){
+    if(sensitivity==1){
         //pitch very fine
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x00);    // minus led off
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x7F);    // Blink minus led
 
-    } else if (sensivity==3){
+    } else if (sensitivity==3){
         //pitch fine
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x00);    // Blink minus led off
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x7F);    // minus led
@@ -272,7 +272,7 @@ HerculesMk4.toglePitchSensitivity=function (group,sensitivity) {
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x00);    // minus led off
     }
 
-    return sensivity;
+    return sensitivity;
 }
 
 HerculesMk4.cue = function (midino, control, value, status, group) {

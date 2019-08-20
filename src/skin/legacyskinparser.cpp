@@ -1193,8 +1193,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
                                   m_pVCManager, pPlayer);
     commonWidgetSetup(node, spinny);
 
-    connect(waveformWidgetFactory, SIGNAL(renderSpinnies()),
-            spinny, SLOT(render()));
+    connect(waveformWidgetFactory, SIGNAL(renderSpinnies(VSyncThread*)), spinny, SLOT(render(VSyncThread*)));
     connect(waveformWidgetFactory, SIGNAL(swapSpinnies()),
             spinny, SLOT(swap()));
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
@@ -1735,14 +1734,14 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         // -1 means do not set.
         if (x >= 0 && y >= 0) {
             pWidget->setMinimumSize(x, y);
-        } else if (x >= 0) {
+        } else if (x >= 0 && y == -1) {
             pWidget->setMinimumWidth(x);
-        } else if (y >= 0) {
+        } else if (y >= 0 && x == -1) {
             pWidget->setMinimumHeight(y);
-        } else {
+        } else if (x != -1 || y != -1) {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MinimumSize:" << size;
-        }
+	}
     }
 
 
@@ -1757,11 +1756,11 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         // -1 means do not set.
         if (x >= 0 && y >= 0) {
             pWidget->setMaximumSize(x, y);
-        } else if (x >= 0) {
+        } else if (x >= 0 && y == -1) {
             pWidget->setMaximumWidth(x);
-        } else if (y >= 0) {
+        } else if (y >= 0 && x == -1) {
             pWidget->setMaximumHeight(y);
-        } else {
+        } else if (x != -1 || y != -1) {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MaximumSize:" << size;
         }

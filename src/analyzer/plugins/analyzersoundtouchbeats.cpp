@@ -25,7 +25,6 @@ bool AnalyzerSoundTouchBeats::processSamples(const CSAMPLE* pIn, const int iLen)
     if (!m_pSoundTouch) {
         return false;
     }
-    DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     // We analyze a mono mixdown of the signal since we don't think stereo does
     // us any good.

@@ -84,7 +84,7 @@ class Track : public QObject {
     }
     // The (refreshed) canonical location
     QString getCanonicalLocation() const;
-    // Checks if the file exsists
+    // Checks if the file exists
     bool checkFileExists() const {
         return m_fileInfo.checkFileExists();
     }

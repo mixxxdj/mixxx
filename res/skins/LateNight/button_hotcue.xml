@@ -1,14 +1,35 @@
 <!-- A hotcue button. The only variable that needs to be specified is "number" -->
 <Template>
-  <Template src="skin:button_2state_right_display.xml">
-    <SetVariable name="TooltipId">hotcue</SetVariable>
-    <SetVariable name="state_0_pressed">hotcue_<Variable name="number"/>_down.svg</SetVariable>
-    <SetVariable name="state_0_unpressed">hotcue_<Variable name="number"/>.svg</SetVariable>
-    <SetVariable name="state_1_pressed">hotcue_<Variable name="number"/>_overdown.svg</SetVariable>
-    <SetVariable name="state_1_unpressed">hotcue_<Variable name="number"/>_over.svg</SetVariable>
-    <SetVariable name="ConfigKey"><Variable name="group"/>,hotcue_<Variable name="number"/>_activate</SetVariable>
-    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,hotcue_<Variable name="number"/>_clear</SetVariable>
-    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,hotcue_<Variable name="number"/>_enabled</SetVariable>
-    <SetVariable name="Size">26,26</SetVariable>
-  </Template>
+  <PushButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <Size>26f,26f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>_unset.svg</Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>_pressed.svg</Pressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>_pressed.svg</Pressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_activate</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_clear</ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color_id</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </PushButton>
 </Template>

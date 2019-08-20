@@ -1,7 +1,7 @@
 <Template>
     <WidgetGroup>
-      <Pos>3,2</Pos>
-      <Size>255,229</Size>
+      <Pos>3,0</Pos>
+      <Size>255,229e</Size>
       <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
       <BackPath>style/style_bg_mixer_panel.png</BackPath>
       <Children>
@@ -383,14 +383,14 @@
               <TooltipId>time</TooltipId>
               <Style>
                 QLabel {
-                  font: bold 9px sans-serif;
+                  font: bold 10px sans-serif;
                   font-family: "Open Sans";
                   background-color: transparent;
                   color: #191F24;
                   text-align:center;
                 }
               </Style>
-              <Pos>114,15</Pos>
+              <Pos>113,14</Pos>
               <CustomFormat>hh:mm</CustomFormat>
               <ShowSeconds>false</ShowSeconds>
             </Time>
@@ -472,7 +472,7 @@
               <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>208,15</Pos>
+              <Pos>217,15</Pos>
               <Connection>
                 <ConfigKey>[Master],gain</ConfigKey>
               </Connection>
@@ -482,7 +482,7 @@
               <Style></Style>
               <NumberStates>63</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>155,15</Pos>
+              <Pos>151,15</Pos>
               <Connection>
                 <ConfigKey>[Master],balance</ConfigKey>
               </Connection>
@@ -498,7 +498,7 @@
               <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs_no_center/knob_rotary_s%1.png</Path>
-              <Pos>20,15</Pos>
+              <Pos>11,15</Pos>
               <Connection>
                 <ConfigKey>[Master],headGain</ConfigKey>
               </Connection>
@@ -508,11 +508,36 @@
               <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>72,15</Pos>
+              <Pos>76,15</Pos>
               <Connection>
                 <ConfigKey>[Master],headMix</ConfigKey>
               </Connection>
             </Knob>
+
+            <!--
+            **********************************************
+            Button - Headphone split cue
+            **********************************************
+            -->
+            <PushButton>
+              <TooltipId>headSplitpfl</TooltipId>
+              <Style></Style>
+              <NumberStates>2</NumberStates>
+              <State>
+                <Number>0</Number>
+                <Pressed>skin:/btn/btn_headsplit_down.png</Pressed>
+                <Unpressed>skin:/btn/btn_headsplit.png</Unpressed>
+              </State>
+              <State>
+                <Number>1</Number>
+                <Pressed>skin:/btn/btn_headsplit_overdown.png</Pressed>
+                <Unpressed>skin:/btn/btn_headsplit_over.png</Unpressed>
+              </State>
+              <Pos>42,18</Pos>
+              <Connection>
+                <ConfigKey>[Master],headSplit</ConfigKey>
+              </Connection>
+            </PushButton>
 
             <!--
             **********************************************

@@ -9,10 +9,6 @@
 #include "sources/soundsourceproxy.h"
 #include "util/sandbox.h"
 
-#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
-#include "util/filepathurl.h"
-#endif
-
 namespace {
 
 QDrag* dragUrls(
@@ -68,12 +64,6 @@ QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
         bool acceptPlaylists) {
     QList<QFileInfo> fileLocations;
     for (QUrl url : urls) {
-#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
-        // OS X 10.10 sends file references instead of file paths
-        // e.g. "file:///.file/id=6571367.1629051"
-        // QT >= 5.4.1 hides this from us
-        url = ensureFilePathUrl(url);
-#endif
 
         // XXX: Possible WTF alert - Previously we thought we needed
         // toString() here but what you actually want in any case when

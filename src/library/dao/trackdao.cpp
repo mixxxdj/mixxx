@@ -914,7 +914,7 @@ bool TrackDAO::onPurgingTracks(
         // invalidate the hash in LibraryHash,
         // in case the file was not deleted to detect it on a rescan
         // Note: -1 is used as return value for missing entries,
-        // needs_verification is a temporary coloumn used during the scan only.
+        // needs_verification is a temporary column used during the scan only.
         // TODO(XXX) delegate to libraryHashDAO
         FwdSqlQuery query(m_database, QString(
                 "UPDATE LibraryHashes SET "

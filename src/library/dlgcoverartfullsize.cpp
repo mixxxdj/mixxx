@@ -9,7 +9,7 @@
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(new WCoverArtMenu(this)) {
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*,
@@ -34,12 +34,8 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
     setupUi(this);
 }
 
-DlgCoverArtFullSize::~DlgCoverArtFullSize() {
-    delete m_pCoverMenu;
-}
-
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
-    if (pTrack == nullptr) {
+    if (!pTrack) {
         return;
     }
     show();

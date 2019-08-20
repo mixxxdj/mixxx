@@ -22,17 +22,6 @@ class PortAudio(Dependence):
         return ['src/soundio/sounddeviceportaudio.cpp']
 
 
-class OSXFilePathUrlBackport(Dependence):
-
-    def configure(self, build, conf):
-        return
-
-    def sources(self, build):
-        if build.platform_is_osx:
-            return ['src/util/filepathurl.mm']
-        return []
-
-
 class PortMIDI(Dependence):
 
     def configure(self, build, conf):
@@ -501,7 +490,9 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['#%s/ebur128' % self.INTERNAL_PATH])
-            if not conf.CheckHeader('sys/queue.h'):
+            import sys
+            if not conf.CheckHeader('sys/queue.h') or sys.platform.startswith('openbsd'):
+                # OpenBSD's queue.h lacks the STAILQ_* macros
                 env.Append(CPPPATH=['#%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
@@ -1540,7 +1531,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, OSXFilePathUrlBackport]
+                QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

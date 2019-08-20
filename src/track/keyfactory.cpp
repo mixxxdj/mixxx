@@ -73,7 +73,7 @@ QString KeyFactory::getPreferredSubVersion(
             it.key(), kSubVersionKeyValueSeparator, it.value());
     }
 
-    qSort(fragments);
+    std::sort(fragments.begin(), fragments.end());
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
 }
 
@@ -98,7 +98,7 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(frame);
         }
-        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples));
+        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples, iSampleRate));
         key_map.set_source(mixxx::track::io::key::ANALYZER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
