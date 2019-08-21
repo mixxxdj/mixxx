@@ -44,12 +44,12 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
   public slots:
     void restoreSearch(const QString& text);
     void disableSearch();
+    void clearSearch();
 
   private slots:
     void setShortcutFocus();
     void updateText(const QString& text);
 
-    void clearSearch();
     void triggerSearch();
 
   private:

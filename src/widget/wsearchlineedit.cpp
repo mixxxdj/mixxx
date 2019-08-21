@@ -62,9 +62,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     setAcceptDrops(false);
 
-    QPixmap pixmap(":/images/library/ic_library_cross.svg");
-    m_clearButton->setIcon(QIcon(pixmap));
-    m_clearButton->setIconSize(pixmap.size());
+    m_clearButton->setObjectName("pushButtonClearSearch");
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
