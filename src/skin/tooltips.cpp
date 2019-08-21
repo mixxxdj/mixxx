@@ -39,6 +39,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Shows information about the track currently loaded in this deck.")
             << tr("Jump around in the track by clicking anywhere on the waveform.")
             << tr("Right click hotcues to edit their labels and colors.")
+            << tr("Right click anywhere else to show the time at that point.")
             << dropTracksHere;
 
     QString scratchMouse = tr("Use the mouse to scratch, spin-back or throw tracks.");
