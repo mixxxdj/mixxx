@@ -422,13 +422,58 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
-    if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus()) {
-        setLibraryFocus();
+    // XXX ronso0:
+    // try to have Keyboard 'Tab' cycle also for controllers:
+    // 1) if searchbox has contains search term
+    //    (Search box may have focus but is skipped)
+    //     > focus Clear button
+    //     > focus tree
+    //     > focus table
+    //     > focus Clear button
+    //       ...
+    // 2) searchbox empty
+    //     > focus tree
+    //     > focus table
+    //     > focus tree
+    //       ...
+    // filter for 'Tab' key with or withut modifier (focus forward/backward)
+    // Search box can receive Tab but must not receive other keys
+
+    int keyCode = event.key();
+    Qt::Key key = static_cast<Qt::Key>(keyCode);
+
+    bool keyIsTab = false;
+    // XXX simplify
+    if(key == Qt::Key_Tab){
+        qDebug() << "  key =" << key;
+        keyIsTab = true;
+        qDebug() << "  keyIsTab =" << keyIsTab;
     }
+
+    // make sure there's a focused widget
     auto focusWidget = QApplication::focusWidget();
     VERIFY_OR_DEBUG_ASSERT(focusWidget) {
         return;
     }
+    QString focusWidgetName = focusWidget->objectName();
+    qDebug() << "   emitKeyEvent()  currently focused widget:" << focusWidget;
+    qDebug() << "                                widget name:" << focusWidgetName;
+
+    // check if Clear button has focus and Tab should be sent,
+    // otherwise setLibraryFocus() (Tab) + Tab would put focus on the
+    // Clear button again (Tab loop)
+    // also applies to buttons in AutoDJ, Recording etc.
+    if ((clearSearchButtonHasFocus() && !keyIsTab) ||
+            (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus() &&
+                    !clearSearchButtonHasFocus())) {
+        setLibraryFocus();
+    }
+    // either the SearchBox or any other widget has focus
+//    if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus() &&
+//            !clearSearchButtonHasFocus()) {
+//            // any other widget has focus
+//            setLibraryFocus();
+//    }
     // Send the event pointer to the currently focused widget
     for (auto i = 0; i < event.count(); ++i) {
         QApplication::sendEvent(focusWidget, &event);
