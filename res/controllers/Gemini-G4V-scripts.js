@@ -565,7 +565,7 @@ var Deck = function(deckN) {
     // Shutdown the deck
     this.shutdown = function() {
         var myObj = this;
-        Object.keys(this.leds).forEach(function(element,key){myObj.leds[element].set(0)});
+        Object.keys(this.leds).forEach(function(element,key){myObj.leds[element].set(0);});
     };
     
     //////////////////////////////////////////////////////////////////////////////
@@ -1455,12 +1455,12 @@ var MyController = function() {
 
         // Connects master controls to call backs to allow the controller to
         // visually react to changes in the system and triggers to synchronize
-        this.addConnection('[Master]', 'VuMeterR', function(value) {midi.sendShortMsg(0xB3, 0x18, value*7)});
-        this.addConnection('[Master]', 'VuMeterL', function(value) {midi.sendShortMsg(0xB3, 0x19, value*7)});
-        this.addConnection('[Channel1]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x14, value*5)});
-        this.addConnection('[Channel2]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x15, value*4)});
-        this.addConnection('[Channel3]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x16, value*5)});
-        this.addConnection('[Channel4]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x17, value*5)});
+        this.addConnection('[Master]', 'VuMeterR', function(value) {midi.sendShortMsg(0xB3, 0x18, value*7);});
+        this.addConnection('[Master]', 'VuMeterL', function(value) {midi.sendShortMsg(0xB3, 0x19, value*7);});
+        this.addConnection('[Channel1]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x14, value*5);});
+        this.addConnection('[Channel2]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x15, value*4);});
+        this.addConnection('[Channel3]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x16, value*5);});
+        this.addConnection('[Channel4]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x17, value*5);});
         this.addConnection("[Channel1]", "track_samples", this.cbDeckLoaded);
         this.addConnection("[Channel1]", "pfl", this.cbPfl);
         this.addConnection("[Channel1]", "orientation", this.cbOrientation);
@@ -1484,7 +1484,7 @@ var MyController = function() {
         this.decks[1].activate(1);
         this.decks[2].activate(1);
         this.decks[3].activate(0);
-        this.decks[4].activate(0)
+        this.decks[4].activate(0);
         
         // Refresh decks to ensure proper control defined
         this.refreshDecks();
@@ -1498,10 +1498,10 @@ var MyController = function() {
 
         // Turn off all controller lights at shutdown.
         var myObj = this;
-        Object.keys(this.leds).forEach(function(element){myObj.leds[element].set(0)});
+        Object.keys(this.leds).forEach(function(element){myObj.leds[element].set(0);});
         
         // Turn off all decks
-        Object.keys(this.decks).forEach(function(element){myObj.decks[element].shutdown()});
+        Object.keys(this.decks).forEach(function(element){myObj.decks[element].shutdown();});
         
         
         print("g4v::shutdown - Finished");
