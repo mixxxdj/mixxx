@@ -767,11 +767,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             QColor bgColor = m_qColorBackground;
-            if (pMark->getHotCue() == WaveformMark::kNoHotCue) {
-                bgColor = Qt::transparent;
-            } else {
-                bgColor.setAlpha(128);
-            }
+            bgColor.setAlpha(128);
 
             pMark->m_label.prerender(textPoint, QPixmap(), text,
                     markerFont, pMark->m_textColor, bgColor,
