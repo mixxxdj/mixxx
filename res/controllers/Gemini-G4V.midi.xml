@@ -1,11 +1,11 @@
-
-
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
   <info>
     <name>Gemini G4V</name>
     <author>Javier Vilarroig</author>
     <description>Mapping for Gemini G4V controller</description>
+    <forums>https://www.mixxx.org/forums/viewtopic.php?f=6&amp;t=12919</forums>
+    <wiki>https://www.mixxx.org/wiki/doku.php/gemini_g4v</wiki>
   </info>
   <controller id="G4V">
     <scriptfiles>
