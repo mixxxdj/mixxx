@@ -124,7 +124,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     inline double positionToValue(int position) const {
         return (static_cast<double>(position) + m_b) / m_a;
     }
-    void shiftRectIfCutOff(QRectF* pRect);
 
     void updateCues(const QList<CuePointer> &loadedCues);
 
@@ -152,8 +151,8 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     bool m_bTimeRulerActive;
     QPointF m_timeRulerPos;
-    QRectF m_timeRulerTextArea;
-    QRectF m_timeRulerDistanceTextArea;
+    WaveformMarkLabel m_timeRulerPositionLabel;
+    WaveformMarkLabel m_timeRulerDistanceLabel;
 
     Qt::Orientation m_orientation;
 
@@ -168,11 +167,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     // List of visible WaveformMarks sorted by the order they appear in the track
     QList<WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
-    QList<QString> m_markLabelText;
-    QString m_cuePositionText;
-    QRectF m_cuePositionRect;
-    QString m_cueTimeDistanceText;
-    QRectF m_cueTimeDistanceRect;
+    WaveformMarkLabel m_cuePositionLabel;
+    WaveformMarkLabel m_cueTimeDistanceLabel;
 
     // Coefficient value-position linear transposition
     double m_a;

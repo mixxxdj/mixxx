@@ -4,6 +4,7 @@
 #include <QDomNode>
 #include <QImage>
 
+#include "waveform/waveformmarklabel.h"
 #include "control/controlproxy.h"
 #include "util/memory.h"
 
@@ -71,9 +72,10 @@ class WaveformMark {
     Qt::Alignment m_align;
     QString m_pixmapPath;
 
-    QRectF m_labelArea;
     float m_linePosition;
     bool m_bMouseHovering;
+
+    WaveformMarkLabel m_label;
 
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;
