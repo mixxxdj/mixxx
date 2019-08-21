@@ -10,10 +10,23 @@ enum Source {
   USER = 2;
 }
 
+enum Type {
+  BEAT = 0;
+  BAR = 1;
+  PHRASE = 2;
+}
+
+message Signature {
+  required int32 a = 1;
+  required int32 b = 2;
+}
+
 message Beat {
   optional int32 frame_position = 1;
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
+  optional Type type = 4 [ default = BEAT ];
+  optional Signature signature = 5;
 }
 
 message Bpm {
@@ -28,4 +41,5 @@ message BeatMap {
 message BeatGrid {
   optional Bpm bpm = 1;
   optional Beat first_beat = 2;
+  repeated Beat phrase_beats = 3; 
 }
