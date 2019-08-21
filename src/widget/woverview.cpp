@@ -670,18 +670,18 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     shadowFont.setWeight(99);
     shadowFont.setPixelSize(10 * m_scaleFactor);
 
-    // Text labels are rendered so they do not overlap with other WaveformMark's
+    // Text labels are rendered so they do not overlap with other WaveformMarks'
     // labels. If the text would be too wide, it is elided. However, the user
     // can hover the mouse cursor over a label to show the whole label text,
     // temporarily hiding any following labels that would be drawn over it.
     // This requires looping over the WaveformMarks twice and the marks must be
     // sorted in the order they appear on the waveform.
     // In the first loop, the lines are drawn and the text to render plus its
-    // location are calculated. The text must be drawn in the second loop to
-    // prevent the lines of following WaveformMarks getting drawn over it. The
-    // second loop is in the separate drawMarkLabels function so it can be
-    // called after drawCurrentPosition so the view of labels is not obscured
-    // by the playhead.
+    // location are calculated then stored in a WaveformMarkLabel. The text must
+    // be drawn in the second loop to prevent the lines of following
+    // WaveformMarks getting drawn over it. The second loop is in the separate
+    // drawMarkLabels function so it can be called after drawCurrentPosition so
+    // the view of labels is not obscured by the playhead.
 
     bool markHovered = false;
     for (int i = 0; i < m_marksToRender.size(); ++i) {

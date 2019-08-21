@@ -8,11 +8,14 @@
 #include <QString>
 #include <QRectF>
 
+// WaveformMarkLabel renders the label for a WaveformMark to an offscreen buffer
+// and calculates its area. This allows the areas of all WaveformMarkLabels
+// to be compared so overlapping labels are not drawn.
 class WaveformMarkLabel {
   public:
     WaveformMarkLabel() {};
 
-    // Render the pixmap to an internal buffer
+    // Render the label to an internal QPixmap buffer
     void prerender(QPointF bottomLeft, QPixmap icon, QString text,
             QFont font, QColor textColor, QColor backgroundColor,
             float widgetWidth, double scaleFactor);
