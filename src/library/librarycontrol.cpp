@@ -12,6 +12,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
+#include "widget/wsearchlineedit.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 
@@ -50,6 +51,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibrary(pLibrary),
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
+          m_pSearchBoxWidget(nullptr),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {
@@ -238,12 +240,25 @@ void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* p
             this, SLOT(libraryWidgetDeleted()));
 }
 
+void LibraryControl::bindSearchBoxWidget(WSearchLineEdit* pSearchBoxWidget) {
+    if (m_pSearchBoxWidget) {
+        disconnect(m_pSidebarWidget, 0, this, 0);
+    }
+    m_pSearchBoxWidget = pSearchBoxWidget;
+    connect(m_pSearchBoxWidget, SIGNAL(destroyed()),
+            this, SLOT(searchBoxWidgetDeleted()));
+}
+
 void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
 }
 
 void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = nullptr;
+}
+
+void LibraryControl::searchBoxWidgetDeleted() {
+    m_pSearchBoxWidget = nullptr;
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
@@ -430,6 +445,22 @@ void LibraryControl::setLibraryFocus() {
     QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
+bool LibraryControl::clearSearchButtonHasFocus() {
+    auto focusWidget = QApplication::focusWidget();
+    VERIFY_OR_DEBUG_ASSERT(focusWidget) {
+        return false;
+    }
+    QString focusWidgetName = focusWidget->objectName();
+    qDebug() << "   clearSearchButtonhasFocus()  currently focused widget:" << focusWidget;
+    qDebug() << "                                             widget name:" << focusWidgetName;
+
+    bool clearButtonFocus = false;
+    if (focusWidgetName == "pushButtonClearSearch") {
+        clearButtonFocus = true;
+    }
+    return clearButtonFocus;
+}
+
 void LibraryControl::slotSelectSidebarItem(double v) {
     if (m_pSidebarWidget == NULL) {
         return;
@@ -486,6 +517,14 @@ void LibraryControl::slotGoToItem(double v) {
         } else {
             // Otherwise toggle the sidebar item expanded state
             slotToggleSelectedSidebarItem(v);
+        }
+    }
+
+    // Clear the search box if the Search box has focus
+    // WRONG! check if the BUTTON has focus
+    if (clearSearchButtonHasFocus()) {
+        if (m_pSearchBoxWidget && v > 0) {
+            m_pSearchBoxWidget->clearSearch();
         }
     }
     // TODO(xxx) instead of remote control the widgets individual, we should 

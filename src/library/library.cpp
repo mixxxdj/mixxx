@@ -283,6 +283,10 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     emit(setSelectedClick(m_editMetadataSelectedClick));
 }
 
+void Library::bindSearchBoxWidget(WSearchLineEdit* pSearchBoxWidget) {
+    m_pLibraryControl->bindSearchBoxWidget(pSearchBoxWidget);
+}
+
 void Library::addFeature(LibraryFeature* feature) {
     VERIFY_OR_DEBUG_ASSERT(feature) {
         return;

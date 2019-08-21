@@ -12,6 +12,7 @@ class ControlPushButton;
 class Library;
 class WLibrary;
 class WLibrarySidebar;
+class WSearchLineEdit;
 class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
@@ -41,10 +42,12 @@ class LibraryControl : public QObject {
 
     void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+    void bindSearchBoxWidget(WSearchLineEdit* pSearchBoxWidget);
 
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
+    void searchBoxWidgetDeleted();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -92,6 +95,8 @@ class LibraryControl : public QObject {
     void emitKeyEvent(QKeyEvent&& event);
     // Give the keyboard focus to the main library pane
     void setLibraryFocus();
+    // Test if the Clear button (X) next to search term has focus
+    bool clearSearchButtonHasFocus();
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
@@ -143,6 +148,7 @@ class LibraryControl : public QObject {
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+    WSearchLineEdit* m_pSearchBoxWidget;
 
     // Other variables
     ControlProxy m_numDecks;

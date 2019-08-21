@@ -28,6 +28,7 @@ class LibraryFeature;
 class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
+class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
@@ -65,6 +66,7 @@ class Library: public QObject,
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+    void bindSearchBoxWidget(WSearchLineEdit* pSearchBoxWidget);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
