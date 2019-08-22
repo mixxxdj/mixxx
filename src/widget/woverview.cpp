@@ -90,6 +90,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_signalColors.setup(node, context);
 
     m_qColorBackground = m_signalColors.getBgColor();
+    m_labelBackgroundColor = m_qColorBackground;
+    m_labelBackgroundColor.setAlpha(128);
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
@@ -900,10 +902,8 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         QString timeText = mixxx::Duration::formatTime(timePosition)
                 + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
-        QColor bgColor = m_qColorBackground;
-        bgColor.setAlpha(128);
         m_timeRulerPositionLabel.prerender(textPoint, QPixmap(), timeText,
-                markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
+                markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText;
@@ -911,7 +911,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             timeDistanceText = mixxx::Duration::formatTime(timeDistance);
         }
         m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText,
-                markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
+                markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
