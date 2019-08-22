@@ -416,7 +416,7 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
     // happen when iterating over the Deck with reconnectComponents.
     this.bottomButtonLayers = [];
 
-    var CueOrSeekButton = function (options) {
+    var CueAndSeekButton = function (options) {
         if (options.cueName === undefined) {
             print('ERROR! cueName not specified');
         } else if (options.seekRate === undefined) {
@@ -426,7 +426,7 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         this.outKey = options.cueName + '_enabled';
         components.Button.call(this, options);
     };
-    CueOrSeekButton.prototype = new components.Button({
+    CueAndSeekButton.prototype = new components.Button({
         unshift: function () {
             this.inKey = this.cueName + '_activate';
             this.input = components.Button.prototype.input;
@@ -452,22 +452,22 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
     });
 
     this.bottomButtonLayers.intro_outro = new components.ComponentContainer();
-    this.bottomButtonLayers.intro_outro[1] = new CueOrSeekButton({
+    this.bottomButtonLayers.intro_outro[1] = new CueAndSeekButton({
         cueName: "intro_start",
         seekRate: XoneK2.seekRateFast,
         color: XoneK2.color.amber,
     });
-    this.bottomButtonLayers.intro_outro[2] = new CueOrSeekButton({
+    this.bottomButtonLayers.intro_outro[2] = new CueAndSeekButton({
         cueName: "intro_end",
         seekRate: -1 * XoneK2.seekRateFast,
         color: XoneK2.color.amber,
     });
-    this.bottomButtonLayers.intro_outro[3] = new CueOrSeekButton({
+    this.bottomButtonLayers.intro_outro[3] = new CueAndSeekButton({
         cueName: "outro_start",
         seekRate: XoneK2.seekRateSlow,
         color: XoneK2.color.amber,
     });
-    this.bottomButtonLayers.intro_outro[4] = new CueOrSeekButton({
+    this.bottomButtonLayers.intro_outro[4] = new CueAndSeekButton({
         cueName: "outro_end",
         seekRate: -1 * XoneK2.seekRateSlow,
         color: XoneK2.color.amber,
@@ -475,22 +475,22 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
 
     this.bottomButtonLayers.hotcue = new components.ComponentContainer();
-    this.bottomButtonLayers.hotcue[1] = new CueOrSeekButton({
+    this.bottomButtonLayers.hotcue[1] = new CueAndSeekButton({
         cueName: "hotcue_1",
         seekRate: XoneK2.seekRateFast,
         color: XoneK2.color.red,
     });
-    this.bottomButtonLayers.hotcue[2] = new CueOrSeekButton({
+    this.bottomButtonLayers.hotcue[2] = new CueAndSeekButton({
         cueName: "hotcue_2",
         seekRate: -1 * XoneK2.seekRateFast,
         color: XoneK2.color.red,
     });
-    this.bottomButtonLayers.hotcue[3] = new CueOrSeekButton({
+    this.bottomButtonLayers.hotcue[3] = new CueAndSeekButton({
         cueName: "hotcue_3",
         seekRate: XoneK2.seekRateSlow,
         color: XoneK2.color.red,
     });
-    this.bottomButtonLayers.hotcue[4] = new CueOrSeekButton({
+    this.bottomButtonLayers.hotcue[4] = new CueAndSeekButton({
         cueName: "hotcue_4",
         seekRate: -1 * XoneK2.seekRateSlow,
         color: XoneK2.color.red,
