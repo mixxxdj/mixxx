@@ -26,7 +26,7 @@ QString createPlaylistLabel(
         int count,
         int duration) {
     return QString("%1 (%2) %3").arg(name, QString::number(count),
-            mixxx::Duration::formatSeconds(duration));
+            mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS));
 }
 
 } // anonymous namespace

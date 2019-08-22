@@ -114,15 +114,6 @@ void RhythmboxFeature::activate() {
     emit(saveViewState());
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Usually the maximum number of threads
-        // is > 2 depending on the CPU cores
-        // Unfortunately, within VirtualBox
-        // the maximum number of allowed threads
-        // is 1 at all times We'll need to increase
-        // the number to > 1, otherwise importing the music collection
-        // takes place when the GUI threads terminates, i.e., on
-        // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
