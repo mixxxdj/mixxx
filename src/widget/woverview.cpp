@@ -806,7 +806,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
                     markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
 
-            QPointF timeDistancePoint(markPosition, height() / 2);
+            QPointF timeDistancePoint(markPosition, (fontMetrics.height() + height()) / 2);
             m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
                     markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
             markHovered = true;
@@ -872,7 +872,8 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         double padding = 1.0; // spacing between line and text
         if (m_orientation == Qt::Horizontal) {
             textPoint = QPointF(textPoint.x() + padding, fontMetrics.height());
-            textPointDistance = QPointF(textPointDistance.x() + padding, height() / 2);
+            textPointDistance = QPointF(textPointDistance.x() + padding,
+                    (fontMetrics.height() + height()) / 2);
             widgetPositionFraction = m_timeRulerPos.x() / width();
         } else {
             textPoint.setX(0);
@@ -964,7 +965,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                 x = endPosition + padding;
             }
 
-            QPointF durationBottomLeft(x, fontMetrics.ascent());
+            QPointF durationBottomLeft(x, fontMetrics.height());
 
             markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(),
                     duration, markerFont, markRange.m_durationTextColor,
