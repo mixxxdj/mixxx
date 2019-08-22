@@ -818,12 +818,10 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             bgColor.setAlpha(128);
             m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
                     markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
-            m_cuePositionLabel.draw(pPainter);
 
             QPointF timeDistancePoint(markPosition, height() / 2);
             m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
                     markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
-            m_cueTimeDistanceLabel.draw(pPainter);
             markHovered = true;
         }
     }
@@ -964,6 +962,9 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             pMark->m_label.draw(pPainter);
         }
     }
+
+    m_cuePositionLabel.draw(pPainter);
+    m_cueTimeDistanceLabel.draw(pPainter);
 
     // draw duration of WaveformMarkRanges
     for (auto&& markRange : m_markRanges) {
