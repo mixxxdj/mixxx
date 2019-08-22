@@ -994,7 +994,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
 
             markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(),
                     duration, markerFont, markRange.m_durationTextColor,
-                    Qt::transparent, width(), getDevicePixelRatioF(this));
+                    m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel)
                   || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel)
