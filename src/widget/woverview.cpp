@@ -57,6 +57,7 @@ WOverview::WOverview(
         m_pCueMenu(std::make_unique<CueMenu>(this)),
         m_bDrag(false),
         m_iPos(0),
+        m_pHoveredMark(nullptr),
         m_bTimeRulerActive(false),
         m_orientation(Qt::Horizontal),
         m_a(1.0),
@@ -371,10 +372,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         return;
     }
 
-    // Without tracking the first hovered WaveformMark, the user could hover one
-    // mark, then drag the cursor over another, and the second one's label text
-    // would be drawn under the first.
-    bool firstMarkHovered = false;
+    m_pHoveredMark = nullptr;
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
     float lineHoverPadding = 3.0;
@@ -389,13 +387,9 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
             pMark->m_linePosition >= hoveredPosition - lineHoverPadding
             && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
 
-        if ((pMark->m_label.area().contains(e->pos())
-            || lineHovered)
-            && !firstMarkHovered) {
-            pMark->m_bMouseHovering = true;
-            firstMarkHovered = true;
-        } else {
-            pMark->m_bMouseHovering = false;
+        if (pMark->m_label.area().contains(e->pos()) || lineHovered) {
+            m_pHoveredMark = pMark;
+            break;
         }
     }
 
@@ -411,11 +405,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
         // If a hotcue label is being hovered, jump to it instead of the point
         // under the cursor.
-        for (const auto& pMark : m_marksToRender) {
-            if (pMark->m_bMouseHovering) {
-                dValue = pMark->getSamplePosition() / m_trackSamplesControl->get();
-                break;
-            }
+        if (m_pHoveredMark != nullptr) {
+            dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
         }
         setControlParameterUp(dValue);
         m_bDrag = false;
@@ -433,27 +424,25 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     bool hotcueRightClicked = false;
     if (m_pCurrentTrack != nullptr) {
         QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
-        for (const auto& pMark : m_marksToRender) {
-            if (pMark->m_bMouseHovering) {
-                if (e->button() == Qt::LeftButton) {
-                    dragging = false;
-                } else if (pMark->getHotCue() != WaveformMark::kNoHotCue) {
-                    // Currently the only way WaveformMarks can be associated
-                    // with their respective Cue objects is by using the hotcue
-                    // number. If cues without assigned hotcue are drawn on
-                    // WOverview in the future, another way to associate
-                    // WaveformMarks with Cues will need to be implemented.
-                    CuePointer pHoveredCue;
-                    for (const auto& pCue : cueList) {
-                        if (pCue->getHotCue() == pMark->getHotCue()) {
-                            pHoveredCue = pCue;
-                            hotcueRightClicked = true;
-                            break;
-                        }
+        if (m_pHoveredMark != nullptr) {
+            if (e->button() == Qt::LeftButton) {
+                dragging = false;
+            } else if (e->button() == Qt::RightButton
+                && m_pHoveredMark->getHotCue() != WaveformMark::kNoHotCue) {
+                // Currently the only way WaveformMarks can be associated
+                // with their respective Cue objects is by using the hotcue
+                // number. If cues without assigned hotcue are drawn on
+                // WOverview in the future, another way to associate
+                // WaveformMarks with Cues will need to be implemented.
+                CuePointer pHoveredCue;
+                for (const auto& pCue : cueList) {
+                    if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
+                        pHoveredCue = pCue;
+                        hotcueRightClicked = true;
+                        break;
                     }
-                    VERIFY_OR_DEBUG_ASSERT(pHoveredCue != nullptr) {
-                        continue;
-                    }
+                }
+                if (pHoveredCue != nullptr) {
                     m_pCueMenu->setCue(pHoveredCue);
                     m_pCueMenu->setTrack(m_pCurrentTrack);
                     m_pCueMenu->popup(e->globalPos());
@@ -471,9 +460,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 
 void WOverview::leaveEvent(QEvent* e) {
     Q_UNUSED(e);
-    for (const auto& pMark : m_marks) {
-        pMark->m_bMouseHovering = false;
-    }
+    m_pHoveredMark = nullptr;
     m_bDrag = false;
     m_bTimeRulerActive = false;
     update();
@@ -720,7 +707,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // Only allow the text to overlap the following mark if the mouse is
             // hovering over it. Otherwise, elide it if it would render over
             // the next label.
-            if (!pMark->m_bMouseHovering && i < m_marksToRender.size()-1) {
+            if (pMark != m_pHoveredMark && i < m_marksToRender.size()-1) {
                 const float nextMarkPosition = offset + m_marksToRender.at(i+1)->getSamplePosition() * gain;
                 text = fontMetrics.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
             }
@@ -790,7 +777,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         // WaveformMark::m_align refers to the alignment of the label,
         // so if the label is on bottom draw the position text on top and
         // vice versa.
-        if (pMark->m_bMouseHovering) {
+        if (pMark == m_pHoveredMark) {
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
             QPointF positionTextPoint(markPosition, 0);
             if (valign == Qt::AlignTop) {
@@ -929,36 +916,21 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     shadowFont.setWeight(99);
     shadowFont.setPixelSize(10 * m_scaleFactor);
 
-    bool firstOverlappingLabelRendered = false;
     // Draw WaveformMark labels
     for (const auto& pMark : m_marksToRender) {
-        if (!(pMark->m_label.intersects(m_cuePositionLabel)
-              || pMark->m_label.intersects(m_cueTimeDistanceLabel)
-              || pMark->m_label.intersects(m_timeRulerPositionLabel)
-              || pMark->m_label.intersects(m_timeRulerDistanceLabel))) {
-
-            // If labels would overlap, only draw the first one.
-            bool skip = false;
-            for (const auto& otherMark : m_marksToRender) {
-                if (otherMark != pMark
-                    && pMark->m_label.intersects(otherMark->m_label)) {
-
-                    if (firstOverlappingLabelRendered) {
-                        skip = true;
-                        break;
-                    } else if (pMark->m_bMouseHovering) {
-                        skip = false;
-                        firstOverlappingLabelRendered = true;
-                        break;
-                    }
-                }
+        if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
+            if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
+              continue;
             }
-            if (skip) {
-                continue;
-            }
-
-            pMark->m_label.draw(pPainter);
         }
+        if (pMark->m_label.intersects(m_cuePositionLabel)
+            || pMark->m_label.intersects(m_cueTimeDistanceLabel)
+            || pMark->m_label.intersects(m_timeRulerPositionLabel)
+            || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
+            continue;
+        }
+
+        pMark->m_label.draw(pPainter);
     }
 
     m_cuePositionLabel.draw(pPainter);

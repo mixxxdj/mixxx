@@ -149,6 +149,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     // Internal storage of slider position in pixels
     int m_iPos;
 
+    WaveformMarkPointer m_pHoveredMark;
     bool m_bTimeRulerActive;
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;

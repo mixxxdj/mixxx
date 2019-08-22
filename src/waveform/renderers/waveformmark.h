@@ -73,7 +73,6 @@ class WaveformMark {
     QString m_pixmapPath;
 
     float m_linePosition;
-    bool m_bMouseHovering;
 
     WaveformMarkLabel m_label;
 
