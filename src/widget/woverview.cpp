@@ -931,10 +931,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
 
     bool firstOverlappingLabelRendered = false;
     // Draw WaveformMark labels
-    for (int n = 0; n < m_marksToRender.size(); ++n) {
-        WaveformMarkPointer pMark = m_marksToRender.at(n);
-        if (pMark->m_bMouseHovering ||
-            !(pMark->m_label.intersects(m_cuePositionLabel)
+    for (const auto& pMark : m_marksToRender) {
+        if (!(pMark->m_label.intersects(m_cuePositionLabel)
               || pMark->m_label.intersects(m_cueTimeDistanceLabel)
               || pMark->m_label.intersects(m_timeRulerPositionLabel)
               || pMark->m_label.intersects(m_timeRulerDistanceLabel))) {
@@ -948,7 +946,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     if (firstOverlappingLabelRendered) {
                         skip = true;
                         break;
-                    } else {
+                    } else if (pMark->m_bMouseHovering) {
                         skip = false;
                         firstOverlappingLabelRendered = true;
                         break;
