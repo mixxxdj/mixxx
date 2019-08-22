@@ -16,7 +16,7 @@ void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation
             continue;
         }
 
-        QAction* pColorAction = new QAction(pColor->m_sDisplayName);
+        QAction* pColorAction = new QAction(pColor->m_sDisplayName, this);
         QPixmap pixmap(80, 80);
         if (pColorRepresentation == nullptr) {
             pixmap.fill(pColor->m_defaultRgba);
