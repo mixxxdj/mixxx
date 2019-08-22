@@ -800,10 +800,13 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             double markSamples = pMark->getSamplePosition();
-            double currentPositionSamples = m_playpositionControl->get() * m_trackSamplesControl->get();
+            double trackSamples = m_trackSamplesControl->get();
+            double currentPositionSamples = m_playpositionControl->get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
+            double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
-            QString cuePositionText = mixxx::Duration::formatTime(markTime);
+            QString cuePositionText = mixxx::Duration::formatTime(markTime) + " -" +
+                    mixxx::Duration::formatTime(markTimeRemaining);
             QString cueTimeDistanceText;
             // Do not show the time until the cue point if the playhead is past
             // the cue point.
