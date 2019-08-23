@@ -184,8 +184,12 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // all we represent with this widget.
     dParameter = math_clamp(dParameter, 0.0, 1.0);
 
+    bool redraw = false;
     int oldPos = m_iPos;
     m_iPos = valueToPosition(dParameter);
+    if (oldPos != m_iPos) {
+        redraw = true;
+    }
 
     // In case the user is hovering a cue point or holding right click, the
     // calculated time between the playhead and cue/cursor should be updated at
@@ -193,7 +197,12 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // of the widget.
     int oldPositionSeconds = m_iPosSeconds;
     m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
-    if (oldPositionSeconds != m_iPosSeconds || oldPos != m_iPos) {
+    if ((m_bTimeRulerActive || m_pHoveredMark != nullptr)
+            && oldPositionSeconds != m_iPosSeconds) {
+        redraw = true;
+    }
+
+    if (redraw) {
         update();
     }
 }
