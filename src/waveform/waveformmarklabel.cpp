@@ -15,10 +15,18 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
 
     QRectF pixmapRect;
     pixmapRect = fontMetrics.boundingRect(text);
+    int availableWidthForText;
     if (icon.isNull()) {
         pixmapRect.setWidth(padding + pixmapRect.width() + padding);
+        availableWidthForText = widgetWidth - padding * 2;
     } else {
         pixmapRect.setWidth(padding + icon.width() + padding + pixmapRect.width() + padding);
+        availableWidthForText = widgetWidth - padding * 3;
+    }
+    // Elide extremely long labels
+    if (pixmapRect.width() > widgetWidth) {
+        text = fontMetrics.elidedText(text, Qt::ElideRight, availableWidthForText);
+        pixmapRect.setWidth(widgetWidth);
     }
     pixmapRect.setHeight(math_max(fontMetrics.height(), icon.height()));
 
