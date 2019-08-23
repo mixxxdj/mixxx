@@ -94,9 +94,9 @@ class LoopingControl : public EngineControl {
 
   private:
     enum class LoopSeekMode {
-        CHANGED, // force the playposition to be inside the loop after adjusting it.
-        MOVED_OUT,
-        NONE,
+        Changed, // force the playposition to be inside the loop after adjusting it.
+        MovedOut,
+        None,
     };
 
     struct LoopSamples {
