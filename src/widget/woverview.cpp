@@ -911,7 +911,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     for (const auto& pMark : m_marksToRender) {
         if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
             if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
-              continue;
+                continue;
             }
         }
         if (pMark->m_label.intersects(m_cuePositionLabel)
