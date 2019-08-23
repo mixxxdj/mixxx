@@ -155,14 +155,18 @@ PioneerDDJ400.loopAdjustMultiply = 5;
 
 
 PioneerDDJ400.init = function() {
-    // init controler
+    // init controller
     // init tempo Range to 10% (default = 6%)
     engine.setValue('[Channel1]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
     engine.setValue('[Channel2]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
     
-    // enable effect fous on FX3 for Effect Section
+    // enable effect focus on FX3 for Effect Section
     engine.setValue('[EffectRack1_EffectUnit1]', 'show_focus', 0);
+    engine.setValue('[EffectRack1_EffectUnit1]', 'group_[Channel1]_enable', 1);
+
     engine.setValue('[EffectRack1_EffectUnit2]', 'show_focus', 0);
+    engine.setValue('[EffectRack1_EffectUnit2]', 'group_[Channel2]_enable', 1);
+
     engine.setValue('[EffectRack1_EffectUnit3]', 'show_focus', 1);
 
     // Connect the VU-Meter LEDS
@@ -608,6 +612,14 @@ PioneerDDJ400.beatFxOnOffShiftPressed = ignoreRelease(function(_channel, control
     }
 
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
+});
+
+PioneerDDJ400.beatFxChannel = ignoreRelease(function(_channel, control, _value, _status, group) {
+    const enableChannel1 = control === 0x10 || control === 0x14;
+    const enableChannel2 = control === 0x11 || control === 0x14;
+
+    engine.setValue(group, 'group_[Channel1]_enable', enableChannel1);
+    engine.setValue(group, 'group_[Channel2]_enable', enableChannel2);
 });
 
 PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value, status, group) {

@@ -1114,34 +1114,35 @@
                 </options>
             </control>
 
+            <!-- Beat Fx channel selector -->
             <control>
                 <description>BEAT FX CH SELECT CH1 - slide - Select FX on DECK 1</description>
                 <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel1]_enable</key>
+                <key>PioneerDDJ400.beatFxChannel</key>
                 <status>0x94</status>
                 <midino>0x10</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <description>BEAT FX CH SELECT CH2 - slide - Select FX on DECK 2</description>
                 <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel2]_enable</key>
+                <key>PioneerDDJ400.beatFxChannel</key>
                 <status>0x94</status>
                 <midino>0x11</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <description>BEAT FX CH SELECT MASTER - slide - Select FX on Master</description>
                 <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Master]_enable</key>
+                <key>PioneerDDJ400.beatFxChannel</key>
                 <status>0x94</status>
-                <midino>0x12</midino>
+                <midino>0x14</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
