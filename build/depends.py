@@ -202,11 +202,11 @@ class Qt(Dependence):
         pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
         try:
             output = subprocess.check_output(pkg_config_cmd)
-        except FileNotFoundError:
+        except OSError:
             # pkg-config is not installed
             pass
         else:
-            core = output.decode().rstrip()
+            core = output.decode('utf-8').rstrip()
             if os.path.isdir(core):
                 return core
 
