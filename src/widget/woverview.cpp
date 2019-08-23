@@ -617,11 +617,11 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
 
         // Active mark ranges by definition have starts/ends that are not
         // disabled.
-        const double startValue = markRange.start();
-        const double endValue = markRange.end();
+        const qreal startValue = markRange.start();
+        const qreal endValue = markRange.end();
 
-        const float startPosition = offset + startValue * gain;
-        const float endPosition = offset + endValue * gain;
+        const qreal startPosition = offset + startValue * gain;
+        const qreal endPosition = offset + endValue * gain;
 
         if (startPosition < 0.0 && endPosition < 0.0) {
             continue;
@@ -679,18 +679,18 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         //const float markPosition = 1.0 +
         //        (m_marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-        const float markPosition = math_clamp(
+        const qreal markPosition = math_clamp(
                 offset + m_marksToRender.at(i)->getSamplePosition() * gain,
-                0.0, static_cast<double>(width()));
+                0.0, static_cast<qreal>(width()));
         pMark->m_linePosition = markPosition;
 
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
 
         QLineF line;
         if (m_orientation == Qt::Horizontal) {
-            line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
+            line.setLine(markPosition, 0.0, markPosition, height());
         } else {
-            line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
+            line.setLine(0.0, markPosition, width(), markPosition);
         }
         pPainter->setPen(shadowPen);
         pPainter->drawLine(line);
@@ -851,9 +851,9 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     if (m_bTimeRulerActive) {
         QLineF line;
         if (m_orientation == Qt::Horizontal) {
-            line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), static_cast<float>(height()));
+            line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
         } else {
-            line.setLine(0.0, m_timeRulerPos.x(), static_cast<float>(width()), m_timeRulerPos.x());
+            line.setLine(0.0, m_timeRulerPos.x(), width(), m_timeRulerPos.x());
         }
         pPainter->setPen(shadowPen);
         pPainter->drawLine(line);
@@ -863,8 +863,8 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
 
         QPointF textPoint = m_timeRulerPos;
         QPointF textPointDistance = m_timeRulerPos;
-        double widgetPositionFraction;
-        double padding = 1.0; // spacing between line and text
+        qreal widgetPositionFraction;
+        qreal padding = 1.0; // spacing between line and text
         if (m_orientation == Qt::Horizontal) {
             textPoint = QPointF(textPoint.x() + padding, fontMetrics.height());
             textPointDistance = QPointF(textPointDistance.x() + padding,
@@ -875,12 +875,12 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             textPointDistance.setX(0);
             widgetPositionFraction = m_timeRulerPos.y() / height();
         }
-        double trackSamples = m_trackSamplesControl->get();
-        double timePosition = samplePositionToSeconds(
+        qreal trackSamples = m_trackSamplesControl->get();
+        qreal timePosition = samplePositionToSeconds(
                 widgetPositionFraction * trackSamples);
-        double timePositionTillEnd = samplePositionToSeconds(
+        qreal timePositionTillEnd = samplePositionToSeconds(
                 (1 - widgetPositionFraction) * trackSamples);
-        double timeDistance = samplePositionToSeconds(
+        qreal timeDistance = samplePositionToSeconds(
                 (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
 
         QString timeText = mixxx::Duration::formatTime(timePosition)
@@ -937,11 +937,11 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
         if (markRange.showDuration()) {
             // Active mark ranges by definition have starts/ends that are not
             // disabled.
-            const double startValue = markRange.start();
-            const double endValue = markRange.end();
+            const qreal startValue = markRange.start();
+            const qreal endValue = markRange.end();
 
-            const float startPosition = offset + startValue * gain;
-            const float endPosition = offset + endValue * gain;
+            const qreal startPosition = offset + startValue * gain;
+            const qreal endPosition = offset + endValue * gain;
 
             if (startPosition < 0.0 && endPosition < 0.0) {
                 continue;
@@ -950,8 +950,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     samplePositionToSeconds(endValue - startValue));
 
             QRectF durationRect = fontMetrics.boundingRect(duration);
-            float padding = 3.0;
-            float x;
+            qreal padding = 3.0;
+            qreal x;
 
             WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
             if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
