@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import SCons
 from SCons.Builder import Builder
-from SCons.Script import *
 
 def signtool_path(subject_name, path):
     print("Running signtool: ", path)
