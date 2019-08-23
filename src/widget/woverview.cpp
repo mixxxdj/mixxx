@@ -92,7 +92,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     m_qColorBackground = m_signalColors.getBgColor();
     m_labelBackgroundColor = m_qColorBackground;
-    m_labelBackgroundColor.setAlpha(128);
+    m_labelBackgroundColor.setAlpha(255 / 2); // 255 == fully transparent
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
@@ -755,11 +755,8 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
 
-            QColor bgColor = m_qColorBackground;
-            bgColor.setAlpha(128);
-
             pMark->m_label.prerender(textPoint, QPixmap(), text,
-                    markerFont, pMark->m_textColor, bgColor,
+                    markerFont, pMark->m_textColor, m_labelBackgroundColor,
                     width(), getDevicePixelRatioF(this));
         }
 
@@ -801,14 +798,12 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 cueTimeDistanceText = mixxx::Duration::formatTime(markTimeDistance);
             }
 
-            QColor bgColor = m_qColorBackground;
-            bgColor.setAlpha(128);
             m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
-                    markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
+                    markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
             QPointF timeDistancePoint(markPosition, (fontMetrics.height() + height()) / 2);
             m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
-                    markerFont, Qt::white, bgColor, width(), getDevicePixelRatioF(this));
+                    markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
             markHovered = true;
         }
     }
