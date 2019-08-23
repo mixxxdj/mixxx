@@ -740,6 +740,11 @@ WWidget, QLabel {
   text-transform: uppercase;
 }
 
+WOverview {
+  /* This affects the labels for cue points. */
+  text-transform: none;
+}
+
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid, #ButtonGrid {
   background-color: #333333;
