@@ -1297,7 +1297,11 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+
+        # In Python 3.x, map() returns a "map object" (instead of a list),
+        # which is evaluated on-demand rather than at once. To invoke uic
+        # for all *.ui files at once, we need to cast it to a list here.
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
