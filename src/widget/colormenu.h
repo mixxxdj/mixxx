@@ -11,6 +11,7 @@ class ColorMenu : public QMenu {
             PredefinedColorsRepresentation* pColorRepresentation = nullptr);
     ~ColorMenu() override;
 
+    // NOTE: This must be called before showing this menu.
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
 
   signals:

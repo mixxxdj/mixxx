@@ -6,7 +6,6 @@ ColorMenu::ColorMenu(QWidget *parent, PredefinedColorsRepresentation* pColorRepr
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
     setTitle(tr("Set color"));
-    useColorSet(pColorRepresentation);
 }
 
 void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
