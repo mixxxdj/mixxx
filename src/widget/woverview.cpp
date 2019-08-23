@@ -920,9 +920,9 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             }
         }
         if (pMark->m_label.intersects(m_cuePositionLabel)
-            || pMark->m_label.intersects(m_cueTimeDistanceLabel)
-            || pMark->m_label.intersects(m_timeRulerPositionLabel)
-            || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
+                || pMark->m_label.intersects(m_cueTimeDistanceLabel)
+                || pMark->m_label.intersects(m_timeRulerPositionLabel)
+                || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
             continue;
         }
 
@@ -967,9 +967,9 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel)
-                  || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel)
-                  || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel)
-                  || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
+                      || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel)
+                      || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel)
+                      || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
             }
         }
