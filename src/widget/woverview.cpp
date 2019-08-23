@@ -365,14 +365,10 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // Do not activate cue hovering while right click is held down and the
     // button down event was not on a cue.
     if (m_bTimeRulerActive) {
-        m_timeRulerPos = e->pos();
         // Prevent showing times beyond the boundaries of the track when the
         // cursor is dragged outside this widget before releasing right click.
-        if (m_timeRulerPos.x() > width()) {
-            m_timeRulerPos.setX(width());
-        } else if (m_timeRulerPos.y() > height()) {
-            m_timeRulerPos.setY(height());
-        }
+        m_timeRulerPos.setX(math_clamp(e->pos().x(), 0, width()));
+        m_timeRulerPos.setY(math_clamp(e->pos().y(), 0, height()));
         update();
         return;
     }
