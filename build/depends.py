@@ -205,6 +205,9 @@ class Qt(Dependence):
         except OSError:
             # pkg-config is not installed
             pass
+        except subprocess.CalledProcessError:
+            # pkg-config failed to find Qt5Core
+            pass
         else:
             core = output.decode('utf-8').rstrip()
             if os.path.isdir(core):
