@@ -677,8 +677,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         PainterScope painterScope(pPainter);
 
-        //const float markPosition = 1.0 +
-        //        (m_marksToRender.at(i).m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
         const qreal markPosition = math_clamp(
                 offset + m_marksToRender.at(i)->getSamplePosition() * gain,
                 0.0, static_cast<qreal>(width()));
