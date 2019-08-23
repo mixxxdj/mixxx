@@ -371,7 +371,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     m_pHoveredMark = nullptr;
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
-    float lineHoverPadding = 3.0;
+    float lineHoverPadding = 5.0;
     for (const auto& pMark : m_marksToRender) {
         int hoveredPosition;
         if (m_orientation == Qt::Horizontal) {
