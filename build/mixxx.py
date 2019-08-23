@@ -170,11 +170,11 @@ class MixxxBuild(object):
             pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
             try:
                 output = subprocess.check_output(pkg_config_cmd)
-            except FileNotFoundError:
+            except OSError:
                 # pkg-config is not installed
                 pass
             else:
-                default_qtdir = output.decode().rstrip()
+                default_qtdir = output.decode('utf-8').rstrip()
 
         # Ugly hack to check the qtdir argument
         qtdir = Script.ARGUMENTS.get(
@@ -229,7 +229,7 @@ class MixxxBuild(object):
             self.compiler_is_clang = False
         else:
             cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
-            cc_version = subprocess.check_output(cc_version_cmd).decode()
+            cc_version = subprocess.check_output(cc_version_cmd).decode('utf-8')
             self.compiler_is_gcc = 'gcc' in cc_version.lower()
             self.compiler_is_clang = 'clang' in cc_version.lower()
 
@@ -237,7 +237,7 @@ class MixxxBuild(object):
             if self.compiler_is_gcc:
                 self.gcc_major_version = None
                 gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
-                gcc_version = subprocess.check_output(gcc_version_cmd).decode()
+                gcc_version = subprocess.check_output(gcc_version_cmd).decode('utf-8')
                 # If match is None we don't know the version.
                 if not gcc_version is None:
                     version_split = gcc_version.split('.')
