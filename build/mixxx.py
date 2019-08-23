@@ -125,6 +125,15 @@ class MixxxBuild(object):
         self.bundle_pdbs = self.platform_is_windows and (
             self.build_is_debug or Script.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
 
+        self.scons_version = (
+            'unknown' if SCons.__version__.startswith('__VERSION')
+            else '%s (%s, %s)' % (
+                SCons.__version__,
+                SCons.__build__,
+                SCons.__date__,
+        ))
+        logging.info("SCons version: %s" % self.scons_version)
+        logging.info("Python version: %s" % sys.version.replace('\n', ''))
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
         logging.info("Build: %s" % self.build)
