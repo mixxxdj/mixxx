@@ -9,8 +9,7 @@
 class CueMenu : public QMenu {
     Q_OBJECT
   public:
-    CueMenu(QWidget *parent = nullptr,
-            PredefinedColorsRepresentation* pColorRepresentation = nullptr);
+    CueMenu(QWidget *parent = nullptr);
     ~CueMenu() override;
 
     void setCue(CuePointer pCue) {
