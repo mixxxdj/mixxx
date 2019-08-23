@@ -55,6 +55,7 @@ WOverview::WOverview(
         m_pConfig(pConfig),
         m_endOfTrack(false),
         m_pCueMenu(std::make_unique<CueMenu>(this)),
+        m_iPosSeconds(0),
         m_iPos(0),
         m_pHoveredMark(nullptr),
         m_bTimeRulerActive(false),
@@ -183,10 +184,16 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // all we represent with this widget.
     dParameter = math_clamp(dParameter, 0.0, 1.0);
 
-    int iPos = valueToPosition(dParameter);
-    if (iPos != m_iPos) {
-        m_iPos = iPos;
-        //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
+    int oldPos = m_iPos;
+    m_iPos = valueToPosition(dParameter);
+
+    // In case the user is hovering a cue point or holding right click, the
+    // calculated time between the playhead and cue/cursor should be updated at
+    // least once per second, regardless of m_iPos which depends on the length
+    // of the widget.
+    int oldPositionSeconds = m_iPosSeconds;
+    m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
+    if (oldPositionSeconds != m_iPosSeconds || oldPos != m_iPos) {
         update();
     }
 }
