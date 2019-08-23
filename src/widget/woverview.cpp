@@ -55,7 +55,6 @@ WOverview::WOverview(
         m_pConfig(pConfig),
         m_endOfTrack(false),
         m_pCueMenu(std::make_unique<CueMenu>(this)),
-        m_bDrag(false),
         m_iPos(0),
         m_pHoveredMark(nullptr),
         m_bTimeRulerActive(false),
@@ -180,17 +179,15 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
-    if (!m_bDrag) {
-        // Calculate handle position. Clamp the value within 0-1 because that's
-        // all we represent with this widget.
-        dParameter = math_clamp(dParameter, 0.0, 1.0);
+    // Calculate handle position. Clamp the value within 0-1 because that's
+    // all we represent with this widget.
+    dParameter = math_clamp(dParameter, 0.0, 1.0);
 
-        int iPos = valueToPosition(dParameter);
-        if (iPos != m_iPos) {
-            m_iPos = iPos;
-            //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
-            update();
-        }
+    int iPos = valueToPosition(dParameter);
+    if (iPos != m_iPos) {
+        m_iPos = iPos;
+        //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
+        update();
     }
 }
 
@@ -349,14 +346,6 @@ void WOverview::receiveCuesUpdated() {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    if (m_bDrag) {
-        if (m_orientation == Qt::Horizontal) {
-            m_iPos = math_clamp(e->x(), 0, width() - 1);
-        } else {
-            m_iPos = math_clamp(e->y(), 0, height() - 1);
-        }
-    }
-
     // Do not activate cue hovering while right click is held down and the
     // button down event was not on a cue.
     if (m_bTimeRulerActive) {
@@ -399,20 +388,9 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
-    double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::LeftButton) {
-        // If a hotcue label is being hovered, jump to it instead of the point
-        // under the cursor.
-        if (m_pHoveredMark != nullptr) {
-            dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
-        }
-        setControlParameterUp(dValue);
-        m_bDrag = false;
-        // Do not seek when releasing a right click. This is important to
-        // prevent accidental seeking when trying to right click a hotcue.
-    } else if (e->button() == Qt::RightButton) {
+    if (e->button() == Qt::RightButton) {
         m_bTimeRulerActive = false;
     }
 }
@@ -420,48 +398,53 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
-    bool dragging = true;
-    bool hotcueRightClicked = false;
-    if (m_pCurrentTrack != nullptr) {
-        QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+    if (m_pCurrentTrack == nullptr) {
+        return;
+    }
+
+    if (e->button() == Qt::LeftButton) {
+        if (m_orientation == Qt::Horizontal) {
+            m_iPos = math_clamp(e->x(), 0, width() - 1);
+        } else {
+            m_iPos = math_clamp(e->y(), 0, height() - 1);
+        }
+
+        double dValue = positionToValue(m_iPos);
         if (m_pHoveredMark != nullptr) {
-            if (e->button() == Qt::LeftButton) {
-                dragging = false;
-            } else if (e->button() == Qt::RightButton
-                && m_pHoveredMark->getHotCue() != WaveformMark::kNoHotCue) {
-                // Currently the only way WaveformMarks can be associated
-                // with their respective Cue objects is by using the hotcue
-                // number. If cues without assigned hotcue are drawn on
-                // WOverview in the future, another way to associate
-                // WaveformMarks with Cues will need to be implemented.
-                CuePointer pHoveredCue;
-                for (const auto& pCue : cueList) {
-                    if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
-                        pHoveredCue = pCue;
-                        hotcueRightClicked = true;
-                        break;
-                    }
-                }
-                if (pHoveredCue != nullptr) {
-                    m_pCueMenu->setCue(pHoveredCue);
-                    m_pCueMenu->setTrack(m_pCurrentTrack);
-                    m_pCueMenu->popup(e->globalPos());
+            dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            m_iPos = valueToPosition(dValue);
+        }
+        setControlParameterUp(dValue);
+    } else if (e->button() == Qt::RightButton) {
+        if (m_pHoveredMark == nullptr) {
+            m_bTimeRulerActive = true;
+            m_timeRulerPos = e->pos();
+        } else if (m_pHoveredMark->getHotCue() != WaveformMark::kNoHotCue) {
+            // Currently the only way WaveformMarks can be associated
+            // with their respective Cue objects is by using the hotcue
+            // number. If cues without assigned hotcue are drawn on
+            // WOverview in the future, another way to associate
+            // WaveformMarks with Cues will need to be implemented.
+            CuePointer pHoveredCue;
+            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            for (const auto& pCue : cueList) {
+                if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
+                    pHoveredCue = pCue;
+                    break;
                 }
             }
+            if (pHoveredCue != nullptr) {
+                m_pCueMenu->setCue(pHoveredCue);
+                m_pCueMenu->setTrack(m_pCurrentTrack);
+                m_pCueMenu->popup(e->globalPos());
+            }
         }
-    }
-    if (e->button() == Qt::LeftButton) {
-        m_bDrag = dragging;
-    } else if (e->button() == Qt::RightButton && !hotcueRightClicked) {
-        m_bTimeRulerActive = true;
-        m_timeRulerPos = e->pos();
     }
 }
 
 void WOverview::leaveEvent(QEvent* e) {
     Q_UNUSED(e);
     m_pHoveredMark = nullptr;
-    m_bDrag = false;
     m_bTimeRulerActive = false;
     update();
 }
