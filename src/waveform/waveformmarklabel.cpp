@@ -58,13 +58,12 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
     }
 
     if (!text.isEmpty()) {
-        // QPainter::drawText draws from the bottom left point.
-        QPointF textPoint;
-        textPoint.setX(icon.width() + padding);
-        textPoint.setY(fontMetrics.ascent());
+        QPointF textBottomLeft;
+        textBottomLeft.setX(icon.width() + padding);
+        textBottomLeft.setY(fontMetrics.ascent());
         painter.setFont(font);
         painter.setPen(textColor);
-        painter.drawText(textPoint, text);
+        painter.drawText(textBottomLeft, text);
     }
 };
 
