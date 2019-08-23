@@ -736,7 +736,7 @@ QAbstractScrollArea::corner {
 
 WWidget, QLabel {
   font-family: "Open Sans";
-  font-size: 8px;
+  font-size: 12px;
   text-transform: uppercase;
 }
 
