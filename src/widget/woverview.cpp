@@ -772,11 +772,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
             QString cuePositionText = mixxx::Duration::formatTime(markTime) + " -" +
                     mixxx::Duration::formatTime(markTimeRemaining);
-            QString cueTimeDistanceText;
-            // Do not show the time until the cue point if the playhead is past
-            // the cue point.
-            if (markTimeDistance > 0) {
-                cueTimeDistanceText = mixxx::Duration::formatTime(markTimeDistance);
+            QString cueTimeDistanceText = mixxx::Duration::formatTime(fabs(markTimeDistance));
+            // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
+            // the playhead passes the cue
+            if (static_cast<int>(markTimeDistance) < 0) {
+                cueTimeDistanceText = "-" + cueTimeDistanceText;
             }
 
             m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
@@ -871,9 +871,11 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerPositionLabel.draw(pPainter);
 
-        QString timeDistanceText;
-        if (timeDistance > 0) {
-            timeDistanceText = mixxx::Duration::formatTime(timeDistance);
+        QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
+        // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
+        // the playhead passes the point
+        if (static_cast<int>(timeDistance) < 0) {
+            timeDistanceText = "-" + timeDistanceText;
         }
         m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText,
                 markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
