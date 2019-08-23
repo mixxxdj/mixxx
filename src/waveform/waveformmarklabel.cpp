@@ -43,17 +43,21 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
     painter.setBrush(QBrush(backgroundColor));
     painter.drawRoundedRect(0, 0, pixmapRect.width(), pixmapRect.height(), 5.0, 5.0);
 
-    QPointF iconTopLeft = pixmapRect.topLeft();
-    iconTopLeft.setX(iconTopLeft.x() + padding);
-    painter.drawPixmap(iconTopLeft, icon);
+    if (!icon.isNull()) {
+        QPointF iconTopLeft = pixmapRect.topLeft();
+        iconTopLeft.setX(iconTopLeft.x() + padding);
+        painter.drawPixmap(iconTopLeft, icon);
+    }
 
-    // QPainter::drawText draws from the bottom left point.
-    QPointF textPoint;
-    textPoint.setX(icon.width() + padding);
-    textPoint.setY(fontMetrics.ascent());
-    painter.setFont(font);
-    painter.setPen(textColor);
-    painter.drawText(textPoint, text);
+    if (!text.isEmpty()) {
+        // QPainter::drawText draws from the bottom left point.
+        QPointF textPoint;
+        textPoint.setX(icon.width() + padding);
+        textPoint.setY(fontMetrics.ascent());
+        painter.setFont(font);
+        painter.setPen(textColor);
+        painter.drawText(textPoint, text);
+    }
 };
 
 void WaveformMarkLabel::draw(QPainter* pPainter) {
