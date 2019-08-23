@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
+
 from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
@@ -197,15 +199,19 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        import sys
-        if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    if os.path.isdir(core):
-                        return core
+        pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
+        try:
+            output = subprocess.check_output(pkg_config_cmd)
+        except OSError:
+            # pkg-config is not installed
+            pass
+        except subprocess.CalledProcessError:
+            # pkg-config failed to find Qt5Core
+            pass
+        else:
+            core = output.decode('utf-8').rstrip()
+            if os.path.isdir(core):
+                return core
 
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
@@ -1294,7 +1300,11 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+
+        # In Python 3.x, map() returns a "map object" (instead of a list),
+        # which is evaluated on-demand rather than at once. To invoke uic
+        # for all *.ui files at once, we need to cast it to a list here.
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
