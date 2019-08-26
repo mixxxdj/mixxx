@@ -30,6 +30,7 @@ WBeatSpinBox,
 QSpinBox,
 WOverview {
   font-family: "Open Sans";
+  text-transform: none;
 }
 
 WPushButton, QPushButton {
