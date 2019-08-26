@@ -373,7 +373,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         return;
     }
 
-    m_pHoveredMark = nullptr;
+    m_pHoveredMark.clear();
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
     float lineHoverPadding = 5.0;
@@ -456,7 +456,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 
 void WOverview::leaveEvent(QEvent* e) {
     Q_UNUSED(e);
-    m_pHoveredMark = nullptr;
+    m_pHoveredMark.clear();
     m_bTimeRulerActive = false;
     update();
 }

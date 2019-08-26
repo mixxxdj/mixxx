@@ -5,7 +5,7 @@
 
 CueMenu::CueMenu(QWidget *parent)
         : QMenu(parent) {
-    m_pEditLabel = new QAction(tr("Edit label"));
+    m_pEditLabel = new QAction(tr("Edit label"), this);
     addAction(m_pEditLabel);
     connect(m_pEditLabel, &QAction::triggered, this, &CueMenu::slotEditLabel);
 
@@ -13,7 +13,7 @@ CueMenu::CueMenu(QWidget *parent)
     connect(m_pColorMenu, &ColorMenu::colorPicked, this, &CueMenu::slotChangeCueColor);
     addMenu(m_pColorMenu);
 
-    m_pRemoveCue = new QAction(tr("Remove"));
+    m_pRemoveCue = new QAction(tr("Remove"), this);
     addAction(m_pRemoveCue);
     connect(m_pRemoveCue, &QAction::triggered, this, &CueMenu::slotRemoveCue);
 }
