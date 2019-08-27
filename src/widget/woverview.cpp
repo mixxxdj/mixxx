@@ -650,10 +650,6 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     markerFont.setPixelSize(10 * m_scaleFactor);
     QFontMetricsF fontMetrics(markerFont);
 
-    QFont shadowFont = pPainter->font();
-    shadowFont.setWeight(99);
-    shadowFont.setPixelSize(10 * m_scaleFactor);
-
     // Text labels are rendered so they do not overlap with other WaveformMarks'
     // labels. If the text would be too wide, it is elided. However, the user
     // can hover the mouse cursor over a label to show the whole label text,
@@ -902,10 +898,6 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     QFont markerFont = pPainter->font();
     markerFont.setPixelSize(10 * m_scaleFactor);
     QFontMetricsF fontMetrics(markerFont);
-
-    QFont shadowFont = pPainter->font();
-    shadowFont.setWeight(99);
-    shadowFont.setPixelSize(10 * m_scaleFactor);
 
     // Draw WaveformMark labels
     for (const auto& pMark : m_marksToRender) {
