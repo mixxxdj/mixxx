@@ -352,8 +352,14 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         firstSound = pAudibleSound->getPosition();
     }
 
-    double introStart = m_pIntroStartPosition->get();
     double mainCue = m_pCuePoint->get();
+    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStart"), false)) {
+        if (mainCue != kNoTrigger && mainCue != 0) {
+            m_pIntroStartPosition->set(mainCue);
+        }
+    }
+
+    double introStart = m_pIntroStartPosition->get();
 
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
@@ -806,6 +812,10 @@ void CueControl::cueSet(double v) {
     // Store cue point in loaded track
     if (pLoadedTrack) {
         pLoadedTrack->setCuePoint(CuePosition(cue));
+    }
+
+    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStart"), false)) {
+        introStartSet(cue);
     }
 }
 

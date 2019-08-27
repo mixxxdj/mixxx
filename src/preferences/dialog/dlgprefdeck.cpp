@@ -76,6 +76,12 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
+    m_bMoveIntroStartWithMainCue = m_pConfig->getValue(ConfigKey("[Controls]",
+            "MoveIntroStart"), false);
+    checkBoxIntroStartMove->setChecked(m_bMoveIntroStartWithMainCue);
+    connect(checkBoxIntroStartMove, &QCheckBox::toggled,
+            this, &DlgPrefDeck::slotMoveIntroStartCheckbox);
+
     // Track time display configuration
     m_pControlTrackTimeDisplay = new ControlObject(
             ConfigKey("[Controls]", "ShowDurationRemaining"));
@@ -346,6 +352,9 @@ DlgPrefDeck::~DlgPrefDeck() {
 }
 
 void DlgPrefDeck::slotUpdate() {
+    checkBoxIntroStartMove->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "MoveIntroStart"), false));
+
     slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
 
     checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
@@ -452,6 +461,10 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+}
+
+void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
+    m_bMoveIntroStartWithMainCue = checked;
 }
 
 void DlgPrefDeck::slotRateRangeComboBox(int index) {
@@ -582,6 +595,8 @@ void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
 }
 
 void DlgPrefDeck::slotApply() {
+    m_pConfig->set(ConfigKey("[Controls]", "MoveIntroStart"), ConfigValue(m_bMoveIntroStartWithMainCue));
+
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);

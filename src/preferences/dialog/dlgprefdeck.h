@@ -65,6 +65,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotApply();
     void slotResetToDefaults();
 
+    void slotMoveIntroStartCheckbox(bool checked);
     void slotRateRangeComboBox(int index);
     void slotRateInversionCheckbox(bool invert);
     void slotKeyLockModeSelected(QAbstractButton*);
@@ -122,6 +123,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     int m_iCueMode;
 
+    bool m_bMoveIntroStartWithMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;
     bool m_bCloneDeckOnLoadDoubleTap;
     bool m_bAssignHotcueColors;
