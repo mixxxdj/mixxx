@@ -14,6 +14,9 @@
     <PlayPosColor>#00FF00</PlayPosColor>
     <EndOfTrackColor>#EA0000</EndOfTrackColor>
     <PlayedOverlayColor>#60000000</PlayedOverlayColor>
+    <LabelBackgroundColor>#80000000</LabelBackgroundColor>
+    <LabelTextColor>#ffffff</LabelTextColor>
+    <LabelFontSize>9</LabelFontSize>
     <DefaultMark>
       <Align>bottom|right</Align>
       <Color>#FD0564</Color>
