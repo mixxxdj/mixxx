@@ -159,6 +159,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
     QColor m_qColorBackground;
+    int m_iLabelFontSize;
+    QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
 

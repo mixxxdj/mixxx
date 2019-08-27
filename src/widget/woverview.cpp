@@ -91,8 +91,23 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_signalColors.setup(node, context);
 
     m_qColorBackground = m_signalColors.getBgColor();
-    m_labelBackgroundColor = m_qColorBackground;
-    m_labelBackgroundColor.setAlpha(255 / 2); // 255 == fully transparent
+
+    m_labelBackgroundColor = context.selectColor(node, "LabelBackgroundColor");
+    if (!m_labelBackgroundColor.isValid()) {
+        m_labelBackgroundColor = m_qColorBackground;
+        m_labelBackgroundColor.setAlpha(255 / 2); // 255 == fully transparent
+    }
+
+    m_labelTextColor = context.selectColor(node, "LabelTextColor");
+    if (!m_labelTextColor.isValid()) {
+        m_labelTextColor = Qt::white;
+    }
+
+    bool okay = false;
+    m_iLabelFontSize = context.selectInt(node, "LabelFontSize", &okay);
+    if (!okay) {
+        m_iLabelFontSize = 10;
+    }
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
@@ -647,7 +662,7 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
 
 void WOverview::drawMarks(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
-    markerFont.setPixelSize(10 * m_scaleFactor);
+    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
     QFontMetricsF fontMetrics(markerFont);
 
     // Text labels are rendered so they do not overlap with other WaveformMarks'
@@ -745,7 +760,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             pMark->m_label.prerender(textPoint, QPixmap(), text,
-                    markerFont, pMark->m_textColor, m_labelBackgroundColor,
+                    markerFont, m_labelTextColor, m_labelBackgroundColor,
                     width(), getDevicePixelRatioF(this));
         }
 
@@ -788,11 +803,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
-                    markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+                    markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
             QPointF timeDistancePoint(markPosition, (fontMetrics.height() + height()) / 2);
             m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
-                    markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+                    markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
             markHovered = true;
         }
     }
@@ -829,12 +844,12 @@ void WOverview::drawCurrentPosition(QPainter* pPainter) {
 
 void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFont markerFont = pPainter->font();
-    markerFont.setPixelSize(10 * m_scaleFactor);
+    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
     shadowFont.setWeight(99);
-    shadowFont.setPixelSize(10 * m_scaleFactor);
+    shadowFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
     if (m_bTimeRulerActive) {
@@ -876,7 +891,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
         m_timeRulerPositionLabel.prerender(textPoint, QPixmap(), timeText,
-                markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+                markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
@@ -886,7 +901,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             timeDistanceText = "-" + timeDistanceText;
         }
         m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText,
-                markerFont, Qt::white, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+                markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
@@ -896,7 +911,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
 
 void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const float gain) {
     QFont markerFont = pPainter->font();
-    markerFont.setPixelSize(10 * m_scaleFactor);
+    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
     QFontMetricsF fontMetrics(markerFont);
 
     // Draw WaveformMark labels
@@ -950,7 +965,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             QPointF durationBottomLeft(x, fontMetrics.height());
 
             markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(),
-                    duration, markerFont, markRange.m_durationTextColor,
+                    duration, markerFont, m_labelTextColor,
                     m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel)
