@@ -45,10 +45,12 @@ class HotcueControl : public QObject {
     inline CuePointer getCue() { return m_pCue; }
     double getPosition() const;
     double getLength() const;
+    double getType() const;
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
     void setLength(double length);
+    void setType(double type);
     void setColor(PredefinedColorPointer newColor);
     PredefinedColorPointer getColor() const;
 
@@ -81,6 +83,7 @@ class HotcueControl : public QObject {
     void slotHotcueClear(double v);
     void slotHotcueLengthChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
+    void slotHotcueTypeChanged(double newType);
     void slotHotcueColorChanged(double newColorId);
 
   signals:
@@ -98,6 +101,7 @@ class HotcueControl : public QObject {
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
     void hotcueLengthChanged(HotcueControl* pHotcue, double newLength);
+    void hotcueTypeChanged(HotcueControl* pHotcue, double newType);
     void hotcueColorChanged(HotcueControl* pHotcue, double newColorId);
     void hotcuePlay(double v);
 
@@ -172,6 +176,7 @@ class CueControl : public EngineControl {
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
     void hotcueLengthChanged(HotcueControl* pControl, double newLength);
+    void hotcueTypeChanged(HotcueControl* pControl, double newType);
 
     void cueSet(double v);
     void cueClear(double v);
