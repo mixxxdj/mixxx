@@ -595,6 +595,10 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
     };
 
+    if (pCue->getType() == Cue::LOOP) {
+        setSavedLoop(pCue, false);
+    }
+
     // If quantize is enabled and we are not playing, jump to the cue point
     // since it's not necessarily where we currently are. TODO(XXX) is this
     // potentially invalid for vinyl control?
@@ -690,6 +694,8 @@ void CueControl::hotcueSetLoop(HotcueControl* pControl, double v) {
         const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
         pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
     };
+
+    setSavedLoop(pCue, false);
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double v) {

@@ -290,6 +290,10 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     loopSamples.seekMode = (m_bLoopingEnabled && scaleFactor < 1.0) ? LoopSeekMode::Changed : LoopSeekMode::MovedOut;
 
     m_loopSamples.setValue(loopSamples);
+    if(m_pCue) {
+        m_pCue->setPosition(loopSamples.start);
+        m_pCue->setLength(loopSamples.end - loopSamples.start);
+    }
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(loopSamples.end);
@@ -1084,6 +1088,11 @@ void LoopingControl::updateBeatLoopingControls() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+    // If this is a "new" loop, stop tracking saved loop changes
+    if(!keepStartPoint) {
+        m_pCue.reset();
+    }
+
     // if a seek was queued in the engine buffer move the current sample to its position
     double p_seekPosition = 0;
     if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
@@ -1205,6 +1214,10 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     m_loopSamples.setValue(newloopSamples);
     m_pCOLoopStartPosition->set(newloopSamples.start);
     m_pCOLoopEndPosition->set(newloopSamples.end);
+    if(m_pCue) {
+        m_pCue->setPosition(loopSamples.start);
+        m_pCue->setLength(loopSamples.end - loopSamples.start);
+    }
 
     if (enable) {
         setLoopingEnabled(true);
@@ -1307,6 +1320,10 @@ void LoopingControl::slotLoopMove(double beats) {
         loopSamples.start = new_loop_in;
         loopSamples.end = new_loop_out;
         m_loopSamples.setValue(loopSamples);
+        if (m_pCue)  {
+            m_pCue->setPosition(loopSamples.start);
+            m_pCue->setLength(loopSamples.end - loopSamples.start);
+        }
         m_pCOLoopStartPosition->set(new_loop_in);
         m_pCOLoopEndPosition->set(new_loop_out);
     }
