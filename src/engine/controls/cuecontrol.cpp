@@ -795,7 +795,7 @@ void CueControl::hotcueReloop(HotcueControl* pControl, double v) {
         return;
     }
 
-    setLoop(startPosition, endPosition, true);
+    setSavedLoop(pCue, true);
     if (!isPlayingByPlayButton()) {
         // cueGoto is processed asynchrony.
         // avoid a wrong cue set if seek by cueGoto is still pending
@@ -825,21 +825,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    double startPosition = pCue->getPosition();
-    if (startPosition == -1) {
-        return;
-    }
-
-    double endPosition = startPosition + pCue->getLength();
-    if (startPosition >= endPosition) {
-        return;
-    }
-
-    if(m_pLoopStartPosition->get() != startPosition || m_pLoopEndPosition->get() != endPosition) {
-        setLoop(startPosition, endPosition, false);
-    } else {
-        m_pLoopToggle->set(1.0);
-    }
+    setSavedLoop(pCue, false);
 }
 
 void CueControl::hotcueActivate(HotcueControl* pControl, double v) {

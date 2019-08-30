@@ -51,7 +51,7 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(double dNewPlaypos) override;
 
-    void setLoop(double startPosition, double endPosition, bool reloop);
+    void setSavedLoop(CuePointer pCue, bool reloop);
 
     bool isLoopingEnabled();
 
@@ -174,6 +174,8 @@ class LoopingControl : public EngineControl {
 
     ControlObject* m_pCOLoopMove;
     QList<LoopMoveControl*> m_loopMoves;
+
+    CuePointer m_pCue;
 
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;

@@ -516,17 +516,32 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
-void LoopingControl::setLoop(double startPosition, double endPosition, bool reloop) {
-    qDebug() << "setLoop" << startPosition << endPosition << reloop;
+void LoopingControl::setSavedLoop(CuePointer pCue, bool reloop) {
+    qDebug() << "setSavedLoop" << reloop;
+
+    if(!pCue) {
+        m_pCue.reset();
+         clearActiveBeatLoop();
+        return;
+    }
+    DEBUG_ASSERT(pCue->getType() == Cue::LOOP);
+
+    double startPosition = pCue->getPosition();;
+    double endPosition = startPosition + pCue->getLength();
+    if(startPosition < 0 || startPosition >= endPosition) {
+        m_pCue.reset();
+        clearActiveBeatLoop();
+        return;
+    }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
     if (loopSamples.start != startPosition || loopSamples.end != endPosition || loopSamples.seekMode != LoopSeekMode::None) {
         loopSamples.start = startPosition;
         loopSamples.end = endPosition;
         loopSamples.seekMode = LoopSeekMode::None;
-
         clearActiveBeatLoop();
 
+        m_pCue = pCue;
         m_loopSamples.setValue(loopSamples);
         m_pCOLoopStartPosition->set(loopSamples.start);
         m_pCOLoopEndPosition->set(loopSamples.end);
@@ -536,9 +551,7 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool relo
     }
 
     if (reloop) {
-        // seekExact is necessary here to prevent notifySeek() from disabling our loop
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().start));
+        seekAbs(static_cast<double>(m_loopSamples.getValue().start));
     }
 }
 
