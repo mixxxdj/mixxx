@@ -795,7 +795,9 @@ void CueControl::hotcueReloop(HotcueControl* pControl, double v) {
         return;
     }
 
-    setSavedLoop(pCue, true);
+    setSavedLoop(pCue, false);
+    hotcueGoto(pControl, v);
+
     if (!isPlayingByPlayButton()) {
         // cueGoto is processed asynchrony.
         // avoid a wrong cue set if seek by cueGoto is still pending
@@ -825,7 +827,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    setSavedLoop(pCue, false);
+    setSavedLoop(pCue, true);
 }
 
 void CueControl::hotcueActivate(HotcueControl* pControl, double v) {

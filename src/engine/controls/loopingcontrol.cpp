@@ -516,8 +516,8 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
-void LoopingControl::setSavedLoop(CuePointer pCue, bool reloop) {
-    qDebug() << "setSavedLoop" << reloop;
+void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
+    qDebug() << "setSavedLoop" << toggle;
 
     if(!pCue) {
         m_pCue.reset();
@@ -547,11 +547,7 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool reloop) {
         m_pCOLoopEndPosition->set(loopSamples.end);
         setLoopingEnabled(true);
     } else {
-        setLoopingEnabled(m_bLoopingEnabled ? reloop : true);
-    }
-
-    if (reloop) {
-        seekAbs(static_cast<double>(m_loopSamples.getValue().start));
+        setLoopingEnabled(toggle ? !m_bLoopingEnabled : true);
     }
 }
 

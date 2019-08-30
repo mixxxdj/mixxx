@@ -51,7 +51,7 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(double dNewPlaypos) override;
 
-    void setSavedLoop(CuePointer pCue, bool reloop);
+    void setSavedLoop(CuePointer pCue, bool toggle);
 
     bool isLoopingEnabled();
 

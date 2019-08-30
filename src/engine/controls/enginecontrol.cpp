@@ -67,9 +67,9 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::setSavedLoop(CuePointer pCue, bool reloop) {
+void EngineControl::setSavedLoop(CuePointer pCue, bool toggle) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->setSavedLoop(pCue, reloop);
+        m_pEngineBuffer->setSavedLoop(pCue, toggle);
     }
 }
 
