@@ -74,12 +74,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
-    m_bMoveIntroStartWithMainCue = m_pConfig->getValue(ConfigKey("[Controls]",
-            "MoveIntroStart"), false);
-    checkBoxIntroStartMove->setChecked(m_bMoveIntroStartWithMainCue);
-    connect(checkBoxIntroStartMove, &QCheckBox::toggled,
-            this, &DlgPrefDeck::slotMoveIntroStartCheckbox);
-
     // Track time display configuration
     m_pControlTrackTimeDisplay = new ControlObject(
             ConfigKey("[Controls]", "ShowDurationRemaining"));
@@ -168,6 +162,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
     comboBoxLoadPoint->addItem(tr("Beginning of track"), static_cast<int>(SeekOnLoadMode::Beginning));
+    bool seekModeExisted = m_pConfig->exists(ConfigKey("[Controls]", "CueRecall"));
     int seekMode = m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"),
                                        static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->setCurrentIndex(
@@ -175,6 +170,24 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     m_seekOnLoadMode = static_cast<SeekOnLoadMode>(seekMode);
     connect(comboBoxLoadPoint, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefDeck::slotSetTrackLoadMode);
+
+    // This option was introduced in Mixxx 2.3 with the intro & outro cues.
+    // If the user has set main cue points with the intention of starting tracks
+    // from those points, enable this option. With Denon and Numark CueModes,
+    // it is not safe to assume that the user wants to start tracks from the
+    // main cue point because it is very easy to move the main cue point without
+    // explicitly intending to in those modes (the main cue point moves whenever
+    // the deck is not at the main cue point and play is pressed).
+    bool introStartMoveDefault = (m_seekOnLoadMode == SeekOnLoadMode::MainCue || !seekModeExisted)
+            && !(m_cueMode == CueMode::Denon || m_cueMode == CueMode::Numark);
+    m_bMoveIntroStartWithMainCue = m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"),
+         introStartMoveDefault);
+    // This is an ugly hack to ensure CueControl does not override the default value
+    // when it first accesses the ConfigKey and mixxx.cfg is empty.
+    m_pConfig->setValue(ConfigKey("[Controls]", "MoveIntroStart"), m_bMoveIntroStartWithMainCue);
+    checkBoxIntroStartMove->setChecked(m_bMoveIntroStartWithMainCue);
+    connect(checkBoxIntroStartMove, &QCheckBox::toggled,
+            this, &DlgPrefDeck::slotMoveIntroStartCheckbox);
 
     // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
     m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(

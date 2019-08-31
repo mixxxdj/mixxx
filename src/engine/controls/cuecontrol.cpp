@@ -353,7 +353,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     }
 
     double mainCue = m_pCuePoint->get();
-    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStart"), false)) {
+    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"), false)) {
         if (mainCue != kNoTrigger && mainCue != 0) {
             m_pIntroStartPosition->set(mainCue);
         }
@@ -814,7 +814,7 @@ void CueControl::cueSet(double v) {
         pLoadedTrack->setCuePoint(CuePosition(cue));
     }
 
-    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStart"), false)) {
+    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"), false)) {
         introStartSet(cue);
     }
 }
