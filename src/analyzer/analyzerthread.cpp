@@ -240,7 +240,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         }
 
         // 1st step: Decode next chunk of audio data
-        const auto inputFrameIndexRange =
+        auto inputFrameIndexRange =
                 remainingFrames.splitAndShrinkFront(
                         math_min(mixxx::kAnalysisFramesPerBlock, remainingFrames.length()));
         DEBUG_ASSERT(!inputFrameIndexRange.empty());
@@ -249,6 +249,12 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                         mixxx::WritableSampleFrames(
                                 inputFrameIndexRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= inputFrameIndexRange);
+        // Sometimes the duration of the audio source is inaccurate
+        // and adjusted (= shrinked) while reading.
+        remainingFrames = intersect(remainingFrames, audioSourceProxy.frameIndexRange());
+        inputFrameIndexRange = intersect(inputFrameIndexRange, audioSourceProxy.frameIndexRange());
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= inputFrameIndexRange);
 
         sleepWhileSuspended();
         if (isStopping()) {
@@ -256,29 +262,32 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         }
 
         // 2nd: step: Analyze chunk of decoded audio data
-        if (readableSampleFrames.frameLength() == mixxx::kAnalysisFramesPerBlock ||
-                remainingFrames.empty()) {
-            // Complete chunk of audio samples has been read for analysis
-            for (auto&& analyzer : m_analyzers) {
-                analyzer.processSamples(
-                        readableSampleFrames.readableData(),
-                        readableSampleFrames.readableLength());
-            }
-            if (remainingFrames.empty()) {
-                result = AnalysisResult::Complete;
-            }
-        } else {
-            // Partial chunk of audio samples has been read, but not the final.
-            // A decoding error must have occurred, maybe a corrupt file?
-            kLogger.warning()
-                    << "Aborting analysis after failure to read sample data:"
-                    << "expected frames =" << inputFrameIndexRange
-                    << ", actual frames =" << readableSampleFrames.frameIndexRange();
-            result = AnalysisResult::Partial;
+        for (auto&& analyzer : m_analyzers) {
+            analyzer.processSamples(
+                    readableSampleFrames.readableData(),
+                    readableSampleFrames.readableLength());
         }
 
-        // Don't check again for paused/stopped and simply finish the
-        // current iteration by emitting progress.
+        // Check if complete or abort on errors
+        if (remainingFrames.empty()) {
+            result = AnalysisResult::Complete;
+        } else {
+            // Only the final chunk should be incomplete
+            if (readableSampleFrames.frameIndexRange() < inputFrameIndexRange) {
+                // Partial chunk of audio samples has been read, although more data
+                // should be available. A decoding error must have occurred, maybe a
+                // corrupt file? Abort the analysis at this point to avoid analyzing
+                // corrupt data.
+                kLogger.warning()
+                        << "Aborting analysis after incomplete reading of sample data:"
+                        << "expected frames =" << inputFrameIndexRange
+                        << ", actual frames =" << readableSampleFrames.frameIndexRange();
+                result = AnalysisResult::Partial;
+            }
+        }
+
+        // Don't check again for paused/stopped again and simply finish
+        // the current iteration by emitting progress.
 
         // 3rd step: Update & emit progress
         const double frameProgress =
