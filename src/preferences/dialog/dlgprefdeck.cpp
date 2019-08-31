@@ -58,21 +58,19 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     int cueDefaultValue = m_pConfig->getValue(
             ConfigKey("[Controls]", "CueDefault"), 0);
 
+
     // Update combo box
-    // The itemData values are out of order to avoid breaking configurations
-    // when Mixxx mode (no blinking) was introduced.
-    // TODO: replace magic numbers with an enum class
-    ComboBoxCueMode->addItem(tr("Mixxx mode"), 0);
-    ComboBoxCueMode->addItem(tr("Mixxx mode (no blinking)"), 4);
-    ComboBoxCueMode->addItem(tr("Pioneer mode"), 1);
-    ComboBoxCueMode->addItem(tr("Denon mode"), 2);
-    ComboBoxCueMode->addItem(tr("Numark mode"), 3);
-    ComboBoxCueMode->addItem(tr("CUP mode"), 5);
+    ComboBoxCueMode->addItem(tr("Mixxx mode"), static_cast<int>(CueMode::Mixxx));
+    ComboBoxCueMode->addItem(tr("Mixxx mode (no blinking)"), static_cast<int>(CueMode::MixxxNoBlinking));
+    ComboBoxCueMode->addItem(tr("Pioneer mode"), static_cast<int>(CueMode::Pioneer));
+    ComboBoxCueMode->addItem(tr("Denon mode"), static_cast<int>(CueMode::Denon));
+    ComboBoxCueMode->addItem(tr("Numark mode"), static_cast<int>(CueMode::Numark));
+    ComboBoxCueMode->addItem(tr("CUP mode"), static_cast<int>(CueMode::CueAndPlay));
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
     for (ControlProxy* pControl : m_cueControls) {
-        pControl->set(m_iCueMode);
+        pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
@@ -521,7 +519,7 @@ void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
 }
 
 void DlgPrefDeck::slotCueModeCombobox(int index) {
-    m_iCueMode = ComboBoxCueMode->itemData(index).toInt();
+    m_cueMode = static_cast<CueMode>(ComboBoxCueMode->itemData(index).toInt());
 }
 
 void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
@@ -608,9 +606,9 @@ void DlgPrefDeck::slotApply() {
 
     // Set cue mode for every deck
     for (ControlProxy* pControl : m_cueControls) {
-        pControl->set(m_iCueMode);
+        pControl->set(static_cast<int>(m_cueMode));
     }
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_iCueMode);
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
 
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);

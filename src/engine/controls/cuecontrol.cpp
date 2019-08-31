@@ -1420,8 +1420,8 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     //qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
     //        << m_iCurrentlyPreviewingHotcues << m_bPreviewing;
     QMutexLocker lock(&m_mutex);
-    double cueMode = m_pCueMode->get();
-    if ((cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) &&
+    CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
+    if ((cueMode == CueMode::Denon || cueMode == CueMode::Numark) &&
         newPlay && playPossible &&
         !m_pPlay->toBool() &&
         !m_bypassCueSetByPlay) {
@@ -1459,15 +1459,15 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     } else {
         // Pause:
         m_pStopButton->set(1.0);
-        if (cueMode == CUE_MODE_DENON) {
+        if (cueMode == CueMode::Denon) {
             if (trackAt == TrackAt::Cue || previewing) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
             } else {
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (cueMode == CUE_MODE_MIXXX || cueMode == CUE_MODE_MIXXX_NO_BLINK ||
-                   cueMode == CUE_MODE_NUMARK) {
+        } else if (cueMode == CueMode::Mixxx || cueMode == CueMode::MixxxNoBlinking ||
+                   cueMode == CueMode::Numark) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer mode
@@ -1475,13 +1475,13 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
         }
     }
 
-    if (cueMode != CUE_MODE_DENON && cueMode != CUE_MODE_NUMARK) {
+    if (cueMode != CueMode::Denon && cueMode != CueMode::Numark) {
         if (m_pCuePoint->get() != -1) {
             if (newPlay == 0.0 && trackAt == TrackAt::ElseWhere) {
-                if (cueMode == CUE_MODE_MIXXX) {
+                if (cueMode == CueMode::Mixxx) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
-                } else if (cueMode == CUE_MODE_MIXXX_NO_BLINK) {
+                } else if (cueMode == CueMode::MixxxNoBlinking) {
                     m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
                 } else {
                     // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point

@@ -121,7 +121,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     TrackTime::DisplayMode m_timeDisplayMode;
 
-    int m_iCueMode;
+    CueMode m_cueMode;
 
     bool m_bMoveIntroStartWithMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;

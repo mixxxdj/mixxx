@@ -18,6 +18,15 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
+enum class CueMode {
+    Mixxx,
+    Pioneer,
+    Denon,
+    Numark,
+    MixxxNoBlinking,
+    CueAndPlay
+};
+
 enum class SeekOnLoadMode {
     MainCue = 0,  // Use main cue point
     Beginning = 1,  // Use 0:00.000
