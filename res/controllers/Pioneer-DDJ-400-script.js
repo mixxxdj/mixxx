@@ -66,7 +66,58 @@
 //TODO: Functions that could be implemented to the script:
 // ****************************************************************************
 
-var PioneerDDJ400 = {};
+const PioneerDDJ400 = {};
+
+const LightsPioneerDDJ400 = {
+    beatFx: {
+        status: 0x94,
+        data1: 0x47,
+    },
+    deck1: {
+        vuMeter: {
+            status: 0xB0,
+            data1: 0x02,
+        },
+        playPause: {
+            status: 0x90,
+            data1: 0x0B,
+        },
+        shiftPlayPause: {
+            status: 0x90,
+            data1: 0x47,
+        },
+        cue: {
+            status: 0x90,
+            data1: 0x0C,
+        },
+        shiftCue: {
+            status: 0x90,
+            data1: 0x48,
+        },
+    },
+    deck2: {
+        vuMeter: {
+            status: 0xB0,
+            data1: 0x02,
+        },
+        playPause: {
+            status: 0x91,
+            data1: 0x0B,
+        },
+        shiftPlayPause: {
+            status: 0x91,
+            data1: 0x47,
+        },
+        cue: {
+            status: 0x91,
+            data1: 0x0C,
+        },
+        shiftCue: {
+            status: 0x91,
+            data1: 0x48,
+        },
+    },
+};
 
 // Save the Shift State 
 PioneerDDJ400.shiftState = [0, 0];
@@ -96,33 +147,40 @@ PioneerDDJ400.hotcueLoopPoints = {
     '[Channel1]' : [],
     '[Channel2]' : []
 };
- 
-// Beat FX 
-PioneerDDJ400.beatFxEffect = 0;
-PioneerDDJ400.beatFXEffectSlots = 3;
 
 // Loop Section
 PioneerDDJ400.loopin4beat = [ false, false ]; // inn4loop is pressed
 PioneerDDJ400.loopout = [ false, false ]; // out loop is pressed
 PioneerDDJ400.loopAdjustMultiply = 5;
 
+
 PioneerDDJ400.init = function() {
-    // init controler
+    // init controller
     // init tempo Range to 10% (default = 6%)
     engine.setValue('[Channel1]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
     engine.setValue('[Channel2]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
     
-    // enable effect fous on FX3 for Effect Section 
+    // enable effect focus on FX3 for Effect Section
+    engine.setValue('[EffectRack1_EffectUnit1]', 'show_focus', 0);
+    engine.setValue('[EffectRack1_EffectUnit1]', 'group_[Channel1]_enable', 1);
+
+    engine.setValue('[EffectRack1_EffectUnit2]', 'show_focus', 0);
+    engine.setValue('[EffectRack1_EffectUnit2]', 'group_[Channel2]_enable', 1);
+
     engine.setValue('[EffectRack1_EffectUnit3]', 'show_focus', 1);
 
     // Connect the VU-Meter LEDS
     engine.connectControl('[Channel1]','VuMeter','PioneerDDJ400.vuMeterUpdate');
     engine.connectControl('[Channel2]','VuMeter','PioneerDDJ400.vuMeterUpdate');
-    midi.sendShortMsg(0xB0, 0x02, 0); // reset vumeter
-    midi.sendShortMsg(0xB1, 0x02, 0); // reset vumeter
 
+    // reset vumeter
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
 };
 
+PioneerDDJ400.toggleLight = function(midiIn, active) {
+    midi.sendShortMsg(midiIn.status, midiIn.data1, active ? 0x7F : 0);
+};
 
 PioneerDDJ400.jogTurn = function(channel, _control, value, _status, group) {
     const deckNum = channel + 1;
@@ -486,58 +544,105 @@ PioneerDDJ400.loopoutPressed = function(channel, _control, value, _status, group
     }
 };
 
+// START BEAT FX
+
+PioneerDDJ400.numFxSlots = 3;
+
+Object.defineProperty(PioneerDDJ400, 'selectedFxSlot', {
+    get: function() {
+        return engine.getValue('[EffectRack1_EffectUnit3]', 'focused_effect');
+    },
+    set: function(value) {
+        if (value <= 0 || value > PioneerDDJ400.numFxSlots) {
+            return;
+        }
+
+        engine.setValue('[EffectRack1_EffectUnit3]', 'focused_effect', value);
+
+        const isEffectEnabled = engine.getValue(PioneerDDJ400.selectedFxGroup, 'enabled');
+
+        PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEffectEnabled);
+    },
+});
+
+Object.defineProperty(PioneerDDJ400, 'selectedFxGroup', {
+    get: function() {
+        return '[EffectRack1_EffectUnit3_Effect' + PioneerDDJ400.selectedFxSlot + ']';
+    },
+});
+
 PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value){
-    const newVal = value == 0 ? 0 : (value / 0x7F);
-    const effectOn = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled');
+    const newVal = value === 0 ? 0 : (value / 0x7F);
+    const effectOn = engine.getValue(PioneerDDJ400.selectedFxGroup, 'enabled');
     
-    if(effectOn == 0){
+    if (effectOn) {
+        engine.setValue(PioneerDDJ400.selectedFxGroup, 'meta', newVal);
+    } else {
         engine.setValue('[EffectRack1_EffectUnit3]', 'mix', newVal);
-    }
-    else{
-        engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'meta', newVal);
     }
 };
 
 PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value){
-    engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'next_effect', value);
+    engine.setValue(PioneerDDJ400.selectedFxGroup, 'next_effect', value);
 };
 
 PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value){
-    engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'prev_effect', value);
+    engine.setValue(PioneerDDJ400.selectedFxGroup, 'prev_effect', value);
 };
 
-PioneerDDJ400.beatFxLeftPressed = function(_channel, _control, value, _status, group){
-    if(this.beatFxEffect == 0) return; // dont cycle
-    this.beatFxEffect = (this.beatFxEffect - (value & 0x1) ) % this.beatFXEffectSlots; 
-    engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
-};
+PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
+    PioneerDDJ400.selectedFxSlot -= 1;
+});
 
-PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value, _status, group){
-    if(this.beatFxEffect >= this.beatFXEffectSlots-1) return; // dont cycle
-    this.beatFxEffect = (this.beatFxEffect + (value & 0x1) ) % this.beatFXEffectSlots; 
-    engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
-};
+PioneerDDJ400.beatFxRightPressed = ignoreRelease(function() {
+    PioneerDDJ400.selectedFxSlot += 1;
+});
 
-PioneerDDJ400.beatFxOnOffPressed = function(_channel, control, value, status, group){
-    if(value == 0) return; // ignore release
-    
-    const lastVal = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled');
-    
-    engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled', !lastVal);
-    engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
+PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
+    const isEnabled = !engine.getValue(PioneerDDJ400.selectedFxGroup, 'enabled');
 
-    midi.sendShortMsg(status, control, !lastVal ? 0x7F : 0x00);
-};
+    engine.setValue(PioneerDDJ400.selectedFxGroup, 'enabled', isEnabled);
 
-PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, control, value, status){
-    if(value == 0) return; // ignore release
-    
-    for(var i = 0; i < this.beatFXEffectSlots; i++){
-        engine.setValue('[EffectRack1_EffectUnit3_Effect'+(i+1)+']', 'enabled', 0);
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEnabled);
+});
+
+PioneerDDJ400.beatFxOnOffShiftPressed = ignoreRelease(function(_channel, control, value, status) {
+    for (var i = 1; i <= PioneerDDJ400.numFxSlots; i += 1) {
+        engine.setValue('[EffectRack1_EffectUnit3_Effect' + i + ']', 'enabled', 0);
     }
 
-    midi.sendShortMsg(status, control, 0);
-};
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
+});
+
+PioneerDDJ400.beatFxChannel = ignoreRelease(function(_channel, control, _value, _status, group) {
+    const enableChannel1 = control === 0x10 || control === 0x14;
+    const enableChannel2 = control === 0x11 || control === 0x14;
+
+    engine.setValue(group, 'group_[Channel1]_enable', enableChannel1);
+    engine.setValue(group, 'group_[Channel2]_enable', enableChannel2);
+});
+
+PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
+    const groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
+        const effectAbove = parseInt(effect, 10) - 4;
+
+        return '[EffectRack1_EffectUnit' + unit + '_Effect' + effectAbove + ']';
+    });
+
+    engine.setValue(groupAbove, 'next_effect', value);
+});
+
+PioneerDDJ400.padFxShiftBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
+    const groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
+        const effectAbove = parseInt(effect, 10) - 4;
+
+        return '[EffectRack1_EffectUnit' + unit + '_Effect' + effectAbove + ']';
+    });
+
+    engine.setValue(groupAbove, 'prev_effect', value);
+});
+
+// END BEAT FX
 
 PioneerDDJ400.vuMeterUpdate = function(value, group){
     const newVal = value * 150;
@@ -555,11 +660,7 @@ PioneerDDJ400.vuMeterUpdate = function(value, group){
 };
 
 
-PioneerDDJ400.samplerModePadPressed = function(channel, control, value, status, group) {
-    if (value === 0) {
-        return; // ignore release
-    }
-
+PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(channel, control, value, status, group) {
     const isLoaded = engine.getValue(group, 'track_loaded') === 1;
 
     if (!isLoaded) {
@@ -569,7 +670,17 @@ PioneerDDJ400.samplerModePadPressed = function(channel, control, value, status, 
     engine.setValue(group, 'cue_gotoandplay', 1);
 
     startSampleFlicker(status, control, group);
-};
+});
+
+// Wrapper to easily ignore the function when the button is released.
+function ignoreRelease(fn) {
+    return function(channel, control, value, status, group){
+        if (value === 0) { // This means the button is released.
+            return;
+        }
+        return fn(channel, control, value, status, group);
+    };
+}
 
 const TimersPioneerDDJ400 = {};
 
@@ -601,6 +712,7 @@ function stopFlicker(channel, control) {
 }
 
 PioneerDDJ400.shutdown = function() {
-    midi.sendShortMsg(0xB0, 0x02, 0); // reset vumeter
-    midi.sendShortMsg(0xB1, 0x02, 0); // reset vumeter
+    // reset vumeter
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
 };
