@@ -1249,9 +1249,10 @@ QString SoundSourceProviderFFmpeg::getName() const {
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
         const QString& /*supportedFileExtension*/) const {
     // TODO: Increase priority to HIGHER if FFmpeg should be used as the
-    // default decoder instead of other SoundSources. Currently it is
-    // only used as a fallback.
-    return SoundSourceProviderPriority::LOWER;
+    // default decoder instead of other SoundSources?
+    // Currently it is only used as a fallback after all other SoundSources
+    // failed to open a file or are otherwise unavailable.
+    return SoundSourceProviderPriority::LOWEST;
 }
 
 } // namespace mixxx
