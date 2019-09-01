@@ -709,11 +709,25 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             QString text = pMark->m_text;
 
             // Only allow the text to overlap the following mark if the mouse is
-            // hovering over it. Otherwise, elide it if it would render over
-            // the next label.
+            // hovering over it. Elide it if it would render over the next
+            // label, but do not elide it if the next mark's label is not at the
+            // same vertical position.
             if (pMark != m_pHoveredMark && i < m_marksToRender.size()-1) {
-                const float nextMarkPosition = offset + m_marksToRender.at(i+1)->getSamplePosition() * gain;
-                text = fontMetrics.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
+                float nextMarkPosition = -1.0;
+                for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
+                    WaveformMarkPointer otherMark = m_marksToRender.at(m);
+                    bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
+                    // Hotcues always show at least their number.
+                    bool otherHasLabel = !otherMark->m_text.isEmpty()
+                            || otherMark->getHotCue() != WaveformMark::kNoHotCue;
+                    if (otherAtSameHeight && otherHasLabel) {
+                        nextMarkPosition = offset + otherMark->getSamplePosition() * gain;
+                        break;
+                    }
+                }
+                if (nextMarkPosition != -1.0) {
+                    text = fontMetrics.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
+                }
             }
             // Sometimes QFontMetrics::elidedText turns the QString into just an
             // elipsis character, so always show at least the hotcue number if
