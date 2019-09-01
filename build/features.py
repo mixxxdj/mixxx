@@ -442,7 +442,7 @@ class ModPlug(Feature):
         return "Modplug module decoder plugin"
 
     def default(self, build):
-        return 1 if build.platform_is_linux else 0
+        return 1 if build.platform_is_linux or build.platform_is_osx else 0
 
     def enabled(self, build):
         build.flags['modplug'] = util.get_flags(build.env, 'modplug', self.default(build))
