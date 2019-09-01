@@ -209,6 +209,10 @@
         outValueScale: function (value) {
             return (value > 0) ? this.on : this.off;
         },
+
+        shutdown: function () {
+            this.send(this.off);
+        },
     });
 
     var PlayButton = function (options) {
@@ -606,6 +610,14 @@
                     component.trigger();
                 });
             }
+        },
+        shutdown: function () {
+            this.forEachComponent(function (component) {
+                if (component.shutdown !== undefined
+                    && typeof component.shutdown === 'function') {
+                    component.shutdown();
+                }
+            })
         },
     };
 
