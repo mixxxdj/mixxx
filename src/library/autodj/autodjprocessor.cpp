@@ -9,6 +9,7 @@
 #include "mixer/basetrackplayer.h"
 
 #define kConfigKey "[Auto DJ]"
+namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 const double kTransitionPreferenceDefault = 10.0;
@@ -16,7 +17,8 @@ const double kKeepPosition = -1.0;
 
 const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
-static const bool sDebug = true; // false;
+static const bool sDebug = false;
+} // anonymous namespace
 
 DeckAttributes::DeckAttributes(int index,
                                BaseTrackPlayer* pPlayer,
