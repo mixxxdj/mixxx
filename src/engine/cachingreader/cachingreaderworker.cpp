@@ -38,10 +38,12 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // is available and if any audio data that is needed by the chunk is
     // actually available.
     auto chunkFrameIndexRange = pChunk->frameIndexRange(m_pAudioSource);
-    DEBUG_ASSERT(chunkFrameIndexRange <= m_pAudioSource->frameIndexRange());
+    DEBUG_ASSERT(!m_pAudioSource ||
+            chunkFrameIndexRange <= m_pAudioSource->frameIndexRange());
     if (chunkFrameIndexRange.empty()) {
         ReaderStatusUpdate result;
-        result.init(CHUNK_READ_INVALID, pChunk, m_pAudioSource->frameIndexRange());
+        result.init(CHUNK_READ_INVALID, pChunk,
+                m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
         return result;
     }
 
@@ -49,7 +51,8 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     const mixxx::IndexRange bufferedFrameIndexRange = pChunk->bufferSampleFrames(
             m_pAudioSource,
             mixxx::SampleBuffer::WritableSlice(m_tempReadBuffer));
-    DEBUG_ASSERT(bufferedFrameIndexRange <= m_pAudioSource->frameIndexRange());
+    DEBUG_ASSERT(!m_pAudioSource ||
+            bufferedFrameIndexRange <= m_pAudioSource->frameIndexRange());
     // The readable frame range might have changed
     chunkFrameIndexRange = intersect(chunkFrameIndexRange, m_pAudioSource->frameIndexRange());
     DEBUG_ASSERT(bufferedFrameIndexRange <= chunkFrameIndexRange);
@@ -67,7 +70,8 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     }
 
     ReaderStatusUpdate result;
-    result.init(status, pChunk, m_pAudioSource->frameIndexRange());
+    result.init(status, pChunk,
+            m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
     return result;
 }
 
