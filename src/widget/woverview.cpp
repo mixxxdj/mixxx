@@ -749,7 +749,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
 
                 if (valign == Qt::AlignTop) {
-                    textPoint.setY(textRect.height() + 0.5f);
+                    textPoint.setY(fontMetrics.height());
                 } else if (valign == Qt::AlignVCenter) {
                     textPoint.setY((textRect.height() + height()) / 2);
                 } else { // AlignBottom
