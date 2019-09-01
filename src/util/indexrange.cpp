@@ -78,18 +78,18 @@ IndexRange intersect(IndexRange lhs, IndexRange rhs) {
             return IndexRange();
         }
     } else {
+        // Single point = empty range
+        DEBUG_ASSERT(lhs.empty());
         DEBUG_ASSERT(lhs.start() == lhs.end());
+        // Check if this point is located within the other range
+        // and then return it
         if (rhs.start() <= rhs.end()) {
-            const SINT start = std::max(lhs.start(), rhs.start());
-            const SINT end = std::min(lhs.end(), rhs.end());
-            if (start <= end) {
-                return IndexRange::between(start, end);
+            if (lhs.start() >= rhs.start() && lhs.end() <= rhs.end()) {
+                return lhs;
             }
         } else {
-            const SINT start = std::min(lhs.start(), rhs.start());
-            const SINT end = std::max(lhs.end(), rhs.end());
-            if (start >= end) {
-                return IndexRange::between(start, end);
+            if (lhs.start() <= rhs.start() && lhs.end() >= rhs.end()) {
+                return lhs;
             }
         }
     }
@@ -119,6 +119,8 @@ IndexRange span(IndexRange lhs, IndexRange rhs) {
             return IndexRange();
         }
     } else {
+        // Single point = empty range
+        DEBUG_ASSERT(lhs.empty());
         DEBUG_ASSERT(lhs.start() == lhs.end());
         if (rhs.start() <= rhs.end()) {
             const SINT start = std::min(lhs.start(), rhs.start());
