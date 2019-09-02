@@ -654,7 +654,7 @@
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
                 if (component instanceof EffectAssignmentButton) {
-                    // The ControlObjects for assinging decks to effect units
+                    // The ControlObjects for assigning decks to effect units
                     // indicate the effect unit with the group and the deck with the key,
                     // so change the key here instead of the group.
                     component.inKey = 'group_' + newGroup + '_enable';
