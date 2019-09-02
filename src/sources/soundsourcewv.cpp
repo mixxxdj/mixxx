@@ -160,16 +160,6 @@ QString SoundSourceProviderWV::getName() const {
     return "WavPack";
 }
 
-QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("wv");
-    return supportedFileExtensions;
-}
-
-SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceWV>(url);
-}
-
 //static
 int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount) {
     QFile* pFile = static_cast<QFile*>(id);
@@ -251,6 +241,23 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount) 
         return 0;
     }
     return (int32_t)pFile->write((char*)data, bcount);
+}
+
+QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("wv");
+    return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::HIGHER;
+}
+
+SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceWV>(url);
 }
 
 } // namespace mixxx
