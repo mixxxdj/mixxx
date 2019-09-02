@@ -58,6 +58,7 @@ WOverview::WOverview(
         m_iPosSeconds(0),
         m_iPos(0),
         m_pHoveredMark(nullptr),
+        m_bHotcueMenuShowing(false),
         m_bTimeRulerActive(false),
         m_orientation(Qt::Horizontal),
         m_a(1.0),
@@ -84,6 +85,9 @@ WOverview::WOverview(
 
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
+
+    connect(m_pCueMenu.get(), &QMenu::aboutToHide,
+            this, &WOverview::slotCueMenuAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -464,14 +468,23 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 m_pCueMenu->setCue(pHoveredCue);
                 m_pCueMenu->setTrack(m_pCurrentTrack);
                 m_pCueMenu->popup(e->globalPos());
+                m_bHotcueMenuShowing = true;
             }
         }
     }
 }
 
+void WOverview::slotCueMenuAboutToHide() {
+    m_bHotcueMenuShowing = false;
+    m_pHoveredMark.clear();
+    update();
+}
+
 void WOverview::leaveEvent(QEvent* e) {
     Q_UNUSED(e);
-    m_pHoveredMark.clear();
+    if (!m_bHotcueMenuShowing) {
+        m_pHoveredMark.clear();
+    }
     m_bTimeRulerActive = false;
     update();
 }

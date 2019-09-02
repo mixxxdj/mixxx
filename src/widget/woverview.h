@@ -101,6 +101,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
+    void slotCueMenuAboutToHide();
+
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -149,6 +151,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPos;
 
     WaveformMarkPointer m_pHoveredMark;
+    bool m_bHotcueMenuShowing;
     bool m_bTimeRulerActive;
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
