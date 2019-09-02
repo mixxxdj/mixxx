@@ -179,7 +179,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     return QString();
 }
 
-int createDevicePLaylist(QSqlDatabase& database, QString devicePath) {
+int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
     int playlistID = -1;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
@@ -339,7 +339,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     int audioFilesCount = 0;
 
     // Create a playlist for all the tracks on a device
-    int playlistID = createDevicePLaylist(database, devicePath);
+    int playlistID = createDevicePlaylist(database, devicePath);
 
     QSqlQuery queryInsertIntoDevicePlaylistTracks(database);
     queryInsertIntoDevicePlaylistTracks.prepare(
