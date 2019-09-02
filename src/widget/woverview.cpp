@@ -741,7 +741,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             QPointF textPoint;
             if (m_orientation == Qt::Horizontal) {
                 if (halign == Qt::AlignLeft) {
-                    textPoint.setX(markPosition - textRect.width());
+                    textPoint.setX(markPosition - textRect.width() - 5.5);
                 } else if (halign == Qt::AlignHCenter) {
                     textPoint.setX(markPosition - textRect.width() / 2);
                 } else { // AlignRight
@@ -794,7 +794,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         // vice versa.
         if (pMark == m_pHoveredMark) {
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
-            QPointF positionTextPoint(markPosition, 0);
+            QPointF positionTextPoint(markPosition + 1.5, 0);
             if (valign == Qt::AlignTop) {
                 positionTextPoint.setY(float(height()) - 0.5f);
             } else {
@@ -819,7 +819,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
                     markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
-            QPointF timeDistancePoint(markPosition, (fontMetrics.height() + height()) / 2);
+            QPointF timeDistancePoint(positionTextPoint.x(), (fontMetrics.height() + height()) / 2);
             m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
                     markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
             markHovered = true;
@@ -966,14 +966,13 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     samplePositionToSeconds(endValue - startValue));
 
             QRectF durationRect = fontMetrics.boundingRect(duration);
-            qreal padding = 3.0;
             qreal x;
 
             WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
             if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
-                x = startPosition - durationRect.width() - padding;
+                x = startPosition - durationRect.width() - 5.5;
             } else {
-                x = endPosition + padding;
+                x = endPosition + 1.5;
             }
 
             QPointF durationBottomLeft(x, fontMetrics.height());
