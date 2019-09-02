@@ -107,7 +107,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     "Use the selected number of seconds as the crossfade time."
     );
     fadeModeCombobox->setToolTip(fadeModeTooltip);
-    fadeModeLabel->setToolTip(fadeModeTooltip);
 
     repeatPlaylistCheckbox->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference)));
