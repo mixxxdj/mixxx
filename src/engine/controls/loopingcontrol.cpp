@@ -354,19 +354,29 @@ double LoopingControl::nextTrigger(bool reverse,
 
     LoopSamples loopSamples = m_loopSamples.getValue();
 
+    // adjust loop in was toggled (slotLoopIn or slotLoopOut)
     if (m_bAdjustingLoopInOld != m_bAdjustingLoopIn) {
         m_bAdjustingLoopInOld = m_bAdjustingLoopIn;
-        if (reverse && !m_bAdjustingLoopIn) {
+
+        // adjust loop in was true and is now false and is only relevant in reverse mode
+        // in non-quantized mode we jump immediately to the end of the loop while in quantized mode we wait until the loop start is reached
+        if (reverse && !m_bAdjustingLoopIn && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopSamples = loopSamples;
+            // set the target sample to the current loop end (jump to end)
             *pTarget = loopSamples.end;
             return currentSample;
         }
     }
 
+    // adjust loop out was toggled (slotLoopOut or slotLoopIn)
     if (m_bAdjustingLoopOutOld != m_bAdjustingLoopOut) {
         m_bAdjustingLoopOutOld = m_bAdjustingLoopOut;
-        if (!reverse && !m_bAdjustingLoopOut) {
+
+        // adjust loop out was true and is now false and is only relevant in forward mode
+        // in non-quantized mode we jump immediately to the beginning of the loop while in quantized mode we wait until the loop end is reached
+        if (!reverse && !m_bAdjustingLoopOut && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopSamples = loopSamples;
+            // set the target sample to the current loop start (jump to beginning)
             *pTarget = loopSamples.start;
             return currentSample;
         }
