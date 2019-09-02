@@ -43,6 +43,7 @@ class SoundSourceProxyTest: public MixxxTest {
         QStringList availableFileNameSuffixes;
         availableFileNameSuffixes
                 << ".aiff"
+                << "-alac.caf"
                 << ".flac"
                 << ".m4a"
                 << "-png.mp3"
