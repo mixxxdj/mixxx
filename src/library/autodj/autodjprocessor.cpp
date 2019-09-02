@@ -1057,9 +1057,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
-            useFixedFadeTime(pFromDeck, pToDeck,
-                    getLastSoundPosition(pFromDeck),
-                    getFirstSoundPosition(pToDeck));
+            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
         break;
     case TransitionMode::FadeAtOutroStart:
@@ -1102,14 +1100,11 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
-            useFixedFadeTime(pFromDeck, pToDeck,
-                    getLastSoundPosition(pFromDeck),
-                    getFirstSoundPosition(pToDeck));
+            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
         break;
     case TransitionMode::FixedSkipSilence:
-        useFixedFadeTime(pFromDeck,
-                pToDeck,
+        useFixedFadeTime(pFromDeck, pToDeck,
                 getLastSoundPosition(pFromDeck),
                 getFirstSoundPosition(pToDeck));
         break;
