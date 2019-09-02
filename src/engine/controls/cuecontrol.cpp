@@ -444,6 +444,7 @@ void CueControl::loadCuesFromTrack() {
                 pControl->setLength(pCue->getLength());
                 pControl->setColor(pCue->getColor());
                 pControl->setType(pCue->getType());
+                pControl->setStatus(pCue->getStatus());
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -2150,7 +2151,6 @@ void HotcueControl::slotHotcueClear(double v) {
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
-    m_hotcueEnabled->forceSet(newPosition == -1 ? 0.0 : 1.0);
     emit(hotcuePositionChanged(this, newPosition));
 }
 
@@ -2183,6 +2183,7 @@ void HotcueControl::setCue(CuePointer pCue) {
     setPosition(pCue->getPosition());
     setLength(pCue->getLength());
     setColor(pCue->getColor());
+    setStatus(pCue->getStatus());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
@@ -2200,11 +2201,11 @@ void HotcueControl::resetCue() {
     m_pCue.reset();
     setPosition(-1.0);
     setLength(-1.0);
+    setStatus(static_cast<double>(Cue::CueStatus::DISABLED));
 }
 
 void HotcueControl::setPosition(double position) {
     m_hotcuePosition->set(position);
-    m_hotcueEnabled->forceSet((position == -1) ? 0.0 : 1.0);
 }
 
 void HotcueControl::setLength(double length) {
@@ -2213,4 +2214,8 @@ void HotcueControl::setLength(double length) {
 
 void HotcueControl::setType(double type) {
     m_hotcueType->set(type);
+}
+
+void HotcueControl::setStatus(double status) {
+    m_hotcueEnabled->set(static_cast<double>(status));
 }

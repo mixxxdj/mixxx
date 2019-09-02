@@ -23,6 +23,12 @@ class Cue : public QObject {
         MANUAL    = 2,
     };
 
+    enum CueStatus {
+        DISABLED  = 0,
+        ENABLED   = 1,
+        ACTIVE    = 2,
+    };
+
     enum CueType {
         INVALID = 0,
         CUE     = 1, // hot cue
@@ -45,6 +51,11 @@ class Cue : public QObject {
 
     CueType getType() const;
     void setType(CueType type);
+
+    CueStatus getStatus() const;
+    bool isActive() const;
+    void activate();
+    void deactivate();
 
     double getPosition() const;
     void setPosition(double samplePosition);
@@ -77,6 +88,7 @@ class Cue : public QObject {
     mutable QMutex m_mutex;
 
     bool m_bDirty;
+    bool m_bActive;
     int m_iId;
     TrackId m_trackId;
     CueSource m_source;

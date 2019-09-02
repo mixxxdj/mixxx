@@ -51,6 +51,7 @@ class HotcueControl : public QObject {
     void setPosition(double position);
     void setLength(double length);
     void setType(double type);
+    void setStatus(double status);
     void setColor(PredefinedColorPointer newColor);
     PredefinedColorPointer getColor() const;
 

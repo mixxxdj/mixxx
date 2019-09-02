@@ -21,6 +21,7 @@ void CuePointer::deleteLater(Cue* pCue) {
 
 Cue::Cue(TrackId trackId)
         : m_bDirty(false),
+          m_bActive(false),
           m_iId(-1),
           m_trackId(trackId),
           m_source(UNKNOWN),
@@ -36,6 +37,7 @@ Cue::Cue(TrackId trackId)
 Cue::Cue(int id, TrackId trackId, Cue::CueSource source, Cue::CueType type, double position, double length,
          int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
+          m_bActive(false),
           m_iId(id),
           m_trackId(trackId),
           m_source(source),
@@ -85,6 +87,53 @@ void Cue::setSource(CueSource source) {
     m_bDirty = true;
     lock.unlock();
     emit(updated());
+}
+
+Cue::CueStatus Cue::getStatus() const {
+    CueStatus status = CueStatus::DISABLED;
+    switch(getType()) {
+        case CueType::LOOP:
+            if (getPosition() != -1 && getPosition() > 0) {
+                status = CueStatus::ENABLED;
+            }
+            break;
+        default:
+            if (getPosition() != -1) {
+                status = CueStatus::ENABLED;
+            }
+            break;
+    }
+
+    if(status == CueStatus::ENABLED && isActive()) {
+        status = CueStatus::ACTIVE;
+    }
+
+    return status;
+}
+
+bool Cue::isActive() const {
+    QMutexLocker lock(&m_mutex);
+    return m_bActive;
+}
+
+void Cue::activate() {
+    QMutexLocker lock(&m_mutex);
+    bool changed = !m_bActive;
+    m_bActive = true;
+    lock.unlock();
+    if (changed) {
+        emit(updated());
+    }
+}
+
+void Cue::deactivate() {
+    QMutexLocker lock(&m_mutex);
+    bool changed = m_bActive;
+    m_bActive = false;
+    lock.unlock();
+    if (changed) {
+        emit(updated());
+    }
 }
 
 Cue::CueType Cue::getType() const {

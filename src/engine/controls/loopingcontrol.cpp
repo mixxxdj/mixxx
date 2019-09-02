@@ -524,8 +524,11 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
     qDebug() << "setSavedLoop" << toggle;
 
     if(!pCue) {
-        m_pCue.reset();
-         clearActiveBeatLoop();
+        if(m_pCue) {
+            m_pCue->deactivate();
+            m_pCue.reset();
+        }
+        clearActiveBeatLoop();
         return;
     }
     DEBUG_ASSERT(pCue->getType() == Cue::LOOP);
@@ -533,7 +536,10 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
     double startPosition = pCue->getPosition();;
     double endPosition = startPosition + pCue->getLength();
     if(startPosition < 0 || startPosition >= endPosition) {
-        m_pCue.reset();
+        if(m_pCue) {
+            m_pCue->deactivate();
+            m_pCue.reset();
+        }
         clearActiveBeatLoop();
         return;
     }
@@ -550,8 +556,15 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
         m_pCOLoopStartPosition->set(loopSamples.start);
         m_pCOLoopEndPosition->set(loopSamples.end);
         setLoopingEnabled(true);
+        m_pCue->activate();
     } else {
-        setLoopingEnabled(toggle ? !m_bLoopingEnabled : true);
+        bool activate_cue = toggle ? !m_bLoopingEnabled : true;
+        setLoopingEnabled(activate_cue);
+        if(activate_cue) {
+            m_pCue->activate();
+        } else {
+            m_pCue->deactivate();
+        }
     }
 }
 
@@ -1089,7 +1102,8 @@ void LoopingControl::updateBeatLoopingControls() {
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
     // If this is a "new" loop, stop tracking saved loop changes
-    if(!keepStartPoint) {
+    if(!keepStartPoint && m_pCue) {
+        m_pCue->deactivate();
         m_pCue.reset();
     }
 
