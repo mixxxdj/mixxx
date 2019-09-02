@@ -950,7 +950,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
 
     // draw duration of WaveformMarkRanges
     for (auto&& markRange : m_markRanges) {
-        if (markRange.showDuration()) {
+        if (markRange.showDuration() && markRange.active() && markRange.visible()) {
             // Active mark ranges by definition have starts/ends that are not
             // disabled.
             const qreal startValue = markRange.start();
