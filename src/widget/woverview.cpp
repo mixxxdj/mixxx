@@ -745,7 +745,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 } else if (halign == Qt::AlignHCenter) {
                     textPoint.setX(markPosition - textRect.width() / 2);
                 } else { // AlignRight
-                    textPoint.setX(markPosition + 0.5f);
+                    textPoint.setX(markPosition + 1.5);
                 }
 
                 if (valign == Qt::AlignTop) {
