@@ -667,11 +667,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
-    track->setKeys(KeyFactory::makeBasicKeysFromText(index.sibling(
-                                                                  index.row(), fieldIndex("key"))
-                                                             .data()
-                                                             .toString(),
-            mixxx::track::io::key::USER));
+    track->setKeys(KeyFactory::makeBasicKeysFromText(index.sibling(index.row(), fieldIndex("key")).data().toString(), mixxx::track::io::key::USER));
 
     return track;
 }
