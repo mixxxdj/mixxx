@@ -2198,7 +2198,7 @@ void HotcueControl::resetCue() {
     setPosition(-1.0);
     setLength(-1.0);
     setType(Cue::CueType::INVALID);
-    setStatus(static_cast<double>(Cue::CueStatus::DISABLED));
+    setStatus(Cue::CueStatus::DISABLED);
 }
 
 void HotcueControl::setPosition(double position) {
@@ -2213,6 +2213,6 @@ void HotcueControl::setType(Cue::CueType type) {
     m_hotcueType->set(static_cast<double>(type));
 }
 
-void HotcueControl::setStatus(double status) {
-    m_hotcueEnabled->set(static_cast<double>(status));
+void HotcueControl::setStatus(Cue::CueStatus status) {
+    m_hotcueEnabled->forceSet(static_cast<double>(status));
 }
