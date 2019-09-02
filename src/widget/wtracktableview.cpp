@@ -1895,7 +1895,7 @@ void WTrackTableView::slotClearHotCues() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::Type::Hotcue);
+            pTrack->removeCuesOfType(Cue::Type::HotCue);
         }
     }
 }

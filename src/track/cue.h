@@ -19,7 +19,7 @@ class Cue : public QObject {
   public:
     enum class Type {
         Invalid = 0,
-        Hotcue  = 1,
+        HotCue  = 1,
         MainCue = 2,
         Beat    = 3, // unused (what is this for?)
         Loop    = 4,

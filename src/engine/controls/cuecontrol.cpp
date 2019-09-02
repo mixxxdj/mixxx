@@ -419,7 +419,7 @@ void CueControl::loadCuesFromTrack() {
         } else if (pCue->getType() == Cue::Type::Outro) {
             DEBUG_ASSERT(!pOutroCue);  // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == Cue::Type::Hotcue && pCue->getHotCue() != -1) {
+        } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != -1) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
@@ -561,7 +561,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
-    pCue->setType(Cue::Type::Hotcue);
+    pCue->setType(Cue::Type::HotCue);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
 
