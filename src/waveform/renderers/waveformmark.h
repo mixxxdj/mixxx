@@ -92,7 +92,22 @@ class WaveformMark {
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
 inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
-    return lhs->getSamplePosition() < rhs->getSamplePosition();
+    double leftPosition = lhs->getSamplePosition();
+    int leftHotcue = lhs->getHotCue();
+    double rightPosition = rhs->getSamplePosition();
+    int rightHotcue = rhs->getHotCue();
+    if (leftPosition == rightPosition) {
+        // Sort WaveformMarks without hotcues before those with hotcues;
+        // if both have hotcues, sort numerically by hotcue number.
+        if (leftHotcue == WaveformMark::kNoHotCue && rightHotcue != WaveformMark::kNoHotCue) {
+            return true;
+        } else if (leftHotcue != WaveformMark::kNoHotCue && rightHotcue == WaveformMark::kNoHotCue) {
+            return false;
+        } else {
+            return leftHotcue < rightHotcue;
+        }
+    }
+    return leftPosition < rightPosition;
 }
 
 #endif // WAVEFORMMARK_H
