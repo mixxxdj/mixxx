@@ -45,12 +45,11 @@ class HotcueControl : public QObject {
     inline CuePointer getCue() { return m_pCue; }
     double getPosition() const;
     double getLength() const;
-    double getType() const;
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
     void setLength(double length);
-    void setType(double type);
+    void setType(Cue::CueType type);
     void setStatus(double status);
     void setColor(PredefinedColorPointer newColor);
     PredefinedColorPointer getColor() const;

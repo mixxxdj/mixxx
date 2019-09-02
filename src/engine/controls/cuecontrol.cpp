@@ -2175,10 +2175,6 @@ double HotcueControl::getLength() const {
     return m_hotcueLength->get();
 }
 
-double HotcueControl::getType() const {
-    return m_hotcueType->get();
-}
-
 void HotcueControl::setCue(CuePointer pCue) {
     setPosition(pCue->getPosition());
     setLength(pCue->getLength());
@@ -2201,7 +2197,7 @@ void HotcueControl::resetCue() {
     m_pCue.reset();
     setPosition(-1.0);
     setLength(-1.0);
-    setType(static_cast<double>(Cue::CueType::INVALID));
+    setType(Cue::CueType::INVALID);
     setStatus(static_cast<double>(Cue::CueStatus::DISABLED));
 }
 
@@ -2213,8 +2209,8 @@ void HotcueControl::setLength(double length) {
     m_hotcueLength->set(length);
 }
 
-void HotcueControl::setType(double type) {
-    m_hotcueType->set(type);
+void HotcueControl::setType(Cue::CueType type) {
+    m_hotcueType->set(static_cast<double>(type));
 }
 
 void HotcueControl::setStatus(double status) {
