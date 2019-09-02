@@ -1618,8 +1618,12 @@ DJ505.SavedLoopMode = function(deck, offset) {
         group: deck.currentDeck,
         outConnect: false,
         on: this.color,
+        blinkTimer: 0,
+        blinkTimeout: 100,
+        blinkColor: DJ505.PadColor.BLUE,
+        blinkStateOn: false,
+        outKey: "hotcue_" + this.number + "_enabled",
         unshift: function() {
-            this.outKey = "hotcue_" + this.number + "_enabled";
             this.inKey = "hotcue_" + this.number + "_activateloop";
             this.input = function (value) {
                 this.pressed = this.isPress(channel, control, value, status);
@@ -1646,6 +1650,30 @@ DJ505.SavedLoopMode = function(deck, offset) {
         shift: function() {
             this.inKey = "hotcue_" + this.number + "_gotoandloop";
             this.input = components.Button.prototype.input;
+        },
+        output: function (value, group, control) {
+            if (this.blinkTimer !== 0) {
+                engine.stopTimer(this.activeBlinkTimer);
+                this.blinkTimer = 0;
+            }
+            if (value == 2) {
+                this.blinkTimer = engine.beginTimer(
+                    this.blinkTimeout,
+                    function () {
+                        if(this.blinkStateOn) {
+                            this.send(this.off)
+                            this.blinkStateOn = false;
+                        } else {
+                            this.send(this.blinkColor)
+                            this.blinkStateOn = true;
+                        }
+                    }
+                );
+                this.send(this.off);
+                this.blinkStateOn = false;
+            } else {
+                this.send((value > 0) ? this.on : this.off);
+            }
         },
     });
 
