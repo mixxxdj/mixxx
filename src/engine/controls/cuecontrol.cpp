@@ -2201,6 +2201,7 @@ void HotcueControl::resetCue() {
     m_pCue.reset();
     setPosition(-1.0);
     setLength(-1.0);
+    setType(static_cast<double>(Cue::CueType::INVALID));
     setStatus(static_cast<double>(Cue::CueStatus::DISABLED));
 }
 
