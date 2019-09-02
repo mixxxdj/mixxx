@@ -158,7 +158,7 @@ inline bool instanceof (const T* ptr) {
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
-// https://github.com/Deep-Symmetry/crate-digger/blob/master/src/main/java/org/deepsymmetry/cratedigger/Database.java
+// https://github.com/Deep-Symmetry/crate-digger/commit/f09fa9fc097a2a428c43245ddd542ac1370c1adc
 // getText is needed because the strings in the PDB file "have a variety of obscure representations".
 
 QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
