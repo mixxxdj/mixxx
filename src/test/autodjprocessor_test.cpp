@@ -379,8 +379,8 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerOutro) {
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
 }
 
-TEST_F(AutoDJProcessorTest, AlignIntroOutroStart_LongerIntro) {
-    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::AlignIntroOutroStart);
+TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerIntro) {
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FadeAtOutroStart);
 
     TrackId testId = addTrackToCollection(kTrackLocationTest);
     ASSERT_TRUE(testId.isValid());
@@ -455,8 +455,8 @@ TEST_F(AutoDJProcessorTest, AlignIntroOutroStart_LongerIntro) {
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
 }
 
-TEST_F(AutoDJProcessorTest, AlignIntroOutroStart_LongerOutro) {
-    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::AlignIntroOutroStart);
+TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerOutro) {
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FadeAtOutroStart);
 
     TrackId testId = addTrackToCollection(kTrackLocationTest);
     ASSERT_TRUE(testId.isValid());

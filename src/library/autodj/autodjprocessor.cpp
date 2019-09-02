@@ -253,7 +253,7 @@ void AutoDJProcessor::fadeNow() {
 
     double fadeTime;
     if (m_transitionMode == TransitionMode::FullIntroOutro
-       || m_transitionMode == TransitionMode::AlignIntroOutroStart) {
+       || m_transitionMode == TransitionMode::FadeAtOutroStart) {
         // Use the intro length as the transition time. If the user has seeked
         // away from the intro start since the track was loaded, start from
         // there and do not seek back to the intro start. If they have seeked
@@ -1062,7 +1062,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     getFirstSoundPosition(pToDeck));
         }
         break;
-    case TransitionMode::AlignIntroOutroStart:
+    case TransitionMode::FadeAtOutroStart:
         // Use the outro or intro length for the transition time, whichever is
         // shorter. If the outro is longer than the intro, cut off the end
         // of the outro.

@@ -156,7 +156,7 @@ class AutoDJProcessor : public QObject {
 
     enum class TransitionMode {
         FullIntroOutro,
-        AlignIntroOutroStart,
+        FadeAtOutroStart,
         FixedFullTrack,
         FixedSkipSilence
     };

@@ -83,11 +83,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
     fadeModeCombobox->addItem(tr("Full Intro + Outro"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
-    fadeModeCombobox->addItem(tr("Align Intro + Outro Start"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
-    fadeModeCombobox->addItem(tr("Fixed Time (full track)"),
+    fadeModeCombobox->addItem(tr("Fade At Outro Start"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::FadeAtOutroStart));
+    fadeModeCombobox->addItem(tr("Full Track"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
-    fadeModeCombobox->addItem(tr("Fixed Time (skip silence)"),
+    fadeModeCombobox->addItem(tr("Skip Silence"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
@@ -95,16 +95,25 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             this, &DlgAutoDJ::slotTransitionModeChanged);
     QString fadeModeTooltip = tr(
     "Full Intro + Outro:\n"
-    "Play the full intro and outro. Use the intro or outro length\n"
-    "as the crossfade time, whichever is shorter.\n"
+    "Play the full intro and outro. Use the intro or outro length as the\n"
+    "crossfade time, whichever is shorter. If no intro or outro are marked,\n"
+    "use the selected crossfade time.\n"
     "\n"
-    "Align Intro + Outro Start:\n"
-    "Start crossfading at the outro start. If the outro is longer\n"
-    "than the intro, cut off the end of the outro. Use the intro or\n"
-    "outro length as the crossfade time, whichever is shorter.\n"
+    "Fade At Outro Start:\n"
+    "Start crossfading at the outro start. If the outro is longer than the\n"
+    "intro, cut off the end of the outro. Use the intro or outro length as\n"
+    "the crossfade time, whichever is shorter. If no intro or outro are\n"
+    "marked, use the selected crossfade time.\n"
     "\n"
-    "Fixed Time modes:\n"
-    "Use the selected number of seconds as the crossfade time."
+    "Full Track:\n"
+    "Play the whole track. Begin crossfading from the selected number of\n"
+    "seconds before the end of the track. A negative crossfade time adds\n"
+    "silence between tracks.\n"
+    "\n"
+    "Skip Silence:\n"
+    "Play the whole track except for silence at the beginning and end.\n"
+    "Begin crossfading from the selected number of seconds before the\n"
+    "last sound."
     );
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
