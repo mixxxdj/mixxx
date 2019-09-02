@@ -372,6 +372,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
+        m_pCOCrossfader->connectValueChanged(this, &AutoDJProcessor::crossfaderChanged);
+
         connect(&deck1, &DeckAttributes::playPositionChanged,
                 this, &AutoDJProcessor::playerPositionChanged);
         connect(&deck2, &DeckAttributes::playPositionChanged,
@@ -456,6 +458,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
+        disconnect(m_pCOCrossfader, &ControlProxy::valueChanged,
+                this, &AutoDJProcessor::crossfaderChanged);
         deck1.disconnect(this);
         deck2.disconnect(this);
         m_pCOCrossfader->set(0);
@@ -483,6 +487,35 @@ void AutoDJProcessor::controlShuffle(double value) {
 void AutoDJProcessor::controlSkipNext(double value) {
     if (value > 0.0) {
         skipNext();
+    }
+}
+
+void AutoDJProcessor::crossfaderChanged(double value) {
+    if (m_eState == ADJ_IDLE) {
+        // The user is changing the crossfader manually. If the user has
+        // moved it all the way to the other side, make the deck faded away
+        // from the new "to deck" by loading the next track into it.
+        DeckAttributes* leftDeck = m_decks.at(0);
+        DeckAttributes* rightDeck = m_decks.at(1);
+        DeckAttributes* newToDeck = nullptr;
+        DeckAttributes* newFromDeck = nullptr;
+
+        double crossfaderPosition = value * (m_pCOCrossfaderReverse->toBool() ? -1 : 1);
+        if (crossfaderPosition == 1.0 && leftDeck->isFromDeck) { // crossfader right
+            newFromDeck = rightDeck;
+            newToDeck = leftDeck;
+        } else if (crossfaderPosition == -1.0 && rightDeck->isFromDeck) { // crossfader left
+            newFromDeck = leftDeck;
+            newToDeck = rightDeck;
+        }
+
+        if (newToDeck != nullptr && newFromDeck != nullptr) {
+            newToDeck->stop();
+            removeLoadedTrackFromTopOfQueue(*newFromDeck);
+            loadNextTrackFromQueue(*newToDeck);
+            calculateTransition(newFromDeck, newToDeck, false);
+            newFromDeck->play();
+        }
     }
 }
 
