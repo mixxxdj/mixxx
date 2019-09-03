@@ -1019,6 +1019,9 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
+    if(m_pCue) {
+        m_pCue->deactivate();
+    }
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
