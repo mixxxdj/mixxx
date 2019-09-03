@@ -1234,12 +1234,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     newloopSamples.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled)) ? LoopSeekMode::Changed : LoopSeekMode::MovedOut;
 
     m_loopSamples.setValue(newloopSamples);
+    if(m_pCue) {
+        m_pCue->setPosition(newloopSamples.start);
+        m_pCue->setLength(newloopSamples.end - newloopSamples.start);
+    }
     m_pCOLoopStartPosition->set(newloopSamples.start);
     m_pCOLoopEndPosition->set(newloopSamples.end);
-    if(m_pCue) {
-        m_pCue->setPosition(loopSamples.start);
-        m_pCue->setLength(loopSamples.end - loopSamples.start);
-    }
 
     if (enable) {
         setLoopingEnabled(true);
