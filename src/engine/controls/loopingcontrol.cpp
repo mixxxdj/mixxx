@@ -545,18 +545,26 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.start != startPosition || loopSamples.end != endPosition || loopSamples.seekMode != LoopSeekMode::None) {
-        loopSamples.start = startPosition;
-        loopSamples.end = endPosition;
-        loopSamples.seekMode = LoopSeekMode::None;
-        clearActiveBeatLoop();
+    bool loopSamplesChanged = (loopSamples.start != startPosition || loopSamples.end != endPosition || loopSamples.seekMode != LoopSeekMode::None);
+    if (m_pCue != pCue || loopSamplesChanged) {
+        if(loopSamplesChanged) {
+            loopSamples.start = startPosition;
+            loopSamples.end = endPosition;
+            loopSamples.seekMode = LoopSeekMode::None;
+            clearActiveBeatLoop();
+            m_loopSamples.setValue(loopSamples);
+            m_pCOLoopStartPosition->set(loopSamples.start);
+            m_pCOLoopEndPosition->set(loopSamples.end);
+            setLoopingEnabled(true);
+        }
 
-        m_pCue = pCue;
-        m_loopSamples.setValue(loopSamples);
-        m_pCOLoopStartPosition->set(loopSamples.start);
-        m_pCOLoopEndPosition->set(loopSamples.end);
-        setLoopingEnabled(true);
-        m_pCue->activate();
+        if(m_pCue != pCue) {
+            if(m_pCue) {
+                m_pCue->deactivate();
+            }
+            m_pCue = pCue;
+            m_pCue->activate();
+        }
     } else {
         bool activate_cue = toggle ? !m_bLoopingEnabled : true;
         setLoopingEnabled(activate_cue);
