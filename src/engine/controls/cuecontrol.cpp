@@ -1082,7 +1082,7 @@ void CueControl::hotcueTypeChanged(HotcueControl* pControl, double newType) {
             pCue->setHotCue(-1);
             detachCue(pControl->getHotcueNumber());
         } else {
-            pCue->setType(static_cast<Cue::CueType>(newType));
+            pCue->setType(static_cast<Cue::CueType>(static_cast<int>(newType)));
         }
     }
 }
