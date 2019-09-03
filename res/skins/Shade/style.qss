@@ -93,6 +93,7 @@ WEffectSelector::down-arrow {
   background-color: #99a0a4;
   border: 1px solid #191919;
   margin-bottom: 2px;
+  margin-left: 10px;
 }
 
 WEffectSelector QAbstractItemView {
