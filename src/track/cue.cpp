@@ -93,7 +93,7 @@ Cue::CueStatus Cue::getStatus() const {
     CueStatus status = CueStatus::DISABLED;
     switch(getType()) {
         case CueType::LOOP:
-            if (getPosition() != -1 && getPosition() > 0) {
+            if (getPosition() != -1 && getLength() > 0) {
                 status = CueStatus::ENABLED;
             }
             break;
