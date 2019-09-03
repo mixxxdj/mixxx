@@ -545,7 +545,7 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    bool loopSamplesChanged = (loopSamples.start != startPosition || loopSamples.end != endPosition || loopSamples.seekMode != LoopSeekMode::None);
+    bool loopSamplesChanged = loopSamples.start != startPosition || loopSamples.end != endPosition;
     if (m_pCue != pCue || loopSamplesChanged) {
         if(loopSamplesChanged) {
             loopSamples.start = startPosition;
