@@ -547,7 +547,14 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     bool loopSamplesChanged = loopSamples.start != startPosition || loopSamples.end != endPosition;
     if (m_pCue != pCue || loopSamplesChanged) {
+        if(m_pCue != pCue) {
+            if(m_pCue) {
+                m_pCue->deactivate();
+            }
+            m_pCue = pCue;
+        }
         if(loopSamplesChanged) {
+            // Copy saved loop parameters to active loop
             loopSamples.start = startPosition;
             loopSamples.end = endPosition;
             loopSamples.seekMode = LoopSeekMode::None;
@@ -556,23 +563,13 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
             m_pCOLoopStartPosition->set(loopSamples.start);
             m_pCOLoopEndPosition->set(loopSamples.end);
             setLoopingEnabled(true);
-        }
-
-        if(m_pCue != pCue) {
-            if(m_pCue) {
-                m_pCue->deactivate();
-            }
-            m_pCue = pCue;
+        } else if(m_pCue && m_bLoopingEnabled) {
+            // Currently active loop became a saved loop, mark it as active
             m_pCue->activate();
         }
     } else {
         bool activate_cue = toggle ? !m_bLoopingEnabled : true;
         setLoopingEnabled(activate_cue);
-        if(activate_cue) {
-            m_pCue->activate();
-        } else {
-            m_pCue->deactivate();
-        }
     }
 }
 
@@ -951,6 +948,13 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
             pActiveBeatLoop->deactivate();
         }
     }
+    if (m_pCue) {
+        if (enabled) {
+            m_pCue->activate();
+        } else {
+            m_pCue->deactivate();
+        }
+    }
 }
 
 bool LoopingControl::isLoopingEnabled() {
@@ -1019,9 +1023,6 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
-    if(m_pCue) {
-        m_pCue->deactivate();
-    }
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
