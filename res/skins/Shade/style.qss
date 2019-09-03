@@ -19,8 +19,6 @@
   padding: 5px 0px;
 }
 
-
-
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
@@ -62,7 +60,7 @@ WBeatSpinBox::down-button,
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
-
+#fadeModeCombobox,
 WEffectSelector {
   color: #060613;
   background-color: #aab2b7;
@@ -74,17 +72,27 @@ WEffectSelector {
   font: 13px;
 }
 
+#fadeModeCombobox::drop-down,
 WEffectSelector::drop-down {
   /* This causes the Qt theme's widget style to magically not apply. Go figure. */
   border: 0;
 }
 
+#fadeModeCombobox::down-arrow,
 WEffectSelector::down-arrow {
   height: 20px;
   border-style: solid;
   border-color: #060613;
   border-width: 0px 0px 0px 1px;
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
+}
+
+
+#fadeModeCombobox {
+  height: 20px;
+  background-color: #99a0a4;
+  border: 1px solid #191919;
+  margin-bottom: 2px;
 }
 
 WEffectSelector QAbstractItemView {
@@ -396,7 +404,11 @@ The general rule when it comes to stylesheets is always to remember that if you 
 /* transition time in Auto DJ tab*/
 QSpinBox:editable,
 /* or addressed directly */
-#spinBoxTransition {}
+#spinBoxTransition {
+  height: 20px;
+  border: 1px solid #191919;
+  background-color: #99a0a4;
+}
 
 /* Cover Art*/
 WCoverArt {
