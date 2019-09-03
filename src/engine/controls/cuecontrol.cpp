@@ -1063,8 +1063,7 @@ void CueControl::hotcueLengthChanged(HotcueControl* pControl, double newLength) 
             pCue->setHotCue(-1);
             detachCue(pControl->getHotcueNumber());
         } else {
-            double position = pControl->getPosition();
-            if (position >= 0 && newLength > 0 && (position + newLength) <= m_pTrackSamples->get()) {
+            if (newLength >= 0) {
                 pCue->setLength(newLength);
             }
         }
@@ -2196,7 +2195,7 @@ void HotcueControl::resetCue() {
     // in the code
     m_pCue.reset();
     setPosition(-1.0);
-    setLength(-1.0);
+    setLength(0.0);
     setType(Cue::CueType::INVALID);
     setStatus(Cue::CueStatus::DISABLED);
 }
