@@ -1651,11 +1651,14 @@ DJ505.SavedLoopMode = function(deck, offset) {
             this.inKey = "hotcue_" + this.number + "_gotoandloop";
             this.input = components.Button.prototype.input;
         },
-        output: function (value, group, control) {
+        stopBlinking: function() {
             if (this.blinkTimer !== 0) {
                 engine.stopTimer(this.blinkTimer);
                 this.blinkTimer = 0;
             }
+        },
+        output: function (value, group, control) {
+            this.stopBlinking();
             if (value == 2) {
                 this.blinkTimer = engine.beginTimer(
                     this.blinkTimeout,
@@ -1672,6 +1675,10 @@ DJ505.SavedLoopMode = function(deck, offset) {
             } else {
                 this.send((value > 0) ? this.on : this.off);
             }
+        },
+        disconnect: function() {
+            components.Button.prototype.disconnect.call(this); // call parent connect
+            this.stopBlinking();
         },
     });
 
