@@ -20,10 +20,17 @@ mixxx::Logger kLogger("CachingReader");
 // TODO() Do we suffer cache misses if we use an audio buffer of above 23 ms?
 const SINT kDefaultHintFrames = 1024;
 
-// currently CachingReaderWorker::kCachingReaderChunkLength is 65536 (0x10000);
-// For 80 chunks we need 5242880 (0x500000) bytes (5 MiB) of Memory
-//static
-const SINT kNumberOfCachedChunksInMemory = 80;
+// With CachingReaderChunk::kFrames = 8192 each chunk consumes
+// 8192 frames * 2 channels/frame * 4-bytes per sample = 65 kB.
+//
+// NOTE(2019-09-04): https://bugs.launchpad.net/mixxx/+bug/1842679
+// According to the linked bug report reserving only 80 chunks in
+// version 2.2.2 for doesn't seem to be sufficient to prevent running
+// out of free chunks. Therefore we increased the number of cached
+// chunks to 256:
+//     80 chunks ->  5120 KB =  5 MB
+//    256 chunks -> 16384 KB = 16 MB
+const SINT kNumberOfCachedChunksInMemory = 256;
 
 } // anonymous namespace
 
