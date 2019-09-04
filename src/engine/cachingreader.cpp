@@ -38,8 +38,8 @@ const SINT kNumberOfCachedChunksInMemory = 256;
 CachingReader::CachingReader(QString group,
                              UserSettingsPointer config)
         : m_pConfig(config),
-          m_chunkReadRequestFIFO(1024),
-          m_readerStatusFIFO(1024),
+          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory),
+          m_readerStatusFIFO(kNumberOfCachedChunksInMemory),
           m_readerStatus(INVALID),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
