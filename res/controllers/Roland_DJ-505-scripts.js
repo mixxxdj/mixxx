@@ -1121,6 +1121,24 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
     if (mode) {
         // Set new mode's LED
         midi.sendShortMsg(0x94 + this.offset, mode.ledControl, mode.color);
+
+        // Set the correct shift state for the new mode. For example, if the
+        // user is in HOT CUE mode and wants to switch to CUE LOOP mode, you
+        // need to press [SHIFT]+[HOT CUE]. Pressing [SHIFT] will make the HOT
+        // CUE mode pads become shifted.
+        // When you're in CUE LOOP mode and want to switch back to
+        // HOT CUE mode, the user need to press HOT CUE (without holding
+        // SHIFT). However, the HOT CUE mode pads are still shifted even though
+        // the user is not pressing [SHIFT] because they never got the unshift
+        // event (the [SHIFT] button was released in CUE LOOP mode, not in HOT
+        // CUE mode).
+        // Hence, it's necessary to set the correct shift state when switching
+        // modes.
+        if(this.isShifted) {
+            mode.shift();
+        } else {
+            mode.unshift();
+        }
         mode.forEachComponent(function (component) {
             component.connect();
             component.trigger();
