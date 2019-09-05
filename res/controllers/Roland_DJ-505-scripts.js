@@ -1094,28 +1094,23 @@ DJ505.PadSection.prototype.padModeButtonPressed = function (channel, control, va
 };
 
 DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, value, status, group) {
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode && mode.paramPlusButton && mode.paramMinusButton) {
+    if (this.currentMode && this.currentMode.paramPlusButton && this.currentMode.paramMinusButton) {
         if (control & 1) {
-            mode.paramPlusButton.input(channel, control, value, status, group);
+            this.currentMode.paramPlusButton.input(channel, control, value, status, group);
         } else {
-            mode.paramMinusButton.input(channel, control, value, status, group);
+            this.currentMode.paramMinusButton.input(channel, control, value, status, group);
         }
     }
 };
 
 DJ505.PadSection.prototype.setPadMode = function (control) {
-    if (this.padMode === control) {
-        return;
-    }
-
     var mode = this.controlToPadMode(control);
-    if (mode === undefined) {
+    if (this.currentMode === mode || mode === undefined) {
         return;
     }
 
     // Disable previous mode's LED
-    var previous_mode = this.controlToPadMode(this.padMode);
+    var previous_mode = this.currentMode;
     if (previous_mode) {
         midi.sendShortMsg(0x94 + this.offset, previous_mode.ledControl, 0x00);
         previous_mode.forEachComponent(function (component) {
@@ -1123,7 +1118,6 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
         });
     }
 
-    this.padMode = control;
     if (mode) {
         // Set new mode's LED
         midi.sendShortMsg(0x94 + this.offset, mode.ledControl, mode.color);
@@ -1132,21 +1126,13 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
             component.trigger();
         });
     }
+    this.currentMode = mode;
 };
 
 DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
     var i = control - ((control >= 0x1C) ? 0x1C : 0x14);
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.pads[i].input(channel, control, value, status, group);
-    }
-};
-
-DJ505.PadSection.prototype.forEachComponent = function (operation, recursive) {
-    components.ComponentContainer.prototype.forEachComponent.apply(this, arguments);
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.forEachComponent(operation, recursive);
+    if (this.currentMode) {
+        this.currentMode.pads[i].input(channel, control, value, status, group);
     }
 };
 
