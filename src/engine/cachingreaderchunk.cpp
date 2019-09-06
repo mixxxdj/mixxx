@@ -126,22 +126,32 @@ CachingReaderChunkForOwner::~CachingReaderChunkForOwner() {
 }
 
 void CachingReaderChunkForOwner::init(SINT index) {
-    DEBUG_ASSERT(READ_PENDING != m_state);
+    // Must not be referenced in MRU/LRU list!
+    DEBUG_ASSERT(!m_pNext);
+    DEBUG_ASSERT(!m_pPrev);
+    // Must not be accessed by a worker!
+    DEBUG_ASSERT(m_state != READ_PENDING);
     CachingReaderChunk::init(index);
     m_state = READY;
 }
 
 void CachingReaderChunkForOwner::free() {
-    DEBUG_ASSERT(READ_PENDING != m_state);
+    // Must not be referenced in MRU/LRU list!
+    DEBUG_ASSERT(!m_pNext);
+    DEBUG_ASSERT(!m_pPrev);
+    // Must not be accessed by a worker!
+    DEBUG_ASSERT(m_state != READ_PENDING);
     CachingReaderChunk::init(kInvalidChunkIndex);
     m_state = FREE;
 }
 
 void CachingReaderChunkForOwner::insertIntoListBefore(
         CachingReaderChunkForOwner* pBefore) {
-    DEBUG_ASSERT(m_pNext == nullptr);
-    DEBUG_ASSERT(m_pPrev == nullptr);
-    DEBUG_ASSERT(m_state != READ_PENDING); // Must not be accessed by a worker!
+    // Must not be referenced in MRU/LRU list!
+    DEBUG_ASSERT(!m_pNext);
+    DEBUG_ASSERT(!m_pPrev);
+    // Must not be accessed by a worker!
+    DEBUG_ASSERT(m_state != READ_PENDING);
 
     m_pNext = pBefore;
     if (pBefore) {
@@ -157,6 +167,7 @@ void CachingReaderChunkForOwner::insertIntoListBefore(
 void CachingReaderChunkForOwner::removeFromList(
         CachingReaderChunkForOwner** ppHead,
         CachingReaderChunkForOwner** ppTail) {
+    DEBUG_ASSERT(m_pNext || m_pPrev);
     // Remove this chunk from the double-linked list...
     CachingReaderChunkForOwner* pNext = m_pNext;
     CachingReaderChunkForOwner* pPrev = m_pPrev;
