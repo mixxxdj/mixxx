@@ -189,15 +189,11 @@ void CachingReader::newTrack(TrackPointer pTrack) {
 }
 
 void CachingReader::process() {
-    ReaderStatusUpdate status;
-    while (m_readerStatusFIFO.read(&status, 1) == 1) {
-        CachingReaderChunkForOwner* pChunk = static_cast<CachingReaderChunkForOwner*>(status.chunk);
+    ReaderStatusUpdate update;
+    while (m_readerStatusFIFO.read(&update, 1) == 1) {
+        auto pChunk = update.takeFromWorker();
         if (pChunk) {
-            // Take over control of the chunk from the worker.
-            // This has to be done before freeing all chunks
-            // after a new track has been loaded (see below)!
-            pChunk->takeFromWorker();
-            if (status.status == CHUNK_READ_SUCCESS) {
+            if (update.status == CHUNK_READ_SUCCESS) {
                 // Insert or freshen the chunk in the MRU/LRU list after
                 // obtaining ownership from the worker.
                 freshenChunk(pChunk);
@@ -206,12 +202,12 @@ void CachingReader::process() {
                 freeChunk(pChunk);
             }
         }
-        if (status.status == TRACK_NOT_LOADED) {
-            m_readerStatus = status.status;
-        } else if (status.status == TRACK_LOADED) {
-            m_readerStatus = status.status;
+        if (update.status == TRACK_NOT_LOADED) {
+            m_readerStatus = update.status;
+        } else if (update.status == TRACK_LOADED) {
+            m_readerStatus = update.status;
             // Reset the max. readable frame index
-            m_readableFrameIndexRange = status.readableFrameIndexRange();
+            m_readableFrameIndexRange = update.readableFrameIndexRange();
             // Free all chunks with sample data from a previous track
             freeAllChunks();
         }
@@ -219,7 +215,7 @@ void CachingReader::process() {
             // Adjust the readable frame index range after loading or reading
             m_readableFrameIndexRange = intersect(
                     m_readableFrameIndexRange,
-                    status.readableFrameIndexRange());
+                    update.readableFrameIndexRange());
         } else {
             // Reset the readable frame index range
             m_readableFrameIndexRange = mixxx::IndexRange();

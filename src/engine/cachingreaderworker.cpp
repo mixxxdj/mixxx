@@ -133,14 +133,14 @@ mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, 
 } // anonymous namespace
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
-    ReaderStatusUpdate status;
-    status.init(TRACK_NOT_LOADED);
+    ReaderStatusUpdate update;
+    update.init(TRACK_NOT_LOADED);
 
     if (!pTrack) {
         // Unload track
         m_pAudioSource.reset(); // Close open file handles
         m_readableFrameIndexRange = mixxx::IndexRange();
-        m_pReaderStatusFIFO->writeBlocking(&status, 1);
+        m_pReaderStatusFIFO->writeBlocking(&update, 1);
         return;
     }
 
@@ -152,7 +152,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         // Must unlock before emitting to avoid deadlock
         kLogger.debug() << m_group << "loadTrack() load failed for\""
                  << filename << "\", unlocked reader lock";
-        m_pReaderStatusFIFO->writeBlocking(&status, 1);
+        m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit(trackLoadFailed(
             pTrack, QString("The file '%1' could not be found.")
                     .arg(QDir::toNativeSeparators(filename))));
@@ -167,7 +167,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         // Must unlock before emitting to avoid deadlock
         kLogger.debug() << m_group << "loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
-        m_pReaderStatusFIFO->writeBlocking(&status, 1);
+        m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit(trackLoadFailed(
             pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
         return;
@@ -183,18 +183,15 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // be decreased to avoid repeated reading of corrupt audio data.
     m_readableFrameIndexRange = m_pAudioSource->frameIndexRange();
 
-    status.status = TRACK_LOADED;
-    status.readableFrameIndexRangeStart = m_readableFrameIndexRange.start();
-    status.readableFrameIndexRangeEnd = m_readableFrameIndexRange.end();
-    m_pReaderStatusFIFO->writeBlocking(&status, 1);
+    update.init(TRACK_LOADED, nullptr, m_pAudioSource->frameIndexRange());
+    m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Clear the chunks to read list.
     CachingReaderChunkReadRequest request;
     while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
         kLogger.debug() << "Cancelling read request for " << request.chunk->getIndex();
-        status.status = CHUNK_READ_INVALID;
-        status.chunk = request.chunk;
-        m_pReaderStatusFIFO->writeBlocking(&status, 1);
+        update.init(CHUNK_READ_INVALID, request.chunk);
+        m_pReaderStatusFIFO->writeBlocking(&update, 1);
     }
 
     // Emit that the track is loaded.
