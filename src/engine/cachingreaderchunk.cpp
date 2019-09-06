@@ -167,28 +167,36 @@ void CachingReaderChunkForOwner::insertIntoListBefore(
 void CachingReaderChunkForOwner::removeFromList(
         CachingReaderChunkForOwner** ppHead,
         CachingReaderChunkForOwner** ppTail) {
-    DEBUG_ASSERT(m_pNext || m_pPrev);
-    // Remove this chunk from the double-linked list...
-    CachingReaderChunkForOwner* pNext = m_pNext;
-    CachingReaderChunkForOwner* pPrev = m_pPrev;
-    m_pNext = nullptr;
-    m_pPrev = nullptr;
-
-    // ...reconnect the remaining list elements...
-    if (pNext) {
-        DEBUG_ASSERT(this == pNext->m_pPrev);
-        pNext->m_pPrev = pPrev;
+    DEBUG_ASSERT(ppHead);
+    DEBUG_ASSERT(ppTail);
+    if (!m_pPrev && !m_pNext) {
+        // Not in linked list -> nothing to do
+        return;
     }
+
+    // Remove this chunk from the double-linked list...
+    const auto pPrev = m_pPrev;
+    const auto pNext = m_pNext;
+    m_pPrev = nullptr;
+    m_pNext = nullptr;
+
+    // ...reconnect the adjacent list items and adjust head/tail
     if (pPrev) {
         DEBUG_ASSERT(this == pPrev->m_pNext);
         pPrev->m_pNext = pNext;
-    }
-
-    // ...and adjust head/tail.
-    if (ppHead && (this == *ppHead)) {
+    } else {
+        // No predecessor
+        DEBUG_ASSERT(this == *ppHead);
+        // pNext becomes the new head
         *ppHead = pNext;
     }
-    if (ppTail && (this == *ppTail)) {
+    if (pNext) {
+        DEBUG_ASSERT(this == pNext->m_pPrev);
+        pNext->m_pPrev = pPrev;
+    } else {
+        // No successor
+        DEBUG_ASSERT(this == *ppTail);
+        // pPrev becomes the new tail
         *ppTail = pPrev;
     }
 }
