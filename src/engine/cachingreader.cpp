@@ -23,20 +23,19 @@ const SINT kDefaultHintFrames = 1024;
 // With CachingReaderChunk::kFrames = 8192 each chunk consumes
 // 8192 frames * 2 channels/frame * 4-bytes per sample = 65 kB.
 //
-// NOTE(2019-09-04): https://bugs.launchpad.net/mixxx/+bug/1842679
-// According to the linked bug report reserving only 80 chunks in
-// version 2.2.2 for doesn't seem to be sufficient to prevent running
-// out of free chunks. Therefore we increased the number of cached
-// chunks to 256:
-//
 //     80 chunks ->  5120 KB =  5 MB
-//    256 chunks -> 16384 KB = 16 MB
+//
+// Each deck (including sample decks) will use their own CachingReader.
+// Consequently the total memory required for all allocated chunks depends
+// on the number of decks. The amount of memory reserved for a single
+// CachingReader must be multiplied by the number of decks to calculate
+// the total amount!
 //
 // NOTE(uklotzde, 2019-09-05): Reduce this number to just few chunks
 // (kNumberOfCachedChunksInMemory = 1, 2, 3, ...) for testing purposes
 // to verify that the MRU/LRU cache works as expected. Even though
 // massive drop outs are expected to occur Mixxx should run reliably!
-const SINT kNumberOfCachedChunksInMemory = 256;
+const SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
