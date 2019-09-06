@@ -28,8 +28,14 @@ const SINT kDefaultHintFrames = 1024;
 // version 2.2.2 for doesn't seem to be sufficient to prevent running
 // out of free chunks. Therefore we increased the number of cached
 // chunks to 256:
+//
 //     80 chunks ->  5120 KB =  5 MB
 //    256 chunks -> 16384 KB = 16 MB
+//
+// NOTE(uklotzde, 2019-09-05): Reduce this number to just few chunks
+// (kNumberOfCachedChunksInMemory = 1, 2, 3, ...) for testing purposes
+// to verify that the MRU/LRU cache works as expected. Even though
+// massive drop outs are expected to occur Mixxx should run reliably!
 const SINT kNumberOfCachedChunksInMemory = 256;
 
 } // anonymous namespace
