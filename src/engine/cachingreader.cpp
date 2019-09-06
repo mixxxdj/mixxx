@@ -130,7 +130,6 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
     CachingReaderChunkForOwner* pChunk = m_freeChunks.takeFirst();
     pChunk->init(chunkIndex);
 
-    //kLogger.debug() << "Allocating chunk" << pChunk << pChunk->getIndex();
     m_allocatedCachingReaderChunks.insert(chunkIndex, pChunk);
 
     return pChunk;
@@ -237,9 +236,10 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
             // Refuse to read from an invalid number of samples
             (numSamples % CachingReaderChunk::kChannels == 0) && (numSamples >= 0)) {
         kLogger.critical()
-                << "read() invalid arguments:"
+                << "Invalid arguments for read():"
                 << "startSample =" << startSample
-                << "numSamples =" << numSamples;
+                << "numSamples =" << numSamples
+                << "reverse =" << reverse;
         return ReadResult::UNAVAILABLE;
     }
     VERIFY_OR_DEBUG_ASSERT(buffer) {
@@ -290,10 +290,12 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                             remainingFrameIndexRange.start(),
                             m_readableFrameIndexRange.start());
             DEBUG_ASSERT(prerollFrameIndexRange.length() <= remainingFrameIndexRange.length());
-            kLogger.debug()
-                    << "Prepending"
-                    << prerollFrameIndexRange.length()
-                    << "frames of silence";
+            if (kLogger.traceEnabled()) {
+                kLogger.trace()
+                        << "Prepending"
+                        << prerollFrameIndexRange.length()
+                        << "frames of silence";
+            }
             const SINT prerollFrames = prerollFrameIndexRange.length();
             const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
             DEBUG_ASSERT(samplesRemaining >= prerollSamples);
