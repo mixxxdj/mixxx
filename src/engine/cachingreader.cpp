@@ -43,7 +43,19 @@ const SINT kNumberOfCachedChunksInMemory = 80;
 CachingReader::CachingReader(QString group,
                              UserSettingsPointer config)
         : m_pConfig(config),
-          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory),
+          // Limit the number of in-flight requests to the worker. This should
+          // prevent to overload the worker when it is not able to fetch those
+          // requests from the FIFO timely. Otherwise outdated requests pile up
+          // in the FIFO and it would take a long time to process them, just to
+          // discard the results that most likely have already become obsolete.
+          // TODO(XXX): Ideally the request FIFO would be implemented as a ring
+          // buffer, where new requests replace old requests when full. Those
+          // old requests need to be returned immediately to the CachingReader
+          // that must take ownership and free them!!!
+          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory / 4),
+          // The capacity of the back channel must be equal to the number of
+          // allocated chunks, because the worker use writeBlocking(). Otherwise
+          // the worker could get stuck in a hot loop!!!
           m_readerStatusFIFO(kNumberOfCachedChunksInMemory),
           m_readerStatus(INVALID),
           m_mruCachingReaderChunk(nullptr),
