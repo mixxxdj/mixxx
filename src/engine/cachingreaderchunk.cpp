@@ -33,11 +33,8 @@ const SINT CachingReaderChunk::kSamples =
 CachingReaderChunk::CachingReaderChunk(
         mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : m_index(kInvalidChunkIndex),
-          m_sampleBuffer(sampleBuffer) {
-    DEBUG_ASSERT(sampleBuffer.length() == kSamples);
-}
-
-CachingReaderChunk::~CachingReaderChunk() {
+          m_sampleBuffer(std::move(sampleBuffer)) {
+    DEBUG_ASSERT(m_sampleBuffer.length() == kSamples);
 }
 
 void CachingReaderChunk::init(SINT index) {
@@ -116,13 +113,10 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
 
 CachingReaderChunkForOwner::CachingReaderChunkForOwner(
         mixxx::SampleBuffer::WritableSlice sampleBuffer)
-        : CachingReaderChunk(sampleBuffer),
+        : CachingReaderChunk(std::move(sampleBuffer)),
           m_state(FREE),
           m_pPrev(nullptr),
           m_pNext(nullptr) {
-}
-
-CachingReaderChunkForOwner::~CachingReaderChunkForOwner() {
 }
 
 void CachingReaderChunkForOwner::init(SINT index) {

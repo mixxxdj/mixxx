@@ -67,7 +67,7 @@ public:
 protected:
     explicit CachingReaderChunk(
             mixxx::SampleBuffer::WritableSlice sampleBuffer);
-    virtual ~CachingReaderChunk();
+    virtual ~CachingReaderChunk() = default;
 
     void init(SINT index);
 
@@ -91,7 +91,7 @@ class CachingReaderChunkForOwner: public CachingReaderChunk {
 public:
     explicit CachingReaderChunkForOwner(
             mixxx::SampleBuffer::WritableSlice sampleBuffer);
-    ~CachingReaderChunkForOwner() override;
+    ~CachingReaderChunkForOwner() override = default;
 
     void init(SINT index);
     void free();
