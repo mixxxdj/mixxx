@@ -140,6 +140,7 @@ class CachingReader : public QObject {
 
     // Returns a CachingReaderChunk to the free list
     void freeChunk(CachingReaderChunkForOwner* pChunk);
+    void freeChunkFromList(CachingReaderChunkForOwner* pChunk);
 
     // Returns all allocated chunks to the free list
     void freeAllChunks();

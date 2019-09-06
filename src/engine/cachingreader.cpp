@@ -80,8 +80,16 @@ CachingReader::~CachingReader() {
     qDeleteAll(m_chunks);
 }
 
+void CachingReader::freeChunkFromList(CachingReaderChunkForOwner* pChunk) {
+    pChunk->removeFromList(
+            &m_mruCachingReaderChunk,
+            &m_lruCachingReaderChunk);
+    pChunk->free();
+    m_freeChunks.push_back(pChunk);
+}
+
 void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
-    DEBUG_ASSERT(pChunk != nullptr);
+    DEBUG_ASSERT(pChunk);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
     const int removed = m_allocatedCachingReaderChunks.remove(pChunk->getIndex());
@@ -89,10 +97,7 @@ void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
     // because sometime you free a chunk right after you allocated it.
     DEBUG_ASSERT(removed <= 1);
 
-    pChunk->removeFromList(
-            &m_mruCachingReaderChunk, &m_lruCachingReaderChunk);
-    pChunk->free();
-    m_freeChunks.push_back(pChunk);
+    freeChunkFromList(pChunk);
 }
 
 void CachingReader::freeAllChunks() {
@@ -104,15 +109,13 @@ void CachingReader::freeAllChunks() {
         }
 
         if (pChunk->getState() != CachingReaderChunkForOwner::FREE) {
-            pChunk->removeFromList(
-                    &m_mruCachingReaderChunk, &m_lruCachingReaderChunk);
-            pChunk->free();
-            m_freeChunks.push_back(pChunk);
+            freeChunkFromList(pChunk);
         }
     }
+    DEBUG_ASSERT(!m_mruCachingReaderChunk);
+    DEBUG_ASSERT(!m_lruCachingReaderChunk);
 
     m_allocatedCachingReaderChunks.clear();
-    m_mruCachingReaderChunk = nullptr;
 }
 
 CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
@@ -129,55 +132,53 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
 }
 
 CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkIndex) {
-    CachingReaderChunkForOwner* pChunk = allocateChunk(chunkIndex);
+    auto pChunk = allocateChunk(chunkIndex);
     if (!pChunk) {
-        if (m_lruCachingReaderChunk == nullptr) {
-            kLogger.warning() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
-            return nullptr;
+        if (m_lruCachingReaderChunk) {
+            freeChunk(m_lruCachingReaderChunk);
+            pChunk = allocateChunk(chunkIndex);
+        } else {
+            kLogger.warning() << "No cached LRU chunk available for freeing";
         }
-        freeChunk(m_lruCachingReaderChunk);
-        pChunk = allocateChunk(chunkIndex);
     }
-    //kLogger.debug() << "allocateChunkExpireLRU" << chunk << pChunk;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "allocateChunkExpireLRU" << chunkIndex << pChunk;
+    }
     return pChunk;
 }
 
 CachingReaderChunkForOwner* CachingReader::lookupChunk(SINT chunkIndex) {
     // Defaults to nullptr if it's not in the hash.
-    CachingReaderChunkForOwner* chunk = m_allocatedCachingReaderChunks.value(chunkIndex, nullptr);
-
-    // Make sure the allocated number matches the indexed chunk number.
-    DEBUG_ASSERT(chunk == nullptr || chunkIndex == chunk->getIndex());
-
-    return chunk;
+    auto pChunk = m_allocatedCachingReaderChunks.value(chunkIndex, nullptr);
+    DEBUG_ASSERT(!pChunk || pChunk->getIndex() == chunkIndex);
+    return pChunk;
 }
 
 void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {
-    DEBUG_ASSERT(pChunk != nullptr);
-    DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
-
-    // Remove the chunk from the LRU list
-    pChunk->removeFromList(&m_mruCachingReaderChunk, &m_lruCachingReaderChunk);
-
-    // Adjust the least-recently-used item before inserting the
-    // chunk as the new most-recently-used item.
-    if (m_lruCachingReaderChunk == nullptr) {
-        if (m_mruCachingReaderChunk == nullptr) {
-            m_lruCachingReaderChunk = pChunk;
-        } else {
-            m_lruCachingReaderChunk = m_mruCachingReaderChunk;
-        }
+    DEBUG_ASSERT(pChunk);
+    DEBUG_ASSERT(pChunk->getState() == CachingReaderChunkForOwner::READY);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "freshenChunk()"
+                << pChunk->getIndex()
+                << pChunk;
     }
 
-    // Insert the chunk as the new most-recently-used item.
-    pChunk->insertIntoListBefore(m_mruCachingReaderChunk);
-    m_mruCachingReaderChunk = pChunk;
+    // Remove the chunk from the MRU/LRU list
+    pChunk->removeFromList(
+            &m_mruCachingReaderChunk,
+            &m_lruCachingReaderChunk);
+
+    // Reinsert has new head of MRU list
+    pChunk->insertIntoListBefore(
+            &m_mruCachingReaderChunk,
+            &m_lruCachingReaderChunk,
+            m_mruCachingReaderChunk);
 }
 
 CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex) {
-    CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
-    if (pChunk &&
-            (pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING)) {
+    auto pChunk = lookupChunk(chunkIndex);
+    if (pChunk && (pChunk->getState() == CachingReaderChunkForOwner::READY)) {
         freshenChunk(pChunk);
     }
     return pChunk;
@@ -476,27 +477,33 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         const int lastChunkIndex = CachingReaderChunk::indexForFrame(readableFrameIndexRange.end() - 1);
         for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
             CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
-            if (pChunk == nullptr) {
+            if (!pChunk) {
                 shouldWake = true;
                 pChunk = allocateChunkExpireLRU(chunkIndex);
-                if (pChunk == nullptr) {
-                    kLogger.warning() << "ERROR: Couldn't allocate spare CachingReaderChunk to make CachingReaderChunkReadRequest.";
+                if (!pChunk) {
+                    kLogger.warning()
+                            << "Failed to allocate chunk"
+                            << chunkIndex
+                            << "for read request";
                     continue;
                 }
                 // Do not insert the allocated chunk into the MRU/LRU list,
                 // because it will be handed over to the worker immediately
                 CachingReaderChunkReadRequest request;
                 request.giveToWorker(pChunk);
-                // kLogger.debug() << "Requesting read of chunk" << current << "into" << pChunk;
-                // kLogger.debug() << "Requesting read into " << request.chunk->data;
+                if (kLogger.traceEnabled()) {
+                    kLogger.trace()
+                            << "Requesting read of chunk"
+                            << request.chunk;
+                }
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
-                    kLogger.warning() << "ERROR: Could not submit read request for "
-                             << chunkIndex;
+                    kLogger.warning()
+                            << "Failed to submit read request for chunk"
+                            << chunkIndex;
                     // Revoke the chunk from the worker and free it
                     pChunk->takeFromWorker();
                     freeChunk(pChunk);
                 }
-                //kLogger.debug() << "Checking chunk " << current << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
             } else if (pChunk->getState() == CachingReaderChunkForOwner::READY) {
                 // This will cause the chunk to be 'freshened' in the cache. The
                 // chunk will be moved to the end of the LRU list.

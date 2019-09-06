@@ -38,6 +38,7 @@ CachingReaderChunk::CachingReaderChunk(
 }
 
 void CachingReaderChunk::init(SINT index) {
+    DEBUG_ASSERT(m_index == kInvalidChunkIndex || index == kInvalidChunkIndex);
     m_index = index;
     m_bufferedSampleFrames.frameIndexRange() = mixxx::IndexRange();
 }
@@ -45,6 +46,7 @@ void CachingReaderChunk::init(SINT index) {
 // Frame index range of this chunk for the given audio source.
 mixxx::IndexRange CachingReaderChunk::frameIndexRange(
         const mixxx::AudioSourcePointer& pAudioSource) const {
+    DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     if (!pAudioSource) {
         return mixxx::IndexRange();
     }
@@ -59,6 +61,7 @@ mixxx::IndexRange CachingReaderChunk::frameIndexRange(
 mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
         const mixxx::AudioSourcePointer& pAudioSource,
         mixxx::SampleBuffer::WritableSlice tempOutputBuffer) {
+    DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     const auto sourceFrameIndexRange = frameIndexRange(pAudioSource);
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
@@ -76,6 +79,7 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
 mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
         CSAMPLE* sampleBuffer,
         const mixxx::IndexRange& frameIndexRange) const {
+    DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     const auto copyableFrameIndexRange =
             intersect(frameIndexRange, m_bufferedSampleFrames.frameIndexRange());
     if (!copyableFrameIndexRange.empty()) {
@@ -95,6 +99,7 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
 mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
         CSAMPLE* reverseSampleBuffer,
         const mixxx::IndexRange& frameIndexRange) const {
+    DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     const auto copyableFrameIndexRange =
             intersect(frameIndexRange, m_bufferedSampleFrames.frameIndexRange());
     if (!copyableFrameIndexRange.empty()) {
@@ -120,77 +125,123 @@ CachingReaderChunkForOwner::CachingReaderChunkForOwner(
 }
 
 void CachingReaderChunkForOwner::init(SINT index) {
+    // Must not be accessed by a worker!
+    DEBUG_ASSERT(m_state != READ_PENDING);
     // Must not be referenced in MRU/LRU list!
     DEBUG_ASSERT(!m_pNext);
     DEBUG_ASSERT(!m_pPrev);
-    // Must not be accessed by a worker!
-    DEBUG_ASSERT(m_state != READ_PENDING);
+
     CachingReaderChunk::init(index);
     m_state = READY;
 }
 
 void CachingReaderChunkForOwner::free() {
+    // Must not be accessed by a worker!
+    DEBUG_ASSERT(m_state != READ_PENDING);
     // Must not be referenced in MRU/LRU list!
     DEBUG_ASSERT(!m_pNext);
     DEBUG_ASSERT(!m_pPrev);
-    // Must not be accessed by a worker!
-    DEBUG_ASSERT(m_state != READ_PENDING);
+
     CachingReaderChunk::init(kInvalidChunkIndex);
     m_state = FREE;
 }
 
 void CachingReaderChunkForOwner::insertIntoListBefore(
+        CachingReaderChunkForOwner** ppHead,
+        CachingReaderChunkForOwner** ppTail,
         CachingReaderChunkForOwner* pBefore) {
-    // Must not be referenced in MRU/LRU list!
+    DEBUG_ASSERT(m_state == READY);
+    // Both head and tail need to be adjusted
+    DEBUG_ASSERT(ppHead);
+    DEBUG_ASSERT(ppTail);
+    // Cannot insert before itself
+    DEBUG_ASSERT(this != pBefore);
+    // Must not yet be referenced in MRU/LRU list
+    DEBUG_ASSERT(this != *ppHead);
+    DEBUG_ASSERT(this != *ppTail);
     DEBUG_ASSERT(!m_pNext);
     DEBUG_ASSERT(!m_pPrev);
-    // Must not be accessed by a worker!
-    DEBUG_ASSERT(m_state != READ_PENDING);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "insertIntoListBefore()"
+                << this
+                << ppHead << *ppHead
+                << ppTail << *ppTail
+                << pBefore;
+    }
 
-    m_pNext = pBefore;
     if (pBefore) {
-        if (pBefore->m_pPrev) {
-            m_pPrev = pBefore->m_pPrev;
-            DEBUG_ASSERT(m_pPrev->m_pNext == pBefore);
+        // List must already contain one or more item, i.e. has both
+        // a head and a tail
+        DEBUG_ASSERT(*ppHead);
+        DEBUG_ASSERT(*ppTail);
+        m_pPrev = pBefore->m_pPrev;
+        pBefore->m_pPrev = this;
+        m_pNext = pBefore;
+        if (*ppHead == pBefore) {
+            // Replace head
+            *ppHead = this;
+        }
+    } else {
+        // Append as new tail
+        m_pPrev = *ppTail;
+        *ppTail = this;
+        if (m_pPrev) {
             m_pPrev->m_pNext = this;
         }
-        pBefore->m_pPrev = this;
+        if (!*ppHead) {
+            // Initialize new head if the list was empty before
+            *ppHead = this;
+        }
     }
 }
 
 void CachingReaderChunkForOwner::removeFromList(
         CachingReaderChunkForOwner** ppHead,
         CachingReaderChunkForOwner** ppTail) {
+    DEBUG_ASSERT(m_state == READY);
+    // Both head and tail need to be adjusted
     DEBUG_ASSERT(ppHead);
     DEBUG_ASSERT(ppTail);
-    if (!m_pPrev && !m_pNext) {
-        // Not in linked list -> nothing to do
-        return;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "removeFromList()"
+                << this
+                << ppHead << *ppHead
+                << ppTail << *ppTail;
     }
 
-    // Remove this chunk from the double-linked list...
+    // Disconnect this chunk from the double-linked list
     const auto pPrev = m_pPrev;
     const auto pNext = m_pNext;
     m_pPrev = nullptr;
     m_pNext = nullptr;
 
-    // ...reconnect the adjacent list items and adjust head/tail
+    // Reconnect the adjacent list items and adjust head/tail if needed
     if (pPrev) {
         DEBUG_ASSERT(this == pPrev->m_pNext);
         pPrev->m_pNext = pNext;
     } else {
-        // No predecessor
-        DEBUG_ASSERT(this == *ppHead);
-        // pNext becomes the new head
-        *ppHead = pNext;
+        // Only the current head item doesn't have a predecessor
+        if (this == *ppHead) {
+            // pNext becomes the new head
+            *ppHead = pNext;
+        } else {
+            // Item was not part the list and must not have any successor
+            DEBUG_ASSERT(!pPrev);
+        }
     }
     if (pNext) {
         DEBUG_ASSERT(this == pNext->m_pPrev);
         pNext->m_pPrev = pPrev;
     } else {
-        // No successor
-        DEBUG_ASSERT(this == *ppTail);
-        // pPrev becomes the new tail
-        *ppTail = pPrev;
+        // Only the current tail item doesn't have a successor
+        if (this == *ppTail) {
+            // pPrev becomes the new tail
+            *ppTail = pPrev;
+        } else {
+            // Item was not part the list and must not have any predecessor
+            DEBUG_ASSERT(!pPrev);
+        }
     }
 }
