@@ -79,10 +79,14 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QSet<TrackId> movedIds(
+    QList<TrackRef> movedTrackRefs(
             m_directoryDao.relocateDirectory(oldDir, newDir));
-
-    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+    QList<QPair<TrackRef, TrackRef>> replacedTrackRefs;
+    replacedTrackRefs.reserve(movedTrackRefs.size());
+    for (const auto& movedTrackRef : movedTrackRefs) {
+        replacedTrackRefs += qMakePair(movedTrackRef, movedTrackRef);
+    }
+    m_trackDao.databaseTracksReplaced(std::move(replacedTrackRefs));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
@@ -191,6 +195,7 @@ bool TrackCollection::purgeTracks(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
+    qInfo() << "Purging" << trackIds.size() << "tracks";
     VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(trackIds)) {
         return false;
     }
@@ -221,9 +226,10 @@ bool TrackCollection::purgeTracks(
     return true;
 }
 
-bool TrackCollection::purgeTracks(
-        const QDir& dir) {
-    QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
+bool TrackCollection::purgeAllTracks(
+        const QDir& rootDir) {
+    QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
+    qInfo() << "Purging" << trackIds.size() << "tracks found in" << rootDir;
     return purgeTracks(trackIds);
 }
 

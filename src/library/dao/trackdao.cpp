@@ -114,7 +114,7 @@ void TrackDAO::finish() {
     @return the track id for the track located at location, or -1 if the track
             is not in the database.
 */
-TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
+TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) const {
 
     TrackId trackId;
 
@@ -206,6 +206,37 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     return trackLocation;
 }
 
+QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
+    QString stmt =
+            "SELECT track_locations.location FROM track_locations "
+            "INNER JOIN library on library.location=track_locations.id "
+            "WHERE library.id IN (%1)";
+    {
+        QStringList idList;
+        idList.reserve(ids.size());
+        for (const auto& id : ids) {
+            idList.append(id.toString());
+        }
+        stmt = stmt.arg(idList.join(","));
+    }
+    FwdSqlQuery query(m_database, stmt);
+    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
+        return QStringList();
+    }
+    if (!query.execPrepared()) {
+        return QStringList();
+    }
+    QStringList locations;
+    locations.reserve(ids.size());
+    const int locationColumn = query.record().indexOf("location");
+    DEBUG_ASSERT(locationColumn >= 0);
+    while (query.next()) {
+        locations += query.fieldValue(locationColumn).toString();
+    }
+    DEBUG_ASSERT(locations.size() <= ids.size());
+    return locations;
+}
+
 void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     if (pTrack->isDirty()) {
@@ -271,15 +302,28 @@ void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
     emit(dbTrackAdded(pTrack));
 }
 
-void TrackDAO::databaseTracksMoved(QSet<TrackId> tracksMovedSetOld, QSet<TrackId> tracksMovedSetNew) {
-    emit(tracksRemoved(tracksMovedSetNew));
-    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    emit(tracksAdded(tracksMovedSetOld));
-}
-
 void TrackDAO::databaseTracksChanged(QSet<TrackId> tracksChanged) {
     // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
     emit(tracksAdded(tracksChanged));
+}
+
+void TrackDAO::databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
+    QSet<TrackId> removedTrackIds;
+    QSet<TrackId> changedTrackIds;
+    for (const auto& replacedTrack : replacedTracks) {
+        // The old track ids (first) are still valid, whereas the new track
+        // ids (second) have been deleted after being detected as moved!
+        changedTrackIds += replacedTrack.first.getId();
+        if (replacedTrack.first.getId() != replacedTrack.second.getId()) {
+            removedTrackIds += replacedTrack.second.getId();
+        }
+    }
+    if (!removedTrackIds.isEmpty()) {
+        emit tracksRemoved(removedTrackIds);
+    }
+    if (!changedTrackIds.isEmpty()) {
+        databaseTracksChanged(changedTrackIds);
+    }
 }
 
 void TrackDAO::slotTrackChanged(Track* pTrack) {
@@ -828,11 +872,11 @@ void TrackDAO::afterUnhidingTracks(
     emit(tracksAdded(QSet<TrackId>::fromList(trackIds)));
 }
 
-QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
+QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    const QString dirPath = dir.absolutePath();
+    const QString dirPath = rootDir.absolutePath();
     QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
@@ -1560,8 +1604,7 @@ namespace {
 // moved instead of being deleted outright, and so we can salvage your
 // existing metadata that you have in your DB (like cue points, etc.).
 // returns falls if canceled
-bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
-        QSet<TrackId>* pTracksMovedSetNew,
+bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTracks,
         const QStringList& addedTracks,
         volatile const bool* pCancel) {
     // This function should not start a transaction on it's own!
@@ -1716,10 +1759,11 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             }
         }
 
-        // We collect all the old tracks that has to be updated in BaseTrackCache
-        pTracksMovedSetOld->insert(oldTrackId);
-        // We collect collect all the new tracks the where added and deleted to BaseTrackCache
-        pTracksMovedSetNew->insert(newTrackId);
+        if (pReplacedTracks) {
+            auto oldTrackRef = TrackRef::fromFileInfo(oldTrackLocation, oldTrackId);
+            auto newTrackRef = TrackRef::fromFileInfo(newTrackLocation, newTrackId);
+            *pReplacedTracks += qMakePair(oldTrackRef, newTrackRef);
+        }
     }
     return true;
 }

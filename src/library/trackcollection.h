@@ -64,13 +64,8 @@ class TrackCollection : public QObject,
 
     void cancelLibraryScan();
 
-    void relocateDirectory(QString oldDir, QString newDir);
-
     bool hideTracks(const QList<TrackId>& trackIds);
     bool unhideTracks(const QList<TrackId>& trackIds);
-
-    bool purgeTracks(const QList<TrackId>& trackIds);
-    bool purgeTracks(const QDir& dir);
 
     bool insertCrate(const Crate& crate, CrateId* pCrateId = nullptr);
     bool updateCrate(const Crate& crate);
@@ -99,6 +94,11 @@ class TrackCollection : public QObject,
             const QSet<CrateId>& crates);
 
   private:
+    friend class Library;
+    bool purgeTracks(const QList<TrackId>& trackIds);
+    bool purgeAllTracks(const QDir& rootDir);
+    void relocateDirectory(QString oldDir, QString newDir);
+
     UserSettingsPointer m_pConfig;
 
     QSqlDatabase m_database;
