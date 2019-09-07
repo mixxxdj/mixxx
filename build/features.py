@@ -441,8 +441,13 @@ class ModPlug(Feature):
     def description(self):
         return "Modplug module decoder plugin"
 
+    # NOTE(2019-09-07, uklotzde)
+    # Modplug support is disabled by default, even if libmodplug is
+    # available on many platforms. Instead it is recommend to enable
+    # this feature explicitly for the release builds if available,
+    # e.g. on Linux, FreeBSD, macOS, ...
     def default(self, build):
-        return 1 if build.platform_is_linux else 0
+        return 0
 
     def enabled(self, build):
         build.flags['modplug'] = util.get_flags(build.env, 'modplug', self.default(build))
