@@ -33,6 +33,7 @@ class SoundSourceFFmpeg : public SoundSource {
     bool initResampling(
             ChannelCount* pResampledChannelCount,
             SampleRate* pResampledSampleRate);
+    const CSAMPLE* resampleDecodedFrame();
 
     // Consume as many buffered sample frames as possible and return
     // the remaining range that could not be filled from the  buffer.
