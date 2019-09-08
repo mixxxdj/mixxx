@@ -134,6 +134,13 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
         // operation, which increases the chance that dropouts may occur.
         // As a compromise we will preroll only 9 instead of 29 frames.
         // Those 9 frames should at least drain the bit reservoir.
+        //
+        // NOTE(2019-09-08): Executing the decoding test with various VBR/CBR
+        // MP3 files always produced exact results with only 9 preroll frames.
+        // Thus increasing this number is not required and would increase
+        // the risk for drop outs when jumping to a new position within
+        // the file. Audible drop outs are considered more harmful than
+        // slight deviations from the exact signal!
         DEBUG_ASSERT(avStream.codecpar->channels <= 2);
         const SINT mp3SeekPrerollFrameCount =
                 9 * (kSamplesPerMP3Frame / avStream.codecpar->channels);
