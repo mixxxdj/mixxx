@@ -729,22 +729,19 @@ SINT readNextPacket(
 
 WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
         WritableSampleFrames writableSampleFrames) {
-    if (m_sampleBuffer.empty(), writableSampleFrames.writableSlice().empty()) {
+    if (m_sampleBuffer.empty() ||
+            writableSampleFrames.writableSlice().empty()) {
         return writableSampleFrames;
     }
-    DEBUG_ASSERT(m_curFrameIndex != kFrameIndexInvalid);
-    DEBUG_ASSERT(m_curFrameIndex != kFrameIndexUnknown);
+    // The current position must be valid
+    DEBUG_ASSERT(frameIndexRange().containsIndex(m_curFrameIndex));
 
     const auto bufferedRange =
             IndexRange::forward(
                     m_curFrameIndex,
                     samples2frames(m_sampleBuffer.readableLength()));
-    VERIFY_OR_DEBUG_ASSERT(bufferedRange <= frameIndexRange()) {
-        kLogger.warning()
-                << "Sample buffer contains more data than expected:"
-                << "total range" << frameIndexRange()
-                << "buffered range" << bufferedRange;
-    }
+    DEBUG_ASSERT(m_curFrameIndex == bufferedRange.clampIndex(m_curFrameIndex));
+    DEBUG_ASSERT(bufferedRange <= frameIndexRange());
     auto writableRange = writableSampleFrames.frameIndexRange();
     const auto consumableRange = intersect(bufferedRange, writableRange);
     DEBUG_ASSERT(consumableRange <= writableRange);
@@ -1284,6 +1281,25 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                         pDecodedSampleData,
                         copySampleCount);
                 readFrameIndex += decodedFrameRange.length();
+            }
+            DEBUG_ASSERT(m_curFrameIndex ==
+                    frameIndexRange().clampIndex(m_curFrameIndex));
+            const auto bufferedRange =
+                    IndexRange::forward(
+                            m_curFrameIndex,
+                            samples2frames(m_sampleBuffer.readableLength()));
+            if (frameIndexRange().end() < bufferedRange.end()) {
+                // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR) FFmpeg may
+                // decode a few more samples than expected! Simply discard those
+                // trailing samples.
+                const auto overflowFrameCount =
+                        bufferedRange.end() - frameIndexRange().end();
+                kLogger.info()
+                        << "Discarding"
+                        << overflowFrameCount
+                        << "sample frames at the end of the audio stream";
+                m_sampleBuffer.shrinkAfterWriting(
+                        frames2samples(overflowFrameCount));
             }
 
             // Housekeeping before next decoding iteration
