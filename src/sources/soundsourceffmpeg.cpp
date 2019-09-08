@@ -727,99 +727,161 @@ SINT readNextPacket(
 }
 } // namespace
 
-ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
+WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
         WritableSampleFrames writableSampleFrames) {
-    CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
-    auto writableRange =
-            writableSampleFrames.frameIndexRange();
-
-    // Consume all buffered sample data before decoding any new data
-    if (!m_sampleBuffer.empty()) {
-        DEBUG_ASSERT(m_curFrameIndex != kFrameIndexInvalid);
-        DEBUG_ASSERT(frameIndexRange().containsIndex(m_curFrameIndex));
-        const auto bufferedRange =
-                IndexRange::forward(
-                        m_curFrameIndex,
-                        samples2frames(m_sampleBuffer.readableLength()));
-        const auto consumableRange =
-                intersect(bufferedRange, writableRange);
-        DEBUG_ASSERT(consumableRange.length() <= writableRange.length());
-        if (!consumableRange.empty() &&
-                (consumableRange.start() == writableRange.start())) {
-            // Drop and skip preceding buffered samples
-            DEBUG_ASSERT(m_curFrameIndex <= writableRange.start());
-            const auto skippableRange =
-                    IndexRange::between(
-                            m_curFrameIndex,
-                            writableRange.start());
-            m_sampleBuffer.shrinkForReading(
-                    frames2samples(skippableRange.length()));
-            m_curFrameIndex += skippableRange.length();
-            // Consume buffered samples
-            DEBUG_ASSERT(m_curFrameIndex == writableRange.start());
-            const SampleBuffer::ReadableSlice consumableSlice =
-                    m_sampleBuffer.shrinkForReading(
-                            frames2samples(consumableRange.length()));
-            DEBUG_ASSERT(consumableSlice.length() == frames2samples(consumableRange.length()));
-#if ENABLE_TRACING
-            kLogger.trace() << "Consuming buffered samples" << consumableRange;
-#endif
-            if (pOutputSampleBuffer) {
-                SampleUtil::copy(
-                        pOutputSampleBuffer,
-                        consumableSlice.data(),
-                        consumableSlice.length());
-                pOutputSampleBuffer += consumableSlice.length();
-            }
-            writableRange.shrinkFront(consumableRange.length());
-            m_curFrameIndex += consumableRange.length();
-            // Keep remaining buffered samples
-            DEBUG_ASSERT(writableRange.empty() || m_sampleBuffer.empty());
-        } else {
-            // Discard all buffered sample data
-            m_sampleBuffer.clear();
-            m_curFrameIndex += bufferedRange.length();
-        }
-    }
-
-    if (m_curFrameIndex != writableRange.start()) {
-        // Need to seek before reading
-        DEBUG_ASSERT(m_sampleBuffer.empty());
-        auto seekFrameIndex =
-                math_max(kMinFrameIndex, writableRange.start() - m_seekPrerollFrameCount);
-        // Seek to codec frame boundaries if the frame size is fixed and known
-        if (m_pavStream->codecpar->frame_size > 0) {
-            seekFrameIndex -= (seekFrameIndex - kMinFrameIndex) % m_pavCodecContext->frame_size;
-        }
-        DEBUG_ASSERT(seekFrameIndex >= kMinFrameIndex);
-        DEBUG_ASSERT(seekFrameIndex <= writableRange.start());
-        if ((m_curFrameIndex == kFrameIndexInvalid) ||
-                (m_curFrameIndex > writableRange.start()) ||
-                (m_curFrameIndex < seekFrameIndex)) {
-            // Flush internal decoder state
-            avcodec_flush_buffers(m_pavCodecContext);
-            // Invalidate current position
-            m_curFrameIndex = kFrameIndexInvalid;
-            // Seek to new position
-            const int64_t seekTimestamp =
-                    convertFrameIndexToStreamTime(*m_pavStream, seekFrameIndex);
-            int av_seek_frame_result = av_seek_frame(
-                    m_pavInputFormatContext,
-                    m_pavStream->index,
-                    seekTimestamp,
-                    AVSEEK_FLAG_BACKWARD);
-            if (av_seek_frame_result < 0) {
-                kLogger.warning()
-                        << "av_seek_frame() failed:"
-                        << formatErrorMessage(av_seek_frame_result).toLocal8Bit().constData();
-                m_curFrameIndex = kFrameIndexInvalid;
-                return ReadableSampleFrames();
-            }
-            // Current position is unknown until reading from the stream
-            m_curFrameIndex = kFrameIndexUnknown;
-        }
+    if (m_sampleBuffer.empty(), writableSampleFrames.writableSlice().empty()) {
+        return writableSampleFrames;
     }
     DEBUG_ASSERT(m_curFrameIndex != kFrameIndexInvalid);
+    DEBUG_ASSERT(m_curFrameIndex != kFrameIndexUnknown);
+
+    const auto bufferedRange =
+            IndexRange::forward(
+                    m_curFrameIndex,
+                    samples2frames(m_sampleBuffer.readableLength()));
+    VERIFY_OR_DEBUG_ASSERT(bufferedRange <= frameIndexRange()) {
+        kLogger.warning()
+                << "Sample buffer contains more data than expected:"
+                << "total range" << frameIndexRange()
+                << "buffered range" << bufferedRange;
+    }
+    auto writableRange = writableSampleFrames.frameIndexRange();
+    const auto consumableRange = intersect(bufferedRange, writableRange);
+    DEBUG_ASSERT(consumableRange <= writableRange);
+    if (consumableRange.empty() ||
+            (consumableRange.start() != writableRange.start())) {
+        // Discard (= skip) all buffered sample data
+        m_curFrameIndex += bufferedRange.length();
+        m_sampleBuffer.clear();
+        return writableSampleFrames;
+    }
+
+    // Drop and skip preceding buffered samples
+    DEBUG_ASSERT(m_curFrameIndex <= consumableRange.start());
+    const auto skippableRange =
+            IndexRange::between(
+                    m_curFrameIndex,
+                    consumableRange.start());
+    m_sampleBuffer.shrinkForReading(
+            frames2samples(skippableRange.length()));
+    m_curFrameIndex += skippableRange.length();
+
+    // Consume buffered samples
+#if ENABLE_TRACING
+    kLogger.trace() << "Consuming buffered samples" << consumableRange;
+#endif
+    DEBUG_ASSERT(m_curFrameIndex == consumableRange.start());
+    const SampleBuffer::ReadableSlice consumableSlice =
+            m_sampleBuffer.shrinkForReading(
+                    frames2samples(consumableRange.length()));
+    DEBUG_ASSERT(consumableSlice.length() == frames2samples(consumableRange.length()));
+    CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
+    if (pOutputSampleBuffer) {
+        SampleUtil::copy(
+                pOutputSampleBuffer,
+                consumableSlice.data(),
+                consumableSlice.length());
+        pOutputSampleBuffer += consumableSlice.length();
+    }
+    writableRange.shrinkFront(consumableRange.length());
+    m_curFrameIndex += consumableRange.length();
+    // Either the resulting output buffer or the sample buffer is
+    // empty after returning from this function! Remaining data in
+    // the sample buffer is kept until the next read operation.
+    DEBUG_ASSERT(writableRange.empty() || m_sampleBuffer.empty());
+
+    // Return the remaining output buffer for decoding
+    return WritableSampleFrames(
+            writableRange,
+            SampleBuffer::WritableSlice(
+                    pOutputSampleBuffer,
+                    writableRange.length()));
+}
+
+bool SoundSourceFFmpeg::adjustCurrentPosition(
+        SINT startIndex) {
+    if (m_curFrameIndex == startIndex) {
+        // Nothing to do
+        return true;
+    }
+
+    // Need to seek to a valid start position before reading
+    DEBUG_ASSERT(frameIndexRange().containsIndex(startIndex));
+    VERIFY_OR_DEBUG_ASSERT(m_sampleBuffer.empty()) {
+        // Should have been done while consuming the sample buffer
+        m_sampleBuffer.clear();
+    }
+
+    auto seekFrameIndex =
+            math_max(kMinFrameIndex, startIndex - m_seekPrerollFrameCount);
+    // Seek to codec frame boundaries if the frame size is fixed and known
+    if (m_pavStream->codecpar->frame_size > 0) {
+        seekFrameIndex -= (seekFrameIndex - kMinFrameIndex) % m_pavCodecContext->frame_size;
+    }
+    DEBUG_ASSERT(seekFrameIndex >= kMinFrameIndex);
+    DEBUG_ASSERT(seekFrameIndex <= startIndex);
+
+    if ((m_curFrameIndex == kFrameIndexInvalid) ||
+            (m_curFrameIndex > startIndex) ||
+            (m_curFrameIndex < seekFrameIndex)) {
+        // Flush internal decoder state
+        avcodec_flush_buffers(m_pavCodecContext);
+        // Invalidate current position
+        m_curFrameIndex = kFrameIndexInvalid;
+        // Seek to new position
+        const int64_t seekTimestamp =
+                convertFrameIndexToStreamTime(*m_pavStream, seekFrameIndex);
+        int av_seek_frame_result = av_seek_frame(
+                m_pavInputFormatContext,
+                m_pavStream->index,
+                seekTimestamp,
+                AVSEEK_FLAG_BACKWARD);
+        if (av_seek_frame_result < 0) {
+            kLogger.warning()
+                    << "av_seek_frame() failed:"
+                    << formatErrorMessage(av_seek_frame_result).toLocal8Bit().constData();
+            m_curFrameIndex = kFrameIndexInvalid;
+            return false;
+        }
+    }
+
+    // The current position remains unknown until actually reading data
+    // from the stream
+    m_curFrameIndex = kFrameIndexUnknown;
+    return true;
+}
+
+ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
+        WritableSampleFrames writableSampleFrames) {
+    const SINT readableStartIndex = writableSampleFrames.frameIndexRange().start();
+    const CSAMPLE* readableData = writableSampleFrames.writableData();
+
+    // Consume all buffered sample data before decoding any new data
+    writableSampleFrames = consumeSampleBuffer(writableSampleFrames);
+
+    // Skip decoding if all data has been read
+    auto writableRange = writableSampleFrames.frameIndexRange();
+    DEBUG_ASSERT(writableRange <= frameIndexRange());
+    if (writableRange.empty()) {
+        auto readableRange =
+                IndexRange::between(
+                        readableStartIndex,
+                        writableRange.start());
+        return ReadableSampleFrames(
+                readableRange,
+                SampleBuffer::ReadableSlice(
+                        readableData,
+                        frames2samples(readableRange.length())));
+    }
+
+    // Adjust the current position
+    if (!adjustCurrentPosition(writableRange.start())) {
+        // Abort reading on seek errors
+        return ReadableSampleFrames();
+    }
+
+    // Start decoding into the output buffer from the current positon
+    CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
 
     AVPacket avPacket;
     av_init_packet(&avPacket);
@@ -1231,14 +1293,14 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     }
     DEBUG_ASSERT(!pavNextPacket);
 
-    const auto readableRange =
+    auto readableRange =
             IndexRange::between(
-                    writableSampleFrames.frameIndexRange().start(),
+                    readableStartIndex,
                     writableRange.start());
     return ReadableSampleFrames(
             readableRange,
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.writableData(),
+                    readableData,
                     frames2samples(readableRange.length())));
 }
 

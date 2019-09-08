@@ -30,6 +30,16 @@ class SoundSourceFFmpeg : public SoundSource {
             OpenMode mode,
             const OpenParams& params) override;
 
+    // Consume as many buffered sample frames as possible and return
+    // the remaining range that could not be filled from the  buffer.
+    WritableSampleFrames consumeSampleBuffer(
+            WritableSampleFrames writableSampleFrames);
+
+    // Seek to the requested start index (if needed) or return false
+    // upon seek errors.
+    bool adjustCurrentPosition(
+            SINT startIndex);
+
     // Takes ownership of an input format context and ensures that
     // the corresponding AVFormatContext is closed, either explicitly
     // or implicitly by the destructor. The wrapper can only be
