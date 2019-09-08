@@ -1,0 +1,943 @@
+cmake_minimum_required(VERSION 3.1.0)
+project(mixxx)
+cmake_policy(SET CMP0071 NEW)
+include(ExternalProject)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+
+# Get the current working branch
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+message(STATUS "Git branch: ${GIT_BRANCH}")
+
+# Get the latest abbreviated commit hash of the working branch
+execute_process(
+  COMMAND git log -1 --format=%h
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Check if the worktree is dirty
+execute_process(
+  COMMAND git diff --quiet
+  RESULT_VARIABLE GIT_WORKTREE_DIRTY
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+if(NOT GIT_WORKTREE_DIRTY EQUAL "0")
+  set(GIT_COMMIT_HASH "${GIT_COMMIT_HASH}+")
+endif()
+message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
+configure_file(
+  "${PROJECT_SOURCE_DIR}/src/build.h.template"
+  "${PROJECT_BINARY_DIR}/src/build.h"
+)
+
+if(CMAKE_VERSION VERSION_LESS "3.7.0")
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
+  # using regular Clang or AppleClang
+  set(CLANG ON)
+else()
+  set(CLANG OFF)
+endif()
+
+# Protobuf
+find_package(Protobuf REQUIRED)
+protobuf_generate_cpp(
+  PROTO_SOURCES
+  PROTO_HEADERS
+  src/proto/beats.proto
+  src/proto/headers.proto
+  src/proto/keys.proto
+  src/proto/skin.proto
+  src/proto/waveform.proto
+)
+
+# Mixxx itself
+add_library(mixxx-lib STATIC
+  src/analyzer/analyzerbeats.cpp
+  src/analyzer/analyzerebur128.cpp
+  src/analyzer/analyzergain.cpp
+  src/analyzer/analyzerkey.cpp
+  src/analyzer/analyzersilence.cpp
+  src/analyzer/analyzerthread.cpp
+  src/analyzer/analyzerwaveform.cpp
+  src/analyzer/plugins/analyzerqueenmarybeats.cpp
+  src/analyzer/plugins/analyzerqueenmarykey.cpp
+  src/analyzer/plugins/analyzersoundtouchbeats.cpp
+  src/analyzer/plugins/buffering_utils.cpp
+  src/analyzer/trackanalysisscheduler.cpp
+  src/control/control.cpp
+  src/control/controlaudiotaperpot.cpp
+  src/control/controlbehavior.cpp
+  src/control/controleffectknob.cpp
+  src/control/controlencoder.cpp
+  src/control/controlindicator.cpp
+  src/control/controllinpotmeter.cpp
+  src/control/controllogpotmeter.cpp
+  src/control/controlmodel.cpp
+  src/control/controlobject.cpp
+  src/control/controlobjectscript.cpp
+  src/control/controlpotmeter.cpp
+  src/control/controlproxy.cpp
+  src/control/controlpushbutton.cpp
+  src/control/controlttrotary.cpp
+  src/controllers/colorjsproxy.cpp
+  src/controllers/controller.cpp
+  src/controllers/controllerdebug.cpp
+  src/controllers/controllerengine.cpp
+  src/controllers/controllerenumerator.cpp
+  src/controllers/controllerinputmappingtablemodel.cpp
+  src/controllers/controllerlearningeventfilter.cpp
+  src/controllers/controllermanager.cpp
+  src/controllers/controllermappingtablemodel.cpp
+  src/controllers/controlleroutputmappingtablemodel.cpp
+  src/controllers/controllerpresetfilehandler.cpp
+  src/controllers/controllerpresetinfo.cpp
+  src/controllers/controllerpresetinfoenumerator.cpp
+  src/controllers/controlpickermenu.cpp
+  src/controllers/delegates/controldelegate.cpp
+  src/controllers/delegates/midibytedelegate.cpp
+  src/controllers/delegates/midichanneldelegate.cpp
+  src/controllers/delegates/midiopcodedelegate.cpp
+  src/controllers/delegates/midioptionsdelegate.cpp
+  src/controllers/dlgcontrollerlearning.cpp
+  src/controllers/dlgcontrollerlearning.ui
+  src/controllers/dlgprefcontroller.cpp
+  src/controllers/dlgprefcontrollerdlg.ui
+  src/controllers/dlgprefcontrollers.cpp
+  src/controllers/dlgprefcontrollersdlg.ui
+  src/controllers/keyboard/keyboardeventfilter.cpp
+  src/controllers/learningutils.cpp
+  src/controllers/midi/midicontroller.cpp
+  src/controllers/midi/midicontrollerpresetfilehandler.cpp
+  src/controllers/midi/midienumerator.cpp
+  src/controllers/midi/midimessage.cpp
+  src/controllers/midi/midioutputhandler.cpp
+  src/controllers/midi/midiutils.cpp
+  src/controllers/midi/portmidicontroller.cpp
+  src/controllers/midi/portmidienumerator.cpp
+  src/controllers/softtakeover.cpp
+  src/database/mixxxdb.cpp
+  src/database/schemamanager.cpp
+  src/dialog/dlgabout.cpp
+  src/dialog/dlgaboutdlg.ui
+  src/dialog/dlgdevelopertools.cpp
+  src/dialog/dlgdevelopertoolsdlg.ui
+  src/effects/builtin/autopaneffect.cpp
+  src/effects/builtin/balanceeffect.cpp
+  src/effects/builtin/bessel4lvmixeqeffect.cpp
+  src/effects/builtin/bessel8lvmixeqeffect.cpp
+  src/effects/builtin/biquadfullkilleqeffect.cpp
+  src/effects/builtin/bitcrushereffect.cpp
+  src/effects/builtin/builtinbackend.cpp
+  src/effects/builtin/echoeffect.cpp
+  src/effects/builtin/filtereffect.cpp
+  src/effects/builtin/flangereffect.cpp
+  src/effects/builtin/graphiceqeffect.cpp
+  src/effects/builtin/linkwitzriley8eqeffect.cpp
+  src/effects/builtin/loudnesscontoureffect.cpp
+  src/effects/builtin/metronomeeffect.cpp
+  src/effects/builtin/moogladder4filtereffect.cpp
+  src/effects/builtin/parametriceqeffect.cpp
+  src/effects/builtin/phasereffect.cpp
+  src/effects/builtin/reverbeffect.cpp
+  src/effects/builtin/threebandbiquadeqeffect.cpp
+  src/effects/builtin/tremoloeffect.cpp
+  src/effects/effect.cpp
+  src/effects/effectbuttonparameterslot.cpp
+  src/effects/effectchain.cpp
+  src/effects/effectchainmanager.cpp
+  src/effects/effectchainslot.cpp
+  src/effects/effectmanifest.cpp
+  src/effects/effectmanifestparameter.cpp
+  src/effects/effectparameter.cpp
+  src/effects/effectparameterslot.cpp
+  src/effects/effectparameterslotbase.cpp
+  src/effects/effectrack.cpp
+  src/effects/effectsbackend.cpp
+  src/effects/effectslot.cpp
+  src/effects/effectsmanager.cpp
+  src/encoder/encoder.cpp
+  src/encoder/encoderbroadcastsettings.cpp
+  src/encoder/encoderflacsettings.cpp
+  src/encoder/encodermp3.cpp
+  src/encoder/encodermp3settings.cpp
+  src/encoder/encoderopussettings.cpp
+  src/encoder/encodersndfileflac.cpp
+  src/encoder/encodervorbis.cpp
+  src/encoder/encodervorbissettings.cpp
+  src/encoder/encoderwave.cpp
+  src/encoder/encoderwavesettings.cpp
+  src/engine/bufferscalers/enginebufferscale.cpp
+  src/engine/bufferscalers/enginebufferscalelinear.cpp
+  src/engine/bufferscalers/enginebufferscalerubberband.cpp
+  src/engine/bufferscalers/enginebufferscalest.cpp
+  src/engine/cachingreader/cachingreader.cpp
+  src/engine/cachingreader/cachingreaderchunk.cpp
+  src/engine/cachingreader/cachingreaderworker.cpp
+  src/engine/channelmixer_autogen.cpp
+  src/engine/channels/engineaux.cpp
+  src/engine/channels/enginechannel.cpp
+  src/engine/channels/enginedeck.cpp
+  src/engine/channels/enginemicrophone.cpp
+  src/engine/controls/bpmcontrol.cpp
+  src/engine/controls/clockcontrol.cpp
+  src/engine/controls/cuecontrol.cpp
+  src/engine/controls/enginecontrol.cpp
+  src/engine/controls/keycontrol.cpp
+  src/engine/controls/loopingcontrol.cpp
+  src/engine/controls/quantizecontrol.cpp
+  src/engine/controls/ratecontrol.cpp
+  src/engine/effects/engineeffect.cpp
+  src/engine/effects/engineeffectchain.cpp
+  src/engine/effects/engineeffectrack.cpp
+  src/engine/effects/engineeffectsmanager.cpp
+  src/engine/enginebuffer.cpp
+  src/engine/enginedelay.cpp
+  src/engine/enginemaster.cpp
+  src/engine/engineobject.cpp
+  src/engine/enginepregain.cpp
+  src/engine/enginesidechaincompressor.cpp
+  src/engine/enginetalkoverducking.cpp
+  src/engine/enginevumeter.cpp
+  src/engine/engineworker.cpp
+  src/engine/engineworkerscheduler.cpp
+  src/engine/enginexfader.cpp
+  src/engine/filters/enginefilter.cpp
+  src/engine/filters/enginefilterbessel4.cpp
+  src/engine/filters/enginefilterbessel8.cpp
+  src/engine/filters/enginefilterbiquad1.cpp
+  src/engine/filters/enginefilterbutterworth4.cpp
+  src/engine/filters/enginefilterbutterworth8.cpp
+  src/engine/filters/enginefilterlinkwitzriley2.cpp
+  src/engine/filters/enginefilterlinkwitzriley4.cpp
+  src/engine/filters/enginefilterlinkwitzriley8.cpp
+  src/engine/filters/enginefiltermoogladder4.cpp
+  src/engine/positionscratchcontroller.cpp
+  src/engine/readaheadmanager.cpp
+  src/engine/sidechain/enginenetworkstream.cpp
+  src/engine/sidechain/enginerecord.cpp
+  src/engine/sidechain/enginesidechain.cpp
+  src/engine/sidechain/networkinputstreamworker.cpp
+  src/engine/sidechain/networkoutputstreamworker.cpp
+  src/engine/sync/basesyncablelistener.cpp
+  src/engine/sync/enginesync.cpp
+  src/engine/sync/internalclock.cpp
+  src/engine/sync/synccontrol.cpp
+  src/errordialoghandler.cpp
+  src/library/analysisfeature.cpp
+  src/library/analysislibrarytablemodel.cpp
+  src/library/autodj/autodjfeature.cpp
+  src/library/autodj/autodjprocessor.cpp
+  src/library/autodj/dlgautodj.cpp
+  src/library/autodj/dlgautodj.ui
+  src/library/banshee/bansheedbconnection.cpp
+  src/library/banshee/bansheefeature.cpp
+  src/library/banshee/bansheeplaylistmodel.cpp
+  src/library/baseexternallibraryfeature.cpp
+  src/library/baseexternalplaylistmodel.cpp
+  src/library/baseexternaltrackmodel.cpp
+  src/library/baseplaylistfeature.cpp
+  src/library/basesqltablemodel.cpp
+  src/library/basetrackcache.cpp
+  src/library/bpmdelegate.cpp
+  src/library/browse/browsefeature.cpp
+  src/library/browse/browsetablemodel.cpp
+  src/library/browse/browsethread.cpp
+  src/library/browse/foldertreemodel.cpp
+  src/library/columncache.cpp
+  src/library/coverart.cpp
+  src/library/coverartcache.cpp
+  src/library/coverartdelegate.cpp
+  src/library/coverartutils.cpp
+  src/library/crate/cratefeature.cpp
+  src/library/crate/cratefeaturehelper.cpp
+  src/library/crate/cratestorage.cpp
+  src/library/crate/cratetablemodel.cpp
+  src/library/dao/analysisdao.cpp
+  src/library/dao/autodjcratesdao.cpp
+  src/library/dao/cuedao.cpp
+  src/library/dao/directorydao.cpp
+  src/library/dao/libraryhashdao.cpp
+  src/library/dao/playlistdao.cpp
+  src/library/dao/settingsdao.cpp
+  src/library/dao/trackdao.cpp
+  src/library/dlganalysis.cpp
+  src/library/dlganalysis.ui
+  src/library/dlgcoverartfullsize.cpp
+  src/library/dlgcoverartfullsize.ui
+  src/library/dlghidden.cpp
+  src/library/dlghidden.ui
+  src/library/dlgmissing.cpp
+  src/library/dlgmissing.ui
+  src/library/dlgtagfetcher.cpp
+  src/library/dlgtagfetcher.ui
+  src/library/dlgtrackinfo.cpp
+  src/library/dlgtrackinfo.ui
+  src/library/dlgtrackmetadataexport.cpp
+  src/library/export/dlgtrackexport.ui
+  src/library/export/trackexportdlg.cpp
+  src/library/export/trackexportwizard.cpp
+  src/library/export/trackexportworker.cpp
+  src/library/hiddentablemodel.cpp
+  src/library/itunes/itunesfeature.cpp
+  src/library/library.cpp
+  src/library/librarycontrol.cpp
+  src/library/libraryfeature.cpp
+  src/library/librarytablemodel.cpp
+  src/library/locationdelegate.cpp
+  src/library/missingtablemodel.cpp
+  src/library/mixxxlibraryfeature.cpp
+  src/library/parser.cpp
+  src/library/parsercsv.cpp
+  src/library/parserm3u.cpp
+  src/library/parserpls.cpp
+  src/library/playlistfeature.cpp
+  src/library/playlisttablemodel.cpp
+  src/library/previewbuttondelegate.cpp
+  src/library/proxytrackmodel.cpp
+  src/library/recording/dlgrecording.cpp
+  src/library/recording/dlgrecording.ui
+  src/library/recording/recordingfeature.cpp
+  src/library/rhythmbox/rhythmboxfeature.cpp
+  src/library/scanner/importfilestask.cpp
+  src/library/scanner/libraryscanner.cpp
+  src/library/scanner/libraryscannerdlg.cpp
+  src/library/scanner/recursivescandirectorytask.cpp
+  src/library/scanner/scannertask.cpp
+  src/library/searchquery.cpp
+  src/library/searchqueryparser.cpp
+  src/library/setlogfeature.cpp
+  src/library/sidebarmodel.cpp
+  src/library/songdownloader.cpp
+  src/library/stardelegate.cpp
+  src/library/stareditor.cpp
+  src/library/starrating.cpp
+  src/library/tableitemdelegate.cpp
+  src/library/trackcollection.cpp
+  src/library/traktor/traktorfeature.cpp
+  src/library/treeitem.cpp
+  src/library/treeitemmodel.cpp
+  src/mixer/auxiliary.cpp
+  src/mixer/baseplayer.cpp
+  src/mixer/basetrackplayer.cpp
+  src/mixer/deck.cpp
+  src/mixer/microphone.cpp
+  src/mixer/playerinfo.cpp
+  src/mixer/playermanager.cpp
+  src/mixer/previewdeck.cpp
+  src/mixer/sampler.cpp
+  src/mixer/samplerbank.cpp
+  src/mixxx.cpp
+  src/mixxxapplication.cpp
+  src/musicbrainz/acoustidclient.cpp
+  src/musicbrainz/chromaprinter.cpp
+  src/musicbrainz/crc.c
+  src/musicbrainz/gzip.cpp
+  src/musicbrainz/musicbrainzclient.cpp
+  src/musicbrainz/network.cpp
+  src/musicbrainz/tagfetcher.cpp
+  src/preferences/broadcastprofile.cpp
+  src/preferences/broadcastsettings.cpp
+  src/preferences/broadcastsettings_legacy.cpp
+  src/preferences/broadcastsettingsmodel.cpp
+  src/preferences/configobject.cpp
+  src/preferences/dialog/dlgprefautodj.cpp
+  src/preferences/dialog/dlgprefautodjdlg.ui
+  src/preferences/dialog/dlgprefbeats.cpp
+  src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefcrossfader.cpp
+  src/preferences/dialog/dlgprefcrossfaderdlg.ui
+  src/preferences/dialog/dlgprefdeck.cpp
+  src/preferences/dialog/dlgprefdeckdlg.ui
+  src/preferences/dialog/dlgprefeffects.cpp
+  src/preferences/dialog/dlgprefeffectsdlg.ui
+  src/preferences/dialog/dlgprefeq.cpp
+  src/preferences/dialog/dlgprefeqdlg.ui
+  src/preferences/dialog/dlgpreferences.cpp
+  src/preferences/dialog/dlgpreferencesdlg.ui
+  src/preferences/dialog/dlgprefinterface.cpp
+  src/preferences/dialog/dlgprefinterfacedlg.ui
+  src/preferences/dialog/dlgprefkey.cpp
+  src/preferences/dialog/dlgprefkeydlg.ui
+  src/preferences/dialog/dlgpreflibrary.cpp
+  src/preferences/dialog/dlgpreflibrarydlg.ui
+  src/preferences/dialog/dlgpreflv2dlg.ui
+  src/preferences/dialog/dlgprefnovinyl.cpp
+  src/preferences/dialog/dlgprefnovinyldlg.ui
+  src/preferences/dialog/dlgprefrecord.cpp
+  src/preferences/dialog/dlgprefrecorddlg.ui
+  src/preferences/dialog/dlgprefreplaygain.cpp
+  src/preferences/dialog/dlgprefreplaygaindlg.ui
+  src/preferences/dialog/dlgprefsound.cpp
+  src/preferences/dialog/dlgprefsounddlg.ui
+  src/preferences/dialog/dlgprefsounditem.cpp
+  src/preferences/dialog/dlgprefsounditem.ui
+  src/preferences/dialog/dlgprefvinyldlg.ui
+  src/preferences/dialog/dlgprefwaveform.cpp
+  src/preferences/dialog/dlgprefwaveformdlg.ui
+  src/preferences/dlgpreferencepage.cpp
+  src/preferences/effectsettingsmodel.cpp
+  src/preferences/replaygainsettings.cpp
+  src/preferences/settingsmanager.cpp
+  src/preferences/upgrade.cpp
+  src/recording/recordingmanager.cpp
+  src/skin/colorschemeparser.cpp
+  src/skin/imgcolor.cpp
+  src/skin/imginvert.cpp
+  src/skin/imgloader.cpp
+  src/skin/launchimage.cpp
+  src/skin/legacyskinparser.cpp
+  src/skin/pixmapsource.cpp
+  src/skin/skincontext.cpp
+  src/skin/skinloader.cpp
+  src/skin/svgparser.cpp
+  src/skin/tooltips.cpp
+  src/soundio/sounddevice.cpp
+  src/soundio/sounddevicenetwork.cpp
+  src/soundio/sounddeviceportaudio.cpp
+  src/soundio/soundmanager.cpp
+  src/soundio/soundmanagerconfig.cpp
+  src/soundio/soundmanagerutil.cpp
+  src/sources/audiosource.cpp
+  src/sources/audiosourcestereoproxy.cpp
+  src/sources/metadatasourcetaglib.cpp
+  src/sources/soundsource.cpp
+  src/sources/soundsourceflac.cpp
+  src/sources/soundsourceoggvorbis.cpp
+  src/sources/soundsourceproviderregistry.cpp
+  src/sources/soundsourceproxy.cpp
+  src/sources/soundsourcesndfile.cpp
+  src/track/albuminfo.cpp
+  src/track/beatfactory.cpp
+  src/track/beatgrid.cpp
+  src/track/beatmap.cpp
+  src/track/beats.cpp
+  src/track/beatutils.cpp
+  src/track/bpm.cpp
+  src/track/cue.cpp
+  src/track/globaltrackcache.cpp
+  src/track/keyfactory.cpp
+  src/track/keys.cpp
+  src/track/keyutils.cpp
+  src/track/playcounter.cpp
+  src/track/replaygain.cpp
+  src/track/track.cpp
+  src/track/trackfile.cpp
+  src/track/trackinfo.cpp
+  src/track/trackmetadata.cpp
+  src/track/trackmetadatataglib.cpp
+  src/track/tracknumbers.cpp
+  src/track/trackrecord.cpp
+  src/track/trackref.cpp
+  src/util/audiosignal.cpp
+  src/util/autohidpi.cpp
+  src/util/battery/battery.cpp
+  src/util/cmdlineargs.cpp
+  src/util/color/color.cpp
+  src/util/color/predefinedcolor.cpp
+  src/util/console.cpp
+  src/util/db/dbconnection.cpp
+  src/util/db/dbconnectionpool.cpp
+  src/util/db/dbconnectionpooled.cpp
+  src/util/db/dbconnectionpooler.cpp
+  src/util/db/dbid.cpp
+  src/util/db/fwdsqlquery.cpp
+  src/util/db/fwdsqlqueryselectresult.cpp
+  src/util/db/sqllikewildcardescaper.cpp
+  src/util/db/sqlqueryfinisher.cpp
+  src/util/db/sqlstringformatter.cpp
+  src/util/db/sqltransaction.cpp
+  src/util/desktophelper.cpp
+  src/util/dnd.cpp
+  src/util/duration.cpp
+  src/util/experiment.cpp
+  src/util/file.cpp
+  src/util/indexrange.cpp
+  src/util/logger.cpp
+  src/util/logging.cpp
+  src/util/mac.cpp
+  src/util/movinginterquartilemean.cpp
+  src/util/performancetimer.cpp
+  src/util/readaheadsamplebuffer.cpp
+  src/util/rlimit.cpp
+  src/util/rotary.cpp
+  src/util/sample.cpp
+  src/util/samplebuffer.cpp
+  src/util/sandbox.cpp
+  src/util/screensaver.cpp
+  src/util/sleepableqthread.cpp
+  src/util/stat.cpp
+  src/util/statmodel.cpp
+  src/util/statsmanager.cpp
+  src/util/tapfilter.cpp
+  src/util/task.cpp
+  src/util/threadcputimer.cpp
+  src/util/time.cpp
+  src/util/timer.cpp
+  src/util/valuetransformer.cpp
+  src/util/version.cpp
+  src/util/widgethider.cpp
+  src/util/widgetrendertimer.cpp
+  src/util/workerthread.cpp
+  src/util/workerthreadscheduler.cpp
+  src/util/xml.cpp
+  src/waveform/guitick.cpp
+  src/waveform/renderers/glslwaveformrenderersignal.cpp
+  src/waveform/renderers/glvsynctestrenderer.cpp
+  src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
+  src/waveform/renderers/glwaveformrendererrgb.cpp
+  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/qtvsynctestrenderer.cpp
+  src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+  src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/waveformmark.cpp
+  src/waveform/renderers/waveformmarkproperties.cpp
+  src/waveform/renderers/waveformmarkrange.cpp
+  src/waveform/renderers/waveformmarkset.cpp
+  src/waveform/renderers/waveformrenderbackground.cpp
+  src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrendererabstract.cpp
+  src/waveform/renderers/waveformrendererendoftrack.cpp
+  src/waveform/renderers/waveformrendererfilteredsignal.cpp
+  src/waveform/renderers/waveformrendererhsv.cpp
+  src/waveform/renderers/waveformrendererpreroll.cpp
+  src/waveform/renderers/waveformrendererrgb.cpp
+  src/waveform/renderers/waveformrenderersignalbase.cpp
+  src/waveform/renderers/waveformrendermark.cpp
+  src/waveform/renderers/waveformrendermarkrange.cpp
+  src/waveform/renderers/waveformsignalcolors.cpp
+  src/waveform/renderers/waveformwidgetrenderer.cpp
+  src/waveform/sharedglcontext.cpp
+  src/waveform/visualplayposition.cpp
+  src/waveform/visualsmanager.cpp
+  src/waveform/vsyncthread.cpp
+  src/waveform/waveform.cpp
+  src/waveform/waveformfactory.cpp
+  src/waveform/waveformwidgetfactory.cpp
+  src/waveform/widgets/emptywaveformwidget.cpp
+  src/waveform/widgets/glrgbwaveformwidget.cpp
+  src/waveform/widgets/glsimplewaveformwidget.cpp
+  src/waveform/widgets/glslwaveformwidget.cpp
+  src/waveform/widgets/glvsynctestwidget.cpp
+  src/waveform/widgets/glwaveformwidget.cpp
+  src/waveform/widgets/hsvwaveformwidget.cpp
+  src/waveform/widgets/qthsvwaveformwidget.cpp
+  src/waveform/widgets/qtrgbwaveformwidget.cpp
+  src/waveform/widgets/qtsimplewaveformwidget.cpp
+  src/waveform/widgets/qtvsynctestwidget.cpp
+  src/waveform/widgets/qtwaveformwidget.cpp
+  src/waveform/widgets/rgbwaveformwidget.cpp
+  src/waveform/widgets/softwarewaveformwidget.cpp
+  src/waveform/widgets/waveformwidgetabstract.cpp
+  src/widget/controlwidgetconnection.cpp
+  src/widget/hexspinbox.cpp
+  src/widget/paintable.cpp
+  src/widget/wanalysislibrarytableview.cpp
+  src/widget/wbasewidget.cpp
+  src/widget/wbattery.cpp
+  src/widget/wbeatspinbox.cpp
+  src/widget/wcombobox.cpp
+  src/widget/wcoverart.cpp
+  src/widget/wcoverartlabel.cpp
+  src/widget/wcoverartmenu.cpp
+  src/widget/wdisplay.cpp
+  src/widget/weffect.cpp
+  src/widget/weffectbuttonparameter.cpp
+  src/widget/weffectchain.cpp
+  src/widget/weffectparameter.cpp
+  src/widget/weffectparameterbase.cpp
+  src/widget/weffectparameterknob.cpp
+  src/widget/weffectparameterknobcomposed.cpp
+  src/widget/weffectpushbutton.cpp
+  src/widget/weffectselector.cpp
+  src/widget/wimagestore.cpp
+  src/widget/wkey.cpp
+  src/widget/wknob.cpp
+  src/widget/wknobcomposed.cpp
+  src/widget/wlabel.cpp
+  src/widget/wlibrary.cpp
+  src/widget/wlibrarysidebar.cpp
+  src/widget/wlibrarytableview.cpp
+  src/widget/wlibrarytextbrowser.cpp
+  src/widget/wmainmenubar.cpp
+  src/widget/wnumber.cpp
+  src/widget/wnumberdb.cpp
+  src/widget/wnumberpos.cpp
+  src/widget/wnumberrate.cpp
+  src/widget/woverview.cpp
+  src/widget/woverviewhsv.cpp
+  src/widget/woverviewlmh.cpp
+  src/widget/woverviewrgb.cpp
+  src/widget/wpixmapstore.cpp
+  src/widget/wpushbutton.cpp
+  src/widget/wrecordingduration.cpp
+  src/widget/wsearchlineedit.cpp
+  src/widget/wsingletoncontainer.cpp
+  src/widget/wsizeawarestack.cpp
+  src/widget/wskincolor.cpp
+  src/widget/wslidercomposed.cpp
+  src/widget/wspinny.cpp
+  src/widget/wsplitter.cpp
+  src/widget/wstarrating.cpp
+  src/widget/wstatuslight.cpp
+  src/widget/wtime.cpp
+  src/widget/wtrackproperty.cpp
+  src/widget/wtracktableview.cpp
+  src/widget/wtracktableviewheader.cpp
+  src/widget/wtracktext.cpp
+  src/widget/wvumeter.cpp
+  src/widget/wwaveformviewer.cpp
+  src/widget/wwidget.cpp
+  src/widget/wwidgetgroup.cpp
+  src/widget/wwidgetstack.cpp
+  ${PROTO_SOURCES}
+  ${PROTO_HEADERS})
+set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON)
+target_include_directories(mixxx-lib PUBLIC src "${PROJECT_BINARY_DIR}/src")
+target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
+if(UNIX AND NOT APPLE)
+  target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
+endif()
+
+if(WIN32)
+  target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
+
+  # Restrict ATL to XP-compatible SDK functions.
+  # TODO(rryan): Remove once we ditch XP support.
+  target_compile_definitions(mixxx-lib PUBLIC _ATL_XP_TARGETING)
+
+  # Helps prevent duplicate symbols
+  target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
+
+  # Need this on Windows until we have UTF16 support in Mixxx use stl min max
+  # defines
+  # http://connect.microsoft.com/VisualStudio/feedback/details/553420/std-cpp-
+  # max-and-std-cpp-min-not-available-in-visual-c-2010
+  target_compile_definitions(mixxx-lib PUBLIC NOMINMAX UNICODE)
+
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    target_compile_definitions(mixxx-lib PUBLIC WIN32)
+  else()
+    target_compile_definitions(mixxx-lib PUBLIC WIN64)
+  endif()
+
+  target_link_libraries(mixxx-lib PUBLIC shell32)
+
+  # Causes the cmath headers to declare M_PI and friends.
+  # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx We could define this
+  # in our headers but then include order matters since headers we don't control
+  # may include cmath first.
+  target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
+elseif(UNIX)
+  target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
+  if(APPLE)
+    target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
+  else()
+    target_compile_definitions(
+      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx/")
+    target_compile_definitions(
+      mixxx-lib PUBLIC UNIX_LIB_PATH="${CMAKE_INSTALL_PREFIX}/lib/mixxx/")
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+      target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
+      target_compile_definitions(mixxx-lib PUBLIC __BSD__)
+    endif()
+  endif()
+endif()
+
+# The mixxx executable
+add_executable(mixxx src/main.cpp ${PROTO_HEADERS})
+target_link_libraries(mixxx PUBLIC mixxx-lib)
+
+add_library(mixxx-qrc STATIC res/mixxx.cc res/mixxx.qrc)
+set_target_properties(mixxx-qrc PROPERTIES AUTOMOC ON AUTOUIC ON)
+target_link_libraries(mixxx-lib PUBLIC mixxx-qrc)
+
+target_include_directories(mixxx-lib PUBLIC
+  ${PROTOBUF_INCLUDE_DIRS}
+  "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
+#
+# Dependencies
+#
+
+# Chromaprint
+find_package(Chromaprint REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Chromaprint::Chromaprint)
+
+# Ebur128Mit
+ExternalProject_Add(libebur128
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
+  INSTALL_COMMAND ""
+)
+add_dependencies(mixxx-lib libebur128)
+target_include_directories(mixxx-lib PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
+)
+target_link_directories(mixxx-lib PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
+)
+target_link_libraries(mixxx-lib PUBLIC "ebur128")
+
+# FidLib
+add_library(fidlib OBJECT lib/fidlib/fidlib.c)
+if(MSVC)
+  target_compile_definitions(fidlib PRIVATE T_MSVC)
+elseif(MINGW)
+  target_compile_definitions(fidlib PRIVATE T_MINGW)
+else()
+  target_compile_definitions(fidlib PRIVATE T_LINUX)
+endif()
+target_include_directories(mixxx-lib PUBLIC lib/fidlib)
+target_link_libraries(mixxx-lib PUBLIC fidlib)
+
+# FLAC
+find_package(FLAC REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC FLAC::FLAC)
+
+# FpClassify This is a wrapper around the fpclassify function that prevents
+# inlining It is compiled without optimization and allows to use these function
+# from -ffast-math optimized objects
+add_library(FpClassify STATIC src/util/fpclassify.cpp)
+target_link_libraries(mixxx-lib PUBLIC FpClassify)
+
+# gtest
+target_include_directories(mixxx-lib PUBLIC lib/gtest-1.7.0/include)
+
+# HIDAPI
+find_package(HIDAPI REQUIRED)
+target_sources(mixxx-lib PRIVATE
+  src/controllers/hid/hidcontroller.cpp
+  src/controllers/hid/hidenumerator.cpp
+  src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+)
+target_link_libraries(mixxx-lib PUBLIC HIDAPI::LibUSB)
+
+# LAME
+find_package(LAME REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
+
+# OpenGL
+set(OpenGL_GL_PREFERENCE "GLVND")
+find_package(OpenGL REQUIRED)
+target_include_directories(mixxx-lib PUBLIC OpenGL)
+target_link_libraries(mixxx-lib PUBLIC OpenGL)
+
+# Ogg Vorbis
+find_package(OggVorbis REQUIRED)
+target_include_directories(mixxx-lib PUBLIC ${OggVorbis_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
+
+# PortAudio
+find_package(PortAudio REQUIRED)
+target_include_directories(mixxx-lib PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${PORTAUDIO_LIBRARIES})
+
+# PortAudio Ring Buffer
+add_library(PortAudioRingBuffer STATIC lib/portaudio/pa_ringbuffer.c)
+target_include_directories(mixxx-lib PUBLIC lib/portaudio)
+target_link_libraries(mixxx-lib PUBLIC PortAudioRingBuffer)
+
+# PortMidi
+find_package(PortMidi REQUIRED)
+target_include_directories(mixxx-lib PUBLIC ${PortMidi_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${PortMidi_LIBRARIES})
+
+# Protobuf
+target_include_directories(mixxx-lib PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${PROTOBUF_LIBRARIES})
+
+# Qt
+find_package(Qt5
+  COMPONENTS
+    Concurrent
+    Core
+    Gui
+    Network
+    OpenGL
+    Script
+    ScriptTools
+    Sql
+    Svg
+    Test
+    Widgets
+    Xml
+  REQUIRED
+)
+target_link_libraries(mixxx-lib PUBLIC
+  Qt5::Concurrent
+  Qt5::Core
+  Qt5::Gui
+  Qt5::Network
+  Qt5::OpenGL
+  Qt5::Script
+  Qt5::ScriptTools
+  Qt5::Sql
+  Qt5::Svg
+  Qt5::Test
+  Qt5::Widgets
+  Qt5::Xml)
+if(UNIX AND NOT APPLE)
+  find_package(X11 REQUIRED)
+  find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC X11 Qt5::X11Extras Qt5::DBus)
+elseif(WIN32)
+  find_package(Qt5
+    COMPONENTS
+      AccessibilitySupport
+      EventDispatcherSupport
+      FontDatabaseSupport
+      ThemeSupport
+      WindowsUIAutomationSupport
+    REQUIRED
+  )
+  target_link_libraries(mixxx-lib PUBLIC
+    Qt5::AccessibilitySupport
+    Qt5::EventDispatcherSupport
+    Qt5::FontDatabaseSupport
+    Qt5::ThemeSupport
+    Qt5::WindowsUIAutomationSupport
+  )
+endif()
+
+# QtScriptByteArray
+add_library(QtScriptByteArray STATIC
+  lib/qtscript-bytearray/bytearrayclass.cpp
+  lib/qtscript-bytearray/bytearrayprototype.cpp
+)
+set_target_properties(QtScriptByteArray PROPERTIES AUTOMOC ON)
+target_link_libraries(QtScriptByteArray Qt5::Core)
+target_include_directories(mixxx-lib PUBLIC lib/qtscript-bytearray)
+target_link_libraries(mixxx-lib PUBLIC QtScriptByteArray)
+
+# Queen Mary DSP
+add_library(QueenMaryDsp STATIC
+  # lib/qm-dsp/base/KaiserWindow.cpp
+  lib/qm-dsp/base/Pitch.cpp
+  # lib/qm-dsp/base/SincWindow.cpp
+  lib/qm-dsp/dsp/chromagram/Chromagram.cpp
+  lib/qm-dsp/dsp/chromagram/ConstantQ.cpp
+  lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
+  # lib/qm-dsp/dsp/mfcc/MFCC.cpp
+  lib/qm-dsp/dsp/onsets/DetectionFunction.cpp
+  lib/qm-dsp/dsp/onsets/PeakPicking.cpp
+  lib/qm-dsp/dsp/phasevocoder/PhaseVocoder.cpp
+  lib/qm-dsp/dsp/rateconversion/Decimator.cpp
+  # lib/qm-dsp/dsp/rateconversion/DecimatorB.cpp
+  # lib/qm-dsp/dsp/rateconversion/Resampler.cpp
+  # lib/qm-dsp/dsp/rhythm/BeatSpectrum.cpp
+  # lib/qm-dsp/dsp/segmentation/ClusterMeltSegmenter.cpp
+  # lib/qm-dsp/dsp/segmentation/Segmenter.cpp
+  # lib/qm-dsp/dsp/segmentation/cluster_melt.c
+  # lib/qm-dsp/dsp/segmentation/cluster_segmenter.c
+  lib/qm-dsp/dsp/signalconditioning/DFProcess.cpp
+  lib/qm-dsp/dsp/signalconditioning/FiltFilt.cpp
+  lib/qm-dsp/dsp/signalconditioning/Filter.cpp
+  lib/qm-dsp/dsp/signalconditioning/Framer.cpp
+  lib/qm-dsp/dsp/tempotracking/DownBeat.cpp
+  lib/qm-dsp/dsp/tempotracking/TempoTrack.cpp
+  lib/qm-dsp/dsp/tempotracking/TempoTrackV2.cpp
+  lib/qm-dsp/dsp/tonal/ChangeDetectionFunction.cpp
+  lib/qm-dsp/dsp/tonal/TCSgram.cpp
+  lib/qm-dsp/dsp/tonal/TonalEstimator.cpp
+  lib/qm-dsp/dsp/transforms/FFT.cpp
+  # lib/qm-dsp/dsp/wavelet/Wavelet.cpp
+  lib/qm-dsp/ext/kissfft/kiss_fft.c
+  lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c
+  # lib/qm-dsp/hmm/hmm.c
+  lib/qm-dsp/maths/Correlation.cpp
+  # lib/qm-dsp/maths/CosineDistance.cpp
+  lib/qm-dsp/maths/KLDivergence.cpp lib/qm-dsp/maths/MathUtilities.cpp
+  # lib/qm-dsp/maths/pca/pca.c
+  # lib/qm-dsp/thread/Thread.cpp
+)
+target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
+if(UNIX)
+  target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
+endif()
+# build.env.Append(CPPPATH="#lib/qm-dsp")
+target_include_directories(QueenMaryDsp PRIVATE lib/qm-dsp)
+target_include_directories(mixxx-lib PRIVATE lib/qm-dsp lib/qm-dsp/include)
+target_link_libraries(mixxx-lib PUBLIC QueenMaryDsp)
+
+# ReplayGain
+add_library(ReplayGain STATIC lib/replaygain/replaygain.cpp)
+target_include_directories(mixxx-lib PRIVATE lib/replaygain)
+target_link_libraries(mixxx-lib PRIVATE ReplayGain)
+
+# Reverb
+add_library(Reverb STATIC lib/reverb/Reverb.cc)
+target_include_directories(Reverb PRIVATE src)
+target_link_libraries(Reverb PUBLIC Qt5::Core)
+target_include_directories(mixxx-lib PRIVATE lib/reverb)
+target_link_libraries(mixxx-lib PUBLIC Reverb)
+
+# Rubberband
+find_package(Rubberband REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
+
+# SndFile
+find_package(SndFile REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
+
+# SoundTouch
+add_library(SoundTouch STATIC
+  lib/soundtouch/AAFilter.cpp
+  lib/soundtouch/BPMDetect.cpp
+  lib/soundtouch/FIFOSampleBuffer.cpp
+  lib/soundtouch/FIRFilter.cpp
+  lib/soundtouch/InterpolateCubic.cpp
+  lib/soundtouch/InterpolateLinear.cpp
+  lib/soundtouch/InterpolateShannon.cpp
+  lib/soundtouch/PeakFinder.cpp
+  lib/soundtouch/RateTransposer.cpp
+  lib/soundtouch/SoundTouch.cpp
+  lib/soundtouch/TDStretch.cpp
+  lib/soundtouch/cpu_detect_x86.cpp
+  lib/soundtouch/mmx_optimized.cpp
+  lib/soundtouch/sse_optimized.cpp
+)
+target_include_directories(SoundTouch PUBLIC lib/soundtouch)
+target_link_libraries(mixxx-lib PUBLIC SoundTouch)
+
+# TagLib
+find_package(Taglib REQUIRED)
+target_include_directories(mixxx-lib PUBLIC ${TAGLIB_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
+
+# Upower
+if(UNIX AND NOT APPLE)
+  find_package(GLIB COMPONENTS gobject REQUIRED)
+  find_package(Upower REQUIRED)
+  target_include_directories(mixxx-lib PUBLIC ${GLIB_INCLUDE_DIRS})
+  target_link_libraries(mixxx-lib PUBLIC ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
+  target_link_libraries(mixxx-lib PUBLIC Upower::Upower)
+endif()
+
+# iOS/OS X Frameworks
+if(APPLE)
+  # The iOS/OS X security framework is used to implement sandboxing.
+  find_library(SECURITY_LIBRARY Security REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC ${SECURITY_LIBRARY})
+
+  find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC ${CORESERVICES_LIBRARY})
+
+  find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC ${FOUNDATION_LIBRARY})
+
+  # Used for battery measurements and controlling the screensaver on OS X and iOS.
+  find_library(IOKIT_LIBRARY IOKit REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC ${IOKIT_LIBRARY})
+endif()

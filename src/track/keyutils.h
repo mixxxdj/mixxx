@@ -6,7 +6,7 @@
 #include <QList>
 
 #include "control/controlproxy.h"
-#include "proto/keys.pb.h"
+#include "keys.pb.h"
 #include "track/keys.h"
 #include "util/math.h"
 

@@ -12,7 +12,7 @@
 #include <QWidget>
 #include <QContextMenuEvent>
 
-#include "proto/headers.pb.h"
+#include "headers.pb.h"
 
 class TrackModel;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "proto/keys.pb.h"
+#include "keys.pb.h"
 
 #include "track/trackid.h"
 #include "track/cue.h"

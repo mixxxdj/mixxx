@@ -5,7 +5,7 @@
 #include <QPair>
 #include <QVector>
 
-#include "proto/keys.pb.h"
+#include "keys.pb.h"
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 

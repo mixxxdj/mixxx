@@ -1,7 +1,7 @@
 #include <QtDebug>
 
 #include "waveform/waveform.h"
-#include "proto/waveform.pb.h"
+#include "waveform.pb.h"
 
 using namespace mixxx::track;
 

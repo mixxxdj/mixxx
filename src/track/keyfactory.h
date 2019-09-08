@@ -6,7 +6,7 @@
 #include <QString>
 
 #include "track/keys.h"
-#include "proto/keys.pb.h"
+#include "keys.pb.h"
 #include "track/track.h"
 
 class KeyFactory {

@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #include "track/keyutils.h"
-#include "proto/keys.pb.h"
+#include "keys.pb.h"
 
 using ::testing::ElementsAre;
 
