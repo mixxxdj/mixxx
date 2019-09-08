@@ -620,6 +620,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         m_sampleBuffer.adjustCapacity(codecSampleBufferCapacity);
     }
 
+    // FFmpeg does not provide sample-accurate decoding after random seeks
+    // in the stream out of the box. Depending on the actual codec we need
+    // to account for this and start decoding before the target position.
     m_seekPrerollFrameCount = getStreamSeekPrerollFrameCount(*m_pavStream);
 #if ENABLE_TRACING
     kLogger.trace() << "Seek preroll frame count:" << m_seekPrerollFrameCount;
