@@ -30,6 +30,10 @@ class SoundSourceFFmpeg : public SoundSource {
             OpenMode mode,
             const OpenParams& params) override;
 
+    bool initResampling(
+            ChannelCount* pResampledChannelCount,
+            SampleRate* pResampledSampleRate);
+
     // Consume as many buffered sample frames as possible and return
     // the remaining range that could not be filled from the  buffer.
     WritableSampleFrames consumeSampleBuffer(

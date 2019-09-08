@@ -50,7 +50,7 @@ void initFFmpegLib() {
 #endif
 }
 
-inline uint64_t getStreamChannelLayout(const AVStream& avStream) {
+inline int64_t getStreamChannelLayout(const AVStream& avStream) {
     auto channel_layout = avStream.codecpar->channel_layout;
     if (channel_layout == kavChannelLayoutUndefined) {
         // Workaround: FFmpeg sometimes fails to determine the channel
@@ -543,84 +543,20 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << '}';
     }
 
-    const auto streamChannelCount =
-            ChannelCount(m_pavStream->codecpar->channels);
-    m_avStreamChannelLayout =
-            getStreamChannelLayout(*m_pavStream);
-    const auto avStreamSampleFormat =
-            m_pavCodecContext->sample_fmt;
-    const auto sampleRate =
-            SampleRate(m_pavStream->codecpar->sample_rate);
-
-    DEBUG_ASSERT(!m_pavDecodedFrame);
-    m_pavDecodedFrame = av_frame_alloc();
-
-    // Init resampling
-    // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
-    // channels like upsampling a mono to stereo signal breaks various
-    // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
-    // are unaffected, because there we always compare two signals produced
-    // by the same decoder instead of a decoded with a reference signal. As
-    // a workaround we decode the stream's channels as is and let Mixxx decide
-    // how to handle this later.
-    const auto resampledChannelCount =
-            /*config.channelCount().valid() ? config.channelCount() :*/ streamChannelCount;
-    m_avResampledChannelLayout =
-            av_get_default_channel_layout(resampledChannelCount);
-    const auto avResampledSampleFormat =
-            kavSampleFormat;
-    // NOTE(uklotzde): We prefer not to change adjust sample rate here, because
-    // all the frame calculations while decoding use the frame information
-    // from the underlying stream! We only need resampling for up-/downsampling
-    // the channels and to transform the decoded audio data into the sample
-    // format that is used by Mixxx.
-    if ((resampledChannelCount != streamChannelCount) ||
-            (m_avResampledChannelLayout != m_avStreamChannelLayout) ||
-            (avResampledSampleFormat != avStreamSampleFormat)) {
-#if ENABLE_TRACING
-        kLogger.trace()
-                << "Decoded stream needs to be resampled"
-                << ": channel count =" << resampledChannelCount
-                << "| channel layout =" << m_avResampledChannelLayout
-                << "| sample format =" << av_get_sample_fmt_name(avResampledSampleFormat);
-#endif
-        m_pSwrContext = SwrContextPtr(swr_alloc_set_opts(
-                nullptr,
-                m_avResampledChannelLayout,
-                avResampledSampleFormat,
-                sampleRate,
-                m_avStreamChannelLayout,
-                avStreamSampleFormat,
-                sampleRate,
-                0,
-                nullptr));
-        if (!m_pSwrContext) {
-            kLogger.warning()
-                    << "Failed to allocate resampling context";
-            return OpenResult::Failed;
-        }
-        const auto swr_init_result =
-                swr_init(m_pSwrContext);
-        if (swr_init_result < 0) {
-            kLogger.warning()
-                    << "swr_init() failed:"
-                    << formatErrorMessage(swr_init_result).toLocal8Bit().constData();
-            return OpenResult::Failed;
-        }
-        DEBUG_ASSERT(!m_pavResampledFrame);
-        m_pavResampledFrame = av_frame_alloc();
+    ChannelCount channelCount;
+    SampleRate sampleRate;
+    if (!initResampling(&channelCount, &sampleRate)) {
+        return OpenResult::Failed;
     }
-
-    if (!setChannelCount(resampledChannelCount)) {
+    if (!setChannelCount(channelCount)) {
         kLogger.warning()
                 << "Failed to initialize number of channels"
-                << resampledChannelCount;
+                << channelCount;
         return OpenResult::Aborted;
     }
-
     if (!setSampleRate(sampleRate)) {
         kLogger.warning()
-                << "Failed to initialize sampling rate"
+                << "Failed to initialize sample rate"
                 << sampleRate;
         return OpenResult::Aborted;
     }
@@ -661,6 +597,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return OpenResult::Failed;
     }
 
+    DEBUG_ASSERT(!m_pavDecodedFrame);
+    m_pavDecodedFrame = av_frame_alloc();
+
     // A stream packet may produce multiple stream frames when decoded. Buffering
     // more than a few codec frames with samples in advance should be unlikely.
     const SINT codecSampleBufferCapacity = 4 * m_pavStream->codecpar->frame_size;
@@ -676,6 +615,83 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     m_curFrameIndex = kMinFrameIndex;
 
     return OpenResult::Succeeded;
+}
+
+bool SoundSourceFFmpeg::initResampling(
+        ChannelCount* pResampledChannelCount,
+        SampleRate* pResampledSampleRate) {
+    const auto avStreamChannelLayout =
+            getStreamChannelLayout(*m_pavStream);
+    const auto streamChannelCount =
+            ChannelCount(m_pavStream->codecpar->channels);
+    // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
+    // channels like upsampling a mono to stereo signal breaks various
+    // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
+    // are unaffected, because there we always compare two signals produced
+    // by the same decoder instead of a decoded with a reference signal. As
+    // a workaround we decode the stream's channels as is and let Mixxx decide
+    // how to handle this later.
+    const auto resampledChannelCount =
+            /*config.channelCount().valid() ? config.channelCount() :*/ streamChannelCount;
+    const auto avResampledChannelLayout =
+            av_get_default_channel_layout(resampledChannelCount);
+    const auto avStreamSampleFormat =
+            m_pavCodecContext->sample_fmt;
+    const auto avResampledSampleFormat =
+            kavSampleFormat;
+    // NOTE(uklotzde): We prefer not to change adjust sample rate here, because
+    // all the frame calculations while decoding use the frame information
+    // from the underlying stream! We only need resampling for up-/downsampling
+    // the channels and to transform the decoded audio data into the sample
+    // format that is used by Mixxx.
+    const auto streamSampleRate =
+            SampleRate(m_pavStream->codecpar->sample_rate);
+    const auto resampledSampleRate = streamSampleRate;
+    if ((resampledChannelCount != streamChannelCount) ||
+            (avResampledChannelLayout != avStreamChannelLayout) ||
+            (avResampledSampleFormat != avStreamSampleFormat)) {
+#if ENABLE_TRACING
+        kLogger.trace()
+                << "Decoded stream needs to be resampled"
+                << ": channel count =" << resampledChannelCount
+                << "| channel layout =" << avResampledChannelLayout
+                << "| sample format =" << av_get_sample_fmt_name(avResampledSampleFormat);
+#endif
+        m_pSwrContext = SwrContextPtr(swr_alloc_set_opts(
+                nullptr,
+                avResampledChannelLayout,
+                avResampledSampleFormat,
+                resampledSampleRate,
+                avStreamChannelLayout,
+                avStreamSampleFormat,
+                streamSampleRate,
+                0,
+                nullptr));
+        if (!m_pSwrContext) {
+            kLogger.warning()
+                    << "Failed to allocate resampling context";
+            return false;
+        }
+        const auto swr_init_result =
+                swr_init(m_pSwrContext);
+        if (swr_init_result < 0) {
+            kLogger.warning()
+                    << "swr_init() failed:"
+                    << formatErrorMessage(swr_init_result).toLocal8Bit().constData();
+            return false;
+        }
+        DEBUG_ASSERT(!m_pavResampledFrame);
+        m_pavResampledFrame = av_frame_alloc();
+    }
+    // Finish initialization
+    m_avStreamChannelLayout = avStreamChannelLayout;
+    m_avResampledChannelLayout = avResampledChannelLayout;
+    // Write output parameters
+    DEBUG_ASSERT(pResampledChannelCount);
+    *pResampledChannelCount = resampledChannelCount;
+    DEBUG_ASSERT(pResampledSampleRate);
+    *pResampledSampleRate = resampledSampleRate;
+    return true;
 }
 
 void SoundSourceFFmpeg::close() {
