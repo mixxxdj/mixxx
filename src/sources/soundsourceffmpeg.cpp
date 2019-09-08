@@ -506,7 +506,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     // Request output format
     pavCodecContext->request_sample_fmt = kavSampleFormat;
     if (params.channelCount().valid()) {
-        pavCodecContext->request_channel_layout = av_get_default_channel_layout(params.channelCount());
+        // A dedicated number of channels for the output signal
+        // has been requested. Forward this to FFmpeg to avoid
+        // manual resampling or post-processing after decoding.
+        pavCodecContext->request_channel_layout =
+                av_get_default_channel_layout(params.channelCount());
     }
 
     // Open decoding context
