@@ -549,14 +549,14 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     m_pavDecodedFrame = av_frame_alloc();
 
     // Init resampling
+    // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
+    // channels like upsampling a mono to stereo signal breaks various
+    // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
+    // are unaffected, because there we always compare two signals produced
+    // by the same decoder instead of a decoded with a reference signal. As
+    // a workaround we decode the stream's channels as is and let Mixxx decide
+    // how to handle this later.
     const auto resampledChannelCount =
-            // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
-            // channels like upsampling a mono to stereo signal breaks various
-            // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
-            // are unaffected, because there we always compare two signals produced
-            // by the same decoder instead of a decoded with a reference signal. As
-            // a workaround we decode the stream's channels as is and let Mixxx decide
-            // how to handle this later.
             /*config.channelCount().valid() ? config.channelCount() :*/ streamChannelCount;
     m_avResampledChannelLayout =
             av_get_default_channel_layout(resampledChannelCount);
