@@ -40,6 +40,10 @@ class SoundSourceFFmpeg : public SoundSource {
     bool adjustCurrentPosition(
             SINT startIndex);
 
+    bool consumeNextPacket(
+            AVPacket* pavPacket,
+            AVPacket** ppavNextPacket);
+
     // Takes ownership of an input format context and ensures that
     // the corresponding AVFormatContext is closed, either explicitly
     // or implicitly by the destructor. The wrapper can only be

@@ -855,6 +855,64 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(
     return true;
 }
 
+bool SoundSourceFFmpeg::consumeNextPacket(
+        AVPacket* pavPacket,
+        AVPacket** ppavNextPacket) {
+    DEBUG_ASSERT(pavPacket);
+    DEBUG_ASSERT(ppavNextPacket);
+    if (!*ppavNextPacket) {
+        // Read next packet from stream
+        const SINT packetFrameIndex =
+                readNextPacket(
+                        m_pavInputFormatContext,
+                        m_pavStream,
+                        pavPacket,
+                        m_curFrameIndex);
+        if (packetFrameIndex == kFrameIndexInvalid) {
+            // Invalidate current position and abort reading
+            m_curFrameIndex = kFrameIndexInvalid;
+            return false;
+        }
+        *ppavNextPacket = pavPacket;
+    }
+    auto pavNextPacket = *ppavNextPacket;
+
+    // Consume raw packet data
+#if ENABLE_TRACING
+    avTrace("Sending packet to decoder", *pavNextPacket);
+#endif
+    const auto avcodec_send_packet_result =
+            avcodec_send_packet(m_pavCodecContext, pavNextPacket);
+    if (avcodec_send_packet_result == 0) {
+        // Packet has been consumed completely
+#if ENABLE_TRACING
+        kLogger.trace() << "Packet has been consumed by decoder";
+#endif
+        // Release ownership on packet
+        av_packet_unref(pavNextPacket);
+        *ppavNextPacket = nullptr;
+    } else {
+        // Packet has not been consumed or only partially
+        if (avcodec_send_packet_result == AVERROR(EAGAIN)) {
+            // Keep and resend this packet to the decoder during the next round
+#if ENABLE_TRACING
+            kLogger.trace() << "Packet needs to be sent again to decoder";
+#endif
+        } else {
+            kLogger.warning()
+                    << "avcodec_send_packet() failed:"
+                    << formatErrorMessage(avcodec_send_packet_result).toLocal8Bit().constData();
+            // Release ownership on packet
+            av_packet_unref(pavNextPacket);
+            *ppavNextPacket = nullptr;
+            // Invalidate current position and abort reading
+            m_curFrameIndex = kFrameIndexInvalid;
+            return false;
+        }
+    }
+    return true;
+}
+
 ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
     const SINT readableStartIndex = writableSampleFrames.frameIndexRange().start();
@@ -893,59 +951,9 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     avPacket.size = 0;
     AVPacket* pavNextPacket = nullptr;
     auto readFrameIndex = m_curFrameIndex;
-    while ((pavNextPacket || !writableRange.empty()) &&
-            (m_curFrameIndex != kFrameIndexInvalid)) {
-        // Read next packet from stream
-        if (!pavNextPacket) {
-            const SINT packetFrameIndex =
-                    readNextPacket(
-                            m_pavInputFormatContext,
-                            m_pavStream,
-                            &avPacket,
-                            m_curFrameIndex);
-            if (packetFrameIndex == kFrameIndexInvalid) {
-                // Invalidate current position and abort reading
-                m_curFrameIndex = kFrameIndexInvalid;
-                break;
-            }
-            pavNextPacket = &avPacket;
-        }
-        DEBUG_ASSERT(pavNextPacket);
-
-        // Consume raw packet data
-#if ENABLE_TRACING
-        avTrace("Sending packet to decoder", *pavNextPacket);
-#endif
-        const auto avcodec_send_packet_result =
-                avcodec_send_packet(m_pavCodecContext, pavNextPacket);
-        if (avcodec_send_packet_result == 0) {
-            // Packet has been consumed completely
-#if ENABLE_TRACING
-            kLogger.trace() << "Packet has been consumed by decoder";
-#endif
-            // Release ownership on packet
-            av_packet_unref(pavNextPacket);
-            pavNextPacket = nullptr;
-        } else {
-            // Packet has not been consumed or only partially
-            if (avcodec_send_packet_result == AVERROR(EAGAIN)) {
-                // Keep and resend this packet to the decoder during the next round
-#if ENABLE_TRACING
-                kLogger.trace() << "Packet needs to be sent again to decoder";
-#endif
-            } else {
-                kLogger.warning()
-                        << "avcodec_send_packet() failed:"
-                        << formatErrorMessage(avcodec_send_packet_result).toLocal8Bit().constData();
-                // Release ownership on packet
-                av_packet_unref(pavNextPacket);
-                pavNextPacket = nullptr;
-                // Invalidate current position and abort reading
-                m_curFrameIndex = kFrameIndexInvalid;
-                break;
-            }
-        }
-
+    while ((m_curFrameIndex != kFrameIndexInvalid) &&
+            (pavNextPacket || !writableRange.empty()) &&
+            consumeNextPacket(&avPacket, &pavNextPacket)) {
         int avcodec_receive_frame_result;
         do {
 #if ENABLE_TRACING
