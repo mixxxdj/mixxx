@@ -33,6 +33,15 @@ constexpr SINT kSamplesPerMP3Frame = 1152;
 // be sufficient for most use cases when using FFmpeg 4.0.x.
 constexpr SINT kMinSampleBufferCapacity = 65536;
 
+// A stream packet may produce multiple stream frames when decoded.
+// Buffering more than a few codec frames with samples in advance
+// should be unlikely.
+// NOTE(2019-09-08, uklotzde): This is just a best guess. If the
+// number of 4 is too low it would only result in some extra loop
+// iterations, because the same packet needs to fed multiple
+// times into the decoder.
+constexpr SINT kMaxDecodedFramesPerPacket = 4;
+
 const Logger kLogger("SoundSourceFFmpeg");
 
 std::once_flag initFFmpegLibFlag;
@@ -604,9 +613,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     DEBUG_ASSERT(!m_pavDecodedFrame);
     m_pavDecodedFrame = av_frame_alloc();
 
-    // A stream packet may produce multiple stream frames when decoded. Buffering
-    // more than a few codec frames with samples in advance should be unlikely.
-    const SINT codecSampleBufferCapacity = 4 * m_pavStream->codecpar->frame_size;
+    // A stream packet may produce multiple stream frames when decoded.
+    const SINT codecSampleBufferCapacity =
+            kMaxDecodedFramesPerPacket * m_pavStream->codecpar->frame_size;
     if (m_sampleBuffer.capacity() < codecSampleBufferCapacity) {
         m_sampleBuffer.adjustCapacity(codecSampleBufferCapacity);
     }
