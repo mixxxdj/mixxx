@@ -1229,6 +1229,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 const auto writeMissingFrameCount =
                         math_min(missingFrameCount, writableRange.length());
                 if (writeMissingFrameCount > 0) {
+                    // Fill the gap until the first decoded frame with silence
                     const auto clearSampleCount =
                             frames2samples(writeMissingFrameCount);
                     if (pOutputSampleBuffer) {
@@ -1245,6 +1246,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 const auto writeDecodedFrameCount =
                         math_min(decodedFrameRange.length(), writableRange.length());
                 if (writeDecodedFrameCount > 0) {
+                    // Copy the decoded samples into the output buffer
                     const auto copySampleCount =
                             frames2samples(writeDecodedFrameCount);
                     if (pOutputSampleBuffer) {
@@ -1279,6 +1281,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             const auto sampleBufferWriteLength =
                     frames2samples(missingFrameCount + decodedFrameRange.length());
             if (m_sampleBuffer.writableLength() < sampleBufferWriteLength) {
+                // Increase the pre-allocated capacity of the sample buffer
                 const auto sampleBufferCapacity =
                         m_sampleBuffer.readableLength() +
                         sampleBufferWriteLength;
@@ -1291,6 +1294,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             }
             DEBUG_ASSERT(m_sampleBuffer.writableLength() >= sampleBufferWriteLength);
             if (missingFrameCount > 0) {
+                // Fill the gap until the first decoded frame with silence
                 const auto clearSampleCount =
                         frames2samples(missingFrameCount);
                 const SampleBuffer::WritableSlice writableSlice(
@@ -1302,6 +1306,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 readFrameIndex += missingFrameCount;
             }
             if (!decodedFrameRange.empty()) {
+                // Copy the decoded samples into the internal buffer
                 const auto copySampleCount =
                         frames2samples(decodedFrameRange.length());
                 const SampleBuffer::WritableSlice writableSlice(
