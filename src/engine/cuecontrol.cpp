@@ -159,30 +159,26 @@ void CueControl::createControls() {
     }
 }
 
-void CueControl::attachCue(CuePointer pCue, int hotCue) {
-    HotcueControl* pControl = m_hotcueControls.value(hotCue, NULL);
-    if (pControl == NULL) {
+void CueControl::attachCue(CuePointer pCue, HotcueControl* pControl) {
+    VERIFY_OR_DEBUG_ASSERT(pControl) {
         return;
     }
-    if (pControl->getCue() != NULL) {
-        detachCue(pControl->getHotcueNumber());
-    }
+    detachCue(pControl);
     connect(pCue.get(), SIGNAL(updated()),
             this, SLOT(cueUpdated()),
             Qt::DirectConnection);
 
     pControl->setCue(pCue);
-
 }
 
-void CueControl::detachCue(int hotCue) {
-    HotcueControl* pControl = m_hotcueControls.value(hotCue, NULL);
-    if (pControl == NULL) {
+void CueControl::detachCue(HotcueControl* pControl) {
+    VERIFY_OR_DEBUG_ASSERT(pControl) {
         return;
     }
     CuePointer pCue(pControl->getCue());
-    if (!pCue)
+    if (!pCue) {
         return;
+    }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
 }
@@ -191,8 +187,9 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        for (int i = 0; i < m_iNumHotCues; ++i) {
-            detachCue(i);
+        for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
+            HotcueControl* pControl = m_hotcueControls.value(hotCue, nullptr);
+            detachCue(pControl);
         }
 
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
@@ -220,7 +217,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            attachCue(pCue, hotcue);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
+            attachCue(pCue, pControl);
         }
     }
     double cuePoint;
@@ -278,10 +276,10 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
 
             // Cue's hotcue doesn't have a hotcue control.
-            if (pControl == NULL) {
+            if (!pControl) {
                 continue;
             }
 
@@ -289,11 +287,8 @@ void CueControl::trackCuesUpdated() {
 
             // If the old hotcue is different than this one.
             if (pOldCue != pCue) {
-                // If the old hotcue exists, detach it
-                if (pOldCue) {
-                    detachCue(hotcue);
-                }
-                attachCue(pCue, hotcue);
+                // old cue is detached if required
+                attachCue(pCue, pControl);
             } else {
                 // If the old hotcue is the same, then we only need to update
                 pControl->setPosition(pCue->getPosition());
@@ -304,9 +299,10 @@ void CueControl::trackCuesUpdated() {
     }
 
     // Detach all hotcues that are no longer present
-    for (int i = 0; i < m_iNumHotCues; ++i) {
-        if (!active_hotcues.contains(i)) {
-            detachCue(i);
+    for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
+        if (!active_hotcues.contains(hotCue)) {
+            HotcueControl* pControl = m_hotcueControls.value(hotCue, nullptr);
+            detachCue(pControl);
         }
     }
 }
@@ -338,7 +334,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setLabel("");
     pCue->setType(Cue::CUE);
     // TODO(XXX) deal with spurious signals
-    attachCue(pCue, hotcue);
+    attachCue(pCue, pControl);
 
     // If quantize is enabled and we are not playing, jump to the cue point
     // since it's not necessarily where we currently are. TODO(XXX) is this
@@ -456,11 +452,12 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             }
         }
     } else {
+        // The cue is non-existent ...
         if (v) {
-            // just in case
+            // create set it to the current position
             hotcueSet(pControl, v);
         } else if (m_iCurrentlyPreviewingHotcues) {
-            // The cue is non-existent, yet we got a release for it and are
+            // yet we got a release for it and are
             // currently previewing a hotcue. This is indicative of a corner
             // case where the cue was detached while we were pressing it. Let
             // hotcueActivatePreview handle it.
@@ -520,7 +517,10 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
     }
 
     CuePointer pCue(pControl->getCue());
-    detachCue(pControl->getHotcueNumber());
+    if (!pCue) {
+        return;
+    }
+    detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
 }
 
@@ -534,7 +534,7 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
         // Setting the position to -1 is the same as calling hotcue_x_clear
         if (newPosition == -1) {
             pCue->setHotCue(-1);
-            detachCue(pControl->getHotcueNumber());
+            detachCue(pControl);
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
             pCue->setPosition(newPosition);
         }
