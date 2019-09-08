@@ -873,6 +873,7 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(
                 seekTimestamp,
                 AVSEEK_FLAG_BACKWARD);
         if (av_seek_frame_result < 0) {
+            // Unrecoverable seek error: Invalidate the current position and abort
             kLogger.warning()
                     << "av_seek_frame() failed:"
                     << formatErrorMessage(av_seek_frame_result).toLocal8Bit().constData();
