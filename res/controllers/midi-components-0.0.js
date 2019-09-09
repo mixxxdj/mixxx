@@ -209,6 +209,10 @@
         outValueScale: function (value) {
             return (value > 0) ? this.on : this.off;
         },
+
+        shutdown: function () {
+            this.send(this.off);
+        },
     });
 
     var PlayButton = function (options) {
@@ -607,6 +611,14 @@
                 });
             }
         },
+        shutdown: function () {
+            this.forEachComponent(function (component) {
+                if (component.shutdown !== undefined
+                    && typeof component.shutdown === 'function') {
+                    component.shutdown();
+                }
+            })
+        },
     };
 
     var Deck = function (deckNumbers) {
@@ -642,7 +654,7 @@
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
                 if (component instanceof EffectAssignmentButton) {
-                    // The ControlObjects for assinging decks to effect units
+                    // The ControlObjects for assigning decks to effect units
                     // indicate the effect unit with the group and the deck with the key,
                     // so change the key here instead of the group.
                     component.inKey = 'group_' + newGroup + '_enable';

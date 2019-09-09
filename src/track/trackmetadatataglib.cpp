@@ -1494,7 +1494,7 @@ void importTrackMetadataFromVorbisCommentTag(
     // https://picard.musicbrainz.org/docs/mappings
     //
     // We are not relying on  TagLib (1.11.1) with a somehow inconsistent
-    // handling. It prefers "DECSCRIPTION" for reading, but adds a "COMMENT"
+    // handling. It prefers "DESCRIPTION" for reading, but adds a "COMMENT"
     // field upon writing when no "DESCRIPTION" field exists.
     QString comment;
     if (!readXiphCommentField(tag, "COMMENT", &comment) || comment.isEmpty()) {
