@@ -187,8 +187,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
-            HotcueControl* pControl = m_hotcueControls.value(hotCue, nullptr);
+        for (const auto& pControl: m_hotcueControls) {
             detachCue(pControl);
         }
 
@@ -216,8 +215,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             pLoadCue = pCue;
         }
         int hotcue = pCue->getHotCue();
-        if (hotcue != -1) {
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
+        HotcueControl* pControl = m_hotcueControls.value(hotcue);
+        if (pControl) {
             attachCue(pCue, pControl);
         }
     }
@@ -275,13 +274,9 @@ void CueControl::trackCuesUpdated() {
             continue;
 
         int hotcue = pCue->getHotCue();
-        if (hotcue != -1) {
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
-
-            // Cue's hotcue doesn't have a hotcue control.
-            if (!pControl) {
-                continue;
-            }
+        HotcueControl* pControl = m_hotcueControls.value(hotcue);
+        if (pControl) {
+            // Note: The Cue's hotcue doesn't have a hotcue control.
 
             CuePointer pOldCue(pControl->getCue());
 
@@ -301,7 +296,7 @@ void CueControl::trackCuesUpdated() {
     // Detach all hotcues that are no longer present
     for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
         if (!active_hotcues.contains(hotCue)) {
-            HotcueControl* pControl = m_hotcueControls.value(hotCue, nullptr);
+            HotcueControl* pControl = m_hotcueControls.at(hotCue);
             detachCue(pControl);
         }
     }
@@ -533,7 +528,6 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
     if (pCue) {
         // Setting the position to -1 is the same as calling hotcue_x_clear
         if (newPosition == -1) {
-            pCue->setHotCue(-1);
             detachCue(pControl);
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
             pCue->setPosition(newPosition);
