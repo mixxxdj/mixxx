@@ -257,7 +257,6 @@ void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
             checked);
     QString stateName = checked ? "On" : "Off";
     QString pixmapPath = m_icons.value(kRepeatButtonName).states.value(stateName).pixmapSource.getPath();
-    qDebug () << "DlgAutoDJ::slotRepeatPlaylistChanged" << pixmapPath;
     if (pixmapPath.isEmpty()) {
         pushButtonRepeatPlaylist->setText(tr("Repeat"));
     } else {
