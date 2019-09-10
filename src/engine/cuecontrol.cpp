@@ -265,12 +265,20 @@ void CueControl::trackCuesUpdated() {
     if (!m_pLoadedTrack)
         return;
 
+    bool loadCueFound = false;
     const QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue(it.next());
 
-        if (pCue->getType() != Cue::CUE && pCue->getType() != Cue::LOAD)
+        if (pCue->getType() == Cue::LOAD) {
+            loadCueFound = true;
+            m_pCuePoint->set(pCue->getPosition());
+            continue;
+        }
+
+
+        if (pCue->getType() != Cue::CUE)
             continue;
 
         int hotcue = pCue->getHotCue();
@@ -291,6 +299,10 @@ void CueControl::trackCuesUpdated() {
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
         }
+    }
+
+    if (!loadCueFound) {
+        m_pCuePoint->set(-1);
     }
 
     // Detach all hotcues that are no longer present
