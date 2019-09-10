@@ -374,7 +374,7 @@ void DlgTrackInfo::saveTrack() {
 
     m_pLoadedTrack->setKeys(m_keysClone);
 
-    bool loadCueFound = false;
+    bool loadCueFound = false; // TODO: Rename with Cue::LOAD
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
@@ -399,7 +399,7 @@ void DlgTrackInfo::saveTrack() {
         int iTableHotcue = vHotcue.toInt(&ok);
         if (ok) {
             if (iTableHotcue == 0 && !loadCueFound) {
-                // adopt the first 0 hot cue as the cue
+                // adopt the first HotCue 0 as LOAD Cue = THE CUE
                 pCue->setHotCue(-1);
                 pCue->setType(Cue::LOAD);
                 loadCueFound = true;
@@ -410,7 +410,9 @@ void DlgTrackInfo::saveTrack() {
                 pCue->setType(Cue::CUE);
             }
         } else {
-            pCue->setHotCue(-1);
+            // Default to HotCue -1, a valid Cue point without a hot cue button assigned.
+            iTableHotcue = -1;
+            pCue->setHotCue(iTableHotcue - 1);
             pCue->setType(Cue::CUE);
         }
 
