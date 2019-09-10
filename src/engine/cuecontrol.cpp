@@ -454,7 +454,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
     } else {
         // The cue is non-existent ...
         if (v) {
-            // create set it to the current position
+            // set it to the current position
             hotcueSet(pControl, v);
         } else if (m_iCurrentlyPreviewingHotcues) {
             // yet we got a release for it and are
