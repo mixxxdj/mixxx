@@ -172,12 +172,18 @@ If no track sources are configured, the track is added from the library instead.
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="repeatPlaylistCheckbox"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="repeatPlaylistLabel">
-       <property name="text">
+      <widget class="QPushButton" name="pushButtonRepeatPlaylist">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
         <string>Repeat playlist</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

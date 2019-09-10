@@ -11,6 +11,7 @@
 namespace {
 const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
+const char* kRepeatButtonName = "AutoDjRepeatPlaylist";
 } // anonymous namespace
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
@@ -18,7 +19,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      Library* pLibrary,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
-                     KeyboardEventFilter* pKeyboard)
+                     KeyboardEventFilter* pKeyboard,
+                     QMap<QString, SkinButton> icons)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
@@ -26,7 +28,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
           m_pTrackTableView(new WTrackTableView(this, pConfig,
                                                 pTrackCollection, false)),
           m_pAutoDJTableModel(nullptr),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_icons(icons) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -117,10 +120,12 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     );
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
-    repeatPlaylistCheckbox->setChecked(m_pConfig->getValue<bool>(
-            ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference)));
-    connect(repeatPlaylistCheckbox, &QCheckBox::stateChanged,
+    connect(pushButtonRepeatPlaylist, &QPushButton::toggled,
             this, &DlgAutoDJ::slotRepeatPlaylistChanged);
+    bool repeatPlaylist = m_pConfig->getValue<bool>(
+            ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference));
+    pushButtonRepeatPlaylist->setChecked(repeatPlaylist);
+    slotRepeatPlaylistChanged(repeatPlaylist);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
@@ -247,8 +252,17 @@ void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
 }
 
 void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
+    bool checked = static_cast<bool>(checkState);
     m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
-            static_cast<bool>(checkState));
+            checked);
+    QString stateName = checked ? "On" : "Off";
+    QString pixmapPath = m_icons.value(kRepeatButtonName).states.value(stateName).pixmapSource.getPath();
+    qDebug () << "DlgAutoDJ::slotRepeatPlaylistChanged" << pixmapPath;
+    if (pixmapPath.isEmpty()) {
+        pushButtonRepeatPlaylist->setText(tr("Repeat"));
+    } else {
+        pushButtonRepeatPlaylist->setIcon(QIcon(pixmapPath));
+    }
 }
 
 void DlgAutoDJ::updateSelectionInfo() {

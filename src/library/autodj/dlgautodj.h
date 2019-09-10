@@ -6,6 +6,7 @@
 
 #include "library/autodj/ui_dlgautodj.h"
 #include "preferences/usersettings.h"
+#include "skin/skinbutton.h"
 #include "track/track.h"
 #include "library/libraryview.h"
 #include "library/library.h"
@@ -22,7 +23,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary,
               AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+              KeyboardEventFilter* pKeyboard,
+              QMap<QString, SkinButton> icons);
     ~DlgAutoDJ() override;
 
     void onShow() override;
@@ -55,6 +57,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
     UserSettingsPointer m_pConfig;
+    QMap<QString, SkinButton> m_icons;
 };
 
 #endif //DLGAUTODJ_H

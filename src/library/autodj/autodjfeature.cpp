@@ -109,7 +109,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                   m_pLibrary,
                                   m_pAutoDJProcessor,
                                   m_pTrackCollection,
-                                  keyboard);
+                                  keyboard,
+                                  libraryWidget->icons);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
