@@ -95,6 +95,12 @@ Description:
               <Library>
                 <BgColor>#585858</BgColor>
                 <FgColor>#eece33</FgColor>
+                <Buttons>
+                  <Button name="AutoDjRepeatPlaylist">
+                    <State name="Off">buttons/btn_loop_beatjump_on.svg</State>
+                    <State name="On">buttons/btn_loop_indicator_on.svg</State>
+                  </Button>
+                </Buttons>
               </Library>
             </Children>
           </WidgetGroup><!-- /Library Table -->

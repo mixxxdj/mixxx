@@ -66,6 +66,12 @@
                   <Library>
                     <BgColor>#585858</BgColor>
                     <FgColor>#eece33</FgColor>
+                    <Buttons>
+                      <Button name="AutoDjRepeatPlaylist">
+                        <State name="Off">buttons/btn_autodj_repeat_playlist_off.svg</State>
+                        <State name="On">buttons/btn_autodj_repeat_playlist_on.svg</State>
+                      </Button>
+                    </Buttons>
                   </Library>
                 </Children>
               </WidgetGroup>

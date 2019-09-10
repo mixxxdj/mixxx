@@ -63,6 +63,12 @@
             </Children>
           </WidgetGroup>
           <Library>
+            <Buttons>
+              <Button name="AutoDjRepeatPlaylist">
+                <State name="Off">icon/ic_beatloop_activate_48px.svg</State>
+                <State name="On">icon/ic_beatloop_activate_48px.svg</State>
+              </Button>
+            </Buttons>
           </Library>
         </Children>
         <Connection>

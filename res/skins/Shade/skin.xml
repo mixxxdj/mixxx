@@ -497,7 +497,14 @@
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
-                    <Library></Library>
+                    <Library>
+                      <Buttons>
+                        <Button name="AutoDjRepeatPlaylist">
+                          <State name="Off">btn/btn_autodj_repeat_playlist.png</State>
+                          <State name="On">btn/btn_autodj_repeat_playlist.png</State>
+                        </Button>
+                      </Buttons>
+                    </Library>
                   </Children>
                 </WidgetGroup>
               </Children>
