@@ -374,7 +374,7 @@ void DlgTrackInfo::saveTrack() {
 
     m_pLoadedTrack->setKeys(m_keysClone);
 
-    bool theCueFound = false;
+    bool loadCueFound = false;
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
@@ -398,11 +398,11 @@ void DlgTrackInfo::saveTrack() {
 
         int iTableHotcue = vHotcue.toInt(&ok);
         if (ok) {
-            if (iTableHotcue == 0 && !theCueFound) {
+            if (iTableHotcue == 0 && !loadCueFound) {
                 // adopt the first 0 hot cue as the cue
                 pCue->setHotCue(-1);
                 pCue->setType(Cue::LOAD);
-                theCueFound = true;
+                loadCueFound = true;
             } else {
                 // The GUI shows hotcues as 1-indexed, but they are actually
                 // 0-indexed, so subtract 1
