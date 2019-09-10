@@ -4,6 +4,7 @@
 
 #include "util/duration.h"
 #include "widget/wknobcomposed.h"
+#include "widget/wskincolor.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
@@ -48,7 +49,7 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     m_dArcThickness = context.selectDouble(node, "ArcThickness");
 
     if (m_dArcThickness > 0.0) {
-        m_arcColor = context.selectColor(node, "ArcColor");
+        m_arcColor = WSkinColor::getCorrectColor(context.selectColor(node, "ArcColor"));
         m_arcUnipolar = context.selectBool(node, "ArcUnipolar", false);
     }
 
