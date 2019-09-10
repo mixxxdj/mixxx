@@ -16,7 +16,7 @@ WLibrary::WLibrary(QWidget* parent)
 }
 
 void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
-    icons = SkinButton::parseIcons(node, context);
+    m_icons = SkinButton::parseIcons(node, context);
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {

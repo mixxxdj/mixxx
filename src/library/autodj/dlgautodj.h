@@ -24,7 +24,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
               Library* pLibrary,
               AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
               KeyboardEventFilter* pKeyboard,
-              QMap<QString, SkinButton> icons);
+              const QMap<QString, SkinButton> icons);
     ~DlgAutoDJ() override;
 
     void onShow() override;
@@ -60,7 +60,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
     UserSettingsPointer m_pConfig;
-    QMap<QString, SkinButton> m_icons;
+    const QMap<QString, SkinButton> m_icons;
 };
 
 #endif //DLGAUTODJ_H

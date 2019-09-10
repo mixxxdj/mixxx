@@ -23,7 +23,6 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     explicit WLibrary(QWidget* parent);
 
     void setup(const QDomNode& node, const SkinContext& context);
-    QMap<QString, SkinButton> icons;
 
     // registerView is used to add a view to the LibraryWidget which the widget
     // can display on request via showView(). To switch to a given view, call
@@ -34,6 +33,10 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     bool registerView(QString name, QWidget* view);
 
     LibraryView* getActiveView() const;
+
+    const QMap<QString, SkinButton> icons() const {
+        return m_icons;
+    }
 
   public slots:
     // Show the view registered with the given name. Does nothing if the current
@@ -49,6 +52,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;
+    QMap<QString, SkinButton> m_icons;
 };
 
 #endif /* WLIBRARY_H */

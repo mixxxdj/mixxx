@@ -25,7 +25,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
                      KeyboardEventFilter* pKeyboard,
-                     QMap<QString, SkinButton> icons)
+                     const QMap<QString, SkinButton> icons)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
