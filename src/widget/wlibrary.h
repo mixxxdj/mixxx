@@ -11,6 +11,8 @@
 #include <QEvent>
 
 #include "library/libraryview.h"
+#include "skin/skinbutton.h"
+#include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class KeyboardEventFilter;
@@ -19,6 +21,9 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WLibrary(QWidget* parent);
+
+    void setup(const QDomNode& node, const SkinContext& context);
+    QMap<QString, SkinButton> icons;
 
     // registerView is used to add a view to the LibraryWidget which the widget
     // can display on request via showView(). To switch to a given view, call

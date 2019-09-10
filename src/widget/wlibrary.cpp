@@ -15,6 +15,10 @@ WLibrary::WLibrary(QWidget* parent)
           m_mutex(QMutex::Recursive) {
 }
 
+void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
+    icons = SkinButton::parseIcons(node, context);
+}
+
 bool WLibrary::registerView(QString name, QWidget* view) {
     QMutexLocker lock(&m_mutex);
     if (m_viewMap.contains(name)) {
