@@ -533,6 +533,34 @@
                 }
             }
         },
+        forEachComponentContainer: function (operation, recursive) {
+            if (typeof operation !== 'function') {
+                print('ERROR: ComponentContainer.forEachComponentContainer requires a function argument');
+                return;
+            }
+            if (recursive === undefined) { recursive = true; }
+
+            var that = this;
+            var applyOperationTo = function (obj) {
+                if (obj instanceof ComponentContainer) {
+                    operation.call(that, obj);
+
+                    if (recursive) {
+                        obj.forEachComponentContainer(operation);
+                    }
+                } else if (Array.isArray(obj)) {
+                    obj.forEach(function (element) {
+                        applyOperationTo(element);
+                    });
+                }
+            };
+
+            for (var memberName in this) {
+                if (this.hasOwnProperty(memberName)) {
+                    applyOperationTo(this[memberName]);
+                }
+            }
+        },
         reconnectComponents: function (operation, recursive) {
             this.forEachComponent(function (component) {
                 component.disconnect();
@@ -545,6 +573,7 @@
         },
         isShifted: false,
         shift: function () {
+            // Shift direct child Components
             this.forEachComponent(function (component) {
                 // Controls for push type Buttons depend on getting reset to 0 when the
                 // Button is released for correct behavior. If there is a skin button
@@ -568,11 +597,18 @@
                     }
                     component.shift();
                 }
-                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-                this.isShifted = true;
-            });
+            }, false);
+
+            // Shift child ComponentContainers
+            this.forEachComponentContainer(function (container) {
+                container.shift();
+            }, false);
+
+            // Set isShifted for each ComponentContainer recursively
+            this.isShifted = true;
         },
         unshift: function () {
+            // Unshift direct child Components
             this.forEachComponent(function (component) {
                 // Refer to comment in ComponentContainer.shift() above for explanation
                 if (typeof component.unshift === 'function') {
@@ -588,9 +624,15 @@
                     }
                     component.unshift();
                 }
-                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-                this.isShifted = false;
-            });
+            }, false);
+
+            // Unshift child ComponentContainers
+            this.forEachComponentContainer(function (container) {
+                container.unshift();
+            }, false);
+
+            // Unset isShifted for each ComponentContainer recursively
+            this.isShifted = false;
         },
         applyLayer: function (newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
