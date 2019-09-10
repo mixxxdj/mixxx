@@ -57,9 +57,6 @@
        <property name="toolTip">
         <string>Turn Auto DJ on or off.</string>
        </property>
-       <property name="text">
-        <string>Enable Auto DJ</string>
-       </property>
        <property name="checkable">
         <bool>true</bool>
        </property>
@@ -76,9 +73,6 @@
        <property name="toolTip">
         <string>Trigger the transition to the next track.</string>
        </property>
-       <property name="text">
-        <string>Fade Now</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -91,9 +85,6 @@
        </property>
        <property name="toolTip">
         <string>Skip the next track in the Auto DJ queue.</string>
-       </property>
-       <property name="text">
-        <string>Skip Track</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -111,9 +102,6 @@
        <property name="toolTip">
         <string>Shuffle the content of the Auto DJ queue.</string>
        </property>
-       <property name="text">
-        <string>Shuffle</string>
-       </property>
        <property name="checkable">
         <bool>false</bool>
        </property>
@@ -130,9 +118,6 @@
        <property name="toolTip">
         <string>Adds a random track from track sources (crates) to the Auto DJ queue.
 If no track sources are configured, the track is added from the library instead.</string>
-       </property>
-       <property name="text">
-        <string>Add Random</string>
        </property>
       </widget>
      </item>

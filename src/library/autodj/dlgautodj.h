@@ -53,6 +53,9 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void trackSelected(TrackPointer pTrack);
 
   private:
+    void setupActionButton(QPushButton* pButton, void (DlgAutoDJ::*pSlot)(bool),
+                           QString skinButtonName, QString fallbackText);
+
     AutoDJProcessor* m_pAutoDJProcessor;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;

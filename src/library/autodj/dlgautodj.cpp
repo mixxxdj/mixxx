@@ -11,6 +11,11 @@
 namespace {
 const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
+const char* kEnableButtonName = "AutoDjEnable";
+const char* kShuffleButtonName = "AutoDjShuffle";
+const char* kSkipButtonName = "AutoDjSkip";
+const char* kAddRandomButtonName = "AutoDjAddRandom";
+const char* kFadeNowButtonName = "AutoDjFadeNow";
 const char* kRepeatButtonName = "AutoDjRepeatPlaylist";
 } // anonymous namespace
 
@@ -66,23 +71,20 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    connect(pushButtonShuffle, &QPushButton::clicked,
-            this, &DlgAutoDJ::shufflePlaylistButton);
+    connect(pushButtonAutoDJ, &QPushButton::toggled,
+            this, &DlgAutoDJ::toggleAutoDJButton);
 
-    connect(pushButtonSkipNext, &QPushButton::clicked,
-            this, &DlgAutoDJ::skipNextButton);
-
-    connect(pushButtonAddRandom, &QPushButton::clicked,
-            this, &DlgAutoDJ::addRandomButton);
-
-    connect(pushButtonFadeNow, &QPushButton::clicked,
-            this, &DlgAutoDJ::fadeNowButton);
+    setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton,
+                      kShuffleButtonName, tr("Shuffle"));
+    setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton,
+                      kSkipButtonName, tr("Skip"));
+    setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton,
+                      kAddRandomButtonName, tr("Random"));
+    setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton,
+                      kFadeNowButtonName, tr("Fade"));
 
     connect(spinBoxTransition, QOverload<int>::of(&QSpinBox::valueChanged),
             this, &DlgAutoDJ::transitionSliderChanged);
-
-    connect(pushButtonAutoDJ, &QPushButton::toggled,
-            this, &DlgAutoDJ::toggleAutoDJButton);
 
     fadeModeCombobox->addItem(tr("Full Intro + Outro"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
@@ -146,6 +148,17 @@ DlgAutoDJ::~DlgAutoDJ() {
     // Delete m_pTrackTableView before the table model. This is because the
     // table view saves the header state using the model.
     delete m_pTrackTableView;
+}
+
+void DlgAutoDJ::setupActionButton(QPushButton* pButton, void (DlgAutoDJ::*pSlot)(bool),
+                           QString skinButtonName, QString fallbackText) {
+    connect(pButton, &QPushButton::clicked, this, pSlot);
+    QString iconPath = m_icons.value(skinButtonName).states.value("Off").pixmapSource.getPath();
+    if (iconPath.isEmpty()) {
+        pButton->setText(fallbackText);
+    } else {
+        pButton->setIcon(QIcon(iconPath));
+    }
 }
 
 void DlgAutoDJ::onShow() {
@@ -220,17 +233,18 @@ void DlgAutoDJ::transitionSliderChanged(int value) {
 }
 
 void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
+    QString stateName;
     if (state == AutoDJProcessor::ADJ_DISABLED) {
         pushButtonAutoDJ->setChecked(false);
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
-        pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
+        stateName = "Off";
         pushButtonFadeNow->setEnabled(false);
         pushButtonSkipNext->setEnabled(false);
     } else {
         // No matter the mode, you can always disable once it is enabled.
         pushButtonAutoDJ->setChecked(true);
         pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
-        pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
+        stateName = "On";
 
         // If fading, you can't hit fade now.
         if (state == AutoDJProcessor::ADJ_LEFT_FADING ||
@@ -243,6 +257,12 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
 
         // You can always skip the next track if we are enabled.
         pushButtonSkipNext->setEnabled(true);
+    }
+    QString pixmapPath = m_icons.value(kEnableButtonName).states.value(stateName).pixmapSource.getPath();
+    if (pixmapPath.isEmpty()) {
+        pushButtonAutoDJ->setText((state == AutoDJProcessor::ADJ_DISABLED) ? tr("Enable") : tr("Disable"));
+    } else {
+        pushButtonAutoDJ->setIcon(QIcon(pixmapPath));
     }
 }
 
