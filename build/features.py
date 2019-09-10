@@ -441,11 +441,12 @@ class ModPlug(Feature):
     def description(self):
         return "Modplug module decoder plugin"
 
-    def default(self, build):
-        return 1 if build.platform_is_linux else 0
-
     def enabled(self, build):
-        build.flags['modplug'] = util.get_flags(build.env, 'modplug', self.default(build))
+        # Default to enabled on but only throw an error if it was explicitly
+        # requested and is not available.
+        if 'modplug' in build.flags:
+            return int(build.flags['modplug']) > 0
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 1)
         if int(build.flags['modplug']):
             return True
         return False
@@ -453,22 +454,30 @@ class ModPlug(Feature):
     def add_options(self, build, vars):
         vars.Add('modplug',
                  'Set to 1 to enable libmodplug based module tracker support.',
-                 self.default(build))
+                 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
+        # Only block the configure if modplug was explicitly requested.
+        explicit = 'modplug' in SCons.ARGUMENTS
+
+        if not conf.CheckHeader('libmodplug/modplug.h'):
+            if explicit:
+                raise Exception('Could not find libmodplug development headers.')
+            else:
+                build.flags['modplug'] = 0
+            return
+
+        if not conf.CheckLib(['modplug', 'libmodplug'], autoadd=True):
+            if explicit:
+                raise Exception('Could not find libmodplug shared library.')
+            else:
+                build.flags['modplug'] = 0
+            return
+
         build.env.Append(CPPDEFINES='__MODPLUG__')
-
-        have_modplug_h = conf.CheckHeader('libmodplug/modplug.h')
-        have_modplug = conf.CheckLib(['modplug', 'libmodplug'], autoadd=True)
-
-        if not have_modplug_h:
-            raise Exception('Could not find libmodplug development headers.')
-
-        if not have_modplug:
-            raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
         depends.Qt.uic(build)('preferences/dialog/dlgprefmodplugdlg.ui')
