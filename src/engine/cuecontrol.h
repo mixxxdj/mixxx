@@ -22,7 +22,7 @@ class HotcueControl : public QObject {
     Q_OBJECT
   public:
     HotcueControl(QString group, int hotcueNumber);
-    virtual ~HotcueControl();
+    ~HotcueControl() override;
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
@@ -96,7 +96,7 @@ class CueControl : public EngineControl {
                UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    virtual void hintReader(HintVector* pHintList) override;
+    void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     void resetIndicators();
