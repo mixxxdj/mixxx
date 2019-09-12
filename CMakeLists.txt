@@ -1331,3 +1331,151 @@ if(WAVPACK_ENABLED)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
 endif()
+
+#
+# Tests
+#
+add_executable(mixxx-test EXCLUDE_FROM_ALL
+  src/test/analyserwaveformtest.cpp
+  src/test/analyzersilence_test.cpp
+  src/test/audiotaperpot_test.cpp
+  src/test/autodjprocessor_test.cpp
+  src/test/baseeffecttest.cpp
+  src/test/beatgridtest.cpp
+  src/test/beatmaptest.cpp
+  src/test/beatstranslatetest.cpp
+  src/test/bpmcontrol_test.cpp
+  src/test/broadcastprofile_test.cpp
+  src/test/broadcastsettings_test.cpp
+  src/test/channelhandle_test.cpp
+  src/test/configobject_test.cpp
+  src/test/controllerengine_test.cpp
+  src/test/controller_preset_validation_test.cpp
+  src/test/controlobjecttest.cpp
+  src/test/coverartcache_test.cpp
+  src/test/coverartutils_test.cpp
+  src/test/cratestorage_test.cpp
+  src/test/cuecontrol_test.cpp
+  src/test/dbconnectionpool_test.cpp
+  src/test/dbidtest.cpp
+  src/test/directorydaotest.cpp
+  src/test/duration_test.cpp
+  src/test/durationutiltest.cpp
+  src/test/effectchainslottest.cpp
+  src/test/effectslottest.cpp
+  src/test/effectsmanagertest.cpp
+  src/test/enginebufferscalelineartest.cpp
+  src/test/enginebuffertest.cpp
+  src/test/enginefilterbiquadtest.cpp
+  src/test/enginemastertest.cpp
+  src/test/enginemicrophonetest.cpp
+  src/test/enginesynctest.cpp
+  src/test/globaltrackcache_test.cpp
+  src/test/indexrange_test.cpp
+  src/test/keyutilstest.cpp
+  src/test/lcstest.cpp
+  src/test/learningutilstest.cpp
+  src/test/libraryscannertest.cpp
+  src/test/looping_control_test.cpp
+  src/test/mathutiltest.cpp
+  src/test/metadatatest.cpp
+  src/test/metaknob_link_test.cpp
+  src/test/midicontrollertest.cpp
+  src/test/mixxxtest.cpp
+  src/test/movinginterquartilemean_test.cpp
+  src/test/mpscfifotest.cpp
+  src/test/nativeeffects_test.cpp
+  src/test/performancetimer_test.cpp
+  src/test/playcountertest.cpp
+  src/test/playlisttest.cpp
+  src/test/portmidicontroller_test.cpp
+  src/test/portmidienumeratortest.cpp
+  src/test/queryutiltest.cpp
+  src/test/readaheadmanager_test.cpp
+  src/test/replaygaintest.cpp
+  src/test/rescalertest.cpp
+  src/test/samplebuffertest.cpp
+  src/test/sampleutiltest.cpp
+  src/test/schemamanager_test.cpp
+  src/test/searchqueryparsertest.cpp
+  src/test/signalpathtest.cpp
+  src/test/skincontext_test.cpp
+  src/test/softtakeover_test.cpp
+  src/test/soundproxy_test.cpp
+  src/test/soundsourceproviderregistrytest.cpp
+  src/test/sqliteliketest.cpp
+  src/test/synccontroltest.cpp
+  src/test/tableview_test.cpp
+  src/test/taglibtest.cpp
+  src/test/trackdao_test.cpp
+  src/test/trackexport_test.cpp
+  src/test/tracknumberstest.cpp
+  src/test/trackreftest.cpp
+  src/test/trackupdate_test.cpp
+  src/test/wpushbutton_test.cpp
+  src/test/wwidgetstack_test.cpp
+  src/test/main.cpp
+)
+set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib mixxx-qrc)
+
+# gtest
+ExternalProject_Add(mixxx-gtest
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
+  INSTALL_COMMAND ""
+)
+set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_dependencies(mixxx-test mixxx-gtest)
+target_include_directories(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
+)
+target_link_directories(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
+)
+target_link_libraries(mixxx-test PUBLIC "gtest")
+
+# gmock
+ExternalProject_Add(mixxx-gmock
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
+  INSTALL_COMMAND ""
+)
+set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_dependencies(mixxx-test mixxx-gmock)
+target_include_directories(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
+)
+target_link_directories(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
+)
+target_link_libraries(mixxx-test PUBLIC "gmock")
+
+# Benchmark
+add_library(benchmark STATIC EXCLUDE_FROM_ALL
+  lib/benchmark/src/benchmark.cc
+  lib/benchmark/src/colorprint.cc
+  lib/benchmark/src/commandlineflags.cc
+  lib/benchmark/src/console_reporter.cc
+  lib/benchmark/src/csv_reporter.cc
+  lib/benchmark/src/json_reporter.cc
+  lib/benchmark/src/log.cc
+  lib/benchmark/src/reporter.cc
+  lib/benchmark/src/sleep.cc
+  lib/benchmark/src/string_util.cc
+  lib/benchmark/src/sysinfo.cc
+  lib/benchmark/src/walltime.cc
+  lib/benchmark/src/re_std.cc
+)
+target_compile_definitions(benchmark PRIVATE HAVE_STD_REGEX)
+find_package(Threads REQUIRED)
+target_link_libraries(benchmark ${CMAKE_THREAD_LIBS_INIT})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  target_link_libraries(benchmark Shlwapi)
+endif()
+target_include_directories(benchmark PUBLIC lib/benchmark/include)
+target_link_libraries(mixxx-test PUBLIC benchmark)
+
+include(GoogleTest)
+enable_testing()
+gtest_add_tests(TARGET mixxx-test)
