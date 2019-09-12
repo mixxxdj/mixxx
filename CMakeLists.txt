@@ -671,7 +671,79 @@ add_library(mixxx-qrc OBJECT res/mixxx.qrc)
 set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_link_libraries(mixxx-lib PUBLIC mixxx-qrc)
 
+#
+# Installation and Packaging
+#
+include(GNUInstallDirs)
+install(TARGETS mixxx)
+
+# Skins
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
 )
+
+# Controller mappings
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# Translation files
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  FILES_MATCHING PATTERN "*.qm"
+)
+# Font files
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# Keyboard mapping(s)
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# Documentation
+install(
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+    ${CMAKE_CURRENT_SOURCE_DIR}/README
+    ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
+  DESTINATION ${CMAKE_INSTALL_DOCDIR}/mixxx
+)
+
+# .desktop file for KDE/GNOME menu
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/mixxx
+)
+
+# Icon file for menu entry
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps/rules.d
+)
+
+# .appdata.xml file for KDE/GNOME AppStream initiative
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/appdata
+)
+
+# udev rule file for USB HID and Bulk controllers
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
+  DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
+)
+
+# Packaging
+set(CPACK_PACKAGE_VENDOR "Mixxx Project")
+set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
+include(CPack)
 
 #
 # Dependencies
