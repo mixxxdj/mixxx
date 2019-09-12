@@ -667,8 +667,8 @@ endif()
 add_executable(mixxx src/main.cpp)
 target_link_libraries(mixxx PUBLIC mixxx-lib)
 
-add_library(mixxx-qrc STATIC res/mixxx.cc res/mixxx.qrc)
-set_target_properties(mixxx-qrc PROPERTIES AUTOMOC ON AUTOUIC ON)
+add_library(mixxx-qrc OBJECT res/mixxx.qrc)
+set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_link_libraries(mixxx-lib PUBLIC mixxx-qrc)
 
 )
