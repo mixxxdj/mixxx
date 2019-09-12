@@ -941,3 +941,314 @@ if(APPLE)
   find_library(IOKIT_LIBRARY IOKit REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC ${IOKIT_LIBRARY})
 endif()
+
+#
+# Features
+#
+
+# Battery meter
+if(WIN32 OR UNIX)
+  set(BATTERY_SUPPORTED ON)
+else()
+  set(BATTERY_SUPPORTED OFF)
+endif()
+option(BATTERY_ENABLED "Battery meter support" "${BATTERY_SUPPORTED}")
+if(BATTERY_ENABLED)
+  if(WIN32)
+    target_sources(mixxx-lib PRIVATE src/util/battery/batterywindows.cpp)
+  elseif(APPLE)
+    target_sources(mixxx-lib PRIVATE src/util/battery/batterymac.cpp)
+  elseif(UNIX)
+    target_sources(mixxx-lib PRIVATE src/util/battery/batterylinux.cpp)
+  else()
+    message(FATAL_ERROR "Battery support is not implemented for the target platform.")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __BATTERY__)
+endif()
+
+
+# Build Time
+option(BUILDTIME_ENABLED "Use __DATE__ and __TIME__" ON)
+if(NOT BUILDTIME_ENABLED)
+  # Distributions like openSUSE use tools (e. g. build-compare) to detect
+  # whether a built binary differs from a former build to avoid unneeded
+  # publishing of packages.
+  # If __DATE__ and __TIME__ are used the built binary differs always but
+  # the tools cannot detect the root and publish a new package although
+  # the only change is caused by __DATE__ and __TIME__.
+  target_compile_definitions(mixxx-lib PUBLIC DISABLE_BUILDTIME)
+endif()
+
+# Clang Color Diagnostics
+option(CLANG_COLORDIAG_ENABLED "Clang color diagnostics" OFF)
+if(CLANG_COLORDIAG_ENABLED)
+  if(NOT CLANG)
+    message(FATAL_ERROR "Color Diagnostics are only available when using Clang.")
+  endif()
+  target_compile_options(mixxx-lib PUBLIC -fcolor-diagnostics)
+endif()
+
+# Clang Sanitizers
+set(CLANG_SANITIZERS "")
+option(CLANG_ASAN_ENABLED "Clang Address Sanitizer" OFF)
+if(CLANG_ASAN_ENABLED)
+  list(APPEND CLANG_SANITIZERS "address")
+endif()
+option(CLANG_UBSAN_ENABLED "Clang Undefined Behaviour Sanitizer" OFF)
+if(CLANG_UBSAN_ENABLED)
+  list(APPEND CLANG_SANITIZERS "undefined")
+endif()
+option(CLANG_TSAN_ENABLED "Clang Thread Sanitizer" OFF)
+if(CLANG_TSAN_ENABLED)
+  list(APPEND CLANG_SANITIZERS "thread")
+endif()
+if(NOT CLANG_SANITIZERS STREQUAL "")
+  if(NOT CLANG)
+    message(FATAL_ERROR "Clang Sanitizers are only available when using Clang.")
+  endif()
+  list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
+  target_compile_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
+endif()
+
+# CoreAudio MP3/AAC Decoder
+option(COREAUDIO_ENABLED "CoreAudio MP3/AAC Decoder" "${APPLE}")
+if(COREAUDIO_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourcecoreaudio.cpp
+    src/sources/v1/legacyaudiosourceadapter.cpp
+    lib/apple/CAStreamBasicDescription.cpp
+  )
+  find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox REQUIRED)
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC
+    ${AUDIOTOOLBOX_LIBRARY}
+    ${COREFOUNDATION_LIBRARY}
+  )
+  target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
+endif()
+
+# FAAD AAC audio file decoder plugin
+find_package(MP4)
+find_package(MP4v2)
+if(MP4_FOUND OR MP4v2_FOUND)
+  set(FAAD_ENABLED_DEFAULT ON)
+else()
+  set(FAAD_ENABLED_DEFAULT OFF)
+endif()
+option(FAAD_ENABLED
+  "FAAD AAC audio file decoder support"
+  "${FAAD_ENABLED_DEFAULT}"
+)
+if(FAAD_ENABLED)
+  if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
+    message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2.")
+  endif()
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourcem4a.cpp
+    src/sources/libfaadloader.cpp
+  )
+  target_compile_definitions(mixxx-lib PRIVATE __FAAD__)
+  if(MP4v2_FOUND)
+    target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
+    target_link_libraries(mixxx-lib PUBLIC MP4v2::MP4v2)
+  else()
+    target_link_libraries(mixxx-lib PUBLIC MP4::MP4)
+  endif()
+endif()
+
+# Google PerfTools
+option(GPERFTOOLS_ENABLED "Google PerfTools libtcmalloc linkage" OFF)
+option(GPERFTOOLSPROFILER_ENABLED "Google PerfTools libprofiler linkage" OFF)
+if(GPERFTOOLS_ENABLED OR GPERFTOOLSPROFILER_ENABLED)
+  find_package(GPerfTools REQUIRED)
+  if(GPERFTOOLS_ENABLED)
+    target_link_libraries(mixxx-lib PUBLIC GPerfTools::tcmalloc)
+  endif()
+  if(PERFTOOLSPROFILER_ENABLED)
+    target_link_libraries(mixxx-lib PUBLIC GPerfTools::profiler)
+  endif()
+endif()
+
+# HSS1394 MIDI device
+find_package(HSS1394)
+option(HSS1394_ENABLED "HSS1394 MIDI device support" "${HSS1394_FOUND}")
+if(HSS1394_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/midi/hss1394controller.cpp
+    src/controllers/midi/hss1394enumerator.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
+  target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
+endif()
+
+# Lilv (LV2)
+find_package(Lilv)
+option(LILV_ENABLED "Lilv (LV2) support" "${Lilv_FOUND}")
+if(LILV_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/effects/lv2/lv2backend.cpp
+    src/effects/lv2/lv2effectprocessor.cpp
+    src/effects/lv2/lv2manifest.cpp
+    src/preferences/dialog/dlgpreflv2.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __LILV__)
+  target_link_libraries(mixxx-lib PUBLIC Lilv::Lilv)
+endif()
+
+# Live Broadcasting (Shoutcast)
+find_package(Shout)
+option(BROADCAST_ENABLED "Live Broadcasting (Shoutcast) support" "${Shout_FOUND}")
+if(BROADCAST_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/preferences/dialog/dlgprefbroadcastdlg.ui
+    src/preferences/dialog/dlgprefbroadcast.cpp
+    src/broadcast/broadcastmanager.cpp
+    src/engine/sidechain/shoutconnection.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
+  target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
+endif()
+
+# Locale Aware Compare for SQLite
+find_package(SQLite3)
+option(LOCALECOMPARE_ENABLED "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}")
+if(LOCALECOMPARE_ENABLED)
+  target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
+  target_include_directories(mixxx-lib PRIVATE ${SQLite3_INCLUDE_DIRS})
+  target_link_libraries(mixxx-lib PUBLIC ${SQLite3_LIBRARIES})
+endif()
+
+# Opus (RFC 6716)
+find_package(Opus)
+option(OPUS_ENABLED "Opus (RFC 6716) support" "${Opus_FOUND}")
+if(OPUS_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourceopus.cpp
+    src/encoder/encoderopus.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
+  target_include_directories(mixxx-lib PUBLIC ${Opus_INCLUDE_DIRS})
+  target_link_libraries(mixxx-lib PUBLIC ${Opus_LIBRARIES})
+endif()
+
+# MAD MP3 Decoder
+find_package(MAD)
+find_package(ID3Tag)
+if(MAD_FOUND AND ID3Tag_FOUND)
+  set(MAD_ENABLED_DEFAULT ON)
+else()
+  set(MAD_ENABLED_DEFAULT OFF)
+endif()
+option(MAD_ENABLED "MAD MP3 Decoder" "${MAD_ENABLED_DEFAULT}")
+if(MAD_ENABLED)
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourcemp3.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __MAD__)
+  target_link_libraries(mixxx-lib PUBLIC MAD::MAD ID3Tag::ID3Tag)
+endif()
+
+# Mac App Store
+if(APPLE)
+  option(MACAPPSTORE_ENABLED "Build for Mac App Store" OFF)
+  if(MACAPPSTORE_ENABLED)
+    target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
+  endif()
+endif()
+
+# Media Foundation AAC Decoder Plugin
+if(WIN32)
+  find_package(MediaFoundation)
+  option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" "${MEDIAFOUNDATION_FOUND}")
+  if(MEDIAFOUNDATION_ENABLED)
+    target_sources(mixxx-lib PRIVATE
+      src/sources/soundsourcemediafoundation.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
+    target_include_directories(mixxx-lib PRIVATE
+      ${MEDIAFOUNDATION_INCLUDE_DIRS}
+    )
+    target_link_libraries(mixxx-lib PUBLIC
+      ${MEDIAFOUNDATION_LIBRARIES}
+    )
+  endif()
+endif()
+
+# Modplug support
+find_package(Modplug)
+option(MODPLUG_ENABLED "Modplug module decoder support" "${Modplug_FOUND}")
+if(MODPLUG_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/preferences/dialog/dlgprefmodplugdlg.ui
+    src/sources/soundsourcemodplug.cpp
+    src/preferences/dialog/dlgprefmodplug.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __MODPLUG__)
+  target_link_libraries(mixxx-lib PUBLIC Modplug::Modplug)
+endif()
+
+# Profiling
+if(UNIX AND NOT APPLE)
+  option(PROFILING_ENABLED "Profiling (e.g. gprof) support" OFF)
+  if(PROFILING_ENABLED)
+    target_compile_options(mixxx-lib PUBLIC -pg)
+    target_link_options(mixxx-lib PUBLIC -pg)
+  endif()
+endif()
+
+# QtKeychain
+find_package(Qt5 COMPONENTS Keychain)
+option(QTKEYCHAIN_ENABLED "Secure credentials storage support for Live Broadcasting profiles" OFF)
+if(QTKEYCHAIN_ENABLED)
+  target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
+  target_link_libraries(mixxx-lib PUBLIC Qt5::Keychain)
+endif()
+
+# USB Bulk controller support
+find_package(LibUSB)
+option(BULK_ENABLED "USB Bulk controller support" "${LibUSB_FOUND}")
+if(BULK_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/bulk/bulkcontroller.cpp
+    src/controllers/bulk/bulkenumerator.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __BULK__)
+  target_link_libraries(mixxx-lib PUBLIC LibUSB::LibUSB)
+endif()
+
+# Vinyl Control
+option(VINYLCONTROL_ENABLED "Vinyl Control support" ON)
+if(VINYLCONTROL_ENABLED)
+  if(MACAPPSTORE_ENABLED)
+    message(FATAL_ERROR "Mac App Store and Vinyl Control support are mutually exclusive due to licensing issues.")
+  endif()
+
+  target_sources(mixxx-lib PRIVATE
+    src/vinylcontrol/vinylcontrol.cpp
+    src/vinylcontrol/vinylcontrolxwax.cpp
+    src/preferences/dialog/dlgprefvinyl.cpp
+    src/vinylcontrol/vinylcontrolsignalwidget.cpp
+    src/vinylcontrol/vinylcontrolmanager.cpp
+    src/vinylcontrol/vinylcontrolprocessor.cpp
+    src/vinylcontrol/steadypitch.cpp
+    src/engine/controls/vinylcontrolcontrol.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
+
+  # Internal xwax library
+  add_library(mixxx-xwax STATIC)
+  if(WIN32)
+    target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder_win32.cpp lib/xwax/lut_win32.cpp)
+  else()
+    target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
+  endif()
+  target_include_directories(mixxx-xwax PUBLIC lib/xwax)
+  target_link_libraries(mixxx-lib PUBLIC mixxx-xwax)
+endif()
+
+# WavPack audio file support
+find_package(WavPack)
+option(WAVPACK_ENABLED "WavPack audio file support" "${WavPack_FOUND}")
+if(WAVPACK_ENABLED)
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __WV__)
+  target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
+endif()
