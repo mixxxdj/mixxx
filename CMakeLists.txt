@@ -608,6 +608,11 @@ if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
 
+target_include_directories(mixxx-lib PUBLIC
+  ${PROTOBUF_INCLUDE_DIRS}
+  "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
@@ -655,16 +660,13 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-add_executable(mixxx src/main.cpp ${PROTO_HEADERS})
+add_executable(mixxx src/main.cpp)
 target_link_libraries(mixxx PUBLIC mixxx-lib)
 
 add_library(mixxx-qrc STATIC res/mixxx.cc res/mixxx.qrc)
 set_target_properties(mixxx-qrc PROPERTIES AUTOMOC ON AUTOUIC ON)
 target_link_libraries(mixxx-lib PUBLIC mixxx-qrc)
 
-target_include_directories(mixxx-lib PUBLIC
-  ${PROTOBUF_INCLUDE_DIRS}
-  "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 #
