@@ -156,7 +156,7 @@ class Bulk(Feature):
                    'src/controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
             sources.append(
-                'controllers/hid/hidcontrollerpresetfilehandler.cpp')
+                'src/controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
