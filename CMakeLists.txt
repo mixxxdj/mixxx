@@ -686,6 +686,7 @@ ExternalProject_Add(libebur128
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
   INSTALL_COMMAND ""
+  CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON"
 )
 add_dependencies(mixxx-lib libebur128)
 target_include_directories(mixxx-lib PUBLIC
@@ -694,7 +695,7 @@ target_include_directories(mixxx-lib PUBLIC
 target_link_directories(mixxx-lib PUBLIC
   "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
 )
-target_link_libraries(mixxx-lib PUBLIC "ebur128")
+target_link_libraries(mixxx-lib PUBLIC "${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # FidLib
 add_library(fidlib OBJECT lib/fidlib/fidlib.c)
