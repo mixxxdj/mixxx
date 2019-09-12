@@ -675,7 +675,10 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-qrc)
 # Installation and Packaging
 #
 include(GNUInstallDirs)
-install(TARGETS mixxx)
+install(
+  TARGETS mixxx
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
 # Skins
 install(
@@ -764,10 +767,7 @@ add_dependencies(mixxx-lib libebur128)
 target_include_directories(mixxx-lib PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
 )
-target_link_directories(mixxx-lib PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
-)
-target_link_libraries(mixxx-lib PUBLIC "${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
+target_link_libraries(mixxx-lib PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # FidLib
 add_library(fidlib OBJECT lib/fidlib/fidlib.c)
