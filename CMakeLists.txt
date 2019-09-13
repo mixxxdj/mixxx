@@ -748,18 +748,31 @@ include(CPack)
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Chromaprint::Chromaprint)
 
-# Ebur128Mit
-ExternalProject_Add(libebur128
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON"
-)
-add_dependencies(mixxx-lib libebur128)
-target_include_directories(mixxx-lib PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
-)
-target_link_libraries(mixxx-lib PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
+# Ebur128
+find_package(Ebur128)
+if(Ebur128_FOUND)
+  set(EBUR128_STATIC_DEFAULT OFF)
+else()
+  set(EBUR128_STATIC_DEFAULT ON)
+endif()
+option(EBUR128_STATIC "Link libebur128 statically" "${EBUR128_STATIC_DEFAULT}")
+if(EBUR128_STATIC)
+  message(STATUS "Linking internal libebur128 statically")
+  ExternalProject_Add(libebur128
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
+    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
+    INSTALL_COMMAND ""
+    CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON"
+  )
+  add_dependencies(mixxx-lib libebur128)
+  target_include_directories(mixxx-lib PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
+  )
+  target_link_libraries(mixxx-lib PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+  message(STATUS "Linking libebur128 dynamically")
+  target_link_libraries(mixxx-lib PUBLIC Ebur128::Ebur128)
+endif()
 
 # FidLib
 add_library(fidlib OBJECT lib/fidlib/fidlib.c)
