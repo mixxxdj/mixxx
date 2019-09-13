@@ -207,34 +207,37 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
     CuePointer pLoadCue;
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::CUE) {
-            continue; // skip
-        }
         if (pCue->getType() == Cue::LOAD) {
             DEBUG_ASSERT(!pLoadCue);
             pLoadCue = pCue;
         }
-        int hotcue = pCue->getHotCue();
-        HotcueControl* pControl = m_hotcueControls.value(hotcue);
-        if (pControl) {
-            attachCue(pCue, pControl);
-        }
     }
-    double cuePoint;
-    if (pLoadCue) {
-        cuePoint = pLoadCue->getPosition();
-    } else {
-        // If no load cue point is stored, read from track
-        cuePoint = m_pLoadedTrack->getCuePoint();
-    }
-    m_pCuePoint->set(cuePoint);
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-
-    // Use pNewTrack here, because m_pLoadedTrack might have been reset
+    // Use pNewTrack from now, because m_pLoadedTrack might have been reset
     // immediately after leaving the locking scope!
-    pNewTrack->setCuePoint(cuePoint);
+
+
+    // Because of legacy, we store the (load) cue point twice and need to
+    // sync both values.
+    // The Cue::LOAD from getCuePoints() has the priority
+    double cuePoint;
+    if (pLoadCue) {
+        cuePoint = pLoadCue->getPosition();
+        // adjust the track cue accordingly
+        pNewTrack->setCuePoint(cuePoint);
+    } else {
+        // If no load cue point is stored, read from track
+        // Note: This is 0:00 for new tracks
+        cuePoint = pNewTrack->getCuePoint();
+        // Than add the load cue to the list of cue
+        CuePointer pCue(pNewTrack->createAndAddCue());
+        pCue->setPosition(cuePoint);
+        pCue->setHotCue(-1);
+        pCue->setType(Cue::LOAD);
+    }
+    m_pCuePoint->set(cuePoint);
 
     // If cue recall is ON in the prefs, then we're supposed to seek to the cue
     // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
@@ -271,15 +274,15 @@ void CueControl::trackCuesUpdated() {
     while (it.hasNext()) {
         CuePointer pCue(it.next());
 
-        if (pCue->getType() == Cue::LOAD) {
+        if (!loadCueFound && pCue->getType() == Cue::LOAD) {
             loadCueFound = true;
             m_pCuePoint->set(pCue->getPosition());
             continue;
         }
 
-
-        if (pCue->getType() != Cue::CUE)
+        if (pCue->getType() != Cue::CUE) {
             continue;
+        }
 
         int hotcue = pCue->getHotCue();
         HotcueControl* pControl = m_hotcueControls.value(hotcue);
