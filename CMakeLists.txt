@@ -799,15 +799,6 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 # gtest
 target_include_directories(mixxx-lib PUBLIC lib/gtest-1.7.0/include)
 
-# HIDAPI
-find_package(HIDAPI REQUIRED)
-target_sources(mixxx-lib PRIVATE
-  src/controllers/hid/hidcontroller.cpp
-  src/controllers/hid/hidenumerator.cpp
-  src/controllers/hid/hidcontrollerpresetfilehandler.cpp
-)
-target_link_libraries(mixxx-lib PUBLIC HIDAPI::LibUSB)
-
 # LAME
 find_package(LAME REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
@@ -1326,6 +1317,49 @@ if(BULK_ENABLED)
   )
   target_compile_definitions(mixxx-lib PUBLIC __BULK__)
   target_link_libraries(mixxx-lib PUBLIC LibUSB::LibUSB)
+endif()
+
+# USB HID controller support
+find_package(HIDAPI)
+option(HID_ENABLED "USB HID controller support" "ON")
+if(HIDAPI_FOUND)
+  set(HIDAPI_STATIC_DEFAULT OFF)
+else()
+  set(HIDAPI_STATIC_DEFAULT ON)
+endif()
+option(HIDAPI_STATIC "Link HIDAPI library statically" "${HID_STATIC_DEFAULT}")
+if(HID_ENABLED)
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/hid/hidcontroller.cpp
+    src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __HID__)
+  if(HIDAPI_STATIC)
+    message(STATUS "Linking internal libhidapi statically")
+    add_library(mixxx-hidapi OBJECT)
+    target_include_directories(mixxx-hidapi PUBLIC lib/hidapi-0.8.0-rc1/hidapi)
+    if(WIN32)
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/windows/hid.c)
+    elseif(APPLE)
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/mac/hid.c)
+    elseif(UNIX)
+      if(NOT LibUSB_FOUND)
+        message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
+      endif()
+      target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/libusb/hid.c)
+      target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
+    else()
+      message(FATAL_ERROR "USB HID controller support only possible on Windows/Mac OS/Linux/BSD.")
+    endif()
+    target_link_libraries(mixxx-lib PUBLIC mixxx-hidapi)
+  else()
+    message(STATUS "Linking libhidapi dynamically")
+    if(NOT HIDAPI_FOUND)
+      message(FATAL_ERROR "USB HID controller support requires libhidapi-libusb and its development headers.")
+    endif()
+    target_link_libraries(mixxx-lib PUBLIC HIDAPI::LibUSB)
+  endif()
 endif()
 
 # Vinyl Control
