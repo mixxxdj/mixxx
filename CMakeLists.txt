@@ -5,6 +5,7 @@ project(mixxx
 )
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 cmake_policy(SET CMP0071 NEW)
+set(CMAKE_CXX_STANDARD 14)
 include(ExternalProject)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
