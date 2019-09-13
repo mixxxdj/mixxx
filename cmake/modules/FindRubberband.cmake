@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_Rubberband QUIET rubberband)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Rubberband QUIET rubberband)
+endif()
 
 find_path(Rubberband_INCLUDE_DIR
   NAMES rubberband/RubberBandStretcher.h

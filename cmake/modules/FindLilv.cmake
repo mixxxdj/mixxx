@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_Lilv QUIET lilv-0)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Lilv QUIET lilv-0)
+endif()
 
 find_path(Lilv_INCLUDE_DIR
   NAMES lilv-0/lilv/lilv.h

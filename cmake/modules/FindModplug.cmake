@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_Modplug QUIET libmodplug)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Modplug QUIET libmodplug)
+endif()
 
 find_path(Modplug_INCLUDE_DIR
   NAMES libmodplug/modplug.h

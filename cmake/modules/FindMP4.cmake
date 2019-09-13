@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_MP4 QUIET mp4)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_MP4 QUIET mp4)
+endif()
 
 find_path(MP4_INCLUDE_DIR
   NAMES mp4/mp4.h

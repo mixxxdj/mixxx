@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_CHROMAPRINT QUIET libchromaprint)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Chromaprint QUIET libchromaprint)
+endif()
 
 find_path(Chromaprint_INCLUDE_DIR
   NAMES chromaprint.h

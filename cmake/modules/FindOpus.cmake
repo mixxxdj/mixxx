@@ -39,9 +39,11 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_Opus QUIET opus)
-pkg_check_modules(PC_OpusFile QUIET opusfile)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Opus QUIET opus)
+  pkg_check_modules(PC_OpusFile QUIET opusfile)
+endif()
 
 find_path(Opus_INCLUDE_DIR
   NAMES opus/opus.h

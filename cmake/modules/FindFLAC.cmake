@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_FLAC QUIET flac)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_FLAC QUIET flac)
+endif()
 
 find_path(FLAC_INCLUDE_DIR
   NAMES FLAC/all.h

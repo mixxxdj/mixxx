@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_CHROMAPRINT QUIET libebur128)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Ebur128 QUIET libebur128)
+endif()
 
 find_path(Ebur128_INCLUDE_DIR
   NAMES ebur128.h

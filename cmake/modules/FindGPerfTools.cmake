@@ -49,9 +49,12 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_GPerfTools_TCMALLOC QUIET libtcmalloc)
+  pkg_check_modules(PC_GPerfTools_PROFILER QUIET libprofiler)
+endif()
 
-pkg_check_modules(PC_GPerfTools_TCMALLOC QUIET libtcmalloc)
 find_path(GPerfTools_TCMALLOC_INCLUDE_DIR
   NAMES gperftools/tcmalloc.h
   PATHS ${PC_GPerfTools_TCMALLOC_INCLUDE_DIRS}
@@ -65,7 +68,6 @@ find_library(GPerfTools_TCMALLOC_LIBRARY
 )
 mark_as_advanced(GPerfTools_TCMALLOC_LIBRARY)
 
-pkg_check_modules(PC_GPerfTools_PROFILER QUIET libprofiler)
 find_path(GPerfTools_PROFILER_INCLUDE_DIR
   NAMES gperftools/profiler.h
   PATHS ${PC_GPerfTools_PROFILER_INCLUDE_DIRS}

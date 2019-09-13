@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_HIDAPI QUIET hidapi-libusb)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_HIDAPI QUIET hidapi-libusb)
+endif()
 
 find_path(HIDAPI_INCLUDE_DIR
   NAMES hidapi.h

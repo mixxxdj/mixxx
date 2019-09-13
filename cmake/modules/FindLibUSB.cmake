@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_LibUSB QUIET libusb-1.0)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_LibUSB QUIET libusb-1.0)
+endif()
 
 find_path(LibUSB_INCLUDE_DIR
   NAMES libusb.h

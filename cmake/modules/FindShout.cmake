@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_Shout QUIET shout)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Shout QUIET shout)
+endif()
 
 find_path(Shout_INCLUDE_DIR
   NAMES shout/shout.h

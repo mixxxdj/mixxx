@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_Upower QUIET upower-glib)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_Upower QUIET upower-glib)
+endif()
 
 find_path(Upower_INCLUDE_DIR
   NAMES upower.h

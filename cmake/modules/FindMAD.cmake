@@ -43,8 +43,10 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-find_package(PkgConfig)
-pkg_check_modules(PC_MAD QUIET mad)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+  pkg_check_modules(PC_MAD QUIET mad)
+endif()
 
 find_path(MAD_INCLUDE_DIR
   NAMES mad.h
