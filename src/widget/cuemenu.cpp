@@ -30,7 +30,7 @@ void CueMenu::slotEditLabel() {
     }
     bool okay = false;
     QString newLabel = QInputDialog::getText(this, tr("Edit cue label"),
-                                             tr("Cue label"), QLineEdit::Normal,
+                                             tr("New cue label"), QLineEdit::Normal,
                                              m_pCue->getLabel(), &okay);
     if (okay) {
         m_pCue->setLabel(newLabel);
