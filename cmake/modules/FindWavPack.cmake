@@ -73,12 +73,12 @@ if(WavPack_FOUND)
   set(WavPack_DEFINITIONS ${PC_WavPack_CFLAGS_OTHER})
 
   if(NOT TARGET WavPack::WavPack)
-  add_library(WavPack::WavPack UNKNOWN IMPORTED)
-  set_target_properties(WavPack::WavPack
-    PROPERTIES
-      IMPORTED_LOCATION "${WavPack_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_WavPack_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${WavPack_INCLUDE_DIR}"
-  )
+    add_library(WavPack::WavPack UNKNOWN IMPORTED)
+    set_target_properties(WavPack::WavPack
+      PROPERTIES
+        IMPORTED_LOCATION "${WavPack_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_WavPack_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${WavPack_INCLUDE_DIR}"
+    )
   endif()
 endif()

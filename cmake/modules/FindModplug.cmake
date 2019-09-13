@@ -73,12 +73,12 @@ if(Modplug_FOUND)
   set(Modplug_DEFINITIONS ${PC_Modplug_CFLAGS_OTHER})
 
   if(NOT TARGET Modplug::Modplug)
-  add_library(Modplug::Modplug UNKNOWN IMPORTED)
-  set_target_properties(Modplug::Modplug
-    PROPERTIES
-      IMPORTED_LOCATION "${Modplug_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_Modplug_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${Modplug_INCLUDE_DIR}"
-  )
+    add_library(Modplug::Modplug UNKNOWN IMPORTED)
+    set_target_properties(Modplug::Modplug
+      PROPERTIES
+        IMPORTED_LOCATION "${Modplug_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_Modplug_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Modplug_INCLUDE_DIR}"
+    )
   endif()
 endif()

@@ -74,12 +74,12 @@ if(SQLite3_FOUND)
   set(SQLite3_DEFINITIONS ${PC_SQLite3_CFLAGS_OTHER})
 
   if(NOT TARGET SQLite3::SQLite3)
-  add_library(SQLite3::SQLite3 UNKNOWN IMPORTED)
-  set_target_properties(SQLite3::SQLite3
-    PROPERTIES
-      IMPORTED_LOCATION "${SQLite3_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_SQLite3_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${SQLite3_INCLUDE_DIR}"
-  )
+    add_library(SQLite3::SQLite3 UNKNOWN IMPORTED)
+    set_target_properties(SQLite3::SQLite3
+      PROPERTIES
+        IMPORTED_LOCATION "${SQLite3_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_SQLite3_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${SQLite3_INCLUDE_DIR}"
+    )
   endif()
 endif()

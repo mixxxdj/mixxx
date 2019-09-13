@@ -74,12 +74,12 @@ if(Lilv_FOUND)
   set(Lilv_DEFINITIONS ${PC_Lilv_CFLAGS_OTHER})
 
   if(NOT TARGET Lilv::Lilv)
-  add_library(Lilv::Lilv UNKNOWN IMPORTED)
-  set_target_properties(Lilv::Lilv
-    PROPERTIES
-      IMPORTED_LOCATION "${Lilv_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_Lilv_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${Lilv_INCLUDE_DIR}"
-  )
+    add_library(Lilv::Lilv UNKNOWN IMPORTED)
+    set_target_properties(Lilv::Lilv
+      PROPERTIES
+        IMPORTED_LOCATION "${Lilv_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_Lilv_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Lilv_INCLUDE_DIR}"
+    )
   endif()
 endif()

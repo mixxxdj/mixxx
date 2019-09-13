@@ -73,12 +73,12 @@ if(Rubberband_FOUND)
   set(Rubberband_DEFINITIONS ${PC_Rubberband_CFLAGS_OTHER})
 
   if(NOT TARGET Rubberband::Rubberband)
-  add_library(Rubberband::Rubberband UNKNOWN IMPORTED)
-  set_target_properties(Rubberband::Rubberband
-    PROPERTIES
-      IMPORTED_LOCATION "${Rubberband_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_Rubberband_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${Rubberband_INCLUDE_DIR}"
-  )
+    add_library(Rubberband::Rubberband UNKNOWN IMPORTED)
+    set_target_properties(Rubberband::Rubberband
+      PROPERTIES
+        IMPORTED_LOCATION "${Rubberband_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_Rubberband_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Rubberband_INCLUDE_DIR}"
+    )
   endif()
 endif()

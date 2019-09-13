@@ -73,12 +73,12 @@ if(Shout_FOUND)
   set(Shout_DEFINITIONS ${PC_Shout_CFLAGS_OTHER})
 
   if(NOT TARGET Shout::Shout)
-  add_library(Shout::Shout UNKNOWN IMPORTED)
-  set_target_properties(Shout::Shout
-    PROPERTIES
-      IMPORTED_LOCATION "${Shout_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_Shout_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${Shout_INCLUDE_DIR}"
-  )
+    add_library(Shout::Shout UNKNOWN IMPORTED)
+    set_target_properties(Shout::Shout
+      PROPERTIES
+        IMPORTED_LOCATION "${Shout_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_Shout_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Shout_INCLUDE_DIR}"
+    )
   endif()
 endif()

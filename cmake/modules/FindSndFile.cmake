@@ -74,12 +74,12 @@ if(SndFile_FOUND)
   set(SndFile_DEFINITIONS ${PC_SndFile_CFLAGS_OTHER})
 
   if(NOT TARGET SndFile::SndFile)
-  add_library(SndFile::SndFile UNKNOWN IMPORTED)
-  set_target_properties(SndFile::SndFile
-    PROPERTIES
-      IMPORTED_LOCATION "${SndFile_LIBRARY}"
-      INTERFACE_COMPILE_OPTIONS "${PC_SndFile_CFLAGS_OTHER}"
-      INTERFACE_INCLUDE_DIRECTORIES "${SndFile_INCLUDE_DIR}"
-  )
+    add_library(SndFile::SndFile UNKNOWN IMPORTED)
+    set_target_properties(SndFile::SndFile
+      PROPERTIES
+        IMPORTED_LOCATION "${SndFile_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_SndFile_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${SndFile_INCLUDE_DIR}"
+    )
   endif()
 endif()
