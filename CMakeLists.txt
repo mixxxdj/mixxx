@@ -1509,10 +1509,9 @@ add_dependencies(mixxx-test mixxx-gtest)
 target_include_directories(mixxx-test PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
 )
-target_link_directories(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
+target_link_libraries(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
-target_link_libraries(mixxx-test PUBLIC "gtest")
 
 # gmock
 ExternalProject_Add(mixxx-gmock
@@ -1525,10 +1524,9 @@ add_dependencies(mixxx-test mixxx-gmock)
 target_include_directories(mixxx-test PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
 )
-target_link_directories(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
+target_link_libraries(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
-target_link_libraries(mixxx-test PUBLIC "gmock")
 
 # Benchmark
 add_library(benchmark STATIC EXCLUDE_FROM_ALL
