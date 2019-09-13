@@ -757,7 +757,7 @@ void Track::setCuePoint(double cue) {
                 break;
             }
         }
-        if (cue > 0) {
+        if (cue != -1) {
             if (!pLoadCue) {
                 pLoadCue = CuePointer(new Cue(m_record.getId()));
                 pLoadCue->setType(Cue::LOAD);
