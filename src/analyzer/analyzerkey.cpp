@@ -5,7 +5,7 @@
 
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarykey.h"
-#include "keys.pb.h"
+#include "proto/keys.pb.h"
 #include "track/keyfactory.h"
 
 // static

@@ -1,7 +1,7 @@
 #ifndef GROUPFEATURESTATE_H
 #define GROUPFEATURESTATE_H
 
-#include "keys.pb.h"
+#include "proto/keys.pb.h"
 
 struct GroupFeatureState {
     GroupFeatureState()

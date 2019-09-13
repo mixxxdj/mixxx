@@ -11,7 +11,7 @@
 #include "skin/skinparser.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
-#include "skin.pb.h"
+#include "proto/skin.pb.h"
 #include "util/memory.h"
 
 class WBaseWidget;

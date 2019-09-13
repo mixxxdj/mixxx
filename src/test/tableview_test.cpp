@@ -4,7 +4,7 @@
 #include <gmock/gmock.h>
 
 #include <QtDebug>
-#include "headers.pb.h"
+#include "proto/headers.pb.h"
 #include "widget/wtracktableviewheader.h"
 
 class HeaderViewStateTest : public testing::Test {

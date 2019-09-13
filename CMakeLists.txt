@@ -62,18 +62,6 @@ else()
   set(CLANG OFF)
 endif()
 
-# Protobuf
-find_package(Protobuf REQUIRED)
-protobuf_generate_cpp(
-  PROTO_SOURCES
-  PROTO_HEADERS
-  src/proto/beats.proto
-  src/proto/headers.proto
-  src/proto/keys.proto
-  src/proto/skin.proto
-  src/proto/waveform.proto
-)
-
 # Mixxx itself
 add_library(mixxx-lib STATIC
   src/analyzer/analyzerbeats.cpp
@@ -613,19 +601,13 @@ add_library(mixxx-lib STATIC
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
-  ${PROTO_SOURCES}
-  ${PROTO_HEADERS})
+)
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON)
-target_include_directories(mixxx-lib PUBLIC src "${PROJECT_BINARY_DIR}/src")
+target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
 if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
-
-target_include_directories(mixxx-lib PUBLIC
-  ${PROTOBUF_INCLUDE_DIRS}
-  "${CMAKE_CURRENT_BINARY_DIR}"
-)
 
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
@@ -844,8 +826,8 @@ target_include_directories(mixxx-lib PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PortMidi_LIBRARIES})
 
 # Protobuf
-target_include_directories(mixxx-lib PUBLIC ${PROTOBUF_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${PROTOBUF_LIBRARIES})
+add_subdirectory(src/proto)
+target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 
 # Qt
 find_package(Qt5
