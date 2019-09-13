@@ -1308,9 +1308,12 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # QtKeychain
-find_package(Qt5 COMPONENTS Keychain)
+find_package(Qt5 OPTIONAL_COMPONENTS Keychain)
 option(QTKEYCHAIN_ENABLED "Secure credentials storage support for Live Broadcasting profiles" OFF)
 if(QTKEYCHAIN_ENABLED)
+  if(NOT Qt5_Keychain_FOUND)
+    message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")
+  endif()
   target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
   target_link_libraries(mixxx-lib PUBLIC Qt5::Keychain)
 endif()
