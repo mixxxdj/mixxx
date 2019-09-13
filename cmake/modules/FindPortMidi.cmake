@@ -67,11 +67,15 @@ find_package_handle_standard_args(
   DEFAULT_MSG
   PortMidi_LIBRARY
   PortMidi_INCLUDE_DIR
-  PortTime_LIBRARY
   PortTime_INCLUDE_DIR
 )
 
 if(PortMidi_FOUND)
-  set(PortMidi_LIBRARIES ${PortMidi_LIBRARY} ${PortTime_LIBRARY})
+  set(PortMidi_LIBRARIES ${PortMidi_LIBRARY})
+  # Depending on the library configuration PortTime might be statically
+  # linked with PortMidi.
+  if(PortTime_LIBRARY)
+    list(APPEND PortMidi_LIBRARIES ${PortTime_LIBRARY})
+  endif()
   set(PortMidi_INCLUDE_DIRS ${PortMidi_INCLUDE_DIR} ${PortTime_INCLUDE_DIR})
 endif()
