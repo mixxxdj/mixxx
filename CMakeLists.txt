@@ -25,6 +25,15 @@ execute_process(
   OUTPUT_VARIABLE GIT_COMMIT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
+
+# Get the number of commits on the working branch
+execute_process(
+  COMMAND git rev-list --count --first-parent HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_COUNT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # Check if the worktree is dirty
 execute_process(
@@ -33,9 +42,10 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 if(NOT GIT_WORKTREE_DIRTY EQUAL "0")
-  set(GIT_COMMIT_HASH "${GIT_COMMIT_HASH}+")
+    set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
 endif()
-message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
+message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
+
 configure_file(
   "${PROJECT_SOURCE_DIR}/src/build.h.template"
   "${PROJECT_BINARY_DIR}/src/build.h"
