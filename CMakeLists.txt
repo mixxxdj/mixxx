@@ -807,8 +807,7 @@ target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
 # OpenGL
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
-target_include_directories(mixxx-lib PUBLIC OpenGL)
-target_link_libraries(mixxx-lib PUBLIC OpenGL)
+target_link_libraries(mixxx-lib PUBLIC OpenGL::GL)
 
 # Ogg Vorbis
 find_package(OggVorbis REQUIRED)
