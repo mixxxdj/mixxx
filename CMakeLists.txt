@@ -991,6 +991,10 @@ find_package(Taglib REQUIRED)
 target_include_directories(mixxx-lib PUBLIC ${TAGLIB_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
 
+# Threads
+find_package(Threads REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Threads::Threads)
+
 # Upower
 if(UNIX AND NOT APPLE)
   find_package(GLIB COMPONENTS gobject REQUIRED)
