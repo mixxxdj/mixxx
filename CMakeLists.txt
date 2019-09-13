@@ -1130,7 +1130,7 @@ option(FAAD_ENABLED
 )
 if(FAAD_ENABLED)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
-    message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2.")
+    message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcem4a.cpp
@@ -1162,6 +1162,9 @@ endif()
 find_package(HSS1394)
 option(HSS1394_ENABLED "HSS1394 MIDI device support" "${HSS1394_FOUND}")
 if(HSS1394_ENABLED)
+  if(NOT HSS1394_FOUND)
+      message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE
     src/controllers/midi/hss1394controller.cpp
     src/controllers/midi/hss1394enumerator.cpp
@@ -1174,6 +1177,9 @@ endif()
 find_package(Lilv)
 option(LILV_ENABLED "Lilv (LV2) support" "${Lilv_FOUND}")
 if(LILV_ENABLED)
+  if(NOT Lilv_FOUND)
+    message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE
     src/effects/lv2/lv2backend.cpp
     src/effects/lv2/lv2effectprocessor.cpp
@@ -1188,6 +1194,9 @@ endif()
 find_package(Shout)
 option(BROADCAST_ENABLED "Live Broadcasting (Shoutcast) support" "${Shout_FOUND}")
 if(BROADCAST_ENABLED)
+  if(NOT Shout_FOUND)
+      message(FATAL_ERROR "Live Broadcasting support requires the libshout and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefbroadcastdlg.ui
     src/preferences/dialog/dlgprefbroadcast.cpp
@@ -1202,6 +1211,9 @@ endif()
 find_package(SQLite3)
 option(LOCALECOMPARE_ENABLED "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}")
 if(LOCALECOMPARE_ENABLED)
+  if(NOT SQLite3_FOUND)
+    message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
+  endif()
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
   target_include_directories(mixxx-lib PRIVATE ${SQLite3_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${SQLite3_LIBRARIES})
@@ -1211,6 +1223,9 @@ endif()
 find_package(Opus)
 option(OPUS_ENABLED "Opus (RFC 6716) support" "${Opus_FOUND}")
 if(OPUS_ENABLED)
+  if(NOT Opus_FOUND)
+    message(FATAL_ERROR "Opus support requires libopus and libopusfile with development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourceopus.cpp
     src/encoder/encoderopus.cpp
@@ -1230,6 +1245,12 @@ else()
 endif()
 option(MAD_ENABLED "MAD MP3 Decoder" "${MAD_ENABLED_DEFAULT}")
 if(MAD_ENABLED)
+  if(NOT MAD_FOUND)
+    message(FATAL_ERROR "MAD support requires libmad and its development headers.")
+  endif()
+  if(NOT ID3Tag_FOUND)
+    message(FATAL_ERROR "ID3Tag support requires libid3tag and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcemp3.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __MAD__)
   target_link_libraries(mixxx-lib PUBLIC MAD::MAD ID3Tag::ID3Tag)
@@ -1248,6 +1269,9 @@ if(WIN32)
   find_package(MediaFoundation)
   option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" "${MediaFoundation_FOUND}")
   if(MEDIAFOUNDATION_ENABLED)
+    if(NOT MediaFoundation_FOUND)
+        message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
+    endif()
     target_sources(mixxx-lib PRIVATE
       src/sources/soundsourcemediafoundation.cpp
     )
@@ -1265,6 +1289,9 @@ endif()
 find_package(Modplug)
 option(MODPLUG_ENABLED "Modplug module decoder support" "${Modplug_FOUND}")
 if(MODPLUG_ENABLED)
+  if(NOT Modplug_FOUND)
+    message(FATAL_ERROR "Modplug module decoder support requires libmodplug and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefmodplugdlg.ui
     src/sources/soundsourcemodplug.cpp
@@ -1295,6 +1322,9 @@ endif()
 find_package(LibUSB)
 option(BULK_ENABLED "USB Bulk controller support" "${LibUSB_FOUND}")
 if(BULK_ENABLED)
+  if(NOT LibUSB_FOUND)
+    message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE
     src/controllers/bulk/bulkcontroller.cpp
     src/controllers/bulk/bulkenumerator.cpp
@@ -1337,6 +1367,9 @@ endif()
 find_package(WavPack)
 option(WAVPACK_ENABLED "WavPack audio file support" "${WavPack_FOUND}")
 if(WAVPACK_ENABLED)
+  if(NOT WavPack_FOUND)
+    message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
+  endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
