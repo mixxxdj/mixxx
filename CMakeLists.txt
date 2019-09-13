@@ -1246,7 +1246,7 @@ endif()
 # Media Foundation AAC Decoder Plugin
 if(WIN32)
   find_package(MediaFoundation)
-  option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" "${MEDIAFOUNDATION_FOUND}")
+  option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" "${MediaFoundation_FOUND}")
   if(MEDIAFOUNDATION_ENABLED)
     target_sources(mixxx-lib PRIVATE
       src/sources/soundsourcemediafoundation.cpp
