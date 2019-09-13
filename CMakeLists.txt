@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(mixxx
   VERSION 2.3.0
-  DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes."
   HOMEPAGE_URL "https://www.mixxx.org"
 )
+set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 cmake_policy(SET CMP0071 NEW)
 include(ExternalProject)
 
