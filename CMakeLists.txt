@@ -1334,7 +1334,7 @@ if(HIDAPI_FOUND)
 else()
   set(HIDAPI_STATIC_DEFAULT ON)
 endif()
-option(HIDAPI_STATIC "Link HIDAPI library statically" "${HID_STATIC_DEFAULT}")
+option(HIDAPI_STATIC "Link HIDAPI library statically" "${HIDAPI_STATIC_DEFAULT}")
 if(HID_ENABLED)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
