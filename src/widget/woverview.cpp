@@ -396,7 +396,14 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
     float lineHoverPadding = 5.0;
-    for (const auto& pMark : m_marksToRender) {
+    // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
+    // before hotcues in m_marksToRender so if there is a hotcue in the same
+    // location, the hotcue gets rendered on top. When right clicking, the
+    // the hotcue rendered on top must be assigned to m_pHoveredMark to show
+    // the CueMenu. To accomplish this, m_marksToRender is iterated in reverse
+    // and the loop breaks as soon as m_pHoveredMark is set.
+    for (auto it = m_marksToRender.crbegin(); it != m_marksToRender.crend(); ++it) {
+        auto pMark = *it;
         int hoveredPosition;
         if (m_orientation == Qt::Horizontal) {
             hoveredPosition = e->x();
