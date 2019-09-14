@@ -660,10 +660,6 @@ endif()
 add_executable(mixxx src/main.cpp)
 target_link_libraries(mixxx PUBLIC mixxx-lib)
 
-add_library(mixxx-qrc OBJECT res/mixxx.qrc)
-set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
-target_link_libraries(mixxx-lib PUBLIC mixxx-qrc)
-
 #
 # Installation and Packaging
 #
@@ -1563,3 +1559,16 @@ target_link_libraries(mixxx-test PUBLIC benchmark)
 include(GoogleTest)
 enable_testing()
 gtest_add_tests(TARGET mixxx-test)
+
+#
+# Resources
+#
+add_library(mixxx-qrc OBJECT res/mixxx.qrc)
+set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
+
+# Add resources to mixxx and mixxx-test binaries, not the mixxx-lib static
+# library. Doing this would require initialization using Q_INIT_RESOURCE()
+# calls that are not present at the moment. Further information can be found
+# at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
+target_link_libraries(mixxx PUBLIC mixxx-qrc)
+target_link_libraries(mixxx-test PUBLIC mixxx-qrc)
