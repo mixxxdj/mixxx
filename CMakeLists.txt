@@ -4,7 +4,12 @@ project(mixxx
   HOMEPAGE_URL "https://www.mixxx.org"
 )
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
-cmake_policy(SET CMP0071 NEW)
+
+# Let AUTOMOC and AUTOUIC process GENERATED files
+if(POLICY CMP0071)
+  cmake_policy(SET CMP0071 NEW)
+endif()
+
 set(CMAKE_CXX_STANDARD 14)
 include(ExternalProject)
 
