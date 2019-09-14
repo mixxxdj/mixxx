@@ -1566,6 +1566,7 @@ include(GoogleTest)
 enable_testing()
 gtest_add_tests(
   TARGET mixxx-test
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   TEST_LIST testsuite
 )
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 10)
@@ -1575,6 +1576,7 @@ gtest_add_tests(
   TARGET mixxx-test
   TEST_PREFIX benchmark.
   EXTRA_ARGS --benchmark
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   TEST_LIST benchmark
 )
 set_tests_properties(${benchmark} PROPERTIES TIMEOUT 10)
