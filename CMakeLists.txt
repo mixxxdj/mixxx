@@ -1556,9 +1556,23 @@ endif()
 target_include_directories(benchmark PUBLIC lib/benchmark/include)
 target_link_libraries(mixxx-test PUBLIC benchmark)
 
+# Test Suite
 include(GoogleTest)
 enable_testing()
-gtest_add_tests(TARGET mixxx-test)
+gtest_add_tests(
+  TARGET mixxx-test
+  TEST_LIST testsuite
+)
+set_tests_properties(${testsuite} PROPERTIES TIMEOUT 10)
+
+# Benchmarking
+gtest_add_tests(
+  TARGET mixxx-test
+  TEST_PREFIX benchmark.
+  EXTRA_ARGS --benchmark
+  TEST_LIST benchmark
+)
+set_tests_properties(${benchmark} PROPERTIES TIMEOUT 10)
 
 #
 # Resources
