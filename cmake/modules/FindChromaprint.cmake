@@ -56,7 +56,7 @@ find_path(Chromaprint_INCLUDE_DIR
 mark_as_advanced(Chromaprint_INCLUDE_DIR)
 
 find_library(Chromaprint_LIBRARY
-  NAMES chromaprint
+  NAMES chromaprint chromaprint_p
   PATHS ${PC_Chromaprint_LIBRARY_DIRS}
   DOC "Chromaprint library"
 )
