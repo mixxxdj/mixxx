@@ -966,6 +966,7 @@ target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
 # SndFile
 find_package(SndFile REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
+target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 
 # SoundTouch
 add_library(SoundTouch STATIC
