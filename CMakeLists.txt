@@ -645,10 +645,10 @@ if(WIN32)
   # may include cmath first.
   target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
 elseif(UNIX)
-  target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
   if(APPLE)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
+    target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
     target_compile_definitions(
       mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx/")
     target_compile_definitions(
