@@ -48,13 +48,6 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-QString fullScreenDefaultKeyBinding() {
-#ifdef __APPLE__
-    return QObject::tr("Ctrl+Shift+F");
-#else
-    return QObject::tr("F11");
-#endif
-}
 
 }  // namespace
 
@@ -170,7 +163,12 @@ void WMainMenuBar::initialize() {
     addMenu(pLibraryMenu);
 
     // VIEW MENU
-    QMenu* pViewMenu = new QMenu(tr("&View"));
+    // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
+    // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
+    // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
+    // and the magic menu items won't get injected.
+    // https://bugs.launchpad.net/mixxx/+bug/1534292
+    QMenu* pViewMenu = new QMenu(tr("&View")+("\u200C"));
 
     // Skin Settings Menu
     QString mayNotBeSupported = tr("May not be supported on all skins.");
@@ -270,10 +268,7 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    pViewFullScreen->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(
-                ConfigKey("[KeyboardShortcuts]", "ViewMenu_Fullscreen"),
-                fullScreenDefaultKeyBinding())));
+    pViewFullScreen->setShortcut(QKeySequence(QKeySequence::FullScreen));
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);
     pViewFullScreen->setChecked(false);

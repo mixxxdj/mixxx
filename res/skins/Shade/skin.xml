@@ -182,7 +182,7 @@
           <Amount>-40</Amount>
         </Add>
       </Filters>
-      <Style src="skin:dark.qss"/>
+      <Style src="skin:style_dark.qss"/>
     </Scheme>
     <Scheme>
       <Name>Summer Sunset</Name>
@@ -200,7 +200,7 @@
           <VConst>-10</VConst>
         </HSVTweak>
       </Filters>
-      <Style src="skin:summer_sunset.qss"/>
+      <Style src="skin:style_summer_sunset.qss"/>
     </Scheme>
   </Schemes>
 
@@ -213,7 +213,7 @@
   ############################################################################################
   -->
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style_mac.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
     <LaunchImageStyle>

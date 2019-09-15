@@ -295,7 +295,6 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->activate();
             m_sFeatures[index.row()]->onRightClick(globalPos);
         }
         else
@@ -303,7 +302,6 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->feature();
-                feature->activateChild(index);
                 feature->onRightClickChild(globalPos, index);
             }
         }
