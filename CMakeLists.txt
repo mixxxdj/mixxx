@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(mixxx
-  VERSION 2.3.0
-  HOMEPAGE_URL "https://www.mixxx.org"
-)
+project(mixxx VERSION 2.3.0)
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 
 # Let AUTOMOC and AUTOUIC process GENERATED files
