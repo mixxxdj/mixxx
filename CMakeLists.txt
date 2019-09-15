@@ -1106,6 +1106,7 @@ if(COREAUDIO_ENABLED)
     ${COREFOUNDATION_LIBRARY}
   )
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
+  target_include_directories(mixxx-lib PUBLIC lib/apple)
 endif()
 
 # FAAD AAC audio file decoder plugin
