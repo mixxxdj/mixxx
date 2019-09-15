@@ -354,18 +354,28 @@ double LoopingControl::nextTrigger(bool reverse,
 
     LoopSamples loopSamples = m_loopSamples.getValue();
 
+    // m_bAdjustingLoopIn is true while the LoopIn button is pressed while a loop is active (slotLoopIn)
     if (m_bAdjustingLoopInOld != m_bAdjustingLoopIn) {
         m_bAdjustingLoopInOld = m_bAdjustingLoopIn;
-        if (reverse && !m_bAdjustingLoopIn) {
+
+        // When the LoopIn button is released in reverse mode we jump to the end of the loop to not fall out and disable the active loop
+        // This must not happen in quantized mode. The newly set start is always ahead (in time, but behind spacially) of the current position so we don't jump.
+        // Jumping to the end is then handled when the loop's start is reached later in this function.
+        if (reverse && !m_bAdjustingLoopIn && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopSamples = loopSamples;
             *pTarget = loopSamples.end;
             return currentSample;
         }
     }
 
+    // m_bAdjustingLoopOut is true while the LoopOut button is pressed while a loop is active (slotLoopOut)
     if (m_bAdjustingLoopOutOld != m_bAdjustingLoopOut) {
         m_bAdjustingLoopOutOld = m_bAdjustingLoopOut;
-        if (!reverse && !m_bAdjustingLoopOut) {
+
+        // When the LoopOut button is released in forward mode we jump to the start of the loop to not fall out and disable the active loop
+        // This must not happen in quantized mode. The newly set end is always ahead of the current position so we don't jump.
+        // Jumping to the start is then handled when the loop's end is reached later in this function.
+        if (!reverse && !m_bAdjustingLoopOut && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopSamples = loopSamples;
             *pTarget = loopSamples.start;
             return currentSample;

@@ -43,10 +43,8 @@ class FIFO {
     }
     void writeBlocking(const DataType* pData, int count) {
         int written = 0;
-        while (written != count) {
-            int i = write(pData, count);
-            pData += i;
-            written += i;
+        while (written < count) {
+            written += write(pData + written, count - written);
         }
     }
     int aquireWriteRegions(int count,
