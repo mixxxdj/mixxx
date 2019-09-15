@@ -867,7 +867,7 @@ target_link_libraries(mixxx-lib PUBLIC
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
-  target_link_libraries(mixxx-lib PUBLIC X11 Qt5::X11Extras Qt5::DBus)
+  target_link_libraries(mixxx-lib PUBLIC X11::X11 Qt5::X11Extras Qt5::DBus)
 elseif(WIN32)
   find_package(Qt5
     COMPONENTS
