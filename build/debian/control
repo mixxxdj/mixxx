@@ -49,7 +49,7 @@ Build-Depends: debhelper (>= 9),
                libhidapi-dev,
                libupower-glib-dev,
                liblilv-dev,
-               libmodplug-dev
+               libmodplug-dev,
                libmp3lame-dev,
 # for running mixxx-test
                xvfb
