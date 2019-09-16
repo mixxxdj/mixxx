@@ -1133,8 +1133,10 @@ void importTrackMetadataFromID3v2Tag(
 
     const TagLib::ID3v2::Header* pHeader = tag.header();
     DEBUG_ASSERT(pHeader);
-        return; // abort
     if (!checkID3v2HeaderVersionSupported(*pHeader)) {
+        kLogger.warning() << "Legacy ID3v2 version - importing only basic tags";
+        importTrackMetadataFromTag(pTrackMetadata, tag);
+        return; // done
     }
 
     // Omit to read comments with the default implementation provided by
@@ -1863,7 +1865,9 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     const TagLib::ID3v2::Header* pHeader = pTag->header();
     DEBUG_ASSERT(pHeader);
     if (!checkID3v2HeaderVersionSupported(*pHeader)) {
-        return false;
+        kLogger.warning() << "Legacy ID3v2 version - exporting only basic tags";
+        exportTrackMetadataIntoTag(pTag, trackMetadata);
+        return true; // done
     }
 
     // NOTE(uklotzde): Setting the comment for ID3v2 tags does
