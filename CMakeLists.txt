@@ -775,7 +775,7 @@ else()
 endif()
 
 # FidLib
-add_library(fidlib OBJECT lib/fidlib/fidlib.c)
+add_library(fidlib STATIC lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
 elseif(MINGW)
@@ -1357,7 +1357,7 @@ if(HID_ENABLED)
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
   if(HIDAPI_STATIC)
     message(STATUS "Linking internal libhidapi statically")
-    add_library(mixxx-hidapi OBJECT)
+    add_library(mixxx-hidapi STATIC)
     target_include_directories(mixxx-hidapi PUBLIC lib/hidapi-0.8.0-rc1/hidapi)
     if(WIN32)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/windows/hid.c)
@@ -1509,7 +1509,7 @@ add_executable(mixxx-test EXCLUDE_FROM_ALL
   src/test/main.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PUBLIC mixxx-lib mixxx-qrc)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib)
 
 # gtest
 ExternalProject_Add(mixxx-gtest
@@ -1595,5 +1595,5 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 # library. Doing this would require initialization using Q_INIT_RESOURCE()
 # calls that are not present at the moment. Further information can be found
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
-target_link_libraries(mixxx PUBLIC mixxx-qrc)
-target_link_libraries(mixxx-test PUBLIC mixxx-qrc)
+target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
+target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
