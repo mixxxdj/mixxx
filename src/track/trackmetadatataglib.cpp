@@ -38,11 +38,18 @@ namespace {
 
 Logger kLogger("TagLib");
 
-bool checkID3v2HeaderVersion(const TagLib::ID3v2::Header& header) {
-    if (header.majorVersion() < 3) {
-        kLogger.warning() << QString("ID3v2.%1 is not supported")
-                                     .arg(QString::number(header.majorVersion()))
-                                     .toLatin1();
+// Only ID3v2.3 and ID3v2.4 are supported for both importing and
+// exporting text frames. ID3v2.2 uses different frame identifiers,
+// i.e. only 3 instead of 4 characters.
+// https://en.wikipedia.org/wiki/ID3#ID3v2
+const unsigned int kMinID3v2Version = 3;
+
+bool checkID3v2HeaderVersionSupported(const TagLib::ID3v2::Header& header) {
+    if (header.majorVersion() < kMinID3v2Version) {
+        kLogger.warning().noquote()
+                << QString("ID3v2.%1 is only partially supported - please convert your file tags to at least ID3v2.%2").arg(
+                        QString::number(header.majorVersion()),
+                        QString::number(kMinID3v2Version));
         return false;
     } else {
         return true;
@@ -1126,8 +1133,8 @@ void importTrackMetadataFromID3v2Tag(
 
     const TagLib::ID3v2::Header* pHeader = tag.header();
     DEBUG_ASSERT(pHeader);
-    if (!checkID3v2HeaderVersion(*pHeader)) {
         return; // abort
+    if (!checkID3v2HeaderVersionSupported(*pHeader)) {
     }
 
     // Omit to read comments with the default implementation provided by
@@ -1855,7 +1862,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
 
     const TagLib::ID3v2::Header* pHeader = pTag->header();
     DEBUG_ASSERT(pHeader);
-    if (!checkID3v2HeaderVersion(*pHeader)) {
+    if (!checkID3v2HeaderVersionSupported(*pHeader)) {
         return false;
     }
 
