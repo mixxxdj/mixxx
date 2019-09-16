@@ -3,6 +3,11 @@ project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 
+# Support new IN_LIST if() operator
+if(POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW)
+endif()
+
 # Let AUTOMOC and AUTOUIC process GENERATED files
 if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
