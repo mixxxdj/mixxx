@@ -890,22 +890,8 @@ if(UNIX AND NOT APPLE)
     Qt5::DBus
   )
 elseif(WIN32)
-  find_package(Qt5
-    COMPONENTS
-      AccessibilitySupport
-      EventDispatcherSupport
-      FontDatabaseSupport
-      ThemeSupport
-      WindowsUIAutomationSupport
-    REQUIRED
-  )
-  target_link_libraries(mixxx-lib PUBLIC
-    Qt5::AccessibilitySupport
-    Qt5::EventDispatcherSupport
-    Qt5::FontDatabaseSupport
-    Qt5::ThemeSupport
-    Qt5::WindowsUIAutomationSupport
-  )
+  find_package(Qt5 COMPONENTS WinExtras REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC Qt5::WinExtras)
 endif()
 
 # QtScriptByteArray
