@@ -2238,9 +2238,9 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 true);
     }
 
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
+    // TODO(XXX): The following tags have been added later and are currently
+    // not stored in the Mixxx library. Only write fields that have non-null
+    // values to preserve any existing file tags instead of removing them!
 
     if (hasAlbumGain(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
@@ -2412,9 +2412,9 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
                 toTagLibString(formatTrackPeak(trackMetadata)));
     }
 
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
+    // TODO(XXX): The following tags have been added later and are currently
+    // not stored in the Mixxx library. Only write fields that have non-null
+    // values to preserve any existing file tags instead of removing them!
 
     auto discNumbers = TrackNumbers::joinStrings(
             trackMetadata.getTrackInfo().getDiscNumber(),
@@ -2594,9 +2594,9 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
                 toTagLibString(formatTrackPeak(trackMetadata)));
     }
 
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
+    // TODO(XXX): The following tags have been added later and are currently
+    // not stored in the Mixxx library. Only write fields that have non-null
+    // values to preserve any existing file tags instead of removing them!
 
     if (hasAlbumGain(trackMetadata)) {
         writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_GAIN",
@@ -2762,9 +2762,9 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
                 toTagLibString(formatTrackPeak(trackMetadata)));
     }
 
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
+    // TODO(XXX): The following tags have been added later and are currently
+    // not stored in the Mixxx library. Only write fields that have non-null
+    // values to preserve any existing file tags instead of removing them!
 
     // Write disc number/total pair
     QString discNumberText;
