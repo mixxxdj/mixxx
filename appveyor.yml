@@ -66,9 +66,6 @@ for:
     - xvfb-run -- cmake --build . --target test
     - xvfb-run -- cmake --build . --target benchmark
 
-  after_test:
-    - curl -F 'file=@test_results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
-
 ########## END UBUNTU SPECIFIC CONFIGURATION ##########
 
 ########## WINDOWS SPECIFIC CONFIGURATION ##########
