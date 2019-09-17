@@ -649,12 +649,6 @@ if(WIN32)
   endif()
 
   target_link_libraries(mixxx-lib PUBLIC shell32)
-
-  # Causes the cmath headers to declare M_PI and friends.
-  # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx We could define this
-  # in our headers but then include order matters since headers we don't control
-  # may include cmath first.
-  target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
 elseif(UNIX)
   if(APPLE)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
@@ -948,6 +942,12 @@ add_library(QueenMaryDsp STATIC
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
 if(UNIX)
   target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
+elseif(MSVC)
+  # Causes the cmath headers to declare M_PI and friends.
+  # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx We could define this
+  # in our headers but then include order matters since headers we don't control
+  # may include cmath first.
+  target_compile_definitions(QueenMaryDsp PUBLIC _USE_MATH_DEFINES)
 endif()
 # build.env.Append(CPPPATH="#lib/qm-dsp")
 target_include_directories(QueenMaryDsp PRIVATE lib/qm-dsp)
