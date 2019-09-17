@@ -88,30 +88,50 @@ for:
   environment:
     ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
     ENVIRONMENTS_PATH: C:\mixxx-buildserver
+    ENVIRONMENT_NAME: 2.3-j00013-PLATFORM-CONFIGURATION-static-36f44bd2-minimal
+    QT_VERSION: 5.12.0
+
 
   install:
-    - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
-    - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
-    - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
-    - cd %TEMP%
-    - echo *** Downloading precompiled build environment if not in build-cache
-    - cd %APPVEYOR_BUILD_FOLDER%
-    - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
+    - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
+    - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
+    - set WINLIB_PATH=%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
+    - IF EXIST %WINLIB_PATH% (
+        echo Using cached environment %WINLIB_PATH%...
+      ) else (
+        mkdir %ENVIRONMENTS_PATH% &&
+        echo Downloading environment %ENVIRONMENT_NAME%... &&
+        curl -fsS -L -o%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip %ENVIRONMENTS_URL%/%ENVIRONMENT_NAME%.zip &&
+        echo Unpacking environment %ENVIRONMENT_NAME% to %ENVIRONMENTS_PATH%... &&
+        7z -o%ENVIRONMENTS_PATH% x %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip || exit 1
+      )
 
   before_build:
+    - set QT_PATH=%WINLIB_PATH%\Qt-%QT_VERSION%
+    - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - cd %APPVEYOR_BUILD_FOLDER%
 
   build_script:
-    - build\appveyor\build_mixxx.bat %platform% %configuration% %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
+    - mkdir cmake_build
+    - cd cmake_build
+    - cmake
+      -DCMAKE_INSTALL_PREFIX=C:\mixxx
+      -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
+      -DCMAKE_FIND_LIBRARY_PREFIXES=lib;
+      -DMEDIAFOUNDATION_ENABLED=ON
+      -DOPUS_ENABLED=ON
+      -DLOCALECOMPARE_ENABLED=ON
+      ..
+    - cmake --build .
+    - cmake --build . --target mixxx-test
+    - cmake --build . --target install
+    - cd ..
 
   test_script:
-    - echo *** Testing
-    # Calling mixxx-test under bash to have standard output
-    # and use stdbuf to unbuffer standard & error output
-    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
-    - timeout 5 > NUL
-    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --benchmark 2>&1"
-    - timeout 5 > NUL
+    # Calling mixxx-test under bash to have standard output and use stdbuf to
+    # unbuffer standard & error output
+    - cmake --build cmake_build --target test
+    - cmake --build cmake_build --target benchmark
 
   after_test:
     - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
