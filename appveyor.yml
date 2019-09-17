@@ -31,7 +31,8 @@ matrix:
 skip_commits:
   files:
     - doc/
-    - LICENCE
+    - .travis.yml
+    - LICENSE
     - README
     - README.md
     - CHANGELOG
