@@ -1867,7 +1867,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     DEBUG_ASSERT(pHeader);
     if (!checkID3v2HeaderVersionSupported(*pHeader)) {
         kLogger.warning() << "Legacy ID3v2 version - exporting only basic tags";
-        exportTrackMetadataIntoTag(pTag, trackMetadata);
+        exportTrackMetadataIntoTag(pTag, trackMetadata, WRITE_TAG_OMIT_NONE);
         return true; // done
     }
 
