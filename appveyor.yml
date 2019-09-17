@@ -133,9 +133,6 @@ for:
     - cmake --build cmake_build --target test
     - cmake --build cmake_build --target benchmark
 
-  after_test:
-    - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
-
   artifacts:
     - path: '*.exe'
     - path: '*.msi'
