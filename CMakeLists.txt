@@ -15,6 +15,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 include(ExternalProject)
+include(CheckSymbolExists)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
@@ -770,11 +771,16 @@ endif()
 option(EBUR128_STATIC "Link libebur128 statically" "${EBUR128_STATIC_DEFAULT}")
 if(EBUR128_STATIC)
   message(STATUS "Linking internal libebur128 statically")
+  set(EBUR128_CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON")
+  check_symbol_exists(STAILQ_HEAD sys/queue.h HAVE_STAILQ)
+  if(NOT HAVE_STAILQ)
+    list(APPEND EBUR128_CMAKE_ARGS "-DENABLE_INTERNAL_QUEUE_H=ON")
+  endif()
   ExternalProject_Add(libebur128
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
     INSTALL_COMMAND ""
-    CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON"
+    CMAKE_ARGS ${EBUR128_CMAKE_ARGS}
   )
   add_dependencies(mixxx-lib libebur128)
   target_include_directories(mixxx-lib PUBLIC
