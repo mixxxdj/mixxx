@@ -42,6 +42,7 @@ Logger kLogger("TagLib");
 // exporting text frames. ID3v2.2 uses different frame identifiers,
 // i.e. only 3 instead of 4 characters.
 // https://en.wikipedia.org/wiki/ID3#ID3v2
+// http://id3.org/Developer%20Information
 const unsigned int kMinID3v2Version = 3;
 
 bool checkID3v2HeaderVersionSupported(const TagLib::ID3v2::Header& header) {
