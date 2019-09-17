@@ -532,6 +532,10 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
     return m_pCurrentTrack;
 }
 
+bool EngineBuffer::isReverse() {
+    return m_reverse_old;
+}
+
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
     //qDebug() << "EngineBuffer::ejectTrack()";
