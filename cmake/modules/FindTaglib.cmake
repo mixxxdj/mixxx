@@ -117,7 +117,7 @@ else()
 
     include(FindPackageMessage)
     include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args(Taglib DEFAULT_MSG TAGLIB_INCLUDE_DIRS_ TAGLIB_LIBRARIES)
+    find_package_handle_standard_args(Taglib DEFAULT_MSG TAGLIB_INCLUDE_DIRS TAGLIB_LIBRARIES)
 
 endif()
 
