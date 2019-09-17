@@ -949,9 +949,7 @@ elseif(MSVC)
   # may include cmath first.
   target_compile_definitions(QueenMaryDsp PUBLIC _USE_MATH_DEFINES)
 endif()
-# build.env.Append(CPPPATH="#lib/qm-dsp")
-target_include_directories(QueenMaryDsp PRIVATE lib/qm-dsp)
-target_include_directories(mixxx-lib PRIVATE lib/qm-dsp lib/qm-dsp/include)
+target_include_directories(QueenMaryDsp PUBLIC lib/qm-dsp lib/qm-dsp/include)
 target_link_libraries(mixxx-lib PUBLIC QueenMaryDsp)
 
 # ReplayGain
