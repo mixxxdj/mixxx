@@ -30,7 +30,11 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_BRANCH
   OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
 )
+if(NOT GIT_BRANCH)
+  set(GIT_BRANCH "unknown")
+endif()
 message(STATUS "Git branch: ${GIT_BRANCH}")
 
 # Get the latest abbreviated commit hash of the working branch
@@ -39,7 +43,11 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
 )
+if(NOT GIT_COMMIT_HASH)
+    set(GIT_COMMIT_HASH "unknown")
+endif()
 message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
 
 # Get the number of commits on the working branch
@@ -48,16 +56,21 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_COUNT
   OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
 )
+if(NOT GIT_COMMIT_COUNT)
+    set(GIT_COMMIT_COUNT "unknown")
+endif()
 
 # Check if the worktree is dirty
 execute_process(
   COMMAND git diff --quiet
   RESULT_VARIABLE GIT_WORKTREE_DIRTY
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  ERROR_QUIET
 )
-if(NOT GIT_WORKTREE_DIRTY EQUAL "0")
-    set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
+if(GIT_WORKTREE_DIRTY EQUAL "1")
+  set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 
