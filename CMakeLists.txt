@@ -1148,6 +1148,40 @@ if(FAAD_ENABLED)
   endif()
 endif()
 
+# FFmpeg 4.x support
+# FFmpeg is multimedia library that can be found http://ffmpeg.org/
+find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
+option(FFMPEG_ENABLED "FFmpeg 4.x support" "OFF")
+if(UNIX)
+  if(NOT AVCODEC_FOUND OR AVCODEC_VERSION VERSION_LESS 58)
+    message(FATAL_ERROR "FFmpeg support requires libavcodec (at least v58) and its development headers.")
+  endif()
+  if(NOT AVFORMAT_FOUND OR AVFORMAT_VERSION VERSION_LESS 58)
+    message(FATAL_ERROR "FFmpeg support requires libavformat (at least v58) and its development headers.")
+  endif()
+  if(NOT AVUTIL_FOUND)
+    message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
+  endif()
+  if(NOT SWRESAMPLE_FOUND OR SWRESAMPLE_VERSION VERSION_LESS 3.1)
+    message(FATAL_ERROR "FFmpeg support requires libswresample (at least v3.1) and its development headers.")
+  endif()
+
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC
+    __FFMPEG__
+    # Needed to build new FFmpeg
+    __STDC_CONSTANT_MACROS
+    __STDC_LIMIT_MACROS
+    __STDC_FORMAT_MACROS
+  )
+  target_link_libraries(mixxx-lib PUBLIC
+    FFmpeg::avcodec
+    FFmpeg::avformat
+    FFmpeg::avutil
+    FFmpeg::swresample
+  )
+endif()
+
 # Google PerfTools
 option(GPERFTOOLS_ENABLED "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER_ENABLED "Google PerfTools libprofiler linkage" OFF)
