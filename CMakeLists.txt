@@ -78,7 +78,7 @@ else()
 endif()
 
 # Mixxx itself
-add_library(mixxx-lib STATIC
+add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
@@ -781,6 +781,7 @@ if(EBUR128_STATIC)
     INSTALL_COMMAND ""
     CMAKE_ARGS ${EBUR128_CMAKE_ARGS}
   )
+  set_target_properties(libebur128 PROPERTIES EXCLUDE_FROM_ALL TRUE)
   add_dependencies(mixxx-lib libebur128)
   target_include_directories(mixxx-lib PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
@@ -792,7 +793,7 @@ else()
 endif()
 
 # FidLib
-add_library(fidlib STATIC lib/fidlib/fidlib.c)
+add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
 elseif(MINGW)
@@ -810,7 +811,7 @@ target_link_libraries(mixxx-lib PUBLIC FLAC::FLAC)
 # FpClassify This is a wrapper around the fpclassify function that prevents
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects
-add_library(FpClassify STATIC src/util/fpclassify.cpp)
+add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
 # gtest
@@ -836,7 +837,9 @@ target_include_directories(mixxx-lib PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PORTAUDIO_LIBRARIES})
 
 # PortAudio Ring Buffer
-add_library(PortAudioRingBuffer STATIC lib/portaudio/pa_ringbuffer.c)
+add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
+  lib/portaudio/pa_ringbuffer.c
+)
 target_include_directories(mixxx-lib PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PUBLIC PortAudioRingBuffer)
 
@@ -894,7 +897,7 @@ elseif(WIN32)
 endif()
 
 # QtScriptByteArray
-add_library(QtScriptByteArray STATIC
+add_library(QtScriptByteArray STATIC EXCLUDE_FROM_ALL
   lib/qtscript-bytearray/bytearrayclass.cpp
   lib/qtscript-bytearray/bytearrayprototype.cpp
 )
@@ -904,7 +907,7 @@ target_include_directories(mixxx-lib PUBLIC lib/qtscript-bytearray)
 target_link_libraries(mixxx-lib PUBLIC QtScriptByteArray)
 
 # Queen Mary DSP
-add_library(QueenMaryDsp STATIC
+add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/base/KaiserWindow.cpp
   lib/qm-dsp/base/Pitch.cpp
   # lib/qm-dsp/base/SincWindow.cpp
@@ -958,12 +961,14 @@ target_include_directories(QueenMaryDsp PUBLIC lib/qm-dsp lib/qm-dsp/include)
 target_link_libraries(mixxx-lib PUBLIC QueenMaryDsp)
 
 # ReplayGain
-add_library(ReplayGain STATIC lib/replaygain/replaygain.cpp)
+add_library(ReplayGain STATIC EXCLUDE_FROM_ALL
+  lib/replaygain/replaygain.cpp
+)
 target_include_directories(mixxx-lib PRIVATE lib/replaygain)
 target_link_libraries(mixxx-lib PRIVATE ReplayGain)
 
 # Reverb
-add_library(Reverb STATIC lib/reverb/Reverb.cc)
+add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
 target_include_directories(Reverb PRIVATE src)
 target_link_libraries(Reverb PUBLIC Qt5::Core)
 target_include_directories(mixxx-lib PRIVATE lib/reverb)
@@ -979,7 +984,7 @@ target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
 target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 
 # SoundTouch
-add_library(SoundTouch STATIC
+add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
   lib/soundtouch/AAFilter.cpp
   lib/soundtouch/BPMDetect.cpp
   lib/soundtouch/FIFOSampleBuffer.cpp
@@ -1406,7 +1411,7 @@ if(HID_ENABLED)
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
   if(HIDAPI_STATIC)
     message(STATUS "Linking internal libhidapi statically")
-    add_library(mixxx-hidapi STATIC)
+    add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
     target_include_directories(mixxx-hidapi PUBLIC lib/hidapi-0.8.0-rc1/hidapi)
     if(WIN32)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/windows/hid.c)
@@ -1451,7 +1456,7 @@ if(VINYLCONTROL_ENABLED)
   target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
 
   # Internal xwax library
-  add_library(mixxx-xwax STATIC)
+  add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
   if(WIN32)
     target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder_win32.cpp lib/xwax/lut_win32.cpp)
   else()
@@ -1781,7 +1786,7 @@ add_dependencies(benchmark mixxx-test)
 #
 # Resources
 #
-add_library(mixxx-qrc OBJECT res/mixxx.qrc)
+add_library(mixxx-qrc OBJECT EXCLUDE_FROM_ALL res/mixxx.qrc)
 set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 
 # Add resources to mixxx and mixxx-test binaries, not the mixxx-lib static
