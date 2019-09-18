@@ -402,8 +402,8 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // the hotcue rendered on top must be assigned to m_pHoveredMark to show
     // the CueMenu. To accomplish this, m_marksToRender is iterated in reverse
     // and the loop breaks as soon as m_pHoveredMark is set.
-    for (auto it = m_marksToRender.crbegin(); it != m_marksToRender.crend(); ++it) {
-        auto pMark = *it;
+    for (int i = m_marksToRender.size() - 1; i >= 0 ; --i) {
+        WaveformMarkPointer pMark = m_marksToRender.at(i);
         int hoveredPosition;
         if (m_orientation == Qt::Horizontal) {
             hoveredPosition = e->x();
