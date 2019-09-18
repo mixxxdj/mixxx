@@ -47,9 +47,9 @@ void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text
 
     QPainter painter(&m_pixmap);
 
-    painter.setPen(backgroundColor);
+    painter.setPen(QColor(Qt::transparent));
     painter.setBrush(QBrush(backgroundColor));
-    painter.drawRoundedRect(0, 0, pixmapRect.width(), pixmapRect.height(), 5.0, 5.0);
+    painter.drawRoundedRect(0, 0, pixmapRect.width(), pixmapRect.height(), 2.0, 2.0);
 
     if (!icon.isNull()) {
         QPointF iconTopLeft = pixmapRect.topLeft();

@@ -99,7 +99,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_labelBackgroundColor = context.selectColor(node, "LabelBackgroundColor");
     if (!m_labelBackgroundColor.isValid()) {
         m_labelBackgroundColor = m_qColorBackground;
-        m_labelBackgroundColor.setAlpha(255 / 2); // 255 == fully transparent
+        m_labelBackgroundColor.setAlpha(255 / 2); // 0 == fully transparent
     }
 
     m_labelTextColor = context.selectColor(node, "LabelTextColor");
@@ -110,7 +110,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     bool okay = false;
     m_iLabelFontSize = context.selectInt(node, "LabelFontSize", &okay);
     if (!okay) {
-        m_iLabelFontSize = 10;
+        m_iLabelFontSize = 11;
     }
 
     // Clear the background pixmap, if it exists.
