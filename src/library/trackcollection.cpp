@@ -67,6 +67,21 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource
     m_pTrackSource = pTrackSource;
 }
 
+bool TrackCollection::addDirectory(const QString& dir) {
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.addDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALREADY_WATCHING:
+        return true;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    }
+    DEBUG_ASSERT("unreachable");
+    return false;
+}
+
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
@@ -79,8 +94,11 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QList<TrackRef> movedTrackRefs(
-            m_directoryDao.relocateDirectory(oldDir, newDir));
+    SqlTransaction transaction(m_database);
+    QList<TrackRef> movedTrackRefs =
+            m_directoryDao.relocateDirectory(oldDir, newDir);
+    transaction.commit();
+
     QList<QPair<TrackRef, TrackRef>> replacedTrackRefs;
     replacedTrackRefs.reserve(movedTrackRefs.size());
     for (const auto& movedTrackRef : movedTrackRefs) {

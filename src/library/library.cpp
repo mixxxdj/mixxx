@@ -405,7 +405,7 @@ void Library::slotRequestAddDir(QString dir) {
     QDir directory(dir);
     Sandbox::createSecurityToken(directory);
 
-    if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
+    if (!m_pTrackCollection->addDirectory(dir)) {
         QMessageBox::information(0, tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
                     "directory is already in your library or you are currently "

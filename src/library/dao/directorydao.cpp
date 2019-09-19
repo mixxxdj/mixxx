@@ -14,7 +14,6 @@
 int DirectoryDAO::addDirectory(const QString& newDir) {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.
-    ScopedTransaction transaction(m_database);
     QStringList dirs = getDirs();
     QString childDir;
     QString parentDir;
@@ -46,7 +45,6 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
         LOG_FAILED_QUERY(query) << "Adding new dir (" % newDir % ") failed.";
         return SQL_ERROR;
     }
-    transaction.commit();
     return ALL_FINE;
 }
 
@@ -86,7 +84,6 @@ QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
     // location column becomes non-unique.
-    ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR %
                   "=:newFolder WHERE " % DIRECTORYDAO_DIR % " = :oldFolder");
@@ -138,7 +135,6 @@ QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     }
 
     qDebug() << "Relocated tracks:" << trackRefs.size();
-    transaction.commit();
     return trackRefs;
 }
 

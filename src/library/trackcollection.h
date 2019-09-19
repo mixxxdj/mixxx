@@ -95,8 +95,10 @@ class TrackCollection : public QObject,
 
   private:
     friend class Library;
+    friend class Upgrade;
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
+    bool addDirectory(const QString& dir);
     void relocateDirectory(QString oldDir, QString newDir);
 
     UserSettingsPointer m_pConfig;
