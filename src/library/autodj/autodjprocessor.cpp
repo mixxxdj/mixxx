@@ -597,7 +597,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // switch to IDLE mode and load the next track into the other deck.
     if (m_eState == ADJ_LEFT_FADING || m_eState == ADJ_RIGHT_FADING) {
         // Once P1 or P2 has stopped switch out of fading mode to idle.
-        if (!otherDeckPlaying) {
+        // If the user stops the toDeck during a fade, let the fade continue
+        // and do not load the next track.
+        if (!otherDeckPlaying && otherDeck.isFromDeck) {
             // Force crossfader all the way to the (non fading) toDeck.
             if (m_eState == ADJ_RIGHT_FADING) {
                 setCrossfader(-1.0);
