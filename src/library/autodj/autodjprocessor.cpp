@@ -264,12 +264,12 @@ void AutoDJProcessor::fadeNow() {
         double timeUntilOutroEnd = outroEnd - fromDeckCurrentPosition;
 
         if (toDeckCurrentPosition <= introEnd && introEnd >= 0) {
-            double introLength = introEnd - toDeckCurrentPosition;
+            double timeUntilIntroEnd = introEnd - toDeckCurrentPosition;
             if (outroEnd >= 0) {
                 // The fade must end by the outro end at the latest.
-                fadeTime = math_min(introLength, timeUntilOutroEnd);
+                fadeTime = math_min(timeUntilIntroEnd, timeUntilOutroEnd);
             } else {
-                fadeTime = introLength;
+                fadeTime = timeUntilIntroEnd;
             }
         } else {
             fadeTime = math_min(spinboxTime, timeUntilOutroEnd);
@@ -1012,6 +1012,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pToDeck->startPos = kKeepPosition;
         // Disable AutoDJ.
         toggleAutoDJ(false);
+        return;
     }
 
     // Within this function, the outro refers to the outro of the currently
