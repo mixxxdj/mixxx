@@ -571,45 +571,47 @@ void Library::purgeAllTracks(const QDir& rootDir) {
 
 void Library::slotScanTrackAdded(TrackPointer pTrack) {
     DEBUG_ASSERT(pTrack);
+    // Already added to m_pTrackCollection
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         externalTrackCollection->saveTrack(*pTrack, ExternalTrackCollection::ChangeHint::Added);
     }
-    // Already added to m_pTrackCollection
 }
 
 void Library::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
+    // Already updated in m_pTrackCollection
     if (updatedTrackIds.isEmpty()) {
         return;
     }
-    if (!m_externalTrackCollections.isEmpty()) {
-        QList<TrackRef> trackRefs;
-        trackRefs.reserve(updatedTrackIds.size());
-        for (const auto& trackId : updatedTrackIds) {
-            auto trackLocation = m_pTrackCollection->getTrackDAO().getTrackLocation(trackId);
-            if (!trackLocation.isEmpty()) {
-                trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
-            }
-        }
-        for (const auto& externalTrackCollection : m_externalTrackCollections) {
-            externalTrackCollection->updateTracks(trackRefs);
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    QList<TrackRef> trackRefs;
+    trackRefs.reserve(updatedTrackIds.size());
+    for (const auto& trackId : updatedTrackIds) {
+        auto trackLocation = m_pTrackCollection->getTrackDAO().getTrackLocation(trackId);
+        if (!trackLocation.isEmpty()) {
+            trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
         }
     }
-    // Already updated in m_pTrackCollection
+    for (const auto& externalTrackCollection : m_externalTrackCollections) {
+        externalTrackCollection->updateTracks(trackRefs);
+    }
 }
 
 void Library::slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
-    if (!m_externalTrackCollections.isEmpty()) {
-        QList<ExternalTrackCollection::DuplicateTrack> duplicateTracks;
-        duplicateTracks.reserve(replacedTracks.size());
-        for (const auto& replacedTrack : replacedTracks) {
-            ExternalTrackCollection::DuplicateTrack duplicateTrack;
-            duplicateTrack.removed = replacedTrack.first;
-            duplicateTrack.replacedBy = replacedTrack.second;
-            duplicateTracks.append(duplicateTrack);
-        }
-        for (const auto& externalTrackCollection : m_externalTrackCollections) {
-            externalTrackCollection->deduplicateTracks(duplicateTracks);
-        }
-    }
     // Already replaced in m_pTrackCollection
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    QList<ExternalTrackCollection::DuplicateTrack> duplicateTracks;
+    duplicateTracks.reserve(replacedTracks.size());
+    for (const auto& replacedTrack : replacedTracks) {
+        ExternalTrackCollection::DuplicateTrack duplicateTrack;
+        duplicateTrack.removed = replacedTrack.first;
+        duplicateTrack.replacedBy = replacedTrack.second;
+        duplicateTracks.append(duplicateTrack);
+    }
+    for (const auto& externalTrackCollection : m_externalTrackCollections) {
+        externalTrackCollection->deduplicateTracks(duplicateTracks);
+    }
 }
