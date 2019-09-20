@@ -231,7 +231,7 @@ QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
     const int locationColumn = query.record().indexOf("location");
     DEBUG_ASSERT(locationColumn >= 0);
     while (query.next()) {
-        locations += query.fieldValue(locationColumn).toString();
+        locations.append(query.fieldValue(locationColumn).toString());
     }
     DEBUG_ASSERT(locations.size() <= ids.size());
     return locations;
@@ -313,9 +313,9 @@ void TrackDAO::databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedT
     for (const auto& replacedTrack : replacedTracks) {
         // The old track ids (first) are still valid, whereas the new track
         // ids (second) have been deleted after being detected as moved!
-        changedTrackIds += replacedTrack.first.getId();
+        changedTrackIds.insert(replacedTrack.first.getId());
         if (replacedTrack.first.getId() != replacedTrack.second.getId()) {
-            removedTrackIds += replacedTrack.second.getId();
+            removedTrackIds.insert(replacedTrack.second.getId());
         }
     }
     if (!removedTrackIds.isEmpty()) {
@@ -1762,7 +1762,7 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
         if (pReplacedTracks) {
             auto oldTrackRef = TrackRef::fromFileInfo(oldTrackLocation, oldTrackId);
             auto newTrackRef = TrackRef::fromFileInfo(newTrackLocation, newTrackId);
-            *pReplacedTracks += qMakePair(oldTrackRef, newTrackRef);
+            pReplacedTracks->append(qMakePair(oldTrackRef, newTrackRef));
         }
     }
     return true;

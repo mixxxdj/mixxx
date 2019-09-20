@@ -116,8 +116,8 @@ QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     QList<DbId> loc_ids;
     QList<TrackRef> trackRefs;
     while (query.next()) {
-        loc_ids += DbId(query.value(1).toInt());
-        trackRefs += TrackRef::fromFileInfo(query.value(2).toString(), TrackId(query.value(0)));
+        loc_ids.append(DbId(query.value(1).toInt()));
+        trackRefs.append(TrackRef::fromFileInfo(query.value(2).toString(), TrackId(query.value(0))));
     }
 
     QString replacement = "UPDATE track_locations SET location = :newloc "

@@ -579,7 +579,7 @@ void Library::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
         for (const auto& trackId : updatedTrackIds) {
             auto trackLocation = m_pTrackCollection->getTrackDAO().getTrackLocation(trackId);
             if (!trackLocation.isEmpty()) {
-                trackRefs += TrackRef::fromFileInfo(trackLocation, trackId);
+                trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
             }
         }
         for (const auto& externalTrackCollection : m_externalTrackCollections) {
@@ -597,7 +597,7 @@ void Library::slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTr
             ExternalTrackCollection::DuplicateTrack duplicateTrack;
             duplicateTrack.removed = replacedTrack.first;
             duplicateTrack.replacedBy = replacedTrack.second;
-            duplicateTracks += duplicateTrack;
+            duplicateTracks.append(duplicateTrack);
         }
         for (const auto& externalTrackCollection : m_externalTrackCollections) {
             externalTrackCollection->deduplicateTracks(duplicateTracks);
