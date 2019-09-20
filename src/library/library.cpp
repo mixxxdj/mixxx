@@ -499,28 +499,36 @@ void Library::saveCachedTrack(Track* pTrack) noexcept {
     // concurrently.
     m_pTrackCollection->exportTrackMetadata(pTrack);
 
+    // The track must be saved in external track collections before
+    // updating the internal database. Updating the track in the
+    // internal track collection will reset its state and modify some
+    // properties, e.g. clear the dirty flag. The dirty flag is used
+    // to decide if the track actually needs to be sent to external
+    // collections.
     if (!m_externalTrackCollections.isEmpty()) {
         if (pTrack->getId().isValid()) {
+            // Track still exists in the internal collection/database
             if (pTrack->isDirty()) {
                 for (const auto& externalTrackCollection : m_externalTrackCollections) {
-                    externalTrackCollection->saveTrack(*pTrack, ExternalTrackCollection::ChangeHint::Modified);
+                    externalTrackCollection->saveTrack(
+                            *pTrack,
+                            ExternalTrackCollection::ChangeHint::Modified);
                 }
             }
         } else {
+            // Track has been deleted from the local internal collection/database
+            // while it was cached in-memory
             for (const auto& externalTrackCollection : m_externalTrackCollections) {
-                externalTrackCollection->purgeTracks(QStringList{pTrack->getLocation()});
+                externalTrackCollection->purgeTracks(
+                        QStringList{pTrack->getLocation()});
             }
         }
     }
 
-    // Updating the track in the local database might reset the
-    // dirty flag and other properties of the track still exists.
-    // Therefore this must be done AFTER external libraries got
-    // their chance to update the track!
-
-    // The track must be saved while the cache is locked to
-    // prevent that a new track is created from the outdated
-    // metadata that is is the database before saving is finished.
+    // Finally update the track in the local database and reset its
+    // state. This operation must be executed synchronously while
+    // the cache is locked to prevent that a new track is created from
+    // outdated metadata in the database before saving finished.
     m_pTrackCollection->saveTrack(pTrack);
 }
 
