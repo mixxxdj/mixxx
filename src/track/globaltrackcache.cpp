@@ -520,7 +520,7 @@ void GlobalTrackCache::resolve(
     // and will be deleted later within the event loop. But this
     // function might be called from any thread, even from worker
     // threads without an event loop. We need to move the newly
-    // created object to the target thread.
+    // created object to the main thread.
     deletingPtr->moveToThread(QApplication::instance()->thread());
 
     auto cacheEntryPtr = std::make_shared<GlobalTrackCacheEntry>(
