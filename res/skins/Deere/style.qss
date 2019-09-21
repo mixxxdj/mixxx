@@ -740,8 +740,10 @@ WWidget, QLabel {
   text-transform: uppercase;
 }
 
-WOverview {
-  /* This affects the labels for cue points. */
+/* This affects the labels for cue points. */
+WOverview,
+/* This is for the label in the edit dialog */
+WOverview QLabel {
   text-transform: none;
 }
 
