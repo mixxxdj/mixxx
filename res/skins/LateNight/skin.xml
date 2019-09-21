@@ -243,12 +243,13 @@
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-        <WidgetGroup><!-- All skin elements-->
+        <!-- regular/maximized libary + skin settings menu -->
+        <WidgetGroup>
           <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
 
-            <!-- Select between either the full UI or the big library -->
+            <!-- regular or maximized library -->
             <WidgetStack currentpage="[Master],maximize_library">
               <Children>
 
@@ -310,7 +311,7 @@
             <Template src="skin:skin_settings.xml"/>
 
           </Children>
-        </WidgetGroup>
+        </WidgetGroup><!-- regular/maximized libary + skin settings menu -->
 
         <Template src="skin:toolbar.xml"/>
       </Children>
