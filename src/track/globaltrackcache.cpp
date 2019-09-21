@@ -413,7 +413,7 @@ TrackPointer GlobalTrackCache::lookupByRef(
 TrackPointer GlobalTrackCache::revive(
         GlobalTrackCacheEntryPointer entryPtr) {
 
-    TrackPointer savingPtr = entryPtr->getSavingWeakPtr().lock();
+    TrackPointer savingPtr = entryPtr->lock();
     if (savingPtr) {
         if (traceLogEnabled()) {
             kLogger.trace()
@@ -433,11 +433,11 @@ TrackPointer GlobalTrackCache::revive(
                 << "Reviving zombie track"
                 << entryPtr->getPlainPtr();
     }
-    DEBUG_ASSERT(entryPtr->getSavingWeakPtr().expired());
+    DEBUG_ASSERT(entryPtr->expired());
 
     savingPtr = TrackPointer(entryPtr->getPlainPtr(),
             EvictAndSaveFunctor(entryPtr));
-    entryPtr->setSavingWeakPtr(savingPtr);
+    entryPtr->init(savingPtr);
     return savingPtr;
 }
 
@@ -528,7 +528,7 @@ void GlobalTrackCache::resolve(
     auto savingPtr = TrackPointer(
             cacheEntryPtr->getPlainPtr(),
             EvictAndSaveFunctor(cacheEntryPtr));
-    cacheEntryPtr->setSavingWeakPtr(savingPtr);
+    cacheEntryPtr->init(savingPtr);
 
     if (debugLogEnabled()) {
         kLogger.debug()
@@ -608,7 +608,7 @@ void GlobalTrackCache::evictAndSave(
 
     GlobalTrackCacheLocker cacheLocker;
 
-    if (!cacheEntryPtr->getSavingWeakPtr().expired()) {
+    if (!cacheEntryPtr->expired()) {
         // We have handed out (revived) this track again after our reference count
         // drops to zero and before acquiring the lock at the beginning of this function
         if (debugLogEnabled()) {

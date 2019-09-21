@@ -46,14 +46,21 @@ class GlobalTrackCacheEntry final {
 
     GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
 
+    void init(TrackWeakPointer savingWeakPtr) {
+        // Uninitialized or expired
+        DEBUG_ASSERT(!m_savingWeakPtr.lock());
+        m_savingWeakPtr = std::move(savingWeakPtr);
+    }
+
     Track* getPlainPtr() const {
         return m_deletingPtr.get();
     }
-    const TrackWeakPointer& getSavingWeakPtr() const {
-        return m_savingWeakPtr;
+
+    TrackPointer lock() const {
+        return m_savingWeakPtr.lock();
     }
-    void setSavingWeakPtr(TrackWeakPointer savingWeakPtr) {
-        m_savingWeakPtr = std::move(savingWeakPtr);
+    bool expired() const {
+        return m_savingWeakPtr.expired();
     }
 
   private:
