@@ -27,8 +27,7 @@ class TrackTitleThread: public QThread {
 
     void run() override {
         int loopCount = 0;
-        while (!m_stop.load()) {
-            m_recentTrackPtr.reset();
+        while (!(m_stop.load() && GlobalTrackCacheLocker().isEmpty())) {
             const TrackId trackId(loopCount % 2);
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
@@ -46,7 +45,7 @@ class TrackTitleThread: public QThread {
             m_recentTrackPtr = std::move(track);
             ++loopCount;
         }
-        m_recentTrackPtr.reset();
+        DEBUG_ASSERT(!m_recentTrackPtr);
         qDebug() << "Finished" << loopCount << " thread loops";
     }
 
@@ -163,16 +162,20 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         // Lookup the track again
         track = GlobalTrackCacheLocker().lookupTrackById(trackId);
         EXPECT_TRUE(static_cast<bool>(track));
+
+        // Ensure that track objects are evicted and deleted
+        QCoreApplication::processEvents();
     }
     m_recentTrackPtr.reset();
 
     workerThread.stop();
-    workerThread.wait();
 
     // Ensure that all track objects have been deleted
-    QCoreApplication::processEvents();
+    while (!GlobalTrackCacheLocker().isEmpty()) {
+        QCoreApplication::processEvents();
+    }
 
-    EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
+    workerThread.wait();
 }
 
 TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
@@ -188,4 +191,8 @@ TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
 
     EXPECT_TRUE(static_cast<bool>(track1));
     EXPECT_FALSE(static_cast<bool>(track2));
+
+    track1.reset();
+
+    EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
 }
