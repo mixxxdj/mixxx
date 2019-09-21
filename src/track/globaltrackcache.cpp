@@ -74,6 +74,7 @@ void deleteTrack(Track* plainPtr) {
                 << "Deleting"
                 << plainPtr;
     }
+    DEBUG_ASSERT(plainPtr->signalsBlocked());
     plainPtr->deleteLater();
 }
 
@@ -321,6 +322,18 @@ void GlobalTrackCache::relocateTracks(
     m_tracksByCanonicalLocation = std::move(relocatedTracksByCanonicalLocation);
 }
 
+void GlobalTrackCache::saveEvictedTrack(Track* plainPtr) const {
+    DEBUG_ASSERT(plainPtr);
+    // Disconnect all receivers and block signals before saving the
+    // track.
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    plainPtr->disconnect();
+    plainPtr->blockSignals(true);
+    m_pSaver->saveCachedTrack(plainPtr);
+}
+
 void GlobalTrackCache::deactivate() {
     // Ideally the cache should be empty when destroyed.
     // But since this is difficult to achieve all remaining
@@ -331,7 +344,7 @@ void GlobalTrackCache::deactivate() {
     auto i = m_tracksById.begin();
     while (i != m_tracksById.end()) {
         Track* plainPtr= i->second->getPlainPtr();
-        m_pSaver->saveCachedTrack(plainPtr);
+        saveEvictedTrack(plainPtr);
         m_tracksByCanonicalLocation.erase(plainPtr->getCanonicalLocation());
         i = m_tracksById.erase(i);
     }
@@ -339,7 +352,7 @@ void GlobalTrackCache::deactivate() {
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
         Track* plainPtr= j->second->getPlainPtr();
-        m_pSaver->saveCachedTrack(plainPtr);
+        saveEvictedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
     }
 
@@ -420,6 +433,7 @@ TrackPointer GlobalTrackCache::revive(
                     << "Found alive track"
                     << entryPtr->getPlainPtr();
         }
+        DEBUG_ASSERT(!savingPtr->signalsBlocked());
         return savingPtr;
     }
 
@@ -438,6 +452,7 @@ TrackPointer GlobalTrackCache::revive(
     savingPtr = TrackPointer(entryPtr->getPlainPtr(),
             EvictAndSaveFunctor(entryPtr));
     entryPtr->init(savingPtr);
+    DEBUG_ASSERT(!savingPtr->signalsBlocked());
     return savingPtr;
 }
 
@@ -632,10 +647,10 @@ void GlobalTrackCache::evictAndSave(
     }
 
     DEBUG_ASSERT(!isCached(cacheEntryPtr->getPlainPtr()));
-    m_pSaver->saveCachedTrack(cacheEntryPtr->getPlainPtr());
+    saveEvictedTrack(cacheEntryPtr->getPlainPtr());
 
-    // here the cacheEntryPtr goes out of scope, the cache is deleted
-    // including the owned track
+    // here the cacheEntryPtr goes out of scope, the cache entry is
+    // deleted including the owned track
 }
 
 bool GlobalTrackCache::evict(Track* plainPtr) {
