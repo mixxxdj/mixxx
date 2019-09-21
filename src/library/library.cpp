@@ -166,7 +166,18 @@ Library::Library(
     }
 
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
-        addFeature(externalTrackCollection->newLibraryFeature(this));
+        auto feature = externalTrackCollection->newLibraryFeature(this);
+        if (feature) {
+            kLogger.info()
+                    << "Adding library feature for"
+                    << externalTrackCollection->name();
+            addFeature(feature);
+        } else {
+            kLogger.info()
+                    << "Library feature for"
+                    << externalTrackCollection->name()
+                    << "is not available";
+        }
     }
 
     // On startup we need to check if all of the user's library folders are
@@ -499,79 +510,158 @@ void Library::saveCachedTrack(Track* pTrack) noexcept {
     // concurrently.
     m_pTrackCollection->exportTrackMetadata(pTrack);
 
-    // The track must be saved in external track collections before
-    // updating the internal database. Updating the track in the
-    // internal track collection will reset its state and modify some
-    // properties, e.g. clear the dirty flag. The dirty flag is used
-    // to decide if the track actually needs to be sent to external
-    // collections.
-    if (!m_externalTrackCollections.isEmpty()) {
-        if (pTrack->getId().isValid()) {
-            // Track still exists in the internal collection/database
-            if (pTrack->isDirty()) {
-                for (const auto& externalTrackCollection : m_externalTrackCollections) {
-                    externalTrackCollection->saveTrack(
-                            *pTrack,
-                            ExternalTrackCollection::ChangeHint::Modified);
-                }
-            }
-        } else {
-            // Track has been deleted from the local internal collection/database
-            // while it was cached in-memory
+    // Th dirty flag is reset while saving the track in the internal
+    // collection!
+    const bool trackDirty = pTrack->isDirty();
+
+    // This operation must be executed synchronously while the cache is
+    // locked to prevent that a new track is created from outdated
+    // metadata in the database before saving finished.
+    kLogger.debug()
+            << "Saving cached track"
+            << pTrack->getLocation()
+            << "in internal collection";
+    m_pTrackCollection->saveTrack(pTrack);
+
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    if (pTrack->getId().isValid()) {
+        // Track still exists in the internal collection/database
+        if (trackDirty) {
+            kLogger.debug()
+                    << "Saving modified track"
+                    << pTrack->getLocation()
+                    << "in"
+                    << m_externalTrackCollections.size()
+                    << "external collection(s)";
             for (const auto& externalTrackCollection : m_externalTrackCollections) {
-                externalTrackCollection->purgeTracks(
-                        QStringList{pTrack->getLocation()});
+                externalTrackCollection->saveTrack(
+                        *pTrack,
+                        ExternalTrackCollection::ChangeHint::Modified);
             }
         }
+    } else {
+        // Track has been deleted from the local internal collection/database
+        // while it was cached in-memory
+        kLogger.debug()
+                << "Purging deleted track"
+                << pTrack->getLocation()
+                << "from"
+                << m_externalTrackCollections.size()
+                << "external collection(s)";
+        for (const auto& externalTrackCollection : m_externalTrackCollections) {
+            externalTrackCollection->purgeTracks(
+                    QStringList{pTrack->getLocation()});
+        }
     }
-
-    // Finally update the track in the local database and reset its
-    // state. This operation must be executed synchronously while
-    // the cache is locked to prevent that a new track is created from
-    // outdated metadata in the database before saving finished.
-    m_pTrackCollection->saveTrack(pTrack);
 }
 
 void Library::relocateDirectory(QString oldDir, QString newDir) {
+    kLogger.debug()
+            << "Relocating directory in internal track collection:"
+            << oldDir
+            << "->"
+            << newDir;
+    // TODO(XXX): Add error handling in TrackCollection::relocateDirectory()
+    m_pTrackCollection->relocateDirectory(oldDir, newDir);
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    kLogger.debug()
+            << "Relocating directory in"
+            << m_externalTrackCollections.size()
+            << "external track collection(s):"
+            << oldDir
+            << "->"
+            << newDir;
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         externalTrackCollection->relocateDirectory(oldDir, newDir);
     }
-    m_pTrackCollection->relocateDirectory(oldDir, newDir);
 }
 
 void Library::purgeTracks(const QList<TrackId>& trackIds) {
     if (trackIds.isEmpty()) {
         return;
     }
+    // Collect the corresponding track locations BEFORE purging the
+    // tracks from the internal collection!
+    QList<QString> trackLocations;
     if (!m_externalTrackCollections.isEmpty()) {
-        const auto trackLocations =
+        trackLocations =
                 m_pTrackCollection->getTrackDAO().getTrackLocations(trackIds);
-        DEBUG_ASSERT(trackLocations.size() <= trackIds.size());
-        VERIFY_OR_DEBUG_ASSERT(trackLocations.size() == trackIds.size()) {
-            kLogger.warning()
-                    << "Purging only"
-                    << trackLocations.size()
-                    << "of"
-                    << trackIds.size()
-                    << "tracks from external libraries";
-        }
-        for (const auto& externalTrackCollection : m_externalTrackCollections) {
-            externalTrackCollection->purgeTracks(trackLocations);
-        }
     }
-    m_pTrackCollection->purgeTracks(trackIds);
+    DEBUG_ASSERT(trackLocations.size() <= trackIds.size());
+    kLogger.debug()
+            << "Purging"
+            << trackIds.size()
+            << "tracks from internal collection";
+    if (!m_pTrackCollection->purgeTracks(trackIds)) {
+        kLogger.warning()
+                << "Failed to purge tracks from internal collection";
+        return;
+    }
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(trackLocations.size() == trackIds.size()) {
+        kLogger.warning()
+                << "Purging only"
+                << trackLocations.size()
+                << "of"
+                << trackIds.size()
+                << "tracks from"
+                << m_externalTrackCollections.size()
+                << "external collection(s)";
+    } else {
+        kLogger.debug()
+                << "Purging"
+                << trackLocations.size()
+                << "tracks from"
+                << m_externalTrackCollections.size()
+                << "external collection(s)";
+    }
+    for (const auto& externalTrackCollection : m_externalTrackCollections) {
+        externalTrackCollection->purgeTracks(trackLocations);
+    }
 }
 
 void Library::purgeAllTracks(const QDir& rootDir) {
+    kLogger.debug()
+            << "Purging directory"
+            << rootDir
+            << "from internal track collection";
+    if (!m_pTrackCollection->purgeAllTracks(rootDir)) {
+        kLogger.warning()
+                << "Failed to purge directory from internal collection";
+        return;
+    }
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    kLogger.debug()
+            << "Purging directory"
+            << rootDir
+            << "from"
+            << m_externalTrackCollections.size()
+            << "external track collection(s)";
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         externalTrackCollection->purgeAllTracks(rootDir);
     }
-    m_pTrackCollection->purgeAllTracks(rootDir);
 }
 
 void Library::slotScanTrackAdded(TrackPointer pTrack) {
     DEBUG_ASSERT(pTrack);
     // Already added to m_pTrackCollection
+    if (m_externalTrackCollections.isEmpty()) {
+        return;
+    }
+    kLogger.debug()
+            << "Adding new track"
+            << pTrack->getLocation()
+            << "to"
+            << m_externalTrackCollections.size()
+            << "external track collection(s)";
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         externalTrackCollection->saveTrack(*pTrack, ExternalTrackCollection::ChangeHint::Added);
     }
@@ -593,6 +683,24 @@ void Library::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
             trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
         }
     }
+    DEBUG_ASSERT(trackRefs.size() <= updatedTrackIds.size());
+    VERIFY_OR_DEBUG_ASSERT(trackRefs.size() == updatedTrackIds.size()) {
+        kLogger.warning()
+                << "Updating only"
+                << trackRefs.size()
+                << "of"
+                << updatedTrackIds.size()
+                << "track(s) in"
+                << m_externalTrackCollections.size()
+                << "external collection(s)";
+    } else {
+        kLogger.debug()
+                << "Updating"
+                << trackRefs.size()
+                << "track(s) in"
+                << m_externalTrackCollections.size()
+                << "external collection(s)";
+    }
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         externalTrackCollection->updateTracks(trackRefs);
     }
@@ -611,6 +719,12 @@ void Library::slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTr
         duplicateTrack.replacedBy = replacedTrack.second;
         duplicateTracks.append(duplicateTrack);
     }
+    kLogger.debug()
+            << "Deduplicating"
+            << duplicateTracks.size()
+            << "replaced track(s) in"
+            << m_externalTrackCollections.size()
+            << "external collection(s)";
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         externalTrackCollection->deduplicateTracks(duplicateTracks);
     }

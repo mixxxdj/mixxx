@@ -213,7 +213,6 @@ bool TrackCollection::purgeTracks(
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    qInfo() << "Purging" << trackIds.size() << "tracks";
     VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(trackIds)) {
         return false;
     }
@@ -247,7 +246,6 @@ bool TrackCollection::purgeTracks(
 bool TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
     QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
-    qInfo() << "Purging" << trackIds.size() << "tracks found in" << rootDir;
     return purgeTracks(trackIds);
 }
 
