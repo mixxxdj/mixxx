@@ -221,7 +221,7 @@ private:
     void purgeTrackId(TrackId trackId);
 
     bool evict(Track* plainPtr);
-    bool isEvicted(Track* plainPtr) const;
+    bool isCached(Track* plainPtr) const;
 
     bool isEmpty() const;
 
