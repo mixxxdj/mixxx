@@ -43,8 +43,8 @@ class GlobalTrackCacheEntry final {
             std::unique_ptr<Track, void (&)(Track*)> deletingPtr)
         : m_deletingPtr(std::move(deletingPtr)) {
     }
-
     GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
+    GlobalTrackCacheEntry(GlobalTrackCacheEntry&&) = default;
 
     void init(TrackWeakPointer savingWeakPtr) {
         // Uninitialized or expired

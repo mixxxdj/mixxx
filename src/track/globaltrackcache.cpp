@@ -36,8 +36,20 @@ TrackRef createTrackRef(const Track& track) {
 
 class EvictAndSaveFunctor {
   public:
-    explicit EvictAndSaveFunctor(GlobalTrackCacheEntryPointer cacheEntryPtr)
+    explicit EvictAndSaveFunctor(
+            GlobalTrackCacheEntryPointer cacheEntryPtr)
         : m_cacheEntryPtr(std::move(cacheEntryPtr)) {
+    }
+    // Disable copy constructor
+    // NOTE(uklotzde, 2019-09-21): Using the default copy constructor
+    // instead of move causes a memory leak and track objects are never
+    // deleted. But why???
+    EvictAndSaveFunctor(const EvictAndSaveFunctor&) = delete;
+    EvictAndSaveFunctor(EvictAndSaveFunctor&&) = default;
+    ~EvictAndSaveFunctor() {
+        // The stored pointer must have been consumed before
+        // the functor gets destroyed.
+        DEBUG_ASSERT(!m_cacheEntryPtr);
     }
 
     void operator()(Track* plainPtr) {
