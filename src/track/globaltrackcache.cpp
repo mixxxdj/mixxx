@@ -670,10 +670,6 @@ bool GlobalTrackCache::evict(Track* plainPtr) {
         }
     }
     DEBUG_ASSERT(!isCached(plainPtr));
-    // Don't erase the pointer from m_cachedTracks here, because
-    // this function is invoked from 2 different contexts. The
-    // caller is responsible for doing this. Until then the cache
-    // is inconsistent and verifyConsitency() is expected to fail.
     return evicted;
 }
 
