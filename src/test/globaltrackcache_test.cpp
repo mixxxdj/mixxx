@@ -156,9 +156,13 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
         // lp1744550: Accessing the track from multiple threads is
         // required to cause a SIGSEGV
-        track->setArtist(track->getTitle());
+        track->setArtist(QString("Artist %1").arg(QString::number(i)));
 
         m_recentTrackPtr = std::move(track);
+
+        // Lookup the track again
+        track = GlobalTrackCacheLocker().lookupTrackById(trackId);
+        EXPECT_TRUE(static_cast<bool>(track));
     }
     m_recentTrackPtr.reset();
 
