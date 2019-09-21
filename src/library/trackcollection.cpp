@@ -102,7 +102,10 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QList<QPair<TrackRef, TrackRef>> replacedTrackRefs;
     replacedTrackRefs.reserve(movedTrackRefs.size());
     for (const auto& movedTrackRef : movedTrackRefs) {
-        replacedTrackRefs.append(qMakePair(movedTrackRef, movedTrackRef));
+        auto removedTrackRef = movedTrackRef;
+        // The actual new location is unknown, only the id remains the same
+        auto changedTrackRef = TrackRef::fromFileInfo(TrackFile(), movedTrackRef.getId());
+        replacedTrackRefs.append(qMakePair(removedTrackRef, changedTrackRef));
     }
     m_trackDao.databaseTracksReplaced(std::move(replacedTrackRefs));
 

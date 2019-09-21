@@ -299,31 +299,46 @@ void TrackDAO::slotTrackClean(Track* pTrack) {
 }
 
 void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
-    emit(dbTrackAdded(pTrack));
+    DEBUG_ASSERT(pTrack);
+    emit dbTrackAdded(pTrack);
 }
 
 void TrackDAO::databaseTracksChanged(QSet<TrackId> tracksChanged) {
     // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    emit(tracksAdded(tracksChanged));
+    if (!tracksChanged.isEmpty()) {
+        emit tracksAdded(tracksChanged);
+    }
 }
 
 void TrackDAO::databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& replacedTrack : replacedTracks) {
-        // The old track ids (first) are still valid, whereas the new track
-        // ids (second) have been deleted after being detected as moved!
-        changedTrackIds.insert(replacedTrack.first.getId());
-        if (replacedTrack.first.getId() != replacedTrack.second.getId()) {
-            removedTrackIds.insert(replacedTrack.second.getId());
+        const auto& removedTrackRef = replacedTrack.first;
+        const auto& changedTrackRef = replacedTrack.second;
+        DEBUG_ASSERT(removedTrackRef.getId().isValid());
+        DEBUG_ASSERT(changedTrackRef.getId().isValid());
+        // The (old)) location of the (re)moved track must be known!
+        DEBUG_ASSERT(!removedTrackRef.getLocation().isEmpty());
+        // The (new) location of the changed track might be empty.
+        DEBUG_ASSERT(changedTrackRef.getLocation() != changedTrackRef.getLocation());
+        changedTrackIds.insert(changedTrackRef.getId());
+        // The ids might be identical if the same track has been only been
+        // relocated. In this case the track has not been removed.
+        if (removedTrackRef.getId() != changedTrackRef.getId()) {
+            // The id must also not match with any other changed track!
+            DEBUG_ASSERT(!changedTrackIds.contains(removedTrackRef.getId()));
+            removedTrackIds.insert(removedTrackRef.getId());
         }
     }
+    DEBUG_ASSERT(removedTrackIds.size() <= changedTrackIds.size());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    DEBUG_ASSERT(!removedTrackIds.intersects(changedTrackIds));
+#endif
     if (!removedTrackIds.isEmpty()) {
         emit tracksRemoved(removedTrackIds);
     }
-    if (!changedTrackIds.isEmpty()) {
-        databaseTracksChanged(changedTrackIds);
-    }
+    databaseTracksChanged(changedTrackIds);
 }
 
 void TrackDAO::slotTrackChanged(Track* pTrack) {
