@@ -631,7 +631,7 @@ void GlobalTrackCache::evictAndSave(
         return;
     }
 
-    DEBUG_ASSERT(isEvicted(cacheEntryPtr->getPlainPtr()));
+    DEBUG_ASSERT(!isCached(cacheEntryPtr->getPlainPtr()));
     m_pSaver->saveCachedTrack(cacheEntryPtr->getPlainPtr());
 
     // here the cacheEntryPtr goes out of scope, the cache is deleted
@@ -653,8 +653,8 @@ bool GlobalTrackCache::evict(Track* plainPtr) {
     }
     if (trackRef.hasId()) {
         const auto trackById = m_tracksById.find(trackRef.getId());
-        if (trackById != m_tracksById.end()) {
-            DEBUG_ASSERT(trackById->second->getPlainPtr() == plainPtr);
+        if (trackById != m_tracksById.end() &&
+                trackById->second->getPlainPtr() == plainPtr) {
             m_tracksById.erase(trackById);
             evicted = true;
         }
@@ -662,14 +662,14 @@ bool GlobalTrackCache::evict(Track* plainPtr) {
     if (trackRef.hasCanonicalLocation()) {
         const auto trackByCanonicalLocation(
                 m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation()));
-        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
-            DEBUG_ASSERT(trackByCanonicalLocation->second->getPlainPtr() == plainPtr);
+        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation &&
+                trackByCanonicalLocation->second->getPlainPtr() == plainPtr) {
             m_tracksByCanonicalLocation.erase(
                     trackByCanonicalLocation);
             evicted = true;
         }
     }
-    DEBUG_ASSERT(isEvicted(plainPtr));
+    DEBUG_ASSERT(!isCached(plainPtr));
     // Don't erase the pointer from m_cachedTracks here, because
     // this function is invoked from 2 different contexts. The
     // caller is responsible for doing this. Until then the cache
@@ -677,16 +677,16 @@ bool GlobalTrackCache::evict(Track* plainPtr) {
     return evicted;
 }
 
-bool GlobalTrackCache::isEvicted(Track* plainPtr) const {
+bool GlobalTrackCache::isCached(Track* plainPtr) const {
     for (auto&& entry: m_tracksById) {
         if (entry.second->getPlainPtr() == plainPtr) {
-            return false;
+            return true;
         }
     }
     for (auto&& entry: m_tracksByCanonicalLocation) {
         if (entry.second->getPlainPtr() == plainPtr) {
-              return false;
+              return true;
         }
     }
-    return true;
+    return false;
 }
