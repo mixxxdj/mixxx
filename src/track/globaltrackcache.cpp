@@ -543,12 +543,6 @@ void GlobalTrackCache::resolve(
                     std::move(pSecurityToken),
                     std::move(trackId)),
             deleteTrack);
-    // Track objects live together with the cache on the main thread
-    // and will be deleted later within the event loop. But this
-    // function might be called from any thread, even from worker
-    // threads without an event loop. We need to move the newly
-    // created object to the main thread.
-    deletingPtr->moveToThread(QApplication::instance()->thread());
 
     auto cacheEntryPtr = std::make_shared<GlobalTrackCacheEntry>(
             std::move(deletingPtr));
@@ -580,6 +574,14 @@ void GlobalTrackCache::resolve(
                 trackRef.getCanonicalLocation(),
                 cacheEntryPtr));
     }
+
+    // Track objects live together with the cache on the main thread
+    // and will be deleted later within the event loop. But this
+    // function might be called from any thread, even from worker
+    // threads without an event loop. We need to move the newly
+    // created object to the main thread.
+    savingPtr->moveToThread(QApplication::instance()->thread());
+
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::MISS,
             std::move(savingPtr),
