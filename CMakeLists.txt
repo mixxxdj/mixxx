@@ -637,6 +637,17 @@ if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
 
+option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
+target_compile_definitions(mixxx-lib PUBLIC
+  $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
+  $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
+  # Disable assert.h assertions in release mode. Some libraries use
+  # this as a signal for when to enable code that should be disabled
+  # in release mode.
+  $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
+  $<$<BOOL:DEBUG_ASSERTIONS_FATAL>:MIXXX_DEBUG_ASSERTIONS_FATAL>
+)
+
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
