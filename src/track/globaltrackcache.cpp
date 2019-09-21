@@ -88,7 +88,20 @@ void deleteTrack(Track* plainPtr) {
                 << plainPtr;
     }
     DEBUG_ASSERT(plainPtr->signalsBlocked());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    if (plainPtr->thread()->loopLevel() > 0) {
+        plainPtr->deleteLater();
+    } else {
+        // Delete track directly if no event loop is running.
+        // Otherwise no track objects would be deleted during
+        // a unit test that doesn't start an event loop. Invoking
+        // QCoreApplication::processEvents() periodically is not
+        // sufficient!
+        delete plainPtr;
+    }
+#else
     plainPtr->deleteLater();
+#endif
 }
 
 } // anonymous namespace
