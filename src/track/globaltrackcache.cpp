@@ -474,8 +474,9 @@ TrackPointer GlobalTrackCache::revive(
     }
     DEBUG_ASSERT(entryPtr->expired());
 
-    savingPtr = TrackPointer(entryPtr->getPlainPtr(),
-            EvictAndSaveFunctor(entryPtr));
+    savingPtr = TrackPointer(
+            entryPtr->getPlainPtr(),
+            std::move(EvictAndSaveFunctor(entryPtr)));
     entryPtr->init(savingPtr);
     DEBUG_ASSERT(!savingPtr->signalsBlocked());
     return savingPtr;
