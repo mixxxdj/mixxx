@@ -9,16 +9,22 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
         : LibraryFeature(pParent),
           m_pTrackCollection(pCollection) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJ()));
+    connect(m_pAddToAutoDJAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotAddToAutoDJ);
 
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-    connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJTop()));
+    connect(m_pAddToAutoDJTopAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotAddToAutoDJTop);
 
     m_pImportAsMixxxPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pImportAsMixxxPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotImportAsMixxxPlaylist()));
+    connect(m_pImportAsMixxxPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotImportAsMixxxPlaylist);
 }
 
 BaseExternalLibraryFeature::~BaseExternalLibraryFeature() {

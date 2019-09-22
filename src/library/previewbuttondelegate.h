@@ -7,6 +7,7 @@
 #include "library/tableitemdelegate.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "widget/wlibrarytableview.h"
 
 class ControlProxy;
 
@@ -36,7 +37,7 @@ class PreviewButtonDelegate : public TableItemDelegate {
   Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QTableView* parent, int column);
+    explicit PreviewButtonDelegate(WLibraryTableView* parent, int column);
     virtual ~PreviewButtonDelegate();
 
     QWidget* createEditor(QWidget* parent,

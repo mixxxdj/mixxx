@@ -9,7 +9,7 @@
 #include "track/track.h"
 #include "control/controlproxy.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
+PreviewButtonDelegate::PreviewButtonDelegate(WLibraryTableView* parent, int column)
         : TableItemDelegate(parent),
           m_pTableView(parent),
           m_isOneCellInEditMode(false),
@@ -22,8 +22,10 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
             PlayerManager::groupForPreviewDeck(0), "cue_gotoandplay", this);
 
     // This assumes that the parent is wtracktableview
-    connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(this,
+            &PreviewButtonDelegate::loadTrackToPlayer,
+            parent,
+            &WLibraryTableView::loadTrackToPlayer);
 
     // The button needs to be parented to receive the parent styles.
     m_pButton = make_parented<LibraryPreviewButton>(m_pTableView);
@@ -33,8 +35,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
     // We need to hide the button that it is not painted by the QObject tree
     m_pButton->hide();
 
-    connect(m_pTableView, SIGNAL(entered(QModelIndex)),
-            this, SLOT(cellEntered(QModelIndex)));
+    connect(m_pTableView, &QTableView::entered, this, &PreviewButtonDelegate::cellEntered);
 }
 
 PreviewButtonDelegate::~PreviewButtonDelegate() {
@@ -55,10 +56,14 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
     btn->setChecked(index.data().toBool() && playing);
-    connect(btn, SIGNAL(clicked()),
-            this, SLOT(buttonClicked()));
-    connect(this, SIGNAL(buttonSetChecked(bool)),
-            btn, SLOT(setChecked(bool)));
+    connect(btn,
+            &QPushButton::clicked,
+            this,
+            &PreviewButtonDelegate::buttonClicked);
+    connect(this,
+            &PreviewButtonDelegate::buttonSetChecked,
+            btn,
+            &QPushButton::setChecked);
     return btn;
 }
 

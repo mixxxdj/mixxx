@@ -6,7 +6,7 @@
 #include "library/dao/trackschema.h"
 #include "util/math.h"
 
-CoverArtDelegate::CoverArtDelegate(QTableView* parent)
+CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
         : TableItemDelegate(parent),
           m_pTableView(parent),
           m_bOnlyCachedCover(false),
@@ -18,8 +18,10 @@ CoverArtDelegate::CoverArtDelegate(QTableView* parent)
           m_iTrackLocationColumn(-1),
           m_iIdColumn(-1) {
     // This assumes that the parent is wtracktableview
-    connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
-            this, SLOT(slotOnlyCachedCoverArt(bool)));
+    connect(parent,
+            &WLibraryTableView::onlyCachedCoverArt,
+            this,
+            &CoverArtDelegate::slotOnlyCachedCoverArt);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {

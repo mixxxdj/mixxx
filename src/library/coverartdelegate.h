@@ -1,6 +1,7 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
+#include <widget/wlibrarytableview.h>
 #include <QHash>
 #include <QLinkedList>
 
@@ -10,7 +11,7 @@
 class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit CoverArtDelegate(QTableView* pTableView);
+    explicit CoverArtDelegate(WLibraryTableView* parent);
     virtual ~CoverArtDelegate();
 
     void paintItem(QPainter* painter,
