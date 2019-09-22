@@ -236,6 +236,11 @@ void GlobalTrackCache::createInstance(GlobalTrackCacheSaver* pDeleter) {
 //static
 void GlobalTrackCache::destroyInstance() {
     DEBUG_ASSERT(s_pInstance);
+    // Processing all pending events is required to evict all
+    // remaining references from the cache.
+    QCoreApplication::processEvents();
+    // Now the cache should be empty
+    DEBUG_ASSERT(GlobalTrackCacheLocker().isEmpty());
     GlobalTrackCache* pInstance = s_pInstance;
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
