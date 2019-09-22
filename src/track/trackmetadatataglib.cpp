@@ -1259,20 +1259,23 @@ void importTrackMetadataFromID3v2Tag(
         }
     }
 
-    const TagLib::ID3v2::FrameList albumArtistFrame(tag.frameListMap()["TPE2"]);
-    if (!albumArtistFrame.isEmpty()) {
-        pTrackMetadata->refAlbumInfo().setArtist(toQStringFirstNotEmpty(albumArtistFrame));
+    const TagLib::ID3v2::FrameList albumArtistFrames(tag.frameListMap()["TPE2"]);
+    if (!albumArtistFrames.isEmpty()) {
+        pTrackMetadata->refAlbumInfo().setArtist(toQStringFirstNotEmpty(albumArtistFrames));
     }
 
     if (pTrackMetadata->getAlbumInfo().getTitle().isEmpty()) {
-        const TagLib::ID3v2::FrameList originalAlbumFrame(
+        // Use the original album title as a fallback
+        const TagLib::ID3v2::FrameList originalAlbumFrames(
                 tag.frameListMap()["TOAL"]);
-        pTrackMetadata->refAlbumInfo().setTitle(toQStringFirstNotEmpty(originalAlbumFrame));
+        if (!originalAlbumFrames.isEmpty()) {
+            pTrackMetadata->refAlbumInfo().setTitle(toQStringFirstNotEmpty(originalAlbumFrames));
+        }
     }
 
-    const TagLib::ID3v2::FrameList composerFrame(tag.frameListMap()["TCOM"]);
-    if (!composerFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setComposer(toQStringFirstNotEmpty(composerFrame));
+    const TagLib::ID3v2::FrameList composerFrames(tag.frameListMap()["TCOM"]);
+    if (!composerFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setComposer(toQStringFirstNotEmpty(composerFrames));
     }
 
     // Apple decided to store the Work in the traditional ID3v2 Content Group
@@ -1332,12 +1335,12 @@ void importTrackMetadataFromID3v2Tag(
         }
     }
 
-    const TagLib::ID3v2::FrameList trackNumberFrame(tag.frameListMap()["TRCK"]);
-    if (!trackNumberFrame.isEmpty()) {
+    const TagLib::ID3v2::FrameList trackNumberFrames(tag.frameListMap()["TRCK"]);
+    if (!trackNumberFrames.isEmpty()) {
         QString trackNumber;
         QString trackTotal;
         TrackNumbers::splitString(
-                toQStringFirstNotEmpty(trackNumberFrame),
+                toQStringFirstNotEmpty(trackNumberFrames),
                 &trackNumber,
                 &trackTotal);
         pTrackMetadata->refTrackInfo().setTrackNumber(trackNumber);
@@ -1345,12 +1348,12 @@ void importTrackMetadataFromID3v2Tag(
     }
 
 #if defined(__EXTRA_METADATA__)
-    const TagLib::ID3v2::FrameList discNumberFrame(tag.frameListMap()["TPOS"]);
-    if (!discNumberFrame.isEmpty()) {
+    const TagLib::ID3v2::FrameList discNumberFrames(tag.frameListMap()["TPOS"]);
+    if (!discNumberFrames.isEmpty()) {
         QString discNumber;
         QString discTotal;
         TrackNumbers::splitString(
-                toQStringFirstNotEmpty(discNumberFrame),
+                toQStringFirstNotEmpty(discNumberFrames),
                 &discNumber,
                 &discTotal);
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
@@ -1358,9 +1361,9 @@ void importTrackMetadataFromID3v2Tag(
     }
 #endif // __EXTRA_METADATA__
 
-    const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
-    if (!bpmFrame.isEmpty()) {
-        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrame));
+    const TagLib::ID3v2::FrameList bpmFrames(tag.frameListMap()["TBPM"]);
+    if (!bpmFrames.isEmpty()) {
+        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrames));
         double bpmValue = pTrackMetadata->getTrackInfo().getBpm().getValue();
         // Some software use (or used) to write decimated values without comma,
         // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
@@ -1402,9 +1405,9 @@ void importTrackMetadataFromID3v2Tag(
         }
     }
 
-    const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);
-    if (!keyFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setKey(toQStringFirstNotEmpty(keyFrame));
+    const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
+    if (!keyFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setKey(toQStringFirstNotEmpty(keyFrames));
     }
 
     QString trackGain =
@@ -1466,55 +1469,55 @@ void importTrackMetadataFromID3v2Tag(
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
-    const TagLib::ID3v2::FrameList conductorFrame(tag.frameListMap()["TPE3"]);
-    if (!conductorFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setConductor(toQStringFirstNotEmpty(conductorFrame));
+    const TagLib::ID3v2::FrameList conductorFrames(tag.frameListMap()["TPE3"]);
+    if (!conductorFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setConductor(toQStringFirstNotEmpty(conductorFrames));
     }
-    const TagLib::ID3v2::FrameList isrcFrame(tag.frameListMap()["TSRC"]);
-    if (!isrcFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setISRC(toQStringFirstNotEmpty(isrcFrame));
+    const TagLib::ID3v2::FrameList isrcFrames(tag.frameListMap()["TSRC"]);
+    if (!isrcFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setISRC(toQStringFirstNotEmpty(isrcFrames));
     }
-    const TagLib::ID3v2::FrameList languageFrame(tag.frameListMap()["TLAN"]);
-    if (!languageFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setLanguage(toQStringFirstNotEmpty(languageFrame));
+    const TagLib::ID3v2::FrameList languageFrames(tag.frameListMap()["TLAN"]);
+    if (!languageFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setLanguage(toQStringFirstNotEmpty(languageFrames));
     }
-    const TagLib::ID3v2::FrameList lyricistFrame(tag.frameListMap()["TEXT"]);
-    if (!lyricistFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setLyricist(toQStringFirstNotEmpty(lyricistFrame));
+    const TagLib::ID3v2::FrameList lyricistFrames(tag.frameListMap()["TEXT"]);
+    if (!lyricistFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setLyricist(toQStringFirstNotEmpty(lyricistFrames));
     }
     if (tag.header()->majorVersion() >= 4) {
-        const TagLib::ID3v2::FrameList moodFrame(tag.frameListMap()["TMOO"]);
-        if (!moodFrame.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setMood(toQStringFirstNotEmpty(moodFrame));
+        const TagLib::ID3v2::FrameList moodFrames(tag.frameListMap()["TMOO"]);
+        if (!moodFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setMood(toQStringFirstNotEmpty(moodFrames));
         }
     }
-    const TagLib::ID3v2::FrameList copyrightFrame(tag.frameListMap()["TCOP"]);
-    if (!copyrightFrame.isEmpty()) {
-        pTrackMetadata->refAlbumInfo().setCopyright(toQStringFirstNotEmpty(copyrightFrame));
+    const TagLib::ID3v2::FrameList copyrightFrames(tag.frameListMap()["TCOP"]);
+    if (!copyrightFrames.isEmpty()) {
+        pTrackMetadata->refAlbumInfo().setCopyright(toQStringFirstNotEmpty(copyrightFrames));
     }
-    const TagLib::ID3v2::FrameList licenseFrame(tag.frameListMap()["WCOP"]);
-    if (!licenseFrame.isEmpty()) {
-        pTrackMetadata->refAlbumInfo().setLicense(toQStringFirstNotEmpty(licenseFrame));
+    const TagLib::ID3v2::FrameList licenseFrames(tag.frameListMap()["WCOP"]);
+    if (!licenseFrames.isEmpty()) {
+        pTrackMetadata->refAlbumInfo().setLicense(toQStringFirstNotEmpty(licenseFrames));
     }
-    const TagLib::ID3v2::FrameList recordLabelFrame(tag.frameListMap()["TPUB"]);
-    if (!recordLabelFrame.isEmpty()) {
-        pTrackMetadata->refAlbumInfo().setRecordLabel(toQStringFirstNotEmpty(recordLabelFrame));
+    const TagLib::ID3v2::FrameList recordLabelFrames(tag.frameListMap()["TPUB"]);
+    if (!recordLabelFrames.isEmpty()) {
+        pTrackMetadata->refAlbumInfo().setRecordLabel(toQStringFirstNotEmpty(recordLabelFrames));
     }
-    const TagLib::ID3v2::FrameList remixerFrame(tag.frameListMap()["TPE4"]);
-    if (!remixerFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setRemixer(toQStringFirstNotEmpty(remixerFrame));
+    const TagLib::ID3v2::FrameList remixerFrames(tag.frameListMap()["TPE4"]);
+    if (!remixerFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setRemixer(toQStringFirstNotEmpty(remixerFrames));
     }
-    const TagLib::ID3v2::FrameList subtitleFrame(tag.frameListMap()["TIT3"]);
-    if (!subtitleFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setSubtitle(toQStringFirstNotEmpty(subtitleFrame));
+    const TagLib::ID3v2::FrameList subtitleFrames(tag.frameListMap()["TIT3"]);
+    if (!subtitleFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setSubtitle(toQStringFirstNotEmpty(subtitleFrames));
     }
-    const TagLib::ID3v2::FrameList encoderFrame(tag.frameListMap()["TENC"]);
-    if (!encoderFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setEncoder(toQStringFirstNotEmpty(encoderFrame));
+    const TagLib::ID3v2::FrameList encoderFrames(tag.frameListMap()["TENC"]);
+    if (!encoderFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setEncoder(toQStringFirstNotEmpty(encoderFrames));
     }
-    const TagLib::ID3v2::FrameList encoderSettingsFrame(tag.frameListMap()["TSSE"]);
-    if (!encoderSettingsFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrame));
+    const TagLib::ID3v2::FrameList encoderSettingsFrames(tag.frameListMap()["TSSE"]);
+    if (!encoderSettingsFrames.isEmpty()) {
+        pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrames));
     }
 #endif // __EXTRA_METADATA__
 }
