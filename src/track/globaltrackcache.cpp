@@ -36,17 +36,22 @@ TrackRef createTrackRef(const Track& track) {
 
 class EvictAndSaveFunctor {
   public:
-    explicit EvictAndSaveFunctor(GlobalTrackCacheEntryPointer cacheEntryPtr)
+    explicit EvictAndSaveFunctor(
+            GlobalTrackCacheEntryPointer cacheEntryPtr)
         : m_cacheEntryPtr(std::move(cacheEntryPtr)) {
     }
 
     void operator()(Track* plainPtr) {
+        Q_UNUSED(plainPtr); // only used in DEBUG_ASSERT
+        DEBUG_ASSERT(m_cacheEntryPtr);
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
         // functor and the owning reference counting object.
         // This is required to break a cycle reference from the weak pointer
         // inside the cache entry to the same reference counting object.
         GlobalTrackCache::evictAndSaveCachedTrack(std::move(m_cacheEntryPtr));
+        // Verify that this functor is only invoked once
+        DEBUG_ASSERT(!m_cacheEntryPtr);
     }
 
     const GlobalTrackCacheEntryPointer& getCacheEntryPointer() const {
