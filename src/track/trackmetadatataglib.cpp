@@ -1335,6 +1335,7 @@ void importTrackMetadataFromID3v2Tag(
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
     }
 
+#if defined(__EXTRA_METADATA__)
     const TagLib::ID3v2::FrameList discNumberFrame(tag.frameListMap()["TPOS"]);
     if (!discNumberFrame.isEmpty()) {
         QString discNumber;
@@ -1346,6 +1347,7 @@ void importTrackMetadataFromID3v2Tag(
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
     }
+#endif // __EXTRA_METADATA__
 
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
     if (!bpmFrame.isEmpty()) {
@@ -1407,6 +1409,7 @@ void importTrackMetadataFromID3v2Tag(
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
 
+#if defined(__EXTRA_METADATA__)
     QString albumGain =
             readFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_ALBUM_GAIN");
     if (!albumGain.isEmpty()) {
@@ -1504,6 +1507,7 @@ void importTrackMetadataFromID3v2Tag(
     if (!encoderSettingsFrame.isEmpty()) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrame));
     }
+#endif // __EXTRA_METADATA__
 }
 
 void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
@@ -1560,6 +1564,7 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
     }
 
+#if defined(__EXTRA_METADATA__)
     QString discNumber;
     if (readAPEItem(tag, "Disc", &discNumber) ||
             readAPEItem(tag, "DISC", &discNumber)) {
@@ -1571,6 +1576,7 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
     }
+#endif // __EXTRA_METADATA__
 
     QString bpm;
     if (readAPEItem(tag, "BPM", &bpm)) {
@@ -1586,6 +1592,7 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
 
+#if defined(__EXTRA_METADATA__)
     QString albumGain;
     if (readAPEItem(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
         parseTrackGain(pTrackMetadata, albumGain);
@@ -1684,6 +1691,7 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
             readAPEItem(tag, "ENCODERSETTINGS", &encoderSettings)) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(encoderSettings);
     }
+#endif // __EXTRA_METADATA__
 }
 
 void importTrackMetadataFromVorbisCommentTag(
@@ -1750,6 +1758,7 @@ void importTrackMetadataFromVorbisCommentTag(
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
     }
 
+#if defined(__EXTRA_METADATA__)
     QString discNumber;
     if (readXiphCommentField(tag, "DISCNUMBER", &discNumber)) {
         QString discTotal;
@@ -1766,6 +1775,7 @@ void importTrackMetadataFromVorbisCommentTag(
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
     }
+#endif // __EXTRA_METADATA__
 
     // The release date formatted according to ISO 8601. Might
     // be followed by a space character and arbitrary text.
@@ -1806,6 +1816,7 @@ void importTrackMetadataFromVorbisCommentTag(
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
 
+#if defined(__EXTRA_METADATA__)
     QString albumGain;
     if (readXiphCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
         parseAlbumGain(pTrackMetadata, albumGain);
@@ -1892,6 +1903,7 @@ void importTrackMetadataFromVorbisCommentTag(
     if (readXiphCommentField(tag, "ENCODERSETTINGS", &encoderSettings)) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(encoderSettings);
     }
+#endif // __EXTRA_METADATA__
 }
 
 void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP4::Tag& tag) {
@@ -1942,6 +1954,7 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setTrackTotal(trackTotal);
     }
 
+#if defined(__EXTRA_METADATA__)
     // Read disc number/total pair
     if (getItemListMap(tag).contains("disk")) {
         const TagLib::MP4::Item trknItem = getItemListMap(tag)["disk"];
@@ -1953,6 +1966,7 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setDiscNumber(discNumber);
         pTrackMetadata->refTrackInfo().setDiscTotal(discTotal);
     }
+#endif // __EXTRA_METADATA__
 
     QString bpm;
     if (readMP4Atom(tag, "----:com.apple.iTunes:BPM", &bpm)) {
@@ -1986,6 +2000,7 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
 
+#if defined(__EXTRA_METADATA__)
     QString albumGain;
     if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_album_gain", &albumGain)) {
         parseAlbumGain(pTrackMetadata, albumGain);
@@ -2068,6 +2083,7 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     if (readMP4Atom(tag, "\251too", &encoder)) {
         pTrackMetadata->refTrackInfo().setEncoder(encoder);
     }
+#endif // __EXTRA_METADATA__
 }
 
 void importTrackMetadataFromRIFFTag(TrackMetadata* pTrackMetadata, const TagLib::RIFF::Info::Tag& tag) {
@@ -2241,7 +2257,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // TODO(XXX): The following tags have been added later and are currently
     // not stored in the Mixxx library. Only write fields that have non-null
     // values to preserve any existing file tags instead of removing them!
-
+#if defined(__EXTRA_METADATA__)
     if (hasAlbumGain(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
@@ -2365,6 +2381,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             pTag,
             "TSSE",
             trackMetadata.getTrackInfo().getEncoderSettings());
+#endif // __EXTRA_METADATA__
 
     return true;
 }
@@ -2415,7 +2432,7 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
     // TODO(XXX): The following tags have been added later and are currently
     // not stored in the Mixxx library. Only write fields that have non-null
     // values to preserve any existing file tags instead of removing them!
-
+#if defined(__EXTRA_METADATA__)
     auto discNumbers = TrackNumbers::joinStrings(
             trackMetadata.getTrackInfo().getDiscNumber(),
             trackMetadata.getTrackInfo().getDiscTotal());
@@ -2509,6 +2526,7 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
         writeAPEItem(pTag, "EncoderSettings",
                 toTagLibString(trackMetadata.getTrackInfo().getEncoderSettings()));
     }
+#endif // __EXTRA_METADATA__
 
     return true;
 }
@@ -2597,7 +2615,7 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     // TODO(XXX): The following tags have been added later and are currently
     // not stored in the Mixxx library. Only write fields that have non-null
     // values to preserve any existing file tags instead of removing them!
-
+#if defined(__EXTRA_METADATA__)
     if (hasAlbumGain(trackMetadata)) {
         writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_GAIN",
                 toTagLibString(formatAlbumGain(trackMetadata)));
@@ -2693,6 +2711,7 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         writeXiphCommentField(pTag, "DISCTOTAL", discTotal);   // recommended field
         updateXiphCommentField(pTag, "TOTALDISCS", discTotal); // alternative field
     }
+#endif // __EXTRA_METADATA__
 
     return true;
 }
@@ -2765,7 +2784,7 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
     // TODO(XXX): The following tags have been added later and are currently
     // not stored in the Mixxx library. Only write fields that have non-null
     // values to preserve any existing file tags instead of removing them!
-
+#if defined(__EXTRA_METADATA__)
     // Write disc number/total pair
     QString discNumberText;
     QString discTotalText;
@@ -2876,6 +2895,7 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
     if (!trackMetadata.getTrackInfo().getMovement().isNull()) {
         writeMP4Atom(pTag, "\251mvn", toTagLibString(trackMetadata.getTrackInfo().getMovement()));
     }
+#endif // __EXTRA_METADATA__
 
     return true;
 }
