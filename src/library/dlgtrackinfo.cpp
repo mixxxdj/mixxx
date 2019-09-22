@@ -305,10 +305,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // them to the user as 1-indexex. Add 1 here. rryan 9/2010
         int iHotcue = pCue->getHotCue() + 1;
         QString hotcue = "";
-        if (iHotcue != -1) {
-            hotcue = QString("%1").arg(iHotcue);
-        }
-
+        hotcue = QString("%1").arg(iHotcue);
         int position = pCue->getPosition();
         double totalSeconds;
         if (position == -1)
@@ -377,6 +374,7 @@ void DlgTrackInfo::saveTrack() {
 
     m_pLoadedTrack->setKeys(m_keysClone);
 
+    bool loadCueFound = false; // TODO: Rename with Cue::LOAD
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
@@ -395,13 +393,27 @@ void DlgTrackInfo::saveTrack() {
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert<int>()) {
-            int iTableHotcue = vHotcue.toInt();
-            // The GUI shows hotcues as 1-indexed, but they are actually
-            // 0-indexed, so subtract 1
-            pCue->setHotCue(iTableHotcue - 1);
+        bool ok;
+
+
+        int iTableHotcue = vHotcue.toInt(&ok);
+        if (ok) {
+            if (iTableHotcue == 0 && !loadCueFound) {
+                // adopt the first HotCue 0 as LOAD Cue = THE CUE
+                pCue->setHotCue(-1);
+                pCue->setType(Cue::LOAD);
+                loadCueFound = true;
+            } else {
+                // The GUI shows hotcues as 1-indexed, but they are actually
+                // 0-indexed, so subtract 1
+                pCue->setHotCue(iTableHotcue - 1);
+                pCue->setType(Cue::CUE);
+            }
         } else {
-            pCue->setHotCue(-1);
+            // Default to HotCue -1, a valid Cue point without a hot cue button assigned.
+            iTableHotcue = -1;
+            pCue->setHotCue(iTableHotcue - 1);
+            pCue->setType(Cue::CUE);
         }
 
         QString label = labelItem->data(Qt::DisplayRole).toString();
