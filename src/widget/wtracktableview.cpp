@@ -494,7 +494,7 @@ void WTrackTableView::createActions(
         m_updateInExternalTrackCollections += updateInExternalTrackCollection;
         auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
         connect(updateInExternalTrackCollection.action, &QAction::triggered,
-                [this, externalTrackCollectionPtr](){
+                [=](){
                     slotUpdateExternalTrackCollection(externalTrackCollectionPtr);});
     }
 
