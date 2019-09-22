@@ -29,7 +29,7 @@ class CueControlTest : public BaseSignalPathTest {
 
     TrackPointer createTestTrack() const {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        return std::make_unique<Track>(kTrackLocationTest, SecurityTokenPointer());
+        return Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
     }
 
     void loadTrack(TrackPointer pTrack) {
