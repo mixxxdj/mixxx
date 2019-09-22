@@ -1280,15 +1280,13 @@ void importTrackMetadataFromID3v2Tag(
     // frames.
     // https://discussions.apple.com/thread/7900430
     // http://blog.jthink.net/2016/11/the-reason-why-is-grouping-field-no.html
-    const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
-    if (appleGroupingFrames.isEmpty()) {
-        // No Apple grouping frame found -> Use the traditional mapping
-        const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
-        if (!traditionalGroupingFrames.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(traditionalGroupingFrames));
+    if (tag.frameListMap().contains("GRP1")) {
+        // New grouping/work mapping
+        const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
+        if (!appleGroupingFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(appleGroupingFrames));
         }
-    } else {
-        pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(appleGroupingFrames));
+#if defined(__EXTRA_METADATA__)
         const TagLib::ID3v2::FrameList workFrames = tag.frameListMap()["TIT1"];
         if (!workFrames.isEmpty()) {
             pTrackMetadata->refTrackInfo().setWork(toQStringFirstNotEmpty(workFrames));
@@ -1296,6 +1294,13 @@ void importTrackMetadataFromID3v2Tag(
         const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
         if (!movementFrames.isEmpty()) {
             pTrackMetadata->refTrackInfo().setMovement(toQStringFirstNotEmpty(movementFrames));
+        }
+#endif // __EXTRA_METADATA__
+    } else {
+        // No Apple grouping frame found -> Use the traditional mapping
+        const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
+        if (!traditionalGroupingFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(traditionalGroupingFrames));
         }
     }
 
@@ -2210,27 +2215,35 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // GRP1 frame instead of using TIT1.
     // See also: importTrackMetadataFromID3v2Tag()
     if (trackMetadata.getTrackInfo().getWork().isNull() &&
-            pTag->frameListMap()["GRP1"].isEmpty()) {
-        // Traditional mapping
+            pTag->frameListMap().contains("GRP1")) {
+        // Stick to traditional mapping if the new GRP1
+        // frame does not already exist in the file.
         writeID3v2TextIdentificationFrame(
                 pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getGrouping());
     } else {
-        // New mapping
+        // New grouping/work mapping
         writeID3v2TextIdentificationFrame(
                 pTag,
                 "GRP1",
                 trackMetadata.getTrackInfo().getGrouping());
+#if defined(__EXTRA_METADATA__)
         writeID3v2TextIdentificationFrameStringIfNotNull(
                 pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getWork());
+#else
+        DEBUG_ASSERT(!pTag->frameListMap().contains("TIT1"));
+        DEBUG_ASSERT(trackMetadata.getTrackInfo().getWork().isNull());
+#endif // __EXTRA_METADATA__
     }
+#if defined(__EXTRA_METADATA__)
     writeID3v2TextIdentificationFrameStringIfNotNull(
             pTag,
             "MVNM",
             trackMetadata.getTrackInfo().getMovement());
+#endif // __EXTRA_METADATA__
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
