@@ -389,13 +389,10 @@ void DlgTrackInfo::saveTrack() {
         if (!pCue) {
             continue;
         }
-
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
         bool ok;
-
-
         int iTableHotcue = vHotcue.toInt(&ok);
         if (ok) {
             if (iTableHotcue == 0 && !loadCueFound) {
