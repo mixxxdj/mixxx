@@ -7,6 +7,10 @@
 #include "util/logger.h"
 #include "util/memory.h"
 
+///////////////////////////////////////////////////////////////////////
+// The common source for all tag mappings is MusicBrainz Picard:
+// https://picard.musicbrainz.org/docs/mappings/
+///////////////////////////////////////////////////////////////////////
 
 // TagLib has support for has<TagType>() style functions since version 1.9
 #define TAGLIB_HAS_TAG_CHECK \
