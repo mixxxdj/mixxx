@@ -321,7 +321,7 @@ void TrackDAO::databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedT
         // The (old)) location of the (re)moved track must be known!
         DEBUG_ASSERT(!removedTrackRef.getLocation().isEmpty());
         // The (new) location of the changed track might be empty.
-        DEBUG_ASSERT(changedTrackRef.getLocation() != changedTrackRef.getLocation());
+        DEBUG_ASSERT(removedTrackRef.getLocation() != changedTrackRef.getLocation());
         changedTrackIds.insert(changedTrackRef.getId());
         // The ids might be identical if the same track has been only been
         // relocated. In this case the track has not been removed.
