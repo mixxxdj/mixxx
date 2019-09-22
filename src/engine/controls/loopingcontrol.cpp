@@ -119,6 +119,7 @@ LoopingControl::LoopingControl(QString group,
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
+    m_pCOReverse = ControlObject::getControl(group, "reverse");
 
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
     // Activates a beatloop of a specified number of beats.
@@ -1067,6 +1068,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat);
 
         if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
+            double beatLength = nextBeat - prevBeat;
+            double loopLength = beatLength * beats;
+
             double closestBeat = pBeats->findClosestBeat(currentSample);
             if (beats >= 1.0) {
                 newloopSamples.start = closestBeat;
@@ -1078,30 +1082,25 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 //
                 // If we press 1/2 beatloop we want loop from 50% to 100%,
                 // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                double beatLength = nextBeat - prevBeat;
-                double beatPos = currentSample - prevBeat;
+                double samplesSinceLastBeat = currentSample - prevBeat;
 
-                // find the two closest beat fractions and place the new loop start to the closer one
-                double fractionBeatLength = beatLength * beats;
-                double previousFractionBeat = prevBeat + (floor(beatPos / fractionBeatLength)) * fractionBeatLength;
-                double nextFractionBeat = prevBeat + (floor(beatPos / fractionBeatLength) + 1) * fractionBeatLength;
+                // find the previous beat fraction and check if the current position is closer to this or the next one
+                // place the new loop start to the closer one
+                double previousFractionBeat = prevBeat + floor(samplesSinceLastBeat / beatLength) * beatLength;
+                double samplesSinceLastFractionBeat = currentSample - previousFractionBeat;
 
-                if (abs(previousFractionBeat - currentSample) <= abs(nextFractionBeat - currentSample)) {
+                if (samplesSinceLastFractionBeat <= (loopLength / 2.0)) {
                     newloopSamples.start = previousFractionBeat;
                 } else {
-                    newloopSamples.start = nextFractionBeat;
-                }
-
-                // If running reverse, move the loop one fractional beat to the left.
-                // Thus, the loop end is (time-wise) in front of the current position.
-                //
-                // TODO: There must be a better way of checking if we are running reverse. Getting the "old_reverse" from the EngineBuffer somehow seems wrong.
-                // Furthermore, it does not work when we are not playing and the reverse button is held.
-                if (getEngineBuffer()->isReverse()) {
-                    newloopSamples.start -= fractionBeatLength;
+                    newloopSamples.start = previousFractionBeat + loopLength;
                 }
             }
-
+            // If running reverse, move the loop one loop size to the left.
+            // Thus, the loops end will be closest to the current position
+            bool reverse = m_pCOReverse->toBool();
+            if (reverse) {
+                newloopSamples.start -= loopLength;
+            }
         } else {
             newloopSamples.start = currentSample;
         }

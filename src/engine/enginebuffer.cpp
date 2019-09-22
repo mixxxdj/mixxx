@@ -181,6 +181,11 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     // beats.
     QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
 
+    // Rate Controller must be created before Looping Controller for the Reverse Button to be created
+    m_pRateControl = new RateControl(group, pConfig);
+    // Add the Rate Controller
+    addControl(m_pRateControl);
+
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
@@ -198,9 +203,6 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     addControl(m_pVinylControlControl);
 #endif
 
-    m_pRateControl = new RateControl(group, pConfig);
-    // Add the Rate Controller
-    addControl(m_pRateControl);
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(group, pConfig);

@@ -129,6 +129,7 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
     ControlObject* m_pSlipEnabled;
+    ControlObject* m_pCOReverse;
     ControlObject* m_pPlayButton;
 
     bool m_bLoopingEnabled;
