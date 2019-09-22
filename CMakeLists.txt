@@ -1531,7 +1531,14 @@ if(NOT OPTIMIZE STREQUAL "off")
 
     # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
     # In general, you should pick /O2 over /Ox
-    target_compile_options(mixxx-lib PUBLIC "/O2")
+    target_compile_options(mixxx-lib PUBLIC $<$<NOT:$<CONFIG:Debug>>:/O2>)
+
+    # Remove /RTC1 flag (conflicts with /O2)
+    string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+
+    # Re-add /RTC1 for Debug builds
+    target_compile_options(mixxx-lib PRIVATE $<$<CONFIG:Debug>:/RTC1>)
+
 
     if(OPTIMIZE STREQUAL "fastbuild")
       # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
