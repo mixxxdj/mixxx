@@ -1,6 +1,5 @@
 #include <QtDebug>
 #include <QDateTime>
-#include <QMenu>
 
 #include "library/setlogfeature.h"
 

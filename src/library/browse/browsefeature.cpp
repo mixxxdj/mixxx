@@ -8,7 +8,6 @@
 #include <QFileInfo>
 #include <QStandardPaths>
 #include <QAction>
-#include <QMenu>
 #include <QPushButton>
 
 #include "track/track.h"
