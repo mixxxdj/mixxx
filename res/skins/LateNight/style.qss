@@ -1625,6 +1625,7 @@ QTableView::indicator {/*
       border: 1px solid #888;
     }
 
+
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
@@ -1669,6 +1670,10 @@ QTableView::indicator {/*
   border: 0px;
   border-radius: 2px; */
   }
+    /* remove OS focus indicator from BPM cell */
+    WLibrary QCheckBox {
+      outline: none;
+    }
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {/*
@@ -1982,10 +1987,55 @@ QTreeView::branch:open:has-children:has-siblings:selected {
     background-color: #151515;
   }
 
-QToolTip {
+QToolTip,
+QMenu {
   background-color: #0f0f0f;
   color: #cfb32c;
   padding: 3px;
-  border: 1px solid #333;
+  border: 1px solid #888;
   border-radius: 2px;
-}
+  }
+  QMenu::separator {
+    height: 0px;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #222;
+    margin: 4px 1px 4px 1px;
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+  /* actually this only needs to be set for QCheckBox */
+  QMenu::item,
+  QMenu QCheckBox {
+    color: #cfb32c;
+    border: none;
+    background: none;
+    margin: 0px;
+  }
+  QMenu::item {
+    padding: 5px 10px 5px 17px;
+  }
+  QMenu QCheckBox {
+    padding: 2px 10px 2px 3px;
+  }
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover  /* mouse hover */ {
+    background-color: #5E4507;
+    color: white;
+    /* remove OS focus indicator */
+    outline: none;
+  }
+  QMenu QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+    background-color: #0f0f0f;
+    border: 1px solid #333;
+    border-radius: 1px;
+    /* remove OS focus indicator */
+    outline: none;
+    }
+  QMenu QCheckBox::indicator:checked {
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
+    border: 1px solid #0f0f0f;
+    }

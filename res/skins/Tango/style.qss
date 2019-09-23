@@ -2083,11 +2083,56 @@ WTrackProperty#SamplerTitle_mini {
  ######  Misc  ##################################################
 ##############################################################*/
 
-QToolTip {
+QToolTip,
+QMenu {
   background-color: #1e1e1e;
   color: #ccc;
-  border: 1px solid #333;
-}
+  padding: 2px;
+  border: 1px solid #888;
+  border-radius: 0px;
+  }
+  QMenu::separator {
+    height: 0px;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #222;
+    margin: 1px 4px 1px 4px;
+  }
+  /* actually this only needs to be set for QCheckBox */
+  QMenu::item,
+  QMenu QCheckBox {
+    color: #ccc;
+    border: none;
+    background: none;
+    margin: 0px;
+  }
+  QMenu::item {
+    padding: 5px 10px 5px 17px;
+  }
+  QMenu QCheckBox {
+    padding: 2px 10px 2px 3px;
+  }
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover  /* mouse hover */ {
+    background-color: #555;
+    color: white;
+    /* remove OS focus indicator */
+    outline: none;
+  }
+  QMenu QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+    background-color: #0f0f0f;
+    border: 1px solid #333;
+    border-radius: 1px;
+    /* remove OS focus indicator */
+    outline: none;
+    }
+  QMenu QCheckBox::indicator:checked {
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
+    border: 1px solid #1e1e1e;
+    }
 
 #TEST {
   background-color: #451278;
@@ -2540,6 +2585,10 @@ WLibrary QPushButton {
       lose their style & icons
     border: 0px;
     border-radius: 2px; */
+    }
+    /* remove OS focus indicator from BPM cell */
+    WLibrary QCheckBox {
+      outline: none;
     }
 
   /* Button in library "Preview" column */
