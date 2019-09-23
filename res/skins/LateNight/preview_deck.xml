@@ -10,16 +10,17 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <!-- Preview Deck Column 1 Row 1 -->
+
+          <!-- PreviewDeck left: Play, text, overview -->
           <WidgetGroup>
-            <ObjectName>PreviewColumnOne</ObjectName>
+            <ObjectName>PreviewDeckLeftPart</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>,40</MinimumSize>
             <Children>
-              <!-- Row 1 -->
+              <!-- Row 1 PreviewTitleEjectRow -->
               <WidgetGroup>
-                <ObjectName>PreviewTitleEject</ObjectName>
+                <ObjectName>PreviewTitleEjectRow</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -36,21 +37,22 @@
                   </Label>
 
                   <WidgetGroup>
-                    <ObjectName>PreviewDeckTextRow</ObjectName>
+                    <ObjectName>PreviewDeckText</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>i,min</SizePolicy>
                     <Children>
                       <Text>
+                        <ObjectName>PreviewTitle</ObjectName>
                         <TooltipId>text</TooltipId>
                         <SizePolicy>me,min</SizePolicy>
-                        <ObjectName>PreviewTitle</ObjectName>
                         <Group>[PreviewDeck1]</Group>
                         <Elide>right</Elide>
                       </Text>
                       <Number>
+                        <ObjectName>PreviewBPM</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
                         <Group>[PreviewDeck1]</Group>
-                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <!--CSS alignments not respected, bug lp:605530 -->
                         <Alignment>left</Alignment>
                         <Connection>
                           <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
@@ -62,8 +64,9 @@
                       </Number>
                     </Children>
                   </WidgetGroup>
+
                   <WidgetGroup>
-                    <ObjectName>AlignRightCenter</ObjectName>
+                    <ObjectName>PreviewEjectButton</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
@@ -83,9 +86,9 @@
                     </Children>
                   </WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Row 1 PreviewTitleEjectRow -->
 
-              <!-- Row 2 -->
+              <!-- Row 2 PreviewPlayOverview -->
               <WidgetGroup>
                 <ObjectName>PreviewPlayOverview</ObjectName>
                 <Layout>horizontal</Layout>
@@ -125,7 +128,7 @@
                     <TooltipId>waveform_overview</TooltipId>
                     <Size>0me,20me</Size>
                     <Group>[PreviewDeck1]</Group>
-                    <BgColor></BgColor>
+                    <BgColor>#0f0f0f</BgColor>
                     <BgColor>#FFFFFF</BgColor>
                     <SignalColor>#FF8000</SignalColor>
                     <SignalHighColor>#F0EBD1</SignalHighColor>
@@ -151,15 +154,17 @@
                     </Connection>
                   </Overview>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Row 2 PreviewPlayOverview -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- PreviewDeck left: Play, text, overview -->
 
-          <!-- Preview Deck Column 2 -->
+          <!-- PreviewDeck right: VU, pregain -->
           <WidgetGroup>
+            <ObjectName>PreviewDeckRightPart</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
+                <ObjectName>PreviewVuMeter</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -198,9 +203,10 @@
                 </Connection>
               </SliderComposed>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- PreviewDeck right: VU, pregain -->
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- PreviewDeck -->
 
     </Children>
     <Connection>

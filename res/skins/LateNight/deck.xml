@@ -8,8 +8,7 @@
 
       <Template src="skin:rate_controls.xml"/>
 
-      <WidgetGroup>  <!-- Deck Channel
-        <ObjectName>Deck<Variable name="channum" /></ObjectName> -->
+      <WidgetGroup>  <!-- Deck Channel -->
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>

@@ -251,7 +251,7 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <WidgetStack currentpage="[EffectRack1_EffectUnit1],show_parameters" persist="true"><!-- EffectUnit 1 -->
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- EffectUnit 1 mini -->
@@ -283,7 +283,7 @@
 
       <!-- EffectUnit 2 -->
       <WidgetStack currentpage="[EffectRack1_EffectUnit2],show_parameters" persist="true">
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- EffectUnit 2 mini -->

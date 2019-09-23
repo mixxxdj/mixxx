@@ -30,13 +30,13 @@
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
 
-              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,2f</Size></WidgetGroup>
 
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
 
-              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,2f</Size></WidgetGroup>
 
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">3</SetVariable>

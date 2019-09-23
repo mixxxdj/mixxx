@@ -27,9 +27,16 @@
         </Connection>
       </WidgetGroup>
 
-      <SingletonContainer>
-        <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
-      </SingletonContainer>
+      <WidgetGroup>
+        <ObjectName>DeckOverviewContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
 
       <!-- Deck controls + Star rating -->
       <WidgetGroup>

@@ -1,7 +1,7 @@
 <Template>
   <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>SamplerDeck</ObjectName>
+    <ObjectName>SamplerDeckSmall</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>

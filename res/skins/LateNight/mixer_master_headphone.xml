@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>Border58</ObjectName>
+    <ObjectName>MasterHeadphoneMixerContainer</ObjectName>
     <SizePolicy>max,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
@@ -18,8 +18,6 @@
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-
-              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
               <!-- Master knobs
                   Labels are separate so knobs are spaced equally -->
@@ -78,6 +76,33 @@
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
+
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="Color">orange</SetVariable>
+                    <SetVariable name="TooltipId">booth_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">booth_gain</SetVariable>
+                  </Template>
+
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Alignment>right</Alignment>
+                    <Text>Booth</Text>
+                  </Label>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],booth_enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
               <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
 
               <WidgetGroup><!-- FX buttons 1/2 -->
@@ -132,33 +157,6 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /FX buttons 3/4 -->
-
-              <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="Color">orange</SetVariable>
-                    <SetVariable name="TooltipId">booth_gain</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">booth_gain</SetVariable>
-                  </Template>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>Booth</Text>
-                  </Label>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Master],booth_enabled</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>MasterVuMeter_4Decks</ObjectName>
@@ -235,7 +233,7 @@
 
           <WidgetGroup>
             <ObjectName>MasterHeadphoneDivider</ObjectName>
-            <Size>,11f</Size>
+            <Size>,2f</Size>
           </WidgetGroup>
 
           <WidgetGroup>

@@ -11,7 +11,7 @@
         <SetVariable name="Size">28f,22f</SetVariable>
         <SetVariable name="state_0_text">KEY</SetVariable>
         <SetVariable name="state_1_text">KEY</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_adjust_set_default</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
       </Template>
 

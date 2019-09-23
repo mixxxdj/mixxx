@@ -23,7 +23,10 @@
         <BackPath>style/background_tile.png</BackPath>
         <Children>
 
-          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>Spacer1e</ObjectName>
+            <Size>0min,1me</Size>
+          </WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -36,7 +39,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,1me</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>2f,1me</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -49,7 +52,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,1me</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>2f,1me</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>

@@ -3,8 +3,6 @@
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
-
-      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
       <!--
       **********************************************
       Library / Preview Deck / Search / Tree view

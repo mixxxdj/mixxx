@@ -8,18 +8,19 @@
       <!-- SamplerMainControls -->
       <WidgetGroup>
         <ObjectName>SamplerMainControls</ObjectName>
+        <BackPath>style/background_tile.png</BackPath>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>SamplerText</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>i,min</SizePolicy>
+            <SizePolicy>i,me</SizePolicy>
             <Children>
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
                 <ObjectName>SamplerTitle</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Property>title</Property>
                 <Group><Variable name="group"/></Group>
                 <Elide>right</Elide>
@@ -71,7 +72,7 @@
                 <TooltipId>waveform_overview</TooltipId>
                 <SizePolicy>me,min</SizePolicy>
                 <Group><Variable name="group"/></Group>
-                <BgColor></BgColor>
+                <BgColor>#0f0f0f</BgColor>
                 <SignalHighColor></SignalHighColor>
                 <SignalMidColor></SignalMidColor>
                 <SignalLowColor></SignalLowColor>
@@ -180,7 +181,6 @@
           <!-- Third Row: SamplerButtons -->
           <WidgetGroup>
             <ObjectName>SamplerButtons</ObjectName>
-            <BackPath>style/background_tile.png</BackPath>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
@@ -251,13 +251,6 @@
                   </Template>
                 </Children>
               </WidgetGroup><!-- /SamplerPfl -->
-
-              <!-- fixed spacer since right border won't show up
-                  if BackPath is defined in xml -->
-              <WidgetGroup>
-                <ObjectName>Spacer58</ObjectName>
-                <Size>1f,1me</Size>
-              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- /SamplerButtons -->

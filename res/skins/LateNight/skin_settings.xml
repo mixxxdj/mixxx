@@ -362,7 +362,7 @@ Description:
 
               <!-- Cover Art -->
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">Cover Art in Library</SetVariable>
+                <SetVariable name="text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Library],show_coverart</SetVariable>
               </Template>
 
