@@ -1,6 +1,6 @@
 #include <QtDebug>
-#include <QMenu>
 #include <QDateTime>
+#include <QMenu>
 
 #include "library/setlogfeature.h"
 
@@ -12,6 +12,7 @@
 #include "mixer/playermanager.h"
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              UserSettingsPointer pConfig,
@@ -19,6 +20,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
+          m_pSidebarWidget(NULL),
           m_icon(":/images/library/ic_library_history.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
@@ -68,6 +70,10 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
 
 }
 
+void SetlogFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
     Q_UNUSED(globalPos);
     m_lastRightClickedIndex = QModelIndex();
@@ -80,11 +86,19 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    // Parent to default NULL if there's no sidebar widget.
+    m_pMenu = new QMenu(m_pSidebarWidget);
+
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
 
+    m_pMenu->clear();
+    qDebug()<<"     m_pMenu->clear()";
+    qDebug()<<"";
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
@@ -93,30 +107,29 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-
-    //Create the right-click menu
-    QMenu menu(NULL);
     //menu.addAction(m_pCreatePlaylistAction);
     //menu.addSeparator();
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addAction(m_pRenamePlaylistAction);
+    m_pMenu->addAction(m_pAddToAutoDJAction);
+    m_pMenu->addAction(m_pAddToAutoDJTopAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pRenamePlaylistAction);
     if (playlistId != m_playlistId) {
         // Todays playlist should not be locked or deleted
-        menu.addAction(m_pDeletePlaylistAction);
-        menu.addAction(m_pLockPlaylistAction);
+        m_pMenu->addAction(m_pDeletePlaylistAction);
+        m_pMenu->addAction(m_pLockPlaylistAction);
     }
     if (index.row() > 0) {
         // The very first setlog cannot be joint
-        menu.addAction(m_pJoinWithPreviousAction);
+        m_pMenu->addAction(m_pJoinWithPreviousAction);
     }
     if (playlistId == m_playlistId && m_playlistDao.tracksInPlaylist(m_playlistId) != 0) {
         // Todays playlists can change !
-        menu.addAction(m_pGetNewPlaylist);
+        m_pMenu->addAction(m_pGetNewPlaylist);
     }
-    menu.addSeparator();
-    menu.addAction(m_pExportPlaylistAction);
-    menu.exec(globalPos);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pExportPlaylistAction);
+
+    m_pMenu->popup(globalPos);
 }
 
 QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {

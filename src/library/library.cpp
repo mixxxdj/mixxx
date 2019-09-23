@@ -16,7 +16,6 @@
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
-#include "library/browse/browsefeature.h"
 #include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/banshee/bansheefeature.h"
@@ -73,6 +72,8 @@ Library::Library(
       m_pLibraryControl(new LibraryControl(this)),
       m_pMixxxLibraryFeature(nullptr),
       m_pPlaylistFeature(nullptr),
+      m_pSetlogFeature(nullptr),
+      m_pBrowseFeature(nullptr),
       m_pCrateFeature(nullptr),
       m_pAnalysisFeature(nullptr),
       m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
@@ -113,18 +114,18 @@ Library::Library(
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
-    BrowseFeature* browseFeature = new BrowseFeature(
+    m_pBrowseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, pRecordingManager);
-    connect(browseFeature, SIGNAL(scanLibrary()),
+    connect(m_pBrowseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
-            browseFeature, SLOT(slotLibraryScanStarted()));
+            m_pBrowseFeature, SLOT(slotLibraryScanStarted()));
     connect(&m_scanner, SIGNAL(scanFinished()),
-            browseFeature, SLOT(slotLibraryScanFinished()));
-
-    addFeature(browseFeature);
+            m_pBrowseFeature, SLOT(slotLibraryScanFinished()));
+    addFeature(m_pBrowseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    m_pSetlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
+    addFeature(m_pSetlogFeature);
 
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
     connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
@@ -240,6 +241,8 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this, SIGNAL(setTrackTableFont(QFont)),
             pSidebarWidget, SLOT(slotSetFont(QFont)));
+    m_pSetlogFeature->bindSidebarWidget(pSidebarWidget);
+    m_pBrowseFeature->bindSidebarWidget(pSidebarWidget);
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,

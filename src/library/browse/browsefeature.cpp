@@ -17,6 +17,7 @@
 #include "library/trackcollection.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "util/sandbox.h"
 #include "util/memory.h"
@@ -33,6 +34,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection),
           m_pLastRightClickedItem(NULL),
+          m_pSidebarWidget(NULL),
           m_icon(":/images/library/ic_library_computer.svg") {
     connect(this, SIGNAL(requestAddDir(QString)),
             parent, SLOT(slotRequestAddDir(QString)));
@@ -216,6 +218,10 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView("BROWSEHOME", edit);
 }
 
+void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
     emit disableSearch();
@@ -252,6 +258,11 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    // Parent to default NULL if there's no sidebar widget.
+    m_pMenu = new QMenu(m_pSidebarWidget);
+
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;
 
@@ -265,23 +276,27 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         return;
     }
 
-    QMenu menu(NULL);
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
-        menu.addAction(m_pRemoveQuickLinkAction);
-        menu.exec(globalPos);
+        m_pMenu->addAction(m_pRemoveQuickLinkAction);
+        m_pMenu->exec(globalPos);
         onLazyChildExpandation(index);
         return;
     }
 
     foreach (const QString& str, m_quickLinkList) {
         if (str == path) {
-             return;
+            // if path is a QuickLink:
+            // show remove action
+            m_pMenu->addAction(m_pRemoveQuickLinkAction);
+            m_pMenu->exec(globalPos);
+            onLazyChildExpandation(index);
+            return;
         }
      }
 
-     menu.addAction(m_pAddQuickLinkAction);
-     menu.addAction(m_pAddtoLibraryAction);
-     menu.exec(globalPos);
+     m_pMenu->addAction(m_pAddQuickLinkAction);
+     m_pMenu->addAction(m_pAddtoLibraryAction);
+     m_pMenu->popup(globalPos);
      onLazyChildExpandation(index);
 }
 

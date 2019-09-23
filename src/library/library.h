@@ -18,6 +18,7 @@
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
+#include "library/browse/browsefeature.h"
 #include "library/scanner/libraryscanner.h"
 #include "util/db/dbconnectionpool.h"
 
@@ -153,6 +154,8 @@ class Library: public QObject,
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    SetlogFeature* m_pSetlogFeature;
+    BrowseFeature* m_pBrowseFeature;
     AnalysisFeature* m_pAnalysisFeature;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;

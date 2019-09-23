@@ -12,6 +12,7 @@
 #include <QModelIndex>
 #include <QPoint>
 #include <QString>
+#include <QMenu>
 
 #include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
@@ -19,6 +20,8 @@
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 
+// Supress the tooltips for root items
+// "QuickLinks", "::mixxx_device_node::"
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
 
@@ -38,6 +41,7 @@ class BrowseFeature : public LibraryFeature {
 
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -75,6 +79,8 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
+    WLibrarySidebar* m_pSidebarWidget;
+    QMenu *m_pMenu;
     QIcon m_icon;
 };
 
