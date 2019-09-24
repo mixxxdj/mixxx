@@ -172,7 +172,7 @@ private:
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveCachedTrack(Track* plainPtr) noexcept = 0;
+    virtual void saveEvictedTrack(Track* pEvictedTrack) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheSaver() {}
@@ -234,7 +234,7 @@ private:
 
     void deactivate();
 
-    void saveEvictedTrack(Track* plainPtr) const;
+    void saveEvictedTrack(Track* pEvictedTrack) const;
 
     // Managed by GlobalTrackCacheLocker
     mutable QMutex m_mutex;
