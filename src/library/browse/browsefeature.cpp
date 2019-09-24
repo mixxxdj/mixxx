@@ -33,7 +33,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection),
           m_pLastRightClickedItem(NULL),
-          m_pSidebarWidget(NULL),
+          m_pSidebarWidget(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
     connect(this, SIGNAL(requestAddDir(QString)),
             parent, SLOT(slotRequestAddDir(QString)));
@@ -261,6 +261,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     // order to make it stylable with skin stylesheet rather than ugly OS styling.
     // Parent to default NULL if there's no sidebar widget.
     m_pMenu = new QMenu(m_pSidebarWidget);
+    m_pMenu->clear();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;

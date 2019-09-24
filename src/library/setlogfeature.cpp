@@ -89,15 +89,12 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     // order to make it stylable with skin stylesheet rather than ugly OS styling.
     // Parent to default NULL if there's no sidebar widget.
     m_pMenu = new QMenu(m_pSidebarWidget);
+    m_pMenu->clear();
 
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-
-    m_pMenu->clear();
-    qDebug()<<"     m_pMenu->clear()";
-    qDebug()<<"";
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
