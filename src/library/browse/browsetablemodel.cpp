@@ -6,13 +6,14 @@
 #include <QUrl>
 #include <QTableView>
 
+#include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
+#include "library/dao/trackdao.h"
 #include "library/previewbuttondelegate.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "control/controlobject.h"
-#include "library/dao/trackdao.h"
+#include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,

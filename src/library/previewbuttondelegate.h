@@ -7,9 +7,9 @@
 #include "library/tableitemdelegate.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
-#include "widget/wlibrarytableview.h"
 
 class ControlProxy;
+class WLibraryTableView;
 
 // A QPushButton for rendering the library preview button within the
 // PreviewButtonDelegate.

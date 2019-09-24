@@ -54,7 +54,10 @@ void DlgTrackInfo::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotBpmHalve);
-    connect(bpmTwoThirds, &QPushButton::clicked, this, &DlgTrackInfo::slotBpmTwoThirds);
+    connect(bpmTwoThirds,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmTwoThirds);
     connect(bpmThreeFourth,
             &QPushButton::clicked,
             this,
@@ -522,7 +525,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-    QObject::disconnect(m_pLoadedTrack.get(),
+    disconnect(m_pLoadedTrack.get(),
             &Track::changed,
             this,
             &DlgTrackInfo::updateTrackMetadata);

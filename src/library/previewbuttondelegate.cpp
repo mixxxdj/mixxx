@@ -2,12 +2,13 @@
 #include <QPushButton>
 #include <QTableView>
 
+#include "control/controlproxy.h"
 #include "library/previewbuttondelegate.h"
 #include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
-#include "control/controlproxy.h"
+#include "widget/wlibrarytableview.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(WLibraryTableView* parent, int column)
         : TableItemDelegate(parent),
