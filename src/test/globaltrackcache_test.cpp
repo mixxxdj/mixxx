@@ -28,6 +28,10 @@ class TrackTitleThread: public QThread {
     void run() override {
         int loopCount = 0;
         while (!(m_stop.load() && GlobalTrackCacheLocker().isEmpty())) {
+            // Drop the previous reference to avoid resolving the
+            // same track twice
+            m_recentTrackPtr.reset();
+            // Try to resolve the next track by guessing the id
             const TrackId trackId(loopCount % 2);
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
@@ -42,10 +46,13 @@ class TrackTitleThread: public QThread {
                 }
                 ASSERT_TRUE(track->isDirty());
             }
+            // Replace the current reference with this one and keep it alive
+            // until the next loop cycle
             m_recentTrackPtr = std::move(track);
             ++loopCount;
         }
-        DEBUG_ASSERT(!m_recentTrackPtr);
+        // If the cache is empty all references must have been dropped
+        ASSERT_TRUE(!m_recentTrackPtr);
         qDebug() << "Finished" << loopCount << " thread loops";
     }
 
