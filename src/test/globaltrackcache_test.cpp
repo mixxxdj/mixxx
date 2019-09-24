@@ -62,6 +62,12 @@ class TrackTitleThread: public QThread {
     std::atomic<bool> m_stop;
 };
 
+void deleteTrack(Track* pTrack) {
+    // Delete track objects directly in unit tests with
+    // no main event loop
+    delete pTrack;
+};
+
 } // anonymous namespace
 
 class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSaver {
@@ -72,7 +78,7 @@ class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSav
 
   protected:
     GlobalTrackCacheTest() {
-        GlobalTrackCache::createInstance(this);
+        GlobalTrackCache::createInstance(this, deleteTrack);
     }
     ~GlobalTrackCacheTest() {
         GlobalTrackCache::destroyInstance();

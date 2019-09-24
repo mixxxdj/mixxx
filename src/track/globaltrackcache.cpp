@@ -62,40 +62,6 @@ class EvictAndSaveFunctor {
     GlobalTrackCacheEntryPointer m_cacheEntryPtr;
 };
 
-
-void deleteTrack(Track* plainPtr) {
-    DEBUG_ASSERT(plainPtr);
-
-    // We safely delete the object via the Qt event queue instead
-    // of using operator delete! Otherwise the deleted track object
-    // might be accessed when processing cross-thread signals that
-    // are delayed within a queued connection and may arrive after
-    // the object has already been deleted.
-    if (traceLogEnabled()) {
-        plainPtr->dumpObjectInfo();
-    }
-    if (debugLogEnabled()) {
-        kLogger.debug()
-                << "Deleting"
-                << plainPtr;
-    }
-    DEBUG_ASSERT(plainPtr->signalsBlocked());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    if (plainPtr->thread()->loopLevel() > 0) {
-        plainPtr->deleteLater();
-    } else {
-        // Delete track directly if no event loop is running.
-        // Otherwise no track objects would be deleted during
-        // a unit test that doesn't start an event loop. Invoking
-        // QCoreApplication::processEvents() periodically is not
-        // sufficient!
-        delete plainPtr;
-    }
-#else
-    plainPtr->deleteLater();
-#endif
-}
-
 } // anonymous namespace
 
 GlobalTrackCacheLocker::GlobalTrackCacheLocker()
@@ -228,9 +194,11 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
 }
 
 //static
-void GlobalTrackCache::createInstance(GlobalTrackCacheSaver* pDeleter) {
+void GlobalTrackCache::createInstance(
+        GlobalTrackCacheSaver* pSaver,
+        deleteTrackFn deleteTrack) {
     DEBUG_ASSERT(!s_pInstance);
-    s_pInstance = new GlobalTrackCache(pDeleter);
+    s_pInstance = new GlobalTrackCache(pSaver, deleteTrack);
 }
 
 //static
@@ -246,6 +214,32 @@ void GlobalTrackCache::destroyInstance() {
     s_pInstance = nullptr;
     // Delete the singular instance
     pInstance->deleteLater();
+}
+
+void GlobalTrackCacheEntry::TrackDeleter::operator()(Track* pTrack) const {
+    DEBUG_ASSERT(pTrack);
+
+    // We safely delete the object via the Qt event queue instead
+    // of using operator delete! Otherwise the deleted track object
+    // might be accessed when processing cross-thread signals that
+    // are delayed within a queued connection and may arrive after
+    // the object has already been deleted.
+    if (traceLogEnabled()) {
+        pTrack->dumpObjectInfo();
+    }
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "Deleting"
+                << pTrack;
+    }
+
+    if (m_deleteTrack) {
+        // Custom delete function
+        (*m_deleteTrack)(pTrack);
+    } else {
+        // Default delete function
+        pTrack->deleteLater();
+    }
 }
 
 //static
@@ -276,9 +270,12 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
     }
 }
 
-GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheSaver* pSaver)
+GlobalTrackCache::GlobalTrackCache(
+        GlobalTrackCacheSaver* pSaver,
+        deleteTrackFn deleteTrack)
     : m_mutex(QMutex::Recursive),
       m_pSaver(pSaver),
+      m_deleteTrack(deleteTrack),
       m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
     qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
@@ -548,12 +545,12 @@ void GlobalTrackCache::resolve(
                 << "Cache miss - allocating track"
                 << trackRef;
     }
-    auto deletingPtr = std::unique_ptr<Track, void (&)(Track*)>(
+    auto deletingPtr = std::unique_ptr<Track, GlobalTrackCacheEntry::TrackDeleter>(
             new Track(
                     std::move(fileInfo),
                     std::move(pSecurityToken),
                     std::move(trackId)),
-            deleteTrack);
+            GlobalTrackCacheEntry::TrackDeleter(m_deleteTrack));
 
     auto cacheEntryPtr = std::make_shared<GlobalTrackCacheEntry>(
             std::move(deletingPtr));

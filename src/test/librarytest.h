@@ -10,34 +10,15 @@
 #include "util/db/dbconnectionpooled.h"
 #include "track/globaltrackcache.h"
 
-const bool kInMemoryDbConnection = true;
-
 class LibraryTest : public MixxxTest,
     public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void saveEvictedTrack(Track* pTrack) noexcept override {
-        m_pTrackCollection->exportTrackMetadata(pTrack);
-        m_pTrackCollection->saveTrack(pTrack);
-    }
+    void saveEvictedTrack(Track* pTrack) noexcept override;
 
   protected:
-    LibraryTest()
-        : m_mixxxDb(config(), kInMemoryDbConnection),
-          m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
-          m_pTrackCollection(std::make_unique<TrackCollection>(config())) {
-        MixxxDb::initDatabaseSchema(m_dbConnection);
-        m_pTrackCollection->connectDatabase(m_dbConnection);
-        GlobalTrackCache::createInstance(this);
-    }
-    ~LibraryTest() override {
-        m_pTrackCollection->disconnectDatabase();
-        m_pTrackCollection.reset();
-        // With the track collection all remaining track references
-        // should have been dropped before destroying the cache.
-        GlobalTrackCache::destroyInstance();
-    }
+    LibraryTest();
+    ~LibraryTest() override;
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_mixxxDb.connectionPool();

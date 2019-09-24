@@ -32,6 +32,8 @@ protected:
     virtual ~GlobalTrackCacheRelocator() {}
 };
 
+typedef void (*deleteTrackFn)(Track*);
+
 class GlobalTrackCacheEntry final {
     // We need to hold two shared pointers, the deletingPtr is
     // responsible for the lifetime of the Track object itselfe.
@@ -39,8 +41,20 @@ class GlobalTrackCacheEntry final {
     // is not longer referenced, the track is saved and evicted
     // from the cache.
   public:
+    class TrackDeleter {
+    public:
+        explicit TrackDeleter(deleteTrackFn deleteTrack = nullptr)
+                : m_deleteTrack(deleteTrack) {
+        }
+
+        void operator()(Track* pTrack) const;
+
+    private:
+        deleteTrackFn m_deleteTrack;
+    };
+
     explicit GlobalTrackCacheEntry(
-            std::unique_ptr<Track, void (&)(Track*)> deletingPtr)
+            std::unique_ptr<Track, TrackDeleter> deletingPtr)
         : m_deletingPtr(std::move(deletingPtr)) {
     }
     GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
@@ -64,7 +78,7 @@ class GlobalTrackCacheEntry final {
     }
 
   private:
-    std::unique_ptr<Track, void (&)(Track*)> m_deletingPtr;
+    std::unique_ptr<Track, TrackDeleter> m_deletingPtr;
     TrackWeakPointer m_savingWeakPtr;
 };
 
@@ -182,7 +196,10 @@ class GlobalTrackCache : public QObject {
     Q_OBJECT
 
 public:
-    static void createInstance(GlobalTrackCacheSaver* pDeleter);
+    static void createInstance(
+            GlobalTrackCacheSaver* pSaver,
+            // A custom deleter is only needed for tests without an event loop!
+            deleteTrackFn deleteTrack = nullptr);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
     // instance during shutdown, because we are not able to guarantee that
     // all track references have been released before. Instead the singular
@@ -201,7 +218,9 @@ private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
-    explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
+    GlobalTrackCache(
+            GlobalTrackCacheSaver* pSaver,
+            deleteTrackFn deleteTrack);
     ~GlobalTrackCache();
 
     void relocateTracks(
@@ -240,6 +259,8 @@ private:
     mutable QMutex m_mutex;
 
     GlobalTrackCacheSaver* m_pSaver;
+
+    deleteTrackFn m_deleteTrack;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;
