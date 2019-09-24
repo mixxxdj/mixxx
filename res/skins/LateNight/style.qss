@@ -1720,21 +1720,6 @@ QHeaderView {
       stop:1 #0f0f0f);
   }
 
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
-  width: 12px;
-  padding-left: 3px;
-  padding-right: 3px;
-  border-right: 1px solid #585858;
-  }
-  QHeaderView::up-arrow {
-    image: url(skin:/style/btn_lib_sort_up.png);
-    }
-  QHeaderView::down-arrow {
-    image: url(skin:/style/btn_lib_sort_down.png);
-  }
-
 
 
 /* QScrollBar styling is even harder */
@@ -2039,3 +2024,33 @@ QMenu {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #0f0f0f;
     }
+
+  QHeaderView::up-arrow,
+  QHeaderView::down-arrow {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+    width: 12px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-right: 1px solid #585858;
+    }
+    QHeaderView::up-arrow {
+      image: url(skin:/style/btn_lib_sort_up.png);
+      }
+    QHeaderView::down-arrow {
+      image: url(skin:/style/btn_lib_sort_down.png);
+    }
+    QHeaderView QMenu::indicator {
+      width: 10px;
+      height: 10px;
+      margin-left: 2px;
+      border: none;
+      background: none;
+      }
+      QHeaderView QMenu::indicator:checked {
+        image: url(skin:/buttons/btn_lib_checkmark.svg);
+      }
+      QMenu::right-arrow {
+        width: 10px;
+        height: 10px;
+        image: url(skin:/style/menu_arrow.svg);
+      }
