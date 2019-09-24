@@ -272,12 +272,18 @@ QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
     supportedFileExtensions.append("m4a");
     supportedFileExtensions.append("mp3");
     supportedFileExtensions.append("mp2");
-    //Can add mp3, mp2, ac3, and others here if you want.
-    //See:
-    //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
-
-    //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni
+    // Can add mp3, mp2, ac3, and others here if you want:
+    // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
     return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // On macOS CoreAudio is used both for decoding MP3 and M4A files. Neither
+    // FFmpeg nor libMAD are enabled in the release builds. In order to avoid
+    // priority conflicts with libMAD when enabled in the future the priority
+    // of this SoundSource is set to HIGHER.
+    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx
