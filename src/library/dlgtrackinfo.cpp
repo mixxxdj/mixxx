@@ -278,7 +278,8 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     while (it.hasNext()) {
         CuePointer pCue = it.next();
         Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::INTRO || type == Cue::OUTRO) {
+        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO
+                || type == Cue::OUTRO) {
             listPoints.push_back(pCue);
         }
     }
@@ -295,10 +296,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // them to the user as 1-indexex. Add 1 here. rryan 9/2010
         int iHotcue = pCue->getHotCue() + 1;
         QString hotcue = "";
-        if (iHotcue != -1) {
-            hotcue = QString("%1").arg(iHotcue);
-        }
-
+        hotcue = QString("%1").arg(iHotcue);
         int position = pCue->getPosition();
         double totalSeconds;
         if (position == -1)
@@ -325,8 +323,23 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
+            case Cue::INVALID:
+                cueType = "?";
+                break;
             case Cue::CUE:
                 cueType = "Hotcue";
+                break;
+            case Cue::LOAD:
+                cueType = "Main Cue";
+                break;
+            case Cue::BEAT:
+                cueType = "Beat";
+                break;
+            case Cue::LOOP:
+                cueType = "Loop";
+                break;
+            case Cue::JUMP:
+                cueType = "Jump";
                 break;
             case Cue::INTRO:
                 cueType = "Intro";
@@ -423,12 +436,12 @@ void DlgTrackInfo::saveTrack() {
         if (!pCue) {
             continue;
         }
-
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert(QMetaType::Int)) {
-            int iTableHotcue = vHotcue.toInt();
+        bool ok;
+        int iTableHotcue = vHotcue.toInt(&ok);
+        if (ok) {
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1
             pCue->setHotCue(iTableHotcue - 1);

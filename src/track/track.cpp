@@ -656,7 +656,7 @@ void Track::setCuePoint(CuePosition cue) {
     CuePointer pLoadCue = findCueByType(Cue::LOAD);
     Cue::CueSource source = cue.getSource();
     double position = cue.getPosition();
-    if (position != 0.0 && position != -1.0) {
+    if (position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
             pLoadCue->setType(Cue::LOAD);
