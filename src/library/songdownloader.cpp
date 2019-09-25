@@ -5,6 +5,7 @@
 #include <QString>
 #include <QtDebug>
 
+#include "util/compatibility.h"
 #include "util/version.h"
 
 #define TEMP_EXTENSION ".tmp"
