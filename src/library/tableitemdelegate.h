@@ -20,6 +20,9 @@ class TableItemDelegate : public QStyledItemDelegate {
             const QStyleOptionViewItem &option,
             const QModelIndex &index) const = 0;
 
+  protected:
+    int columnWidth(const QModelIndex &index) const;
+
   private:
     QTableView* m_pTableView;
 };

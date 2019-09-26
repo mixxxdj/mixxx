@@ -44,3 +44,7 @@ void TableItemDelegate::paint(
 
     painter->restore();
 }
+
+int TableItemDelegate::columnWidth(const QModelIndex &index) const {
+    return m_pTableView->columnWidth(index.column());
+}
