@@ -1010,12 +1010,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pToDeck->startPos = kKeepPosition;
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(toTrackDuration > 0) {
+    if (toTrackDuration <= 0) {
         // Playing Track has no duration. This should not happen, because short
         // tracks are skipped after load.
-        pToDeck->startPos = kKeepPosition;
-        // Disable AutoDJ.
-        toggleAutoDJ(false);
+        loadNextTrackFromQueue(*pToDeck, false);
         return;
     }
 
