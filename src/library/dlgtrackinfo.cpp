@@ -297,21 +297,28 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         int iHotcue = pCue->getHotCue() + 1;
         QString hotcue = "";
         hotcue = QString("%1").arg(iHotcue);
-        int position = pCue->getPosition();
-        double totalSeconds;
-        if (position == -1)
+        double position = pCue->getPosition();
+        if (position == -1) {
             continue;
-        else {
-            totalSeconds = float(position) / float(sampleRate) / 2.0;
         }
 
-        int fraction = 100*(totalSeconds - floor(totalSeconds));
-        int seconds = int(totalSeconds) % 60;
-        int mins = int(totalSeconds) / 60;
+        double totalSeconds = position / sampleRate / 2.0;
+
+        bool negative = false;
+        if (totalSeconds < 0) {
+            totalSeconds *= -1;
+            negative = true;
+        }
+
+        int iTotalSeconds = static_cast<int>(totalSeconds);
+        int fraction = 100 * (totalSeconds - iTotalSeconds);
+        int seconds = iTotalSeconds % 60;
+        int mins = iTotalSeconds / 60;
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(
+        QString duration = QString("%1%2:%3.%4").arg(
+            negative ? QString("-") : QString(),
             QString::number(mins),
             QString("%1").arg(seconds, 2, 10, QChar('0')),
             QString("%1").arg(fraction, 2, 10, QChar('0')));
