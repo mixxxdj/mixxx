@@ -456,10 +456,12 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(-1);
         }
 
-        auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
-        if (colorComboBox) {
-            PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
-            pCue->setColor(color);
+        if (pCue->getType() == Cue::CUE) {
+            auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
+            if (colorComboBox) {
+                PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
+                pCue->setColor(color);
+            }
         }
         // do nothing for now.
 
