@@ -99,7 +99,6 @@
                     <Size>100me,14f</Size>
                     <Layout>horizontal</Layout>
                     <Style>
-                      QWidget { margin: 0px; padding: 0; }
                       QLabel {
                         font: bold 9px sans-serif;
                         font-family: "Open Sans";
@@ -189,7 +188,6 @@
                   <PushButton>
                     <TooltipId>play_cue_set</TooltipId>
                     <Pos>5,5</Pos>
-                    <Style></Style>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>

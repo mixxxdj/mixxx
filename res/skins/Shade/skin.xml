@@ -375,12 +375,10 @@
             <WidgetGroup>
               <SizePolicy>me,min</SizePolicy>
               <Layout>horizontal</Layout>
-              <Style>QGroupBox { border: 0px solid yellow; margin: 0px;}</Style>
               <Children>
                 <WidgetGroup>
                   <ObjectName>EffectLeftBorder</ObjectName>
                   <Size>3f,43f</Size>
-                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
                 </WidgetGroup>
                 <Template src="skin:looping.xml">
                   <SetVariable name="channum">1</SetVariable>
@@ -432,7 +430,6 @@
           <SizePolicy>me,me</SizePolicy>
           <Layout>horizontal</Layout>
           <Style>
-          QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
           <!--
           <BgColor>#101010</BgColor>
           <FgColor>#C1C1C1</FgColor>
@@ -448,15 +445,12 @@
               <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
               <Children>
                 <WidgetGroup>
-                  <Style>QGroupBox {}</Style>
                   <Layout>vertical</Layout>
                   <Children>
                     <WidgetGroup>
                       <Style>
                         QGroupBox {
                           margin: 2px 0px 4px 3px;
-                          padding: 0px;
-                          background: transparent;
                         }
                       </Style>
                       <Layout>horizontal</Layout>
@@ -473,7 +467,6 @@
                     <!--Library Tree View-->
                     <Splitter>
                       <Size>e,me</Size>
-                      <Style></Style>
                       <SplitSizes>1,e</SplitSizes>
                       <Collapsible>0,0</Collapsible>
                       <Children>
@@ -493,7 +486,6 @@
                 </WidgetGroup>
                 <WidgetGroup>
                   <!-- Library Table-->
-                  <Style>QGroupBox {}</Style>
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
