@@ -36,10 +36,13 @@ enum ReaderStatus {
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct ReaderStatusUpdate {
-    ReaderStatus status;
+  private:
     CachingReaderChunk* chunk;
     SINT readableFrameIndexRangeStart;
     SINT readableFrameIndexRangeEnd;
+
+  public:
+    ReaderStatus status;
 
     void init(
             ReaderStatus statusArg = INVALID,
@@ -49,6 +52,17 @@ typedef struct ReaderStatusUpdate {
         chunk = chunkArg;
         readableFrameIndexRangeStart = readableFrameIndexRangeArg.start();
         readableFrameIndexRangeEnd = readableFrameIndexRangeArg.end();
+    }
+
+    CachingReaderChunkForOwner* takeFromWorker() {
+        CachingReaderChunkForOwner* pChunk = nullptr;
+        if (chunk) {
+            DEBUG_ASSERT(dynamic_cast<CachingReaderChunkForOwner*>(chunk));
+            pChunk = static_cast<CachingReaderChunkForOwner*>(chunk);
+            chunk = nullptr;
+            pChunk->takeFromWorker();
+        }
+        return pChunk;
     }
 
     mixxx::IndexRange readableFrameIndexRange() const {

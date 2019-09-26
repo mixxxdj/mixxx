@@ -33,7 +33,7 @@ Variables:
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
           <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
+          <Color>#666666</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>

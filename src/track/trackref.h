@@ -1,10 +1,7 @@
-#ifndef TRACKREF_H
-#define TRACKREF_H
-
-
-#include <QFileInfo>
+#pragma once
 
 #include "track/trackid.h"
+#include "track/trackfile.h"
 
 
 // A track in the library is identified by a location and an id.
@@ -15,30 +12,19 @@
 // value object. Only the id can be set once.
 class TrackRef {
 public:
-    // All file-related track properties are snapshots from the provided
-    // QFileInfo. Obtaining them might involve accessing the file system
-    // and should be used consciously! The QFileInfo class does some
-    // caching behind the scenes.
-    // Please note that the canonical location of QFileInfo may change at
-    // any time, when the underlying file system structure is modified.
-    // It becomes empty if the file is deleted.
-    static QString location(const QFileInfo& fileInfo) {
-        return fileInfo.absoluteFilePath();
-    }
-    static QString canonicalLocation(const QFileInfo& fileInfo) {
-        return fileInfo.canonicalFilePath();
-    }
-
-    // Converts a QFileInfo and an optional TrackId into a TrackRef. This
+    // Converts a TrackFile and an optional TrackId into a TrackRef. This
     // involves obtaining the file-related track properties from QFileInfo
-    // (see above) and should used consciously!
+    // (see above) and should used consciously! The file info is refreshed
+    // implicitly if the canonical location if necessary.
     static TrackRef fromFileInfo(
-            const QFileInfo& fileInfo,
+            TrackFile fileInfo,
             TrackId id = TrackId()) {
+        auto canonicalLocation = fileInfo.freshCanonicalLocation();
+        // All properties of the file info are now considered fresh
         return TrackRef(
-                location(fileInfo),
-                canonicalLocation(fileInfo),
-                id);
+                fileInfo.location(),
+                std::move(canonicalLocation),
+                std::move(id));
     }
 
     // Default constructor
@@ -128,6 +114,3 @@ Q_DECLARE_METATYPE(TrackRef)
 std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
-
-
-#endif // TRACKREF_H

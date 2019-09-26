@@ -7,12 +7,13 @@
 
 namespace mixxx {
 
-AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats() :
-        m_downmixBuffer(kAnalysisFramesPerBlock),
-        m_fResultBpm(0.0f) {
+AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats()
+        : m_downmixBuffer(kAnalysisFramesPerBlock),
+          m_fResultBpm(0.0f) {
 }
 
-AnalyzerSoundTouchBeats::~AnalyzerSoundTouchBeats() { }
+AnalyzerSoundTouchBeats::~AnalyzerSoundTouchBeats() {
+}
 
 bool AnalyzerSoundTouchBeats::initialize(int samplerate) {
     m_fResultBpm = 0.0f;
@@ -20,11 +21,10 @@ bool AnalyzerSoundTouchBeats::initialize(int samplerate) {
     return true;
 }
 
-bool AnalyzerSoundTouchBeats::process(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerSoundTouchBeats::processSamples(const CSAMPLE* pIn, const int iLen) {
     if (!m_pSoundTouch) {
         return false;
     }
-    DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     // We analyze a mono mixdown of the signal since we don't think stereo does
     // us any good.
@@ -47,4 +47,4 @@ bool AnalyzerSoundTouchBeats::finalize() {
     return true;
 }
 
-}  // namespace mixxx
+} // namespace mixxx

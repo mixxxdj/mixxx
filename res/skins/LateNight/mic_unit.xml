@@ -1,12 +1,12 @@
 <Template>
   <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>MicBorder</ObjectName>
+    <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,max</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>MicInterior</ObjectName>
+        <ObjectName>MicAuxInterior</ObjectName>
         <BackPath>style/background_tile.png</BackPath>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
@@ -124,6 +124,9 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
+
+                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
                     <SetVariable name="ObjectName">FxAssignButton</SetVariable>

@@ -791,7 +791,7 @@ LongShortDoubleBtn.prototype.ButtonDecide = function() {
 //      the crossfader closes, when the jog wheel is turned forward the crossfader
 //      will open."
 // In Practice : DJAY software is closing/opening the crossfader
-//      quicly without taking into account the direction of the whheel.
+//      quickly without taking into account the direction of the wheel.
 //      Here I am trying to stick with the reloop explanation :
 //      it is the "as it is supposed to be done"
 var AutoCut = function (deckNum) {

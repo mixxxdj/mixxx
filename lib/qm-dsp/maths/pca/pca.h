@@ -1,5 +1,5 @@
-#ifndef _PCA_H
-#define _PCA_H
+#ifndef QM_DSP_PCA_H
+#define QM_DSP_PCA_H
 
 #ifdef __cplusplus
 extern "C" {

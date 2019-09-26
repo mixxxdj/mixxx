@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Author 2014 Tuukka Pasanen <pasanen.tuukka@gmail.com> -->
-<component>
+<component type="desktop-application">
   <id>org.mixxx.Mixxx</id>
   <launchable type="desktop-id">mixxx.desktop</launchable>
   <metadata_license>CC-BY-SA-3.0</metadata_license>

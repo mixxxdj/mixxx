@@ -33,7 +33,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     }
 
     if (!parentDir.isEmpty()) {
-        // removeing the old directory won't harm because we are adding the
+        // removing the old directory won't harm because we are adding the
         // parent later in this function
         removeDirectory(parentDir);
     }

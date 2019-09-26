@@ -86,7 +86,7 @@ QString formatMinutes(int minutes) {
 
 int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
     // See WDisplay::getActivePixmapIndex for more info on this.
-    int result = static_cast<int>(dPercentage * numPixmaps - 0.00001);
+    int result = static_cast<int>(dPercentage / 100.0 * numPixmaps);
     result = math_min(numPixmaps - 1, math_max(0, result));
     return result;
 }
@@ -97,6 +97,11 @@ void WBattery::update() {
             m_pBattery->getChargingState() : Battery::UNKNOWN;
     double dPercentage = m_pBattery ? m_pBattery->getPercentage() : 0;
 
+    if (chargingState != Battery::UNKNOWN) {
+        setBaseTooltip(QString("%1\%").arg(dPercentage, 0, 'f', 0));
+    } else {
+        setBaseTooltip(tr("Battery status unknown."));
+    }
     m_pCurrentPixmap.clear();
     switch (chargingState) {
         case Battery::CHARGING:
@@ -105,10 +110,8 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_chargingPixmaps.size())];
             }
-            if (minutesLeft == -1) {
-                setBaseTooltip(tr("Time until charged unknown."));
-            } else {
-                setBaseTooltip(tr("Time until charged: %1")
+            if (minutesLeft != Battery::TIME_UNKNOWN) {
+                appendBaseTooltip("\n" + tr("Time until charged: %1")
                                .arg(formatMinutes(minutesLeft)));
             }
             break;
@@ -118,21 +121,18 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_dischargingPixmaps.size())];
             }
-            if (minutesLeft == -1) {
-                setBaseTooltip(tr("Time left unknown."));
-            } else {
-                setBaseTooltip(tr("Time left: %1")
+            if (minutesLeft != Battery::TIME_UNKNOWN) {
+                appendBaseTooltip("\n" + tr("Time left: %1")
                                .arg(formatMinutes(minutesLeft)));
             }
             break;
         case Battery::CHARGED:
             m_pCurrentPixmap = m_pPixmapCharged;
-            setBaseTooltip(tr("Battery fully charged."));
+            appendBaseTooltip("\n" + tr("Battery fully charged."));
             break;
         case Battery::UNKNOWN:
         default:
             m_pCurrentPixmap = m_pPixmapUnknown;
-            setBaseTooltip(tr("Battery status unknown."));
             break;
     }
 
@@ -148,7 +148,9 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
         qDebug() << this << "Error loading pixmap:" << source.getPath();
     } else {
         *ppPixmap = pPixmap;
-        setFixedSize(pPixmap->size());
+        if (mode == Paintable::FIXED) {
+            setFixedSize(pPixmap->size());
+        }
     }
 }
 
@@ -159,10 +161,10 @@ void WBattery::paintEvent(QPaintEvent* /*unused*/) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
-        m_pPixmapBack->draw(0, 0, &p);
+        m_pPixmapBack->draw(rect(), &p);
     }
 
     if (m_pCurrentPixmap) {
-        m_pCurrentPixmap->draw(0, 0, &p);
+        m_pCurrentPixmap->draw(rect(), &p);
     }
 }

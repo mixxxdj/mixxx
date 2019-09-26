@@ -222,7 +222,7 @@ void BaseTrackCache::resetRecentTrack() const {
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getLocation();
+        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
     }
 
     if (!pTrack) {

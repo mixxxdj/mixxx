@@ -106,6 +106,16 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddBottom(double)));
 
+    // Sort controls
+    m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
+    m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
+    m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
+    connect(m_pSortColumn.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotSortColumn(double)));
+    connect(m_pSortColumnToggle.get(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotSortColumnToggle(double)));
+
     // Font sizes
     m_pFontSizeKnob = std::make_unique<ControlObject>(
             ConfigKey("[Library]", "font_size_knob"), false);
@@ -280,7 +290,6 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
     if (!m_pLibraryWidget) {
         return;
     }
-
     if (v > 0) {
         auto activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
@@ -389,14 +398,21 @@ void LibraryControl::slotMoveFocus(double v) {
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
-    // Ensure a valid widget has the keyboard focus
-    auto focusWidget = QApplication::focusWidget();
-    if (!focusWidget) {
+    // Ensure a valid library widget has the keyboard focus.
+    // QApplication::focusWidget() is not sufficient here because it
+    // would return any focused widget like WOverview, WWaveform, QSpinBox
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+        return;
+    }
+    if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus()) {
         setLibraryFocus();
-        focusWidget = QApplication::focusWidget();
-        if (!focusWidget) {
-            return;
-        }
+    }
+    auto focusWidget = QApplication::focusWidget();
+    VERIFY_OR_DEBUG_ASSERT(focusWidget) {
+        return;
     }
     // Send the event pointer to the currently focused widget
     for (auto i = 0; i < event.count(); ++i) {
@@ -405,12 +421,13 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
 }
 
 void LibraryControl::setLibraryFocus() {
-    if (m_pSidebarWidget) {
-        // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
-        m_pSidebarWidget->setFocus();
-        QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-        QApplication::sendEvent(m_pSidebarWidget, &event);
+    // XXX: Set the focus of the library panel directly instead of sending tab from sidebar
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
     }
+    m_pSidebarWidget->setFocus();
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+    QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
@@ -463,9 +480,8 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Focus the library if this is a leaf node in the tree
-    if (m_pSidebarWidget->hasFocus()) {
-        if (m_pSidebarWidget && v > 0
-                && m_pSidebarWidget->isLeafNodeSelected()) {
+    if (m_pSidebarWidget && m_pSidebarWidget->hasFocus()) {
+        if (v > 0 && m_pSidebarWidget->isLeafNodeSelected()) {
             setLibraryFocus();
         } else {
             // Otherwise toggle the sidebar item expanded state
@@ -476,6 +492,20 @@ void LibraryControl::slotGoToItem(double v) {
     // translate this into Alt+Return and handle it at each library widget 
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
+}
+
+void LibraryControl::slotSortColumn(double v) {
+    m_pSortColumnToggle->set(v);
+}
+
+void LibraryControl::slotSortColumnToggle(double v) {
+    int column = static_cast<int>(v);
+    if (static_cast<int>(m_pSortColumn->get()) == column) {
+        m_pSortOrder->set(!m_pSortOrder->get());
+    } else {
+        m_pSortColumn->set(v);
+        m_pSortOrder->set(0);
+    }
 }
 
 void LibraryControl::slotFontSize(double v) {

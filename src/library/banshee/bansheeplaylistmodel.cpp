@@ -1,4 +1,3 @@
-#include <QtAlgorithms>
 #include <QtDebug>
 
 #include "library/banshee/bansheeplaylistmodel.h"
@@ -286,8 +285,8 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
         }
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
-                QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-                if (rowUrl.toLocalFile() == pTrack->getLocation()) {
+                const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
+                if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
                     m_previewDeckTrackId =
                             TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
                     break;
@@ -364,11 +363,8 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
     }
     QUrl url(getFieldString(index, CLM_URI));
 
-    QString location;
-    location = url.toLocalFile();
-
+    QString location = TrackFile::fromUrl(url).location();
     qDebug() << location << " = " << url;
-
     if (!location.isEmpty()) {
         return location;
     }

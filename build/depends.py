@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
+
 from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
@@ -20,17 +22,6 @@ class PortAudio(Dependence):
 
     def sources(self, build):
         return ['src/soundio/sounddeviceportaudio.cpp']
-
-
-class OSXFilePathUrlBackport(Dependence):
-
-    def configure(self, build, conf):
-        return
-
-    def sources(self, build):
-        if build.platform_is_osx:
-            return ['src/util/filepathurl.mm']
-        return []
 
 
 class PortMIDI(Dependence):
@@ -120,9 +111,9 @@ class IOKit(Dependence):
         build.env.Append(LINKFLAGS='-framework IOKit')
 
 class UPower(Dependence):
-    """UPower is used to get battery measurements on Linux."""
+    """UPower is used to get battery measurements on Linux and BSD."""
     def configure(self, build, conf):
-        if not build.platform_is_linux:
+        if not build.platform_is_linux and not build.platform_is_bsd:
             return
         build.env.ParseConfig(
                 'pkg-config upower-glib --silence-errors --cflags --libs')
@@ -192,10 +183,12 @@ class FLAC(Dependence):
 
 class Qt(Dependence):
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
+                         'bsd': '/usr/local/lib/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
+                         'bsd': '/usr/local/lib/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
 
@@ -206,15 +199,19 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        import sys
-        if sys.platform.startswith('linux'):
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    if os.path.isdir(core):
-                        return core
+        pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
+        try:
+            output = subprocess.check_output(pkg_config_cmd)
+        except OSError:
+            # pkg-config is not installed
+            pass
+        except subprocess.CalledProcessError:
+            # pkg-config failed to find Qt5Core
+            pass
+        else:
+            core = output.decode('utf-8').rstrip()
+            if os.path.isdir(core):
+                return core
 
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
@@ -293,7 +290,7 @@ class Qt(Dependence):
             conf.CheckLib('sqlite3');
 
         # Enable Qt include paths
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
 
@@ -315,11 +312,6 @@ class Qt(Dependence):
                 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65886#c30
                 build.env.Append(CCFLAGS='-fPIC')
 
-        elif build.platform_is_bsd:
-            build.env.Append(LIBS=qt_modules)
-            include_paths = ['$QTDIR/include/%s' % module
-                             for module in qt_modules]
-            build.env.Append(CPPPATH=include_paths)
         elif build.platform_is_osx:
             qtdir = build.env['QTDIR']
             build.env.Append(
@@ -446,10 +438,13 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++11 support. Windows enables C++11 features by
-        # default but Clang/GCC require a flag.
-        if not build.platform_is_windows:
-            build.env.Append(CXXFLAGS='-std=c++11')
+        # Mixxx requires C++14 support
+        if build.platform_is_windows:
+            # MSVC
+            build.env.Append(CXXFLAGS='/std:c++14')
+        else:
+            # GCC/Clang
+            build.env.Append(CXXFLAGS='-std=c++14')
 
 
 class TestHeaders(Dependence):
@@ -510,7 +505,9 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['#%s/ebur128' % self.INTERNAL_PATH])
-            if not conf.CheckHeader('sys/queue.h'):
+            import sys
+            if not conf.CheckHeader('sys/queue.h') or sys.platform.startswith('openbsd'):
+                # OpenBSD's queue.h lacks the STAILQ_* macros
                 env.Append(CPPPATH=['#%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
@@ -534,7 +531,7 @@ class SoundTouch(Dependence):
         if env is None:
             env = build.env
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
@@ -575,7 +572,6 @@ class QueenMaryDsp(Dependence):
             #"#lib/qm-dsp/base/KaiserWindow.cpp",
             "#lib/qm-dsp/base/Pitch.cpp",
             #"#lib/qm-dsp/base/SincWindow.cpp",
-            "#lib/qm-dsp/dsp/chromagram/CQprecalc.cpp",
             "#lib/qm-dsp/dsp/chromagram/Chromagram.cpp",
             "#lib/qm-dsp/dsp/chromagram/ConstantQ.cpp",
             "#lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp",
@@ -604,7 +600,7 @@ class QueenMaryDsp(Dependence):
             "#lib/qm-dsp/dsp/transforms/FFT.cpp",
             #"#lib/qm-dsp/dsp/wavelet/Wavelet.cpp",
             "#lib/qm-dsp/ext/kissfft/kiss_fft.c",
-            "#lib/qm-dsp/ext/kissfft/kiss_fftr.c",
+            "#lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c",
             #"#lib/qm-dsp/hmm/hmm.c",
             "#lib/qm-dsp/maths/Correlation.cpp",
             #"#lib/qm-dsp/maths/CosineDistance.cpp",
@@ -1175,6 +1171,7 @@ class MixxxCore(Feature):
                    "src/track/replaygain.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
+                   "src/track/trackfile.cpp",
                    "src/track/trackmetadata.cpp",
                    "src/track/trackmetadatataglib.cpp",
                    "src/track/tracknumbers.cpp",
@@ -1315,7 +1312,11 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+
+        # In Python 3.x, map() returns a "map object" (instead of a list),
+        # which is evaluated on-demand rather than at once. To invoke uic
+        # for all *.ui files at once, we need to cast it to a list here.
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
@@ -1505,9 +1506,6 @@ class MixxxCore(Feature):
                                       '/usr/local/lib',
                                       '/usr/X11R6/lib'])
             build.env.Append(LIBS='pthread')
-            # why do we need to do this on OpenBSD and not on Linux?  if we
-            # don't then CheckLib("vorbisfile") fails
-            build.env.Append(LIBS=['ogg', 'vorbis'])
 
         # Define for things that would like to special case UNIX (Linux or BSD)
         if build.platform_is_bsd or build.platform_is_linux:
@@ -1555,7 +1553,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, OSXFilePathUrlBackport, Kaitai]
+                QueenMaryDsp, Kaitai]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
