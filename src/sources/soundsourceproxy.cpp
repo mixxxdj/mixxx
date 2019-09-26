@@ -298,45 +298,6 @@ void SoundSourceProxy::initSoundSource() {
     }
 }
 
-namespace {
-
-const QString kArtistTitleSeparator("_-_");
-
-// Parses only title or artist/title from the file name and returns true
-// if the track has been modified. Assumes that the file name is written
-// like "artist - title.xxx" or "artist_-_title.xxx".
-bool parseArtistTitleFromFileName(
-        mixxx::TrackMetadata* pTrackMetadata,
-        QString fileName,
-        bool splitArtistTitle) {
-    bool modified = false;
-    QString titleWithFileType = fileName.trimmed();
-    if (splitArtistTitle) {
-        fileName.replace(" - ", kArtistTitleSeparator);
-        if (fileName.count(kArtistTitleSeparator) == 1) {
-            auto artist = fileName.section(kArtistTitleSeparator, 0, 0).trimmed();
-            if (!artist.isEmpty()) {
-                pTrackMetadata->refTrackInfo().setArtist(artist);
-                modified = true;
-            }
-            titleWithFileType = fileName.section(kArtistTitleSeparator, 1).trimmed();
-        }
-    }
-    auto title = titleWithFileType;
-    if (titleWithFileType.contains('.')) {
-        // Strip file extension starting at the right-most '.'
-        title = titleWithFileType.section('.', 0, -2);
-    }
-    title = title.trimmed();
-    if (!title.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setTitle(title);
-        modified = true;
-    }
-    return modified;
-}
-
-} // anonymous namespace
-
 void SoundSourceProxy::updateTrackFromSource(
         ImportTrackMetadataMode importTrackMetadataMode) const {
     DEBUG_ASSERT(m_pTrack);
@@ -464,7 +425,7 @@ void SoundSourceProxy::updateTrackFromSource(
                 << (splitArtistTitle ? "artist/title" : "title")
                 << "from file name:"
                 << trackFile;
-        if (parseArtistTitleFromFileName(&trackMetadata, trackFile.fileName(), splitArtistTitle) &&
+        if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(trackFile.fileName(), splitArtistTitle) &&
                 metadataImported.second.isNull()) {
             // Since this is also some kind of metadata import, we mark the
             // track's metadata as synchronized with the time stamp of the file.
