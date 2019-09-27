@@ -6,7 +6,7 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>TitleGutter</ObjectName>
+        <ObjectName>TitleRow</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>i,min</SizePolicy>
         <Children>
@@ -47,7 +47,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- TitleRow -->
 
       <WidgetGroup>
         <ObjectName>ArtistRow</ObjectName>
@@ -89,7 +89,11 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- ArtistRow -->
     </Children>
-  </WidgetGroup>
+    <Connection>
+      <ConfigKey>[Skin],show_rate_controls</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- DeckRow_2_3_ArtistTitleTime -->
 </Template>

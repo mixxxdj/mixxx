@@ -33,10 +33,10 @@ QToolTip {/*
 #SamplerDeckSmall,
 #PreviewDeck {
   background-color: #1e1e1e;
-  border-top: 1px solid #444;
-  border-left: 1px solid #444;
-  border-bottom: 1px solid #000;
-  border-right: 1px solid #000;
+  border-top: 1px solid #333;
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #0a0a0a;
+  border-right: 1px solid #0a0a0a;
   border-radius: 2px;
 }
 
@@ -49,10 +49,10 @@ QToolTip {/*
 #MasterControls,
 #HeadphoneControls,
 #SamplerButtons {
-  border-top: 1px solid #000;
-  border-left: 1px solid #000;
-  border-bottom: 1px solid #444;
-  border-right: 1px solid #444;
+  border-top: 1px solid #0a0a0a;
+  border-left: 1px solid #0a0a0a;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
   border-bottom-left-radius: 1px;
   border-top-right-radius: 1px;
 }
@@ -73,7 +73,7 @@ QToolTip {/*
 
 #Deck1, #Deck2,
 #Deck3, #Deck4 {
-  padding: 2px 3px 3px 1px;
+  padding: 2px 3px 3px 2px;
 }
 
 #DeckSmall1, #DeckSmall2 {
@@ -97,7 +97,6 @@ QToolTip {/*
 
 /* Button borders */
 
-#KeyText,
 #RecBox,
 #VinylButton,
 #FxAssignButton,
@@ -202,6 +201,8 @@ WTime {
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
+  padding-bottom: 1px;
+  border-bottom: 1px solid #080808;
 }
 
 #DeckRows234 {
@@ -210,8 +211,26 @@ WTime {
 #DeckRow_2_3_ArtistTitleTime {
   background-color: #1e1e1e;
   padding-left: 2px;
-  border-left: 1px solid #080808;
-}
+  }
+  #DeckRow_2_3_ArtistTitleTime[highlight="0"] {
+    border-left: none;
+  }
+  /* show left border only with rate controlsy */
+  #DeckRow_2_3_ArtistTitleTime[highlight="1"] {
+    border-left: 1px solid #080808;
+  }
+  #TitleRow {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    padding: 2px 3px 2px 0px;
+  }
+  #TimeGutter, #DurationGutter {
+    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+    padding: 2px;
+  }
+  #ArtistRow {
+    border-top: 1px solid #080808;
+    
+  }
 
 #DeckRow_4_OverviewSpinny {
   background-color: #1e1e1e;
@@ -234,9 +253,6 @@ WTime {
 #SpinnyContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  border-top: 1px solid #080808;
-  border-left: 1px solid #080808;
-  margin-right: 1px;
 }
 
 WSpinny {/*
@@ -319,15 +335,6 @@ WTime {
   padding: 0px 2px;
 }
 
-#MasterVuMeter_2Decks {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#MasterVuMeter_4Decks {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  margin-top: 5px;
-}
-
 #MasterKnobCol {
   padding-left:1px;
   padding-right:1px;
@@ -336,14 +343,57 @@ WTime {
 #VuAndSlider {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding: 1px 4px 0px 0px;
+  background-color: green;
 }
-
 #VuAndSlider4decks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding: 1px 0px 0px 0px;
+  background-color: green;
 }
 
-#VuMeter4Decks {
+#VuMeterBox {
+  background-color: green;
+  padding: 1px;
+  qproperty-layoutSpacing: 1px;
+}
+
+#VUMeterMarginChannel2Decks {
+  
+}
+#VUMeterMarginChannel4Decks {
+  
+}
+#VUMeterMarginMaster2Decks {
+  
+}
+#VUMeterMarginMaster4Decks {
+  
+}
+
+/* Master vu meter */
+
+#MasterVuMeter_2Decks {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#MasterVuMeter_4Decks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin-top: 5px;
+}
+#VUMeterBoxClippingMaster,
+#VUMeterBoxLevelMaster {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutSpacing: 1;
+  background-color: #000;
+  margin-left: 9px;
+  margin-right: 9px;
+}
+
+#VuMeterBox2Decks {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding: 0px 4px 2px 0px;
+}
+#VuMeterBox4Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 0px 4px 2px 0px;
 }
@@ -375,22 +425,9 @@ WTime {
   margin-top: 2px;
 }
 
-#TitleGutter {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 2px 3px 2px 0px;
-  border-top: 1px solid #080808;
-  border-bottom: 1px solid #080808;
-}
-
 #ArtistGutter{
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   padding: 2px 2px 2px 0px;
-}
-
-
-#TimeGutter, #DurationGutter {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  padding: 2px;
 }
 
 #PlayCueRevHotCues {
@@ -417,7 +454,10 @@ WTime {
   qproperty-alignment: 'AlignCenter';
   font-size: 13px/13px;
   background-color: #0f0f0f;
-  border-radius: 3px;
+  /* let's give this a more decent border with sharper corners
+   because it's not interactive like the spinboxes or the effect selector */
+  border: 1px solid #333;
+  border-radius: 1px;
   margin: 0px 1px;
   }
 
@@ -944,7 +984,7 @@ WBeatSpinBox,
 }
 
 #CrossfaderAndSwitches2Decks {
-  qpoperty-layoutAlignment: 'AlignHCenter';
+  qproperty-layoutAlignment: 'AlignHCenter';
   padding: 0px;
 }
 
@@ -1068,10 +1108,6 @@ WBeatSpinBox,
   padding: 4px 0px 5px 0px;
 }
 
-#VUMeterBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
 #ToolbarLogo {
   background: transparent;
   margin: 3px 0px;
@@ -1106,7 +1142,7 @@ WBeatSpinBox,
 
 #RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 4px 2px 2px 1px;
+  padding: 4px 2px 2px 0px;
 }
 
 #BpmContainer {

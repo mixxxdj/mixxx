@@ -84,16 +84,16 @@
                         <Children>
                           <StatusLight>
                             <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                            <PathBack>style/clipping_deck.svg</PathBack>
+                            <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                            <PathBack>style/clipping_deck.png</PathBack>
                             <Connection>
                               <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                             </Connection>
                           </StatusLight>
                           <StatusLight>
                             <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                            <PathBack>style/clipping_deck.svg</PathBack>
+                            <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                            <PathBack>style/clipping_deck.png</PathBack>
                             <Connection>
                               <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                             </Connection>

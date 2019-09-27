@@ -6,7 +6,7 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <Template src="skin:rate_controls.xml"/>
+      <Template src="skin:deck_rate_controls.xml"/>
 
       <WidgetGroup>  <!-- Deck Channel -->
         <SizePolicy>me,min</SizePolicy>
@@ -18,9 +18,9 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- Big spinny -->
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>103,</MaximumSize>
+                <MaximumSize>102,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
@@ -38,12 +38,18 @@
                   <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- Big spinny -->
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
+                    </Children>
+                  </WidgetGroup>
                   <Template src="skin:deck_row_4_overviewSpinny.xml" />
                 </Children>
               </WidgetGroup>

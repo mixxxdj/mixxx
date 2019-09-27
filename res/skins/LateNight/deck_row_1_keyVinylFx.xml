@@ -50,22 +50,19 @@
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
       </Template>
 
-      <WidgetGroup>  <!-- spacer -->
-        <SizePolicy>min,min</SizePolicy>
-      </WidgetGroup>
+      <!-- spacer -->
+      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
-      <Template src="skin:vinyl_controls.xml"/>
+      <Template src="skin:deck_vinyl_controls.xml"/>
 
-      <WidgetGroup>  <!-- spacer -->
-        <SizePolicy>min,min</SizePolicy>
-      </WidgetGroup>
+      <!-- spacer -->
+      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- FX buttons -->
         <Layout>horizontal</Layout>
         <ObjectName>AlignRightTop</ObjectName>
           <Children>
 
-          <!-- FX buttons 1-4 -->
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
             <SetVariable name="ObjectName">FxAssignButton</SetVariable>
@@ -110,9 +107,8 @@
               </Template>
             </Children>
           </WidgetGroup>
-          <!-- /FX buttons 1-4 -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- FX buttons -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- DeckRow_1_KeyVinylFx -->
 </Template>

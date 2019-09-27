@@ -1,0 +1,77 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob.
+  Variables:
+    group
+    control: The control to connect to
+    label
+    Size
+    TooltipId
+    PotiMinAngle
+    PotiMaxAngle
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VuMeterBox</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <StatusLight>
+            <TooltipId>master_PeakIndicator</TooltipId>
+            <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+            <PathBack>style/clipping_deck.png</PathBack>
+            <Connection>
+              <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <TooltipId>master_VuMeter</TooltipId>
+            <PathVu>style/volume_display_deck_over.png</PathVu>
+            <PathBack>style/volume_display_deck.png</PathBack>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Master],VuMeterL</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <StatusLight>
+            <TooltipId>master_PeakIndicator</TooltipId>
+            <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+            <PathBack>style/clipping_deck.png</PathBack>
+            <Connection>
+              <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <TooltipId>master_VuMeter</TooltipId>
+            <PathVu>style/volume_display_deck_over.png</PathVu>
+            <PathBack>style/volume_display_deck.png</PathBack>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Master],VuMeterR</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
