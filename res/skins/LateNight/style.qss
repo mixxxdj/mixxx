@@ -114,7 +114,7 @@ QToolTip {/*
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  border: 1px solid #585858;
+  border: 1px solid #444;
   border-radius: 2px;
 }
 /* Button borders */
@@ -189,7 +189,7 @@ WTime {
 }
 
 #HorizBorder {
-  border-bottom: 1px solid #585858;
+  border-bottom: 1px solid #444;
   background-color: #1e1e1e;
 }
 
@@ -516,7 +516,7 @@ WTime {
 #FxKnobLabel,
 #FxButtonLabel {
   font: bold 10px/10px;
-  color: #585858;
+  color: #666;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-top: -1px;
@@ -897,7 +897,7 @@ WBeatSpinBox,
     border is added for final size
   width: 55px;
   height: 22px; */
-  border: 1px solid #666;
+  border: 1px solid #444;
   border-radius: 2px;
   color: #cfb32c;
   background-color: #0f0f0f;
@@ -1498,7 +1498,7 @@ WEffectSelector {
     is inherited.
     On Windows, it must be defined here */
     color: #cfb32c;
-    border: 1px solid #666;
+    border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
   }
