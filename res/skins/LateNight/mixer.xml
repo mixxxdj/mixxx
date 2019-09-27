@@ -6,7 +6,7 @@
       <SliderComposed>
         <TooltipId>crossfader</TooltipId>
         <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
-        <Slider>slider_crossfader.svg.png</Slider>
+        <Slider>slider_crossfader.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],crossfader</ConfigKey>
