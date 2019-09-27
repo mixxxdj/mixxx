@@ -966,16 +966,28 @@ WBeatSpinBox,
   background-color:yellow;  */
   padding: 3px 0px 1px 1px;
 }
-
 #CrossfaderAndSwitches2Decks {
   qproperty-layoutAlignment: 'AlignHCenter';
   padding: 0px;
 }
-
 #CrossfaderSwitch4Decks {
   qproperty-layoutAlignment: 'AlignRight';
-  margin: 1px 6px 0px 0px;
+  margin: 3px 5px 3px 0px;
 }
+
+#CrossfaderButtonContainer {
+  padding: 1px;
+  background-color: #0f0f0f;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
+  border-bottom-right-radius: 1px;
+  }
+  #CrossfaderButton[value="0"] {
+    background-color: #0f0f0f;
+  }
+  #CrossfaderButton[value="1"] {
+    background-color: #222;
+  }
 
 #PreviewDeck {
   qproperty-layoutAlignment: 'AlignTop';

@@ -13,14 +13,15 @@
 -->
 <Template>
   <WidgetGroup>
+    <ObjectName>CrossfaderButtonContainer</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 <!-- L -->
       <PushButton>
+        <ObjectName>CrossfaderButton</ObjectName>
         <TooltipId>orientation</TooltipId>
-        <Size>9f,15f</Size>
+        <Size>11f,15f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
@@ -43,6 +44,7 @@
       </PushButton>
 <!-- M -->
       <PushButton>
+        <ObjectName>CrossfaderButton</ObjectName>
         <TooltipId>orientation</TooltipId>
         <Size>11f,15f</Size>
         <NumberStates>2</NumberStates>
@@ -68,8 +70,9 @@
       </PushButton>
 <!-- R -->
       <PushButton>
+        <ObjectName>CrossfaderButton</ObjectName>
         <TooltipId>orientation</TooltipId>
-        <Size>10f,15f</Size>
+        <Size>11f,15f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
