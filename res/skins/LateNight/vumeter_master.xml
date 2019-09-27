@@ -18,6 +18,7 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <WidgetGroup>
+        <ObjectName>VuMeterBoxMasterSingle</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -44,8 +45,8 @@
           </VuMeter>
         </Children>
       </WidgetGroup>
-      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
       <WidgetGroup>
+        <ObjectName>VuMeterBoxMasterSingle</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>

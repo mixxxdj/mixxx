@@ -48,6 +48,10 @@
               </Spinny>
 
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_big_spinny_coverart</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
@@ -78,6 +82,10 @@
                     <DefaultCover>style/cover_default.svg</DefaultCover>
                   </CoverArt>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_big_spinny_coverart</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
               </WidgetGroup>
             </Children>
             <Connection>

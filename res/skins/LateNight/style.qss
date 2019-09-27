@@ -253,7 +253,13 @@ WTime {
 #SpinnyContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-}
+  }
+  #SpinnyContainer[highlight="0"] {
+    border-top: 1px solid #080808;
+  }
+  #SpinnyContainer[highlight="1"] {
+    border: none;
+  }
 
 WSpinny {/*
   This produces artifacts in spinny bg
@@ -347,56 +353,34 @@ WTime {
 }
 #VuAndSlider4decks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 1px 0px 0px 0px;
-  background-color: green;
 }
 
-#VuMeterBox {
-  background-color: green;
-  padding: 1px;
-  qproperty-layoutSpacing: 1px;
-}
-
-#VUMeterMarginChannel2Decks {
-  
-}
-#VUMeterMarginChannel4Decks {
-  
-}
-#VUMeterMarginMaster2Decks {
-  
-}
-#VUMeterMarginMaster4Decks {
-  
-}
-
-/* Master vu meter */
-
-#MasterVuMeter_2Decks {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#MasterVuMeter_4Decks {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  margin-top: 5px;
-}
-#VUMeterBoxClippingMaster,
-#VUMeterBoxLevelMaster {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  qproperty-layoutSpacing: 1;
+#VuMeterBox,
+#VuMeterBoxMasterSingle {
   background-color: #000;
-  margin-left: 9px;
-  margin-right: 9px;
+  qproperty-layoutSpacing: 1;
 }
-
-#VuMeterBox2Decks {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 0px 4px 2px 0px;
+#VuMeterBox {
+  padding: 1;
 }
-#VuMeterBox4Decks {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 0px 4px 2px 0px;
-}
+#VuMeterChannel2Decks,
+#VuMeterChannel4Decks,
+#VuMeterMaster2Decks,
+#VuMeterMaster4Decks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  }
+  #VuMeterChannel2Decks {
+    margin: 0px 9px 2px 9px;
+  }
+  #VuMeterChannel4Decks {
+    margin: 6px 4px 6px 14px;
+  }
+  #VuMeterMaster2Decks {
+    margin: 0px 0px 2px 0px;
+  }
+  #VuMeterMaster4Decks {
+    margin: 5px 0px;
+  }
 
 #VolumeGain2Decks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -978,9 +962,9 @@ WBeatSpinBox,
     }
 
 #Crossfader {
-  qproperty-layoutAlignment: 'AlignCenter';
-  /*background-color:#1e1e1e;*/
-  padding: 3px 1px 1px 5px;
+  qproperty-layoutAlignment: 'AlignCenter';/*
+  background-color:yellow;  */
+  padding: 3px 0px 1px 1px;
 }
 
 #CrossfaderAndSwitches2Decks {
@@ -1142,7 +1126,9 @@ WBeatSpinBox,
 
 #RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 4px 2px 2px 0px;
+  /* for some reason padding-right & margin-right are not applied.
+    #RateControls add the right margin. */
+  padding: 4px 0px 2px 0px;
 }
 
 #BpmContainer {
@@ -1170,6 +1156,7 @@ WBeatSpinBox,
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin-right: 2px;
 }
 
 #RateSlider {
