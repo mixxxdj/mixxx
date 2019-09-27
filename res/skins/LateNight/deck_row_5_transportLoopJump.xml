@@ -179,14 +179,54 @@
               </WidgetGroup>
             </Children>
             <Connection>
-                <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
-                <BindProperty>visible</BindProperty>
+              <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- / Intro + Outro -->
 
           <WidgetGroup>
             <MaximumSize>10,</MaximumSize>
             <SizePolicy>min,min</SizePolicy>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>HotCueGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">1</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">2</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">3</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">6</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">7</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">8</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup><!-- HotCues, Play, Cue, Reverse -->
@@ -197,28 +237,53 @@
                 <ObjectName>PlayCueRevHotCues</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:button_hotcue.xml">
-                    <SetVariable name="number">1</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_hotcue.xml">
-                    <SetVariable name="number">2</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_hotcue.xml">
-                    <SetVariable name="number">3</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_hotcue.xml">
-                    <SetVariable name="number">4</SetVariable>
-                  </Template>
-
                   <WidgetGroup>
-                    <Layout>horizontal</Layout>
+                    <ObjectName>HotCueGrid</ObjectName>
+                    <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">5</SetVariable>
-                      </Template>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:button_hotcue.xml">
+                            <SetVariable name="number">1</SetVariable>
+                          </Template>
+                          <Template src="skin:button_hotcue.xml">
+                            <SetVariable name="number">2</SetVariable>
+                          </Template>
+                          <Template src="skin:button_hotcue.xml">
+                            <SetVariable name="number">3</SetVariable>
+                          </Template>
+                          <Template src="skin:button_hotcue.xml">
+                            <SetVariable name="number">4</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup><Size>2f,2f</Size></WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <ObjectName>HotCueGrid</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:button_hotcue.xml">
+                            <SetVariable name="number">4</SetVariable>
+                          </Template>
+                          <Template src="skin:button_hotcue.xml">
+                            <SetVariable name="number">5</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup><Size>2f,2f</Size></WidgetGroup>
                     </Children>
                     <Connection>
                       <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
@@ -245,22 +310,8 @@
                 <ObjectName>PlayCueRevHotCues</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-
                   <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">6</SetVariable>
-                      </Template>
-
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">7</SetVariable>
-                      </Template>
-
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">8</SetVariable>
-                      </Template>
-                    </Children>
+                    <Size>2f,0min</Size>
                     <Connection>
                       <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
                       <BindProperty>visible</BindProperty>
