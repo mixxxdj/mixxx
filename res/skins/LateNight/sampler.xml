@@ -263,27 +263,34 @@
         <Layout>vertical</Layout>
         <SizePolicy>f,min</SizePolicy>
         <Children>
-          <StatusLight>
-            <TooltipId>sampler_PeakIndicator</TooltipId>
-            <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-            <PathBack>style/clipping_deck.png</PathBack>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-            </Connection>
-          </StatusLight>
-          <VuMeter>
-            <TooltipId>sampler_VuMeter</TooltipId>
-            <PathVu>style/volume_display_sampler_over.png</PathVu>
-            <PathBack>style/volume_display_sampler.png</PathBack>
-            <Horizontal>false</Horizontal>
-            <PeakHoldSize>5</PeakHoldSize>
-            <PeakHoldTime>500</PeakHoldTime>
-            <PeakFallTime>50</PeakFallTime>
-            <PeakFallStep>2</PeakFallStep>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-            </Connection>
-          </VuMeter>
+          <WidgetGroup>
+            <ObjectName>VuMeterBox</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>f,min</SizePolicy>
+            <Children>
+              <StatusLight>
+                <TooltipId>sampler_PeakIndicator</TooltipId>
+                <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                <PathBack>style/clipping_deck.png</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                </Connection>
+              </StatusLight>
+              <VuMeter>
+                <TooltipId>sampler_VuMeter</TooltipId>
+                <PathVu>style/volume_display_sampler_over.png</PathVu>
+                <PathBack>style/volume_display_sampler.png</PathBack>
+                <Horizontal>false</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>500</PeakHoldTime>
+                <PeakFallTime>50</PeakFallTime>
+                <PeakFallStep>2</PeakFallStep>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup><!-- /VU Meter -->
 

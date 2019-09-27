@@ -250,15 +250,21 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#SpinnyContainer {
+#SpinnyContainer,
+#CoverArtContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   }
-  #SpinnyContainer[highlight="0"] {
+  #SpinnyContainer {
+    border-left: 1px solid #080808;
+  }
+  #SpinnyContainer[highlight="0"],
+  #CoverArtContainer[highlight="0"] {
     border-top: 1px solid #080808;
   }
-  #SpinnyContainer[highlight="1"] {
-    border: none;
+  #SpinnyContainer[highlight="1"],
+  #CoverArtContainer[highlight="1"] {
+    border-top: none;
   }
 
 WSpinny {/*
@@ -1083,6 +1089,10 @@ WBeatSpinBox,
   background-color: #456113;
 }
 
+#Spacer00 {
+  background-color: #000;
+}
+
 #Spacer0f {
   background-color: #0f0f0f;
 }
@@ -1308,7 +1318,7 @@ WBeatSpinBox,
 }
 
 #SamplerPlay {
-  padding: 3px 1px 1px 1px;
+  padding: 3px 1px 1px 0px;
   border-right: 1px solid #000;
   border-top: 1px solid #080808;
   border-right: 0px;
