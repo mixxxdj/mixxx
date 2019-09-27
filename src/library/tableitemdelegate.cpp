@@ -1,8 +1,7 @@
+#include "library/tableitemdelegate.h"
 
 #include <QTableView>
 #include <QPainter>
-
-#include "library/tableitemdelegate.h"
 
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
@@ -10,11 +9,10 @@ TableItemDelegate::TableItemDelegate(QTableView* pTableView)
           m_pTableView(pTableView) {
 }
 
-TableItemDelegate::~TableItemDelegate() {
-}
-
-void TableItemDelegate::paint(QPainter* painter,const QStyleOptionViewItem& option,
-                              const QModelIndex& index) const {
+void TableItemDelegate::paint(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
 
     painter->save();
 
@@ -45,4 +43,8 @@ void TableItemDelegate::paint(QPainter* painter,const QStyleOptionViewItem& opti
     paintItem(painter, option, index);
 
     painter->restore();
+}
+
+int TableItemDelegate::columnWidth(const QModelIndex &index) const {
+    return m_pTableView->columnWidth(index.column());
 }
