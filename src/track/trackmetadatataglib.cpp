@@ -2220,9 +2220,12 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // or if the track has a Work field then store the Grouping in a
     // GRP1 frame instead of using TIT1.
     // See also: importTrackMetadataFromID3v2Tag()
-    if (trackMetadata.getTrackInfo().getWork().isNull() &&
-            pTag->frameListMap().contains("GRP1")) {
-        // Stick to traditional mapping if the new GRP1
+    if (
+#if defined(__EXTRA_METADATA__)
+            trackMetadata.getTrackInfo().getWork().isNull() &&
+#endif // __EXTRA_METADATA__
+            !pTag->frameListMap().contains("GRP1")) {
+        // Stick to the traditional mapping if the new GRP1
         // frame does not already exist in the file.
         writeID3v2TextIdentificationFrame(
                 pTag,
@@ -2239,9 +2242,6 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getWork());
-#else
-        DEBUG_ASSERT(!pTag->frameListMap().contains("TIT1"));
-        DEBUG_ASSERT(trackMetadata.getTrackInfo().getWork().isNull());
 #endif // __EXTRA_METADATA__
     }
 #if defined(__EXTRA_METADATA__)
