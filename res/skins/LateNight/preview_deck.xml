@@ -195,8 +195,8 @@
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">knob_volume_previewdeck.svg</Handle>
-                <Slider>slider_volume_previewdeck.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_volume_previewdeck.svg</Handle>
+                <Slider>skin:knobs_sliders/slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey>[PreviewDeck1],pregain</ConfigKey>

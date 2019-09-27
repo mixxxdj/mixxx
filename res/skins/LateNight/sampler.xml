@@ -306,8 +306,8 @@
             <Children>
               <SliderComposed>
                 <TooltipId>rate</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">knob_pitch_sampler.svg</Handle>
-                <Slider>slider_pitch_sampler.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_pitch_sampler.svg</Handle>
+                <Slider>skin:knobs_sliders/slider_pitch_sampler.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>

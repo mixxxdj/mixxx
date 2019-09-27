@@ -111,8 +111,8 @@
 
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
-            <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
-            <Slider>slider_volume_deck.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_volume_deck.svg</Handle>
+            <Slider>skin:knobs_sliders/slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>
