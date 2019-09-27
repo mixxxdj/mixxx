@@ -2222,17 +2222,13 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // See also: importTrackMetadataFromID3v2Tag()
     if (
 #if defined(__EXTRA_METADATA__)
-            trackMetadata.getTrackInfo().getWork().isNull() &&
+            !trackMetadata.getTrackInfo().getWork().isNull() ||
+            !trackMetadata.getTrackInfo().getMovement().isNull() ||
 #endif // __EXTRA_METADATA__
-            !pTag->frameListMap().contains("GRP1")) {
-        // Stick to the traditional mapping if the new GRP1
-        // frame does not already exist in the file.
-        writeID3v2TextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getGrouping());
-    } else {
-        // New grouping/work mapping
+            pTag->frameListMap().contains("GRP1")) {
+        // New grouping/work/movement mapping if properties for classical
+        // music are available or if the GRP1 frame is already present in
+        // the file.
         writeID3v2TextIdentificationFrame(
                 pTag,
                 "GRP1",
@@ -2242,14 +2238,18 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getWork());
+        writeID3v2TextIdentificationFrameStringIfNotNull(
+                pTag,
+                "MVNM",
+                trackMetadata.getTrackInfo().getMovement());
 #endif // __EXTRA_METADATA__
+    } else {
+        // Stick to the traditional CONTENTGROUP mapping.
+        writeID3v2TextIdentificationFrame(
+                pTag,
+                "TIT1",
+                trackMetadata.getTrackInfo().getGrouping());
     }
-#if defined(__EXTRA_METADATA__)
-    writeID3v2TextIdentificationFrameStringIfNotNull(
-            pTag,
-            "MVNM",
-            trackMetadata.getTrackInfo().getMovement());
-#endif // __EXTRA_METADATA__
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
