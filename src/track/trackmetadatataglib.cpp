@@ -342,6 +342,7 @@ bool parseTrackPeak(
     return isPeakValid;
 }
 
+#if defined(__EXTRA_METADATA__)
 inline
 bool hasAlbumGain(const TrackMetadata& trackMetadata) {
     return trackMetadata.getAlbumInfo().getReplayGain().hasRatio();
@@ -387,6 +388,7 @@ bool parseAlbumPeak(
     }
     return isPeakValid;
 }
+#endif // __EXTRA_METADATA__
 
 void readAudioProperties(
         TrackMetadata* pTrackMetadata,
@@ -686,18 +688,6 @@ void writeID3v2TextIdentificationFrame(
     }
 }
 
-bool writeID3v2TextIdentificationFrameStringIfNotNull(
-        TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id,
-        const QString& text) {
-    if (text.isNull()) {
-        return false;
-    } else {
-        writeID3v2TextIdentificationFrame(pTag, id, text);
-        return true;
-    }
-}
-
 void writeID3v2CommentsFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& text,
@@ -780,6 +770,19 @@ void writeID3v2UserTextIdentificationFrame(
     }
 }
 
+#if defined(__EXTRA_METADATA__)
+bool writeID3v2TextIdentificationFrameStringIfNotNull(
+        TagLib::ID3v2::Tag* pTag,
+        const TagLib::ByteVector &id,
+        const QString& text) {
+    if (text.isNull()) {
+        return false;
+    } else {
+        writeID3v2TextIdentificationFrame(pTag, id, text);
+        return true;
+    }
+}
+
 void writeID3v2UniqueFileIdentifierFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& owner,
@@ -809,6 +812,7 @@ void writeID3v2UniqueFileIdentifierFrame(
         }
     }
 }
+#endif // __EXTRA_METADATA__
 
 bool readMP4Atom(
         const TagLib::MP4::Tag& tag,
@@ -1940,15 +1944,6 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setGrouping(grouping);
     }
 
-    QString work;
-    if (readMP4Atom(tag, "\251wrk", &work)) {
-        pTrackMetadata->refTrackInfo().setWork(work);
-    }
-    QString movement;
-    if (readMP4Atom(tag, "\251mvn", &movement)) {
-        pTrackMetadata->refTrackInfo().setMovement(movement);
-    }
-
     QString year;
     if (readMP4Atom(tag, "\251day", &year)) {
         pTrackMetadata->refTrackInfo().setYear(year);
@@ -2095,6 +2090,14 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     if (readMP4Atom(tag, "\251too", &encoder)) {
         pTrackMetadata->refTrackInfo().setEncoder(encoder);
     }
+    QString work;
+    if (readMP4Atom(tag, "\251wrk", &work)) {
+        pTrackMetadata->refTrackInfo().setWork(work);
+    }
+    QString movement;
+    if (readMP4Atom(tag, "\251mvn", &movement)) {
+        pTrackMetadata->refTrackInfo().setMovement(movement);
+    }
 #endif // __EXTRA_METADATA__
 }
 
@@ -2217,16 +2220,15 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // or if the track has a Work field then store the Grouping in a
     // GRP1 frame instead of using TIT1.
     // See also: importTrackMetadataFromID3v2Tag()
-    if (trackMetadata.getTrackInfo().getWork().isNull() &&
+    if (
+#if defined(__EXTRA_METADATA__)
+            !trackMetadata.getTrackInfo().getWork().isNull() ||
+            !trackMetadata.getTrackInfo().getMovement().isNull() ||
+#endif // __EXTRA_METADATA__
             pTag->frameListMap().contains("GRP1")) {
-        // Stick to traditional mapping if the new GRP1
-        // frame does not already exist in the file.
-        writeID3v2TextIdentificationFrame(
-                pTag,
-                "TIT1",
-                trackMetadata.getTrackInfo().getGrouping());
-    } else {
-        // New grouping/work mapping
+        // New grouping/work/movement mapping if properties for classical
+        // music are available or if the GRP1 frame is already present in
+        // the file.
         writeID3v2TextIdentificationFrame(
                 pTag,
                 "GRP1",
@@ -2236,17 +2238,18 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getWork());
-#else
-        DEBUG_ASSERT(!pTag->frameListMap().contains("TIT1"));
-        DEBUG_ASSERT(trackMetadata.getTrackInfo().getWork().isNull());
+        writeID3v2TextIdentificationFrameStringIfNotNull(
+                pTag,
+                "MVNM",
+                trackMetadata.getTrackInfo().getMovement());
 #endif // __EXTRA_METADATA__
+    } else {
+        // Stick to the traditional CONTENTGROUP mapping.
+        writeID3v2TextIdentificationFrame(
+                pTag,
+                "TIT1",
+                trackMetadata.getTrackInfo().getGrouping());
     }
-#if defined(__EXTRA_METADATA__)
-    writeID3v2TextIdentificationFrameStringIfNotNull(
-            pTag,
-            "MVNM",
-            trackMetadata.getTrackInfo().getMovement());
-#endif // __EXTRA_METADATA__
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
