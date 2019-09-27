@@ -342,6 +342,7 @@ bool parseTrackPeak(
     return isPeakValid;
 }
 
+#if defined(__EXTRA_METADATA__)
 inline
 bool hasAlbumGain(const TrackMetadata& trackMetadata) {
     return trackMetadata.getAlbumInfo().getReplayGain().hasRatio();
@@ -387,6 +388,7 @@ bool parseAlbumPeak(
     }
     return isPeakValid;
 }
+#endif // __EXTRA_METADATA__
 
 void readAudioProperties(
         TrackMetadata* pTrackMetadata,
@@ -686,18 +688,6 @@ void writeID3v2TextIdentificationFrame(
     }
 }
 
-bool writeID3v2TextIdentificationFrameStringIfNotNull(
-        TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id,
-        const QString& text) {
-    if (text.isNull()) {
-        return false;
-    } else {
-        writeID3v2TextIdentificationFrame(pTag, id, text);
-        return true;
-    }
-}
-
 void writeID3v2CommentsFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& text,
@@ -780,6 +770,19 @@ void writeID3v2UserTextIdentificationFrame(
     }
 }
 
+#if defined(__EXTRA_METADATA__)
+bool writeID3v2TextIdentificationFrameStringIfNotNull(
+        TagLib::ID3v2::Tag* pTag,
+        const TagLib::ByteVector &id,
+        const QString& text) {
+    if (text.isNull()) {
+        return false;
+    } else {
+        writeID3v2TextIdentificationFrame(pTag, id, text);
+        return true;
+    }
+}
+
 void writeID3v2UniqueFileIdentifierFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& owner,
@@ -809,6 +812,7 @@ void writeID3v2UniqueFileIdentifierFrame(
         }
     }
 }
+#endif // __EXTRA_METADATA__
 
 bool readMP4Atom(
         const TagLib::MP4::Tag& tag,
@@ -1940,15 +1944,6 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setGrouping(grouping);
     }
 
-    QString work;
-    if (readMP4Atom(tag, "\251wrk", &work)) {
-        pTrackMetadata->refTrackInfo().setWork(work);
-    }
-    QString movement;
-    if (readMP4Atom(tag, "\251mvn", &movement)) {
-        pTrackMetadata->refTrackInfo().setMovement(movement);
-    }
-
     QString year;
     if (readMP4Atom(tag, "\251day", &year)) {
         pTrackMetadata->refTrackInfo().setYear(year);
@@ -2094,6 +2089,14 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     QString encoder;
     if (readMP4Atom(tag, "\251too", &encoder)) {
         pTrackMetadata->refTrackInfo().setEncoder(encoder);
+    }
+    QString work;
+    if (readMP4Atom(tag, "\251wrk", &work)) {
+        pTrackMetadata->refTrackInfo().setWork(work);
+    }
+    QString movement;
+    if (readMP4Atom(tag, "\251mvn", &movement)) {
+        pTrackMetadata->refTrackInfo().setMovement(movement);
     }
 #endif // __EXTRA_METADATA__
 }
