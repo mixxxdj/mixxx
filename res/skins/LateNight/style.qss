@@ -357,7 +357,7 @@ WTime {
 
 #VuMeterBox,
 #VuMeterBoxMasterSingle {
-  background-color: #000;
+  background-color: #080808;
   qproperty-layoutSpacing: 1;
 }
 #VuMeterBox {

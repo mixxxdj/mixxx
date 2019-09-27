@@ -99,7 +99,7 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>VuMeterMarginChannel4Decks</ObjectName>
+            <ObjectName>VuMeterChannel4Decks</ObjectName>
             <Size>26f,-1min</Size>
             <Layout>horizontal</Layout>
             <Children>
