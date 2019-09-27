@@ -53,7 +53,7 @@ LoopingControl::LoopingControl(QString group,
     m_loopSamples.setValue(m_oldLoopSamples);
     m_currentSample.setValue(0.0);
     m_pActiveBeatLoop = NULL;
-
+    m_pRateControl = NULL;
     //Create loop-in, loop-out, loop-exit, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(group, "loop_in"));
     connect(m_pLoopInButton, &ControlObject::valueChanged,
@@ -119,7 +119,6 @@ LoopingControl::LoopingControl(QString group,
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
-    m_pCOReverse = ControlObject::getControl(group, "reverse");
 
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
     // Activates a beatloop of a specified number of beats.
@@ -683,6 +682,10 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     m_loopSamples.setValue(loopSamples);
 }
 
+void LoopingControl::setRateControl(RateControl* rateControl) {
+    m_pRateControl = rateControl;
+}
+
 void LoopingControl::slotLoopOut(double pressed) {
     if (m_pTrack == nullptr) {
         return;
@@ -1086,7 +1089,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
                 // find the previous beat fraction and check if the current position is closer to this or the next one
                 // place the new loop start to the closer one
-                double previousFractionBeat = prevBeat + floor(samplesSinceLastBeat / beatLength) * beatLength;
+                double previousFractionBeat = prevBeat + floor(samplesSinceLastBeat / loopLength) * loopLength;
                 double samplesSinceLastFractionBeat = currentSample - previousFractionBeat;
 
                 if (samplesSinceLastFractionBeat <= (loopLength / 2.0)) {
@@ -1095,9 +1098,13 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                     newloopSamples.start = previousFractionBeat + loopLength;
                 }
             }
+
             // If running reverse, move the loop one loop size to the left.
             // Thus, the loops end will be closest to the current position
-            bool reverse = m_pCOReverse->toBool();
+            bool reverse = false;
+            if (m_pRateControl != NULL) {
+                reverse = m_pRateControl->isReverseButtonPressed();
+            }
             if (reverse) {
                 newloopSamples.start -= loopLength;
             }

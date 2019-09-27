@@ -180,18 +180,12 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
     QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
-
-    // Rate Controller must be created before Looping Controller for the Reverse Button to be created
-    m_pRateControl = new RateControl(group, pConfig);
-    // Add the Rate Controller
-    addControl(m_pRateControl);
+    addControl(quantize_control);
+    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
-
-    addControl(quantize_control);
-    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
@@ -203,6 +197,12 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     addControl(m_pVinylControlControl);
 #endif
 
+    // Create the Rate Controller
+    m_pRateControl = new RateControl(group, pConfig);
+    // Add the Rate Controller
+    addControl(m_pRateControl);
+    // Looping Control needs Rate Control for Reverse Button
+    m_pLoopingControl->setRateControl(m_pRateControl);
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(group, pConfig);
