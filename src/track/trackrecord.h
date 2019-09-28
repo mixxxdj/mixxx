@@ -69,23 +69,23 @@ public:
         return m_keys;
     }
 
-    mixxx::track::io::key::ChromaticKey getGlobalKey() const {
+    track::io::key::ChromaticKey getGlobalKey() const {
         if (getKeys().isValid()) {
             return getKeys().getGlobalKey();
         } else {
-            return mixxx::track::io::key::INVALID;
+            return track::io::key::INVALID;
         }
     }
     bool updateGlobalKey(
-            mixxx::track::io::key::ChromaticKey key,
-            mixxx::track::io::key::Source keySource);
+            track::io::key::ChromaticKey key,
+            track::io::key::Source keySource);
 
     QString getGlobalKeyText() const {
         return KeyUtils::getGlobalKeyText(getKeys());
     }
     bool updateGlobalKeyText(
             const QString& keyText,
-            mixxx::track::io::key::Source keySource);
+            track::io::key::Source keySource);
 
 private:
     Keys m_keys;
