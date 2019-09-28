@@ -914,7 +914,7 @@ WBeatSpinBox,
   }
   WBeatSpinBox {
     padding: 0px 2px 0px 1px;
-    margin: 0px -1px 2px 0px;
+    margin: 0px 0px 2px 0px;
   }
   /* Eliminate overlapping right border for transition time in Auto DJ tab */
   #DlgAutoDJ QSpinBox {
@@ -940,18 +940,18 @@ WBeatSpinBox,
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
-    width: 18px;
+    width: 16px;
     height: 12px;
-    margin: 0px;
+    margin: 0px 0px 0px 0px;
     padding: 0px;
-    border: 0px;
+    border-left: 1px solid #4c4c4c;
   }
 
   WBeatSpinBox::up-button,
   #DlgAutoDJ QSpinBox::up-button {
     subcontrol-position: top right;
-    margin-top: -1px;
     image: url(skin:/buttons/btn_beatbox_double.svg) no-repeat;
+    border-bottom-left-radius: 2px;
     }
     WBeatSpinBox::up-button:pressed,
     #DlgAutoDJ QSpinBox::up-button:pressed {
@@ -960,8 +960,8 @@ WBeatSpinBox,
   WBeatSpinBox::down-button,
   #DlgAutoDJ QSpinBox::down-button {
     subcontrol-position: bottom right;
-    margin-bottom: -1px;
     image: url(skin:/buttons/btn_beatbox_halve.svg) no-repeat;
+    border-top-left-radius: 2px;
     }
     WBeatSpinBox::down-button:pressed,
     #DlgAutoDJ QSpinBox::down-button:pressed {
@@ -1485,9 +1485,14 @@ WEffectSelector {
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
   padding: 4px 0px 4px 5px;
-  /* The 3D frame on the combo box becomes flat when you give it a border */
-  border: 1px solid #666;
-  border-radius: 3px;
+  /* The 3D frame on the combo box becomes flat when you give it a border
+  border-left: 1px solid #444;
+  border-radius: 3px; */
+  border-top: 1px solid #444;
+  border-left: 1px solid #444;
+  border-bottom: 1px solid #2a2a2a;
+  border-right: 1px solid #2a2a2a;
+  border-radius: 2px;
   }
   WEffectSelector::drop-down {
     border: 0;
