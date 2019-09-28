@@ -65,7 +65,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
-    bool onHidingTracks(
+    bool hideTracks(
             const QList<TrackId>& trackIds);
     void afterHidingTracks(
             const QList<TrackId>& trackIds);

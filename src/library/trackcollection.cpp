@@ -171,7 +171,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.hideTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {

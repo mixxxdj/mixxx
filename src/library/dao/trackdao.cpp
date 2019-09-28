@@ -744,7 +744,7 @@ TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) 
     return pTrack;
 }
 
-bool TrackDAO::onHidingTracks(
+bool TrackDAO::hideTracks(
         const QList<TrackId>& trackIds) {
     QStringList idList;
     for (const auto& trackId: trackIds) {
