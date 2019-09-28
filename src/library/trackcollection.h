@@ -69,7 +69,7 @@ class TrackCollection : public QObject,
     // This function returns a track ID of all file in the list not already visible,
     // it adds and unhides the tracks as well.
     QList<TrackId> resolveTrackIds(const QList<QFileInfo> &files,
-            TrackDAO::ResolveTrackIdOptions options);
+            TrackDAO::ResolveTrackIdFlags flags);
     QList<TrackId> resolveTrackIdsFromUrls(const QList<QUrl>& urls,
             bool addMissing);
     QList<TrackId> resolveTrackIdsFromLocations(

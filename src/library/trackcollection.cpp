@@ -89,9 +89,9 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
-        const QList<QFileInfo>& files, TrackDAO::ResolveTrackIdOptions options) {
-    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(files, options);
-    if (options & TrackDAO::ResolveTrackIdOption::UnhideHidden) {
+        const QList<QFileInfo>& files, TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(files, flags);
+    if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
         unhideTracks(trackIds);
     }
     return trackIds;
@@ -104,12 +104,12 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
         return QList<TrackId>();
     }
 
-    TrackDAO::ResolveTrackIdOptions options =
-            TrackDAO::ResolveTrackIdOption::UnhideHidden;
+    TrackDAO::ResolveTrackIdFlags flags =
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden;
     if (addMissing) {
-        options |= TrackDAO::ResolveTrackIdOption::AddMissing;
+        flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
     }
-    return resolveTrackIds(files, options);
+    return resolveTrackIds(files, flags);
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
@@ -120,12 +120,12 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
         fileInfoList.append(fileInfo);
     }
     return resolveTrackIds(fileInfoList,
-            TrackDAO::ResolveTrackIdOption::UnhideHidden
-                    | TrackDAO::ResolveTrackIdOption::AddMissing);
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden
+                    | TrackDAO::ResolveTrackIdFlag::AddMissing);
 }
 
 QList<TrackId> resolveTrackIdsFromUrls(const QList<QUrl>& urls,
-        TrackDAO::ResolveTrackIdOptions options);
+        TrackDAO::ResolveTrackIdFlags flags);
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
