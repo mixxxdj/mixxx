@@ -201,9 +201,17 @@ void TrackCollectionManager::exportTrackMetadata(
             (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate:
+            // Export track metadata now by saving as file tags.
             SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
             break;
         case TrackMetadataExportMode::Deferred:
+            // Export track metadata later when the track object goes out
+            // of scope and we have exclusive file access. This is required
+            // unconditionally, even if the dirty flag is not set again!
+            // Use case: Keep all track collection up-to-date while tracks
+            // are still loaded in memory to allow frequent synchronization
+            // of external collections. Local caching is error prone and not
+            // always feasible.
             pTrack->markForMetadataExport();
             break;
         }
