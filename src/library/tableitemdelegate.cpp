@@ -3,6 +3,8 @@
 #include <QTableView>
 #include <QPainter>
 
+#include "util/painterscope.h"
+
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
         : QStyledItemDelegate(pTableView),
@@ -13,8 +15,7 @@ void TableItemDelegate::paint(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-
-    painter->save();
+    PainterScope painterScope(painter);
 
     painter->setClipRect(option.rect);
 
@@ -41,8 +42,6 @@ void TableItemDelegate::paint(
     }
 
     paintItem(painter, option, index);
-
-    painter->restore();
 }
 
 int TableItemDelegate::columnWidth(const QModelIndex &index) const {
