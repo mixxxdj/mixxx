@@ -1347,33 +1347,6 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
-    // Data migration: Reload track total from file tags if not initialized
-    // yet. The added column "tracktotal" has been initialized with the
-    // default value "//".
-    // See also: Schema revision 26 in schema.xml
-    if (pTrack->getTrackTotal() == "//") {
-        // Reload track total from file tags if the special track
-        // total migration value "//" indicates that the track total
-        // is missing and needs to be reloaded.
-        qDebug() << "Reloading value for 'tracktotal' once-only from file"
-                " to replace the default value introduced with a previous"
-                " schema upgrade";
-        mixxx::TrackMetadata trackMetadata;
-        if (SoundSourceProxy(pTrack).importTrackMetadata(&trackMetadata) == mixxx::MetadataSource::ImportResult::Succeeded) {
-            // Copy the track total from the temporary track object
-            pTrack->setTrackTotal(trackMetadata.getTrackInfo().getTrackTotal());
-            // Also set the track number if it is still empty due
-            // to insufficient parsing capabilities of Mixxx in
-            // previous versions.
-            if (!trackMetadata.getTrackInfo().getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                pTrack->setTrackNumber(trackMetadata.getTrackInfo().getTrackNumber());
-            }
-        } else {
-            qWarning() << "Failed to reload value for 'tracktotal' from file tags:"
-                    << trackLocation;
-        }
-    }
-
     // Listen to dirty and changed signals
     connect(pTrack.get(),
             &Track::dirty,
