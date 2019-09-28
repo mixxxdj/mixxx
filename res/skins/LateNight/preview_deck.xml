@@ -175,16 +175,16 @@
                     <Children>
                       <StatusLight>
                         <TooltipId>preview_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping_previewdeck_over.png</PathStatusLight>
-                        <PathBack>style/clipping_previewdeck.png</PathBack>
+                        <PathStatusLight>style/vu_clipping_previewdeck_over.png</PathStatusLight>
+                        <PathBack>style/vu_clipping_previewdeck.png</PathBack>
                         <Connection>
                           <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
                         </Connection>
                       </StatusLight>
                       <VuMeter>
                         <TooltipId>preview_VuMeter</TooltipId>
-                        <PathVu>style/volume_display_previewdeck_over.png</PathVu>
-                        <PathBack>style/volume_display_previewdeck.png</PathBack>
+                        <PathVu>style/vu_level_previewdeck_over.png</PathVu>
+                        <PathBack>style/vu_level_previewdeck.png</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>3</PeakHoldSize>
                         <PeakHoldTime>250</PeakHoldTime>

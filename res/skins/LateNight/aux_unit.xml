@@ -86,16 +86,16 @@
                 <Children>
                   <StatusLight>
                     <TooltipId>microphone_PeakIndicator</TooltipId>
-                    <PathStatusLight>style/clipping_micAux_over.png</PathStatusLight>
-                    <PathBack>style/clipping_micAux.png</PathBack>
+                    <PathStatusLight>style/vu_clipping_micAux_over.png</PathStatusLight>
+                    <PathBack>style/vu_clipping_micAux.png</PathBack>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
                     </Connection>
                   </StatusLight>
                   <VuMeter>
                     <TooltipId>microphone_VuMeter</TooltipId>
-                    <PathVu>style/volume_display_micAux_over.png</PathVu>
-                    <PathBack>style/volume_display_micAux.png</PathBack>
+                    <PathVu>style/vu_level_micAux_over.png</PathVu>
+                    <PathBack>style/vu_level_micAux.png</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
