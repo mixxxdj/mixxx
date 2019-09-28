@@ -138,21 +138,13 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    if (!files.size()) {
-        return false;
-    }
-
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    TrackDAO::ResolveTrackIdOptions options = TrackDAO::ResolveTrackIdOption::UnhideHidden;
-    if (pSource == nullptr) {
-        options |= TrackDAO::ResolveTrackIdOption::AddMissing;
-    }
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIds(files, options);
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+            !pSource);
     if (!trackIds.size()) {
         return false;
     }

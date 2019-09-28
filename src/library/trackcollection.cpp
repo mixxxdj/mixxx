@@ -9,6 +9,7 @@
 #include "util/db/sqltransaction.h"
 
 #include "util/assert.h"
+#include "util/dnd.h"
 
 
 namespace {
@@ -95,6 +96,36 @@ QList<TrackId> TrackCollection::resolveTrackIds(
     }
     return trackIds;
 }
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls, bool addMissing) {
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    if (!files.size()) {
+        return QList<TrackId>();
+    }
+
+    TrackDAO::ResolveTrackIdOptions options =
+            TrackDAO::ResolveTrackIdOption::UnhideHidden;
+    if (addMissing) {
+        options |= TrackDAO::ResolveTrackIdOption::AddMissing;
+    }
+    return resolveTrackIds(files, options);
+}
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) {
+    QList<QFileInfo> fileInfoList;
+    foreach(QString fileLocation, locations) {
+        QFileInfo fileInfo(fileLocation);
+        fileInfoList.append(fileInfo);
+    }
+    return resolveTrackIds(fileInfoList,
+            TrackDAO::ResolveTrackIdOption::UnhideHidden
+                    | TrackDAO::ResolveTrackIdOption::AddMissing);
+}
+
+QList<TrackId> resolveTrackIdsFromUrls(const QList<QUrl>& urls,
+        TrackDAO::ResolveTrackIdOptions options);
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());

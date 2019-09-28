@@ -181,10 +181,8 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIds(files,
-                TrackDAO::ResolveTrackIdOption::UnhideHidden
-                        | TrackDAO::ResolveTrackIdOption::AddMissing);
+        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+                urls, true);
         return trackIds.size() > 0;
     }
 }

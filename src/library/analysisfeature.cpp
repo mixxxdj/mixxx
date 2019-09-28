@@ -193,11 +193,8 @@ void AnalysisFeature::cleanupAnalyzer() {
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    Q_UNUSED(pSource);
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIds(files,
-            TrackDAO::ResolveTrackIdOption::UnhideHidden
-                    | TrackDAO::ResolveTrackIdOption::AddMissing);
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+            !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

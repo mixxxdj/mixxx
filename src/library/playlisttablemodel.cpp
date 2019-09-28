@@ -78,6 +78,9 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         return 0;
     }
 
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromLocations(
+            locations);
+
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
 
@@ -85,16 +88,6 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     if (position <= 0) {
         position = rowCount() + 1;
     }
-
-    QList<QFileInfo> fileInfoList;
-    foreach (QString fileLocation, locations) {
-        QFileInfo fileInfo(fileLocation);
-        fileInfoList.append(fileInfo);
-    }
-
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIds(fileInfoList,
-            TrackDAO::ResolveTrackIdOption::UnhideHidden
-                    | TrackDAO::ResolveTrackIdOption::AddMissing);
 
     int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
             trackIds, m_iPlaylistId, position);
