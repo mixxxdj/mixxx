@@ -1,6 +1,7 @@
-
 import os
 import subprocess
+import sys
+
 
 #This page is REALLY USEFUL: http://www.cocoadev.com/index.pl?ApplicationLinking
 #question: why do dylibs embed their install name in themselves? that would seem to imply the system keeps a cache of all the "install names", but that's not what the docs seem to say.
@@ -32,10 +33,6 @@ import subprocess
 #Is the working dir of an app set to it's .app dir or .app/Contents/MacOS?
 
 #Assumption: the loadlinks inside of an embeddable framework are all relative
-
-
-import sys,os
-
 
 
 def system(s):

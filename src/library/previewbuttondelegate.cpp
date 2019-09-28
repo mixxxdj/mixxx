@@ -46,6 +46,11 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
     Q_UNUSED(option);
     QPushButton* btn = new LibraryPreviewButton(parent);
     btn->setCheckable(true);
+    // Prevent being focused by Tab key or emulated Tab sent by library controls
+    // Avoids a Tab loop caused by setLibraryFocus() when the mouse pointer
+    // is above the button (Prev.btn > Table > Prev.btn > ...) and also
+    // keeps the table focus border when the hovered button's row is selected
+    btn->setFocusPolicy(Qt::NoFocus);
     bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.

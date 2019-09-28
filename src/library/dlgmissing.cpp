@@ -23,7 +23,7 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary);
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, SIGNAL(clicked()),

@@ -20,6 +20,8 @@ class DlgTrackInfo;
 class TrackCollection;
 class WCoverArtMenu;
 
+class ExternalTrackCollection;
+
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
@@ -27,8 +29,12 @@ const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) f
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
-    WTrackTableView(QWidget* parent, UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection, bool sorting = true);
+    WTrackTableView(
+            QWidget* parent,
+            UserSettingsPointer pConfig,
+            TrackCollection* pTrackCollection,
+            bool sorting,
+            const QList<ExternalTrackCollection*>& externalTrackCollections = {});
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
@@ -65,6 +71,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotShowTrackInTagFetcher(TrackPointer track);
     void slotImportTrackMetadataFromFileTags();
     void slotExportTrackMetadataIntoFileTags();
+    void slotUpdateExternalTrackCollection(ExternalTrackCollection*);
     void slotPopulatePlaylistMenu();
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* qc);
@@ -104,7 +111,7 @@ class WTrackTableView : public WLibraryTableView {
     void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
-    void createActions();
+    void createActions(const QList<ExternalTrackCollection*>& externalTrackCollections);
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
@@ -147,6 +154,7 @@ class WTrackTableView : public WLibraryTableView {
     QMenu *m_pPlaylistMenu;
     QMenu *m_pCrateMenu;
     QMenu *m_pMetadataMenu;
+    QMenu *m_pMetadataUpdateExternalCollectionsMenu;
     QMenu *m_pClearMetadataMenu;
     QMenu *m_pBPMMenu;
 
@@ -202,6 +210,12 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearKeyAction;
     QAction* m_pClearReplayGainAction;
     QAction* m_pClearAllMetadataAction;
+
+    struct UpdateExternalTrackCollection {
+        QPointer<ExternalTrackCollection> externalTrackCollection;
+        QAction* action;
+    };
+    QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
     bool m_sorting;
 
