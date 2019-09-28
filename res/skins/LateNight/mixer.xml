@@ -6,7 +6,7 @@
       <SliderComposed>
         <TooltipId>crossfader</TooltipId>
         <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-        <Slider>slider_crossfader.svg</Slider>
+        <Slider>skin:/knobs_sliders/slider_crossfader.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -246,8 +246,8 @@
                           </SingletonContainer>
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
-                            <Handle scalemode="STRETCH_ASPECT">/knobs_sliders/knob_crossfader.svg</Handle>
-                            <Slider>slider_crossfader_small.svg</Slider>
+                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
+                            <Slider>skin:/knobs_slidersslider_crossfader_small.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>
