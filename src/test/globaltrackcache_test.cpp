@@ -51,7 +51,11 @@ class TrackTitleThread: public QThread {
             m_recentTrackPtr = std::move(track);
             ++loopCount;
         }
-        // If the cache is empty all references must have been dropped
+        // If the cache is empty all references must have been dropped.
+        // Why? m_recentTrackPtr is only valid if a pointer has been found
+        // in the cache during the previous cycle, i.e. the cache could not
+        // have been empty. In this case at least another loop cycle follow,
+        // and so on...
         ASSERT_TRUE(!m_recentTrackPtr);
         qDebug() << "Finished" << loopCount << " thread loops";
     }
