@@ -224,20 +224,23 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
-        // Show the currently selected track in the large cover art view. Doing
-        // this in selectionChanged slows down scrolling performance so we wait
-        // until the user has stopped interacting first.
+        // Show the currently selected track in the large cover art view and
+        // hightlights crate and playlists. Doing this in selectionChanged
+        // slows down scrolling performance so we wait until the user has
+        // stopped interacting first.
         if (m_selectionChangedSinceLastGuiTick) {
             const QModelIndexList indices = selectionModel()->selectedRows();
-            if (indices.size() > 0 && indices.last().isValid()) {
+            if (indices.size() == 1 && indices.first().isValid()) {
+                // A single track has been selected
                 TrackModel* trackModel = getTrackModel();
                 if (trackModel) {
-                    TrackPointer pTrack = trackModel->getTrack(indices.last());
+                    TrackPointer pTrack = trackModel->getTrack(indices.first());
                     if (pTrack) {
                         emit(trackSelected(pTrack));
                     }
                 }
             } else {
+                // None or multiple tracks have been selected
                 emit(trackSelected(TrackPointer()));
             }
             m_selectionChangedSinceLastGuiTick = false;
