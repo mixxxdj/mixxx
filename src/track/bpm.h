@@ -25,6 +25,12 @@ public:
 
     // Adjusts floating-point values to match their string representation
     // in file tags to account for rounding errors.
+    // NOTE(2019-02-19, uklotzde): The pre-normalization cannot prevent
+    // repeated export of metadata for files with ID3 tags that are only
+    // able to store the BPM value with integer precision! In case of a
+    // fractional value the ID3 metadata is always detected as modified
+    // and will be exported regardless if it has actually been modified
+    // or not.
     void normalizeBeforeExport() {
         m_value = normalizeValue(m_value);
     }

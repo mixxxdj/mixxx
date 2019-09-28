@@ -72,9 +72,6 @@ public:
             QString fileName,
             bool splitArtistTitle);
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues();
-
     // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {

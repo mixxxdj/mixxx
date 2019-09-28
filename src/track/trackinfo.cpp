@@ -3,28 +3,6 @@
 
 namespace mixxx {
 
-void TrackInfo::resetUnsupportedValues() {
-#if defined(__EXTRA_METADATA__)
-    setConductor(QString());
-    setDiscNumber(QString());
-    setDiscTotal(QString());
-    setEncoder(QString());
-    setEncoderSettings(QString());
-    setISRC(QString());
-    setLanguage(QString());
-    setLyricist(QString());
-    setMood(QString());
-    setMovement(QString());
-    setMusicBrainzArtistId(QString());
-    setMusicBrainzRecordingId(QString());
-    setMusicBrainzReleaseId(QString());
-    setMusicBrainzWorkId(QString());
-    setRemixer(QString());
-    setSubtitle(QString());
-    setWork(QString());
-#endif // __EXTRA_METADATA__
-}
-
 namespace {
 
 const QString kArtistTitleSeparatorWithSpaces = " - ";

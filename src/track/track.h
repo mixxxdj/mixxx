@@ -281,14 +281,18 @@ class Track : public QObject {
     quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
-    void setTrackMetadata(
-            mixxx::TrackMetadata trackMetadata,
+    void importMetadata(
+            mixxx::TrackMetadata importedMetadata,
             QDateTime metadataSynchronized);
-    void getTrackMetadata(
+    // Merge additional metadata that is not (yet) stored in the database
+    // and only available from file tags.
+    void mergeImportedMetadata(
+            const mixxx::TrackMetadata& importedMetadata);
+
+    void readTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
             bool* pMetadataSynchronized = nullptr) const;
-
-    void getTrackRecord(
+    void readTrackRecord(
             mixxx::TrackRecord* pTrackRecord,
             bool* pDirty = nullptr) const;
 
