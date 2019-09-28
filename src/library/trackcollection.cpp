@@ -100,7 +100,7 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls, bool addMissing) {
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    if (!files.size()) {
+    if (files.isEmpty()) {
         return QList<TrackId>();
     }
 
