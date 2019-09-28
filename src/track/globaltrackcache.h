@@ -32,7 +32,7 @@ protected:
     virtual ~GlobalTrackCacheRelocator() {}
 };
 
-typedef void (*deleteTrackFn)(Track*);
+typedef void (*deleteTrackFn_t)(Track*);
 
 class GlobalTrackCacheEntry final {
     // We need to hold two shared pointers, the deletingPtr is
@@ -43,14 +43,14 @@ class GlobalTrackCacheEntry final {
   public:
     class TrackDeleter {
     public:
-        explicit TrackDeleter(deleteTrackFn deleteTrack = nullptr)
-                : m_deleteTrack(deleteTrack) {
+        explicit TrackDeleter(deleteTrackFn_t deleteTrackFn = nullptr)
+                : m_deleteTrackFn(deleteTrackFn) {
         }
 
         void operator()(Track* pTrack) const;
 
     private:
-        deleteTrackFn m_deleteTrack;
+        deleteTrackFn_t m_deleteTrackFn;
     };
 
     explicit GlobalTrackCacheEntry(
@@ -199,7 +199,7 @@ public:
     static void createInstance(
             GlobalTrackCacheSaver* pSaver,
             // A custom deleter is only needed for tests without an event loop!
-            deleteTrackFn deleteTrack = nullptr);
+            deleteTrackFn_t deleteTrackFn = nullptr);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
     // instance during shutdown, because we are not able to guarantee that
     // all track references have been released before. Instead the singular
@@ -220,7 +220,7 @@ private:
 
     GlobalTrackCache(
             GlobalTrackCacheSaver* pSaver,
-            deleteTrackFn deleteTrack);
+            deleteTrackFn_t deleteTrackFn);
     ~GlobalTrackCache();
 
     void relocateTracks(
@@ -260,7 +260,7 @@ private:
 
     GlobalTrackCacheSaver* m_pSaver;
 
-    deleteTrackFn m_deleteTrack;
+    deleteTrackFn_t m_deleteTrackFn;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;

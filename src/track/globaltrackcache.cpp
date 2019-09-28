@@ -196,9 +196,9 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
 //static
 void GlobalTrackCache::createInstance(
         GlobalTrackCacheSaver* pSaver,
-        deleteTrackFn deleteTrack) {
+        deleteTrackFn_t deleteTrackFn) {
     DEBUG_ASSERT(!s_pInstance);
-    s_pInstance = new GlobalTrackCache(pSaver, deleteTrack);
+    s_pInstance = new GlobalTrackCache(pSaver, deleteTrackFn);
 }
 
 //static
@@ -233,9 +233,9 @@ void GlobalTrackCacheEntry::TrackDeleter::operator()(Track* pTrack) const {
                 << pTrack;
     }
 
-    if (m_deleteTrack) {
+    if (m_deleteTrackFn) {
         // Custom delete function
-        (*m_deleteTrack)(pTrack);
+        (*m_deleteTrackFn)(pTrack);
     } else {
         // Default delete function
         pTrack->deleteLater();
@@ -272,10 +272,10 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
 
 GlobalTrackCache::GlobalTrackCache(
         GlobalTrackCacheSaver* pSaver,
-        deleteTrackFn deleteTrack)
+        deleteTrackFn_t deleteTrackFn)
     : m_mutex(QMutex::Recursive),
       m_pSaver(pSaver),
-      m_deleteTrack(deleteTrack),
+      m_deleteTrackFn(deleteTrackFn),
       m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
     qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
@@ -550,7 +550,7 @@ void GlobalTrackCache::resolve(
                     std::move(fileInfo),
                     std::move(pSecurityToken),
                     std::move(trackId)),
-            GlobalTrackCacheEntry::TrackDeleter(m_deleteTrack));
+            GlobalTrackCacheEntry::TrackDeleter(m_deleteTrackFn));
 
     auto cacheEntryPtr = std::make_shared<GlobalTrackCacheEntry>(
             std::move(deletingPtr));
