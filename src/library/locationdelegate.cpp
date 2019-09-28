@@ -11,9 +11,9 @@ void LocationDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    QString elidedLocation = option.fontMetrics.elidedText(
+    QString elidedText = option.fontMetrics.elidedText(
             index.data().toString(),
             Qt::ElideLeft,
             columnWidth(index));
-    painter->drawText(option.rect, Qt::AlignVCenter, elidedLocation);
+    painter->drawText(option.rect, Qt::AlignVCenter, elidedText);
 }
