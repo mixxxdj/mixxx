@@ -25,6 +25,7 @@ void TrackInfo::resetUnsupportedValues() {
 
 namespace {
 
+const QString kArtistTitleSeparatorWithSpaces = " - ";
 const QString kArtistTitleSeparator = "_-_";
 
 const QChar kFileExtensionSeparator = '.';
@@ -38,7 +39,7 @@ bool TrackInfo::parseArtistTitleFromFileName(
     fileName = fileName.trimmed();
     auto titleWithFileType = fileName;
     if (splitArtistTitle) {
-        fileName.replace(" - ", kArtistTitleSeparator);
+        fileName.replace(kArtistTitleSeparatorWithSpaces, kArtistTitleSeparator);
         if (fileName.count(kArtistTitleSeparator) == 1) {
             auto artist = fileName.section(kArtistTitleSeparator, 0, 0).trimmed();
             if (!artist.isEmpty()) {
