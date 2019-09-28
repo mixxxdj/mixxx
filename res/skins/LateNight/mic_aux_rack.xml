@@ -5,7 +5,9 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>MicRack</ObjectName>
@@ -86,7 +88,7 @@
 
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
-        <MaximumSize>80,i</MaximumSize>
+        <MaximumSize>85,i</MaximumSize>
       </WidgetGroup>
 
       <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
