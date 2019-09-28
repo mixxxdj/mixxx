@@ -239,7 +239,7 @@ WTime {
 
 #DeckRow_5_LoopCuesTransport {
   qproperty-layoutAlignment: 'AlignBottom';
-  padding: 3px 1px 1px 3px;
+  padding: 2px 1px 1px 3px;
 }
 
 #PlayContainerSmall {
@@ -662,9 +662,10 @@ WEffectButtonParameter*/
   /* ronso0
   TEST pixel fonts instead of icons
   FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+  
   font-size: tried a lot of integers as well as .5 values
-  didn't I didn't find the magic, unintuitive floating point value that would align
-  font pixels to actual button size in pixels to make the fonts look sharp.
+  didn't find the magic number.. it's some unintuitive floating point value
+  that aligns font pixels to screen pixels so the fonts look sharp.
 
   font-family: "Acknowledge TT (BRK)";
   font-family: "Bulky Pixels";
@@ -992,7 +993,7 @@ WBeatSpinBox,
     background-color: #0f0f0f;
   }
   #CrossfaderButton[value="1"] {
-    background-color: #222;
+    background-color: #333;
   }
 
 #PreviewDeck {
@@ -1191,6 +1192,9 @@ WBeatSpinBox,
   padding: 2px 0px 0px 2px;
 }
 
+#MicAuxRack {
+}
+
 #MicRack, #AuxRack {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #1e1e1e;
@@ -1198,10 +1202,12 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 4;
   }
   #MicRack {
+    margin-left: 3px;
     margin-right: 5px;
   }
   #AuxRack {
     margin-left: 5px;
+    margin-right: 3px;
   }
 
 #MicAuxUnit {
@@ -1209,7 +1215,7 @@ WBeatSpinBox,
 }
 
 #MicAuxInterior {
-  padding: 0px 2px 2px 2px;
+  padding: 0px 2px 2px 1px;
 }
 
 #MicTitle {
@@ -1250,7 +1256,7 @@ WBeatSpinBox,
 
 #MicVUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 2px 1px 1px 3px;
+  padding: 2px 1px 1px 2px;
 }
 
 #MicFxButtons {

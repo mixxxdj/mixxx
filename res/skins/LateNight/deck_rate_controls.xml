@@ -14,13 +14,13 @@
           <WidgetGroup><!-- BpmContainer + Tap overlay -->
             <ObjectName>BpmContainer</ObjectName>
             <Layout>stacked</Layout>
-            <Size>60f,22f</Size>
+            <Size>56f,22f</Size>
             <Children>
               <!-- In order to make the bpm display tappable, we use an old-style
               widget group and put the bpm pushbutton on top of the display. -->
               <PushButton>
                 <TooltipId>bpm_tap_visual_bpm</TooltipId>
-                <Size>60f,22f</Size>
+                <Size>56f,22f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -38,9 +38,9 @@
               <NumberBpm>
                 <ObjectName>BpmText</ObjectName>
                 <TooltipId>visual_bpm</TooltipId>
-                <Size>60f,22f</Size>
+                <Size>56f,22f</Size>
                 <Channel><Variable name="channum" /></Channel>
-                <NumberOfDigits>2</NumberOfDigits>
+                <NumberOfDigits>1</NumberOfDigits>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                 </Connection>
@@ -92,21 +92,21 @@
                   </Template>
 
                   <Template src="skin:button_1state_right.xml">
-                    <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">arrow_left_overdown.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">arrow_left.svg</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_down</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="state_0_pressed">arrow_right_overdown.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">arrow_right.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_up</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">arrow_left_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">arrow_left.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
                   </Template>
 
                   <Template src="skin:button_1state_right.xml">
@@ -172,6 +172,10 @@
                 </Connection>
               </WidgetGroup><!-- /Rate buttons for up=slower -->
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_rate_control_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- RateButtons for different rate directions -->
         </Children>
       </WidgetGroup>

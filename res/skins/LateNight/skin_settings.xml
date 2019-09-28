@@ -76,8 +76,15 @@ Description:
               <!-- Rate Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                <SetVariable name="text">Rate Control</SetVariable>
+                <SetVariable name="text">Rate Slider &amp; Sync</SetVariable>
                 <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
+              </Template>
+
+              <!-- Rate Control buttons toggle -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                <SetVariable name="text">Rate Control Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],show_rate_control_buttons</SetVariable>
               </Template>
 
               <!-- Vinyl Control toggle -->
