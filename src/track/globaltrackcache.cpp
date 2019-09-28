@@ -656,13 +656,13 @@ void GlobalTrackCache::evictAndSave(
         return;
     }
 
-    if (!evict(cacheEntryPtr->getPlainPtr())) {
-        // A scond deleter has already evict the track from cache after our
-        // reference count drops to zero and before acquire the lock at the
+    if (!tryEvict(cacheEntryPtr->getPlainPtr())) {
+        // A second deleter has already evicted the track from cache after our
+        // reference count drops to zero and before acquiring the lock at the
         // beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
-                    << "Skip to save an already evicted track"
+                    << "Skip to save an already evicted track again"
                     << cacheEntryPtr->getPlainPtr();
         }
         return;
@@ -675,12 +675,17 @@ void GlobalTrackCache::evictAndSave(
     // deleted including the owned track
 }
 
-bool GlobalTrackCache::evict(Track* plainPtr) {
+bool GlobalTrackCache::tryEvict(Track* plainPtr) {
     DEBUG_ASSERT(plainPtr);
     // Make the cached track object invisible to avoid reusing
     // it before starting to save it. This is achieved by
     // removing it from both cache indices.
+    // Due to expected race conditions pointers might be evicted
+    // multiple times. Therefore we need to check the stored
+    // pointers to avoid evicting a new cached track object instead
+    // of the given plainPtr!!
     bool evicted = false;
+    bool notEvicted = false;
     const auto trackRef = createTrackRef(*plainPtr);
     if (debugLogEnabled()) {
         kLogger.debug()
@@ -690,23 +695,30 @@ bool GlobalTrackCache::evict(Track* plainPtr) {
     }
     if (trackRef.hasId()) {
         const auto trackById = m_tracksById.find(trackRef.getId());
-        if (trackById != m_tracksById.end() &&
-                trackById->second->getPlainPtr() == plainPtr) {
-            m_tracksById.erase(trackById);
-            evicted = true;
+        if (trackById != m_tracksById.end()) {
+            if (trackById->second->getPlainPtr() == plainPtr) {
+                m_tracksById.erase(trackById);
+                evicted = true;
+            } else {
+                notEvicted = true;
+            }
         }
     }
     if (trackRef.hasCanonicalLocation()) {
         const auto trackByCanonicalLocation(
                 m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation()));
-        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation &&
-                trackByCanonicalLocation->second->getPlainPtr() == plainPtr) {
-            m_tracksByCanonicalLocation.erase(
-                    trackByCanonicalLocation);
-            evicted = true;
+        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
+            if (trackByCanonicalLocation->second->getPlainPtr() == plainPtr) {
+                m_tracksByCanonicalLocation.erase(
+                        trackByCanonicalLocation);
+                evicted = true;
+            } else {
+                notEvicted = true;
+            }
         }
     }
     DEBUG_ASSERT(!isCached(plainPtr));
+    DEBUG_ASSERT(!(evicted && notEvicted));
     return evicted;
 }
 
