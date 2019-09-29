@@ -718,6 +718,7 @@ bool GlobalTrackCache::tryEvict(Track* plainPtr) {
         }
     }
     DEBUG_ASSERT(!isCached(plainPtr));
+    Q_UNUSED(notEvicted); // only used in debug assertion
     DEBUG_ASSERT(!(evicted && notEvicted));
     return evicted;
 }
