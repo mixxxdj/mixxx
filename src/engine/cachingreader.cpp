@@ -231,9 +231,8 @@ void CachingReader::process() {
                 // All chunks have been freed before loading the next track!
                 DEBUG_ASSERT(!m_mruCachingReaderChunk);
                 DEBUG_ASSERT(!m_lruCachingReaderChunk);
-                // Discard all pending read requests for the previous track
-                // that are discarded by the worker before loading the next
-                // track.
+                // Discard all results from pending read requests for the
+                // previous track before the next track has been loaded.
                 freeChunk(pChunk);
                 continue;
             }
