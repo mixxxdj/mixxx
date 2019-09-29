@@ -56,12 +56,12 @@ CachingReader::CachingReader(QString group,
           // The capacity of the back channel must be equal to the number of
           // allocated chunks, because the worker use writeBlocking(). Otherwise
           // the worker could get stuck in a hot loop!!!
-          m_readerStatusFIFO(kNumberOfCachedChunksInMemory),
-          m_readerStatus(INVALID),
+          m_stateFIFO(kNumberOfCachedChunksInMemory),
+          m_state(State::Idle),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kSamples * kNumberOfCachedChunksInMemory),
-          m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
+          m_worker(group, &m_chunkReadRequestFIFO, &m_stateFIFO) {
 
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
@@ -206,15 +206,15 @@ void CachingReader::newTrack(TrackPointer pTrack) {
     // Don't accept any new read requests until the current
     // track has been unloaded and the new track has been
     // loaded!
-    m_readerStatus = INVALID;
+    m_state = State::TrackLoading;
     // Free all chunks with sample data from the current track
     freeAllChunks();
 }
 
 void CachingReader::process() {
     ReaderStatusUpdate update;
-    bool reloaded = false;
-    while (m_readerStatusFIFO.read(&update, 1) == 1) {
+    while (m_stateFIFO.read(&update, 1) == 1) {
+        DEBUG_ASSERT(m_state != State::Idle);
         auto pChunk = update.takeFromWorker();
         if (pChunk) {
             // Response to a read request
@@ -223,15 +223,17 @@ void CachingReader::process() {
                     update.status == CHUNK_READ_EOF ||
                     update.status == CHUNK_READ_INVALID ||
                     update.status == CHUNK_READ_DISCARDED);
-            if (reloaded || m_readerStatus == INVALID) {
-                // All chunks are freed when loading/unloading a track!
+            if (m_state == State::TrackLoading) {
+                // All chunks have been freed before loading the next track!
                 DEBUG_ASSERT(!m_mruCachingReaderChunk);
                 DEBUG_ASSERT(!m_lruCachingReaderChunk);
                 // Discard all pending read requests for the previous track
-                // that arrived while the worker was unloading that track!
+                // that are discarded by the worker before loading the next
+                // track.
                 freeChunk(pChunk);
                 continue;
             }
+            DEBUG_ASSERT(m_state == State::TrackLoaded);
             if (update.status == CHUNK_READ_SUCCESS) {
                 // Insert or freshen the chunk in the MRU/LRU list after
                 // obtaining ownership from the worker.
@@ -247,15 +249,16 @@ void CachingReader::process() {
                         update.readableFrameIndexRange());
             }
         } else {
-            DEBUG_ASSERT(
-                    update.status == TRACK_LOADED ||
-                    update.status == TRACK_NOT_LOADED);
             DEBUG_ASSERT(!m_mruCachingReaderChunk);
             DEBUG_ASSERT(!m_lruCachingReaderChunk);
-            m_readerStatus = update.status;
+            if (update.status == TRACK_LOADED) {
+                m_state = State::TrackLoaded;
+            } else {
+                DEBUG_ASSERT(update.status == TRACK_UNLOADED);
+                m_state = State::Idle;
+            }
             // Reset the readable frame index range
             m_readableFrameIndexRange = update.readableFrameIndexRange();
-            reloaded = true;
         }
     }
 }
@@ -279,7 +282,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
     }
 
     // If no track is loaded, don't do anything.
-    if (m_readerStatus != TRACK_LOADED) {
+    if (m_state != State::TrackLoaded) {
         return ReadResult::UNAVAILABLE;
     }
 
@@ -476,7 +479,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
 
 void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // If no file is loaded, skip.
-    if (m_readerStatus != TRACK_LOADED) {
+    if (m_state != State::TrackLoaded) {
         return;
     }
 

@@ -26,9 +26,8 @@ typedef struct CachingReaderChunkReadRequest {
 } CachingReaderChunkReadRequest;
 
 enum ReaderStatus {
-    INVALID,
-    TRACK_NOT_LOADED,
     TRACK_LOADED,
+    TRACK_UNLOADED,
     CHUNK_READ_SUCCESS,
     CHUNK_READ_EOF,
     CHUNK_READ_INVALID,
@@ -72,7 +71,7 @@ typedef struct ReaderStatusUpdate {
 
     static ReaderStatusUpdate trackNotLoaded() {
         ReaderStatusUpdate update;
-        update.init(TRACK_NOT_LOADED, nullptr, mixxx::IndexRange());
+        update.init(TRACK_UNLOADED, nullptr, mixxx::IndexRange());
         return update;
     }
 

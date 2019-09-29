@@ -124,7 +124,7 @@ class CachingReader : public QObject {
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
     FIFO<CachingReaderChunkReadRequest> m_chunkReadRequestFIFO;
-    FIFO<ReaderStatusUpdate> m_readerStatusFIFO;
+    FIFO<ReaderStatusUpdate> m_stateFIFO;
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns nullptr. If it is present then
@@ -151,7 +151,12 @@ class CachingReader : public QObject {
     // Gets a chunk from the free list, frees the LRU CachingReaderChunk if none available.
     CachingReaderChunkForOwner* allocateChunkExpireLRU(SINT chunkIndex);
 
-    ReaderStatus m_readerStatus;
+    enum class State {
+        Idle,
+        TrackLoading,
+        TrackLoaded,
+    };
+    State m_state;
 
     // Keeps track of all CachingReaderChunks we've allocated.
     QVector<CachingReaderChunkForOwner*> m_chunks;
