@@ -1,10 +1,14 @@
-#include <QTableView>
 #include <QPainter>
 
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
+#include "library/trackmodel.h"
+
+#include "widget/wlibrarytableview.h"
+
 #include "util/math.h"
+
 
 CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
         : TableItemDelegate(parent),
@@ -25,16 +29,15 @@ CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfoRelative&,
-                                          QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfoRelative&,
-                                          QPixmap, bool)));
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &CoverArtDelegate::slotCoverFound);
     }
 
-    TrackModel* pTrackModel = NULL;
-    QTableView* pTableView = NULL;
-    if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
-        pTableView = tableView;
+    TrackModel* pTrackModel = nullptr;
+    QTableView* pTableView = qobject_cast<QTableView*>(parent);
+    if (pTableView) {
         pTrackModel = dynamic_cast<TrackModel*>(pTableView->model());
     }
 
@@ -54,9 +57,6 @@ CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
         m_iIdColumn = pTrackModel->fieldIndex(
             LIBRARYTABLE_ID);
     }
-}
-
-CoverArtDelegate::~CoverArtDelegate() {
 }
 
 void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
