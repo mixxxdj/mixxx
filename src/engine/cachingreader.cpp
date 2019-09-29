@@ -201,13 +201,17 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 }
 
 void CachingReader::newTrack(TrackPointer pTrack) {
+    // Feed the track to the worker as soon as possible
+    // to get ready while the reader switches its internal
+    // state. There are no race conditions, because the
+    // reader polls the worker.
     m_worker.newTrack(pTrack);
     m_worker.workReady();
     // Don't accept any new read requests until the current
     // track has been unloaded and the new track has been
-    // loaded!
+    // loaded.
     m_state = State::TrackLoading;
-    // Free all chunks with sample data from the current track
+    // Free all chunks with sample data from the current track.
     freeAllChunks();
 }
 
