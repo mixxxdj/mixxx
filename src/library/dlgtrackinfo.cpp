@@ -278,7 +278,8 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     while (it.hasNext()) {
         CuePointer pCue = it.next();
         Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::INTRO || type == Cue::OUTRO) {
+        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO
+                || type == Cue::OUTRO) {
             listPoints.push_back(pCue);
         }
     }
@@ -295,25 +296,29 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // them to the user as 1-indexex. Add 1 here. rryan 9/2010
         int iHotcue = pCue->getHotCue() + 1;
         QString hotcue = "";
-        if (iHotcue != -1) {
-            hotcue = QString("%1").arg(iHotcue);
-        }
-
-        int position = pCue->getPosition();
-        double totalSeconds;
-        if (position == -1)
+        hotcue = QString("%1").arg(iHotcue);
+        double position = pCue->getPosition();
+        if (position == -1) {
             continue;
-        else {
-            totalSeconds = float(position) / float(sampleRate) / 2.0;
         }
 
-        int fraction = 100*(totalSeconds - floor(totalSeconds));
-        int seconds = int(totalSeconds) % 60;
-        int mins = int(totalSeconds) / 60;
+        double totalSeconds = position / sampleRate / 2.0;
+
+        bool negative = false;
+        if (totalSeconds < 0) {
+            totalSeconds *= -1;
+            negative = true;
+        }
+
+        int iTotalSeconds = static_cast<int>(totalSeconds);
+        int fraction = 100 * (totalSeconds - iTotalSeconds);
+        int seconds = iTotalSeconds % 60;
+        int mins = iTotalSeconds / 60;
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(
+        QString duration = QString("%1%2:%3.%4").arg(
+            negative ? QString("-") : QString(),
             QString::number(mins),
             QString("%1").arg(seconds, 2, 10, QChar('0')),
             QString("%1").arg(fraction, 2, 10, QChar('0')));
@@ -325,8 +330,23 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
+            case Cue::INVALID:
+                cueType = "?";
+                break;
             case Cue::CUE:
                 cueType = "Hotcue";
+                break;
+            case Cue::LOAD:
+                cueType = "Main Cue";
+                break;
+            case Cue::BEAT:
+                cueType = "Beat";
+                break;
+            case Cue::LOOP:
+                cueType = "Loop";
+                break;
+            case Cue::JUMP:
+                cueType = "Jump";
                 break;
             case Cue::INTRO:
                 cueType = "Intro";
@@ -423,12 +443,12 @@ void DlgTrackInfo::saveTrack() {
         if (!pCue) {
             continue;
         }
-
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert(QMetaType::Int)) {
-            int iTableHotcue = vHotcue.toInt();
+        bool ok;
+        int iTableHotcue = vHotcue.toInt(&ok);
+        if (ok) {
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1
             pCue->setHotCue(iTableHotcue - 1);
@@ -436,10 +456,12 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(-1);
         }
 
-        auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
-        if (colorComboBox) {
-            PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
-            pCue->setColor(color);
+        if (pCue->getType() == Cue::CUE) {
+            auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
+            if (colorComboBox) {
+                PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
+                pCue->setColor(color);
+            }
         }
         // do nothing for now.
 
