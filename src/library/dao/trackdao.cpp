@@ -1407,14 +1407,20 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     }
 
     // Listen to dirty and changed signals
-    connect(pTrack.get(), SIGNAL(dirty(Track*)),
-            this, SLOT(slotTrackDirty(Track*)),
+    connect(pTrack.get(),
+            &Track::dirty,
+            this,
+            &TrackDAO::slotTrackDirty,
             Qt::DirectConnection);
-    connect(pTrack.get(), SIGNAL(clean(Track*)),
-            this, SLOT(slotTrackClean(Track*)),
+    connect(pTrack.get(),
+            &Track::clean,
+            this,
+            &TrackDAO::slotTrackClean,
             Qt::DirectConnection);
-    connect(pTrack.get(), SIGNAL(changed(Track*)),
-            this, SLOT(slotTrackChanged(Track*)),
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &TrackDAO::slotTrackChanged,
             Qt::DirectConnection);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
