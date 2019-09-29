@@ -221,7 +221,7 @@ void CachingReader::process() {
         DEBUG_ASSERT(m_state != State::Idle);
         auto pChunk = update.takeFromWorker();
         if (pChunk) {
-            // Response to a read request
+            // Result of a read request (with a chunk)
             DEBUG_ASSERT(
                     update.status == CHUNK_READ_SUCCESS ||
                     update.status == CHUNK_READ_EOF ||
@@ -252,6 +252,7 @@ void CachingReader::process() {
                         update.readableFrameIndexRange());
             }
         } else {
+            // State update (without a chunk)
             DEBUG_ASSERT(!m_mruCachingReaderChunk);
             DEBUG_ASSERT(!m_lruCachingReaderChunk);
             if (update.status == TRACK_LOADED) {
