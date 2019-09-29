@@ -1,18 +1,21 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
-#include <widget/wlibrarytableview.h>
 #include <QHash>
+#include <QList>
 #include <QLinkedList>
 
 #include "library/tableitemdelegate.h"
-#include "library/trackmodel.h"
+
+class CoverInfoRelative;
+class TrackModel;
+class WLibraryTableView;
 
 class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
     explicit CoverArtDelegate(WLibraryTableView* parent);
-    virtual ~CoverArtDelegate();
+    ~CoverArtDelegate() override = default;
 
     void paintItem(QPainter* painter,
                const QStyleOptionViewItem& option,

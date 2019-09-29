@@ -5,9 +5,11 @@
 #include <QString>
 #include <QtDebug>
 
+#include "skin/imgloader.h"
+
 #include "util/math.h"
 #include "util/memory.h"
-#include "skin/imgloader.h"
+#include "util/painterscope.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -244,12 +246,11 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             // entire SVG to the painter. We save/restore the QPainter in case
             // there is an existing clip region (I don't know of any Mixxx code
             // that uses one but we may in the future).
-            pPainter->save();
+            PainterScope PainterScope(pPainter);
             pPainter->setClipping(true);
             pPainter->setClipRect(targetRect);
             m_pSvg->setViewBox(sourceRect);
             m_pSvg->render(pPainter, targetRect);
-            pPainter->restore();
         }
     }
 }

@@ -78,6 +78,7 @@ public:
     static void setRateRampSensitivity(int);
     static int getRateRampSensitivity();
     void notifySeek(double dNewPlaypos) override;
+    bool isReverseButtonPressed();
 
   public slots:
     void slotReverseRollActivate(double);

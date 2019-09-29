@@ -24,7 +24,7 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
+    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary);
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
     connect(btnUnhide,

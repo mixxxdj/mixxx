@@ -7,6 +7,7 @@
 #include "control/controlproxy.h"
 #include "library/crate/crateid.h"
 #include "track/track.h"
+#include "track/trackref.h"
 #include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
@@ -52,13 +53,16 @@ MixxxApplication::~MixxxApplication() {
 
 void MixxxApplication::registerMetaTypes() {
     // Register custom data types for signal processing
-    qRegisterMetaType<TrackId>("TrackId");
-    qRegisterMetaType<QList<TrackId>>("QList<TrackId>");
-    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
-    qRegisterMetaType<CrateId>("CrateId");
-    qRegisterMetaType<QList<CrateId>>("QList<CrateId>");
-    qRegisterMetaType<QSet<CrateId>>("QSet<CrateId>");
-    qRegisterMetaType<TrackPointer>("TrackPointer");
+    qRegisterMetaType<TrackId>();
+    qRegisterMetaType<QSet<TrackId>>();
+    qRegisterMetaType<QList<TrackId>>();
+    qRegisterMetaType<TrackRef>();
+    qRegisterMetaType<QList<TrackRef>>();
+    qRegisterMetaType<QList<QPair<TrackRef, TrackRef>>>();
+    qRegisterMetaType<CrateId>();
+    qRegisterMetaType<QSet<CrateId>>();
+    qRegisterMetaType<QList<CrateId>>();
+    qRegisterMetaType<TrackPointer>();
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");

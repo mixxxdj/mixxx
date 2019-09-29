@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 #include <QUrl>
-#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
@@ -21,6 +20,7 @@
 #include "util/duration.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "widget/wlibrarytableview.h"
 
 static const bool sDebug = false;
 
@@ -1113,7 +1113,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
-    WLibraryTableView* pTableView = qobject_cast<WLibraryTableView*>(pParent);
+    auto* pTableView = qobject_cast<WLibraryTableView*>(pParent);
     DEBUG_ASSERT(pTableView);
 
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
