@@ -23,6 +23,45 @@ void TrackInfo::resetUnsupportedValues() {
     setWork(QString());
 }
 
+namespace {
+
+const QString kArtistTitleSeparatorWithSpaces = " - ";
+const QString kArtistTitleSeparator = "_-_";
+
+const QChar kFileExtensionSeparator = '.';
+
+} // anonymous namespace
+
+bool TrackInfo::parseArtistTitleFromFileName(
+        QString fileName,
+        bool splitArtistTitle) {
+    bool modified = false;
+    fileName = fileName.trimmed();
+    auto titleWithFileType = fileName;
+    if (splitArtistTitle) {
+        fileName.replace(kArtistTitleSeparatorWithSpaces, kArtistTitleSeparator);
+        if (fileName.count(kArtistTitleSeparator) == 1) {
+            auto artist = fileName.section(kArtistTitleSeparator, 0, 0).trimmed();
+            if (!artist.isEmpty()) {
+                setArtist(artist);
+                modified = true;
+            }
+            titleWithFileType = fileName.section(kArtistTitleSeparator, 1).trimmed();
+        }
+    }
+    auto title = titleWithFileType;
+    if (titleWithFileType.contains(kFileExtensionSeparator)) {
+        // Strip file extension starting at the right-most '.'
+        title = titleWithFileType.section(kFileExtensionSeparator, 0, -2);
+    }
+    title = title.trimmed();
+    if (!title.isEmpty()) {
+        setTitle(title);
+        modified = true;
+    }
+    return modified;
+}
+
 bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
     return (lhs.getArtist() == rhs.getArtist()) &&
             (lhs.getBpm() == rhs.getBpm()) &&

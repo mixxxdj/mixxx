@@ -55,6 +55,11 @@ public:
     TrackInfo& operator=(TrackInfo&&) = default;
     TrackInfo& operator=(const TrackInfo&) = default;
 
+    // Returns true if modified
+    bool parseArtistTitleFromFileName(
+            QString fileName,
+            bool splitArtistTitle);
+
     // TODO(XXX): Remove after all new fields have been added to the library
     void resetUnsupportedValues();
 
