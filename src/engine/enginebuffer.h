@@ -146,6 +146,8 @@ class EngineBuffer : public EngineObject {
     bool getQueuedSeekPosition(double* pSeekPosition);
     TrackPointer getLoadedTrack() const;
 
+    bool isReverse();
+
     double getExactPlayPos();
     double getVisualPlayPos();
     double getTrackSamples();

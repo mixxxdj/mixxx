@@ -1,8 +1,9 @@
+#include "library/tableitemdelegate.h"
 
 #include <QTableView>
 #include <QPainter>
 
-#include "library/tableitemdelegate.h"
+#include "util/painterscope.h"
 
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
@@ -10,23 +11,25 @@ TableItemDelegate::TableItemDelegate(QTableView* pTableView)
           m_pTableView(pTableView) {
 }
 
-TableItemDelegate::~TableItemDelegate() {
-}
-
-void TableItemDelegate::paint(QPainter* painter,const QStyleOptionViewItem& option,
-                              const QModelIndex& index) const {
-
-    painter->save();
+void TableItemDelegate::paint(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    PainterScope painterScope(painter);
 
     painter->setClipRect(option.rect);
 
     // Set the palette appropriately based on whether the row is selected or
     // not. We also have to check if it is inactive or not and use the
     // appropriate ColorGroup.
-    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
-            ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
-        cg = QPalette::Inactive;
+    QPalette::ColorGroup cg = QPalette::Normal;
+    if (option.state & QStyle::State_Enabled) {
+        if (!(option.state & QStyle::State_Active)) {
+            cg = QPalette::Disabled;
+        }
+    } else {
+        cg = QPalette::Disabled;
+    }
 
     if (option.state & QStyle::State_Selected) {
         painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
@@ -37,12 +40,17 @@ void TableItemDelegate::paint(QPainter* painter,const QStyleOptionViewItem& opti
     if (m_pTableView) {
         QStyle* style = m_pTableView->style();
         if (style) {
-            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
+            style->drawControl(
+                    QStyle::CE_ItemViewItem,
+                    &option,
+                    painter,
                     m_pTableView);
         }
     }
 
     paintItem(painter, option, index);
+}
 
-    painter->restore();
+int TableItemDelegate::columnWidth(const QModelIndex &index) const {
+    return m_pTableView->columnWidth(index.column());
 }

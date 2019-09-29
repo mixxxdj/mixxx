@@ -67,6 +67,21 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource
     m_pTrackSource = pTrackSource;
 }
 
+bool TrackCollection::addDirectory(const QString& dir) {
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.addDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALREADY_WATCHING:
+        return true;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    }
+    DEBUG_ASSERT("unreachable");
+    return false;
+}
+
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
@@ -79,10 +94,20 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QSet<TrackId> movedIds(
-            m_directoryDao.relocateDirectory(oldDir, newDir));
+    SqlTransaction transaction(m_database);
+    QList<TrackRef> movedTrackRefs =
+            m_directoryDao.relocateDirectory(oldDir, newDir);
+    transaction.commit();
 
-    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+    QList<QPair<TrackRef, TrackRef>> replacedTrackRefs;
+    replacedTrackRefs.reserve(movedTrackRefs.size());
+    for (const auto& movedTrackRef : movedTrackRefs) {
+        auto removedTrackRef = movedTrackRef;
+        // The actual new location is unknown, only the id remains the same
+        auto changedTrackRef = TrackRef::fromFileInfo(TrackFile(), movedTrackRef.getId());
+        replacedTrackRefs.append(qMakePair(removedTrackRef, changedTrackRef));
+    }
+    m_trackDao.databaseTracksReplaced(std::move(replacedTrackRefs));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
@@ -221,9 +246,9 @@ bool TrackCollection::purgeTracks(
     return true;
 }
 
-bool TrackCollection::purgeTracks(
-        const QDir& dir) {
-    QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
+bool TrackCollection::purgeAllTracks(
+        const QDir& rootDir) {
+    QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
     return purgeTracks(trackIds);
 }
 

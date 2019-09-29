@@ -57,19 +57,19 @@ LibraryScanner::LibraryScanner(
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
-    TrackDAO* dao = &(m_pTrackCollection->getTrackDAO());
+    TrackDAO* trackDao = &(m_pTrackCollection->getTrackDAO());
     connect(this,
             &LibraryScanner::trackAdded,
-            dao,
+            trackDao,
             &TrackDAO::databaseTrackAdded);
     connect(this,
-            &LibraryScanner::tracksMoved,
-            dao,
-            &TrackDAO::databaseTracksMoved);
-    connect(this,
             &LibraryScanner::tracksChanged,
-            dao,
+            trackDao,
             &TrackDAO::databaseTracksChanged);
+    connect(this,
+            &LibraryScanner::tracksReplaced,
+            trackDao,
+            &TrackDAO::databaseTracksReplaced);
 
     m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
@@ -300,14 +300,22 @@ void LibraryScanner::cleanUpScan() {
     // Check to see if the "deleted" tracks showed up in another location,
     // and if so, do some magic to update all our tables.
     kLogger.debug() << "Detecting moved files";
-    QSet<TrackId> tracksMovedSetOld;
-    QSet<TrackId> tracksMovedSetNew;
-    if (!m_trackDao.detectMovedTracks(&tracksMovedSetOld,
-            &tracksMovedSetNew,
-            m_scannerGlobal->addedTracks(),
-            m_scannerGlobal->shouldCancelPointer())) {
-        // canceled
-        return;
+    {
+        QList<QPair<TrackRef, TrackRef>> replacedTracks;
+        if (!m_trackDao.detectMovedTracks(&replacedTracks,
+                m_scannerGlobal->addedTracks(),
+                m_scannerGlobal->shouldCancelPointer())) {
+            kLogger.info()
+                    << "Detecting moved files has been canceled or aborted";
+            return;
+        }
+        if (!replacedTracks.isEmpty()) {
+            kLogger.info()
+                    << "Found"
+                    << replacedTracks.size()
+                    << "moved track(s)";
+            emit tracksReplaced(replacedTracks);
+        }
     }
 
     // Remove the hashes for any directories that have been marked as
@@ -324,8 +332,9 @@ void LibraryScanner::cleanUpScan() {
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
     // Update BaseTrackCache via signals connected to the main TrackDAO.
-    emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
-    emit(tracksChanged(coverArtTracksChanged));
+    if (!coverArtTracksChanged.isEmpty()) {
+        emit tracksChanged(coverArtTracksChanged);
+    }
 }
 
 
