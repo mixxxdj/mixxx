@@ -203,13 +203,35 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 void CachingReader::newTrack(TrackPointer pTrack) {
     m_worker.newTrack(pTrack);
     m_worker.workReady();
+    // Don't accept any new read requests until the current
+    // track has been unloaded and the new track has been
+    // loaded!
+    m_readerStatus = INVALID;
+    // Free all chunks with sample data from the current track
+    freeAllChunks();
 }
 
 void CachingReader::process() {
     ReaderStatusUpdate update;
+    bool reloaded = false;
     while (m_readerStatusFIFO.read(&update, 1) == 1) {
         auto pChunk = update.takeFromWorker();
         if (pChunk) {
+            // Response to a read request
+            DEBUG_ASSERT(
+                    update.status == CHUNK_READ_SUCCESS ||
+                    update.status == CHUNK_READ_EOF ||
+                    update.status == CHUNK_READ_INVALID ||
+                    update.status == CHUNK_READ_DISCARDED);
+            if (reloaded || m_readerStatus == INVALID) {
+                // All chunks are freed when loading/unloading a track!
+                DEBUG_ASSERT(!m_mruCachingReaderChunk);
+                DEBUG_ASSERT(!m_lruCachingReaderChunk);
+                // Discard all pending read requests for the previous track
+                // that arrived while the worker was unloading that track!
+                freeChunk(pChunk);
+                continue;
+            }
             if (update.status == CHUNK_READ_SUCCESS) {
                 // Insert or freshen the chunk in the MRU/LRU list after
                 // obtaining ownership from the worker.
@@ -218,24 +240,22 @@ void CachingReader::process() {
                 // Discard chunks that don't carry any data
                 freeChunk(pChunk);
             }
-        }
-        if (update.status == TRACK_NOT_LOADED) {
-            m_readerStatus = update.status;
-        } else if (update.status == TRACK_LOADED) {
-            m_readerStatus = update.status;
-            // Reset the max. readable frame index
-            m_readableFrameIndexRange = update.readableFrameIndexRange();
-            // Free all chunks with sample data from a previous track
-            freeAllChunks();
-        }
-        if (m_readerStatus == TRACK_LOADED) {
-            // Adjust the readable frame index range after loading or reading
-            m_readableFrameIndexRange = intersect(
-                    m_readableFrameIndexRange,
-                    update.readableFrameIndexRange());
+            // Adjust the readable frame index range (if available)
+            if (update.status != CHUNK_READ_DISCARDED) {
+                m_readableFrameIndexRange = intersect(
+                        m_readableFrameIndexRange,
+                        update.readableFrameIndexRange());
+            }
         } else {
+            DEBUG_ASSERT(
+                    update.status == TRACK_LOADED ||
+                    update.status == TRACK_NOT_LOADED);
+            DEBUG_ASSERT(!m_mruCachingReaderChunk);
+            DEBUG_ASSERT(!m_lruCachingReaderChunk);
+            m_readerStatus = update.status;
             // Reset the readable frame index range
-            m_readableFrameIndexRange = mixxx::IndexRange();
+            m_readableFrameIndexRange = update.readableFrameIndexRange();
+            reloaded = true;
         }
     }
 }
