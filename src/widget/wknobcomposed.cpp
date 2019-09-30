@@ -56,6 +56,8 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     m_dKnobCenterXOffset *= scaleFactor;
     m_dKnobCenterYOffset *= scaleFactor;
     m_dArcThickness *= scaleFactor;
+
+    this->setFocusPolicy(Qt::NoFocus);
 }
 
 void WKnobComposed::clear() {
