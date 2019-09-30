@@ -491,6 +491,21 @@ class Kaitai(Dependence):
         build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
         build.env.Append(CPPPATH="#lib/kaitai")        
 
+# For determining MP3 timing offset cases in Rekordbox library feature
+class MP3GuessEnc(Dependence):
+
+    def sources(self, build):
+        return [
+            "lib/mp3guessenc-0.27.4/mp3guessenc.c",
+            "lib/mp3guessenc-0.27.4/tags.c",
+            "lib/mp3guessenc-0.27.4/decode.c",
+            "lib/mp3guessenc-0.27.4/bit_utils.c",            
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/mp3guessenc-0.27.4/')
+
+
 class Ebur128Mit(Dependence):
     INTERNAL_PATH = 'lib/libebur128'
     INTERNAL_LINK = False
@@ -1048,9 +1063,10 @@ class MixxxCore(Feature):
 
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
-                   
+
                    "src/library/rekordbox/rekordboxfeature.cpp",
                    "src/library/rekordbox/rekordbox_pdb.cpp",
+                   "src/library/rekordbox/rekordbox_anlz.cpp",                     
 
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
@@ -1553,7 +1569,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, Kaitai]
+                QueenMaryDsp, Kaitai, MP3GuessEnc]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

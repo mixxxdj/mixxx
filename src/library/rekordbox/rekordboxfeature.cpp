@@ -7,8 +7,11 @@
 #include <QStandardPaths>
 #include <QtDebug>
 
+#include "library/rekordbox/rekordbox_anlz.h"
 #include "library/rekordbox/rekordbox_pdb.h"
 #include "library/rekordbox/rekordboxfeature.h"
+
+#include <mp3guessenc.h>
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -16,6 +19,8 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
+#include "track/beatfactory.h"
+#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
@@ -32,6 +37,7 @@
 namespace {
 const QString kPDBPath = "PIONEER/rekordbox/export.pdb";
 const QString kPLaylistPathDelimiter = "-->";
+const double kLongestPosition = 999999999.0;
 
 void clearTable(QSqlDatabase& database, QString tableName) {
     QSqlQuery query(database);
@@ -654,6 +660,101 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
+void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QString anlzPath) {
+    if (!QFile(anlzPath).exists()) {
+        return;
+    }
+
+    qDebug() << "Rekordbox ANLZ path:" << anlzPath << " for: " << track->getTitle();
+
+    std::ifstream ifs(anlzPath.toStdString(), std::ifstream::binary);
+    kaitai::kstream ks(&ifs);
+
+    rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
+
+    double cueLoadPosition = kLongestPosition;
+    double cueLoopPosition = kLongestPosition;
+    double loopLength = -1.0;
+
+    for (std::vector<rekordbox_anlz_t::tagged_section_t*>::iterator section = anlz.sections()->begin(); section != anlz.sections()->end(); ++section) {
+        switch ((*section)->fourcc()) {
+        case rekordbox_anlz_t::SECTION_TAGS_BEAT_GRID: {
+            rekordbox_anlz_t::beat_grid_tag_t* beatGridTag = static_cast<rekordbox_anlz_t::beat_grid_tag_t*>((*section)->body());
+
+            QVector<double> beats;
+
+            for (std::vector<rekordbox_anlz_t::beat_grid_beat_t*>::iterator beat = beatGridTag->beats()->begin(); beat != beatGridTag->beats()->end(); ++beat) {
+                int time = static_cast<int>((*beat)->time()) - timingOffset;
+                // Ensure no offset times are less than 1
+                if (time < 1) {
+                    time = 1;
+                }
+                beats << (sampleRate * static_cast<double>(time));
+            }
+
+            QHash<QString, QString> extraVersionInfo;
+
+            BeatsPointer pBeats = BeatFactory::makePreferredBeats(
+                    *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
+
+            track->setBeats(pBeats);
+        } break;
+        case rekordbox_anlz_t::SECTION_TAGS_CUES: {
+            double sampleRateFrames = sampleRate * 2.0;
+            rekordbox_anlz_t::cue_tag_t* cuesTag = static_cast<rekordbox_anlz_t::cue_tag_t*>((*section)->body());
+
+            for (std::vector<rekordbox_anlz_t::cue_entry_t*>::iterator cueEntry = cuesTag->cues()->begin(); cueEntry != cuesTag->cues()->end(); ++cueEntry) {
+                int time = static_cast<int>((*cueEntry)->time()) - timingOffset;
+                // Ensure no offset times are less than 1
+                if (time < 1) {
+                    time = 1;
+                }               
+                double position = sampleRateFrames * static_cast<double>(time);
+
+                switch (cuesTag->type()) {
+                case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
+                    switch ((*cueEntry)->type()) {
+                    case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
+                        // As Mixxx can only have 1 saved cue point, use the first occurance of a memory cue relative to the start of the track
+                        if (position < cueLoadPosition) {
+                            cueLoadPosition = position;
+                        }
+                    } break;
+                    case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
+                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        if (position < cueLoopPosition) {
+                            cueLoopPosition = position;
+                            loopLength = sampleRateFrames * static_cast<double>((*cueEntry)->loop_time() - (*cueEntry)->time());
+                        }
+                    } break;
+                    }
+                } break;
+                case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
+                    CuePointer pCue(track->createAndAddCue());
+                    pCue->setPosition(position);
+                    pCue->setHotCue(static_cast<int>((*cueEntry)->hot_cue() - 1));
+                    pCue->setType(Cue::CUE);
+                } break;
+                }
+            }
+        } break;
+        default:
+            break;
+        }
+    }
+
+    if (cueLoadPosition < kLongestPosition) {
+        track->setCuePoint(CuePosition(cueLoadPosition, Cue::MANUAL));
+    }
+    if (cueLoopPosition < kLongestPosition) {
+        CuePointer pCue(track->createAndAddCue());
+        pCue->setPosition(cueLoopPosition);
+        pCue->setLength(loopLength);
+        pCue->setSource(Cue::MANUAL);
+        pCue->setType(Cue::LOOP);
+    }
+}
+
 } // anonymous namespace
 
 RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
@@ -703,6 +804,57 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     qDebug() << "RekordboxTrackModel::getTrack";
 
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+
+    // The following code accounts for timing offsets required to
+    // correctly align timing information (cue points, loops, beatgrids)
+    // exported from Rekordbox. This is caused by different MP3
+    // decoders treating MP3s encoded in a variety of different cases
+    // differently. The mp3guessenc library is used to determine which
+    // case the MP3 is clasified in. See the following PR for more
+    // detailed information:
+    // https://github.com/mixxxdj/mixxx/pull/2119
+
+    int timingOffset = 0;
+
+    if (location.toLower().endsWith(".mp3")) {
+        int timingShiftCase = mp3guessenc_timing_shift_case(location.toStdString().c_str());
+
+        qDebug() << "Timing shift case:" << timingShiftCase << "for MP3 file:" << location;
+
+        switch (timingShiftCase) {
+#ifdef __COREAUDIO__
+        case EXIT_CODE_CASE_A:
+            timingOffset = 13;
+            break;
+        case EXIT_CODE_CASE_B:
+            timingOffset = 11;
+            break;
+        case EXIT_CODE_CASE_C:
+            timingOffset = 26;
+            break;
+        case EXIT_CODE_CASE_D:
+            timingOffset = 50;
+            break;
+#elif defined(__MAD__)
+        case EXIT_CODE_CASE_A:
+        case EXIT_CODE_CASE_D:
+            timingOffset = 26;
+            break;
+#elif defined(__FFMPEG__)
+        case EXIT_CODE_CASE_D:
+            timingOffset = 26;
+            break;
+#endif
+        }
+    }
+
+    double sampleRate = static_cast<double>(track->getSampleRate()) / 1000.0;
+
+    QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
+    readAnalyze(track, sampleRate, timingOffset, anlzPath);
+    QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
+    readAnalyze(track, sampleRate, timingOffset, anlzPathExt);
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
@@ -740,7 +892,8 @@ RekordboxFeature::RekordboxFeature(QObject* parent, TrackCollection* trackCollec
             << "duration"
             << "bitrate"
             << "bpm"
-            << "key";
+            << "key"
+            << "analyze_path";
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
     QStringList searchColumns;
@@ -825,12 +978,26 @@ TreeItemModel* RekordboxFeature::getChildModel() {
 
 QString RekordboxFeature::formatRootViewHtml() const {
     QString title = tr("Rekordbox");
-    QString summary = tr("Reads playlists and folders from Rekordbox prepared removable devices.");
+    QString summary = tr("Reads the following from Rekordbox prepared removable devices:");
+    QString item1 = tr("Playlists");
+    QString item2 = tr("Folders");
+    QString item3 = tr("First memory cue");
+    QString item4 = tr("First memory loop");
+    QString item5 = tr("Hot cues");
+    QString item6 = tr("Beatgrids");
 
     QString html;
     QString refreshLink = tr("Check for attached Rekordbox devices (refresh)");
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
+    html.append(QString("<ul>"));
+    html.append(QString("<li>%1</li>").arg(item1));
+    html.append(QString("<li>%1</li>").arg(item2));
+    html.append(QString("<li>%1</li>").arg(item3));
+    html.append(QString("<li>%1</li>").arg(item4));
+    html.append(QString("<li>%1</li>").arg(item5));
+    html.append(QString("<li>%1</li>").arg(item6));
+    html.append(QString("</ul>"));
 
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
