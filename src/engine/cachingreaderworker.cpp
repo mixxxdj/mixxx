@@ -29,9 +29,6 @@ CachingReaderWorker::CachingReaderWorker(
           m_stop(0) {
 }
 
-CachingReaderWorker::~CachingReaderWorker() {
-}
-
 ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         const CachingReaderChunkReadRequest& request) {
     CachingReaderChunk* pChunk = request.chunk;
@@ -87,9 +84,12 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
-    QMutexLocker locker(&m_newTrackMutex);
-    m_pNewTrack = pTrack;
-    m_newTrackAvailable = true;
+    {
+        QMutexLocker locker(&m_newTrackMutex);
+        m_pNewTrack = std::move(pTrack);
+        m_newTrackAvailable = true;
+    }
+    workReady();
 }
 
 void CachingReaderWorker::run() {
@@ -104,11 +104,11 @@ void CachingReaderWorker::run() {
             TrackPointer pLoadTrack;
             { // locking scope
                 QMutexLocker locker(&m_newTrackMutex);
-                pLoadTrack = m_pNewTrack;
-                m_pNewTrack.reset();
+                pLoadTrack = std::move(m_pNewTrack);
+                DEBUG_ASSERT(!m_pNewTrack);
                 m_newTrackAvailable = false;
             } // implicitly unlocks the mutex
-            loadTrack(pLoadTrack);
+            loadTrack(std::move(pLoadTrack));
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
             // Read the requested chunk and send the result
             const ReaderStatusUpdate update(processReadRequest(request));
@@ -121,7 +121,7 @@ void CachingReaderWorker::run() {
     }
 }
 
-void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
+void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
     // Discard all pending read requests
     CachingReaderChunkReadRequest request;
     while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
@@ -139,9 +139,6 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         return;
     }
-
-    // Emit that a new track is loading, stops the current track
-    emit trackLoading();
 
     QString filename = pTrack->getLocation();
     if (filename.isEmpty() || !pTrack->exists()) {

@@ -101,20 +101,19 @@ class CachingReaderWorker : public EngineWorker {
     CachingReaderWorker(QString group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
-    virtual ~CachingReaderWorker();
+    ~CachingReaderWorker() override = default;
 
-    // Request to load a new track. wake() must be called afterwards.
-    virtual void newTrack(TrackPointer pTrack);
+    // Request to load a new track
+    void newTrack(TrackPointer pTrack);
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
-    virtual void run();
+    void run() override;
 
     void quitWait();
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
-    void trackLoading();
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
@@ -130,11 +129,11 @@ class CachingReaderWorker : public EngineWorker {
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
     QMutex m_newTrackMutex;
-    bool m_newTrackAvailable;
     TrackPointer m_pNewTrack;
+    bool m_newTrackAvailable;
 
     // Internal method to load a track. Emits trackLoaded when finished.
-    void loadTrack(const TrackPointer& pTrack);
+    void loadTrack(TrackPointer pTrack);
 
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);

@@ -116,7 +116,13 @@ class CachingReader : public QObject {
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+
+    // Forwarded from the worker
     void trackLoadFailed(TrackPointer pTrack, QString reason);
+
+  private slots:
+    void onTrackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void onTrackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
     const UserSettingsPointer m_pConfig;

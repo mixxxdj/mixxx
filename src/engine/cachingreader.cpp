@@ -78,16 +78,15 @@ CachingReader::CachingReader(QString group,
         m_freeChunks.push_back(c);
     }
 
-    // Forward signals from worker
-    connect(&m_worker, SIGNAL(trackLoading()),
-            this, SIGNAL(trackLoading()),
-            Qt::DirectConnection);
-    connect(&m_worker, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
-    connect(&m_worker, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            Qt::DirectConnection);
+    // Handle signals from worker thread
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoaded,
+            this,
+            &CachingReader::onTrackLoaded);
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoadFailed,
+            this,
+            &CachingReader::onTrackLoadFailed);
 
     m_worker.start(QThread::HighPriority);
 }
@@ -201,18 +200,48 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 }
 
 void CachingReader::newTrack(TrackPointer pTrack) {
+    while (m_state == State::TrackLoading) {
+        // Spin until the previous track has been either
+        // loaded or unloaded by the worker
+        process();
+    }
     // Feed the track to the worker as soon as possible
     // to get ready while the reader switches its internal
     // state. There are no race conditions, because the
     // reader polls the worker.
-    m_worker.newTrack(pTrack);
-    m_worker.workReady();
+    m_worker.newTrack(std::move(pTrack));
     // Don't accept any new read requests until the current
     // track has been unloaded and the new track has been
     // loaded.
     m_state = State::TrackLoading;
     // Free all chunks with sample data from the current track.
     freeAllChunks();
+    // Emit that a new track is loading, stops the current track
+    emit trackLoading();
+}
+
+void CachingReader::onTrackLoaded(
+        TrackPointer pTrack,
+        int iSampleRate,
+        int iNumSamples) {
+    // Consume all pending messages
+    process();
+    // Forward signal depending on the current state
+    if (m_state == State::TrackLoaded) {
+        emit trackLoaded(std::move(pTrack), iSampleRate, iNumSamples);
+    } else {
+        kLogger.warning()
+                << "No track loaded";
+    }
+}
+
+void CachingReader::onTrackLoadFailed(
+        TrackPointer pTrack,
+        QString reason) {
+    // Consume all pending messages
+    process();
+    // Forward signal independent of the current state
+    emit trackLoadFailed(std::move(pTrack), reason);
 }
 
 void CachingReader::process() {
@@ -542,6 +571,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                             << "Requesting read of chunk"
                             << request.chunk;
                 }
+                DEBUG_ASSERT(m_state == State::TrackLoaded);
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
                     kLogger.warning()
                             << "Failed to submit read request for chunk"
