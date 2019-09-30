@@ -61,13 +61,10 @@ WSearchLineEdit,
   border-bottom: 1px solid #333;
   border-right: 1px solid #333;
   border-bottom-left-radius: 1px;
-  border-top-right-radius: 1px;
+  border-top-right-radius: 1px; /*
+  any color would cover the background tetxture
+  background-color: #131313;  */
 }
-/*
-#OverviewBox {
-  background-color: green;
-  padding: 5px;
-}*/
 
 #Deck1, #Deck2,
 #Deck3, #Deck4,
@@ -1293,37 +1290,50 @@ WBeatSpinBox,
 
 #MicAuxUnit {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
+  }
+  #MicAuxInterior {
+    padding: 0px 1px 0px 0px;
+  }
+  #MicAuxMainControls {
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    border-left: 1px solid #333;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+    border-radius: 1px;
+    padding: 0px 1px 0px 1px;
+  }
 
-#MicAuxInterior {
-  padding: 0px 2px 2px 1px;
-}
-
-#MicTitle {
+#MicAuxSubTitle {
   qproperty-alignment: 'AlignCenter | AlignTop';
-  font-size: 12px/13px;
+  font-size: 12px/12px;
   text-align: center;
+  margin: 0px 0px 2px 1px;
 }
 
 #MicDuckingContainer {
   qproperty-alignment: 'AlignCenter | AlignTop';
-}
+  }
+  #MicDuckingStrengthKnob {
+    margin: 2px 0px;
+  }
+  #MicDuckingButton {
+    }
+    #MicDuckingButton[displayValue="0"] {
+      color: #ddd;
+    }
+    #MicDuckingButton[displayValue="1"],
+    #MicDuckingButton[displayValue="2"] {
+      color: #0e0e0e;
+    }
 
-#MicDuckingStrengthKnob {
-  margin: 2px 0px;
+#MicTalkButton {
+  qproperty-alignment: 'AlignCenter';
+  margin: 1px 0px 1px 2px;
 }
-
-/* styled like GuiToggleButton, VinylButton etc
-  background-color: green; */
-#MicDuckingButton {
-  }
-  #MicDuckingButton[displayValue="0"] {
-    color: #ddd;
-  }
-  #MicDuckingButton[displayValue="1"],
-  #MicDuckingButton[displayValue="2"] {
-    color: #0e0e0e;
-  }
+#AuxPlayButton {
+  margin: 1px 0px 3px 2px;
+}
 
 #MicGainPFlContainer {
   qproperty-layoutAlignment: 'AlignCenter';
@@ -1337,21 +1347,12 @@ WBeatSpinBox,
 
 #MicVUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 2px 1px 1px 2px;
+  padding: 1px 1px 1px 2px;
 }
 
-#MicFxButtons {
+#MicAuxFxButtons {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#MicTalkButton,
-#AuxMuteButton {
-  border-radius: 2px;
-  margin: 1px 0px 1px 2px;
-}
-
-#SamplerExpandbutton {
-  margin-right: 1px;
+  padding: 2px 1px;
 }
 
 #SamplerRow {
@@ -2017,6 +2018,7 @@ QScrollBar {
 #SearchLineBox {
   padding: 2px;
   margin-bottom: 5px;
+  margin-left: 2px;
 }
 WSearchLineEdit {
   padding: 2px;

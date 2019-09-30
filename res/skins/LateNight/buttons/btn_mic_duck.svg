@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg17"
+   version="1.1"
+   height="27"
+   width="72">
+  <metadata
+     id="metadata21">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs7">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.6957 0 0 1 -.8478 -1025.4)"
+       y2="1049"
+       y1="1027.4"
+       x2="13"
+       x1="13"
+       id="a">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-color="#242424" />
+      <stop
+         id="stop4"
+         offset="1"
+         stop-color="#101010" />
+    </linearGradient>
+  </defs>
+  <path
+     style="color:#000000;fill-opacity:0.8"
+     id="path9"
+     d="m 69.56153,1.18775 c 0.11225,0.24927 0.1875,0.52278 0.1875,0.8125 l -6.2e-5,21 c -3e-6,1.0994 -0.90065,2.000004 -2,2 L 1.999438,25 c -0.28972,-1e-6 -0.56323,-0.07525 -0.8125,-0.1875 0.31167,0.69758 0.9965,1.187497 1.8125,1.1875 l 65.74953,2.5e-4 c 1.108,4e-6 2,-0.892 2,-2 l 6.3e-5,-21 c 3e-6,-0.816 -0.48992,-1.5008 -1.187501,-1.8125 z" />
+  <path
+     id="path13"
+     fill="url(#a)"
+     color="#000000"
+     d="m2.5002.5h65.25c1.108 0 2 .892 2 2l-6.2e-5 20c-3e-6 1.108-.892 2-2 2h-65.25c-1.108 0-2-.892-2-2l6.225e-5-20c3.45e-6-1.108.892-2 2-2z" />
+  <path
+     id="path15"
+     style="text-decoration-line:none;text-indent:0;text-transform:none"
+     fill="#444444"
+     color="#000000"
+     d="m2.0002 0c-1.0994 0-2 .90065-2 2l-6.225e-5 21c-3.2589e-6 1.0994.90065 2 2 2h66.25c1.0994 0 2-.90065 2-2l6.2e-5-21c3e-6-1.0994-.90065-2-2-2zm.3 1h65.65c.56265 0 1.3.73735 1.3 1.3l-6.2e-5 20.4c-1e-6.56265-.73735 1.3-1.3 1.3h-65.65c-.56265 0-1.3-.73735-1.3-1.3l6.23e-5-20.4c1.7e-6-.56265.73735-1.3 1.3-1.3z" />
+</svg>
