@@ -50,6 +50,9 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
             QSharedPointer<BaseTrackCache> trackSource);
     TrackPointer getTrack(const QModelIndex& index) const override;
     bool isColumnHiddenByDefault(int column) override;
+
+  protected:
+    virtual void initSortColumnMapping();
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
