@@ -242,7 +242,11 @@ inline QString formatBpm(const TrackMetadata& trackMetadata) {
 
 inline
 QString formatBpmInteger(const TrackMetadata& trackMetadata) {
-    return QString::number(Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().getValue()));
+    if (trackMetadata.getTrackInfo().getBpm().hasValue()) {
+        return QString::number(Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().getValue()));
+    } else {
+        return QString();
+    }
 }
 
 bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
