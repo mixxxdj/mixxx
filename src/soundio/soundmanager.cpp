@@ -513,7 +513,7 @@ SoundDeviceError SoundManager::setupDevices() {
     qDebug() << outputDevicesOpened << "output sound devices opened";
     qDebug() << inputDevicesOpened << "input sound devices opened";
     for (const auto& device: devicesNotFound) {
-        qWarning() << device.debugName() << "not found";
+        qWarning() << device << "not found";
     }
 
     m_pControlObjectSoundStatusCO->set(

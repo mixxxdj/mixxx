@@ -239,7 +239,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     }
     for (const auto& pDevice: qAsConst(m_devices)) {
         if (selection == pDevice->getDeviceId()) {
-            //qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId().debugName();
+            //qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId();
             return pDevice;
         }
     }
@@ -254,7 +254,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
  */
 void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     int index = deviceComboBox->findData(QVariant::fromValue(device));
-    //qDebug() << "DlgPrefSoundItem::setDevice" << device.debugName();
+    //qDebug() << "DlgPrefSoundItem::setDevice" << device;
     if (index != -1) {
         m_inhibitSettingChanged = true;
         deviceComboBox->setCurrentIndex(index);

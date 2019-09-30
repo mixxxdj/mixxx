@@ -203,8 +203,6 @@ class SoundDeviceId {
     QString alsaDeviceName;
     int portAudioIndex;
 
-    SoundDeviceId() : name(""), alsaDeviceName(""), portAudioIndex(-1) {};
-
     QString debugName() const {
         if (alsaDeviceName.isEmpty()) {
             return name + ", " + portAudioIndex;
@@ -212,6 +210,8 @@ class SoundDeviceId {
             return name + ", " + alsaDeviceName + ", " + QString::number(portAudioIndex);
         }
     }
+    SoundDeviceId() :
+        name(""), alsaDeviceName(""), portAudioIndex(-1) {};
 };
 
 inline bool operator==(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
@@ -229,6 +229,10 @@ Q_DECLARE_METATYPE(SoundDeviceId);
 
 inline unsigned int qHash(const SoundDeviceId& id) {
     return qHash(id.name) + qHash(id.alsaDeviceName) + id.portAudioIndex;
+}
+
+inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {
+    return dbg << QString("SoundDeviceId(" + soundDeviceId.debugName() + ")");
 }
 
 // globals for QHash
