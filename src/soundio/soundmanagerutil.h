@@ -200,6 +200,8 @@ typedef AudioPath::AudioPathType AudioPathType;
 class SoundDeviceId {
   public:
     QString name;
+    // The "hw:X,Y" device name. Remains an empty string if not using ALSA
+    // or using a non-hw ALSA device such as "default" or "pulse".
     QString alsaHwDevice;
     int portAudioIndex;
 
@@ -210,10 +212,16 @@ class SoundDeviceId {
             return name + ", " + alsaHwDevice + ", " + QString::number(portAudioIndex);
         }
     }
-    SoundDeviceId() :
-        name(""), alsaHwDevice(""), portAudioIndex(-1) {};
+
+    SoundDeviceId()
+       : name(""),
+         alsaHwDevice(""),
+         portAudioIndex(-1) {};
 };
 
+// This must be registered with QMetaType::registerComparators for
+// QVariant::operator== to use it, which is required for QComboBox::findData to
+// work in DlgPrefSoundItem.
 inline bool operator==(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
     return lhs.name == rhs.name
             && lhs.alsaHwDevice == rhs.alsaHwDevice
