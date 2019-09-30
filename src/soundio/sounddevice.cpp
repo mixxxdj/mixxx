@@ -29,7 +29,6 @@
 SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
-          m_strInternalName("Unknown Soundcard"),
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),
           m_iNumInputChannels(2),
@@ -104,11 +103,7 @@ void SoundDevice::clearInputs() {
 }
 
 bool SoundDevice::operator==(const SoundDevice &other) const {
-    return this->getInternalName() == other.getInternalName();
-}
-
-bool SoundDevice::operator==(const QString &other) const {
-    return getInternalName() == other;
+    return m_deviceId == other.getDeviceId();
 }
 
 void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,

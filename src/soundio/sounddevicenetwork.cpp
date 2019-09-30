@@ -47,7 +47,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
-    m_strInternalName = kNetworkDeviceInternalName;
+    m_deviceId.name = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
@@ -61,7 +61,7 @@ SoundDeviceNetwork::~SoundDeviceNetwork() {
 
 SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     Q_UNUSED(syncBuffers);
-    kLogger.debug() << "open:" << getInternalName();
+    kLogger.debug() << "open:" << m_deviceId.name;
 
     // Sample rate
     if (m_dSampleRate <= 0) {
@@ -414,7 +414,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     updateCallbackEntryToDacTime();
 
     Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
-                getInternalName());
+                m_deviceId.name);
 
 
     if (!m_denormals) {
@@ -453,7 +453,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
     {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
-                getInternalName());
+                m_deviceId.name);
         m_pSoundManager->onDeviceOutputCallback(m_framesPerBuffer);
     }
 

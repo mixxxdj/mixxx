@@ -33,7 +33,7 @@ const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
 const int SoundManagerConfig::kDefaultSyncBuffers = 2;
 
-SoundManagerConfig::SoundManagerConfig()
+SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     : m_api("None"),
       m_sampleRate(kFallbackSampleRate),
       m_deckCount(kDefaultDeckCount),
@@ -41,7 +41,8 @@ SoundManagerConfig::SoundManagerConfig()
       m_syncBuffers(2),
       m_forceNetworkClock(false),
       m_iNumMicInputs(0),
-      m_bExternalRecordBroadcastConnected(false) {
+      m_bExternalRecordBroadcastConnected(false),
+      m_pSoundManager(pSoundManager) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -80,11 +81,68 @@ bool SoundManagerConfig::readFromDisk() {
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
+
+    VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
+        return false;
+    }
+    QList<SoundDevicePointer> soundDevices = m_pSoundManager->getDeviceList(m_api, true, true);
+
     for (int i = 0; i < devElements.count(); ++i) {
         QDomElement devElement(devElements.at(i).toElement());
         if (devElement.isNull()) continue;
-        QString device(devElement.attribute("name"));
-        if (device.isEmpty()) continue;
+        SoundDeviceId deviceIdFromFile;
+        deviceIdFromFile.name = devElement.attribute("name");
+        if (deviceIdFromFile.name.isEmpty()) {
+            continue;
+        }
+        deviceIdFromFile.alsaDeviceName = devElement.attribute("alsaDeviceName");
+        deviceIdFromFile.portAudioIndex = devElement.attribute("portAudioIndex").toInt();
+
+        int devicesMatchingByName = 0;
+        for (const auto& soundDevice : soundDevices) {
+            SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
+            if (hardwareDeviceId.name == deviceIdFromFile.name) {
+                devicesMatchingByName++;
+            }
+        }
+
+        if (devicesMatchingByName == 0) {
+            continue;
+        } else if (devicesMatchingByName == 1) {
+            // There is only one device with this name, so it is unambiguous
+            // which it is. Neither the alsaDeviceName nor portAudioIndex are
+            // very reliable as persistent identifiers across restarts of Mixxx.
+            // Set deviceIdFromFile's alsaDeviceName and portAudioIndex to match
+            // the hardwareDeviceId so operator== works for SoundDeviceId.
+            for (const auto& soundDevice : soundDevices) {
+                SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
+                if (hardwareDeviceId.name == deviceIdFromFile.name) {
+                    deviceIdFromFile.alsaDeviceName = hardwareDeviceId.alsaDeviceName;
+                    deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                }
+            }
+        } else {
+            // It is not clear which hardwareDeviceId corresponds to the device
+            // listed in the configuration file using only the name.
+            if (!deviceIdFromFile.alsaDeviceName.isEmpty()) {
+                // If using ALSA, attempt to match based on the ALSA device name.
+                // This is reliable between restarts of Mixxx until the user
+                // unplugs an audio interface or restarts Linux.
+                // NOTE(Be): I am not sure if there is a way to assign a
+                // persistent ALSA device name across restarts of Linux for
+                // multiple devices with the same name. This might be possible
+                // somehow with a udev rule matching device serial numbers, but
+                // I have not tested this.
+                for (const auto& soundDevice : soundDevices) {
+                    SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
+                    if (hardwareDeviceId.name == deviceIdFromFile.name
+                            && hardwareDeviceId.alsaDeviceName == deviceIdFromFile.alsaDeviceName) {
+                        deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                    }
+                }
+            }
+        }
+
         QDomNodeList outElements(devElement.elementsByTagName("output"));
         QDomNodeList inElements(devElement.elementsByTagName("input"));
         for (int j = 0; j < outElements.count(); ++j) {
@@ -93,7 +151,7 @@ bool SoundManagerConfig::readFromDisk() {
             AudioOutput out(AudioOutput::fromXML(outElement));
             if (out.getType() == AudioPath::INVALID) continue;
             bool dupe(false);
-            foreach (AudioOutput otherOut, m_outputs) {
+            for (const AudioOutput& otherOut : m_outputs) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
@@ -101,7 +159,8 @@ bool SoundManagerConfig::readFromDisk() {
                 }
             }
             if (dupe) continue;
-            addOutput(device, out);
+
+            addOutput(deviceIdFromFile, out);
         }
         for (int j = 0; j < inElements.count(); ++j) {
             QDomElement inElement(inElements.at(j).toElement());
@@ -109,7 +168,7 @@ bool SoundManagerConfig::readFromDisk() {
             AudioInput in(AudioInput::fromXML(inElement));
             if (in.getType() == AudioPath::INVALID) continue;
             bool dupe(false);
-            foreach (AudioInput otherIn, m_inputs) {
+            for (const AudioInput& otherIn : m_inputs) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;
@@ -117,7 +176,7 @@ bool SoundManagerConfig::readFromDisk() {
                 }
             }
             if (dupe) continue;
-            addInput(device, in);
+            addInput(deviceIdFromFile, in);
         }
     }
     return true;
@@ -135,15 +194,19 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
-    for (const auto& device: getDevices()) {
+    for (const auto& deviceId: getDevices()) {
         QDomElement devElement(doc.createElement("SoundDevice"));
-        devElement.setAttribute("name", device);
-        foreach (AudioInput in, m_inputs.values(device)) {
+        devElement.setAttribute("name", deviceId.name);
+        devElement.setAttribute("portAudioIndex", deviceId.portAudioIndex);
+        if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
+            devElement.setAttribute("alsaDeviceName", deviceId.alsaDeviceName);
+        }
+        for (const AudioInput& in : m_inputs.values(deviceId)) {
             QDomElement inElement(doc.createElement("input"));
             in.toXML(&inElement);
             devElement.appendChild(inElement);
         }
-        foreach (AudioOutput out, m_outputs.values(device)) {
+        for (const AudioOutput& out : m_outputs.values(deviceId)) {
             QDomElement outElement(doc.createElement("output"));
             out.toXML(&outElement);
             devElement.appendChild(outElement);
@@ -176,8 +239,11 @@ void SoundManagerConfig::setAPI(const QString &api) {
  * @returns false if the API is not found in SoundManager's list, otherwise
  *          true
  */
-bool SoundManagerConfig::checkAPI(const SoundManager &soundManager) {
-    if (!soundManager.getHostAPIList().contains(m_api) && m_api != "None") {
+bool SoundManagerConfig::checkAPI() {
+    VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
+        return false;
+    }
+    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != "None") {
         return false;
     }
     return true;
@@ -303,11 +369,11 @@ void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
     m_audioBufferSizeIndex = sizeIndex != 0 ? math_min(sizeIndex, kMaxAudioBufferSizeIndex) : 1;
 }
 
-void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out) {
+void SoundManagerConfig::addOutput(const SoundDeviceId &device, const AudioOutput &out) {
     m_outputs.insert(device, out);
 }
 
-void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
+void SoundManagerConfig::addInput(const SoundDeviceId &device, const AudioInput &in) {
     m_inputs.insert(device, in);
     if (in.getType() == AudioPath::MICROPHONE) {
         m_iNumMicInputs++;
@@ -316,11 +382,11 @@ void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
     }
 }
 
-QMultiHash<QString, AudioOutput> SoundManagerConfig::getOutputs() const {
+QMultiHash<SoundDeviceId, AudioOutput> SoundManagerConfig::getOutputs() const {
     return m_outputs;
 }
 
-QMultiHash<QString, AudioInput> SoundManagerConfig::getInputs() const {
+QMultiHash<SoundDeviceId, AudioInput> SoundManagerConfig::getInputs() const {
     return m_inputs;
 }
 
@@ -391,7 +457,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
                     continue;
                 }
                 AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
-                addOutput(pDevice->getInternalName(), masterOut);
+                addOutput(pDevice->getDeviceId(), masterOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }
@@ -416,8 +482,8 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     m_forceNetworkClock = false;
 }
 
-QSet<QString> SoundManagerConfig::getDevices() const {
-    QSet<QString> devices;
+QSet<SoundDeviceId> SoundManagerConfig::getDevices() const {
+    QSet<SoundDeviceId> devices;
     devices.reserve(m_outputs.size() + m_inputs.size());
     for (auto it = m_outputs.constBegin(); it != m_outputs.constEnd(); ++it) {
         devices.insert(it.key());

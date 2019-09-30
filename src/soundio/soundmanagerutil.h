@@ -197,6 +197,40 @@ public:
 
 typedef AudioPath::AudioPathType AudioPathType;
 
+class SoundDeviceId {
+  public:
+    QString name;
+    QString alsaDeviceName;
+    int portAudioIndex;
+
+    SoundDeviceId() : name(""), alsaDeviceName(""), portAudioIndex(-1) {};
+
+    QString debugName() const {
+        if (alsaDeviceName.isEmpty()) {
+            return name + ", " + portAudioIndex;
+        } else {
+            return name + ", " + alsaDeviceName + ", " + QString::number(portAudioIndex);
+        }
+    }
+};
+
+inline bool operator==(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
+    return lhs.name == rhs.name
+            && lhs.alsaDeviceName == rhs.alsaDeviceName
+            && lhs.portAudioIndex == rhs.portAudioIndex;
+}
+
+// There is not really a use case for this, but it is required for QMetaType::registerComparators.
+inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
+    return lhs.portAudioIndex < rhs.portAudioIndex;
+}
+
+Q_DECLARE_METATYPE(SoundDeviceId);
+
+inline unsigned int qHash(const SoundDeviceId& id) {
+    return qHash(id.name) + qHash(id.alsaDeviceName) + id.portAudioIndex;
+}
+
 // globals for QHash
 unsigned int qHash(const ChannelGroup &group);
 unsigned int qHash(const AudioOutput &output);
