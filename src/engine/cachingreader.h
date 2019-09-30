@@ -124,7 +124,7 @@ class CachingReader : public QObject {
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
     FIFO<CachingReaderChunkReadRequest> m_chunkReadRequestFIFO;
-    FIFO<ReaderStatusUpdate> m_stateFIFO;
+    FIFO<ReaderStatusUpdate> m_readerStatusUpdateFIFO;
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns nullptr. If it is present then
