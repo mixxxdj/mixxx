@@ -438,14 +438,11 @@ void Library::setEditMedatataSelectedClick(bool enabled) {
     emit(setSelectedClick(enabled));
 }
 
-void Library::saveCachedTrack(Track* pTrack) noexcept {
+void Library::saveEvictedTrack(Track* pTrack) noexcept {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved!
     // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
-    // doesn't seem to work reliably. Emitting the clean() signal from
-    // a track that is about to deleted may cause access violations!!
-    pTrack->blockSignals(true);
+    DEBUG_ASSERT(pTrack->signalsBlocked());
 
     // The metadata must be exported while the cache is locked to
     // ensure that we have exclusive (write) access on the file
