@@ -200,23 +200,23 @@ typedef AudioPath::AudioPathType AudioPathType;
 class SoundDeviceId {
   public:
     QString name;
-    QString alsaDeviceName;
+    QString alsaHwDevice;
     int portAudioIndex;
 
     QString debugName() const {
-        if (alsaDeviceName.isEmpty()) {
+        if (alsaHwDevice.isEmpty()) {
             return name + ", " + portAudioIndex;
         } else {
-            return name + ", " + alsaDeviceName + ", " + QString::number(portAudioIndex);
+            return name + ", " + alsaHwDevice + ", " + QString::number(portAudioIndex);
         }
     }
     SoundDeviceId() :
-        name(""), alsaDeviceName(""), portAudioIndex(-1) {};
+        name(""), alsaHwDevice(""), portAudioIndex(-1) {};
 };
 
 inline bool operator==(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
     return lhs.name == rhs.name
-            && lhs.alsaDeviceName == rhs.alsaDeviceName
+            && lhs.alsaHwDevice == rhs.alsaHwDevice
             && lhs.portAudioIndex == rhs.portAudioIndex;
 }
 
@@ -228,7 +228,7 @@ inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
 Q_DECLARE_METATYPE(SoundDeviceId);
 
 inline unsigned int qHash(const SoundDeviceId& id) {
-    return qHash(id.name) + qHash(id.alsaDeviceName) + id.portAudioIndex;
+    return qHash(id.name) + qHash(id.alsaHwDevice) + id.portAudioIndex;
 }
 
 inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {

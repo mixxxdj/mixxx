@@ -95,7 +95,7 @@ bool SoundManagerConfig::readFromDisk() {
         if (deviceIdFromFile.name.isEmpty()) {
             continue;
         }
-        deviceIdFromFile.alsaDeviceName = devElement.attribute("alsaDeviceName");
+        deviceIdFromFile.alsaHwDevice = devElement.attribute("alsaHwDevice");
         deviceIdFromFile.portAudioIndex = devElement.attribute("portAudioIndex").toInt();
 
         int devicesMatchingByName = 0;
@@ -110,21 +110,21 @@ bool SoundManagerConfig::readFromDisk() {
             continue;
         } else if (devicesMatchingByName == 1) {
             // There is only one device with this name, so it is unambiguous
-            // which it is. Neither the alsaDeviceName nor portAudioIndex are
+            // which it is. Neither the alsaHwDevice nor portAudioIndex are
             // very reliable as persistent identifiers across restarts of Mixxx.
-            // Set deviceIdFromFile's alsaDeviceName and portAudioIndex to match
+            // Set deviceIdFromFile's alsaHwDevice and portAudioIndex to match
             // the hardwareDeviceId so operator== works for SoundDeviceId.
             for (const auto& soundDevice : soundDevices) {
                 SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                 if (hardwareDeviceId.name == deviceIdFromFile.name) {
-                    deviceIdFromFile.alsaDeviceName = hardwareDeviceId.alsaDeviceName;
+                    deviceIdFromFile.alsaHwDevice = hardwareDeviceId.alsaHwDevice;
                     deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
                 }
             }
         } else {
             // It is not clear which hardwareDeviceId corresponds to the device
             // listed in the configuration file using only the name.
-            if (!deviceIdFromFile.alsaDeviceName.isEmpty()) {
+            if (!deviceIdFromFile.alsaHwDevice.isEmpty()) {
                 // If using ALSA, attempt to match based on the ALSA device name.
                 // This is reliable between restarts of Mixxx until the user
                 // unplugs an audio interface or restarts Linux.
@@ -136,7 +136,7 @@ bool SoundManagerConfig::readFromDisk() {
                 for (const auto& soundDevice : soundDevices) {
                     SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                     if (hardwareDeviceId.name == deviceIdFromFile.name
-                            && hardwareDeviceId.alsaDeviceName == deviceIdFromFile.alsaDeviceName) {
+                            && hardwareDeviceId.alsaHwDevice == deviceIdFromFile.alsaHwDevice) {
                         deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
                     }
                 }
@@ -199,7 +199,7 @@ bool SoundManagerConfig::writeToDisk() const {
         devElement.setAttribute("name", deviceId.name);
         devElement.setAttribute("portAudioIndex", deviceId.portAudioIndex);
         if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
-            devElement.setAttribute("alsaDeviceName", deviceId.alsaDeviceName);
+            devElement.setAttribute("alsaHwDevice", deviceId.alsaHwDevice);
         }
         for (const AudioInput& in : m_inputs.values(deviceId)) {
             QDomElement inElement(doc.createElement("input"));

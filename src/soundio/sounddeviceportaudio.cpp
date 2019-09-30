@@ -119,7 +119,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         QRegularExpressionMatch match = alsaHwDeviceRegex.match(deviceInfo->name);
         if (match.hasMatch()) {
             m_deviceId.name = match.captured(1);
-            m_deviceId.alsaDeviceName = match.captured(3);
+            m_deviceId.alsaHwDevice = match.captured(3);
         } else {
             // Special ALSA devices like "default" and "pulse" do not match the regex
             m_deviceId.name = deviceInfo->name;
