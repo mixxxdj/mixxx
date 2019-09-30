@@ -56,12 +56,12 @@ CachingReader::CachingReader(QString group,
           // The capacity of the back channel must be equal to the number of
           // allocated chunks, because the worker use writeBlocking(). Otherwise
           // the worker could get stuck in a hot loop!!!
-          m_stateFIFO(kNumberOfCachedChunksInMemory),
+          m_readerStatusUpdateFIFO(kNumberOfCachedChunksInMemory),
           m_state(State::Idle),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kSamples * kNumberOfCachedChunksInMemory),
-          m_worker(group, &m_chunkReadRequestFIFO, &m_stateFIFO) {
+          m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusUpdateFIFO) {
 
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
@@ -215,8 +215,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
 
 void CachingReader::process() {
     ReaderStatusUpdate update;
-    while (m_stateFIFO.read(&update, 1) == 1) {
-        auto pChunk = update.takeFromWorker();
+    while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
         if (pChunk) {
             DEBUG_ASSERT(m_state != State::Idle);
             // Result of a read request (with a chunk)
