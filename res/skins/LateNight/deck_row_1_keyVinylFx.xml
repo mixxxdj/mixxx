@@ -1,4 +1,6 @@
 <Template>
+  <SetVariable name="Type">group</SetVariable>
+  <SetVariable name="FxButtonType">Deck</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckRow_1_KeyVinylFx</ObjectName>
     <Layout>horizontal</Layout>
@@ -61,51 +63,35 @@
         <Layout>horizontal</Layout>
         <ObjectName>AlignRightTop</ObjectName>
           <Children>
-
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
-            <SetVariable name="Size">28f,22f</SetVariable>
-            <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
-            <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
-            <SetVariable name="Size">28f,22f</SetVariable>
-            <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
-            <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</SetVariable>
-          </Template>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Connection>
-              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-            <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
-                <SetVariable name="Size">28f,22f</SetVariable>
-                <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
-                <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</SetVariable>
-              </Template>
-
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
-                <SetVariable name="Size">28f,22f</SetVariable>
-                <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
-                <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
+            <Template src="skin:fx_assign_button.xml">
+              <SetVariable name="Size">28f,22f</SetVariable>
+              <SetVariable name="Text">FX&#8202;</SetVariable>
+              <SetVariable name="FxUnit">1</SetVariable>
+            </Template>
+            <Template src="skin:fx_assign_button.xml">
+              <SetVariable name="Size">28f,22f</SetVariable>
+              <SetVariable name="Text">FX&#8202;</SetVariable>
+              <SetVariable name="FxUnit">2</SetVariable>
+            </Template>
+            <WidgetGroup>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Template src="skin:fx_assign_button.xml">
+                  <SetVariable name="Size">28f,22f</SetVariable>
+                  <SetVariable name="Text">FX&#8202;</SetVariable>
+                  <SetVariable name="FxUnit">3</SetVariable>
+                </Template>
+                <Template src="skin:fx_assign_button.xml">
+                  <SetVariable name="Size">28f,22f</SetVariable>
+                  <SetVariable name="Text">FX&#8202;</SetVariable>
+                  <SetVariable name="FxUnit">4</SetVariable>
+                </Template>
+              </Children>
+              <Connection>
+                <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup>
         </Children>
       </WidgetGroup><!-- FX buttons -->
     </Children>

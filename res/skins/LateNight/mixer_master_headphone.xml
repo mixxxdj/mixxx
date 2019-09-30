@@ -1,4 +1,6 @@
 <Template>
+  <SetVariable name="group">[Master]</SetVariable>
+  <SetVariable name="Type">master</SetVariable>
   <WidgetGroup>
     <ObjectName>MasterHeadphoneMixerContainer</ObjectName>
     <SizePolicy>max,min</SizePolicy>
@@ -33,7 +35,6 @@
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="TooltipId">master_gain</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">gain</SetVariable>
                       </Template>
                     </Children>
@@ -47,7 +48,6 @@
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="Color">red</SetVariable>
                         <SetVariable name="TooltipId">balance</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">balance</SetVariable>
                       </Template>
                     </Children>
@@ -81,15 +81,12 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
-
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="Color">orange</SetVariable>
                     <SetVariable name="TooltipId">booth_gain</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
                     <SetVariable name="control">booth_gain</SetVariable>
                   </Template>
-
                   <Label>
                     <ObjectName>KnobLabel</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
@@ -109,22 +106,15 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                  <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
+                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                  <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
+                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /FX buttons 1/2 -->
@@ -134,22 +124,15 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                  <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
+                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                  <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
+                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="FxUnit">4</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
@@ -180,7 +163,7 @@
               </WidgetGroup><!-- /MasterVuMeter4ch -->
 
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- MasterControls -->
 
           <WidgetGroup>
             <ObjectName>MasterHeadphoneDivider</ObjectName>

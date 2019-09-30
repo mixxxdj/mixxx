@@ -14,18 +14,17 @@
         <Layout>horizontal</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
-
           <Template src="skin:mic_unit.xml">
-            <SetVariable name="mic1hack">1</SetVariable>
-          </Template>
-          <Template src="skin:mic_unit.xml">
-            <SetVariable name="micnum">2</SetVariable>
+            <SetVariable name="micnum">4</SetVariable>
           </Template>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">3</SetVariable>
           </Template>
           <Template src="skin:mic_unit.xml">
-            <SetVariable name="micnum">4</SetVariable>
+            <SetVariable name="micnum">2</SetVariable>
+          </Template>
+          <Template src="skin:mic_unit.xml">
+            <SetVariable name="mic1hack">1</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Ducking controls -->
@@ -33,7 +32,6 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
                 <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
@@ -46,7 +44,6 @@
                 <SetVariable name="state_2_text">DUCK MAN</SetVariable>
                 <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
               </Template>
-
               <WidgetGroup>
                 <ObjectName>MicDuckingStrengthKnob</ObjectName>
                 <Layout>horizontal</Layout>
@@ -60,7 +57,7 @@
                     <SetVariable name="control">duckStrength</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- MicDuckingStrengthKnob -->
             </Children>
           </WidgetGroup><!-- /Ducking controls -->
         </Children>
@@ -72,16 +69,16 @@
         <SizePolicy>max,min</SizePolicy>
         <Children>
           <Template src="skin:aux_unit.xml">
-            <SetVariable name="auxnum">1</SetVariable>
-          </Template>
-          <Template src="skin:aux_unit.xml">
-            <SetVariable name="auxnum">2</SetVariable>
+            <SetVariable name="auxnum">4</SetVariable>
           </Template>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">3</SetVariable>
           </Template>
           <Template src="skin:aux_unit.xml">
-            <SetVariable name="auxnum">4</SetVariable>
+            <SetVariable name="auxnum">2</SetVariable>
+          </Template>
+          <Template src="skin:aux_unit.xml">
+            <SetVariable name="auxnum">1</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- Aux -->

@@ -36,7 +36,8 @@ QToolTip {/*
 #PreviewDeck,
 WLibrary,
 #SidebarBox,
-#SearchLineBox {
+#SearchLineBox,
+#MicAuxMainControls {
   background-color: #1e1e1e;
   border-top: 1px solid #333;
   border-left: 1px solid #333;
@@ -53,7 +54,7 @@ WLibrary,
 #EffectSlot2,
 #EffectSlot3,
 #SamplerButtons,
-#MicAuxInterior,
+#MicAuxFrame,
 WSearchLineEdit,
 #OverviewBox {
   border-top: 1px solid #0a0a0a;
@@ -992,7 +993,7 @@ WBeatSpinBox,
   #DlgAutoDJ QSpinBox {
     height: 22px;
     padding: 0px 2px 0px 0px;
-    margin: 0px 0px 1px 2px;
+    margin: 0px 0px 1px 19px;
   }
   /* see button border styles */
   WBeatSpinBox:hover,
@@ -1121,7 +1122,7 @@ WBeatSpinBox,
 }
 
 #PreviewVuMeter {
-  margin: 2px 0px 2px 2px;
+  margin: 0px 0px 0px 2px;
 }
 
 #AlignLeft {
@@ -1270,13 +1271,15 @@ WBeatSpinBox,
   padding: 2px 0px 0px 2px;
 }
 
+
+/******************** Mic Aux ********************/
 #MicAuxRack {
 }
 
 #MicRack, #AuxRack {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #1e1e1e;
-  padding: 3px 3px 2px 3px;
+  padding: 2px 3px 1px 4px;
   qproperty-layoutSpacing: 5;
   }
   #MicRack {
@@ -1292,7 +1295,25 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #MicAuxInterior {
-    padding: 0px 1px 0px 0px;
+    padding: 2px 2px 0px 2px;
+    border-left: 1px solid #0a0a0a;
+    background-color: transparent;
+    }
+    #MicAuxInteriorBorderTop {
+      background-color: #1e1e1e;
+      border-right: 1px solid #0a0a0a;
+      border-bottom: 1px solid #0a0a0a;
+      border-bottom-right-radius: 2px;
+    }
+    #MicAuxInteriorBorderBottom {
+      background-color: #1e1e1e;
+      border-top: 1px solid #333;
+      border-top-right-radius: 1px;
+    }
+  #MicAuxFrame {
+    border-left: 0px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
   }
   #MicAuxMainControls {
     background-color: #1e1e1e;
@@ -1335,19 +1356,10 @@ WBeatSpinBox,
   margin: 1px 0px 3px 2px;
 }
 
-#MicGainPFlContainer {
+#MicAuxGainPFlContainer {
   qproperty-layoutAlignment: 'AlignCenter';
-  padding: 0px;
+  padding: 0px 0px 0px 3px;
   margin: 0px;
-}
-
-#MicGainKnob {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
-#MicVUMeter {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 1px 1px 1px 2px;
 }
 
 #MicAuxFxButtons {
@@ -1355,6 +1367,18 @@ WBeatSpinBox,
   padding: 2px 1px;
 }
 
+#MicAuxGainKnob {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
+#MicAuxVUMeter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 1px 1px 1px 2px;
+}
+/******************** /Mic Aux ********************/
+
+
+/******************** Samplers ********************/
 #SamplerRow {
   qproperty-layoutAlignment: 'AlignTop';
   margin: 0px 3px 5px 3px;
@@ -2138,13 +2162,14 @@ WLibrary QRadioButton::indicator:unchecked {
   /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {
     margin-left: 1px;
-    margin-right: 17px;
   }
-  QPushButton#pushButtonAutoDJ:checked {
+  QPushButton#pushButtonAutoDJ:checked,
+  #DlgAnalysis > QPushButton:checked {
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #AD5700,
       stop:1 #DE7000);
     border: 1px solid #ddd;
+    color: #0f0f0f;
     margin-bottom: 4px;
   }
   /* Space in between 'All' radio button and 'Select All' button */

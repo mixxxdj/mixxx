@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="group">[PreviewDeck1]</SetVariable>
   <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
@@ -30,7 +31,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Text>Preview</Text>
                     <Connection>
-                      <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -45,20 +46,20 @@
                         <ObjectName>PreviewTitle</ObjectName>
                         <TooltipId>text</TooltipId>
                         <SizePolicy>me,min</SizePolicy>
-                        <Group>[PreviewDeck1]</Group>
+                        <Group><Variable name="group"/></Group>
                         <Elide>right</Elide>
                       </Text>
                       <Number>
                         <ObjectName>PreviewBPM</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
-                        <Group>[PreviewDeck1]</Group>
+                        <Group><Variable name="group"/></Group>
                         <!--CSS alignments not respected, bug lp:605530 -->
                         <Alignment>left</Alignment>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </Number>
@@ -79,7 +80,7 @@
                           <Unpressed>buttons/btn_eject.svg</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],eject</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,eject</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -113,11 +114,11 @@
                           <Unpressed>buttons/btn_play_preview_over.svg</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],play</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,play</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],start</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,start</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -132,7 +133,7 @@
                       <Overview>
                         <TooltipId>waveform_overview</TooltipId>
                         <SizePolicy>me,me</SizePolicy>
-                        <Group>[PreviewDeck1]</Group>
+                        <Group><Variable name="group"/></Group>
                         <BgColor>#0f0f0f</BgColor>
                         <BgColor>#FFFFFF</BgColor>
                         <SignalColor>#FF8000</SignalColor>
@@ -155,7 +156,7 @@
                           <TextColor>#FFFFFF</TextColor>
                         </Mark>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                         </Connection>
                       </Overview>
                     </Children>
@@ -175,34 +176,9 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup>
-                    <ObjectName>VuMeterBox</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <StatusLight>
-                        <TooltipId>preview_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/vu_clipping_previewdeck_over.png</PathStatusLight>
-                        <PathBack>style/vu_clipping_previewdeck.png</PathBack>
-                        <Connection>
-                          <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-                        </Connection>
-                      </StatusLight>
-                      <VuMeter>
-                        <TooltipId>preview_VuMeter</TooltipId>
-                        <PathVu>style/vu_level_previewdeck_over.png</PathVu>
-                        <PathBack>style/vu_level_previewdeck.png</PathBack>
-                        <Horizontal>false</Horizontal>
-                        <PeakHoldSize>3</PeakHoldSize>
-                        <PeakHoldTime>250</PeakHoldTime>
-                        <PeakFallTime>50</PeakFallTime>
-                        <PeakFallStep>3</PeakFallStep>
-                        <Connection>
-                          <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
-                        </Connection>
-                      </VuMeter>
-                    </Children>
-                  </WidgetGroup>
+                  <Template src="skin:vumeter_small.xml">
+                    <SetVariable name="GroupType">preview</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
@@ -212,7 +188,7 @@
                 <Slider>skin:knobs_sliders/slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
-                  <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
                 </Connection>
               </SliderComposed>
             </Children>
