@@ -135,7 +135,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     if (!pTrack) {
         // If no new track is available then we are done
-        const auto update = ReaderStatusUpdate::trackNotLoaded();
+        const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         return;
     }
@@ -149,7 +149,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                  << m_group
                  << "File not found"
                  << filename;
-        const auto update = ReaderStatusUpdate::trackNotLoaded();
+        const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(
             pTrack, QString("The file '%1' could not be found.")
@@ -165,7 +165,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 << m_group
                 << "Failed to open file"
                 << filename;
-        const auto update = ReaderStatusUpdate::trackNotLoaded();
+        const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(
             pTrack, QString("The file '%1' could not be loaded").arg(filename));
@@ -182,7 +182,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 << m_group
                 << "Failed to open empty file"
                 << filename;
-        const auto update = ReaderStatusUpdate::trackNotLoaded();
+        const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(
             pTrack, QString("The file '%1' is empty and could not be loaded").arg(filename));

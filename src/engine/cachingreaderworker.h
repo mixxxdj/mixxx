@@ -69,7 +69,7 @@ typedef struct ReaderStatusUpdate {
         return update;
     }
 
-    static ReaderStatusUpdate trackNotLoaded() {
+    static ReaderStatusUpdate trackUnloaded() {
         ReaderStatusUpdate update;
         update.init(TRACK_UNLOADED, nullptr, mixxx::IndexRange());
         return update;
