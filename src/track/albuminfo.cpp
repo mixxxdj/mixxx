@@ -4,6 +4,7 @@
 namespace mixxx {
 
 void AlbumInfo::resetUnsupportedValues() {
+#if defined(__EXTRA_METADATA__)
     setCopyright(QString());
     setLicense(QString());
     setMusicBrainzArtistId(QString());
@@ -11,23 +12,27 @@ void AlbumInfo::resetUnsupportedValues() {
     setMusicBrainzReleaseGroupId(QString());
     setRecordLabel(QString());
     setReplayGain(ReplayGain());
+#endif // __EXTRA_METADATA__
 }
 
 bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs) {
     return (lhs.getArtist() == rhs.getArtist()) &&
+#if defined(__EXTRA_METADATA__)
             (lhs.getCopyright() == rhs.getCopyright()) &&
             (lhs.getLicense() == rhs.getLicense()) &&
             (lhs.getMusicBrainzArtistId() == rhs.getMusicBrainzArtistId()) &&
-            (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
             (lhs.getMusicBrainzReleaseGroupId() == rhs.getMusicBrainzReleaseGroupId()) &&
+            (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
             (lhs.getRecordLabel() == rhs.getRecordLabel()) &&
             (lhs.getReplayGain() == rhs.getReplayGain()) &&
+#endif // __EXTRA_METADATA__
             (lhs.getTitle() == rhs.getTitle());
 }
 
 QDebug operator<<(QDebug dbg, const AlbumInfo& arg) {
     dbg << '{';
     arg.dbgArtist(dbg);
+#if defined(__EXTRA_METADATA__)
     arg.dbgCopyright(dbg);
     arg.dbgLicense(dbg);
     arg.dbgMusicBrainzArtistId(dbg);
@@ -35,6 +40,7 @@ QDebug operator<<(QDebug dbg, const AlbumInfo& arg) {
     arg.dbgMusicBrainzReleaseGroupId(dbg);
     arg.dbgRecordLabel(dbg);
     arg.dbgReplayGain(dbg);
+#endif // __EXTRA_METADATA__
     arg.dbgTitle(dbg);
     dbg << '}';
     return dbg;

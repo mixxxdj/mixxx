@@ -23,28 +23,21 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary);
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
-    connect(btnPurge, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotPurge()));
-    connect(btnPurge, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+    connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
+    connect(btnPurge, &QPushButton::clicked, this, &DlgMissing::clicked);
+    connect(btnSelect, &QPushButton::clicked, this, &DlgMissing::selectAll);
     connect(m_pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            &QItemSelectionModel::selectionChanged,
             this,
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+            &DlgMissing::selectionChanged);
+    connect(m_pTrackTableView, &WTrackTableView::trackSelected, this, &DlgMissing::trackSelected);
 
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
-            m_pTrackTableView, SLOT(setSelectedClick(bool)));
+    connect(pLibrary, &Library::setTrackTableFont, m_pTrackTableView, &WTrackTableView::setTrackTableFont);
+    connect(pLibrary, &Library::setTrackTableRowHeight, m_pTrackTableView, &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary, &Library::setSelectedClick, m_pTrackTableView, &WTrackTableView::setSelectedClick);
 }
 
 DlgMissing::~DlgMissing() {

@@ -298,39 +298,6 @@ void SoundSourceProxy::initSoundSource() {
     }
 }
 
-namespace {
-// Parses artist/title from the file name and returns the file type.
-// Assumes that the file name is written like: "artist - title.xxx"
-// or "artist_-_title.xxx".
-// This function does not overwrite any existing (non-empty) artist
-// and title fields!
-bool parseMetadataFromFileName(mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
-    fileName.replace("_", " ");
-    QString titleWithFileType;
-    bool parsed = false;
-    if (fileName.count('-') == 1) {
-        if (pTrackMetadata->getTrackInfo().getArtist().isEmpty()) {
-            const QString artist(fileName.section('-', 0, 0).trimmed());
-            if (!artist.isEmpty()) {
-                pTrackMetadata->refTrackInfo().setArtist(artist);
-                parsed = true;
-            }
-        }
-        titleWithFileType = fileName.section('-', 1, 1).trimmed();
-    } else {
-        titleWithFileType = fileName.trimmed();
-    }
-    if (pTrackMetadata->getTrackInfo().getTitle().isEmpty()) {
-        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
-        if (!title.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setTitle(title);
-            parsed = true;
-        }
-    }
-    return parsed;
-}
-} // anonymous namespace
-
 void SoundSourceProxy::updateTrackFromSource(
         ImportTrackMetadataMode importTrackMetadataMode) const {
     DEBUG_ASSERT(m_pTrack);
@@ -433,16 +400,32 @@ void SoundSourceProxy::updateTrackFromSource(
         }
     }
 
-    // Fallback: If artist or title fields are blank then try to populate
-    // them from the file name. This might happen if tags are unavailable,
-    // unreadable, or partially/completely missing.
-    if (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
-            trackMetadata.getTrackInfo().getTitle().isEmpty()) {
-        kLogger.info()
-                << "Adding missing artist/title from file name"
-                << getUrl().toString();
+    // Fallback: If the title field is empty then try to populate title
+    // (and optionally artist) from the file name. This might happen if
+    // tags are unavailable, unreadable, or partially/completely missing.
+    if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
+        // Only parse artist and title if both fields are empty to avoid
+        // inconsistencies. Otherwise the file name (without extension)
+        // is used as the title and the artist is unmodified.
+        //
+        // TODO(XXX): Disable splitting of artist/title in settings, i.e.
+        // optionally don't split even if both title and artist are empty?
+        // Some users might want to import the whole file name of untagged
+        // files as the title without splitting the artist:
+        //     https://www.mixxx.org/forums/viewtopic.php?f=3&t=12838
+        // NOTE(uklotzde, 2019-09-26): Whoever needs this should simply set
+        // splitArtistTitle = false here and compile their custom version!
+        // It is not worth extending the settings and injecting them into
+        // SoundSourceProxy for just a few people.
+        const bool splitArtistTitle =
+                trackMetadata.getTrackInfo().getArtist().trimmed().isEmpty();
         const auto trackFile = m_pTrack->getFileInfo();
-        if (parseMetadataFromFileName(&trackMetadata, trackFile.fileName()) &&
+        kLogger.info()
+                << "Parsing missing"
+                << (splitArtistTitle ? "artist/title" : "title")
+                << "from file name:"
+                << trackFile;
+        if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(trackFile.fileName(), splitArtistTitle) &&
                 metadataImported.second.isNull()) {
             // Since this is also some kind of metadata import, we mark the
             // track's metadata as synchronized with the time stamp of the file.
