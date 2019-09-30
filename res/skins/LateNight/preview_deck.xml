@@ -124,35 +124,42 @@
                     </Children>
                   </WidgetGroup>
 
-                  <Overview>
-                    <TooltipId>waveform_overview</TooltipId>
+                  <WidgetGroup>
+                    <ObjectName>OverviewBox</ObjectName>
+                    <Layout>vertical</Layout>
                     <Size>0me,20me</Size>
-                    <Group>[PreviewDeck1]</Group>
-                    <BgColor>#0f0f0f</BgColor>
-                    <BgColor>#FFFFFF</BgColor>
-                    <SignalColor>#FF8000</SignalColor>
-                    <SignalHighColor>#F0EBD1</SignalHighColor>
-                    <SignalMidColor>#EECE33</SignalMidColor>
-                    <SignalLowColor>#E4C739</SignalLowColor>
-                    <PlayPosColor>#00FF00</PlayPosColor>
-                    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-                    <DefaultMark>
-                      <Align>bottom|right</Align>
-                      <Color>#FF0000</Color>
-                      <TextColor>#FFFFFF</TextColor>
-                      <Text> %1 </Text>
-                    </DefaultMark>
-                    <Mark>
-                      <Control>cue_point</Control>
-                      <Text> C </Text>
-                      <Align>top|right</Align>
-                      <Color>#FF001C</Color>
-                      <TextColor>#FFFFFF</TextColor>
-                    </Mark>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-                    </Connection>
-                  </Overview>
+                    <Children>
+                      <Overview>
+                        <TooltipId>waveform_overview</TooltipId>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Group>[PreviewDeck1]</Group>
+                        <BgColor>#0f0f0f</BgColor>
+                        <BgColor>#FFFFFF</BgColor>
+                        <SignalColor>#FF8000</SignalColor>
+                        <SignalHighColor>#F0EBD1</SignalHighColor>
+                        <SignalMidColor>#EECE33</SignalMidColor>
+                        <SignalLowColor>#E4C739</SignalLowColor>
+                        <PlayPosColor>#00FF00</PlayPosColor>
+                        <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                        <DefaultMark>
+                          <Align>bottom|right</Align>
+                          <Color>#FF0000</Color>
+                          <TextColor>#FFFFFF</TextColor>
+                          <Text> %1 </Text>
+                        </DefaultMark>
+                        <Mark>
+                          <Control>cue_point</Control>
+                          <Text> C </Text>
+                          <Align>top|right</Align>
+                          <Color>#FF001C</Color>
+                          <TextColor>#FFFFFF</TextColor>
+                        </Mark>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                        </Connection>
+                      </Overview>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup><!-- Row 2 PreviewPlayOverview -->
             </Children>

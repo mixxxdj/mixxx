@@ -40,7 +40,7 @@
 
       <Template src="skin:button_3state_persist.xml">
         <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
-        <SetVariable name="ObjectName">TristateButton</SetVariable>
+        <SetVariable name="ObjectName">VinylTristateButton</SetVariable>
         <SetVariable name="Size">44f,22f</SetVariable>
         <SetVariable name="state_0_text">ABS</SetVariable>
         <SetVariable name="state_1_text">REL</SetVariable>

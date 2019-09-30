@@ -28,7 +28,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>DeckOverviewContainer</ObjectName>
+        <ObjectName>OverviewBox</ObjectName>
         <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>

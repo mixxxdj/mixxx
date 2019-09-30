@@ -14,13 +14,13 @@
           <WidgetGroup><!-- BpmContainer + Tap overlay -->
             <ObjectName>BpmContainer</ObjectName>
             <Layout>stacked</Layout>
-            <Size>56f,22f</Size>
+            <Size>58f,22f</Size>
             <Children>
               <!-- In order to make the bpm display tappable, we use an old-style
               widget group and put the bpm pushbutton on top of the display. -->
               <PushButton>
                 <TooltipId>bpm_tap_visual_bpm</TooltipId>
-                <Size>56f,22f</Size>
+                <Size>58f,22f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -38,9 +38,9 @@
               <NumberBpm>
                 <ObjectName>BpmText</ObjectName>
                 <TooltipId>visual_bpm</TooltipId>
-                <Size>56f,22f</Size>
+                <Size>58f,22f</Size>
                 <Channel><Variable name="channum" /></Channel>
-                <NumberOfDigits>1</NumberOfDigits>
+                <NumberOfDigits>2</NumberOfDigits>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                 </Connection>
@@ -65,8 +65,8 @@
           <SliderComposed>
             <ObjectName>RateSlider</ObjectName>
             <TooltipId>rate</TooltipId>
-            <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_pitch_deck.svg</Handle>
-            <Slider>skin:knobs_sliders/slider_pitch_deck.svg</Slider>
+            <Handle scalemode="STRETCH">skin:/knobs_sliders/knob_pitch_deck.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_pitch_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>

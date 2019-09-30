@@ -196,6 +196,8 @@
                 </Children>
               </WidgetGroup><!-- /Channel controls -->
 
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
               <WidgetGroup><!-- Crossfader + Channel1/2 assign switches -->
                 <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
                 <Layout>horizontal</Layout>

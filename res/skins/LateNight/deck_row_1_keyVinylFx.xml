@@ -7,7 +7,7 @@
 
       <Template src="skin:button_2state_right.xml">
         <SetVariable name="TooltipId">sync_reset_key</SetVariable>
-        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
+        <SetVariable name="ObjectName">KeyButton</SetVariable>
         <SetVariable name="Size">28f,22f</SetVariable>
         <SetVariable name="state_0_text">KEY</SetVariable>
         <SetVariable name="state_1_text">KEY</SetVariable>
@@ -17,7 +17,7 @@
 
       <Template src="skin:button_1state_right.xml">
         <SetVariable name="TooltipId">pitch_down</SetVariable>
-        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
+        <SetVariable name="ObjectName">KeyButton</SetVariable>
         <SetVariable name="Size">16f,22f</SetVariable>
         <SetVariable name="state_0_pressed">prev_down.svg</SetVariable>
         <SetVariable name="state_0_unpressed">prev.svg</SetVariable>
@@ -42,7 +42,7 @@
 
       <Template src="skin:button_1state_right.xml">
         <SetVariable name="TooltipId">pitch_up</SetVariable>
-        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
+        <SetVariable name="ObjectName">KeyButton</SetVariable>
         <SetVariable name="Size">16f,22f</SetVariable>
         <SetVariable name="state_0_pressed">next_down.svg</SetVariable>
         <SetVariable name="state_0_unpressed">next.svg</SetVariable>
@@ -50,22 +50,21 @@
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
       </Template>
 
-      <!-- spacer -->
       <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
       <Template src="skin:deck_vinyl_controls.xml"/>
 
-      <!-- spacer -->
       <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- FX buttons -->
+      <!-- FX buttons -->
+      <WidgetGroup>
         <Layout>horizontal</Layout>
         <ObjectName>AlignRightTop</ObjectName>
           <Children>
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+            <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
             <SetVariable name="Size">28f,22f</SetVariable>
             <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
             <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
@@ -74,7 +73,7 @@
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+            <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
             <SetVariable name="Size">28f,22f</SetVariable>
             <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
             <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
@@ -90,7 +89,7 @@
             <Children>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
                 <SetVariable name="Size">28f,22f</SetVariable>
                 <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
                 <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
@@ -99,7 +98,7 @@
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                <SetVariable name="ObjectName">FxAssignButtonDeck</SetVariable>
                 <SetVariable name="Size">28f,22f</SetVariable>
                 <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
                 <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
