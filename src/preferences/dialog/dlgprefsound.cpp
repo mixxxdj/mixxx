@@ -205,11 +205,11 @@ void DlgPrefSound::slotUpdate() {
     // we change to this pane, we lose changed and unapplied settings
     // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
-    m_settingsModified = false;
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
+    m_settingsModified = false;
 }
 
 /**
