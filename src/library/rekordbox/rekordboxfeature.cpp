@@ -173,7 +173,9 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        return QString::fromStdString(longUtf16beString->text());
+        QTextCodec *codec = QTextCodec::codecForName("UTF-16BE");
+        std::string utf16be = longUtf16beString->text();
+        return codec->toUnicode(QByteArray(utf16be.c_str(), utf16be.length()));
     }
 
     return QString();
