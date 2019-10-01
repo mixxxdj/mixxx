@@ -24,7 +24,6 @@
 #include "util/types.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
-#include "soundio/sounddevice.h"
 #include "soundio/soundmanagerutil.h"
 
 class SoundDevice;
