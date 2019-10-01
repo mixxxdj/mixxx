@@ -38,7 +38,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
-          m_loading(false) {
+          m_loading(false),
+          m_config(pSoundManager) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -204,11 +205,11 @@ void DlgPrefSound::slotUpdate() {
     // we change to this pane, we lose changed and unapplied settings
     // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
-    m_settingsModified = false;
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
+    m_settingsModified = false;
 }
 
 /**
@@ -590,7 +591,7 @@ void DlgPrefSound::queryClicked() {
  * Slot called when the "Reset to Defaults" button is clicked.
  */
 void DlgPrefSound::slotResetToDefaults() {
-    SoundManagerConfig newConfig;
+    SoundManagerConfig newConfig(m_pSoundManager);
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);

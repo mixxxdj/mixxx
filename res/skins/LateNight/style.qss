@@ -1809,10 +1809,21 @@ WSearchLineEdit {
     border: 2px solid #FF6600;
     background: #0f0f0f;
   }
-  /* Clear button next to text field */
+  /* Clear button */
   WSearchLineEdit QToolButton {
-    margin-bottom: 4px;
-  }
+    /* C++ code adds 3px in each dimension.
+       height of search box inside the border: 22px
+       make the button use the available height */
+    height: 19px;
+    width: 19px;
+    margin-bottom: 5px;
+    }
+    WSearchLineEdit QToolButton:!focus {
+      image: url(skin:/buttons/btn_lib_clear_search.svg);
+    }
+    WSearchLineEdit QToolButton:focus {
+      image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
+    }
 
 /* cover art */
 WCoverArt {
