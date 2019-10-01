@@ -129,7 +129,7 @@ class BaseSignalPathTest : public MixxxTest {
         ProcessBuffer();
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
-            QTest::qSleep(1); // millis
+            QCoreApplication::processEvents();
         }
     }
 
