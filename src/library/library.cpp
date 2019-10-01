@@ -26,6 +26,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
 #include "util/db/dbconnectionpooled.h"
