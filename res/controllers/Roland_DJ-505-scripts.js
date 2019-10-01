@@ -1111,6 +1111,11 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
         return;
     }
 
+    // If we're switching away from or to a hardware-based mode (e.g. TR mode),
+    // the performance pad behaviour is hardcoded in the firmware and not
+    // controlled by Mixxx. These modes are represented by the value null.
+    // Hence, we only need to change LEDs and (dis-)connect components if
+    // this.currentMode or newMode is not null.
     if (this.currentMode) {
         // Disable the mode button LED of the currently active mode
         midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, 0x00);
