@@ -994,8 +994,8 @@ QString RekordboxFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (int index = 0; index < items.size(); ++index) {
-        html.append(QString("<li>%1</li>").arg(items[index]));
+    for (const auto& item : items) {
+        html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));
 
