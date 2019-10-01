@@ -6,6 +6,7 @@
 #include "library/crate/crateid.h"
 #include "control/controlproxy.h"
 #include "mixxx.h"
+#include "soundio/soundmanagerutil.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
@@ -65,6 +66,8 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
+    QMetaType::registerComparators<SoundDeviceId>();
 }
 
 // Macs do not have touchscreens
