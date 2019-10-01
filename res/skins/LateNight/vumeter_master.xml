@@ -23,7 +23,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
-            <TooltipId>master_PeakIndicator</TooltipId>
+            <TooltipId>master_PeakIndicatorL</TooltipId>
             <PathStatusLight>style/vu_clipping_deck_over.png</PathStatusLight>
             <PathBack>style/vu_clipping_deck.png</PathBack>
             <Connection>
@@ -31,7 +31,7 @@
             </Connection>
           </StatusLight>
           <VuMeter>
-            <TooltipId>master_VuMeter</TooltipId>
+            <TooltipId>master_VuMeterL</TooltipId>
             <PathVu>style/vu_level_deck_over.png</PathVu>
             <PathBack>style/vu_level_deck.png</PathBack>
             <Horizontal>false</Horizontal>
@@ -51,7 +51,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
-            <TooltipId>master_PeakIndicator</TooltipId>
+            <TooltipId>master_PeakIndicatorR</TooltipId>
             <PathStatusLight>style/vu_clipping_deck_over.png</PathStatusLight>
             <PathBack>style/vu_clipping_deck.png</PathBack>
             <Connection>
@@ -59,7 +59,7 @@
             </Connection>
           </StatusLight>
           <VuMeter>
-            <TooltipId>master_VuMeter</TooltipId>
+            <TooltipId>master_VuMeterR</TooltipId>
             <PathVu>style/vu_level_deck_over.png</PathVu>
             <PathBack>style/vu_level_deck.png</PathBack>
             <Horizontal>false</Horizontal>

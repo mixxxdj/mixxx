@@ -154,6 +154,15 @@ WSearchLineEdit,
     border: 1px solid #000;
     border-radius: 2px;
   }
+  #DlgMissing > QPushButton:pressed,
+  #DlgHidden > QPushButton:pressed,
+  #DlgAutoDJ > QPushButton:pressed,
+  #DlgRecording > QPushButton:pressed,
+  #DlgAnalysis > QPushButton:pressed {
+    border: 1px solid #444;
+    border-radius: 2px;
+    margin-bottom: 4px;
+  }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
     border: 1px solid #888;
@@ -207,6 +216,17 @@ QHeaderView::down-arrow {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #222,
     stop:1 #111);
+}
+
+
+#DlgMissing > QPushButton:pressed,
+#DlgHidden > QPushButton:pressed,
+#DlgAutoDJ > QPushButton:pressed,
+#DlgRecording > QPushButton:pressed,
+#DlgAnalysis > QPushButton:pressed {
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #111,
+    stop:1 #222);
 }
 
 #GuiToggleButton[displayValue="0"],
@@ -690,11 +710,6 @@ WTime {
   margin-top: 2px;
 }
 
-#ArtistGutter{
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 2px 2px 2px 0px;
-}
-
 #PlayCueRevHotCues {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
@@ -720,15 +735,25 @@ WTime {
   margin: 0px 1px;
   }
 
+#ArtistGutter,
+#TitleGutter {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  padding: 2px 2px 1px 2px;
+}
+
 #ArtistText,
-#TitleText,
-#PlayPositionText {
+#TitleText {
   font-size: 18px/20px;
+  /* for some reason the padding/margin is double in the skin...
+  margin-left: 1px;
+  padding-left: 1px; */
   }
   #TitleTextSmall,
   #ArtistTextSmall,
+  #PlayPositionText,
   #PlayPositionTextSmall,
-  #BpmTextSmall {
+  #BpmTextSmall,
+  #FxUnitLabel {
     font-size: 16px/16px;
     text-transform: none;
   }
@@ -751,7 +776,7 @@ WTime {
     padding: 0px 2px 0px 0px;
   }
   #PlayPositionTextSmall {
-    padding: 0px 0px 2px 2px;
+    padding: 0px 1px 2px 2px;
   }
   
   #BpmTextSmall,
@@ -1107,10 +1132,10 @@ WBeatSpinBox,
       font: bold 14px/14px;
       text-align: left;
       color: #cfb32c;
-      margin: 2px;
+      margin: 2px 2px 2px 0px;
     }
     #PreviewBPM {
-      padding: 0px 2px 2px 0px;
+      padding: 0px 0px 2px 2px;
     }
   #PreviewEjectButton {
   }

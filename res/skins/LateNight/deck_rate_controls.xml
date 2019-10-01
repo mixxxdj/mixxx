@@ -14,21 +14,19 @@
           <WidgetGroup><!-- BpmContainer + Tap overlay -->
             <ObjectName>BpmContainer</ObjectName>
             <Layout>stacked</Layout>
-            <Size>58f,22f</Size>
+            <Size>60f,22f</Size>
             <Children>
               <!-- In order to make the bpm display tappable, we use an old-style
               widget group and put the bpm pushbutton on top of the display. -->
               <PushButton>
                 <TooltipId>bpm_tap_visual_bpm</TooltipId>
-                <Size>58f,22f</Size>
+                <Size>60f,22f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text></Text>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Text></Text>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
@@ -38,7 +36,7 @@
               <NumberBpm>
                 <ObjectName>BpmText</ObjectName>
                 <TooltipId>visual_bpm</TooltipId>
-                <Size>58f,22f</Size>
+                <Size>60f,22f</Size>
                 <Channel><Variable name="channum" /></Channel>
                 <NumberOfDigits>2</NumberOfDigits>
                 <Connection>

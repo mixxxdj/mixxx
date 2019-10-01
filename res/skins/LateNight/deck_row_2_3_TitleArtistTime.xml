@@ -11,7 +11,7 @@
         <SizePolicy>i,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>AlignLeftTop</ObjectName>
+            <ObjectName>TitleGutter</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>i,min</SizePolicy>
             <Children>

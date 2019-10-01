@@ -88,7 +88,7 @@
 
                   <!-- Label -->
                   <Label>
-                    <ObjectName>MicSubTitle</ObjectName>
+                    <ObjectName>FxUnitLabel</ObjectName>
                     <Size>me,22f</Size>
                     <Text>FX&#8202;<Variable name="FxUnit"/></Text>
                     <Alignment>center</Alignment>

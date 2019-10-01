@@ -52,9 +52,10 @@
                       <Number>
                         <ObjectName>PreviewBPM</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
+                        <Size>45f,21f</Size>
                         <Group><Variable name="group"/></Group>
                         <!--CSS alignments not respected, bug lp:605530 -->
-                        <Alignment>left</Alignment>
+                        <Alignment>right</Alignment>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                         </Connection>
