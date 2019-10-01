@@ -1104,23 +1104,26 @@ DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, valu
 };
 
 DJ505.PadSection.prototype.setPadMode = function (control) {
-    var mode = this.controlToPadMode(control);
-    if (this.currentMode === mode || mode === undefined) {
+    var newMode = this.controlToPadMode(control);
+
+    // Exit early if the requested mode is already active or not mapped
+    if (newMode === this.currentMode || newMode === undefined) {
         return;
     }
 
-    // Disable previous mode's LED
-    var previous_mode = this.currentMode;
-    if (previous_mode) {
-        midi.sendShortMsg(0x94 + this.offset, previous_mode.ledControl, 0x00);
-        previous_mode.forEachComponent(function (component) {
+    var oldMode = this.currentMode;
+    if (oldMode) {
+        // Disable the mode button LED of the old mode
+        midi.sendShortMsg(0x94 + this.offset, oldMode.ledControl, 0x00);
+
+        oldMode.forEachComponent(function (component) {
             component.disconnect();
         });
     }
 
-    if (mode) {
-        // Set new mode's LED
-        midi.sendShortMsg(0x94 + this.offset, mode.ledControl, mode.color);
+    if (newMode) {
+        // Illuminate the mode button LED of the new mode
+        midi.sendShortMsg(0x94 + this.offset, newMode.ledControl, newMode.color);
 
         // Set the correct shift state for the new mode. For example, if the
         // user is in HOT CUE mode and wants to switch to CUE LOOP mode, you
@@ -1134,17 +1137,18 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
         // CUE mode).
         // Hence, it's necessary to set the correct shift state when switching
         // modes.
-        if(this.isShifted) {
-            mode.shift();
+        if (this.isShifted) {
+            newMode.shift();
         } else {
-            mode.unshift();
+            newMode.unshift();
         }
-        mode.forEachComponent(function (component) {
+
+        newMode.forEachComponent(function (component) {
             component.connect();
             component.trigger();
         });
     }
-    this.currentMode = mode;
+    this.currentMode = newMode;
 };
 
 DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
