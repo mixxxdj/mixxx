@@ -31,7 +31,7 @@ class SoundManager;
 
 class SoundManagerConfig {
 public:
-    SoundManagerConfig(SoundManager* pSoundManager);
+    explicit SoundManagerConfig(SoundManager* pSoundManager);
 
     enum Defaults {
         API = (1 << 0),
