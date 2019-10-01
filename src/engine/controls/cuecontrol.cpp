@@ -356,6 +356,9 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     CuePosition cuePoint;
     if (pLoadCue) {
         cuePoint.setPosition(pLoadCue->getPosition());
+	// Update load cue source to ensure AnalyzerSilence does not
+	// overwrite it
+	cuePoint.setSource(pLoadCue->getSource());
         // adjust the track cue accordingly
         pNewTrack->setCuePoint(cuePoint);
     } else {
