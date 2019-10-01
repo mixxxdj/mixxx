@@ -1111,12 +1111,11 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
         return;
     }
 
-    var oldMode = this.currentMode;
-    if (oldMode) {
-        // Disable the mode button LED of the old mode
-        midi.sendShortMsg(0x94 + this.offset, oldMode.ledControl, 0x00);
+    if (this.currentMode) {
+        // Disable the mode button LED of the currently active mode
+        midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, 0x00);
 
-        oldMode.forEachComponent(function (component) {
+        this.currentMode.forEachComponent(function (component) {
             component.disconnect();
         });
     }
