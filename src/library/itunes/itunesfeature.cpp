@@ -105,7 +105,10 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     if (!m_database.open()) {
         qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &ITunesFeature::onTrackCollectionLoaded);
 }
 
 ITunesFeature::~ITunesFeature() {

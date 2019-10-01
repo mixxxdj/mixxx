@@ -35,8 +35,10 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
     pLayout->addWidget(pLabel);
 
     QPushButton* pCancel = new QPushButton(tr("Cancel"), this);
-    connect(pCancel, SIGNAL(clicked()),
-            this, SLOT(slotCancel()));
+    connect(pCancel,
+            &QPushButton::clicked,
+            this,
+            &LibraryScannerDlg::slotCancel);
     pLayout->addWidget(pCancel);
 
     QLabel* pCurrent = new QLabel(this);
@@ -44,8 +46,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
     pCurrent->setMaximumWidth(600);
     pCurrent->setFixedHeight(this->fontMetrics().height());
     pCurrent->setWordWrap(true);
-    connect(this, SIGNAL(progress(QString)),
-            pCurrent, SLOT(setText(QString)));
+    connect(this, &LibraryScannerDlg::progress, pCurrent, &QLabel::setText);
     pLayout->addWidget(pCurrent);
     setLayout(pLayout);
 }

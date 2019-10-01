@@ -1,4 +1,7 @@
-{ nixroot  ? (import <nixpkgs> {}) }:
+{ nixroot  ? (import <nixpkgs> {})
+, defaultLv2Plugins ? false
+, lv2Plugins ? []
+}:
 let inherit (nixroot) stdenv pkgs lib
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv 
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
@@ -42,13 +45,18 @@ let inherit (nixroot) stdenv pkgs lib
 
   shell-run = nixroot.writeShellScriptBin "run" ''
       BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
-      $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
+      /usr/bin/env LV2_PATH=${lib.makeSearchPathOutput "lib" "lib/lv2" allLv2Plugins}:$LV2_PATH $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
       BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
       gdb --args $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
   '';
+
+  allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then [
+    nixroot.x42-plugins nixroot.zam-plugins nixroot.rkrlv2 nixroot.mod-distortion
+    nixroot.infamousPlugins nixroot.artyFX
+  ] else []);
 
 in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
@@ -83,7 +91,7 @@ in stdenv.mkDerivation rec {
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
     rubberband scons sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
     ccache git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
-  ];
+  ] ++ allLv2Plugins;
 
   sconsFlags = [
     "build=debug"
@@ -102,7 +110,7 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     scons $sconsFlags "prefix=$out" install
-    wrapProgram $out/bin/mixxx --suffix QT_PLUGIN_PATH : ${qt5.qtbase}/${qt5.qtbase.qtPluginPrefix} --set QTDIR ${qt5.full}
+    wrapProgram $out/bin/mixxx --suffix QT_PLUGIN_PATH : ${qt5.qtbase}/${qt5.qtbase.qtPluginPrefix} --set QTDIR ${qt5.full} --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
     runHook postInstall
   '';
 
