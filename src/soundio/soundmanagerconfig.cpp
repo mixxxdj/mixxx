@@ -33,8 +33,26 @@ const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
 const int SoundManagerConfig::kDefaultSyncBuffers = 2;
 
+namespace {
+const QString xmlRootElement = "SoundManagerConfig";
+const QString xmlAttributeApi = "api";
+const QString xmlAttributeSampleRate = "samplerate";
+const QString xmlAttributeBufferSize = "latency";
+const QString xmlAttributeSyncBuffers = "sync_buffers";
+const QString xmlAttributeForceNetworkClock = "force_network_clock";
+const QString xmlAttributeDeckCount = "deck_count";
+
+const QString xmlElementSoundDevice = "SoundDevice";
+const QString xmlAttributeDeviceName = "name";
+const QString xmlAttributeAlsaHwDevice = "alsaHwDevice";
+const QString xmlAttributePortAudioIndex = "portAudioIndex";
+
+const QString xmlElementOutput = "output";
+const QString xmlElementInput = "input";
+}
+
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
-    : m_api("None"),
+    : m_api(kDefaultAPI),
       m_sampleRate(kFallbackSampleRate),
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
@@ -69,18 +87,18 @@ bool SoundManagerConfig::readFromDisk() {
     }
     file.close();
     rootElement = doc.documentElement();
-    setAPI(rootElement.attribute("api"));
-    setSampleRate(rootElement.attribute("samplerate", "0").toUInt());
+    setAPI(rootElement.attribute(xmlAttributeApi));
+    setSampleRate(rootElement.attribute(xmlAttributeSampleRate, "0").toUInt());
     // audioBufferSizeIndex is refereed as "latency" in the config file
-    setAudioBufferSizeIndex(rootElement.attribute("latency", "0").toUInt());
-    setSyncBuffers(rootElement.attribute("sync_buffers", "2").toUInt());
-    setForceNetworkClock(rootElement.attribute("force_network_clock",
+    setAudioBufferSizeIndex(rootElement.attribute(xmlAttributeBufferSize, "0").toUInt());
+    setSyncBuffers(rootElement.attribute(xmlAttributeSyncBuffers, "2").toUInt());
+    setForceNetworkClock(rootElement.attribute(xmlAttributeForceNetworkClock,
             "0").toUInt() != 0);
-    setDeckCount(rootElement.attribute("deck_count",
+    setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
             QString(kDefaultDeckCount)).toUInt());
     clearOutputs();
     clearInputs();
-    QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
+    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
 
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
@@ -91,12 +109,12 @@ bool SoundManagerConfig::readFromDisk() {
         QDomElement devElement(devElements.at(i).toElement());
         if (devElement.isNull()) continue;
         SoundDeviceId deviceIdFromFile;
-        deviceIdFromFile.name = devElement.attribute("name");
+        deviceIdFromFile.name = devElement.attribute(xmlAttributeDeviceName);
         if (deviceIdFromFile.name.isEmpty()) {
             continue;
         }
-        deviceIdFromFile.alsaHwDevice = devElement.attribute("alsaHwDevice");
-        deviceIdFromFile.portAudioIndex = devElement.attribute("portAudioIndex").toInt();
+        deviceIdFromFile.alsaHwDevice = devElement.attribute(xmlAttributeAlsaHwDevice);
+        deviceIdFromFile.portAudioIndex = devElement.attribute(xmlAttributePortAudioIndex).toInt();
 
         int devicesMatchingByName = 0;
         for (const auto& soundDevice : soundDevices) {
@@ -143,8 +161,8 @@ bool SoundManagerConfig::readFromDisk() {
             }
         }
 
-        QDomNodeList outElements(devElement.elementsByTagName("output"));
-        QDomNodeList inElements(devElement.elementsByTagName("input"));
+        QDomNodeList outElements(devElement.elementsByTagName(xmlElementOutput));
+        QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
         for (int j = 0; j < outElements.count(); ++j) {
             QDomElement outElement(outElements.at(j).toElement());
             if (outElement.isNull()) continue;
@@ -183,31 +201,30 @@ bool SoundManagerConfig::readFromDisk() {
 }
 
 bool SoundManagerConfig::writeToDisk() const {
-    QDomDocument doc("SoundManagerConfig");
-    QDomElement docElement(doc.createElement("SoundManagerConfig"));
-    docElement.setAttribute("api", m_api);
-    docElement.setAttribute("samplerate", m_sampleRate);
-    // audioBufferSizeIndex is refereed as "latency" in the config file
-    docElement.setAttribute("latency", m_audioBufferSizeIndex);
-    docElement.setAttribute("sync_buffers", m_syncBuffers);
-    docElement.setAttribute("force_network_clock", m_forceNetworkClock);
-    docElement.setAttribute("deck_count", m_deckCount);
+    QDomDocument doc(xmlRootElement);
+    QDomElement docElement(doc.createElement(xmlRootElement));
+    docElement.setAttribute(xmlAttributeApi, m_api);
+    docElement.setAttribute(xmlAttributeSampleRate, m_sampleRate);
+    docElement.setAttribute(xmlAttributeBufferSize, m_audioBufferSizeIndex);
+    docElement.setAttribute(xmlAttributeSyncBuffers, m_syncBuffers);
+    docElement.setAttribute(xmlAttributeForceNetworkClock, m_forceNetworkClock);
+    docElement.setAttribute(xmlAttributeDeckCount, m_deckCount);
     doc.appendChild(docElement);
 
     for (const auto& deviceId: getDevices()) {
-        QDomElement devElement(doc.createElement("SoundDevice"));
-        devElement.setAttribute("name", deviceId.name);
-        devElement.setAttribute("portAudioIndex", deviceId.portAudioIndex);
+        QDomElement devElement(doc.createElement(xmlElementSoundDevice));
+        devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
+        devElement.setAttribute(xmlAttributePortAudioIndex, deviceId.portAudioIndex);
         if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
-            devElement.setAttribute("alsaHwDevice", deviceId.alsaHwDevice);
+            devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }
         for (const AudioInput& in : m_inputs.values(deviceId)) {
-            QDomElement inElement(doc.createElement("input"));
+            QDomElement inElement(doc.createElement(xmlElementInput));
             in.toXML(&inElement);
             devElement.appendChild(inElement);
         }
         for (const AudioOutput& out : m_outputs.values(deviceId)) {
-            QDomElement outElement(doc.createElement("output"));
+            QDomElement outElement(doc.createElement(xmlElementOutput));
             out.toXML(&outElement);
             devElement.appendChild(outElement);
         }
@@ -243,7 +260,7 @@ bool SoundManagerConfig::checkAPI() {
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
-    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != "None") {
+    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != kDefaultAPI) {
         return false;
     }
     return true;
