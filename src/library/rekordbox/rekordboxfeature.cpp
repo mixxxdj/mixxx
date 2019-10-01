@@ -179,7 +179,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        QTextCodec *codec = QTextCodec::codecForName("UTF-16BE");
+        QTextCodec* codec = QTextCodec::codecForName("UTF-16BE");
         std::string utf16be = longUtf16beString->text();
         return codec->toUnicode(QByteArray(utf16be.c_str(), utf16be.length()));
     }
@@ -708,7 +708,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QStrin
                 // Ensure no offset times are less than 1
                 if (time < 1) {
                     time = 1;
-                }               
+                }
                 double position = sampleRateFrames * static_cast<double>(time);
 
                 switch (cuesTag->type()) {
@@ -979,24 +979,24 @@ TreeItemModel* RekordboxFeature::getChildModel() {
 QString RekordboxFeature::formatRootViewHtml() const {
     QString title = tr("Rekordbox");
     QString summary = tr("Reads the following from Rekordbox prepared removable devices:");
-    QString item1 = tr("Playlists");
-    QString item2 = tr("Folders");
-    QString item3 = tr("First memory cue");
-    QString item4 = tr("First memory loop");
-    QString item5 = tr("Hot cues");
-    QString item6 = tr("Beatgrids");
+    QStringList items;
+
+    items
+            << tr("Playlists")
+            << tr("Folders")
+            << tr("First memory cue")
+            << tr("First memory loop")
+            << tr("Hot cues")
+            << tr("Beatgrids");
 
     QString html;
     QString refreshLink = tr("Check for attached Rekordbox devices (refresh)");
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    html.append(QString("<li>%1</li>").arg(item1));
-    html.append(QString("<li>%1</li>").arg(item2));
-    html.append(QString("<li>%1</li>").arg(item3));
-    html.append(QString("<li>%1</li>").arg(item4));
-    html.append(QString("<li>%1</li>").arg(item5));
-    html.append(QString("<li>%1</li>").arg(item6));
+    for (int index = 0; index < items.size(); ++index) {
+        html.append(QString("<li>%1</li>").arg(items[index]));
+    }
     html.append(QString("</ul>"));
 
     //Colorize links in lighter blue, instead of QT default dark blue.
