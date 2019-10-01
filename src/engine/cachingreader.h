@@ -4,6 +4,8 @@
 #ifndef ENGINE_CACHINGREADER_H
 #define ENGINE_CACHINGREADER_H
 
+#include <atomic>
+
 #include <QtDebug>
 #include <QList>
 #include <QVector>
@@ -156,7 +158,7 @@ class CachingReader : public QObject {
         TrackLoading,
         TrackLoaded,
     };
-    State m_state;
+    std::atomic<State> m_state;
 
     // Keeps track of all CachingReaderChunks we've allocated.
     QVector<CachingReaderChunkForOwner*> m_chunks;

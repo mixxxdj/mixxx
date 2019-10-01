@@ -205,22 +205,20 @@ void CachingReader::newTrack(TrackPointer pTrack) {
     // to get ready while the reader switches its internal
     // state. There are no race conditions, because the
     // reader polls the worker.
+    m_state.store(State::TrackLoading, std::memory_order_acquire);
     m_worker.newTrack(pTrack);
     m_worker.workReady();
     // Don't accept any new read requests until the current
     // track has been unloaded and the new track has been
     // loaded.
-    m_state = State::TrackLoading;
-    // Free all chunks with sample data from the current track.
-    freeAllChunks();
 }
 
 void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_stateFIFO.read(&update, 1) == 1) {
-        DEBUG_ASSERT(m_state != State::Idle);
         auto pChunk = update.takeFromWorker();
         if (pChunk) {
+            DEBUG_ASSERT(m_state != State::Idle);
             // Result of a read request (with a chunk)
             DEBUG_ASSERT(
                     update.status == CHUNK_READ_SUCCESS ||
@@ -228,9 +226,6 @@ void CachingReader::process() {
                     update.status == CHUNK_READ_INVALID ||
                     update.status == CHUNK_READ_DISCARDED);
             if (m_state == State::TrackLoading) {
-                // All chunks have been freed before loading the next track!
-                DEBUG_ASSERT(!m_mruCachingReaderChunk);
-                DEBUG_ASSERT(!m_lruCachingReaderChunk);
                 // Discard all results from pending read requests for the
                 // previous track before the next track has been loaded.
                 freeChunk(pChunk);
@@ -253,13 +248,15 @@ void CachingReader::process() {
             }
         } else {
             // State update (without a chunk)
+            // We have a new Track, discharge the chunks from the old track.
+            freeAllChunks();
             DEBUG_ASSERT(!m_mruCachingReaderChunk);
             DEBUG_ASSERT(!m_lruCachingReaderChunk);
             if (update.status == TRACK_LOADED) {
-                m_state = State::TrackLoaded;
+                m_state.store(State::TrackLoaded, std::memory_order_release);
             } else {
                 DEBUG_ASSERT(update.status == TRACK_UNLOADED);
-                m_state = State::Idle;
+                m_state.store(State::Idle, std::memory_order_release);
             }
             // Reset the readable frame index range
             m_readableFrameIndexRange = update.readableFrameIndexRange();
