@@ -13,6 +13,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QRegularExpression>
+
 #include "soundio/soundmanagerconfig.h"
 
 #include "soundio/soundmanagerutil.h"
@@ -49,6 +51,8 @@ const QString xmlAttributePortAudioIndex = "portAudioIndex";
 
 const QString xmlElementOutput = "output";
 const QString xmlElementInput = "input";
+
+const QRegularExpression kLegacyFormatRegex("((\\d*), )(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
 }
 
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
@@ -113,8 +117,17 @@ bool SoundManagerConfig::readFromDisk() {
         if (deviceIdFromFile.name.isEmpty()) {
             continue;
         }
-        deviceIdFromFile.alsaHwDevice = devElement.attribute(xmlAttributeAlsaHwDevice);
-        deviceIdFromFile.portAudioIndex = devElement.attribute(xmlAttributePortAudioIndex).toInt();
+
+        // TODO: remove this ugly hack after Mixxx 2.2.3 is released
+        QRegularExpressionMatch match = kLegacyFormatRegex.match(deviceIdFromFile.name);
+        if (match.hasMatch()) {
+            deviceIdFromFile.name = match.captured(3);
+            deviceIdFromFile.alsaHwDevice = match.captured(5);
+            deviceIdFromFile.portAudioIndex = match.captured(2).toInt();
+        } else {
+            deviceIdFromFile.alsaHwDevice = devElement.attribute(xmlAttributeAlsaHwDevice);
+            deviceIdFromFile.portAudioIndex = devElement.attribute(xmlAttributePortAudioIndex).toInt();
+        }
 
         int devicesMatchingByName = 0;
         for (const auto& soundDevice : soundDevices) {
