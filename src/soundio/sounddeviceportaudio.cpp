@@ -84,6 +84,8 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
+const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
+
 } // anonymous namespace
 
 
@@ -115,8 +117,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         // the name from the hw device allows for making the use of both pieces
         // of information in SoundManagerConfig::readFromDisk to minimize how
         // often users need to reconfigure their sound hardware.
-        QRegularExpression alsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
-        QRegularExpressionMatch match = alsaHwDeviceRegex.match(deviceInfo->name);
+        QRegularExpressionMatch match = kAlsaHwDeviceRegex.match(deviceInfo->name);
         if (match.hasMatch()) {
             m_deviceId.name = match.captured(1);
             m_deviceId.alsaHwDevice = match.captured(3);
