@@ -214,9 +214,7 @@ class SoundDeviceId {
     }
 
     SoundDeviceId()
-       : name(""),
-         alsaHwDevice(""),
-         portAudioIndex(-1) {};
+       : portAudioIndex(-1) {}
 };
 
 // This must be registered with QMetaType::registerComparators for
