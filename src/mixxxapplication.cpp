@@ -6,6 +6,7 @@
 
 #include "control/controlproxy.h"
 #include "library/crate/crateid.h"
+#include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
 #include "util/math.h"
@@ -66,6 +67,8 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
+    QMetaType::registerComparators<SoundDeviceId>();
 }
 
 bool MixxxApplication::touchIsRightButton() {
