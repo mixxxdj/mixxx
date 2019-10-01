@@ -40,7 +40,7 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
-    deviceComboBox->addItem(tr("None"), "None");
+    deviceComboBox->addItem(tr("None"), QVariant::fromValue(SoundDeviceId()));
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(deviceChanged(int)));
     connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
@@ -83,7 +83,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
     unsigned int numChannels = 0;
-    if (selection.name == "None") {
+    if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
         for (const auto& pDevice: qAsConst(m_devices)) {
@@ -234,7 +234,7 @@ void DlgPrefSoundItem::reload() {
  */
 SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     SoundDeviceId selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
-    if (selection.name == "None") {
+    if (selection == SoundDeviceId()) {
         return SoundDevicePointer();
     }
     for (const auto& pDevice: qAsConst(m_devices)) {
