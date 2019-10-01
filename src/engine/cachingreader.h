@@ -186,6 +186,9 @@ class CachingReader : public QObject {
     mixxx::IndexRange m_readableFrameIndexRange;
 
     CachingReaderWorker m_worker;
+
+    // Pending next track while loading a previous track
+    TrackPointer m_pNewTrack;
 };
 
 

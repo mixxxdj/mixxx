@@ -200,11 +200,12 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 }
 
 void CachingReader::newTrack(TrackPointer pTrack) {
-    while (m_state == State::TrackLoading) {
-        // Spin until the previous track has been either
-        // loaded or unloaded by the worker
+    if (m_state == State::TrackLoading) {
+        m_pNewTrack = pTrack;
         process();
+        return;
     }
+    m_pNewTrack.reset();
     // Feed the track to the worker as soon as possible
     // to get ready while the reader switches its internal
     // state. There are no race conditions, because the
@@ -293,6 +294,11 @@ void CachingReader::process() {
             // Reset the readable frame index range
             m_readableFrameIndexRange = update.readableFrameIndexRange();
         }
+    }
+    // To terminate the recursion a pending new track must
+    // only be loaded if no track is currently loading!
+    if (m_pNewTrack && m_state != State::TrackLoading) {
+        newTrack(std::move(m_pNewTrack));
     }
 }
 
