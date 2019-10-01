@@ -806,11 +806,14 @@ if(EBUR128_STATIC)
     CMAKE_ARGS ${EBUR128_CMAKE_ARGS}
   )
   set_target_properties(libebur128 PROPERTIES EXCLUDE_FROM_ALL TRUE)
-  add_dependencies(mixxx-lib libebur128)
-  target_include_directories(mixxx-lib PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
+
+  add_library(mixxx-libebur128 STATIC IMPORTED)
+  add_dependencies(mixxx-libebur128 libebur128)
+  set_target_properties(mixxx-libebur128 PROPERTIES
+    IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
   )
-  target_link_libraries(mixxx-lib PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  target_link_libraries(mixxx-lib PUBLIC mixxx-libebur128)
 else()
   message(STATUS "Linking libebur128 dynamically")
   target_link_libraries(mixxx-lib PUBLIC Ebur128::Ebur128)
