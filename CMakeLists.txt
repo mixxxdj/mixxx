@@ -317,6 +317,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
+  src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
   src/library/library.cpp
@@ -1666,8 +1667,8 @@ add_executable(mixxx-test EXCLUDE_FROM_ALL
   src/test/broadcastsettings_test.cpp
   src/test/channelhandle_test.cpp
   src/test/configobject_test.cpp
-  src/test/controllerengine_test.cpp
   src/test/controller_preset_validation_test.cpp
+  src/test/controllerengine_test.cpp
   src/test/controlobjecttest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
@@ -1693,7 +1694,9 @@ add_executable(mixxx-test EXCLUDE_FROM_ALL
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
   src/test/libraryscannertest.cpp
+  src/test/librarytest.cpp
   src/test/looping_control_test.cpp
+  src/test/main.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp
   src/test/metaknob_link_test.cpp
@@ -1726,12 +1729,12 @@ add_executable(mixxx-test EXCLUDE_FROM_ALL
   src/test/taglibtest.cpp
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
+  src/test/trackmetadata_test.cpp
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
-  src/test/main.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PUBLIC mixxx-lib)
