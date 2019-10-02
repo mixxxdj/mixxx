@@ -25,7 +25,7 @@ CachingReaderWorker::CachingReaderWorker(
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_newTrackAvailable(false),
+          m_newTrackFifo(MpscFifoConcurrency::SingleProducer),
           m_stop(0) {
 }
 
@@ -84,10 +84,9 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
-    {
-        QMutexLocker locker(&m_newTrackMutex);
-        m_pNewTrack = pTrack;
-        m_newTrackAvailable = true;
+    VERIFY_OR_DEBUG_ASSERT(m_newTrackFifo.enqueue(pTrack)) {
+        kLogger.critical()
+                << "No capacity to accept a new track";
     }
     workReady();
 }
@@ -97,18 +96,12 @@ void CachingReaderWorker::run() {
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
     Event::start(m_tag);
+    TrackPointer pNewTrack;
+    CachingReaderChunkReadRequest request;
     while (!m_stop.load()) {
         // Request is initialized by reading from FIFO
-        CachingReaderChunkReadRequest request;
-        if (m_newTrackAvailable) {
-            TrackPointer pLoadTrack;
-            { // locking scope
-                QMutexLocker locker(&m_newTrackMutex);
-                pLoadTrack = m_pNewTrack;
-                m_pNewTrack.reset();
-                m_newTrackAvailable = false;
-            } // implicitly unlocks the mutex
-            loadTrack(pLoadTrack);
+        if (m_newTrackFifo.dequeue(&pNewTrack)) {
+            loadTrack(std::move(pNewTrack));
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
             // Read the requested chunk and send the result
             const ReaderStatusUpdate update(processReadRequest(request));

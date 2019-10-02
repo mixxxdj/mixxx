@@ -1,17 +1,13 @@
-#ifndef ENGINE_CACHINGREADERWORKER_H
-#define ENGINE_CACHINGREADERWORKER_H
+#pragma once
 
-#include <QtDebug>
-#include <QMutex>
 #include <QSemaphore>
-#include <QThread>
-#include <QString>
 
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "track/track.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "util/fifo.h"
+#include "util/mpscfifo.h"
 
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
@@ -127,11 +123,7 @@ class CachingReaderWorker : public EngineWorker {
     FIFO<CachingReaderChunkReadRequest>* m_pChunkReadRequestFIFO;
     FIFO<ReaderStatusUpdate>* m_pReaderStatusFIFO;
 
-    // Queue of Tracks to load, and the corresponding lock. Must acquire the
-    // lock to touch.
-    QMutex m_newTrackMutex;
-    bool m_newTrackAvailable;
-    TrackPointer m_pNewTrack;
+    MpscFifo<TrackPointer, 1> m_newTrackFifo;
 
     // Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(const TrackPointer& pTrack);
@@ -155,6 +147,3 @@ class CachingReaderWorker : public EngineWorker {
 
     QAtomicInt m_stop;
 };
-
-
-#endif /* ENGINE_CACHINGREADERWORKER_H */
