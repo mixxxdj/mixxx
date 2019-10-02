@@ -4,9 +4,7 @@
 #ifndef ENGINE_CACHINGREADER_H
 #define ENGINE_CACHINGREADER_H
 
-#include <atomic>
-
-#include <QtDebug>
+#include <QAtomicInt>
 #include <QList>
 #include <QVector>
 #include <QLinkedList>
@@ -153,12 +151,13 @@ class CachingReader : public QObject {
     // Gets a chunk from the free list, frees the LRU CachingReaderChunk if none available.
     CachingReaderChunkForOwner* allocateChunkExpireLRU(SINT chunkIndex);
 
-    enum class State {
-        Idle,
-        TrackLoading,
-        TrackLoaded,
+    enum State {
+        STATE_IDLE,
+        STATE_TRACK_LOADING,
+        STATE_TRACK_UNLOADING,
+        STATE_TRACK_LOADED,
     };
-    std::atomic<State> m_state;
+    QAtomicInt m_state;
 
     // Keeps track of all CachingReaderChunks we've allocated.
     QVector<CachingReaderChunkForOwner*> m_chunks;

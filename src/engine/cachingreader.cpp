@@ -57,7 +57,7 @@ CachingReader::CachingReader(QString group,
           // allocated chunks, because the worker use writeBlocking(). Otherwise
           // the worker could get stuck in a hot loop!!!
           m_readerStatusUpdateFIFO(kNumberOfCachedChunksInMemory),
-          m_state(State::Idle),
+          m_state(STATE_IDLE),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kSamples * kNumberOfCachedChunksInMemory),
@@ -200,17 +200,19 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
     return pChunk;
 }
 
+// Invoked from the UI thread!!
 void CachingReader::newTrack(TrackPointer pTrack) {
-    // Feed the track to the worker as soon as possible
-    // to get ready while the reader switches its internal
-    // state. There are no race conditions, because the
-    // reader polls the worker.
-    m_state.store(State::TrackLoading, std::memory_order_acquire);
-    m_worker.newTrack(pTrack);
+    auto newState = pTrack ? STATE_TRACK_LOADING : STATE_TRACK_UNLOADING;
+    auto oldState = m_state.fetchAndStoreAcquire(newState);
+    VERIFY_OR_DEBUG_ASSERT(
+            oldState != STATE_TRACK_LOADING ||
+            newState != STATE_TRACK_LOADING) {
+        kLogger.critical()
+                << "Cannot load new track while loading a track";
+        return;
+    }
+    m_worker.newTrack(std::move(pTrack));
     m_worker.workReady();
-    // Don't accept any new read requests until the current
-    // track has been unloaded and the new track has been
-    // loaded.
 }
 
 void CachingReader::process() {
@@ -218,20 +220,20 @@ void CachingReader::process() {
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
         auto pChunk = update.takeFromWorker();
         if (pChunk) {
-            DEBUG_ASSERT(m_state != State::Idle);
             // Result of a read request (with a chunk)
+            DEBUG_ASSERT(m_state.load() != STATE_IDLE);
             DEBUG_ASSERT(
                     update.status == CHUNK_READ_SUCCESS ||
                     update.status == CHUNK_READ_EOF ||
                     update.status == CHUNK_READ_INVALID ||
                     update.status == CHUNK_READ_DISCARDED);
-            if (m_state == State::TrackLoading) {
+            if (m_state.load() == STATE_TRACK_LOADING) {
                 // Discard all results from pending read requests for the
                 // previous track before the next track has been loaded.
                 freeChunk(pChunk);
                 continue;
             }
-            DEBUG_ASSERT(m_state == State::TrackLoaded);
+            DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADED);
             if (update.status == CHUNK_READ_SUCCESS) {
                 // Insert or freshen the chunk in the MRU/LRU list after
                 // obtaining ownership from the worker.
@@ -252,14 +254,19 @@ void CachingReader::process() {
             freeAllChunks();
             DEBUG_ASSERT(!m_mruCachingReaderChunk);
             DEBUG_ASSERT(!m_lruCachingReaderChunk);
-            if (update.status == TRACK_LOADED) {
-                m_state.store(State::TrackLoaded, std::memory_order_release);
-            } else {
-                DEBUG_ASSERT(update.status == TRACK_UNLOADED);
-                m_state.store(State::Idle, std::memory_order_release);
-            }
             // Reset the readable frame index range
             m_readableFrameIndexRange = update.readableFrameIndexRange();
+            if (update.status == TRACK_LOADED) {
+                DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);
+                m_state.storeRelease(STATE_TRACK_LOADED);
+            } else {
+                DEBUG_ASSERT(update.status == TRACK_UNLOADED);
+                // This message could be processed later when a new
+                // track is already loading!
+                if (!m_state.testAndSetRelease(STATE_TRACK_UNLOADING, STATE_IDLE)) {
+                    DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);
+                }
+            }
         }
     }
 }
@@ -283,7 +290,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
     }
 
     // If no track is loaded, don't do anything.
-    if (m_state != State::TrackLoaded) {
+    if (m_state.load() != STATE_TRACK_LOADED) {
         return ReadResult::UNAVAILABLE;
     }
 
@@ -480,7 +487,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
 
 void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // If no file is loaded, skip.
-    if (m_state != State::TrackLoaded) {
+    if (m_state.load() != STATE_TRACK_LOADED) {
         return;
     }
 
