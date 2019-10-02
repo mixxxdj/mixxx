@@ -14,7 +14,7 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <MinimumSize>55,35</MinimumSize>
-    <MaximumSize>60,-1</MaximumSize>
+    <MaximumSize>60,</MaximumSize>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 

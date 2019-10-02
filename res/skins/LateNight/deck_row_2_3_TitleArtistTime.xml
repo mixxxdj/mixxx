@@ -37,7 +37,7 @@
                 <ObjectName>PlayPositionText</ObjectName>
                 <TooltipId>track_time</TooltipId>
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>-1,19</MaximumSize>
+                <MaximumSize>,19</MaximumSize>
                 <Alignment>right</Alignment>
                 <Channel><Variable name="channum"/></Channel>
                 <Connection>
@@ -80,7 +80,7 @@
                 <ObjectName>DurationText</ObjectName>
                 <TooltipId>track_duration</TooltipId>
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>-1,20</MaximumSize>
+                <MaximumSize>,20</MaximumSize>
                 <Property>durationFormatted</Property>
                 <Channel>
                   <Variable name="channum"/>

@@ -24,7 +24,7 @@
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>100,-1</MinimumSize>
+                <MinimumSize>100,</MinimumSize>
                 <Children>
 
                   <Template src="skin:preview_deck.xml"/>

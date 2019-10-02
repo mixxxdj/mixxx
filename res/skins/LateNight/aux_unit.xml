@@ -125,7 +125,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:vumeter_small.xml">
-                        <SetVariable name="GroupType">auxiliary</SetVariable>
+                        <SetVariable name="GroupType">microphone</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>

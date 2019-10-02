@@ -234,7 +234,7 @@
 
               <WidgetGroup>
                 <MinimumSize>0,3</MinimumSize>
-                <MaximumSize>-1,5</MaximumSize>
+                <MaximumSize>,5</MaximumSize>
                 <SizePolicy>me,min</SizePolicy>
               </WidgetGroup>
 

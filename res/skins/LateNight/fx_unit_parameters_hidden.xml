@@ -32,7 +32,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>220,-1</MaximumSize>
+            <MaximumSize>220,</MaximumSize>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">1</SetVariable>
@@ -45,7 +45,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>220,-1</MaximumSize>
+            <MaximumSize>220,</MaximumSize>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">2</SetVariable>
@@ -58,7 +58,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>220,-1</MaximumSize>
+            <MaximumSize>220,</MaximumSize>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">3</SetVariable>

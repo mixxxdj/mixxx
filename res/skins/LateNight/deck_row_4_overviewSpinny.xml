@@ -49,10 +49,10 @@
           <WidgetGroup>
             <ObjectName>Stars</ObjectName>
             <Layout>vertical</Layout>
-            <Size>-1min,17me</Size>
+            <Size>0min,17me</Size>
             <Children>
               <StarRating>
-                <Size>-1min,15f</Size>
+                <Size>0min,15f</Size>
                 <Alignment>center</Alignment>
                 <TooltipId>starrating</TooltipId>
                 <Channel><Variable name="channum"/></Channel>

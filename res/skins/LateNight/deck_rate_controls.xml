@@ -9,18 +9,18 @@
         <ObjectName>AlignCenter</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
-        <MaximumSize>-1,46</MaximumSize>
+        <MaximumSize>,46</MaximumSize>
         <Children>
           <WidgetGroup><!-- BpmContainer + Tap overlay -->
             <ObjectName>BpmContainer</ObjectName>
             <Layout>stacked</Layout>
-            <Size>60f,22f</Size>
+            <Size>62f,22f</Size>
             <Children>
               <!-- In order to make the bpm display tappable, we use an old-style
               widget group and put the bpm pushbutton on top of the display. -->
               <PushButton>
                 <TooltipId>bpm_tap_visual_bpm</TooltipId>
-                <Size>60f,22f</Size>
+                <Size>62f,22f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -36,7 +36,7 @@
               <NumberBpm>
                 <ObjectName>BpmText</ObjectName>
                 <TooltipId>visual_bpm</TooltipId>
-                <Size>60f,22f</Size>
+                <Size>62f,22f</Size>
                 <Channel><Variable name="channum" /></Channel>
                 <NumberOfDigits>2</NumberOfDigits>
                 <Connection>
@@ -57,7 +57,7 @@
 
       <WidgetGroup>
         <ObjectName>RateControls</ObjectName>
-        <Size>-1min,-1me</Size>
+        <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <SliderComposed>

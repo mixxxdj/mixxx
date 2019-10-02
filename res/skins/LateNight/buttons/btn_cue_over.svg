@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg43"
-   version="1.1"
+   width="52"
    height="26"
-   width="52">
+   version="1.1"
+   id="svg43">
   <metadata
      id="metadata47">
     <rdf:RDF>
@@ -24,79 +24,82 @@
   <defs
      id="defs9">
     <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(2.1304 0 0 1 -.56521 -1026.4)"
-       y2="1049.4"
-       y1="1027.4"
-       x2="11"
+       id="a"
        x1="11"
-       id="a">
+       x2="11"
+       y1="1027.4"
+       y2="1049.4"
+       gradientTransform="matrix(2.1304 0 0 1 -.56521 -1026.4)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop2"
+         stop-color="#ce0e0e"
          offset="0"
-         stop-color="#ce0e0e" />
+         id="stop2" />
       <stop
-         id="stop4"
+         stop-color="#d00"
          offset=".28"
-         stop-color="#d00" />
+         id="stop4" />
       <stop
-         id="stop6"
+         stop-color="#8d0000"
          offset="1"
-         stop-color="#8d0000" />
+         id="stop6" />
     </linearGradient>
   </defs>
   <path
-     id="rect11"
+     style="color:#000000;opacity:0.9"
      d="M 5.00025,1 H 49 c 1.108,0 2,0.892 2,2 v 20 c 0,1.108 -0.892,2 -2,2 H 5.00025 c -1.108,0 -2,-0.892 -2,-2 V 3 c 0,-1.108 0.892,-2 2,-2 z"
-     style="color:#000000;opacity:0.9" />
+     id="rect11" />
   <path
-     style="color:#000000;opacity:0.62085003;fill:#060606"
+     d="M 50.812,2.1875 C 50.92353,2.43712 50.9995,2.708 50.9995,3 v 20 c 0,1.108 -0.892,2 -2,2 H 4.99975 C 4.70775,25 4.43687,24.924027 4.18725,24.8125 4.49892,25.51008 5.18375,26 5.99975,26 H 49.9995 c 1.108,0 2,-0.892 2,-2 V 4 c 0,-0.816 -0.48992,-1.5008 -1.1875,-1.8125 z"
      id="path13"
-     d="M 50.812,2.1875 C 50.92353,2.43712 50.9995,2.708 50.9995,3 v 20 c 0,1.108 -0.892,2 -2,2 H 4.99975 C 4.70775,25 4.43687,24.924027 4.18725,24.8125 4.49892,25.51008 5.18375,26 5.99975,26 H 49.9995 c 1.108,0 2,-0.892 2,-2 V 4 c 0,-0.816 -0.48992,-1.5008 -1.1875,-1.8125 z" />
+     style="color:#000000;opacity:0.62085003;fill:#060606" />
   <path
-     id="rect15"
+     style="color:#000000;fill:url(#a)"
      d="M 4.00025,0.49998 H 48 c 0.831,0 1.5,0.669 1.5,1.5 v 20 c 0,0.831 -0.669,1.5 -1.5,1.5 H 4.00025 c -0.831,0 -1.5,-0.669 -1.5,-1.5 v -20 c 0,-0.831 0.669,-1.5 1.5,-1.5 z"
-     style="color:#000000;fill:url(#a)" />
+     id="rect15" />
   <path
-     id="path17"
-     style="color:#000000;text-indent:0;text-transform:none;fill:#aaaaaa"
-     d="m 4.00025,0 c -1.0994,0 -2,0.90065 -2,2 v 20 c 0,1.0994 0.90065,2 2,2 H 48 c 1.0994,0 2,-0.90065 2,-2 V 2 C 50,0.9006 49.09935,0 48,0 Z m 0.3,1 H 47.7 C 48.26265,1 49,1.73735 49,2.3 V 21.7 C 49,22.26265 48.26265,23 47.7,23 H 4.30025 c -0.56265,0 -1.3,-0.73735 -1.3,-1.3 V 2.3 c 0,-0.56265 0.73735,-1.3 1.3,-1.3 z" />
+     d="m 4.00025,0 c -1.0994,0 -2,0.90065 -2,2 v 20 c 0,1.0994 0.90065,2 2,2 H 48 c 1.0994,0 2,-0.90065 2,-2 V 2 C 50,0.9006 49.09935,0 48,0 Z m 0.3,1 H 47.7 C 48.26265,1 49,1.73735 49,2.3 V 21.7 C 49,22.26265 48.26265,23 47.7,23 H 4.30025 c -0.56265,0 -1.3,-0.73735 -1.3,-1.3 V 2.3 c 0,-0.56265 0.73735,-1.3 1.3,-1.3 z"
+     style="color:#000000;text-indent:0;text-transform:none;fill:#979797;fill-opacity:1"
+     id="path17" />
   <g
-     id="g25"
-     fill="#fff">
+     fill="#3d0000"
+     id="g41">
     <path
-       id="path19"
-       d="m20 9h-7v6h7v-1h-5v-4h5v-1" />
+       d="m21 10h-6v4h1v-3h5v-1"
+       id="path27" />
     <path
-       id="path21"
-       d="m22 9v6h7v-6h-2v5h-3v-5h-2" />
+       d="m21 15v1h-7v-1h7"
+       id="path29" />
     <path
-       id="path23"
-       d="m31 9v6h7v-1h-5v-2h4v-1h-4v-1h5v-1h-7" />
+       d="m24 10h1v4h-1v-4"
+       id="path31" />
+    <path
+       d="m23 15v1h7v-6h-1v5h-6"
+       id="path33" />
+    <path
+       d="m39 10h-6v1h6v-1"
+       id="path35" />
+    <path
+       d="m38 12h-5v2h1v-1h4v-1"
+       id="path37" />
+    <path
+       d="m39 15v1h-7v-1h7"
+       id="path39" />
   </g>
   <g
-     id="g41"
-     fill="#3d0000">
+     id="g6087-0"
+     style="fill:#dcdcdc;fill-opacity:1">
     <path
-       id="path27"
-       d="m21 10h-6v4h1v-3h5v-1" />
+       style="fill:#dcdcdc;fill-opacity:1"
+       d="m 20,9 h -7 v 6 h 7 v -1 h -5 v -4 h 5 V 9"
+       id="path6038-8" />
     <path
-       id="path29"
-       d="m21 15v1h-7v-1h7" />
+       style="fill:#dcdcdc;fill-opacity:1"
+       d="m 22,9 v 6 h 7 V 9 h -2 v 5 H 24 V 9 h -2"
+       id="path6042-8" />
     <path
-       id="path31"
-       d="m24 10h1v4h-1v-4" />
-    <path
-       id="path33"
-       d="m23 15v1h7v-6h-1v5h-6" />
-    <path
-       id="path35"
-       d="m39 10h-6v1h6v-1" />
-    <path
-       id="path37"
-       d="m38 12h-5v2h1v-1h4v-1" />
-    <path
-       id="path39"
-       d="m39 15v1h-7v-1h7" />
+       style="fill:#dcdcdc;fill-opacity:1"
+       d="m 31,9 v 6 h 7 v -1 h -5 v -2 h 4 v -1 h -4 v -1 h 5 V 9 h -7"
+       id="path6046-5" />
   </g>
 </svg>

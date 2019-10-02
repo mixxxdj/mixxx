@@ -165,7 +165,7 @@
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
                       <PushButton>
-                        <TooltipId>talkover</TooltipId>
+                        <TooltipId>microphone_talkover</TooltipId>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>

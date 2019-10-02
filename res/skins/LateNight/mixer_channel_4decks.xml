@@ -100,7 +100,7 @@
 
           <WidgetGroup>
             <ObjectName>VuMeterChannel4Decks</ObjectName>
-            <Size>26f,-1min</Size>
+            <Size>26f,0min</Size>
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>

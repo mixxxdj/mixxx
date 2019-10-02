@@ -56,7 +56,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">1</SetVariable>
           </Template>
         </Children>
@@ -72,7 +72,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">2</SetVariable>
           </Template>
         </Children>
@@ -88,7 +88,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">3</SetVariable>
           </Template>
         </Children>
@@ -104,7 +104,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">4</SetVariable>
           </Template>
         </Children>
@@ -120,7 +120,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">5</SetVariable>
           </Template>
         </Children>
@@ -136,7 +136,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">6</SetVariable>
           </Template>
         </Children>
@@ -152,7 +152,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">7</SetVariable>
           </Template>
         </Children>
@@ -168,7 +168,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">8</SetVariable>
           </Template>
         </Children>
