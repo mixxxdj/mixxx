@@ -11,7 +11,7 @@
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
+    <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <Size>635me,170min</Size>
     <Children>
@@ -21,7 +21,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <ObjectName>EffectRows</ObjectName>
+            <ObjectName>FxRows</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <BackPath>style/background_tile.png</BackPath>
@@ -45,7 +45,7 @@
           </WidgetGroup>
 
           <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
-            <ObjectName>EffectUnitControls</ObjectName>
+            <ObjectName>FxUnitControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>

@@ -11,14 +11,14 @@
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
+    <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
       <!-- Effect slots -->
       <WidgetGroup>
-        <ObjectName>EffectRows</ObjectName>
+        <ObjectName>FxRows</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <BackPath>style/background_tile.png</BackPath>
@@ -69,7 +69,7 @@
       </WidgetGroup><!-- /Effect slots -->
 
       <WidgetGroup><!-- Mix / Super -->
-        <ObjectName>EffectUnitControls</ObjectName>
+        <ObjectName>FxUnitControls</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>

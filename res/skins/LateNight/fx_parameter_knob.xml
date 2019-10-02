@@ -22,7 +22,7 @@
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>EffectKnob</ObjectName>
+        <ObjectName>FxKnob</ObjectName>
         <Layout>horizontal</Layout>
         <Size>25me,25f</Size>
         <Children>

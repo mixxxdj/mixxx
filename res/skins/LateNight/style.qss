@@ -26,7 +26,7 @@ QToolTip {/*
 #Deck2, #DeckSmall2,
 #Deck3, #DeckSmall3,
 #Deck4, #DeckSmall4,
-#EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4,
+#FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MixerChannelControls,
 #MasterHeadphoneMixerContainer,
 #MicRack, #AuxRack,
@@ -50,9 +50,9 @@ WLibrary,
 #DeckRow_5_LoopCuesTransport,
 #MasterControls,
 #HeadphoneControls,
-#EffectSlot1,
-#EffectSlot2,
-#EffectSlot3,
+#FxSlot1,
+#FxSlot2,
+#FxSlot3,
 #SamplerButtons,
 #MicAuxFrame,
 WSearchLineEdit,
@@ -71,8 +71,8 @@ WSearchLineEdit,
 #Deck3, #Deck4,
 #DeckSmall1, #DeckSmall2,
 #DeckSmall3, #DeckSmall4,
-#EffectUnit1, #EffectUnit3,
-#EffectUnit2, #EffectUnit4,
+#FxUnit1, #FxUnit3,
+#FxUnit2, #FxUnit4,
 #MicRack, #AuxRack {
   margin-bottom: 5px;
 }
@@ -91,20 +91,20 @@ WSearchLineEdit,
 
 #Deck1, #DeckSmall1,
 #Deck3, #DeckSmall3,
-#EffectUnit1, #EffectUnit3 {
+#FxUnit1, #FxUnit3 {
   margin-right: 5px;
   margin-left: 3px;
 }
 
 #Deck1, #DeckSmall1,
 #Deck3, #DeckSmall3,
-#EffectUnit1, #EffectUnit3 {
+#FxUnit1, #FxUnit3 {
   margin-right: 5px;
   margin-left: 3px;
 }
 #Deck2, #DeckSmall2,
 #Deck4, #DeckSmall4,
-#EffectUnit2, #EffectUnit4 {
+#FxUnit2, #FxUnit4 {
   margin-right: 3px;
   margin-left: 5px;
 }
@@ -192,7 +192,7 @@ WSearchLineEdit,
 #BroadcastButton,
 #SettingsButton,
 #BeatgridButtonsToggle,
-#BeatCurpos {
+#BeatGridButton {
   border: 1px solid #444;
   border-radius: 2px;
 }
@@ -391,19 +391,6 @@ QHeaderView::down-arrow {
 #FxAssignButtonDeck[displayValue="1"] {
   color: #0e0e0e;
 }
-
-#RecBox,
-#GuiToggleButton,
-#BroadcastButton,
-#SettingsButton,
-#BeatgridButtonsToggle,
-#BeatCurpos,
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-}
 /*************** Button labels ***************/
 
 
@@ -529,7 +516,7 @@ WTime {
 
 #DeckRow_4_OverviewSpinny {
   background-color: #1e1e1e;
-  padding: 1px 0px 1px 0px;
+  padding: 0px 0px 1px 0px;
 }
 
 #DeckRow_5_LoopCuesTransport {
@@ -727,10 +714,9 @@ WTime {
 #KeyText {
   qproperty-alignment: 'AlignCenter';
   font-size: 13px/13px;
-  background-color: #0f0f0f;
   /* let's give this a more decent border with sharper corners
    because it's not interactive like the spinboxes or the effect selector */
-  border: 1px solid #333;
+  border: 1px solid #0f0f0f;
   border-radius: 1px;
   margin: 0px 1px;
   }
@@ -842,12 +828,7 @@ WEffectButtonParameter*/
   }
 
 #FxKnobContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';/*
-  background-color: #113397;*/
-}
-
-#FxUnit1_PflButton, #FxUnit2_PflButton,
-#FxUnit3_PflButton, #FxUnit4_PflButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #SyncControls {
@@ -1242,7 +1223,7 @@ WBeatSpinBox,
           stop:1 #0e0e0e);
 }
 
-#BeatCurpos {
+#BeatGridButton {
   margin: 1px;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
           stop:0 #282828,
@@ -1527,7 +1508,7 @@ WBeatSpinBox,
   text-align: left;
 }
 
-#EffectRack {
+#FxRack {
   qproperty-layoutAlignment: 'AlignCenter | AlignTop';
   background-color: #0e0e0e;
 }
@@ -1537,21 +1518,21 @@ WBeatSpinBox,
   border-bottom-right-radius: 0px;
 }
 
-#EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
+#FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4 {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding: 3px;
   background-color: #1E1E1E;
 }
 
-#EffectRows {
+#FxRows {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   background-color: #101010;
 }
 
-#EffectUnitControls {
+#FxUnitControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  padding: 1px 1px 1px 4px;
+  padding: 0px 0px 0px 4px;
 }
 
 #FxUnit1_ExpandCollapseButton,
@@ -1579,14 +1560,14 @@ WBeatSpinBox,
   border-radius: 1px;
 }
 
-#EffectSlot1,
-#EffectSlot2,
-#EffectSlot3 {
+#FxSlot1,
+#FxSlot2,
+#FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 2px 3px 2px 5px;
 }
 
-#EffectSlot_focused {
+#FxSlot_focused {
   background-color:qlineargradient(
       x1:0, y1:0, x2:0, y2:1,
         stop:0 #000,
@@ -1594,7 +1575,7 @@ WBeatSpinBox,
         stop:1 #090909);
 }
 
-#EffectFocusButton {
+#FxFocusButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin: 0px 0px 0px 0px;
 }
@@ -1604,17 +1585,17 @@ WBeatSpinBox,
   padding: 0px 2px 0px 5px;
 }
 
-#EffectKnob {
+#FxKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-left: 1px;
 }
 
-#EffectButton {
+#FxButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-top: 4px;
 }
 
-#EffectUnitKnob {
+#FxUnitKnob {
   qproperty-layoutAlignment: 'AlignRight';
   padding: 3px;
 }
@@ -1815,20 +1796,13 @@ WEffectSelector {
     stop:1 #1e1e1e);
 }
 
-WLibrary {
+WLibrary,
+#SidebarBox {
   padding: 2px 2px 0px 2px;
   border-bottom: 0px;
   border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #333,
     stop:1 #1e1e1e);
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
-  background-color: #1e1e1e;
-}
-
-#SidebarBox {
-  padding: 2px 2px 0px 2px;
-  border-bottom: 0px;
   border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #0a0a0a,
     stop:1 #1e1e1e);

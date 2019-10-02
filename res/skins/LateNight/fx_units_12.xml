@@ -242,7 +242,7 @@
   </SingletonDefinition>
 
   <WidgetGroup>
-    <ObjectName>EffectRack</ObjectName>
+    <ObjectName>FxRack</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -251,7 +251,6 @@
         <Children>
 
           <WidgetGroup><!-- EffectUnit 1 mini -->
-            <ObjectName>EffUnit1_mini</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
@@ -264,7 +263,6 @@
 
           <!-- EffectUnit 1 maxi -->
           <WidgetGroup trigger="[EffectRack1_EffectUnit1],show_parameters" on_hide_select="0" persist="true">
-            <ObjectName>EffUnit1_maxi</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>

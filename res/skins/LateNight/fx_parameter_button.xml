@@ -19,7 +19,7 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>EffectButton</ObjectName>
+        <ObjectName>FxButton</ObjectName>
         <Layout>horizontal</Layout>
         <Size>40me,25f</Size>
         <Children>
