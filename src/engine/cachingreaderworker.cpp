@@ -29,9 +29,6 @@ CachingReaderWorker::CachingReaderWorker(
           m_stop(0) {
 }
 
-CachingReaderWorker::~CachingReaderWorker() {
-}
-
 ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         const CachingReaderChunkReadRequest& request) {
     CachingReaderChunk* pChunk = request.chunk;

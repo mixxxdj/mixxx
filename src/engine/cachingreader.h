@@ -78,9 +78,9 @@ class CachingReader : public QObject {
     // Construct a CachingReader with the given group.
     CachingReader(QString group,
                   UserSettingsPointer _config);
-    virtual ~CachingReader();
+    ~CachingReader() override;
 
-    virtual void process();
+    void process();
 
     enum class ReadResult {
         // No samples read and buffer untouched(!), try again later in case of a cache miss
@@ -101,12 +101,12 @@ class CachingReader : public QObject {
     // that is not in the cache. If any hints do request a chunk not in cache,
     // then wake the reader so that it can process them. Must only be called
     // from the engine callback.
-    virtual void hintAndMaybeWake(const HintVector& hintList);
+    void hintAndMaybeWake(const HintVector& hintList);
 
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
-    virtual void newTrack(TrackPointer pTrack);
+    void newTrack(TrackPointer pTrack);
 
     void setScheduler(EngineWorkerScheduler* pScheduler) {
         m_worker.setScheduler(pScheduler);
