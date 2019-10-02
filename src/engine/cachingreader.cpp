@@ -216,6 +216,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
 void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
+        auto pChunk = update.takeFromWorker();
         if (pChunk) {
             DEBUG_ASSERT(m_state != State::Idle);
             // Result of a read request (with a chunk)
