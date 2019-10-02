@@ -125,6 +125,11 @@
           </WidgetGroup>
 
         </Children>
+        <Connection>
+          <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -135,8 +140,7 @@
             <ObjectName>FxSlot_focused</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
-            <Children>
-            </Children>
+            <BackPath>style/background_tile_fx_focus.png</BackPath>
             <Connection>
               <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
               <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>

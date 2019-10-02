@@ -50,9 +50,9 @@ WLibrary,
 #DeckRow_5_LoopCuesTransport,
 #MasterControls,
 #HeadphoneControls,
-#FxSlot1,
-#FxSlot2,
-#FxSlot3,
+#FxSlot1[highlight="0"],
+#FxSlot2[highlight="0"],
+#FxSlot3[highlight="0"],
 #SamplerButtons,
 #MicAuxFrame,
 WSearchLineEdit,
@@ -1565,6 +1565,12 @@ WBeatSpinBox,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 2px 3px 2px 5px;
+}
+
+#FxSlot1[highlight="1"],
+#FxSlot2[highlight="1"],
+#FxSlot3[highlight="1"] {
+  border: 1px solid #248301;
 }
 
 #FxSlot_focused {
