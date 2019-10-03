@@ -75,8 +75,8 @@ endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 
 configure_file(
-  "${PROJECT_SOURCE_DIR}/src/build.h.template"
-  "${PROJECT_BINARY_DIR}/src/build.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
 )
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
