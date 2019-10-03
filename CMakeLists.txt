@@ -1838,3 +1838,43 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
+
+# Windows-only resource file
+if(WIN32)
+  string(TIMESTAMP MIXXX_YEAR "%Y")
+
+  file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
+  string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
+
+  # Remove anything after ~ or - in the version number and replace the dots with commas
+  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
+  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
+    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
+    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  endif()
+  set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
+
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(MIXXX_DEBUG 1)
+  else()
+    set(MIXXX_DEBUG 0)
+  endif()
+
+  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
+  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
+    set(MIXXX_PRERELEASE 0)
+  else()
+    set(MIXXX_PRERELEASE 1)
+  endif()
+
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+  )
+  target_sources(mixxx PRIVATE
+    src/mixxx.rc
+    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+  )
+  target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
