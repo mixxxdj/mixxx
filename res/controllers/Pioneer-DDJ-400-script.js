@@ -226,16 +226,16 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
     }
 
     // on touch jog with vinylmode enabled -> enable scratchmode
-    if (value != 0 && this.vinylMode) {
+    if (value !== 0 && this.vinylMode) {
         engine.scratchEnable(deckNum, 720, 33 + 1 / 3, this.alpha, this.beta);
     } else {
-        // on release jog (value==0) disable pitch bend mode or scratch mode
+        // on release jog (value === 0) disable pitch bend mode or scratch mode
         engine.scratchDisable(deckNum);
     }
 };
 
 PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
-    if (value == 0) {
+    if (value === 0) {
       return; // ignore release
     }
 
@@ -243,7 +243,7 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
     var idx = 0;
 
     for (var i = 0; i < this.tempoRanges.length; i++) {
-        if (currRange == this.tempoRanges[i]) {
+        if (currRange === this.tempoRanges[i]) {
             idx = (i + 1) % this.tempoRanges.length;
             break;
         }
@@ -272,7 +272,7 @@ PioneerDDJ400.initCuePointsAndLoops = function(group) {
 };
 
 PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, group) {
-    if (value == 0) {
+    if (value === 0) {
       return; // ignore release
     }
 
@@ -287,7 +287,7 @@ PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, gro
         var newPosition = currentPosition;
 
         for (var i = 1; i <= points.length; i++) {
-            if (i == points.length || points[i] >= currentPosition * trackSamples) {
+            if (i === points.length || points[i] >= currentPosition * trackSamples) {
                 newPosition = points[i - 1] / trackSamples;
                 break;
             }
@@ -298,7 +298,7 @@ PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, gro
 };
 
 PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, group) {
-    if (value == 0) {
+    if (value === 0) {
       return; // ignore release
     }
 
@@ -336,10 +336,10 @@ PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group) 
 
 
 PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group) {
-    var status = channel == 0 ? 0x97 : 0x99;
+    var status = channel === 0 ? 0x97 : 0x99;
     var hotcuePad = 1;
 
-    if (this.keyboardHotCuePoint[channel] == 0) {
+    if (this.keyboardHotCuePoint[channel] === 0) {
         for (hotcuePad = 1; hotcuePad <= 8; hotcuePad++) {
             var hotcueEnabled = engine.getValue(group, 'hotcue_' + hotcuePad + '_enabled');
 
