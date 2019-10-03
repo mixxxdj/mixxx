@@ -249,19 +249,23 @@ void CachingReader::process() {
             }
         } else {
             // State update (without a chunk)
-            // We have a new Track, discharge the chunks from the old track.
-            freeAllChunks();
-            DEBUG_ASSERT(!m_mruCachingReaderChunk);
-            DEBUG_ASSERT(!m_lruCachingReaderChunk);
-            // Reset the readable frame index range
-            m_readableFrameIndexRange = update.readableFrameIndexRange();
             if (update.status == TRACK_LOADED) {
+                // We have a new Track ready to go.
+                // Assert that we had STATE_TRACK_LOADING before and all old chunks
+                // in the m_readerStatusUpdateFIFO have been discarded.
                 DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);
+                // now purge also the recently used chunk list from the old track.
+                freeAllChunks();
+                DEBUG_ASSERT(!m_mruCachingReaderChunk);
+                DEBUG_ASSERT(!m_lruCachingReaderChunk);
+                // Reset the readable frame index range
+                m_readableFrameIndexRange = update.readableFrameIndexRange();
                 m_state.storeRelease(STATE_TRACK_LOADED);
             } else {
                 DEBUG_ASSERT(update.status == TRACK_UNLOADED);
                 // This message could be processed later when a new
-                // track is already loading!
+                // track is already loading! In this case the TRACK_LOADED will
+                // be the very next status update.
                 if (!m_state.testAndSetRelease(STATE_TRACK_UNLOADING, STATE_IDLE)) {
                     DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);
                 }
