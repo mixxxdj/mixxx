@@ -146,12 +146,12 @@ typedef struct mmtag_tail_infos_t {
     unsigned char footer[MMTAG_FOOTER_SIZE];
 } mmtag_tail_infos_t;
 
-//#if defined(__WATCOMC__)
+#if defined(__WATCOMC__) || defined(__WINDOWS__)
 /* Watcom compiler defaults alignment to 1 byte */
 typedef struct mmtag_partial_infos_t {
-//#else
-//typedef struct __attribute__((packed)) mmtag_partial_infos_t {
-//#endif
+#else
+typedef struct __attribute__((packed)) mmtag_partial_infos_t {
+#endif
     unsigned char empty[12];
     unsigned char sync[MMTAG_VERSION_BLOCK_SUBSECTION_LENGTH];
     unsigned char xing[MMTAG_VERSION_BLOCK_SUBSECTION_LENGTH];
