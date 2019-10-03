@@ -69,7 +69,7 @@ typedef struct ReaderStatusUpdate {
         return update;
     }
 
-    static ReaderStatusUpdate trackNotLoaded() {
+    static ReaderStatusUpdate trackUnloaded() {
         ReaderStatusUpdate update;
         update.init(TRACK_UNLOADED, nullptr, mixxx::IndexRange());
         return update;
@@ -101,14 +101,14 @@ class CachingReaderWorker : public EngineWorker {
     CachingReaderWorker(QString group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
-    virtual ~CachingReaderWorker();
+    ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
-    virtual void newTrack(TrackPointer pTrack);
+    void newTrack(TrackPointer pTrack);
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
-    virtual void run();
+    void run() override;
 
     void quitWait();
 
