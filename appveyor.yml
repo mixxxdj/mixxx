@@ -122,6 +122,8 @@ for:
       -DMEDIAFOUNDATION_ENABLED=ON
       -DOPUS_ENABLED=ON
       -DLOCALECOMPARE_ENABLED=ON
+      -G "Visual Studio 15 2017 Win64"
+      --config "Release"
       ..
     - cmake --build .
     - cmake --build . --target mixxx-test
