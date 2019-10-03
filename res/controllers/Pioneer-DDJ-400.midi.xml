@@ -15,7 +15,7 @@
         </scriptfiles>
         <controls>
             <!--
-                BROWSER	Section	START
+                BROWSER Section START
             -->
             <control>
                 <description>BROWSE - rotate - Scroll tracklist/tree view</description>
@@ -111,8 +111,8 @@
             <!-- BROWSER Section END -->
 
             <!-- 
-				DECK Section START
-			-->
+        DECK Section START
+      -->
             <control>
                 <description>PLAY/PAUSE (DECK1) - press - Play/Pause</description>
                 <group>[Channel1]</group>
@@ -1059,7 +1059,7 @@
                 </options>
             </control>
             <!--
-			<control>
+      <control>
                 <description>BEAT LEFT +SHIFT - press - BPM auto mode for FX on</description>
                 <group>[EffectRack1_EffectUnit3]</group>
                 <key></key>
@@ -1081,7 +1081,7 @@
                 </options>
             </control>
             <!--
-			<control>
+      <control>
                 <description>BEAT RIGHT +SHIFT - press - BPM TAP mode for FX on</description>
                 <group>[EffectRack1_EffectUnit3]</group>
                 <key></key>
@@ -1091,7 +1091,7 @@
                     <Normal/>
                 </options>
             </control>
-			-->
+      -->
 
             <control>
                 <description>BEAT FX SELECT - press - next FX in the selected Slot</description>
@@ -4671,17 +4671,17 @@
             <!-- LOADED (load illumination) -->
             <!-- 
             <output>
-				<group>[Channel1]</group>
-				<key>LoadSelectedTrack</key>
-				<status>0x9F</status>
-				<midino>0x00</midino>
-			</output>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0x9F</status>
+        <midino>0x00</midino>
+      </output>
             <output>
-				<group>[Channel2]</group>
-				<key>LoadSelectedTrack</key>
-				<status>0x9F</status>
-				<midino>0x01</midino>
-			</output>
+        <group>[Channel2]</group>
+        <key>LoadSelectedTrack</key>
+        <status>0x9F</status>
+        <midino>0x01</midino>
+      </output>
             -->
         </outputs>
     </controller>
