@@ -212,7 +212,6 @@ void CachingReader::newTrack(TrackPointer pTrack) {
         return;
     }
     m_worker.newTrack(std::move(pTrack));
-    m_worker.workReady();
 }
 
 void CachingReader::process() {

@@ -84,9 +84,12 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
-    QMutexLocker locker(&m_newTrackMutex);
-    m_pNewTrack = pTrack;
-    m_newTrackAvailable = true;
+    {
+        QMutexLocker locker(&m_newTrackMutex);
+        m_pNewTrack = pTrack;
+        m_newTrackAvailable = true;
+    }
+    workReady();
 }
 
 void CachingReaderWorker::run() {
