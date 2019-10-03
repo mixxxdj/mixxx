@@ -21,6 +21,10 @@
 #ifndef TAGS_H
 #define TAGS_H
 
+#if defined(__WINDOWS__)
+#include <sys/types.h>
+#endif
+
 #define LAMETAGSIZE        36
 #define LAME_STRING_LENGTH 48
 

@@ -66,7 +66,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(__WINDOWS__)
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <sys/stat.h>
 
 #include "mp3guessenc.h"
@@ -206,7 +210,7 @@ char malformed_part1(unsigned char *, currentFrame *);
 /* Mpeg header utilities */
 
 
-char head_check(unsigned int head, char relaxed)
+char mp3guessenc_head_check(unsigned int head, char relaxed)
 /*
  * Integrity checks for an mpeg header (4 bytes)
  * Return values:
@@ -350,7 +354,7 @@ char layerIII(unsigned int head)
 /* unit for begin_ptr and length is bit */
 /* begin_ptr should have values in 1..7 - fix: it works with any values */
 /* begin_ptr may be NULL, when not NULL it is increased of 'length' amount */
-unsigned short crc_update(unsigned short old_crc, unsigned char *data, unsigned int *begin_ptr, unsigned int length)
+unsigned short mp3guessenc_crc_update(unsigned short old_crc, unsigned char *data, unsigned int *begin_ptr, unsigned int length)
 {
 #define CRC16_POLYNOMIAL 0x8005
 
@@ -428,11 +432,11 @@ char verify_crc(unsigned int header, unsigned char *chk_buffer, int p1len, unsig
 
     /* the crc16 is first calculated on the last two bytes of the header */
     dummy = (unsigned char)((header>>8)&0xFF);
-    curr_crc = crc_update(curr_crc, &dummy, NULL, 8);
+    curr_crc = mp3guessenc_crc_update(curr_crc, &dummy, NULL, 8);
     dummy = (unsigned char)(header&0xFF);
-    curr_crc = crc_update(curr_crc, &dummy, NULL, 8);
+    curr_crc = mp3guessenc_crc_update(curr_crc, &dummy, NULL, 8);
 
-    curr_crc = crc_update(curr_crc, chk_buffer, NULL, p1len-
+    curr_crc = mp3guessenc_crc_update(curr_crc, chk_buffer, NULL, p1len-
                           8*(sizeof(unsigned int)+sizeof(unsigned short)));
 
     return (curr_crc==target);
@@ -464,7 +468,7 @@ unsigned short crc_reflected_update(unsigned short old_crc, unsigned char *data,
     for (idx=0; idx<length; idx++)
     {
         value1 = reflect_byte(data[idx]);
-        old_crc = crc_update(old_crc, &value1, NULL, 8);
+        old_crc = mp3guessenc_crc_update(old_crc, &value1, NULL, 8);
     }
 
     /* will I need some reflection here for non zero sums? NOT HERE THE CALLER WILL DO */
@@ -569,7 +573,7 @@ void scan_multichannel(streamInfo *si, unsigned char *buf, unsigned int start_po
 //if (ext_bs_present) printf("n_ad_bytes=%d\n",extract_bits(buf, &pointer, 8));
     /* begin crc computation */
     pointer = start_pointer;
-    crc_new = crc_update(0xffff, buf, &pointer, MC_HEADER_LENGTH+8*ext_bs_present);
+    crc_new = mp3guessenc_crc_update(0xffff, buf, &pointer, MC_HEADER_LENGTH+8*ext_bs_present);
 
     pointer = start_pointer + MC_CENTER_POS + 8*ext_bs_present;
     center = (unsigned char)extract_bits(buf, &pointer, 2);
@@ -858,7 +862,7 @@ void scan_multichannel(streamInfo *si, unsigned char *buf, unsigned int start_po
     {
 
         start_pointer += MC_TC_SBGR_SELECT_POS + 8*ext_bs_present;
-        crc_new = crc_update(crc_new, buf, &start_pointer, pointer-start_pointer);
+        crc_new = mp3guessenc_crc_update(crc_new, buf, &start_pointer, pointer-start_pointer);
 
 
         if (crc_new == crc_old)
@@ -1014,7 +1018,7 @@ off_t resync_mpeg(FILE *fp, off_t pos, unsigned char **storage, streamInfo *si, 
         {
             head = (head<<8) | (unsigned int)mp3g_storage[idx+3];
 
-            if (head_check(head, relaxed))
+            if (mp3guessenc_head_check(head, relaxed))
             {
                 result = actual_pos+(off_t)idx;
                 break;
@@ -2762,6 +2766,7 @@ int mp3guessenc_timing_shift_case(const char *file)
         printf("Error getting file attributes for `%s' (does it exist?), exiting.\n",file);
         return EXIT_CODE_STAT_ERROR;
     }
+/*    
     if (
         !S_ISREG(fileStat.st_mode)
 #ifndef _WIN32
@@ -2772,6 +2777,7 @@ int mp3guessenc_timing_shift_case(const char *file)
         printf("File `%s' is not a regular file, unable to proceed, exiting.\n",file);
         return EXIT_CODE_INVALID_FILE;
     }
+*/    
     if (fileStat.st_size == 0)
     {
         printf("File `%s' is zero bytes long, nothing to scan, exiting.\n",file);

@@ -16,6 +16,7 @@
  *   License along with this library; if not, write to the Free Software
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/* Modifed by Evan Dekker 2019-09-26 */
 
 #ifndef MP3G_IO_CONFIG_H_
 #define MP3G_IO_CONFIG_H_
@@ -40,7 +41,7 @@
 #define ftello    ftello64
 #endif /* __MINGW32__ */
 
-#if defined(OS2) || defined(_OS2) || defined(__OS2__) || defined(AMIGA) || defined(__amigaos__)
+#if defined(OS2) || defined(_OS2) || defined(__OS2__) || defined(AMIGA) || defined(__amigaos__) || defined(__WINDOWS__)
 #define fseeko    fseek
 #define ftello    ftell
 #if defined(OS2) || defined(_OS2) || defined(__OS2__)
