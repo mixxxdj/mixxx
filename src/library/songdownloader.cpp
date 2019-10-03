@@ -5,6 +5,7 @@
 #include <QString>
 #include <QtDebug>
 
+#include "util/compatibility.h"
 #include "util/version.h"
 
 #define TEMP_EXTENSION ".tmp"
@@ -17,8 +18,8 @@ SongDownloader::SongDownloader(QObject* parent)
     qDebug() << "SongDownloader constructed";
 
     m_pNetwork = new QNetworkAccessManager();
-    //connect(m_pNetwork, SIGNAL(finished(QNetworkReply*)),
-    //     this, SLOT(finishedSlot(QNetworkReply*)));
+    //connect(m_pNetwork, finished,
+    //     this, finishedSlot);
 }
 
 SongDownloader::~SongDownloader() {
@@ -64,15 +65,23 @@ bool SongDownloader::downloadFromQueue() {
     m_pRequest->setRawHeader("User-Agent", mixxxUABA);
     m_pReply = m_pNetwork->get(*m_pRequest);
 
-    connect(m_pReply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
-    connect(m_pReply, SIGNAL(error(QNetworkReply::NetworkError)),
-         this, SLOT(slotError(QNetworkReply::NetworkError)));
-    connect(m_pReply, SIGNAL(downloadProgress(qint64, qint64)),
-            this, SLOT(slotProgress(qint64, qint64)));
-    connect(m_pReply, SIGNAL(downloadProgress(qint64, qint64)),
-            this, SIGNAL(downloadProgress(qint64, qint64)));
-    connect(m_pReply, SIGNAL(finished()),
-            this, SLOT(slotDownloadFinished()));
+    connect(m_pReply,
+            &QNetworkReply::readyRead,
+            this,
+            &SongDownloader::slotReadyRead);
+    connect(m_pReply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &SongDownloader::slotError);
+    connect(m_pReply,
+            &QNetworkReply::downloadProgress,
+            this,
+            &SongDownloader::slotProgress);
+    connect(m_pReply,
+            &QNetworkReply::downloadProgress,
+            this,
+            &SongDownloader::downloadProgress);
+    connect(m_pReply,
+            &QNetworkReply::finished,
+            this,
+            &SongDownloader::slotDownloadFinished);
 
     return true;
 }

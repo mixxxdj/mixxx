@@ -51,16 +51,26 @@ void RecordingFeature::bindWidget(WLibrary* pLibraryWidget,
 
     pRecordingView->installEventFilter(keyboard);
     pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);
-    connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(this, SIGNAL(refreshBrowseModel()),
-            pRecordingView, SLOT(refreshBrowseModel()));
-    connect(this, SIGNAL(requestRestoreSearch()),
-            pRecordingView, SLOT(slotRestoreSearch()));
-    connect(pRecordingView, SIGNAL(restoreSearch(QString)),
-            this, SIGNAL(restoreSearch(QString)));
+    connect(pRecordingView,
+            &DlgRecording::loadTrack,
+            this,
+            &RecordingFeature::loadTrack);
+    connect(pRecordingView,
+            &DlgRecording::loadTrackToPlayer,
+            this,
+            &RecordingFeature::loadTrackToPlayer);
+    connect(this,
+            &RecordingFeature::refreshBrowseModel,
+            pRecordingView,
+            &DlgRecording::refreshBrowseModel);
+    connect(this,
+            &RecordingFeature::requestRestoreSearch,
+            pRecordingView,
+            &DlgRecording::slotRestoreSearch);
+    connect(pRecordingView,
+            &DlgRecording::restoreSearch,
+            this,
+            &RecordingFeature::restoreSearch);
 }
 
 

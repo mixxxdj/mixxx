@@ -35,6 +35,8 @@ class LibraryControl;
 class KeyboardEventFilter;
 class PlayerManager;
 
+class ExternalTrackCollection;
+
 class Library: public QObject,
     public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
@@ -91,6 +93,11 @@ class Library: public QObject,
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
+    void relocateDirectory(QString oldDir, QString newDir);
+
+    void purgeTracks(const QList<TrackId>& trackIds);
+    void purgeAllTracks(const QDir& rootDir);
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -110,6 +117,9 @@ class Library: public QObject,
     void scan() {
         m_scanner.scan();
     }
+    void slotScanTrackAdded(TrackPointer pTrack);
+    void slotScanTracksUpdated(QSet<TrackId> updatedTrackIds);
+    void slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -137,7 +147,7 @@ class Library: public QObject,
 
   private:
     // Callback for GlobalTrackCache
-    void saveCachedTrack(Track* pTrack) noexcept override;
+    void saveEvictedTrack(Track* pTrack) noexcept override;
 
     const UserSettingsPointer m_pConfig;
 
@@ -146,6 +156,9 @@ class Library: public QObject,
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
+
+    QList<ExternalTrackCollection*> m_externalTrackCollections;
+
     LibraryControl* m_pLibraryControl;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;

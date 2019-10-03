@@ -6,6 +6,7 @@
 #include "control/controlproxy.h"
 #include "track/track.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 #include <QLineF>
 #include <QLinearGradient>
@@ -275,7 +276,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     if (!pTrack)
         return;
 
-    painter->save();
+    PainterScope PainterScope(painter);
 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
@@ -335,6 +336,4 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         painter->setBrush(m_highBrush);
     }
     painter->drawPolygon(&m_polygon[2][0], numberOfPoints);
-
-    painter->restore();
 }

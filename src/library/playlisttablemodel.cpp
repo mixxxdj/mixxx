@@ -104,8 +104,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(changed(int)),
-            this, SLOT(playlistChanged(int)));
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::changed,
+            this,
+            &PlaylistTableModel::playlistChanged);
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
