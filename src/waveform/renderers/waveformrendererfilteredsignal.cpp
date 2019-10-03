@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -49,7 +50,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHints(QPainter::Antialiasing, false);
     painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
@@ -235,6 +237,4 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 0.0) {
         painter->drawLines(&m_highLines[0], actualHighLineNumber);
     }
-
-    painter->restore();
 }

@@ -1,9 +1,7 @@
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
-#include <QtAlgorithms>
 #include <QtDebug>
 #include <QUrl>
-#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
@@ -20,9 +18,9 @@
 #include "track/trackmetadata.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
-#include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "widget/wlibrarytableview.h"
 
 static const bool sDebug = false;
 
@@ -46,10 +44,14 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_bInitialized(false),
           m_currentSearch("") {
     DEBUG_ASSERT(m_pTrackCollection);
-    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
-            this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
-            this, SLOT(select()));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackLoaded,
+            this,
+            &BaseSqlTableModel::trackLoaded);
+    connect(&m_pTrackCollection->getTrackDAO(),
+            &TrackDAO::forceModelUpdate,
+            this,
+            &BaseSqlTableModel::select);
     // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
@@ -112,6 +114,41 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
+}
+
+void BaseSqlTableModel::initSortColumnMapping() {
+    // Add a bijective mapping between the SortColumnIds and column indices
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        m_columnIndexBySortColumnId[i] = -1;
+    }
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+
+    m_sortColumnIdByColumnIndex.clear();
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
+        m_sortColumnIdByColumnIndex.insert(m_columnIndexBySortColumnId[sortColumn], sortColumn);
+    }
 }
 
 void BaseSqlTableModel::setHeaderProperties(
@@ -379,8 +416,10 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableColumns = tableColumns;
 
     if (m_trackSource) {
-        disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                   this, SLOT(tracksChanged(QSet<TrackId>)));
+        disconnect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged);
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
@@ -391,17 +430,34 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
-        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                this, SLOT(tracksChanged(QSet<TrackId>)), Qt::QueuedConnection);
+        connect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged,
+                Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnCache.setColumns(m_tableColumns);
 
     initHeaderData();
+    initSortColumnMapping();
 
     m_bInitialized = true;
 }
+
+int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+        return -1;
+    }
+
+    return m_columnIndexBySortColumnId[column];
+}
+
+TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) {
+    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::SORTCOLUMN_INVALID);
+}
+
 
 const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
@@ -1045,7 +1101,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
             continue;
         }
         rows.insert(index.row());
-        QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
+        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;
@@ -1057,7 +1113,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
-    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    auto* pTableView = qobject_cast<WLibraryTableView*>(pParent);
     DEBUG_ASSERT(pTableView);
 
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
@@ -1070,11 +1126,13 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new LocationDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
-        connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
-                this, SLOT(refreshCell(int, int)));
+        connect(pCoverDelegate,
+                &CoverArtDelegate::coverReadyForCell,
+                this,
+                &BaseSqlTableModel::refreshCell);
         return pCoverDelegate;
     }
-    return NULL;
+    return nullptr;
 }
 
 void BaseSqlTableModel::refreshCell(int row, int column) {

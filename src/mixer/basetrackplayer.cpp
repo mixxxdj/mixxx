@@ -291,10 +291,10 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
     // was loaded before. Here we must unload the
     // We must unload the track m_pLoadedTrack as well
     if (pTrack == m_pLoadedTrack) {
-        qDebug() << "Failed to load track" << pTrack->getLocation() << reason;
+        qDebug() << "Failed to load track" << pTrack->getFileInfo() << reason;
         slotTrackLoaded(TrackPointer(), pTrack);
     } else if (pTrack) {
-        qDebug() << "Stray failed to load track" << pTrack->getLocation() << reason;
+        qDebug() << "Stray failed to load track" << pTrack->getFileInfo() << reason;
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }

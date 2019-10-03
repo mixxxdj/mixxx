@@ -10,6 +10,7 @@
 class ControlObject;
 class ControlPushButton;
 class Library;
+class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
 class KeyboardEventFilter;
@@ -17,7 +18,7 @@ class KeyboardEventFilter;
 class LoadToGroupController : public QObject {
     Q_OBJECT
   public:
-    LoadToGroupController(QObject* pParent, const QString& group);
+    LoadToGroupController(LibraryControl* pParent, const QString& group);
     virtual ~LoadToGroupController();
 
   signals:
@@ -42,6 +43,10 @@ class LibraryControl : public QObject {
     void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
 
+  public slots:
+    // Deprecated navigation slots
+    void slotLoadSelectedTrackToGroup(QString group, bool play);
+
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
@@ -61,7 +66,6 @@ class LibraryControl : public QObject {
     void slotGoToItem(double v);
 
     // Deprecated navigation slots
-    void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
     void slotSelectTrack(double v);
@@ -77,6 +81,9 @@ class LibraryControl : public QObject {
     void slotNumDecksChanged(double v);
     void slotNumSamplersChanged(double v);
     void slotNumPreviewDecksChanged(double v);
+
+    void slotSortColumn(double v);
+    void slotSortColumnToggle(double v);
 
     void slotFontSize(double v);
     void slotIncrementFontSize(double v);
@@ -116,6 +123,11 @@ class LibraryControl : public QObject {
     // Add to Auto-Dj Cueue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;
     std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
+
+    // Controls to sort the track view
+    std::unique_ptr<ControlEncoder> m_pSortColumn;
+    std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
+    std::unique_ptr<ControlPushButton> m_pSortOrder;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;

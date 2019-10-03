@@ -22,13 +22,19 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
     m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, m_pTrackCollection);
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::loadTrack,
+            this,
+            &DlgAnalysis::loadTrack);
+    connect(m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::loadTrackToPlayer,
+            this,
+            &DlgAnalysis::loadTrackToPlayer);
 
-    connect(m_pAnalysisLibraryTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::trackSelected,
+            this,
+            &DlgAnalysis::trackSelected);
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
@@ -41,32 +47,46 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, m_pTrackCollection);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
-    connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
-            this,  SLOT(showRecentSongs()));
-    connect(radioButtonAllSongs, SIGNAL(clicked()),
-            this,  SLOT(showAllSongs()));
+    connect(radioButtonRecentlyAdded,
+            &QRadioButton::clicked,
+            this,
+            &DlgAnalysis::showRecentSongs);
+    connect(radioButtonAllSongs,
+            &QRadioButton::clicked,
+            this,
+            &DlgAnalysis::showAllSongs);
 
     // TODO(rryan): This triggers a library search before the UI has even
     // started up. Accounts for 0.2% of skin creation time. Get rid of this!
     radioButtonRecentlyAdded->click();
 
-    connect(pushButtonAnalyze, SIGNAL(clicked()),
-            this, SLOT(analyze()));
+    connect(pushButtonAnalyze,
+            &QPushButton::clicked,
+            this,
+            &DlgAnalysis::analyze);
 
-    connect(pushButtonSelectAll, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+    connect(pushButtonSelectAll,
+            &QPushButton::clicked,
+            this,
+            &DlgAnalysis::selectAll);
 
     connect(m_pAnalysisLibraryTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
+            &QItemSelectionModel::selectionChanged,
             this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+            &DlgAnalysis::tableSelectionChanged);
 
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pAnalysisLibraryTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pAnalysisLibraryTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
-            m_pAnalysisLibraryTableView, SLOT(setSelectedClick(bool)));
+    connect(pLibrary,
+            &Library::setTrackTableFont,
+            m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::setTrackTableFont);
+    connect(pLibrary,
+            &Library::setTrackTableRowHeight,
+            m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::setTrackTableRowHeight);
+    connect(pLibrary,
+            &Library::setSelectedClick,
+            m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::setSelectedClick);
 
     slotAnalysisActive(m_bAnalysisActive);
 }
@@ -176,6 +196,10 @@ void DlgAnalysis::onTrackAnalysisSchedulerProgress(
         }
         labelProgress->setText(progressText);
     }
+}
+
+void DlgAnalysis::onTrackAnalysisSchedulerFinished() {
+    slotAnalysisActive(false);
 }
 
 void DlgAnalysis::showRecentSongs() {

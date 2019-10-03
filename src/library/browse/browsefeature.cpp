@@ -1,32 +1,32 @@
 // browsefeature.cpp
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QStringList>
-#include <QTreeView>
-#include <QDirModel>
-#include <QStringList>
-#include <QFileInfo>
-#include <QStandardPaths>
 #include <QAction>
+#include <QDirModel>
+#include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QTreeView>
 
-#include "track/track.h"
-#include "library/treeitem.h"
-#include "library/browse/browsefeature.h"
-#include "library/trackcollection.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "util/sandbox.h"
+#include "library/browse/browsefeature.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/treeitem.h"
+#include "track/track.h"
 #include "util/memory.h"
+#include "util/sandbox.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarytextbrowser.h"
 
 const QString kQuickLinksSeparator = "-+-";
 
-BrowseFeature::BrowseFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
-                             TrackCollection* pTrackCollection,
-                             RecordingManager* pRecordingManager)
+BrowseFeature::BrowseFeature(Library* parent,
+        UserSettingsPointer pConfig,
+        TrackCollection* pTrackCollection,
+        RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_browseModel(this, pTrackCollection, pRecordingManager),
@@ -34,18 +34,28 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_pLastRightClickedItem(NULL),
           m_icon(":/images/library/ic_library_computer.svg") {
-    connect(this, SIGNAL(requestAddDir(QString)),
-            parent, SLOT(slotRequestAddDir(QString)));
+    connect(this,
+            &BrowseFeature::requestAddDir,
+            parent,
+            &Library::slotRequestAddDir);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
-    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
+    connect(m_pAddQuickLinkAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotAddQuickLink);
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
-    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+    connect(m_pRemoveQuickLinkAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotRemoveQuickLink);
 
     m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
-    connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToLibrary()));
+    connect(m_pAddtoLibraryAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotAddToLibrary);
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -288,8 +298,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 namespace {
 // Get the list of devices (under "Removable Devices" section).
 QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
-#if defined(__WINDOWS__)
     QList<TreeItem*> ret;
+#if defined(__WINDOWS__)
     // Repopulate drive list
     QFileInfoList drives = QDir::drives();
     // show drive letters
@@ -312,8 +322,6 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
             drive.filePath()); // Displays C:/
         ret << driveLetter;
     }
-
-    return ret;
 #elif defined(__LINUX__)
     // To get devices on Linux, we look for directories under /media and
     // /run/media/$USER.
@@ -329,7 +337,6 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Convert devices into a QList<TreeItem*> for display.
-    QList<TreeItem*> ret;
     foreach(QFileInfo device, devices) {
         TreeItem* folder = new TreeItem(
             pFeature,
@@ -338,8 +345,8 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         ret << folder;
     }
 
-    return ret;
 #endif
+    return ret;
 }
 }
 
@@ -381,11 +388,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-#if defined(__WINDOWS__) || defined(__LINUX__)
         folders += getRemovableDevices(this);
-#else // __APPLE__
-        DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
-#endif
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs

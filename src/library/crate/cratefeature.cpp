@@ -62,70 +62,106 @@ CrateFeature::~CrateFeature() {
 }
 
 void CrateFeature::initActions() {
-    m_pCreateCrateAction = std::make_unique<QAction>(tr("Create New Crate"),this);
-    connect(m_pCreateCrateAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotCreateCrate()));
+    m_pCreateCrateAction = make_parented<QAction>(tr("Create New Crate"), this);
+    connect(m_pCreateCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotCreateCrate);
 
-    m_pDeleteCrateAction = std::make_unique<QAction>(tr("Remove"),this);
-    connect(m_pDeleteCrateAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotDeleteCrate()));
+    m_pDeleteCrateAction = make_parented<QAction>(tr("Remove"), this);
+    connect(m_pDeleteCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotDeleteCrate);
 
-    m_pRenameCrateAction = std::make_unique<QAction>(tr("Rename"),this);
-    connect(m_pRenameCrateAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotRenameCrate()));
+    m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
+    connect(m_pRenameCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotRenameCrate);
 
-    m_pLockCrateAction = std::make_unique<QAction>(tr("Lock"),this);
-    connect(m_pLockCrateAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotToggleCrateLock()));
+    m_pLockCrateAction = make_parented<QAction>(tr("Lock"), this);
+    connect(m_pLockCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotToggleCrateLock);
 
-    m_pImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"),this);
-    connect(m_pImportPlaylistAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotImportPlaylist()));
+    m_pImportPlaylistAction = make_parented<QAction>(tr("Import Crate"), this);
+    connect(m_pImportPlaylistAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotImportPlaylist);
 
-    m_pCreateImportPlaylistAction = std::make_unique<QAction>(tr("Import Crate"), this);
-    connect(m_pCreateImportPlaylistAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotCreateImportCrate()));
+    m_pCreateImportPlaylistAction = make_parented<QAction>(tr("Import Crate"), this);
+    connect(m_pCreateImportPlaylistAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotCreateImportCrate);
 
-    m_pExportPlaylistAction = std::make_unique<QAction>(tr("Export Crate"), this);
-    connect(m_pExportPlaylistAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotExportPlaylist()));
+    m_pExportPlaylistAction = make_parented<QAction>(tr("Export Crate"), this);
+    connect(m_pExportPlaylistAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotExportPlaylist);
 
-    m_pExportTrackFilesAction = std::make_unique<QAction>(tr("Export Track Files"), this);
-    connect(m_pExportTrackFilesAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotExportTrackFiles()));
+    m_pExportTrackFilesAction = make_parented<QAction>(tr("Export Track Files"), this);
+    connect(m_pExportTrackFilesAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotExportTrackFiles);
 
-    m_pDuplicateCrateAction = std::make_unique<QAction>(tr("Duplicate"),this);
-    connect(m_pDuplicateCrateAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotDuplicateCrate()));
+    m_pDuplicateCrateAction = make_parented<QAction>(tr("Duplicate"), this);
+    connect(m_pDuplicateCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotDuplicateCrate);
 
-    m_pAnalyzeCrateAction = std::make_unique<QAction>(tr("Analyze entire Crate"),this);
-    connect(m_pAnalyzeCrateAction.get(), SIGNAL(triggered()),
-            this, SLOT(slotAnalyzeCrate()));
+    m_pAnalyzeCrateAction = make_parented<QAction>(tr("Analyze entire Crate"), this);
+    connect(m_pAnalyzeCrateAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotAnalyzeCrate);
 
-    m_pAutoDjTrackSourceAction = std::make_unique<QAction>(tr("Auto DJ Track Source"),this);
+    m_pAutoDjTrackSourceAction = make_parented<QAction>(tr("Auto DJ Track Source"), this);
     m_pAutoDjTrackSourceAction->setCheckable(true);
-    connect(m_pAutoDjTrackSourceAction.get(), SIGNAL(changed()),
-            this, SLOT(slotAutoDjTrackSourceChanged()));
+    connect(m_pAutoDjTrackSourceAction.get(),
+            &QAction::changed,
+            this,
+            &CrateFeature::slotAutoDjTrackSourceChanged);
 }
 
 void CrateFeature::connectLibrary(Library* pLibrary) {
-    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
+    connect(pLibrary,
+            &Library::trackSelected,
+            this,
+            &CrateFeature::slotTrackSelected);
+    connect(pLibrary,
+            &Library::switchToView,
+            this,
+            &CrateFeature::slotResetSelectedTrack);
 }
 
 void CrateFeature::connectTrackCollection() {
-    connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
-            this, SLOT(slotCrateTableChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
-            this, SLOT(slotCrateTableChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateDeleted(CrateId)),
-            this, SLOT(slotCrateTableChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateTracksChanged(CrateId, QList<TrackId>, QList<TrackId>)),
-            this, SLOT(slotCrateContentChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateSummaryChanged(QSet<CrateId>)),
-            this, SLOT(slotUpdateCrateLabels(QSet<CrateId>)));
+    connect(m_pTrackCollection,
+            &TrackCollection::crateInserted,
+            this,
+            &CrateFeature::slotCrateTableChanged);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateUpdated,
+            this,
+            &CrateFeature::slotCrateTableChanged);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateDeleted,
+            this,
+            &CrateFeature::slotCrateTableChanged);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateTracksChanged,
+            this,
+            &CrateFeature::slotCrateContentChanged);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateSummaryChanged,
+            this,
+            &CrateFeature::slotUpdateCrateLabels);
 }
 
 QVariant CrateFeature::title() {
@@ -243,8 +279,10 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
-            this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView("CRATEHOME", edit);
 }
 

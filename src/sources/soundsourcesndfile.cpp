@@ -133,16 +133,28 @@ QString SoundSourceProviderSndFile::getName() const {
 
 QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
-    supportedFileExtensions.append("aiff");
     supportedFileExtensions.append("aif");
-    supportedFileExtensions.append("wav");
-    supportedFileExtensions.append("flac");
-    supportedFileExtensions.append("ogg");
+    supportedFileExtensions.append("aiff");
     // ALAC/CAF has been added in version 1.0.26
     // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
     // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
     supportedFileExtensions.append("caf");
+    supportedFileExtensions.append("flac");
+    supportedFileExtensions.append("ogg");
+    supportedFileExtensions.append("wav");
     return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    if (supportedFileExtension.startsWith("aif") ||
+            supportedFileExtension == "wav") {
+        // Default decoder for AIFF and WAV
+        return SoundSourceProviderPriority::DEFAULT;
+    } else {
+        // Otherwise only used as fallback
+        return SoundSourceProviderPriority::LOWER;
+    }
 }
 
 } // namespace mixxx

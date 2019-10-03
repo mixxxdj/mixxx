@@ -26,29 +26,64 @@ typedef struct CachingReaderChunkReadRequest {
 } CachingReaderChunkReadRequest;
 
 enum ReaderStatus {
-    INVALID,
-    TRACK_NOT_LOADED,
     TRACK_LOADED,
+    TRACK_UNLOADED,
     CHUNK_READ_SUCCESS,
     CHUNK_READ_EOF,
-    CHUNK_READ_INVALID
+    CHUNK_READ_INVALID,
+    CHUNK_READ_DISCARDED, // response without frame index range!
 };
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct ReaderStatusUpdate {
-    ReaderStatus status;
+  private:
     CachingReaderChunk* chunk;
     SINT readableFrameIndexRangeStart;
     SINT readableFrameIndexRangeEnd;
 
+  public:
+    ReaderStatus status;
+
     void init(
-            ReaderStatus statusArg = INVALID,
-            CachingReaderChunk* chunkArg = nullptr,
-            const mixxx::IndexRange& readableFrameIndexRangeArg = mixxx::IndexRange()) {
+            ReaderStatus statusArg,
+            CachingReaderChunk* chunkArg,
+            const mixxx::IndexRange& readableFrameIndexRangeArg) {
         status = statusArg;
         chunk = chunkArg;
         readableFrameIndexRangeStart = readableFrameIndexRangeArg.start();
         readableFrameIndexRangeEnd = readableFrameIndexRangeArg.end();
+    }
+
+    static ReaderStatusUpdate readDiscarded(
+            CachingReaderChunk* chunk) {
+        ReaderStatusUpdate update;
+        update.init(CHUNK_READ_DISCARDED, chunk, mixxx::IndexRange());
+        return update;
+    }
+
+    static ReaderStatusUpdate trackLoaded(
+            const mixxx::IndexRange& readableFrameIndexRange) {
+        DEBUG_ASSERT(!readableFrameIndexRange.empty());
+        ReaderStatusUpdate update;
+        update.init(TRACK_LOADED, nullptr, readableFrameIndexRange);
+        return update;
+    }
+
+    static ReaderStatusUpdate trackNotLoaded() {
+        ReaderStatusUpdate update;
+        update.init(TRACK_UNLOADED, nullptr, mixxx::IndexRange());
+        return update;
+    }
+
+    CachingReaderChunkForOwner* takeFromWorker() {
+        CachingReaderChunkForOwner* pChunk = nullptr;
+        if (chunk) {
+            DEBUG_ASSERT(dynamic_cast<CachingReaderChunkForOwner*>(chunk));
+            pChunk = static_cast<CachingReaderChunkForOwner*>(chunk);
+            chunk = nullptr;
+            pChunk->takeFromWorker();
+        }
+        return pChunk;
     }
 
     mixxx::IndexRange readableFrameIndexRange() const {

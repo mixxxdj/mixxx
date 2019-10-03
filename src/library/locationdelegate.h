@@ -1,21 +1,16 @@
-#ifndef LOCATIONDELEGATE_H
-#define LOCATIONDELEGATE_H
+#pragma once
 
-#include <QStyledItemDelegate>
+#include "library/tableitemdelegate.h"
 
-class QTableView;
-class QStyleOptionViewItem;
 
-class LocationDelegate : public QStyledItemDelegate {
+class LocationDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    LocationDelegate(QTableView* pTrackTable);
+    explicit LocationDelegate(QTableView* pTrackTable);
+    ~LocationDelegate() override = default;
 
-    void paint(QPainter* painter, const QStyleOptionViewItem& option,
-               const QModelIndex& index) const;
-
-  private:
-    QTableView* m_pTableView;
+    void paintItem(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 };
-
-#endif /* LOCATIONDELEGATE_H */

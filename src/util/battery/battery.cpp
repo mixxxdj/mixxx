@@ -3,12 +3,12 @@
 // Do not include platform-specific battery implementation unless we are built
 // with battery support (__BATTERY__).
 #ifdef __BATTERY__
-#ifdef Q_OS_LINUX
-#include "util/battery/batterylinux.h"
-#elif defined(Q_OS_WIN)
+#if defined(Q_OS_WIN)
 #include "util/battery/batterywindows.h"
 #elif defined(Q_OS_MAC)
 #include "util/battery/batterymac.h"
+#else
+#include "util/battery/batterylinux.h"
 #endif
 #endif
 #include "util/math.h"
@@ -31,12 +31,12 @@ Battery::~Battery() {
 
 Battery* Battery::getBattery(QObject* parent) {
 #ifdef __BATTERY__
-#ifdef Q_OS_LINUX
-    return new BatteryLinux(parent);
-#elif defined(Q_OS_WIN)
+#if defined(Q_OS_WIN)
     return new BatteryWindows(parent);
 #elif defined(Q_OS_MAC)
     return new BatteryMac(parent);
+#else
+    return new BatteryLinux(parent);
 #endif
 #else
     Q_UNUSED(parent);

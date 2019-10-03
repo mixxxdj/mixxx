@@ -12,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
+#ifndef QM_DSP_WINDOW_H
+#define QM_DSP_WINDOW_H
 
 #include <cmath>
 #include <iostream>
@@ -50,17 +50,19 @@ public:
     Window(WindowType type, int size) : m_type(type), m_size(size) { encache(); }
     Window(const Window &w) : m_type(w.m_type), m_size(w.m_size) { encache(); }
     Window &operator=(const Window &w) {
-	if (&w == this) return *this;
-	m_type = w.m_type;
-	m_size = w.m_size;
-	encache();
-	return *this;
+        if (&w == this) return *this;
+        m_type = w.m_type;
+        m_size = w.m_size;
+        encache();
+        return *this;
     }
     virtual ~Window() { delete[] m_cache; }
     
     void cut(T *src) const { cut(src, src); }
     void cut(const T *src, T *dst) const {
-	for (int i = 0; i < m_size; ++i) dst[i] = src[i] * m_cache[i];
+        for (int i = 0; i < m_size; ++i) {
+            dst[i] = src[i] * m_cache[i];
+        }
     }
 
     WindowType getType() const { return m_type; }
@@ -91,13 +93,13 @@ void Window<T>::encache()
     for (i = 0; i < n; ++i) mult[i] = 1.0;
 
     switch (m_type) {
-		
+                
     case RectangularWindow:
         for (i = 0; i < n; ++i) {
             mult[i] = mult[i] * 0.5;
-	}
-	break;
-	    
+        }
+        break;
+            
     case BartlettWindow:
         if (n == 2) {
             mult[0] = mult[1] = 0; // "matlab compatible"
@@ -109,34 +111,34 @@ void Window<T>::encache()
                 mult[i] = mult[i] * (i / T(n/2));
                 mult[i + n - n/2] = mult[i + n - n/2] * (1.0 - (i / T(n/2)));
             }
-	}
-	break;
-	    
+        }
+        break;
+            
     case HammingWindow:
         if (n > 1) {
             for (i = 0; i < n; ++i) {
                 mult[i] = mult[i] * (0.54 - 0.46 * cos(2 * M_PI * i / n));
             }
-	}
-	break;
-	    
+        }
+        break;
+            
     case HanningWindow:
         if (n > 1) {
             for (i = 0; i < n; ++i) {
                 mult[i] = mult[i] * (0.50 - 0.50 * cos(2 * M_PI * i / n));
             }
-	}
-	break;
-	    
+        }
+        break;
+            
     case BlackmanWindow:
         if (n > 1) {
             for (i = 0; i < n; ++i) {
                 mult[i] = mult[i] * (0.42 - 0.50 * cos(2 * M_PI * i / n)
                                      + 0.08 * cos(4 * M_PI * i / n));
             }
-	}
-	break;
-	    
+        }
+        break;
+            
     case BlackmanHarrisWindow:
         if (n > 1) {
             for (i = 0; i < n; ++i) {
@@ -145,10 +147,10 @@ void Window<T>::encache()
                                      + 0.14128 * cos(4 * M_PI * i / n)
                                      - 0.01168 * cos(6 * M_PI * i / n));
             }
-	}
-	break;
+        }
+        break;
     }
-	   
+           
     m_cache = mult;
 }
 

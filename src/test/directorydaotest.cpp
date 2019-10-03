@@ -7,7 +7,6 @@
 #include <QStringBuilder>
 #include <QDir>
 #include <QFileInfo>
-#include <QtAlgorithms>
 
 #include "sources/soundsourceproxy.h"
 #include "preferences/usersettings.h"
@@ -140,18 +139,18 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     TrackDAO &trackDAO = collection()->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
-    trackDAO.addTracksAddTrack(Track::newTemporary(testdir + "/a" + m_supportedFileExt), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(testdir + "/b" + m_supportedFileExt), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(test2 + "/c" + m_supportedFileExt), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(test2 + "/d" + m_supportedFileExt), false);
+    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(testdir, "a" + m_supportedFileExt)), false);
+    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(testdir, "b" + m_supportedFileExt)), false);
+    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(test2, "c" + m_supportedFileExt)), false);
+    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(test2, "d" + m_supportedFileExt)), false);
     trackDAO.addTracksFinish(false);
 
-    QSet<TrackId> ids = directoryDao.relocateDirectory(testdir, testnew);
-    EXPECT_EQ(2, ids.size());
+    QList<TrackRef> refs = directoryDao.relocateDirectory(testdir, testnew);
+    EXPECT_EQ(2, refs.size());
 
     QStringList dirs = directoryDao.getDirs();
     EXPECT_EQ(2, dirs.size());
-    qSort(dirs);
+    std::sort(dirs.begin(), dirs.end());
     EXPECT_THAT(dirs, ElementsAre(test2, testnew));
 }
 

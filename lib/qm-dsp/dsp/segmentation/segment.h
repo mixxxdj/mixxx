@@ -1,10 +1,4 @@
-#ifndef _SEGMENT_H
-#define _SEGMENT_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+/* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 /*
  *  segment.h
  *
@@ -19,27 +13,34 @@ extern "C" {
  *
  */
 
+#ifndef QM_DSP_SEGMENT_H
+#define QM_DSP_SEGMENT_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct segment_t
 {
-	long start;			/* in samples */
-	long end;
-	int type;
+    long start;                     /* in samples */
+    long end;
+    int type;
 } segment_t;
 
 typedef struct segmentation_t
 {
-	int nsegs;			/* number of segments */
-	int nsegtypes;		/* number of segment types, so possible types are {0,1,...,nsegtypes-1} */
-	int samplerate;
-	segment_t* segments;
+    int nsegs; /* number of segments */
+    int nsegtypes; /* number of segment types, so possible types are {0,1,...,nsegtypes-1} */
+    int samplerate;
+    segment_t* segments;
 } segmentation_t;
 
 typedef enum 
 { 
-	FEATURE_TYPE_UNKNOWN = 0, 
-	FEATURE_TYPE_CONSTQ = 1, 
-	FEATURE_TYPE_CHROMA = 2,
-	FEATURE_TYPE_MFCC = 3
+    FEATURE_TYPE_UNKNOWN = 0, 
+    FEATURE_TYPE_CONSTQ = 1, 
+    FEATURE_TYPE_CHROMA = 2,
+    FEATURE_TYPE_MFCC = 3
 } feature_types;
 
 #ifdef __cplusplus

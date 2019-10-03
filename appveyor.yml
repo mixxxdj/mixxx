@@ -50,10 +50,11 @@ for:
 
   install:
     - sudo apt-get update
-    - sudo apt-get -y install gdb libavformat-dev libchromaprint-dev libfaad-dev libflac-dev libid3tag0-dev libmad0-dev libmodplug-dev libmp3lame-dev libmp4v2-dev libopus-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev librubberband-dev libshout3-dev libsndfile1-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev libqt5x11extras5-dev scons qtkeychain-dev liblilv-dev libsoundtouch-dev
+    - sudo apt-get -y install gdb libavformat-dev libchromaprint-dev libfaad-dev libflac-dev libid3tag0-dev libmad0-dev libmodplug-dev libmp3lame-dev libmp4v2-dev libopus-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev librubberband-dev libshout3-dev libsndfile1-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev libqt5x11extras5-dev scons qt5keychain-dev liblilv-dev libsoundtouch-dev
 
   build_script:
-    - scons -j4 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0 localecompare=1
+    # ffmpeg=1 requires FFmpeg 4.0, but Ubuntu 18.04 still provides only FFmpeg 3.4.x
+    - scons -j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0 localecompare=1
 
   test_script:
     - xvfb-run -- ./mixxx-test --gtest_output=xml:test_results.xml

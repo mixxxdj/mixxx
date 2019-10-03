@@ -553,7 +553,13 @@ void RateControl::resetRateTemp(void)
     setRateTemp(0.0);
 }
 
-void RateControl::notifySeek(double playPos, bool adjustingPhase) {
-    Q_UNUSED(adjustingPhase);
+void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+}
+
+bool RateControl::isReverseButtonPressed() {
+    if (m_pReverseButton) {
+        return m_pReverseButton->toBool();
+    }
+    return false;
 }

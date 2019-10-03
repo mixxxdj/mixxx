@@ -71,6 +71,7 @@ int main(int argc, char * argv[]) {
     // This needs to be set before initializing the QApplication.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
@@ -124,7 +125,7 @@ int main(int argc, char * argv[]) {
 #endif
 
     // When the last window is closed, terminate the Qt event loop.
-    QObject::connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+    QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
 
     int result = runMixxx(&app, args);
 

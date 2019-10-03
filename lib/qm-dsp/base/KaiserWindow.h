@@ -11,8 +11,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef KAISER_WINDOW_H
-#define KAISER_WINDOW_H
+#ifndef QM_DSP_KAISER_WINDOW_H
+#define QM_DSP_KAISER_WINDOW_H
 
 #include <vector>
 #include <cmath>
@@ -26,8 +26,8 @@ class KaiserWindow
 {
 public:
     struct Parameters {
-	int length;
-	double beta;
+        int length;
+        double beta;
     };
 
     /**
@@ -41,9 +41,9 @@ public:
      * and transition width in samples.
      */
     static KaiserWindow byTransitionWidth(double attenuation,
-					  double transition) {
-	return KaiserWindow
-	    (parametersForTransitionWidth(attenuation, transition));
+                                          double transition) {
+        return KaiserWindow
+            (parametersForTransitionWidth(attenuation, transition));
     }
 
     /**
@@ -51,10 +51,10 @@ public:
      * and transition bandwidth in Hz for the given samplerate.
      */
     static KaiserWindow byBandwidth(double attenuation,
-				    double bandwidth,
-				    double samplerate) {
-	return KaiserWindow
-	    (parametersForBandwidth(attenuation, bandwidth, samplerate));
+                                    double bandwidth,
+                                    double samplerate) {
+        return KaiserWindow
+            (parametersForBandwidth(attenuation, bandwidth, samplerate));
     }
 
     /**
@@ -62,7 +62,7 @@ public:
      * given attenuation in dB and transition width in samples.
      */
     static Parameters parametersForTransitionWidth(double attenuation,
-						   double transition);
+                                                   double transition);
 
     /**
      * Obtain the parameters necessary for a Kaiser window of the
@@ -70,28 +70,28 @@ public:
      * given samplerate.
      */
     static Parameters parametersForBandwidth(double attenuation,
-					     double bandwidth,
-					     double samplerate) {
-	return parametersForTransitionWidth
-	    (attenuation, (bandwidth * 2 * M_PI) / samplerate);
+                                             double bandwidth,
+                                             double samplerate) {
+        return parametersForTransitionWidth
+            (attenuation, (bandwidth * 2 * M_PI) / samplerate);
     } 
 
     int getLength() const {
-	return m_length;
+        return m_length;
     }
 
     const double *getWindow() const { 
-	return m_window.data();
+        return m_window.data();
     }
 
     void cut(double *src) const { 
-	cut(src, src); 
+        cut(src, src); 
     }
 
     void cut(const double *src, double *dst) const {
-	for (int i = 0; i < m_length; ++i) {
-	    dst[i] = src[i] * m_window[i];
-	}
+        for (int i = 0; i < m_length; ++i) {
+            dst[i] = src[i] * m_window[i];
+        }
     }
 
 private:

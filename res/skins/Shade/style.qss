@@ -297,10 +297,21 @@ WSearchLineEdit {
     color: #eeeeee;
     padding: 2px;
   }
-  /* Clear button next to text field */
+  /* Clear button */
   WSearchLineEdit QToolButton {
-    margin-bottom: 4px;
-  }
+    /* C++ code adds 3px in each dimension.
+       height of search box inside the border: 22px
+       make the button use the available height */
+    height: 19px;
+    width: 19px;
+    margin-bottom: 2px;
+    }
+    WSearchLineEdit QToolButton:!focus {
+      image: url(skin:/btn/btn_lib_clear_search.svg);
+    }
+    WSearchLineEdit QToolButton:focus {
+      image: url(skin:/btn/btn_lib_clear_search_focus.svg);
+    }
 
 QHeaderView {
   /* Note(ronso0)
@@ -490,4 +501,47 @@ WLibrary QPushButton {
     margin: 1px 2px 3px 10px;
   }
 
+/* Hotcue Color: No Color */
+#HotcueButton[highlight="0"] {
+    background-color: #fd0564;
+}
 
+/* Hotcue Color: Red */
+#HotcueButton[highlight="1"] {
+    background-color: #c50a08;
+}
+
+/* Hotcue Color: Green */
+#HotcueButton[highlight="2"] {
+    background-color: #32be44;
+}
+
+/* Hotcue Color: Blue */
+#HotcueButton[highlight="3"] {
+    background-color: #0044ff;
+}
+
+/* Hotcue Color: Yellow */
+#HotcueButton[highlight="4"] {
+    background-color: #f8d200;
+}
+
+/* Hotcue Color: Celeste */
+#HotcueButton[highlight="5"] {
+    background-color: #42d4f4;
+}
+
+/* Hotcue Color: Purple */
+#HotcueButton[highlight="6"] {
+    background-color: #af00cc;
+}
+
+/* Hotcue Color: Pink */
+#HotcueButton[highlight="7"] {
+    background-color: #fca6d7;
+}
+
+/* Hotcue Color: White */
+#HotcueButton[highlight="8"] {
+    background-color: #f2f2ff;
+}
