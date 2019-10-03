@@ -204,12 +204,17 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 void CachingReader::newTrack(TrackPointer pTrack) {
     auto newState = pTrack ? STATE_TRACK_LOADING : STATE_TRACK_UNLOADING;
     auto oldState = m_state.fetchAndStoreAcquire(newState);
-    VERIFY_OR_DEBUG_ASSERT(
-            oldState != STATE_TRACK_LOADING ||
+
+    // TODO():
+    // BaseTrackPlayerImpl::slotLoadTrack() distributes the new track via
+    // emit(loadingTrack(pNewTrack, pOldTrack));
+    // but the newTrack may change if we load a new track while the previous one
+    // is still loading. This leads to inconsistent states for example a different
+    // track in the Mixx Title and the Deck label.
+    if (oldState != STATE_TRACK_LOADING ||
             newState != STATE_TRACK_LOADING) {
-        kLogger.critical()
-                << "Cannot load new track while loading a track";
-        return;
+        kLogger.warning()
+                << "Loading a new track while loading a track may lead to inconsistent states";
     }
     m_worker.newTrack(std::move(pTrack));
 }
@@ -218,6 +223,7 @@ void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
         auto pChunk = update.takeFromWorker();
+        qDebug() << "CachingReader::process()" << update.status;
         if (pChunk) {
             // Result of a read request (with a chunk)
             DEBUG_ASSERT(m_state.load() != STATE_IDLE);
@@ -251,13 +257,19 @@ void CachingReader::process() {
             // State update (without a chunk)
             if (update.status == TRACK_LOADED) {
                 // We have a new Track ready to go.
-                // Assert that we had STATE_TRACK_LOADING before and all old chunks
-                // in the m_readerStatusUpdateFIFO have been discarded.
-                DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);
+                // Assert that we either have had STATE_TRACK_LOADING before and all
+                // chunks in the m_readerStatusUpdateFIFO have been discarded.
+                // or the cache has been already cleared.
+                // In case of two consecutive load events, we receive two consecutive
+                // TRACK_LOADED without a chunk in between, assert this here.
+                DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING ||
+                        (m_state.load() == STATE_TRACK_LOADED &&
+                         !m_mruCachingReaderChunk && !m_lruCachingReaderChunk));
                 // now purge also the recently used chunk list from the old track.
-                freeAllChunks();
-                DEBUG_ASSERT(!m_mruCachingReaderChunk);
-                DEBUG_ASSERT(!m_lruCachingReaderChunk);
+                if (m_mruCachingReaderChunk || m_lruCachingReaderChunk) {
+                    DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);
+                    freeAllChunks();
+                }
                 // Reset the readable frame index range
                 m_readableFrameIndexRange = update.readableFrameIndexRange();
                 m_state.storeRelease(STATE_TRACK_LOADED);
