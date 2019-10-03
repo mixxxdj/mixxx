@@ -211,8 +211,8 @@ void CachingReader::newTrack(TrackPointer pTrack) {
     // but the newTrack may change if we load a new track while the previous one
     // is still loading. This leads to inconsistent states for example a different
     // track in the Mixx Title and the Deck label.
-    if (oldState != STATE_TRACK_LOADING ||
-            newState != STATE_TRACK_LOADING) {
+    if (oldState == STATE_TRACK_LOADING &&
+            newState == STATE_TRACK_LOADING) {
         kLogger.warning()
                 << "Loading a new track while loading a track may lead to inconsistent states";
     }
@@ -223,7 +223,6 @@ void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
         auto pChunk = update.takeFromWorker();
-        qDebug() << "CachingReader::process()" << update.status;
         if (pChunk) {
             // Result of a read request (with a chunk)
             DEBUG_ASSERT(m_state.load() != STATE_IDLE);
