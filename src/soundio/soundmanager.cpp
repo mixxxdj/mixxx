@@ -73,7 +73,8 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 #endif
           m_config(this),
           m_pErrorDevice(NULL),
-          m_underflowHappened(0) {
+          m_underflowHappened(0),
+          m_underflowUpdateCount(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
