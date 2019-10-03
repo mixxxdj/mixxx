@@ -825,10 +825,10 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
         switch (timingShiftCase) {
 #ifdef __COREAUDIO__
         case EXIT_CODE_CASE_A:
-            timingOffset = 13;
+            timingOffset = 12;
             break;
         case EXIT_CODE_CASE_B:
-            timingOffset = 11;
+            timingOffset = 13;
             break;
         case EXIT_CODE_CASE_C:
             timingOffset = 26;
