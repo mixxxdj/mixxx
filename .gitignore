@@ -63,4 +63,3 @@ lib/*/lib/*.lib
 lib/qtscript-bytearray/*.cc
 
 compile_commands.json
-
