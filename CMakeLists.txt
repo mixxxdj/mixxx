@@ -16,6 +16,7 @@ endif()
 set(CMAKE_CXX_STANDARD 14)
 include(ExternalProject)
 include(CheckSymbolExists)
+include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
@@ -794,7 +795,6 @@ else()
 endif()
 option(EBUR128_STATIC "Link libebur128 statically" "${EBUR128_STATIC_DEFAULT}")
 if(EBUR128_STATIC)
-  message(STATUS "Linking internal libebur128 statically")
   set(EBUR128_CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON")
   check_symbol_exists(STAILQ_HEAD sys/queue.h HAVE_STAILQ)
   if(NOT HAVE_STAILQ)
@@ -803,15 +803,21 @@ if(EBUR128_STATIC)
   ExternalProject_Add(libebur128
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
-    INSTALL_COMMAND ""
-    CMAKE_ARGS ${EBUR128_CMAKE_ARGS}
+    INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install"
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> ${EBUR128_CMAKE_ARGS}
   )
   set_target_properties(libebur128 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
   add_library(mixxx-libebur128 STATIC IMPORTED)
   add_dependencies(mixxx-libebur128 libebur128)
+  if(MSVC)
+    set(EBUR128_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  else()
+    set(EBUR128_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endif()
+  message(STATUS "Linking internal libebur128 statically: ${EBUR128_LIBRARY}")
   set_target_properties(mixxx-libebur128 PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    IMPORTED_LOCATION "${EBUR128_LIBRARY}"
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
   )
   target_link_libraries(mixxx-lib PUBLIC mixxx-libebur128)
