@@ -537,7 +537,7 @@
             <control>
                 <description>RELOOP/EXIT +SHIFT (DECK2) - press - Active loop on/off</description>
                 <group>[Channel2]</group>
-                <key>reloop_toggle</key> <!-- TODO Check if correct -->
+                <key>reloop_andstop</key> <!-- Check if correct -->
                 <status>0x91</status>
                 <midino>0x50</midino>
                 <options>
