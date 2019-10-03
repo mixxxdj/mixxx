@@ -145,7 +145,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     // tracks already in the DB
     QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
             !pSource);
-    if (!trackIds.size()) {
+    if (trackIds.isEmpty()) {
         return false;
     }
 
