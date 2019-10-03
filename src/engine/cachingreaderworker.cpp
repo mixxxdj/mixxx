@@ -143,9 +143,6 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track
     emit trackLoading();
 
-    // Slows down track loading for debug
-    //QThread::sleep(10);
-
     QString filename = pTrack->getLocation();
     if (filename.isEmpty() || !pTrack->exists()) {
         kLogger.warning()
