@@ -124,33 +124,33 @@ PioneerDDJ400.shiftState = [0, 0];
 
 // JogWheel
 PioneerDDJ400.vinylMode = true;
-PioneerDDJ400.alpha = 1.0/8;
-PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
+PioneerDDJ400.alpha = 1.0 / 8;
+PioneerDDJ400.beta = PioneerDDJ400.alpha / 32;
 PioneerDDJ400.highspeedScale = 2;
 PioneerDDJ400.bendScale = 0.5;
 
 PioneerDDJ400.pointJumpSpace = 0.005; // amount in percent of the Song we can jump back to previous Cue or loop point
 
-PioneerDDJ400.tempoRanges = [ 0.06, 0.10, 0.16, 0.25 ]; // WIDE = 25%?
+PioneerDDJ400.tempoRanges = [0.06, 0.10, 0.16, 0.25]; // WIDE = 25%?
 
 // Keyboard Mode Variables and Settings
-PioneerDDJ400.keyboardHotCuePoint = [ 0, 0 ]; // selected HotCue point (eg. PAD) in Keyboard mode per Deck 0 = unset
-PioneerDDJ400.keyboardModeRefCount = [ 0, 0 ]; // count the currently pressed Pads per Deck
-PioneerDDJ400.halftoneToPadMap = [4, 5, 6, 7, 0, 1, 2, 3 ];
+PioneerDDJ400.keyboardHotCuePoint = [0, 0]; // selected HotCue point (eg. PAD) in Keyboard mode per Deck 0 = unset
+PioneerDDJ400.keyboardModeRefCount = [0, 0]; // count the currently pressed Pads per Deck
+PioneerDDJ400.halftoneToPadMap = [4, 5, 6, 7, 0, 1, 2, 3];
 
 // Beatjump Pads
-PioneerDDJ400.beatjumpPad = [-1, 1, -2, 2, -4, 4, -8, 8 ]; // < 0 = left; else right
-PioneerDDJ400.beatjumpMulitplier = [ 1, 1 ]; // Beatjump Beatcount per Deck
+PioneerDDJ400.beatjumpPad = [-1, 1, -2, 2, -4, 4, -8, 8]; // < 0 = left; else right
+PioneerDDJ400.beatjumpMulitplier = [1, 1]; // Beatjump Beatcount per Deck
 
 // Hotcue Pads saved Loop points
 PioneerDDJ400.hotcueLoopPoints = {
-    '[Channel1]' : [],
-    '[Channel2]' : []
+    '[Channel1]': [],
+    '[Channel2]': []
 };
 
 // Loop Section
-PioneerDDJ400.loopin4beat = [ false, false ]; // inn4loop is pressed
-PioneerDDJ400.loopout = [ false, false ]; // out loop is pressed
+PioneerDDJ400.loopin4beat = [false, false]; // inn4loop is pressed
+PioneerDDJ400.loopout = [false, false]; // out loop is pressed
 PioneerDDJ400.loopAdjustMultiply = 5;
 
 
@@ -170,8 +170,8 @@ PioneerDDJ400.init = function() {
     engine.setValue('[EffectRack1_EffectUnit3]', 'show_focus', 1);
 
     // Connect the VU-Meter LEDS
-    engine.connectControl('[Channel1]','VuMeter','PioneerDDJ400.vuMeterUpdate');
-    engine.connectControl('[Channel2]','VuMeter','PioneerDDJ400.vuMeterUpdate');
+    engine.connectControl('[Channel1]', 'VuMeter', 'PioneerDDJ400.vuMeterUpdate');
+    engine.connectControl('[Channel2]', 'VuMeter', 'PioneerDDJ400.vuMeterUpdate');
 
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
@@ -189,23 +189,22 @@ PioneerDDJ400.jogTurn = function(channel, _control, value, _status, group) {
 
     // loop_in / out adjust
     var loopEnabled = engine.getValue(group, 'loop_enabled');
-    if(loopEnabled > 0){
-        if(this.loopin4beat[channel]){
+    if (loopEnabled > 0) {
+        if (this.loopin4beat[channel]) {
             newVal = newVal * this.loopAdjustMultiply + engine.getValue(group, 'loop_start_position');
             engine.setValue(group, 'loop_start_position', newVal);
             return;
         }
-        if(this.loopout[channel]){
+        if (this.loopout[channel]) {
             newVal = newVal * this.loopAdjustMultiply + engine.getValue(group, 'loop_end_position');
             engine.setValue(group, 'loop_end_position', newVal);
             return;
         }
     }
 
-    if(engine.isScratching(deckNum)){
+    if (engine.isScratching(deckNum)) {
         engine.scratchTick(deckNum, newVal);
-    }
-    else{ // fallback
+    } else { // fallback
         engine.setValue(group, 'jog', newVal * this.bendScale);
     }
 
@@ -222,28 +221,29 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
     var deckNum = channel + 1;
 
     // skip scratchmode if we adjust the loop points
-    if(this.loopin4beat[channel] || this.loopout[channel]){
+    if (this.loopin4beat[channel] || this.loopout[channel]) {
         return;
     }
 
     // on touch jog with vinylmode enabled -> enable scratchmode
-    if(value != 0 && this.vinylMode){
-        engine.scratchEnable(deckNum, 720, 33+1/3, this.alpha, this.beta);
-    }
-    else{
+    if (value != 0 && this.vinylMode) {
+        engine.scratchEnable(deckNum, 720, 33 + 1 / 3, this.alpha, this.beta);
+    } else {
         // on release jog (value==0) disable pitch bend mode or scratch mode
         engine.scratchDisable(deckNum);
     }
 };
 
-PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group){
-    if(value == 0) return; // ignore release
+PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
+    if (value == 0) {
+      return; // ignore release
+    }
 
     var currRange = engine.getValue(group, 'rateRange');
     var idx = 0;
 
-    for(var i = 0; i < this.tempoRanges.length; i++){
-        if(currRange == this.tempoRanges[i]){
+    for (var i = 0; i < this.tempoRanges.length; i++) {
+        if (currRange == this.tempoRanges[i]) {
             idx = (i + 1) % this.tempoRanges.length;
             break;
         }
@@ -252,42 +252,43 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
 };
 
 
-function sortAsc(a, b){
+function sortAsc(a, b) {
     return a > b ? 1 : b > a ? -1 : 0;
 }
 
-PioneerDDJ400.initCuePointsAndLoops = function(group){
+PioneerDDJ400.initCuePointsAndLoops = function(group) {
     // create a list of positions in the track which can be selected
     var points = [];
 
-    for(var padNum = 1; padNum <= 8; padNum++){
-        points.push( engine.getValue(group, 'hotcue_'+padNum+'_position'));
+    for (var padNum = 1; padNum <= 8; padNum++) {
+        points.push(engine.getValue(group, 'hotcue_' + padNum + '_position'));
     }
-    points.push( engine.getValue(group, 'cue_point'));
-    points.push( engine.getValue(group, 'loop_start_position'));
-    points.push( engine.getValue(group, 'loop_end_position'));
+    points.push(engine.getValue(group, 'cue_point'));
+    points.push(engine.getValue(group, 'loop_start_position'));
+    points.push(engine.getValue(group, 'loop_end_position'));
     points.sort(sortAsc); // sort asc
 
     return points;
 };
 
-PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, group){
-    if(value == 0) return; // ignore release
+PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, group) {
+    if (value == 0) {
+      return; // ignore release
+    }
 
     var loop_on = engine.getValue(group, 'loop_enabled');
-    if (loop_on){
+    if (loop_on) {
         // loop halve
         engine.setValue(group, 'loop_scale', 0.5);
-    }
-    else{
+    } else {
         var currentPosition = engine.getValue(group, 'playposition') - this.pointJumpSpace;
         var trackSamples = engine.getValue(group, 'track_samples');
         var points = this.initCuePointsAndLoops(group);
         var newPosition = currentPosition;
 
-        for(var i = 1; i <= points.length; i++){
-            if(i == points.length || points[i] >= currentPosition * trackSamples){
-                newPosition = points[i-1] / trackSamples;
+        for (var i = 1; i <= points.length; i++) {
+            if (i == points.length || points[i] >= currentPosition * trackSamples) {
+                newPosition = points[i - 1] / trackSamples;
                 break;
             }
         }
@@ -296,23 +297,24 @@ PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, gro
     }
 };
 
-PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, group){
-    if(value == 0) return; // ignore release
+PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, group) {
+    if (value == 0) {
+      return; // ignore release
+    }
 
     var loop_on = engine.getValue(group, 'loop_enabled');
-    if (loop_on){
+    if (loop_on) {
         // loop double
         engine.setValue(group, 'loop_scale', 2.0);
-    }
-    else{
+    } else {
         var currentPosition = engine.getValue(group, 'playposition');
         var trackSamples = engine.getValue(group, 'track_samples');
         var points = this.initCuePointsAndLoops(group);
 
         var newPosition = currentPosition;
 
-        for(var i = 0; i < points.length; i++){
-            if(points[i] > currentPosition * trackSamples){
+        for (var i = 0; i < points.length; i++) {
+            if (points[i] > currentPosition * trackSamples) {
                 newPosition = points[i] / trackSamples;
                 break;
             }
@@ -321,8 +323,8 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
     }
 };
 
-PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group){
-    if(value > 0){
+PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group) {
+    if (value > 0) {
         // clear current set hotcue point and refcount for keyboard mode
         this.keyboardHotCuePoint[channel] = 0;
         this.keyboardModeRefCount[channel] = 0;
@@ -333,45 +335,44 @@ PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group){
 };
 
 
-PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group){
+PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group) {
     var status = channel == 0 ? 0x97 : 0x99;
     var hotcuePad = 1;
 
-    if(this.keyboardHotCuePoint[channel] == 0){
-        for(hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
-            var hotcueEnabled = engine.getValue(group, 'hotcue_'+hotcuePad+'_enabled');
+    if (this.keyboardHotCuePoint[channel] == 0) {
+        for (hotcuePad = 1; hotcuePad <= 8; hotcuePad++) {
+            var hotcueEnabled = engine.getValue(group, 'hotcue_' + hotcuePad + '_enabled');
 
-            midi.sendShortMsg(status, 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
+            midi.sendShortMsg(status, 0x40 + hotcuePad - 1, hotcueEnabled > 0 ? 0x7F : 0);
             // shift lights on if hotcue is set
-            midi.sendShortMsg(status+1 , 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
+            midi.sendShortMsg(status + 1, 0x40 + hotcuePad - 1, hotcueEnabled > 0 ? 0x7F : 0);
         }
-    }
-    else{
+    } else {
         // enable all LEDs
-        for(hotcuePad = 1; hotcuePad <= 8; hotcuePad++){
-            midi.sendShortMsg(status , 0x40 + hotcuePad-1, 0x7F);
+        for (hotcuePad = 1; hotcuePad <= 8; hotcuePad++) {
+            midi.sendShortMsg(status, 0x40 + hotcuePad - 1, 0x7F);
         }
     }
     // shift keyboard Pad 7 and 8 are always enabled
-    midi.sendShortMsg(status+1 , 0x46, 0x7F);
-    midi.sendShortMsg(status+1 , 0x47, 0x7F);
+    midi.sendShortMsg(status + 1, 0x46, 0x7F);
+    midi.sendShortMsg(status + 1, 0x47, 0x7F);
 };
 
 
-PioneerDDJ400.keyboardModePad = function(channel, control, value, _status, group){
+PioneerDDJ400.keyboardModePad = function(channel, control, value, _status, group) {
     channel = (channel & 0xf) < 10 ? 0 : 1;
     var padNum = (control & 0xf) + 1;
     var hotcuePad = this.keyboardHotCuePoint[channel];
 
     // if no hotcue is set for keyboard mode set on first press on a pad
-    if(hotcuePad === 0 && value !== 0){
+    if (hotcuePad === 0 && value !== 0) {
         hotcuePad = padNum;
         this.keyboardHotCuePoint[channel] = hotcuePad;
         // if there is no hotcue at this pad, set current play position
-        var hotcuePos = engine.getValue(group, 'hotcue_'+hotcuePad+'_position');
+        var hotcuePos = engine.getValue(group, 'hotcue_' + hotcuePad + '_position');
 
-        if(hotcuePos < 0){
-            engine.setValue(group, 'hotcue_'+hotcuePad+'_set', 1);
+        if (hotcuePos < 0) {
+            engine.setValue(group, 'hotcue_' + hotcuePad + '_set', 1);
         }
 
         this.keyboardModeRefCount[channel] = 0; // reset count
@@ -380,47 +381,47 @@ PioneerDDJ400.keyboardModePad = function(channel, control, value, _status, group
     }
 
     // if hotcue point is set perform coresponding halftone operation
-    if(value > 0){
+    if (value > 0) {
         // count pressed Pad per deck
         this.keyboardModeRefCount[channel] += 1;
-        var newValue = this.halftoneToPadMap[padNum-1];
+        var newValue = this.halftoneToPadMap[padNum - 1];
 
         engine.setValue(group, 'pitch', newValue);
-        engine.setValue(group, 'hotcue_'+hotcuePad+'_gotoandplay', 1);
-    }
-    else{
+        engine.setValue(group, 'hotcue_' + hotcuePad + '_gotoandplay', 1);
+    } else {
         // decrease the number of active Pads, this should minimize unwanted stops
         this.keyboardModeRefCount[channel] -= 1;
-        if(this.keyboardModeRefCount[channel] <= 0){
-            engine.setValue(group, 'hotcue_'+hotcuePad+'_gotoandstop', 1);
+        if (this.keyboardModeRefCount[channel] <= 0) {
+            engine.setValue(group, 'hotcue_' + hotcuePad + '_gotoandstop', 1);
             engine.setValue(group, 'pitch', 0.0); // reset pitch
             this.keyboardModeRefCount[channel] = 0; // reset refcount to 0
         }
     }
 };
 
-PioneerDDJ400.keyshiftModePad = function(_channel, control, value, _status, group){
-    if(value == 0) return; // ignore release
+PioneerDDJ400.keyshiftModePad = function(_channel, control, value, _status, group) {
+    if (value == 0) {
+      return; // ignore release
+    }
     engine.setValue(group, 'pitch', this.halftoneToPadMap[control & 0xf]);
 };
 
-PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group){
-    if(value == 0) {
+PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group) {
+    if (value == 0) {
         return; // ignore release
     }
     var playing = engine.getValue(group, 'play');
     // when playing stop and return to start/cue point
-    if(playing > 0){
+    if (playing > 0) {
         engine.setValue(group, 'cue_gotoandstop', 1);
-    }
-    else{ // load selected track
+    } else { // load selected track
         engine.setValue(group, 'LoadSelectedTrack', 1);
     }
     // TODO: while playing a sample blink playing PAD?
 };
 
-PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, status, group){
-    if(value == 0) {
+PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, status, group) {
+    if (value == 0) {
         midi.sendShortMsg(status, control, 0); // turn off LED
         return; // ignore release
     }
@@ -431,15 +432,15 @@ PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, status, gr
     midi.sendShortMsg(status, control, 0x7f); // turn LED back on
 };
 
-PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status){
-    if(value == 0) {
+PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status) {
+    if (value == 0) {
         midi.sendShortMsg(status, control, 0); // turn off LED
         return; // ignore release
     }
 
     var direction = status <= 0x98 ? -1 : 1;
 
-    if ( direction == -1 && this.beatjumpMulitplier <= 1){
+    if (direction == -1 && this.beatjumpMulitplier <= 1) {
         direction = 0;
     }
 
@@ -448,61 +449,67 @@ PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status){
 };
 
 
-PioneerDDJ400.shiftPressed = function(channel, _control, value){
+PioneerDDJ400.shiftPressed = function(channel, _control, value) {
     this.shiftState[channel] = value;
 };
 
 
-PioneerDDJ400.hotcuePadPressed = function(_channel, control, value, status, group){
+PioneerDDJ400.hotcuePadPressed = function(_channel, control, value, status, group) {
     var loopPlaying = engine.getValue(group, 'loop_enabled');
-    var padNum = (control & 0xf) +1;
-    var loopPoint = PioneerDDJ400.hotcueLoopPoints[group][padNum-1];
-    var hotcueSet = engine.getValue(group, 'hotcue_'+padNum+'_enabled');
+    var padNum = (control & 0xf) + 1;
+    var loopPoint = PioneerDDJ400.hotcueLoopPoints[group][padNum - 1];
+    var hotcueSet = engine.getValue(group, 'hotcue_' + padNum + '_enabled');
 
     // play hotcue if set or set if not set and no loop is playing
-    if(hotcueSet > 0 || (loopPlaying == 0 && (!loopPoint || loopPoint.start <= -1))){
-        engine.setValue(group, 'hotcue_'+padNum+'_activate', value);
+    if (hotcueSet > 0 || (loopPlaying == 0 && (!loopPoint || loopPoint.start <= -1))) {
+        engine.setValue(group, 'hotcue_' + padNum + '_activate', value);
         midi.sendShortMsg(status, control, 0x7f); // enable PAD LED
         return;
     }
 
     // play saved loop if set
-    if(value > 0 && loopPoint && loopPoint.start >= 0){
+    if (value > 0 && loopPoint && loopPoint.start >= 0) {
         engine.setValue(group, 'loop_start_position', loopPoint.start);
         engine.setValue(group, 'loop_end_position', loopPoint.end);
         engine.setValue(group, 'loop_in_goto', 1);
         engine.setValue(group, 'reloop_toggle', 1);
         // This is a hack, TODO find a command like loop_in_goto_and_play
-        if(engine.getValue(group, 'loop_enabled') == 0){
+        if (engine.getValue(group, 'loop_enabled') == 0) {
             engine.setValue(group, 'reloop_toggle', 1);
         }
         return;
     }
 
     // save playing loop on hotcue pad
-    if(value > 0 && loopPlaying > 0){
+    if (value > 0 && loopPlaying > 0) {
         var loopStart = engine.getValue(group, 'loop_start_position');
         var loopEnd = engine.getValue(group, 'loop_end_position');
 
-        this.hotcueLoopPoints[group][padNum-1] = {start: loopStart, end: loopEnd};
+        this.hotcueLoopPoints[group][padNum - 1] = {
+            start: loopStart,
+            end: loopEnd
+        };
         midi.sendShortMsg(status, control, 0x7f); // enable pad LED
         return;
     }
 
 };
 
-PioneerDDJ400.hotcuePadShiftPressed = function(_channel, control, value, status, group){
+PioneerDDJ400.hotcuePadShiftPressed = function(_channel, control, value, status, group) {
     var loopPlaying = engine.getValue(group, 'loop_enabled');
-    var padNum = (control & 0xf) +1;
-    var loopPoint = this.hotcueLoopPoints[group][padNum-1];
+    var padNum = (control & 0xf) + 1;
+    var loopPoint = this.hotcueLoopPoints[group][padNum - 1];
 
     // shift is pressed -> delete hotcue or loop point
-    if(value > 0){
-        midi.sendShortMsg(status-1, control, 0); // disable Pad LED
-        engine.setValue(group, 'hotcue_'+padNum+'_clear', 1);
-        if ( loopPoint && loopPoint.start >=0 ){
-            this.hotcueLoopPoints[group][padNum-1] = {start: -1, end: -1};
-            if(loopPlaying > 0 ){
+    if (value > 0) {
+        midi.sendShortMsg(status - 1, control, 0); // disable Pad LED
+        engine.setValue(group, 'hotcue_' + padNum + '_clear', 1);
+        if (loopPoint && loopPoint.start >= 0) {
+            this.hotcueLoopPoints[group][padNum - 1] = {
+                start: -1,
+                end: -1
+            };
+            if (loopPlaying > 0) {
                 engine.setValue(group, 'reloop_toggle', 1);
             }
         }
@@ -510,36 +517,36 @@ PioneerDDJ400.hotcuePadShiftPressed = function(_channel, control, value, status,
     }
 };
 
-PioneerDDJ400.waveFormRotate = function(_channel, _control, value){
+PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
     // select the Waveform to zoom left shift = deck1, right shift = deck2
     var deckNum = this.shiftState[0] > 0 ? 1 : 2;
-    var oldVal = engine.getValue('[Channel'+deckNum+']', 'waveform_zoom');
+    var oldVal = engine.getValue('[Channel' + deckNum + ']', 'waveform_zoom');
     var newVal = oldVal + (value > 0x64 ? 1 : -1);
 
-    engine.setValue('[Channel'+deckNum+']', 'waveform_zoom', newVal);
+    engine.setValue('[Channel' + deckNum + ']', 'waveform_zoom', newVal);
 };
 
-PioneerDDJ400.loopin4beatPressed = function(channel, _control, value, _status, group){
+PioneerDDJ400.loopin4beatPressed = function(channel, _control, value, _status, group) {
     var loopEnabled = engine.getValue(group, 'loop_enabled');
     this.loopin4beat[channel] = (value > 0);
 
-    if(loopEnabled == 0 && value > 0){
+    if (loopEnabled == 0 && value > 0) {
         engine.setValue(group, 'loop_in', 1);
     }
 };
 
-PioneerDDJ400.loopin4beatPressedLong = function(_channel, _control, value, _status, group){
+PioneerDDJ400.loopin4beatPressedLong = function(_channel, _control, value, _status, group) {
     var loopEnabled = engine.getValue(group, 'loop_enabled');
-    if(!loopEnabled && value > 0){
+    if (!loopEnabled && value > 0) {
         engine.setValue(group, 'beatloop_4_activate', 1);
     }
 };
 
-PioneerDDJ400.loopoutPressed = function(channel, _control, value, _status, group){
+PioneerDDJ400.loopoutPressed = function(channel, _control, value, _status, group) {
     var loopEnabled = engine.getValue(group, 'loop_enabled');
     this.loopout[channel] = (value > 0);
 
-    if(loopEnabled == 0 && value > 0){
+    if (loopEnabled == 0 && value > 0) {
         engine.setValue(group, 'loop_out', 1);
     }
 };
@@ -571,7 +578,7 @@ Object.defineProperty(PioneerDDJ400, 'selectedFxGroup', {
     },
 });
 
-PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value){
+PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     var newVal = value === 0 ? 0 : (value / 0x7F);
     var effectOn = engine.getValue(PioneerDDJ400.selectedFxGroup, 'enabled');
 
@@ -582,11 +589,11 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value){
     }
 };
 
-PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value){
+PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.selectedFxGroup, 'next_effect', value);
 };
 
-PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value){
+PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.selectedFxGroup, 'prev_effect', value);
 };
 
@@ -644,10 +651,10 @@ PioneerDDJ400.padFxShiftBelowPressed = ignoreRelease(function(channel, control, 
 
 // END BEAT FX
 
-PioneerDDJ400.vuMeterUpdate = function(value, group){
+PioneerDDJ400.vuMeterUpdate = function(value, group) {
     var newVal = value * 150;
 
-    switch(group){
+    switch (group) {
         case '[Channel1]':
             midi.sendShortMsg(0xB0, 0x02, newVal);
             break;
@@ -674,7 +681,7 @@ PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(channel, control, v
 
 // Wrapper to easily ignore the function when the button is released.
 function ignoreRelease(fn) {
-    return function(channel, control, value, status, group){
+    return function(channel, control, value, status, group) {
         if (value === 0) { // This means the button is released.
             return;
         }
