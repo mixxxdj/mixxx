@@ -1269,7 +1269,7 @@ WBeatSpinBox,
 }
 
 #MicDuckingContainer {
-  qproperty-alignment: 'AlignCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
   padding: 1px 0px 0px 0xp;
   }
   #MicDuckingStrengthKnob {
@@ -2074,6 +2074,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 2px 4px 3px 2px;
   padding: 3px 8px;
   min-width: 65px;
+  color: #bbb;
   }
   #DlgMissing > QPushButton:!enabled,
   #DlgHidden > QPushButton:!enabled,

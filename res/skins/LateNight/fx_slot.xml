@@ -112,7 +112,7 @@
             <Size>30f,0me</Size>
             <Children>
               <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">FxSlot_enabled</SetVariable>
+                <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxToggleButton</SetVariable>
                 <SetVariable name="icon">fx_toggle</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
