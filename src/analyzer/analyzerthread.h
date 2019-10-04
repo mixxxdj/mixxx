@@ -11,7 +11,7 @@
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/memory.h"
-#include "util/mpscfifo.h"
+#include "util/spscfifo.h"
 #include "util/performancetimer.h"
 #include "util/samplebuffer.h"
 
@@ -107,7 +107,7 @@ class AnalyzerThread : public WorkerThread {
     // safely exchanging data between two threads.
     // NOTE(uklotzde, 2018-01-04): Ideally we would use std::atomic<TrackPointer>,
     // for this purpose, which will become available in C++20.
-    MpscFifo<TrackPointer, 1> m_nextTrack;
+    SpscFifo<TrackPointer> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
