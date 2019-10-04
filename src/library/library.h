@@ -152,10 +152,11 @@ class Library: public QObject,
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    AutoDJFeature* m_pAutoDJFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
-    SetlogFeature* m_pSetlogFeature;
     BrowseFeature* m_pBrowseFeature;
+    SetlogFeature* m_pSetlogFeature;
     AnalysisFeature* m_pAnalysisFeature;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;

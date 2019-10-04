@@ -6,6 +6,7 @@
 
 #include <QVariant>
 #include <QIcon>
+#include <QMenu>
 #include <QModelIndex>
 #include <QUrl>
 #include <QObject>
@@ -27,6 +28,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     QVariant title();
     QIcon getIcon();
 
+    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -47,6 +50,7 @@ class PlaylistFeature : public BasePlaylistFeature {
   private:
     QString getRootViewHtml() const;
     QIcon m_icon;
+    QMenu *m_pMenu;
 };
 
 #endif /* PLAYLISTFEATURE_H */

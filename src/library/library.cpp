@@ -71,10 +71,11 @@ Library::Library(
       m_pTrackCollection(new TrackCollection(pConfig)),
       m_pLibraryControl(new LibraryControl(this)),
       m_pMixxxLibraryFeature(nullptr),
+      m_pAutoDJFeature(nullptr),
       m_pPlaylistFeature(nullptr),
-      m_pSetlogFeature(nullptr),
-      m_pBrowseFeature(nullptr),
       m_pCrateFeature(nullptr),
+      m_pBrowseFeature(nullptr),
+      m_pSetlogFeature(nullptr),
       m_pAnalysisFeature(nullptr),
       m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
 
@@ -109,7 +110,8 @@ Library::Library(
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
+    m_pAutoDJFeature = new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection);
+    addFeature(m_pAutoDJFeature);
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
@@ -241,8 +243,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this, SIGNAL(setTrackTableFont(QFont)),
             pSidebarWidget, SLOT(slotSetFont(QFont)));
-    m_pSetlogFeature->bindSidebarWidget(pSidebarWidget);
+    m_pAutoDJFeature->bindSidebarWidget(pSidebarWidget);
+    m_pPlaylistFeature->bindSidebarWidget(pSidebarWidget);
+    m_pCrateFeature->bindSidebarWidget(pSidebarWidget);
     m_pBrowseFeature->bindSidebarWidget(pSidebarWidget);
+    m_pSetlogFeature->bindSidebarWidget(pSidebarWidget);
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,

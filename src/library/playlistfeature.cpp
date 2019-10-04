@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QMenu>
 #include <QFile>
 #include <QFileInfo>
 
@@ -58,15 +57,20 @@ QIcon PlaylistFeature::getIcon() {
     return m_icon;
 }
 
+void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    m_pMenu = new QMenu(pSidebarWidget);
+}
+
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 
-    //Create the right-click menu
-    QMenu menu(NULL);
-    menu.addAction(m_pCreatePlaylistAction);
-    menu.addSeparator();
-    menu.addAction(m_pCreateImportPlaylistAction);
-    menu.exec(globalPos);
+    m_pMenu->clear();
+    m_pMenu->addAction(m_pCreatePlaylistAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pCreateImportPlaylistAction);
+    m_pMenu->popup(globalPos);
 }
 
 void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -80,24 +84,23 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-    //Create the right-click menu
-    QMenu menu(NULL);
-    menu.addAction(m_pCreatePlaylistAction);
-    menu.addSeparator();
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addSeparator();
-    menu.addAction(m_pRenamePlaylistAction);
-    menu.addAction(m_pDuplicatePlaylistAction);
-    menu.addAction(m_pDeletePlaylistAction);
-    menu.addAction(m_pLockPlaylistAction);
-    menu.addSeparator();
-    menu.addAction(m_pAnalyzePlaylistAction);
-    menu.addSeparator();
-    menu.addAction(m_pImportPlaylistAction);
-    menu.addAction(m_pExportPlaylistAction);
-    menu.addAction(m_pExportTrackFilesAction);
-    menu.exec(globalPos);
+    m_pMenu->clear();
+    m_pMenu->addAction(m_pCreatePlaylistAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pAddToAutoDJAction);
+    m_pMenu->addAction(m_pAddToAutoDJTopAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pRenamePlaylistAction);
+    m_pMenu->addAction(m_pDuplicatePlaylistAction);
+    m_pMenu->addAction(m_pDeletePlaylistAction);
+    m_pMenu->addAction(m_pLockPlaylistAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pAnalyzePlaylistAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pImportPlaylistAction);
+    m_pMenu->addAction(m_pExportPlaylistAction);
+    m_pMenu->addAction(m_pExportTrackFilesAction);
+    m_pMenu->popup(globalPos);
 }
 
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,

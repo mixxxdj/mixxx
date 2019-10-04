@@ -3,7 +3,6 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QLineEdit>
-#include <QMenu>
 #include <QDesktopServices>
 
 #include <algorithm>
@@ -22,6 +21,7 @@
 #include "sources/soundsourceproxy.h"
 
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 #include "util/dnd.h"
@@ -248,6 +248,12 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView("CRATEHOME", edit);
 }
 
+void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    m_pMenu = new QMenu(pSidebarWidget);
+}
+
 TreeItemModel* CrateFeature::getChildModel() {
     return &m_childModel;
 }
@@ -302,11 +308,11 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    QMenu menu(NULL);
-    menu.addAction(m_pCreateCrateAction.get());
-    menu.addSeparator();
-    menu.addAction(m_pCreateImportPlaylistAction.get());
-    menu.exec(globalPos);
+    m_pMenu->clear();
+    m_pMenu->addAction(m_pCreateCrateAction.get());
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pCreateImportPlaylistAction.get());
+    m_pMenu->popup(globalPos);
 }
 
 void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -329,24 +335,24 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
-    QMenu menu(NULL);
-    menu.addAction(m_pCreateCrateAction.get());
-    menu.addSeparator();
-    menu.addAction(m_pRenameCrateAction.get());
-    menu.addAction(m_pDuplicateCrateAction.get());
-    menu.addAction(m_pDeleteCrateAction.get());
-    menu.addAction(m_pLockCrateAction.get());
-    menu.addSeparator();
-    menu.addAction(m_pAutoDjTrackSourceAction.get());
-    menu.addSeparator();
-    menu.addAction(m_pAnalyzeCrateAction.get());
-    menu.addSeparator();
+    m_pMenu->clear();
+    m_pMenu->addAction(m_pCreateCrateAction.get());
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pRenameCrateAction.get());
+    m_pMenu->addAction(m_pDuplicateCrateAction.get());
+    m_pMenu->addAction(m_pDeleteCrateAction.get());
+    m_pMenu->addAction(m_pLockCrateAction.get());
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pAutoDjTrackSourceAction.get());
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pAnalyzeCrateAction.get());
+    m_pMenu->addSeparator();
     if (!crate.isLocked()) {
-        menu.addAction(m_pImportPlaylistAction.get());
+        m_pMenu->addAction(m_pImportPlaylistAction.get());
     }
-    menu.addAction(m_pExportPlaylistAction.get());
-    menu.addAction(m_pExportTrackFilesAction.get());
-    menu.exec(globalPos);
+    m_pMenu->addAction(m_pExportPlaylistAction.get());
+    m_pMenu->addAction(m_pExportTrackFilesAction.get());
+    m_pMenu->popup(globalPos);
 }
 
 void CrateFeature::slotCreateCrate() {

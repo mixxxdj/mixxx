@@ -45,6 +45,7 @@ class AutoDJFeature : public LibraryFeature {
 
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -91,6 +92,7 @@ class AutoDJFeature : public LibraryFeature {
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;
 
+    QMenu *m_pMenu;
     QIcon m_icon;
 
   private slots:

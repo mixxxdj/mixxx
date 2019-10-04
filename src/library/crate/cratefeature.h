@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <QList>
 #include <QAction>
+#include <QMenu>
 #include <QVariant>
 #include <QUrl>
 #include <QIcon>
@@ -43,6 +44,7 @@ class CrateFeature : public LibraryFeature {
 
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
+    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel() override;
 
@@ -101,6 +103,8 @@ class CrateFeature : public LibraryFeature {
 
     const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
+
+    QMenu *m_pMenu;
 
     TrackCollection* m_pTrackCollection;
 

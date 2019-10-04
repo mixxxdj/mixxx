@@ -17,6 +17,7 @@
 #include "library/treeitem.h"
 #include "library/crate/cratestorage.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
@@ -124,6 +125,12 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack()));
+}
+
+void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    m_pMenu = new QMenu(pSidebarWidget);
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {

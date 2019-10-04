@@ -218,11 +218,9 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 }
 
 void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    m_pSidebarWidget = pSidebarWidget;
     // Create the right-click menu and parent it to the sidebar widget in
     // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    // Parent to default NULL if there's no sidebar widget.
-    m_pMenu = new QMenu(m_pSidebarWidget);
+    m_pMenu = new QMenu(pSidebarWidget);
 }
 
 void BrowseFeature::activate() {
@@ -278,7 +276,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
         m_pMenu->addAction(m_pRemoveQuickLinkAction);
-        m_pMenu->exec(globalPos);
+        m_pMenu->popup(globalPos);
         onLazyChildExpandation(index);
         return;
     }
@@ -288,7 +286,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
             // if path is a QuickLink:
             // show remove action
             m_pMenu->addAction(m_pRemoveQuickLinkAction);
-            m_pMenu->exec(globalPos);
+            m_pMenu->popup(globalPos);
             onLazyChildExpandation(index);
             return;
         }
