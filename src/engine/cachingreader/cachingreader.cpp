@@ -223,7 +223,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
 
 void CachingReader::process() {
     ReaderStatusUpdate update;
-    while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
+    while (m_readerStatusUpdateFIFO.pop(&update)) {
         auto pChunk = update.takeFromWorker();
         if (pChunk) {
             // Result of a read request (with a chunk)
@@ -562,7 +562,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                             << "Requesting read of chunk"
                             << request.chunk;
                 }
-                if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
+                if (!m_chunkReadRequestFIFO.push(std::move(request))) {
                     kLogger.warning()
                             << "Failed to submit read request for chunk"
                             << chunkIndex;

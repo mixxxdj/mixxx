@@ -11,12 +11,12 @@
 #include <QHash>
 #include <QVarLengthArray>
 
-#include "util/types.h"
+#include "engine/cachingreader/cachingreaderworker.h"
+#include "engine/engineworker.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "engine/engineworker.h"
-#include "util/fifo.h"
-#include "engine/cachingreader/cachingreaderworker.h"
+#include "util/spscfifo.h"
+#include "util/types.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -123,8 +123,8 @@ class CachingReader : public QObject {
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
-    FIFO<CachingReaderChunkReadRequest> m_chunkReadRequestFIFO;
-    FIFO<ReaderStatusUpdate> m_readerStatusUpdateFIFO;
+    SpscFifo<CachingReaderChunkReadRequest> m_chunkReadRequestFIFO;
+    SpscFifo<ReaderStatusUpdate> m_readerStatusUpdateFIFO;
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns nullptr. If it is present then

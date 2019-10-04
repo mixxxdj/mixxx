@@ -1,17 +1,13 @@
-#ifndef ENGINE_CACHINGREADERWORKER_H
-#define ENGINE_CACHINGREADERWORKER_H
+#pragma once
 
-#include <QtDebug>
 #include <QMutex>
 #include <QSemaphore>
-#include <QThread>
-#include <QString>
 
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "track/track.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
-#include "util/fifo.h"
+#include "util/spscfifo.h"
 
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
@@ -99,8 +95,8 @@ class CachingReaderWorker : public EngineWorker {
   public:
     // Construct a CachingReader with the given group.
     CachingReaderWorker(QString group,
-            FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
-            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
+            SpscFifo<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
+            SpscFifo<ReaderStatusUpdate>* pReaderStatusFIFO);
     ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
@@ -122,10 +118,11 @@ class CachingReaderWorker : public EngineWorker {
     QString m_group;
     QString m_tag;
 
-    // Thread-safe FIFOs for communication between the engine callback and
-    // reader thread.
-    FIFO<CachingReaderChunkReadRequest>* m_pChunkReadRequestFIFO;
-    FIFO<ReaderStatusUpdate>* m_pReaderStatusFIFO;
+    // Engine -> Worker
+    SpscFifo<CachingReaderChunkReadRequest>* m_pChunkReadRequestFIFO;
+
+    // Worker -> Engine
+    SpscFifo<ReaderStatusUpdate>* m_pReaderStatusFIFO;
 
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
@@ -148,6 +145,3 @@ class CachingReaderWorker : public EngineWorker {
 
     QAtomicInt m_stop;
 };
-
-
-#endif /* ENGINE_CACHINGREADERWORKER_H */
