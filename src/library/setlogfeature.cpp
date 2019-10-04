@@ -30,11 +30,16 @@ SetlogFeature::SetlogFeature(QObject* parent,
     constructChildModel(-1);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
-    connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
-            this, SLOT(slotJoinWithPrevious()));
+    connect(m_pJoinWithPreviousAction,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotJoinWithPrevious);
 
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
-    connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
+    connect(m_pGetNewPlaylist,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotGetNewPlaylist);
 
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
@@ -62,8 +67,10 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            this, SLOT(slotPlayingTrackChanged(TrackPointer)));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingTrackChanged,
+            this,
+            &SetlogFeature::slotPlayingTrackChanged);
     m_libraryWidget = libraryWidget;
 
 }

@@ -1094,59 +1094,71 @@ DJ505.PadSection.prototype.padModeButtonPressed = function (channel, control, va
 };
 
 DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, value, status, group) {
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode && mode.paramPlusButton && mode.paramMinusButton) {
+    if (this.currentMode && this.currentMode.paramPlusButton && this.currentMode.paramMinusButton) {
         if (control & 1) {
-            mode.paramPlusButton.input(channel, control, value, status, group);
+            this.currentMode.paramPlusButton.input(channel, control, value, status, group);
         } else {
-            mode.paramMinusButton.input(channel, control, value, status, group);
+            this.currentMode.paramMinusButton.input(channel, control, value, status, group);
         }
     }
 };
 
 DJ505.PadSection.prototype.setPadMode = function (control) {
-    if (this.padMode === control) {
+    var newMode = this.controlToPadMode(control);
+
+    // Exit early if the requested mode is already active or not mapped
+    if (newMode === this.currentMode || newMode === undefined) {
         return;
     }
 
-    var mode = this.controlToPadMode(control);
-    if (mode === undefined) {
-        return;
-    }
+    // If we're switching away from or to a hardware-based mode (e.g. TR mode),
+    // the performance pad behaviour is hardcoded in the firmware and not
+    // controlled by Mixxx. These modes are represented by the value null.
+    // Hence, we only need to change LEDs and (dis-)connect components if
+    // this.currentMode or newMode is not null.
+    if (this.currentMode) {
+        // Disable the mode button LED of the currently active mode
+        midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, 0x00);
 
-    // Disable previous mode's LED
-    var previous_mode = this.controlToPadMode(this.padMode);
-    if (previous_mode) {
-        midi.sendShortMsg(0x94 + this.offset, previous_mode.ledControl, 0x00);
-        previous_mode.forEachComponent(function (component) {
+        this.currentMode.forEachComponent(function (component) {
             component.disconnect();
         });
     }
 
-    this.padMode = control;
-    if (mode) {
-        // Set new mode's LED
-        midi.sendShortMsg(0x94 + this.offset, mode.ledControl, mode.color);
-        mode.forEachComponent(function (component) {
+    if (newMode) {
+        // Illuminate the mode button LED of the new mode
+        midi.sendShortMsg(0x94 + this.offset, newMode.ledControl, newMode.color);
+
+        // Set the correct shift state for the new mode. For example, if the
+        // user is in HOT CUE mode and wants to switch to CUE LOOP mode, you
+        // need to press [SHIFT]+[HOT CUE]. Pressing [SHIFT] will make the HOT
+        // CUE mode pads become shifted.
+        // When you're in CUE LOOP mode and want to switch back to
+        // HOT CUE mode, the user need to press HOT CUE (without holding
+        // SHIFT). However, the HOT CUE mode pads are still shifted even though
+        // the user is not pressing [SHIFT] because they never got the unshift
+        // event (the [SHIFT] button was released in CUE LOOP mode, not in HOT
+        // CUE mode).
+        // Hence, it's necessary to set the correct shift state when switching
+        // modes.
+        if (this.isShifted) {
+            newMode.shift();
+        } else {
+            newMode.unshift();
+        }
+
+        newMode.forEachComponent(function (component) {
             component.connect();
             component.trigger();
         });
     }
+    this.currentMode = newMode;
 };
 
 DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
     var i = control - ((control >= 0x1C) ? 0x1C : 0x14);
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.pads[i].input(channel, control, value, status, group);
-    }
-};
-
-DJ505.PadSection.prototype.forEachComponent = function (operation, recursive) {
-    components.ComponentContainer.prototype.forEachComponent.apply(this, arguments);
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.forEachComponent(operation, recursive);
+    if (this.currentMode) {
+        this.currentMode.pads[i].input(channel, control, value, status, group);
     }
 };
 

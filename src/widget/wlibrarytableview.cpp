@@ -6,6 +6,7 @@
 #include <QScrollBar>
 #include <QFontMetrics>
 
+#include "library/trackmodel.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"

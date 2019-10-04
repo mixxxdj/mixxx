@@ -66,8 +66,10 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
         qDebug() << "Failed to open database for Rhythmbox scanner."
                  << m_database.lastError();
     }
-    connect(&m_track_watcher, SIGNAL(finished()),
-            this, SLOT(onTrackCollectionLoaded()),
+    connect(&m_track_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &RhythmboxFeature::onTrackCollectionLoaded,
             Qt::QueuedConnection);
 }
 

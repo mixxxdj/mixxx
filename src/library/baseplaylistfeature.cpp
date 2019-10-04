@@ -30,73 +30,111 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
-    connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotCreatePlaylist()));
+    connect(m_pCreatePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJ()));
+    connect(m_pAddToAutoDJAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJ);
 
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-    connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJTop()));
+    connect(m_pAddToAutoDJTopAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJTop);
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
-    connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDeletePlaylist()));
+    connect(m_pDeletePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotDeletePlaylist);
 
     m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
-    connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotRenamePlaylist()));
+    connect(m_pRenamePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotRenamePlaylist);
 
     m_pLockPlaylistAction = new QAction(tr("Lock"),this);
-    connect(m_pLockPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotTogglePlaylistLock()));
+    connect(m_pLockPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotTogglePlaylistLock);
 
     m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
-    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDuplicatePlaylist()));
+    connect(m_pDuplicatePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotDuplicatePlaylist);
 
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
-    connect(m_pImportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotImportPlaylist()));
+    connect(m_pImportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotImportPlaylist);
 
     m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotCreateImportPlaylist()));
+    connect(m_pCreateImportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreateImportPlaylist);
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
-    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotExportPlaylist()));
+    connect(m_pExportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportPlaylist);
 
     m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
-    connect(m_pExportTrackFilesAction, SIGNAL(triggered()),
-            this, SLOT(slotExportTrackFiles()));
+    connect(m_pExportTrackFilesAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportTrackFiles);
 
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
-    connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotAnalyzePlaylist()));
+    connect(m_pAnalyzePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAnalyzePlaylist);
 
-    connect(&m_playlistDao, SIGNAL(added(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::added,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    connect(&m_playlistDao, SIGNAL(deleted(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::deleted,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
-            this, SLOT(slotPlaylistTableRenamed(int,QString)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::renamed,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableRenamed);
 
-    connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(slotPlaylistContentChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::changed,
+            this,
+            &BasePlaylistFeature::slotPlaylistContentChanged);
 
-    connect(&m_playlistDao, SIGNAL(lockChanged(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::lockChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
     Library* pLibrary = static_cast<Library*>(parent);
-    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
+    connect(pLibrary,
+            &Library::trackSelected,
+            this,
+            &BasePlaylistFeature::slotTrackSelected);
+    connect(pLibrary,
+            &Library::switchToView,
+            this,
+            &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -601,8 +639,10 @@ void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
-            this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &BasePlaylistFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
 }
 

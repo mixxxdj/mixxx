@@ -100,12 +100,30 @@ Library::Library(
 
     m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
-    connect(&m_scanner, &LibraryScanner::scanStarted, this, &Library::scanStarted);
-    connect(&m_scanner, &LibraryScanner::scanFinished, this, &Library::scanFinished);
-    connect(&m_scanner, &LibraryScanner::scanFinished, this, &Library::slotRefreshLibraryModels);
-    connect(&m_scanner, &LibraryScanner::trackAdded, this, &Library::slotScanTrackAdded);
-    connect(&m_scanner, &LibraryScanner::tracksChanged, this, &Library::slotScanTracksUpdated);
-    connect(&m_scanner, &LibraryScanner::tracksReplaced, this, &Library::slotScanTracksReplaced);
+    connect(&m_scanner,
+            &LibraryScanner::scanStarted,
+            this,
+            &Library::scanStarted);
+    connect(&m_scanner,
+            &LibraryScanner::scanFinished,
+            this,
+            &Library::scanFinished);
+    connect(&m_scanner,
+            &LibraryScanner::scanFinished,
+            this,
+            &Library::slotRefreshLibraryModels);
+    connect(&m_scanner,
+            &LibraryScanner::trackAdded,
+            this,
+            &Library::slotScanTrackAdded);
+    connect(&m_scanner,
+            &LibraryScanner::tracksChanged,
+            this,
+            &Library::slotScanTracksUpdated);
+    connect(&m_scanner,
+            &LibraryScanner::tracksReplaced,
+            this,
+            &Library::slotScanTracksReplaced);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -119,12 +137,18 @@ Library::Library(
     addFeature(m_pCrateFeature);
     BrowseFeature* browseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, pRecordingManager);
-    connect(browseFeature, SIGNAL(scanLibrary()),
-            &m_scanner, SLOT(scan()));
-    connect(&m_scanner, SIGNAL(scanStarted()),
-            browseFeature, SLOT(slotLibraryScanStarted()));
-    connect(&m_scanner, SIGNAL(scanFinished()),
-            browseFeature, SLOT(slotLibraryScanFinished()));
+    connect(browseFeature,
+            &BrowseFeature::scanLibrary,
+            &m_scanner,
+            &LibraryScanner::scan);
+    connect(&m_scanner,
+            &LibraryScanner::scanStarted,
+            browseFeature,
+            &BrowseFeature::slotLibraryScanStarted);
+    connect(&m_scanner,
+            &LibraryScanner::scanFinished,
+            browseFeature,
+            &BrowseFeature::slotLibraryScanFinished);
 
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
@@ -247,22 +271,34 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
-    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
-            m_pSidebarModel, SLOT(pressed(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(clicked(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+    connect(m_pSidebarModel,
+            &SidebarModel::selectIndex,
+            pSidebarWidget,
+            &WLibrarySidebar::selectIndex);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::pressed,
+            m_pSidebarModel,
+            &SidebarModel::pressed);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::clicked,
+            m_pSidebarModel,
+            &SidebarModel::clicked);
     // Lazy model: Let triangle symbol increment the model
-    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
+    connect(pSidebarWidget,
+            &WLibrarySidebar::expanded,
+            m_pSidebarModel,
+            &SidebarModel::doubleClicked);
 
-    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+    connect(pSidebarWidget,
+            &WLibrarySidebar::rightClicked,
+            m_pSidebarModel,
+            &SidebarModel::rightClicked);
 
     pSidebarWidget->slotSetFont(m_trackTableFont);
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pSidebarWidget, SLOT(slotSetFont(QFont)));
+    connect(this,
+            &Library::setTrackTableFont,
+            pSidebarWidget,
+            &WLibrarySidebar::slotSetFont);
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
@@ -275,28 +311,46 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
                     true,
                     m_externalTrackCollections);
     pTrackTableView->installEventFilter(pKeyboard);
-    connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(this, SIGNAL(saveViewState()),
-            pTrackTableView, SLOT(saveViewState()));
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(this,
+            &Library::showTrackModel,
+            pTrackTableView,
+            &WTrackTableView::loadTrackModel);
+    connect(pTrackTableView,
+            &WTrackTableView::loadTrack,
+            this,
+            &Library::slotLoadTrack);
+    connect(pTrackTableView,
+            &WTrackTableView::loadTrackToPlayer,
+            this,
+            &Library::slotLoadTrackToPlayer);
+    connect(pTrackTableView,
+            &WTrackTableView::saveViewState,
+            this,
+            &Library::saveViewState);
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
-    connect(this, SIGNAL(switchToView(const QString&)),
-            pLibraryWidget, SLOT(switchToView(const QString&)));
+    connect(this,
+            &Library::switchToView,
+            pLibraryWidget,
+            &WLibrary::switchToView);
 
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pTrackTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &Library::trackSelected);
 
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(this, SIGNAL(setTrackTableRowHeight(int)),
-            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(this, SIGNAL(setSelectedClick(bool)),
-            pTrackTableView, SLOT(setSelectedClick(bool)));
+    connect(this,
+            &Library::setTrackTableFont,
+            pTrackTableView,
+            &WTrackTableView::setTrackTableFont);
+    connect(this,
+            &Library::setTrackTableRowHeight,
+            pTrackTableView,
+            &WTrackTableView::setTrackTableRowHeight);
+    connect(this,
+            &Library::setSelectedClick,
+            pTrackTableView,
+            &WTrackTableView::setSelectedClick);
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
@@ -319,24 +373,42 @@ void Library::addFeature(LibraryFeature* feature) {
     }
     m_features.push_back(feature);
     m_pSidebarModel->addLibraryFeature(feature);
-    connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            this, SLOT(slotShowTrackModel(QAbstractItemModel*)));
-    connect(feature, SIGNAL(saveViewState()),
-            this, SLOT(slotSaveViewState()));
-    connect(feature, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotSwitchToView(const QString&)));
-    connect(feature, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(feature, SIGNAL(restoreSearch(const QString&)),
-            this, SLOT(slotRestoreSearch(const QString&)));
-    connect(feature, SIGNAL(disableSearch()),
-            this, SLOT(slotDisableSearch()));
-    connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
-            this, SIGNAL(enableCoverArtDisplay(bool)));
-    connect(feature, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(feature,
+            &LibraryFeature::showTrackModel,
+            this,
+            &Library::slotShowTrackModel);
+    connect(feature,
+            &LibraryFeature::switchToView,
+            this,
+            &Library::slotSwitchToView);
+    connect(feature,
+            &LibraryFeature::loadTrack,
+            this,
+            &Library::slotLoadTrack);
+    connect(feature,
+            &LibraryFeature::loadTrackToPlayer,
+            this,
+            &Library::slotLoadTrackToPlayer);
+    connect(feature,
+            &LibraryFeature::restoreSearch,
+            this,
+            &Library::slotRestoreSearch);
+    connect(feature,
+            &LibraryFeature::disableSearch,
+            this,
+            &Library::slotDisableSearch);
+    connect(feature,
+            &LibraryFeature::enableCoverArtDisplay,
+            this,
+            &Library::enableCoverArtDisplay);
+    connect(feature,
+            &LibraryFeature::trackSelected,
+            this,
+            &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::saveViewState,
+            this,
+            &Library::saveViewState);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(
@@ -504,14 +576,11 @@ void Library::setEditMedatataSelectedClick(bool enabled) {
     emit(setSelectedClick(enabled));
 }
 
-void Library::saveCachedTrack(Track* pTrack) noexcept {
+void Library::saveEvictedTrack(Track* pTrack) noexcept {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved!
     // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
-    // doesn't seem to work reliably. Emitting the clean() signal from
-    // a track that is about to deleted may cause access violations!!
-    pTrack->blockSignals(true);
+    DEBUG_ASSERT(pTrack->signalsBlocked());
 
     // The metadata must be exported while the cache is locked to
     // ensure that we have exclusive (write) access on the file

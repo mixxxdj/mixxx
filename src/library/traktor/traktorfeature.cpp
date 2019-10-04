@@ -109,8 +109,10 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
         qDebug() << "Failed to open database for iTunes scanner."
                  << m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()),
-            this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &TraktorFeature::onTrackCollectionLoaded);
 }
 
 TraktorFeature::~TraktorFeature() {

@@ -26,12 +26,12 @@ typedef struct CachingReaderChunkReadRequest {
 } CachingReaderChunkReadRequest;
 
 enum ReaderStatus {
-    INVALID,
-    TRACK_NOT_LOADED,
     TRACK_LOADED,
+    TRACK_UNLOADED,
     CHUNK_READ_SUCCESS,
     CHUNK_READ_EOF,
-    CHUNK_READ_INVALID
+    CHUNK_READ_INVALID,
+    CHUNK_READ_DISCARDED, // response without frame index range!
 };
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
@@ -45,13 +45,34 @@ typedef struct ReaderStatusUpdate {
     ReaderStatus status;
 
     void init(
-            ReaderStatus statusArg = INVALID,
-            CachingReaderChunk* chunkArg = nullptr,
-            const mixxx::IndexRange& readableFrameIndexRangeArg = mixxx::IndexRange()) {
+            ReaderStatus statusArg,
+            CachingReaderChunk* chunkArg,
+            const mixxx::IndexRange& readableFrameIndexRangeArg) {
         status = statusArg;
         chunk = chunkArg;
         readableFrameIndexRangeStart = readableFrameIndexRangeArg.start();
         readableFrameIndexRangeEnd = readableFrameIndexRangeArg.end();
+    }
+
+    static ReaderStatusUpdate readDiscarded(
+            CachingReaderChunk* chunk) {
+        ReaderStatusUpdate update;
+        update.init(CHUNK_READ_DISCARDED, chunk, mixxx::IndexRange());
+        return update;
+    }
+
+    static ReaderStatusUpdate trackLoaded(
+            const mixxx::IndexRange& readableFrameIndexRange) {
+        DEBUG_ASSERT(!readableFrameIndexRange.empty());
+        ReaderStatusUpdate update;
+        update.init(TRACK_LOADED, nullptr, readableFrameIndexRange);
+        return update;
+    }
+
+    static ReaderStatusUpdate trackUnloaded() {
+        ReaderStatusUpdate update;
+        update.init(TRACK_UNLOADED, nullptr, mixxx::IndexRange());
+        return update;
     }
 
     CachingReaderChunkForOwner* takeFromWorker() {
@@ -80,14 +101,14 @@ class CachingReaderWorker : public EngineWorker {
     CachingReaderWorker(QString group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
-    virtual ~CachingReaderWorker();
+    ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
-    virtual void newTrack(TrackPointer pTrack);
+    void newTrack(TrackPointer pTrack);
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
-    virtual void run();
+    void run() override;
 
     void quitWait();
 
