@@ -22,6 +22,8 @@ class SpscFifo final {
         DEBUG_ASSERT(std::atomic_is_lock_free(&m_front));
         DEBUG_ASSERT(std::atomic_is_lock_free(&m_back));
     }
+    SpscFifo(const SpscFifo&) = delete;
+    SpscFifo(SpscFifo&&) = delete;
     ~SpscFifo() {
         delete[] m_data;
     }
