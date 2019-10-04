@@ -262,9 +262,9 @@ QHeaderView::down-arrow {
 }
 #MicDuckingButton[displayValue="1"],
 #MicDuckingButton[displayValue="2"] {
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #B69700,
-    stop:1 #eece33);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #AD5700,
+    stop:1 #DE7000);
 }
 
 #VinylButton[displayValue="1"],
