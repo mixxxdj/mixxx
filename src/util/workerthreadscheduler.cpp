@@ -4,7 +4,7 @@
 
 
 WorkerThreadScheduler::WorkerThreadScheduler(
-        int maxWorkers,
+        size_t maxWorkers,
         const QString& name)
         : WorkerThread(name.isEmpty() ? QString("WorkerThreadScheduler") : name),
           m_scheduledWorkers(maxWorkers),
@@ -13,26 +13,13 @@ WorkerThreadScheduler::WorkerThreadScheduler(
 
 bool WorkerThreadScheduler::scheduleWorker(WorkerThread* worker) {
     DEBUG_ASSERT(worker);
-    const auto written = m_scheduledWorkers.write(&worker, 1) == 1;
-    DEBUG_ASSERT((written == 0) || (written == 1));
-    return written == 1;
-}
-
-bool WorkerThreadScheduler::resumeWorkers() {
-    // Resume the scheduler thread if workers have been scheduled
-    // in the meantime
-    if (m_scheduledWorkers.readAvailable() > 0) {
-        resume();
-        return true;
-    } else {
-        return false;
-    }
+    return m_scheduledWorkers.push(worker);
 }
 
 WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_fetchedWorker);
     WorkerThread* worker;
-    if (m_scheduledWorkers.read(&worker, 1) == 1) {
+    if (m_scheduledWorkers.pop(&worker)) {
         DEBUG_ASSERT(worker);
         m_fetchedWorker = worker;
         return FetchWorkResult::Ready;

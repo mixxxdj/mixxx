@@ -1,24 +1,22 @@
 #pragma once
 
 #include "util/workerthread.h"
-#include "util/fifo.h"
+#include "util/spscfifo.h"
 
-
-class WorkerThread;
 
 // Non-blocking scheduler for worker threads which itself runs
 // as a worker thread. The maximum number of worker threads is
 // limited.
+// TODO: Currently unused, supposed to be used for scheduling
+// engine worker threads.
 class WorkerThreadScheduler : public WorkerThread {
   public:
     explicit WorkerThreadScheduler(
-            int maxWorkers,
+            size_t maxWorkers,
             const QString& name = QString());
     ~WorkerThreadScheduler() override = default;
 
     bool scheduleWorker(WorkerThread* worker);
-
-    bool resumeWorkers();
 
   protected:
     void doRun() override;
@@ -26,7 +24,7 @@ class WorkerThreadScheduler : public WorkerThread {
     FetchWorkResult tryFetchWorkItems() override;
 
   private:
-    FIFO<WorkerThread*> m_scheduledWorkers;
+    SpscFifo<WorkerThread*> m_scheduledWorkers;
 
     WorkerThread* m_fetchedWorker;
 };
