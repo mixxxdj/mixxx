@@ -1839,6 +1839,19 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 
+if(UNIX)
+  add_custom_target(mixxx-res
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
+    COMMENT "Symlinking resources to build directory..."
+  )
+else()
+  add_custom_target(mixxx-res
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMENT "Copying resources to build directory..."
+  )
+endif()
+add_dependencies(mixxx mixxx-res)
+
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
