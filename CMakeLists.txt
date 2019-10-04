@@ -928,6 +928,78 @@ if(UNIX AND NOT APPLE)
 elseif(WIN32)
   find_package(Qt5 COMPONENTS WinExtras REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Qt5::WinExtras)
+
+  get_target_property(QT5_TYPE Qt5::Core TYPE)
+  if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+    target_link_libraries(mixxx-lib PUBLIC
+      # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
+      # QtCore
+      kernel32
+      user32      # QtGui, QtOpenGL, libHSS1394
+      shell32
+      uuid
+      ole32       # QtGui,
+      advapi32    # QtGui, portaudio, portmidi
+      ws2_32      # QtGui, QtNetwork, libshout
+      # QtGui
+      gdi32       # QtOpenGL, libshout
+      comdlg32
+      oleaut32
+      imm32
+      winmm
+      winspool
+      # QtOpenGL
+      glu32
+      opengl32
+
+      # QtNetwork openssl-linked
+      crypt32
+
+      # New libraries required by Qt5.
+      dwmapi      # qtwindows
+      iphlpapi    # qt5network
+      #libEGL      # qt5opengl
+      #libGLESv2   # qt5opengl
+      mpr         # qt5core
+      netapi32    # qt5core
+      userenv     # qt5core
+      uxtheme     # ?
+      version     # ?
+      wtsapi32    # ?
+
+      #qtfreetype
+      #qtharfbuzz
+      #qtlibpng
+      #qtpcre2
+
+      # NOTE(rryan): If you are adding a plugin here, you must also
+      # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
+      # for it. Not all imageformats plugins are built as .libs when
+      # building Qt statically on Windows. Check the build environment
+      # to see exactly what's available as a standalone .lib vs linked
+      # into Qt .libs by default.
+
+      # iconengines plugins
+      Qt5::QSvgIconPlugin
+
+      # imageformats plugins
+      #Qt5::QTgaPlugin
+      #Qt5::QIcoPlugin
+      Qt5::QSvgPlugin
+      #Qt5::QTgaPlugin
+      #Qt5::QGifPlugin
+      #Qt5::QJpegPlugin
+
+      # platform plugins (new in Qt5 for Windows)
+      Qt5::QWindowsIntegrationPlugin
+
+      # styles (new in Qt5 for Windows)
+      Qt5::QWindowsVistaStylePlugin
+
+      # sqldrivers (new in Qt5? or did we just start enabling them)
+      Qt5::QSQLiteDriverPlugin
+    )
+  endif()
 endif()
 
 # QtScriptByteArray
