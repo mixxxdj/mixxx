@@ -84,7 +84,7 @@
   </SingletonDefinition>
 
   <WidgetGroup>
-    <ObjectName>Mixer</ObjectName>
+    <ObjectName>MixerContainer</ObjectName>
     <SizePolicy>max,me</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
@@ -101,7 +101,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>MixerContainer</ObjectName>
+            <ObjectName>Mixer</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>

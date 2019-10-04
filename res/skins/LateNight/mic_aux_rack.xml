@@ -35,13 +35,10 @@
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
                 <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
-                <SetVariable name="Size">72f,27f</SetVariable>
-                <SetVariable name="state_0">mic_duck</SetVariable>
-                <SetVariable name="state_0_text">DUCK OFF</SetVariable>
-                <SetVariable name="state_1">mic_duck_over</SetVariable>
-                <SetVariable name="state_1_text">DUCK AUTO</SetVariable>
-                <SetVariable name="state_2">mic_duck_over</SetVariable>
-                <SetVariable name="state_2_text">DUCK MAN</SetVariable>
+                <SetVariable name="Size">71f,23f</SetVariable>
+                <SetVariable name="state_0">mic_duck_off</SetVariable>
+                <SetVariable name="state_1">mic_duck_auto</SetVariable>
+                <SetVariable name="state_2">mic_duck_manual</SetVariable>
                 <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
               </Template>
               <WidgetGroup>

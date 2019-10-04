@@ -9,7 +9,6 @@
       <!-- This container gives the Master/Headphone
             a continuous background image -->
       <WidgetGroup>
-        <ObjectName>MasterHeadphoneMixer</ObjectName>
         <BackPath>style/background_tile.png</BackPath>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
@@ -242,14 +241,27 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">headSplit</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">68f,22f</SetVariable>
-                    <SetVariable name="state_0_text">Split Cue</SetVariable>
-                    <SetVariable name="state_1_text">Split Cue</SetVariable>
-                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
-                  </Template>
+                  <PushButton>
+                    <TooltipId>headSplit</TooltipId>
+                    <ObjectName>SplitCueButton</ObjectName>
+                    <Size>76f,22f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Master],headSplit</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
                 </Children>
               </WidgetGroup><!-- /HeadSplit button -->
 
