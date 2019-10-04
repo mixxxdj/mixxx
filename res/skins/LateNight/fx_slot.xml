@@ -114,7 +114,7 @@
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">FxSlot_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxToggleButton</SetVariable>
-                <SetVariable name="icon">fxToggle</SetVariable>
+                <SetVariable name="icon">fx_toggle</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
               </Template>

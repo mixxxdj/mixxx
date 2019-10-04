@@ -145,7 +145,8 @@ WSearchLineEdit,
   #DlgRecording > QPushButton,
   #DlgAnalysis > QPushButton,
   WBeatSpinBox,
-  #DlgAutoDJ QSpinBox {
+  #DlgAutoDJ QSpinBox,
+  WEffectSelector {
     border: 1px solid #444;
     border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #444,
@@ -1477,7 +1478,7 @@ WBeatSpinBox,
 #FxSlot2,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 2px 3px 2px 5px;
+  padding: 2px 3px 1px 5px;
 }
 
 #FxSlot1[highlight="1"],
@@ -1533,7 +1534,10 @@ WEffectSelector {
   padding: 4px 0px 4px 5px;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
-  border: 1px solid #444;/*
+  /* It's now styled with a drop shadow, see Border style
+  of FxAssignButton, beat spinbox etc.
+  border: 1px solid #444; */
+  /*
   border-left: 1px solid #444;
   border-top: 1px solid #444;
   border-left: 1px solid #444;
@@ -1562,13 +1566,13 @@ WEffectSelector {
     border: 0;
   }
   WEffectSelector::down-arrow {
-    image: url(skin:/buttons/btn_fxSelector.svg);
+    image: url(skin:/buttons/btn_fx_selector.svg);
     border: 0;
     padding: 0;
     margin: 0;
     }
     WEffectSelector::down-arrow:hover {
-      image: url(skin:/buttons/btn_fxSelector_pressed.svg);
+      image: url(skin:/buttons/btn_fx_selector_pressed.svg);
       border: 0;
       padding: 0;
       margin: 0;
@@ -1838,6 +1842,13 @@ QTableView::indicator {/*
     lose their style & icons
   border: 0px;
   border-radius: 2px; */
+  }
+  #LibraryBPMSpinBox:focus,
+  QItemEditorFactory:focus,
+  QStyleOptionViewItem:focus {
+  /* This would not remove the OS-styled focus outline from
+    selected BPM value item */
+    outline: none;
   }
 
 /* Button in library "Preview" column */

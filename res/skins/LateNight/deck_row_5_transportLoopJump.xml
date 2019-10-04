@@ -270,8 +270,8 @@
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">reverse</SetVariable>
                     <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">reverse_overdown.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">reverse.svg</SetVariable>
+                    <SetVariable name="state_0_pressed">reverse_overdown.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,reverse</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reverseroll</SetVariable>
                   </Template>
@@ -279,10 +279,10 @@
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">play_down.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">play.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">play_overdown.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">play_over.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">play_deck.svg</SetVariable>
+                    <SetVariable name="state_0_pressed">play_deck_down.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">play_deck_over.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">play_deck_overdown.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>

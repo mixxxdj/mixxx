@@ -121,10 +121,10 @@
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="Size">38f,38f</SetVariable>
-                <SetVariable name="state_0_pressed">play_small_deck_down.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">play_small_deck.svg</SetVariable>
-                <SetVariable name="state_1_pressed">play_small_deck_overdown.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">play_small_deck_over.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">play_deck_small.svg</SetVariable>
+                <SetVariable name="state_0_pressed">play_deck_small_down.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">play_deck_small_over.svg</SetVariable>
+                <SetVariable name="state_1_pressed">play_deck_small_overdown.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
