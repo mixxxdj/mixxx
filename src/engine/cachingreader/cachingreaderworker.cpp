@@ -94,7 +94,6 @@ void CachingReaderWorker::run() {
     CachingReaderChunkReadRequest request;
     while (!m_stop.load()) {
         // Request is initialized by reading from FIFO
-        CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable) {
             TrackPointer pLoadTrack;
             { // locking scope
@@ -107,10 +106,7 @@ void CachingReaderWorker::run() {
         } else if (m_pChunkReadRequestFIFO->pop(&request)) {
             // Read the requested chunk and send the result
             auto update = processReadRequest(request);
-            while (!m_pReaderStatusFIFO->push(update)) {
-                kLogger.info()
-                        << "Failed to push read result - retrying...";
-            }
+            m_pReaderStatusFIFO->push_all(&update);
         } else {
             Event::end(m_tag);
             m_semaRun.acquire();
@@ -123,11 +119,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Discard all pending read requests
     CachingReaderChunkReadRequest request;
     while (m_pChunkReadRequestFIFO->pop(&request)) {
-        const auto update = ReaderStatusUpdate::readDiscarded(request.chunk);
-        while (!m_pReaderStatusFIFO->push(update)) {
-            kLogger.info()
-                    << "Failed to push update for obsolete read request - retrying...";
-        }
+        auto update = ReaderStatusUpdate::readDiscarded(request.chunk);
+        m_pReaderStatusFIFO->push_all(&update);
     }
 
     // Unload the track
@@ -135,11 +128,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     if (!pTrack) {
         // If no new track is available then we are done
-        const auto update = ReaderStatusUpdate::trackUnloaded();
-        while (!m_pReaderStatusFIFO->push(update)) {
-            kLogger.info()
-                    << "Failed to push update after track unloaded - retrying...";
-        }
+        auto update = ReaderStatusUpdate::trackUnloaded();
+        m_pReaderStatusFIFO->push_all(&update);
         return;
     }
 
@@ -152,11 +142,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                  << m_group
                  << "File not found"
                  << filename;
-        const auto update = ReaderStatusUpdate::trackUnloaded();
-        while (!m_pReaderStatusFIFO->push(update)) {
-            kLogger.info()
-                    << "Failed to push update after track load failure - retrying...";
-        }
+        auto update = ReaderStatusUpdate::trackUnloaded();
+        m_pReaderStatusFIFO->push_all(&update);
         emit trackLoadFailed(
             pTrack, QString("The file '%1' could not be found.")
                     .arg(QDir::toNativeSeparators(filename)));
@@ -171,11 +158,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 << m_group
                 << "Failed to open file"
                 << filename;
-        const auto update = ReaderStatusUpdate::trackUnloaded();
-        while (!m_pReaderStatusFIFO->push(update)) {
-            kLogger.info()
-                    << "Failed to push update after track load failure - retrying...";
-        }
+        auto update = ReaderStatusUpdate::trackUnloaded();
+        m_pReaderStatusFIFO->push_all(&update);
         emit trackLoadFailed(
             pTrack, QString("The file '%1' could not be loaded").arg(filename));
         return;
@@ -190,11 +174,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 << m_group
                 << "Failed to open empty file"
                 << filename;
-        const auto update = ReaderStatusUpdate::trackUnloaded();
-        while (!m_pReaderStatusFIFO->push(update)) {
-            kLogger.info()
-                    << "Failed to push update after track load failure - retrying...";
-        }
+        auto update = ReaderStatusUpdate::trackUnloaded();
+        m_pReaderStatusFIFO->push_all(&update);
         emit trackLoadFailed(
             pTrack, QString("The file '%1' is empty and could not be loaded").arg(filename));
         return;
@@ -207,18 +188,13 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         mixxx::SampleBuffer(tempReadBufferSize).swap(m_tempReadBuffer);
     }
 
-    const auto update =
-        ReaderStatusUpdate::trackLoaded(
-                m_pAudioSource->frameIndexRange());
-    while (!m_pReaderStatusFIFO->push(update)) {
-        kLogger.info()
-                << "Failed to push update after track loaded - retrying...";
-    }
+    auto update = ReaderStatusUpdate::trackLoaded(
+            m_pAudioSource->frameIndexRange());
+    m_pReaderStatusFIFO->push_all(&update);
 
     // Emit that the track is loaded.
-    const SINT sampleCount =
-            CachingReaderChunk::frames2samples(
-                    m_pAudioSource->frameLength());
+    const SINT sampleCount = CachingReaderChunk::frames2samples(
+            m_pAudioSource->frameLength());
     emit trackLoaded(pTrack, m_pAudioSource->sampleRate(), sampleCount);
 }
 

@@ -562,7 +562,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                             << "Requesting read of chunk"
                             << request.chunk;
                 }
-                if (!m_chunkReadRequestFIFO.push(std::move(request))) {
+                if (!m_chunkReadRequestFIFO.try_push(std::move(request))) {
                     kLogger.warning()
                             << "Failed to submit read request for chunk"
                             << chunkIndex;

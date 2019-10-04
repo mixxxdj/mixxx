@@ -13,7 +13,7 @@ WorkerThreadScheduler::WorkerThreadScheduler(
 
 bool WorkerThreadScheduler::scheduleWorker(WorkerThread* worker) {
     DEBUG_ASSERT(worker);
-    return m_scheduledWorkers.push(worker);
+    return m_scheduledWorkers.try_push(worker);
 }
 
 WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {

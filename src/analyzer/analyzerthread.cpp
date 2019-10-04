@@ -192,7 +192,7 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     kLogger.debug()
             << "Enqueueing next track"
             << nextTrack->getId();
-    if (m_nextTrack.push(std::move(nextTrack))) {
+    if (m_nextTrack.try_push(std::move(nextTrack))) {
         // Ensure that the submitted track gets processed eventually
         // by waking the worker thread up after adding a new task to
         // its back queue! Otherwise the thread might not notice if
