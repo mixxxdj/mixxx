@@ -19,19 +19,20 @@
                 <Size>22f,22f</Size>
                 <Children>
                   <PushButton>
+                    <Size>20f,20f</Size>
                     <TooltipId>show_samplers</TooltipId>
                     <ObjectName>SamplerExpandButton</ObjectName>
                     <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>skin:/buttons/btn_fx_sampler_expand.svg</Pressed>
-                      <Unpressed>skin:/buttons/btn_fx_sampler_expand.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>skin:/buttons/btn_fx_sampler_collapse.svg</Pressed>
-                      <Unpressed>skin:/buttons/btn_fx_sampler_collapse.svg</Unpressed>
-                    </State>
+                      <State>
+                        <Number>0</Number>
+                        <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Pressed>
+                        <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Unpressed>
+                      </State>
+                      <State>
+                        <Number>1</Number>
+                        <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Pressed>
+                        <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Unpressed>
+                      </State>
                     <Connection>
                       <ConfigKey>[Skin],expand_samplers</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
