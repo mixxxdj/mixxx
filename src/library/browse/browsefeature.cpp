@@ -219,6 +219,10 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 
 void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pSidebarWidget = pSidebarWidget;
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    // Parent to default NULL if there's no sidebar widget.
+    m_pMenu = new QMenu(m_pSidebarWidget);
 }
 
 void BrowseFeature::activate() {
@@ -257,10 +261,6 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    // Parent to default NULL if there's no sidebar widget.
-    m_pMenu = new QMenu(m_pSidebarWidget);
     m_pMenu->clear();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());

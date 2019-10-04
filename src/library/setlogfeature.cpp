@@ -71,6 +71,10 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
 
 void SetlogFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pSidebarWidget = pSidebarWidget;
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    // Parent to default NULL if there's no sidebar widget.
+    m_pMenu = new QMenu(m_pSidebarWidget);
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -85,10 +89,6 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    // Parent to default NULL if there's no sidebar widget.
-    m_pMenu = new QMenu(m_pSidebarWidget);
     m_pMenu->clear();
 
     //Save the model index so we can get it in the action slots...
