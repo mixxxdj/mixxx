@@ -1402,7 +1402,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # QtKeychain
-find_package(Qt5 OPTIONAL_COMPONENTS Keychain)
+find_package(Qt5 QUIET OPTIONAL_COMPONENTS Keychain)
 option(QTKEYCHAIN_ENABLED "Secure credentials storage support for Live Broadcasting profiles" OFF)
 if(QTKEYCHAIN_ENABLED)
   if(NOT Qt5_Keychain_FOUND)
