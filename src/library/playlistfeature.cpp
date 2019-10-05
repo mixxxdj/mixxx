@@ -36,7 +36,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                  UserSettingsPointer pConfig)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
                               "PLAYLISTHOME"),
-          m_icon(":/images/library/ic_library_playlist.svg") {
+          m_icon(":/images/library/ic_library_playlist.svg"),
+          m_pMenu(nullptr) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
 

@@ -20,7 +20,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
           m_playlistId(-1),
           m_libraryWidget(nullptr),
           m_pSidebarWidget(NULL),
-          m_icon(":/images/library/ic_library_history.svg") {
+          m_icon(":/images/library/ic_library_history.svg"),
+          m_pMenu(nullptr) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks

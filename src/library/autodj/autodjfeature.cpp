@@ -54,7 +54,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(NULL),
           m_pAutoDJView(NULL),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig),
-          m_icon(":/images/library/ic_library_autodj.svg") {
+          m_icon(":/images/library/ic_library_autodj.svg"),
+          m_pMenu(nullptr) {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
