@@ -138,6 +138,7 @@ WSearchLineEdit,
 #DlgAnalysis > QPushButton {
   border-width: 2px 3px 3px 2px;
   border-image: url(skin:buttons/btn_border_image_qpushbutton.svg) 2 3 3 2;
+  color: #bbb;
   }
   #DlgMissing > QPushButton:pressed,
   #DlgHidden > QPushButton:pressed,
@@ -153,6 +154,7 @@ WSearchLineEdit,
   #DlgRecording > QPushButton:!enabled,
   #DlgAnalysis > QPushButton:!enabled {
     border-image: url(skin:buttons/btn_border_image_qpushbutton_disabled.svg) 2 3 3 2;
+    color: #666;
   }
   QPushButton#pushButtonAutoDJ:checked,
   #DlgAnalysis > QPushButton:checked {
@@ -377,7 +379,6 @@ QHeaderView::down-arrow {
 #KeyButton[displayValue="0"],
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
-#FxAssignButton[displayValue="0"],
 #FxAssignButtonDeck[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -388,7 +389,6 @@ QHeaderView::down-arrow {
 #KeyButton[displayValue="1"],
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
-#FxAssignButton[displayValue="1"],
 #FxAssignButtonDeck[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -1430,14 +1430,6 @@ WBeatSpinBox,
   border: 1px solid #248301;
 }
 
-#FxSlot_focused {
-  background-color:qlineargradient(
-      x1:0, y1:0, x2:0, y2:1,
-        stop:0 #000,
-        stop:0.1 #090909,
-        stop:1 #090909);
-}
-
 #FxFocusButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin: 0px 0px 0px 0px;
@@ -1477,33 +1469,6 @@ WEffectSelector {
   padding: 4px 0px 4px 5px;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
-  /* It's now styled with a drop shadow, see Border style
-  of FxAssignButton, beat spinbox etc.
-  border: 1px solid #444; */
-  /*
-  border-left: 1px solid #444;
-  border-top: 1px solid #444;
-  border-left: 1px solid #444;
-  border-bottom: 1px solid #333;
-  border-right: 1px solid #444;*/
-  /*
-  border-top: 1px solid #444;
-  border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #444,
-    stop:0.94 #444,
-    stop:0.95 #000,
-    stop:1 #000);
-  border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #444,
-    stop:0.94 #444,
-    stop:0.95 #000,
-    stop:1 #000);
-  border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #444,
-    stop:0.49 #444,
-    stop:0.5 #000,
-    stop:1 #000);
-  border-radius: 2px;*/
   }
   WEffectSelector::drop-down {
     border: 0;
@@ -2018,14 +1983,6 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 2px 4px 3px 2px;
   padding: 3px 8px;
   min-width: 65px;
-  color: #bbb;
-  }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
-    color: #666;
   }
   /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {

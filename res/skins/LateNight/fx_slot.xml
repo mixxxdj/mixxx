@@ -137,7 +137,6 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>FxSlot_focused</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
             <BackPath>style/background_tile_fx_focus.png</BackPath>
