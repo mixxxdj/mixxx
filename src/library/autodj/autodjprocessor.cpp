@@ -987,10 +987,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    if (sDebug) {
-        qDebug() << this << "calculateFadeThresholds" << pFromDeck->group;
-    }
-
     //qDebug() << "player" << pAttributes->group << "PlayChanged(" << playing << ")";
 
     // We require ADJ_IDLE to prevent changing the thresholds in the middle of a
@@ -1157,7 +1153,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1);
 
     if (sDebug) {
-        qDebug() << this << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
+        qDebug() << this << "calculateTransition" << pFromDeck->group
+                << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
                 << pToDeck->startPos;
     }
 }
