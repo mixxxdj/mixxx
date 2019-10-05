@@ -268,8 +268,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
         // Currently the range will never grow, but lets also account for this case
         // that might become relevant in the future.
-        VERIFY_OR_DEBUG_ASSERT(remainingFrameRange.end() ==
-                audioSourceProxy.frameIndexRange().end()) {
+        VERIFY_OR_DEBUG_ASSERT(remainingFrameRange.empty() ||
+                remainingFrameRange.end() == audioSourceProxy.frameIndexRange().end()) {
             if (chunkFrameRange.length() < mixxx::kAnalysisFramesPerChunk) {
                 // If we have read an incomplete chunk while the range has grown
                 // we need to discard the read results and re-read the current
@@ -304,15 +304,21 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // the current iteration by emitting progress.
 
         // 3rd step: Update & emit progress
-        const double frameProgress =
-                double(audioSource->frameLength() - remainingFrameRange.length()) /
-                double(audioSource->frameLength());
-        const AnalyzerProgress progress =
-                frameProgress *
-                (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
-        DEBUG_ASSERT(progress > kAnalyzerProgressNone);
-        DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
-        emitBusyProgress(progress);
+        if (audioSource->frameLength() > 0) {
+            const double frameProgress =
+                    double(audioSource->frameLength() - remainingFrameRange.length()) /
+                    double(audioSource->frameLength());
+            const AnalyzerProgress progress =
+                    frameProgress *
+                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+            DEBUG_ASSERT(progress > kAnalyzerProgressNone);
+            DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
+            emitBusyProgress(progress);
+        } else {
+            // Unreadable audio source
+            DEBUG_ASSERT(remainingFrameRange.empty());
+            emitBusyProgress(kAnalyzerProgressUnknown);
+        }
     }
 
     return AnalysisResult::Finished;
