@@ -9,6 +9,7 @@
 #include <QFuture>
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QMenu>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
@@ -27,6 +28,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -71,6 +73,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QSharedPointer<BaseTrackCache> m_trackSource;
     QIcon m_icon;
+    QMenu *m_pMenu;
 };
 
 #endif // ITUNESFEATURE_H

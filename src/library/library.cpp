@@ -67,6 +67,7 @@ Library::Library(
       m_pBrowseFeature(nullptr),
       m_pSetlogFeature(nullptr),
       m_pAnalysisFeature(nullptr),
+      m_pITunesFeature(nullptr),
       m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
 
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
@@ -147,7 +148,8 @@ Library::Library(
     }
     if (ITunesFeature::isSupported() &&
         pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
-        addFeature(new ITunesFeature(this, m_pTrackCollection));
+        m_pITunesFeature = new ITunesFeature(this, m_pTrackCollection);
+        addFeature(m_pITunesFeature);
     }
     if (TraktorFeature::isSupported() &&
         pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
@@ -238,6 +240,9 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pCrateFeature->bindSidebarWidget(pSidebarWidget);
     m_pBrowseFeature->bindSidebarWidget(pSidebarWidget);
     m_pSetlogFeature->bindSidebarWidget(pSidebarWidget);
+    if (ITunesFeature::isSupported() && m_pITunesFeature) {
+        m_pITunesFeature->bindSidebarWidget(pSidebarWidget);
+    }
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,

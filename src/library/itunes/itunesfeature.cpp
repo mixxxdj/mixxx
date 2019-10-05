@@ -3,7 +3,6 @@
 #include <QXmlStreamReader>
 #include <QStandardPaths>
 #include <QFileDialog>
-#include <QMenu>
 #include <QAction>
 #include <QUrl>
 #include <QFileInfo>
@@ -17,6 +16,7 @@
 #include "library/queryutil.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
+#include "widget/wlibrarysidebar.h"
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
@@ -62,7 +62,8 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
-          m_icon(":/images/library/ic_library_itunes.svg") {
+          m_icon(":/images/library/ic_library_itunes.svg"),
+          m_pMenu(nullptr) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
     QStringList columns;
@@ -141,6 +142,12 @@ QVariant ITunesFeature::title() {
 
 QIcon ITunesFeature::getIcon() {
     return m_icon;
+}
+
+void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // Create the right-click menu and parent it to the sidebar widget in
+    // order to make it stylable with skin stylesheet rather than ugly OS styling.
+    m_pMenu = new QMenu(pSidebarWidget);
 }
 
 void ITunesFeature::activate() {
@@ -223,12 +230,12 @@ TreeItemModel* ITunesFeature::getChildModel() {
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    QMenu menu;
-    QAction useDefault(tr("Use Default Library"), &menu);
-    QAction chooseNew(tr("Choose Library..."), &menu);
-    menu.addAction(&useDefault);
-    menu.addAction(&chooseNew);
-    QAction *chosen(menu.exec(globalPos));
+    m_pMenu->clear();
+    QAction useDefault(tr("Use Default Library"), m_pMenu);
+    QAction chooseNew(tr("Choose Library..."), m_pMenu);
+    m_pMenu->addAction(&useDefault);
+    m_pMenu->addAction(&chooseNew);
+    QAction *chosen(m_pMenu->exec(globalPos));
     if (chosen == &useDefault) {
         SettingsDAO settings(m_database);
         settings.setValue(ITDB_PATH_KEY, QString());

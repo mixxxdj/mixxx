@@ -168,6 +168,7 @@ class Library: public QObject,
     BrowseFeature* m_pBrowseFeature;
     SetlogFeature* m_pSetlogFeature;
     AnalysisFeature* m_pAnalysisFeature;
+    ITunesFeature* m_pITunesFeature;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
