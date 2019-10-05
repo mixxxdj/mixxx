@@ -12,18 +12,36 @@
 #include <QThreadStorage>
 #include <QList>
 
-#include "util/fifo.h"
+#include "util/spscfifo.h"
 #include "util/singleton.h"
 #include "util/stat.h"
 #include "util/event.h"
 
 class StatsManager;
 
-class StatsPipe : public FIFO<StatReport> {
+class StatsPipe final {
+    typedef SpscFifo<StatReport> Fifo;
+
   public:
-    StatsPipe(StatsManager* pManager);
-    virtual ~StatsPipe();
+    typedef Fifo::size_type size_type;
+
+    explicit StatsPipe(StatsManager* pManager);
+    ~StatsPipe();
+
+    size_type writeAvailable() {
+        return m_fifo.push_peek();
+    }
+
+    bool write(const StatReport& report) {
+        return m_fifo.push(&report) == 1;
+    }
+
+    bool read(StatReport* pReport) {
+        return m_fifo.pop(pReport) == 1;
+    }
+
   private:
+    Fifo m_fifo;
     StatsManager* m_pManager;
 };
 

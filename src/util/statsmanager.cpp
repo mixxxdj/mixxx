@@ -15,7 +15,7 @@ const int kProcessLength = kStatsPipeSize * 4 / 5;
 bool StatsManager::s_bStatsManagerEnabled = false;
 
 StatsPipe::StatsPipe(StatsManager* pManager)
-        : FIFO<StatReport>(kStatsPipeSize),
+        : m_fifo(kStatsPipeSize),
           m_pManager(pManager) {
     qRegisterMetaType<Stat>("Stat");
 }
@@ -182,7 +182,7 @@ bool StatsManager::maybeWriteReport(const StatReport& report) {
     if (pStatsPipe == NULL) {
         return false;
     }
-    bool success = pStatsPipe->write(&report, 1) == 1;
+    bool success = pStatsPipe->write(report);
     int space = pStatsPipe->writeAvailable();
     if (space < kProcessLength) {
         m_statsPipeCondition.wakeAll();
@@ -199,7 +199,7 @@ bool StatsManager::maybeWriteReport(const StatReport& report) {
 void StatsManager::processIncomingStatReports() {
     StatReport report;
     foreach (StatsPipe* pStatsPipe, m_statsPipes) {
-        while (pStatsPipe->read(&report, 1) == 1) {
+        while (pStatsPipe->read(&report)) {
             QString tag = QString::fromUtf8(report.tag);
             Stat& info = m_stats[tag];
             info.m_tag = tag;
