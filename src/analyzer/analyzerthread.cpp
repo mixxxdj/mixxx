@@ -230,31 +230,64 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
 
-    mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
-    auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
+    mixxx::IndexRange remainingFrameRange = audioSource->frameIndexRange();
+    auto result = remainingFrameRange.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
-        DEBUG_ASSERT(!remainingFrames.empty());
+        DEBUG_ASSERT(!remainingFrameRange.empty());
         sleepWhileSuspended();
         if (isStopping()) {
             return AnalysisResult::Cancelled;
         }
 
         // 1st step: Decode next chunk of audio data
-        auto inputFrameIndexRange =
-                remainingFrames.splitAndShrinkFront(
-                        math_min(mixxx::kAnalysisFramesPerChunk, remainingFrames.length()));
-        DEBUG_ASSERT(!inputFrameIndexRange.empty());
+
+        // Split the range for the next chunk from the remaining (= to-be-analyzed) frames
+        auto chunkFrameRange =
+                remainingFrameRange.splitAndShrinkFront(
+                        math_min(mixxx::kAnalysisFramesPerChunk, remainingFrameRange.length()));
+        DEBUG_ASSERT(!chunkFrameRange.empty());
+
+        // Request the next chunk of audio data
         const auto readableSampleFrames =
                 audioSourceProxy.readSampleFrames(
                         mixxx::WritableSampleFrames(
-                                inputFrameIndexRange,
+                                chunkFrameRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= inputFrameIndexRange);
-        // Sometimes the duration of the audio source is inaccurate
-        // and adjusted (= shrinked) while reading.
-        remainingFrames = intersect(remainingFrames, audioSourceProxy.frameIndexRange());
-        inputFrameIndexRange = intersect(inputFrameIndexRange, audioSourceProxy.frameIndexRange());
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= inputFrameIndexRange);
+        // The returned range fits into the requested range
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+
+        // Sometimes the duration of the audio source is inaccurate and adjusted
+        // while reading. We need to adjust all frame ranges to reflect this new
+        // situation by restoring all invariants and consistency requirements!
+
+        // Shrink the original range of the current chunks to the actual available
+        // range.
+        chunkFrameRange = intersect(chunkFrameRange, audioSourceProxy.frameIndexRange());
+        // The audio data that has just been read should still fit into the adjusted
+        // chunk range.
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+
+        // We also need to adjust the remaining frame range for the next requests.
+        remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
+        // Currently the range will never grow, but lets also account for this case
+        // that might become relevant in the future.
+        VERIFY_OR_DEBUG_ASSERT(remainingFrameRange.end() ==
+                audioSourceProxy.frameIndexRange().end()) {
+            if (chunkFrameRange.length() < mixxx::kAnalysisFramesPerChunk) {
+                // If we have read an incomplete chunk while the range has grown
+                // we need to discard the read results and re-read the current
+                // chunk!
+                remainingFrameRange = span(remainingFrameRange, chunkFrameRange);
+                continue;
+            }
+            DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());
+            kLogger.warning()
+                    << "Unexpected growth of the audio source while reading"
+                    << mixxx::IndexRange::forward(
+                            remainingFrameRange.end(), audioSourceProxy.frameIndexRange().end());
+            remainingFrameRange.growBack(
+                    audioSourceProxy.frameIndexRange().end() - remainingFrameRange.end());
+        }
 
         sleepWhileSuspended();
         if (isStopping()) {
@@ -262,10 +295,12 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         }
 
         // 2nd: step: Analyze chunk of decoded audio data
-        for (auto&& analyzer : m_analyzers) {
-            analyzer.processSamples(
-                    readableSampleFrames.readableData(),
-                    readableSampleFrames.readableLength());
+        if (!readableSampleFrames.frameIndexRange().empty()) {
+            for (auto&& analyzer : m_analyzers) {
+                analyzer.processSamples(
+                        readableSampleFrames.readableData(),
+                        readableSampleFrames.readableLength());
+            }
         }
 
         // Check if complete or abort on errors
@@ -273,15 +308,15 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             result = AnalysisResult::Complete;
         } else {
             // Only the final chunk should be incomplete
-            if (readableSampleFrames.frameIndexRange() < inputFrameIndexRange) {
+            if (readableFrames.frameIndexRange() < chunkFrames) {
                 // Partial chunk of audio samples has been read, although more data
                 // should be available. A decoding error must have occurred, maybe a
                 // corrupt file? Abort the analysis at this point to avoid analyzing
                 // corrupt data.
                 kLogger.warning()
                         << "Aborting analysis after incomplete reading of sample data:"
-                        << "expected frames =" << inputFrameIndexRange
-                        << ", actual frames =" << readableSampleFrames.frameIndexRange();
+                        << "expected frames =" << chunkFrames
+                        << ", actual frames =" << readableFrames.frameIndexRange();
                 result = AnalysisResult::Partial;
             }
         }
@@ -291,7 +326,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
         // 3rd step: Update & emit progress
         const double frameProgress =
-                double(audioSource->frameLength() - remainingFrames.length()) /
+                double(audioSource->frameLength() - remainingFrameRange.length()) /
                 double(audioSource->frameLength());
         const AnalyzerProgress progress =
                 frameProgress *
