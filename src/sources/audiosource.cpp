@@ -144,7 +144,8 @@ ReadableSampleFrames AudioSource::readSampleFrames(
     } else {
         // forward clamped request
         ReadableSampleFrames readable = readSampleFramesClamped(writable);
-        DEBUG_ASSERT(readable.frameIndexRange() <= writable.frameIndexRange());
+        DEBUG_ASSERT(readable.frameIndexRange().empty() ||
+                readable.frameIndexRange() <= writable.frameIndexRange());
         if (readable.frameIndexRange() != writable.frameIndexRange()) {
             kLogger.warning()
                     << "Failed to read sample frames:"

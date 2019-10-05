@@ -55,7 +55,8 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
             bufferedFrameIndexRange <= m_pAudioSource->frameIndexRange());
     // The readable frame range might have changed
     chunkFrameIndexRange = intersect(chunkFrameIndexRange, m_pAudioSource->frameIndexRange());
-    DEBUG_ASSERT(bufferedFrameIndexRange <= chunkFrameIndexRange);
+    DEBUG_ASSERT(bufferedFrameIndexRange.empty() ||
+            bufferedFrameIndexRange <= chunkFrameIndexRange);
 
     ReaderStatus status = bufferedFrameIndexRange.empty() ? CHUNK_READ_EOF : CHUNK_READ_SUCCESS;
     if (bufferedFrameIndexRange != chunkFrameIndexRange) {
