@@ -84,7 +84,7 @@ AnalyzerThread::AnalyzerThread(
           m_pConfig(std::move(pConfig)),
           m_modeFlags(modeFlags),
           m_nextTrack(MpscFifoConcurrency::SingleProducer),
-          m_sampleBuffer(mixxx::kAnalysisSamplesPerBlock),
+          m_sampleBuffer(mixxx::kAnalysisSamplesPerChunk),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
 }
@@ -224,7 +224,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             audioSource,
-            mixxx::kAnalysisFramesPerBlock);
+            mixxx::kAnalysisFramesPerChunk);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == mixxx::kAnalysisChannels);
 
     // Analysis starts now
@@ -242,7 +242,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 1st step: Decode next chunk of audio data
         auto inputFrameIndexRange =
                 remainingFrames.splitAndShrinkFront(
-                        math_min(mixxx::kAnalysisFramesPerBlock, remainingFrames.length()));
+                        math_min(mixxx::kAnalysisFramesPerChunk, remainingFrames.length()));
         DEBUG_ASSERT(!inputFrameIndexRange.empty());
         const auto readableSampleFrames =
                 audioSourceProxy.readSampleFrames(
