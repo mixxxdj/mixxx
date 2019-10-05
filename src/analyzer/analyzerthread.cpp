@@ -154,8 +154,7 @@ void AnalyzerThread::doRun() {
         if (processTrack) {
             const auto analysisResult = analyzeAudioSource(audioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
-            if ((analysisResult == AnalysisResult::Complete) ||
-                    (analysisResult == AnalysisResult::Partial)) {
+            if (analysisResult == AnalysisResult::Finished) {
                 // The analysis has been finished, and is either complete without
                 // any errors or partial if it has been aborted due to a corrupt
                 // audio file. In both cases don't reanalyze tracks during this
@@ -231,9 +230,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     emitBusyProgress(kAnalyzerProgressNone);
 
     mixxx::IndexRange remainingFrameRange = audioSource->frameIndexRange();
-    auto result = remainingFrameRange.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
-    while (result == AnalysisResult::Pending) {
-        DEBUG_ASSERT(!remainingFrameRange.empty());
+    while (!remainingFrameRange.empty()) {
         sleepWhileSuspended();
         if (isStopping()) {
             return AnalysisResult::Cancelled;
@@ -303,24 +300,6 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             }
         }
 
-        // Check if complete or abort on errors
-        if (remainingFrames.empty()) {
-            result = AnalysisResult::Complete;
-        } else {
-            // Only the final chunk should be incomplete
-            if (readableFrames.frameIndexRange() < chunkFrames) {
-                // Partial chunk of audio samples has been read, although more data
-                // should be available. A decoding error must have occurred, maybe a
-                // corrupt file? Abort the analysis at this point to avoid analyzing
-                // corrupt data.
-                kLogger.warning()
-                        << "Aborting analysis after incomplete reading of sample data:"
-                        << "expected frames =" << chunkFrames
-                        << ", actual frames =" << readableFrames.frameIndexRange();
-                result = AnalysisResult::Partial;
-            }
-        }
-
         // Don't check again for paused/stopped again and simply finish
         // the current iteration by emitting progress.
 
@@ -336,7 +315,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         emitBusyProgress(progress);
     }
 
-    return result;
+    return AnalysisResult::Finished;
 }
 
 void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
