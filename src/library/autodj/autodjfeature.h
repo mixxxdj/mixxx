@@ -94,6 +94,7 @@ class AutoDJFeature : public LibraryFeature {
 
     QIcon m_icon;
     QMenu *m_pMenu;
+    QMenu *m_pCrateMenu;
 
   private slots:
     // Add a crate to the auto-DJ queue.

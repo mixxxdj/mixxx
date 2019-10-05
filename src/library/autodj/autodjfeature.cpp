@@ -55,7 +55,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJView(NULL),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig),
           m_icon(":/images/library/ic_library_autodj.svg"),
-          m_pMenu(nullptr) {
+          m_pMenu(nullptr),
+          m_pCrateMenu(nullptr) {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
@@ -132,6 +133,7 @@ void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // Create the right-click menu and parent it to the sidebar widget in
     // order to make it stylable with skin stylesheet rather than ugly OS styling.
     m_pMenu = new QMenu(pSidebarWidget);
+    m_pCrateMenu = new QMenu(pSidebarWidget);
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -282,18 +284,18 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     if (m_pCratesTreeItem == pClickedItem) {
         // The "Crates" parent item was right-clicked.
         // Bring up the context menu.
-        QMenu crateMenu;
-        crateMenu.setTitle(tr("Add Crate as Track Source"));
+        m_pCrateMenu->clear();
+        m_pCrateMenu->setTitle(tr("Add Crate as Track Source"));
         CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
-            auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
+            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
             m_crateMapper.setMapping(pAction.get(), crate.getId().value());
             connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
-            crateMenu.addAction(pAction.get());
+            m_pCrateMenu->addAction(pAction.get());
             pAction.release();
         }
-        m_pMenu->addMenu(&crateMenu);
+        m_pMenu->addMenu(m_pCrateMenu);
         m_pMenu->popup(globalPos);
     } else {
         // A crate child item was right-clicked.
