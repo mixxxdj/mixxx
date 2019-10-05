@@ -15,23 +15,19 @@ Variables:
 <Template>
   <PushButton>
     <TooltipId>EffectUnit_<Variable name="Type"/>_enabled</TooltipId>
-    <ObjectName>FxAssignButton</ObjectName>
-    <Size><Variable name="Size"/></Size>
+    <ObjectName>FxAssignButtonDeck</ObjectName>
+    <Size>28f,22f</Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text><Variable name="Text"/><Variable name="FxUnit"/></Text>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_fx_assign.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_fx_assign.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
-      <Text><Variable name="Text"/><Variable name="FxUnit"/></Text>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_fx_assign_over.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_fx_assign_over.svg</Unpressed>
     </State>
     <Connection>
       <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>

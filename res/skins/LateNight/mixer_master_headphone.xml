@@ -9,6 +9,7 @@
       <!-- This container gives the Master/Headphone
             a continuous background image -->
       <WidgetGroup>
+        <ObjectName>MasterHeadphoneMixer</ObjectName>
         <BackPath>style/background_tile.png</BackPath>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
@@ -102,34 +103,42 @@
               <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
 
               <WidgetGroup><!-- FX buttons 1/2 -->
+                <ObjectName>AlignHCenter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /FX buttons 1/2 -->
 
+              <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+
               <!-- FX buttons 3/4 -->
               <WidgetGroup>
+                <ObjectName>AlignHCenter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">4</SetVariable>
                   </Template>
@@ -244,7 +253,7 @@
                   <PushButton>
                     <TooltipId>headSplit</TooltipId>
                     <ObjectName>SplitCueButton</ObjectName>
-                    <Size>76f,22f</Size>
+                    <Size>76f,23f</Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>false</RightClickIsPushButton>
                     <State>
@@ -254,8 +263,8 @@
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Unpressed>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue_over.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue_over.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>

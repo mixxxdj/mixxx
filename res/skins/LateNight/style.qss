@@ -15,8 +15,7 @@ QSpinBox {
   font-weight: bold;
 }
 
-QToolTip,
-QMenu {
+QToolTip {
   font-family: Ubuntu;
   text-transform: none;
   font-weight: normal;
@@ -132,70 +131,57 @@ WSearchLineEdit,
   border-radius: 1px;
   margin: 1px;
 }
-
-#FxAssignButton {
-  border-radius: 1px;
-  margin: 1px;
-  }
-  #FxAssignButton[displayValue="0"],
-  #SplitCueButton[displayValue="0"],
-  #DlgMissing > QPushButton,
-  #DlgHidden > QPushButton,
-  #DlgAutoDJ > QPushButton,
-  #DlgRecording > QPushButton,
-  #DlgAnalysis > QPushButton,
-  WBeatSpinBox,
-  #DlgAutoDJ QSpinBox,
-  WEffectSelector {
-    border: 1px solid #444;
-    border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #444,
-      stop:0.49 #444,
-      stop:0.5 #000,
-      stop:1 #000);
-    border-radius: 2px;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-  }
-  #FxAssignButton[displayValue="1"],
-  #SplitCueButton[displayValue="1"] {
-    border: 1px solid #000;
-    border-radius: 2px;
-    margin-bottom: 1px;
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  border-width: 2px 3px 3px 2px;
+  border-image: url(skin:buttons/btn_border_image_qpushbutton.svg) 2 3 3 2;
   }
   #DlgMissing > QPushButton:pressed,
   #DlgHidden > QPushButton:pressed,
   #DlgAutoDJ > QPushButton:pressed,
   #DlgRecording > QPushButton:pressed,
   #DlgAnalysis > QPushButton:pressed {
-    border: 1px solid #444;
-    border-radius: 2px;
-    margin-bottom: 4px;
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_pressed.svg) 2 3 3 2;
+    color: #d2d2d2;
+  }
+  #DlgMissing > QPushButton:!enabled,
+  #DlgHidden > QPushButton:!enabled,
+  #DlgAutoDJ > QPushButton:!enabled,
+  #DlgRecording > QPushButton:!enabled,
+  #DlgAnalysis > QPushButton:!enabled {
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_disabled.svg) 2 3 3 2;
+  }
+  QPushButton#pushButtonAutoDJ:checked,
+  #DlgAnalysis > QPushButton:checked {
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_active_orange.svg) 2 3 3 2;
+    color: #000;
+  }
+  QPushButton#pushButtonRecording:checked {
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_active_red.svg) 2 3 3 2;
+    color: #000;
+  }
+
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
+  border-width: 1px 2px 2px 1px;
+  border-image: url(skin:buttons/btn_border_image_spinbox.svg) 1 2 2 1;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
-    border: 1px solid #888;
-    border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #888,
-      stop:0.49 #888,
-      stop:0.5 #000,
-      stop:1 #000);
-    border-radius: 2px;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-image: url(skin:buttons/btn_border_image_spinbox_hover.svg) 1 2 2 1;
   }
   WBeatSpinBox:focus,
   #DlgAutoDJ QSpinBox:focus {
-    border: 1px solid #ff6600;
-    border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #ff6600,
-      stop:0.49 #ff6600,
-      stop:0.5 #000,
-      stop:1 #000);
-    border-radius: 2px;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-image: url(skin:buttons/btn_border_image_spinbox_focus.svg) 1 2 2 1;
   }
+
+WEffectSelector {
+  border-width: 2px 3px 3px 2px;
+  border-image: url(skin:buttons/btn_border_image_weffectselector.svg) 2 3 3 2;
+}
   
 #RecBox,
 #GuiToggleButton,
@@ -212,13 +198,7 @@ WSearchLineEdit,
 /************** Button backgrounds **************/
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
-#FxAssignButton[displayValue="0"],
-#FxAssignButtonDeck[displayValue="0"],/*  */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton,
+#FxAssignButtonDeck[displayValue="0"],
 QHeaderView,
 QHeaderView::section,
 QHeaderView::up-arrow,
@@ -228,19 +208,6 @@ QHeaderView::down-arrow {
     stop:1 #111);
 }
 
-
-#DlgMissing > QPushButton:pressed,
-#DlgHidden > QPushButton:pressed,
-#DlgAutoDJ > QPushButton:pressed,
-#DlgRecording > QPushButton:pressed,
-#DlgAnalysis > QPushButton:pressed {
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #111,
-    stop:1 #222);
-}
-
-
-#SplitCueButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SettingsButton[displayValue="0"],
@@ -248,12 +215,6 @@ QHeaderView::down-arrow {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
     stop:1 #0e0e0e);
-}
-
-#SplitCueButton[displayValue="1"] {
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #412f05,
-    stop:1 #725309);
 }
 
 #MicDuckingButton {
@@ -278,7 +239,6 @@ QHeaderView::down-arrow {
     stop:1 #eece33);
 }
 
-#FxAssignButton[displayValue="1"],
 #FxAssignButtonDeck[displayValue="1"] {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #508301,
@@ -837,12 +797,6 @@ WCoverArt {
 
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox {
-  /* make it 2px smaller in each dimension,
-    border is added for final size
-  width: 55px;
-  height: 22px;
-  border: 1px solid #444;
-  border-radius: 2px; */
   color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
@@ -946,12 +900,6 @@ WBeatSpinBox,
 
 #MasterHeadphoneDivider {
   background-color: #1e1e1e;
-}
-
-#SplitCueButton {
-/* Uses the same trick to style the
-  margin: 1px;
-  border-radius: 3px; */
 }
 
 #MixerChannel_2Decks {
@@ -1080,18 +1028,13 @@ WBeatSpinBox,
 #MasterHeadphoneMixer WLabel,
 #FxKnobLabel,
 #FxButtonLabel {
+  padding: 0px;
   background-color: #101010;
-  text-align: center;
-  qproperty-alignment: 'AlignLeft | AlignVCenter';
   }
-  #MasterHeadphoneMixer WLabel {
-    padding: 0px;
-  }
-  #FxKnobLabel {
-    padding: 0px;
-  }
+  #FxKnobLabel,
   #FxButtonLabel {
-  }
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    }
 
 #FxKnobContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1559,8 +1502,8 @@ WEffectSelector {
     stop:0 #444,
     stop:0.49 #444,
     stop:0.5 #000,
-    stop:1 #000);*/
-  border-radius: 2px;
+    stop:1 #000);
+  border-radius: 2px;*/
   }
   WEffectSelector::drop-down {
     border: 0;
@@ -1590,6 +1533,7 @@ WEffectSelector {
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
+    margin: 0px;
   }
   /* selected item */
   WEffectSelector::checked {
@@ -2082,34 +2026,14 @@ WLibrary QRadioButton::indicator:unchecked {
   #DlgRecording > QPushButton:!enabled,
   #DlgAnalysis > QPushButton:!enabled {
     color: #666;
-    border-bottom: 1px solid #444;
-    border-radius: 2px;
-    margin-bottom: 4px;
   }
   /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {
     margin-left: 1px;
   }
-  QPushButton#pushButtonAutoDJ:checked,
-  #DlgAnalysis > QPushButton:checked {
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #AD5700,
-      stop:1 #DE7000);
-    border: 1px solid #ddd;
-    color: #0f0f0f;
-    margin-bottom: 4px;
-  }
   /* Space in between 'All' radio button and 'Select All' button */
   QPushButton#pushButtonSelectAll {
     margin-left: 12px;
-  }
-  QPushButton#pushButtonRecording:checked {
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #840600,
-      stop:1 #AD0800);
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    margin-bottom: 4px;
   }
 
 /* triangle for closed/opened branches in treeview */
