@@ -104,8 +104,6 @@ class CrateFeature : public LibraryFeature {
     const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
 
-    QMenu *m_pMenu;
-
     TrackCollection* m_pTrackCollection;
 
     CrateTableModel m_crateTableModel;
@@ -125,6 +123,8 @@ class CrateFeature : public LibraryFeature {
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pAnalyzeCrateAction;
+
+    QMenu *m_pMenu;
 };
 
 

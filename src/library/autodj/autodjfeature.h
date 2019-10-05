@@ -92,8 +92,8 @@ class AutoDJFeature : public LibraryFeature {
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;
 
-    QMenu *m_pMenu;
     QIcon m_icon;
+    QMenu *m_pMenu;
 
   private slots:
     // Add a crate to the auto-DJ queue.
