@@ -277,6 +277,7 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
+    m_pMenu->clear();
     if (m_pCratesTreeItem == pClickedItem) {
         // The "Crates" parent item was right-clicked.
         // Bring up the context menu.
@@ -291,16 +292,14 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
             crateMenu.addAction(pAction.get());
             pAction.release();
         }
-        QMenu contextMenu;
-        contextMenu.addMenu(&crateMenu);
-        contextMenu.exec(globalPos);
+        m_pMenu->addMenu(&crateMenu);
+        m_pMenu->popup(globalPos);
     } else {
         // A crate child item was right-clicked.
         // Bring up the context menu.
         m_pRemoveCrateFromAutoDj->setData(pClickedItem->getData()); // the selected CrateId
-        QMenu contextMenu;
-        contextMenu.addAction(m_pRemoveCrateFromAutoDj);
-        contextMenu.exec(globalPos);
+        m_pMenu->addAction(m_pRemoveCrateFromAutoDj);
+        m_pMenu->popup(globalPos);
     }
 }
 
