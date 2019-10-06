@@ -389,6 +389,7 @@ QHeaderView::down-arrow {
 #KeyButton[displayValue="1"],
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
+#FxAssignButton[displayValue="1"],
 #FxAssignButtonDeck[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
