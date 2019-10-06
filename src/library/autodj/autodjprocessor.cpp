@@ -622,11 +622,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     if (m_eState == ADJ_IDLE) {
-        if (!thisDeckPlaying) {
+        if (!thisDeckPlaying && thisPlayPosition < 1) {
             // this is a cueing seek, recalculate the transition, from the
             // new position.
             // This can be our own seek to startPos or a random seek by a user.
             // we need to call calculateTransition() because we are not sure.
+            // If using the full track mode with a transition time of 0,
+            // thisDeckPlaying will be false but the transition should not be
+            // recalculated here.
             calculateTransition(&otherDeck, &thisDeck, false);
         } else if (thisDeck.isRepeat()) {
             // repeat pauses auto DJ
@@ -683,6 +686,16 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             if (thisDeck.fadeBeginPos == thisDeck.fadeEndPos) {
                 setCrossfader(crossfaderTarget);
                 m_transitionProgress = 1.0;
+                // Usually code above will take care of these steps when the
+                // playposition updates again, however this does not occur when
+                // using the Full Track mode with a fade time of 0 because the
+                // toDeck stops.
+                if (thisPlayPosition >= 1) {
+                    otherDeck.play();
+                    loadNextTrackFromQueue(thisDeck);
+                    m_eState = ADJ_IDLE;
+                    emitAutoDJStateChanged(m_eState);
+                }
                 return;
             }
 
