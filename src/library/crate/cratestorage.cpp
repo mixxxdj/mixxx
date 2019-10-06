@@ -166,10 +166,14 @@ void CrateStorage::cleanupDatabase(QSqlDatabase database) {
                 "DELETE FROM %1 WHERE %2 IS NULL OR TRIM(%2)=''").arg(
                         CRATE_TABLE,
                         CRATETABLE_NAME));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Deleted" << query.numRowsAffected()
-                    << "crates with empty names";
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            // continue
+        } else {
+            if (query.numRowsAffected() > 0) {
+                kLogger.warning()
+                        << "Deleted" << query.numRowsAffected()
+                        << "crates with empty names";
+            }
         }
     }
     {
@@ -178,11 +182,15 @@ void CrateStorage::cleanupDatabase(QSqlDatabase database) {
                 "UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)").arg(
                         CRATE_TABLE,
                         CRATETABLE_LOCKED));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Fixed boolean values in table" << CRATE_TABLE
-                    << "column" << CRATETABLE_LOCKED
-                    << "for" << query.numRowsAffected() << "crates";
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            // continue
+        } else {
+            if (query.numRowsAffected() > 0) {
+                kLogger.warning()
+                        << "Fixed boolean values in table" << CRATE_TABLE
+                        << "column" << CRATETABLE_LOCKED
+                        << "for" << query.numRowsAffected() << "crates";
+            }
         }
     }
     {
@@ -191,11 +199,15 @@ void CrateStorage::cleanupDatabase(QSqlDatabase database) {
                 "UPDATE %1 SET %2=0 WHERE %2 NOT IN (0,1)").arg(
                         CRATE_TABLE,
                         CRATETABLE_AUTODJ_SOURCE));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Fixed boolean values in table" << CRATE_TABLE
-                    << "column" << CRATETABLE_AUTODJ_SOURCE
-                    << "for" << query.numRowsAffected() << "crates";
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            // continue
+        } else {
+            if (query.numRowsAffected() > 0) {
+                kLogger.warning()
+                        << "Fixed boolean values in table" << CRATE_TABLE
+                        << "column" << CRATETABLE_AUTODJ_SOURCE
+                        << "for" << query.numRowsAffected() << "crates";
+            }
         }
     }
 
@@ -208,10 +220,14 @@ void CrateStorage::cleanupDatabase(QSqlDatabase database) {
                         CRATETRACKSTABLE_CRATEID,
                         CRATETABLE_ID,
                         CRATE_TABLE));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Removed" << query.numRowsAffected()
-                    << "crate tracks from non-existent crates";
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            // continue
+        } else {
+            if (query.numRowsAffected() > 0) {
+                kLogger.warning()
+                        << "Removed" << query.numRowsAffected()
+                        << "crate tracks from non-existent crates";
+            }
         }
     }
     {
@@ -222,10 +238,14 @@ void CrateStorage::cleanupDatabase(QSqlDatabase database) {
                         CRATETRACKSTABLE_TRACKID,
                         LIBRARYTABLE_ID,
                         LIBRARY_TABLE));
-        if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Removed" << query.numRowsAffected()
-                    << "library purged tracks from crates";
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            // continue
+        } else {
+            if (query.numRowsAffected() > 0) {
+                kLogger.warning()
+                        << "Removed" << query.numRowsAffected()
+                        << "library purged tracks from crates";
+            }
         }
     }
 }
