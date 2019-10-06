@@ -231,13 +231,27 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
         m_pMenu->setCoverArt(m_lastRequestedCover);
         m_pMenu->popup(event->globalPos());
-    } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
+    } else if (event->button() == Qt::LeftButton) {
+        // do nothing if left button is pressed,
+        // wait for button release
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+    }
+}
+
+void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
+    if (!m_bEnable) {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton && m_loadedTrack &&
+            m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
             m_pDlgFullSize->init(m_loadedTrack);
         }
-    }
+    } // else it was a long leftclick or a right click that's already been processed
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {

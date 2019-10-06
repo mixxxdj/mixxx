@@ -51,36 +51,55 @@ LibraryScanner::LibraryScanner(
 
     // Listen to signals from our public methods (invoked by other threads) and
     // connect them to our slots to run the command on the scanner thread.
-    connect(this, SIGNAL(startScan()),
-            this, SLOT(slotStartScan()));
+    connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
 
     // Force the GUI thread's Track cache to be cleared when a library
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
-    TrackDAO* dao = &(m_pTrackCollection->getTrackDAO());
-    connect(this, SIGNAL(trackAdded(TrackPointer)),
-            dao, SLOT(databaseTrackAdded(TrackPointer)));
-    connect(this, SIGNAL(tracksMoved(QSet<TrackId>, QSet<TrackId>)),
-            dao, SLOT(databaseTracksMoved(QSet<TrackId>, QSet<TrackId>)));
-    connect(this, SIGNAL(tracksChanged(QSet<TrackId>)),
-            dao, SLOT(databaseTracksChanged(QSet<TrackId>)));
+    TrackDAO* trackDao = &(m_pTrackCollection->getTrackDAO());
+    connect(this,
+            &LibraryScanner::trackAdded,
+            trackDao,
+            &TrackDAO::databaseTrackAdded);
+    connect(this,
+            &LibraryScanner::tracksChanged,
+            trackDao,
+            &TrackDAO::databaseTracksChanged);
+    connect(this,
+            &LibraryScanner::tracksReplaced,
+            trackDao,
+            &TrackDAO::databaseTracksReplaced);
 
     m_pProgressDlg.reset(new LibraryScannerDlg());
-    connect(this, SIGNAL(progressLoading(QString)),
-            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
-    connect(this, SIGNAL(progressHashing(QString)),
-            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
-    connect(this, SIGNAL(scanStarted()),
-            m_pProgressDlg.data(), SLOT(slotScanStarted()));
-    connect(this, SIGNAL(scanFinished()),
-            m_pProgressDlg.data(), SLOT(slotScanFinished()));
-    connect(m_pProgressDlg.data(), SIGNAL(scanCancelled()),
-            this, SLOT(slotCancel()));
-    connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
-            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
-    connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
-            m_pProgressDlg.data(), SLOT(slotUpdateCover(QString)));
+    connect(this,
+            &LibraryScanner::progressLoading,
+            m_pProgressDlg.data(),
+            &LibraryScannerDlg::slotUpdate);
+    connect(this,
+            &LibraryScanner::progressHashing,
+            m_pProgressDlg.data(),
+            &LibraryScannerDlg::slotUpdate);
+    connect(this,
+            &LibraryScanner::scanStarted,
+            m_pProgressDlg.data(),
+            &LibraryScannerDlg::slotScanStarted);
+    connect(this,
+            &LibraryScanner::scanFinished,
+            m_pProgressDlg.data(),
+            &LibraryScannerDlg::slotScanFinished);
+    connect(m_pProgressDlg.data(),
+            &LibraryScannerDlg::scanCancelled,
+            this,
+            &LibraryScanner::slotCancel);
+    connect(&m_trackDao,
+            &TrackDAO::progressVerifyTracksOutside,
+            m_pProgressDlg.data(),
+            &LibraryScannerDlg::slotUpdate);
+    connect(&m_trackDao,
+            &TrackDAO::progressCoverArt,
+            m_pProgressDlg.data(),
+            &LibraryScannerDlg::slotUpdateCover);
 
     start();
 }
@@ -174,8 +193,10 @@ void LibraryScanner::slotStartScan() {
     // are done, TaskWatcher will signal slotFinishHashedScan.
     TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
     pWatcher->watchTask();
-    connect(pWatcher, SIGNAL(allTasksDone()),
-            this, SLOT(slotFinishHashedScan()));
+    connect(pWatcher,
+            &TaskWatcher::allTasksDone,
+            this,
+            &LibraryScanner::slotFinishHashedScan);
 
     foreach (const QString& dirPath, m_libraryRootDirs) {
         // Acquire a security bookmark for this directory if we are in a
@@ -202,8 +223,10 @@ void LibraryScanner::slotFinishHashedScan() {
     }
 
     TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
-    disconnect(pWatcher, SIGNAL(allTasksDone()),
-            this, SLOT(slotFinishHashedScan()));
+    disconnect(pWatcher,
+            &TaskWatcher::allTasksDone,
+            this,
+            &LibraryScanner::slotFinishHashedScan);
 
     if (m_scannerGlobal->unhashedDirs().empty()) {
         // bypass the second stage
@@ -215,8 +238,10 @@ void LibraryScanner::slotFinishHashedScan() {
     // in the first stage. When all tasks
     // are done, TaskWatcher will signal slotFinishUnhashedScan.
     pWatcher->watchTask();
-    connect(pWatcher, SIGNAL(allTasksDone()),
-            this, SLOT(slotFinishUnhashedScan()));
+    connect(pWatcher,
+            &TaskWatcher::allTasksDone,
+            this,
+            &LibraryScanner::slotFinishUnhashedScan);
 
     foreach (const DirInfo& dirInfo, m_scannerGlobal->unhashedDirs()) {
         // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
@@ -275,14 +300,22 @@ void LibraryScanner::cleanUpScan() {
     // Check to see if the "deleted" tracks showed up in another location,
     // and if so, do some magic to update all our tables.
     kLogger.debug() << "Detecting moved files";
-    QSet<TrackId> tracksMovedSetOld;
-    QSet<TrackId> tracksMovedSetNew;
-    if (!m_trackDao.detectMovedTracks(&tracksMovedSetOld,
-            &tracksMovedSetNew,
-            m_scannerGlobal->addedTracks(),
-            m_scannerGlobal->shouldCancelPointer())) {
-        // canceled
-        return;
+    {
+        QList<QPair<TrackRef, TrackRef>> replacedTracks;
+        if (!m_trackDao.detectMovedTracks(&replacedTracks,
+                m_scannerGlobal->addedTracks(),
+                m_scannerGlobal->shouldCancelPointer())) {
+            kLogger.info()
+                    << "Detecting moved files has been canceled or aborted";
+            return;
+        }
+        if (!replacedTracks.isEmpty()) {
+            kLogger.info()
+                    << "Found"
+                    << replacedTracks.size()
+                    << "moved track(s)";
+            emit tracksReplaced(replacedTracks);
+        }
     }
 
     // Remove the hashes for any directories that have been marked as
@@ -299,8 +332,9 @@ void LibraryScanner::cleanUpScan() {
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
     // Update BaseTrackCache via signals connected to the main TrackDAO.
-    emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
-    emit(tracksChanged(coverArtTracksChanged));
+    if (!coverArtTracksChanged.isEmpty()) {
+        emit tracksChanged(coverArtTracksChanged);
+    }
 }
 
 
@@ -407,23 +441,37 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
         return;
     }
     m_scannerGlobal->getTaskWatcher().watchTask();
-    connect(pTask, SIGNAL(queueTask(ScannerTask*)),
-            this, SLOT(queueTask(ScannerTask*)));
-    connect(pTask, SIGNAL(directoryHashedAndScanned(QString, bool, int)),
-            this, SLOT(slotDirectoryHashedAndScanned(QString, bool, int)));
-    connect(pTask, SIGNAL(directoryUnchanged(QString)),
-            this, SLOT(slotDirectoryUnchanged(QString)));
-    connect(pTask, SIGNAL(trackExists(QString)),
-            this, SLOT(slotTrackExists(QString)));
-    connect(pTask, SIGNAL(addNewTrack(QString)),
-            this, SLOT(slotAddNewTrack(QString)));
+    connect(pTask,
+            &ScannerTask::queueTask,
+            this,
+            &LibraryScanner::queueTask);
+    connect(pTask,
+            &ScannerTask::directoryHashedAndScanned,
+            this,
+            &LibraryScanner::slotDirectoryHashedAndScanned);
+    connect(pTask,
+            &ScannerTask::directoryUnchanged,
+            this,
+            &LibraryScanner::slotDirectoryUnchanged);
+    connect(pTask,
+            &ScannerTask::trackExists,
+            this,
+            &LibraryScanner::slotTrackExists);
+    connect(pTask,
+            &ScannerTask::addNewTrack,
+            this,
+            &LibraryScanner::slotAddNewTrack);
 
     // Progress signals.
     // Pass directly to the main thread
-    connect(pTask, SIGNAL(progressLoading(QString)),
-            this, SIGNAL(progressLoading(QString)));
-    connect(pTask, SIGNAL(progressHashing(QString)),
-            this, SIGNAL(progressHashing(QString)));
+    connect(pTask,
+            &ScannerTask::progressLoading,
+            this,
+            &LibraryScanner::progressLoading);
+    connect(pTask,
+            &ScannerTask::progressHashing,
+            this,
+            &LibraryScanner::progressHashing);
 
     m_pool.start(pTask);
 }
