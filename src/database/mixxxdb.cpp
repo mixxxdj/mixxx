@@ -50,10 +50,12 @@ bool MixxxDb::initDatabaseSchema(
     QString helpEmail = tr("For help with database issues contact:") + "\n" +
                            "mixxx-devel@lists.sourceforge.net";
 
-    switch (SchemaManager(database).upgradeToSchemaVersion(schemaFile, schemaVersion)) {
+    SchemaManager schemaManager(database);
+    switch (schemaManager.upgradeToSchemaVersion(schemaFile, schemaVersion)) {
         case SchemaManager::Result::CurrentVersion:
         case SchemaManager::Result::UpgradeSucceeded:
         case SchemaManager::Result::NewerVersionBackwardsCompatible:
+            schemaManager.cleanupDatabase();
             return true; // done
         case SchemaManager::Result::UpgradeFailed:
             QMessageBox::warning(

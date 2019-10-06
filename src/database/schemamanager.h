@@ -32,6 +32,8 @@ class SchemaManager {
             const QString& schemaFilename,
             int targetVersion);
 
+    void cleanupDatabase() const;
+
   private:
     QSqlDatabase m_database;
     SettingsDAO m_settingsDao;

@@ -1,10 +1,13 @@
 #include "database/schemamanager.h"
 
+#include "library/crate/cratestorage.h"
+
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
 #include "util/xml.h"
 #include "util/logger.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
@@ -208,4 +211,124 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         }
     }
     return Result::UpgradeSucceeded;
+}
+
+namespace {
+
+const QString kDeleteOrphanedTrackLocations =
+        "delete from track_locations where id not in (select location from library)";
+
+const QString kDeleteTracksWithoutLocations =
+        "delete from library where location not in (select id from track_locations)";
+
+const QString kDeleteOrphanedPlaylistTracks =
+        "delete from PlaylistTracks where track_id not in (select id from library)";
+
+const QString kDeleteOrphanedTrackCues =
+        "delete from cues where track_id not in (select id from library)";
+
+const QString kDeleteOrphanedTrackAnalyses =
+        "delete from track_analysis where track_id not in (select id from library)";
+
+const QString kDeleteOrphanedLibraryScannerDirectories =
+        "delete from LibraryHashes where hash <> 0 and directory_path not in (select directory from track_locations)";
+
+// Returns the number of affected rows or -1 on error
+int execCleanupQuery(QSqlDatabase database, const QString& statement) {
+    FwdSqlQuery query(database, statement);
+    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
+        return -1;
+    }
+    if (!query.execPrepared()) {
+        return -1;
+    }
+    return query.numRowsAffected();
+}
+
+} // anonymous namespace
+
+void SchemaManager::cleanupDatabase() const {
+    // No transactions needed as all queries are self-sufficient
+    // and could be executed repeatedly. The order of the queries
+    // respects their dependencies, i.e. deleting rows from tables
+    // that might be referenced from other tables earlier. SQLite
+    // does not check referential integrity by default, that's the
+    // reason why we need this cleanup.
+    kLogger.info()
+            << "Cleaning up database...";
+    PerformanceTimer timer;
+    timer.start();
+    {
+        // TODO: Move into TrackDAO?
+        auto numRows = execCleanupQuery(m_database, kDeleteOrphanedTrackLocations);
+        if (numRows < 0) {
+            kLogger.warning()
+                    << "Failed to delete orphaned track locations";
+        } else if (numRows > 0) {
+            kLogger.info()
+                    << "Deleted" << numRows << "orphaned track locations";
+        }
+    }
+    {
+        // TODO: Move into TrackDAO?
+        auto numRows = execCleanupQuery(m_database, kDeleteTracksWithoutLocations);
+        if (numRows < 0) {
+            kLogger.warning()
+                    << "Failed to delete tracks without locations";
+        } else if (numRows > 0) {
+            kLogger.info()
+                    << "Deleted" << numRows << "tracks without locations";
+        }
+    }
+    {
+        CrateStorage crateStorage;
+        crateStorage.cleanupDatabase(m_database);
+    }
+    {
+        // TODO: Move into PlaylistDAO?
+        auto numRows = execCleanupQuery(m_database, kDeleteOrphanedPlaylistTracks);
+        if (numRows < 0) {
+            kLogger.warning()
+                    << "Failed to delete orphaned playlist tracks";
+        } else if (numRows > 0) {
+            kLogger.info()
+                    << "Deleted" << numRows << "orphaned playlist tracks";
+        }
+    }
+    {
+        // TODO: Move into CueDAO?
+        auto numRows = execCleanupQuery(m_database, kDeleteOrphanedTrackCues);
+        if (numRows < 0) {
+            kLogger.warning()
+                    << "Failed to delete orphaned track cues";
+        } else if (numRows > 0) {
+            kLogger.info()
+                    << "Deleted" << numRows << "orphaned track cues";
+        }
+    }
+    {
+        // TODO: Move into AnalysisDAO?
+        auto numRows = execCleanupQuery(m_database, kDeleteOrphanedTrackAnalyses);
+        if (numRows < 0) {
+            kLogger.warning()
+                    << "Failed to delete orphaned track analyses";
+        } else if (numRows > 0) {
+            kLogger.info()
+                    << "Deleted" << numRows << "orphaned track analyses)";
+        }
+    }
+    {
+        // TODO: Move into LibraryHashDAO?
+        auto numRows = execCleanupQuery(m_database, kDeleteOrphanedLibraryScannerDirectories);
+        if (numRows < 0) {
+            kLogger.warning()
+                    << "Failed to delete orphaned library scanner directories";
+        } else if (numRows > 0) {
+            kLogger.info()
+                    << "Deleted" << numRows << "orphaned library scanner directories)";
+        }
+    }
+    kLogger.info()
+            << "Finished database cleanup:"
+            << timer.elapsed().debugMillisWithUnit();
 }
