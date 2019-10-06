@@ -200,7 +200,7 @@ void StatsManager::processIncomingStatReports() {
     StatReport report;
     foreach (StatsPipe* pStatsPipe, m_statsPipes) {
         while (pStatsPipe->read(&report)) {
-            QString tag = QString::fromUtf8(report.tag);
+            QString tag = report.tag;
             Stat& info = m_stats[tag];
             info.m_tag = tag;
             info.m_type = report.type;
@@ -232,7 +232,6 @@ void StatsManager::processIncomingStatReports() {
                 event.m_time = mixxx::Duration::fromNanos(report.time);
                 m_events.append(event);
             }
-            free(report.tag);
         }
     }
 }

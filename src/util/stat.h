@@ -1,5 +1,4 @@
-#ifndef STAT_H
-#define STAT_H
+#pragma once
 
 #include <QMap>
 #include <QVector>
@@ -127,11 +126,9 @@ class Stat {
 QDebug operator<<(QDebug dbg, const Stat &stat);
 
 struct StatReport {
-    char* tag;
+    QString tag;
     qint64 time;
     Stat::StatType type;
     Stat::ComputeFlags compute;
     double value;
 };
-
-#endif /* STAT_H */
