@@ -145,7 +145,7 @@ void CrateSummaryQueryFields::populateFromQuery(
 }
 
 
-void CrateStorage::repairDatabase(QSqlDatabase database) {
+void CrateStorage::cleanupDatabase(QSqlDatabase database) {
     // NOTE(uklotzde): No transactions
     // All queries are independent so there is no need to enclose some
     // or all of them in a transaction. Grouping into transactions would

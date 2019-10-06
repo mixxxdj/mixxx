@@ -181,7 +181,7 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     CrateStorage() = default;
     ~CrateStorage() override = default;
 
-    void repairDatabase(
+    void cleanupDatabase(
             QSqlDatabase database) override;
 
     void connectDatabase(

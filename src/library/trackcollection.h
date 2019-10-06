@@ -20,8 +20,7 @@
 class Track;
 
 // Manages everything around tracks.
-class TrackCollection : public QObject,
-    public virtual /*implements*/ SqlStorage {
+class TrackCollection : public QObject {
     Q_OBJECT
 
   public:
@@ -29,12 +28,9 @@ class TrackCollection : public QObject,
             const UserSettingsPointer& pConfig);
     ~TrackCollection() override;
 
-    void repairDatabase(
-            QSqlDatabase database) override;
-
     void connectDatabase(
-            QSqlDatabase database) override;
-    void disconnectDatabase() override;
+            QSqlDatabase database);
+    void disconnectDatabase();
 
     QSqlDatabase database() const {
         return m_database;

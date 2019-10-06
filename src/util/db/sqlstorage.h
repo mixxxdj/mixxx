@@ -18,7 +18,7 @@ class SqlStorage {
     // strayed rows should be deleted.
     // This function will only be called while no database
     // is attached to avoid invalidation of internal caches!
-    virtual void repairDatabase(QSqlDatabase database) = 0;
+    virtual void cleanupDatabase(QSqlDatabase database) = 0;
 
     // Attach an open database connection to the storage class.
     // Implementations might need to do the following:

@@ -31,12 +31,6 @@ TrackCollection::~TrackCollection() {
     DEBUG_ASSERT(!m_database.isOpen());
 }
 
-void TrackCollection::repairDatabase(QSqlDatabase database) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-
-    m_crates.repairDatabase(database);
-}
-
 void TrackCollection::connectDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
