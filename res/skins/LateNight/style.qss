@@ -66,7 +66,8 @@ WLibrary,
 #SamplerButtons,
 #MicAuxFrame,
 WSearchLineEdit,
-#OverviewBox {
+#OverviewBox,
+#KeyText {
   border-top: 1px solid #0a0a0a;
   border-left: 1px solid #0a0a0a;
   border-bottom: 1px solid #333;
@@ -620,9 +621,6 @@ WCoverArt {
 #KeyText {
   qproperty-alignment: 'AlignCenter';
   font-size: 13px/13px;
-  /* let's give this a more decent border with sharper corners
-   because it's not interactive like the spinboxes or the effect selector */
-  border: 1px solid #0f0f0f;
   border-radius: 1px;
   margin: 0px 1px;
   }
@@ -658,13 +656,6 @@ WCoverArt {
   #TitleTextSmall,
   #ArtistTextSmall {
     font-weight: bold;
-  }
-  #TitleTextSmall,
-  #ArtistTextSmall,
-  #PlayPositionTextSmall,
-  #BpmTextSmall,
-  #KeyTextSmall {
-    background-color: #1e1e1e;
   }
   #TitleTextSmall {
     padding: 1px 3px 1px 1px;
