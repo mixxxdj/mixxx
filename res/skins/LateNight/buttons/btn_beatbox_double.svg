@@ -6,7 +6,7 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
-   height="12"
+   height="11"
    width="16"
    id="svg3063">
   <metadata
@@ -43,9 +43,9 @@
     <linearGradient
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(0.96801856,0,0,1.0311015,0.93759913,-11.387575)"
-       y2="1.1144"
-       y1="21.841"
-       x2="12.525"
+       y2="11.118282"
+       y1="31.958563"
+       x2="12.551"
        x1="12.551"
        id="linearGradient6970-3">
       <stop
@@ -59,7 +59,7 @@
     </linearGradient>
     <linearGradient
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.96801856,0,0,1.0311015,0.93759913,-11.387575)"
+       gradientTransform="matrix(0.96801856,0,0,1.0311015,13.245291,-12.208088)"
        y2="1.1144"
        y1="21.841"
        x2="12.525"
@@ -76,27 +76,11 @@
     </linearGradient>
   </defs>
   <path
-     style="color:#000000;text-indent:0;text-transform:none;fill:url(#linearGradient6970-5);stroke-width:0.94349116"
-     d="M 0,11 H 16 L 16.01546,2.9645237 C 16.02106,1.312009 14.854001,0 13.459567,0 H 2.5168294 C 1.122395,0 0.02118003,1.312009 0.01545833,2.9645237 Z"
-     id="path3067-6" />
+     style="color:#000000;text-indent:0;text-transform:none;fill:url(#linearGradient6970-3);stroke-width:0.94349116"
+     d="m 0,11 16,-2.62e-4 V 2.964 C 16.0056,1.3114853 14.854001,0 13.459567,0 H 0 Z"
+     id="path3067-6-7" />
   <path
      style="fill:#bfbfbf;stroke-width:0.85714287"
      d="M 8.0050588,3 4.5409159,9.0000003 h 6.9282001 z"
      id="path3065-6" />
-  <rect
-     transform="scale(1,-1)"
-     y="-12"
-     x="0"
-     height="1"
-     width="16"
-     id="rect845"
-     style="opacity:1;fill:#010101;fill-opacity:1;stroke:none;stroke-width:0.86608171;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke" />
-  <rect
-     transform="scale(1,-1)"
-     y="-12"
-     x="0"
-     height="1"
-     width="16"
-     id="rect845-6"
-     style="opacity:1;fill:#010101;fill-opacity:1;stroke:none;stroke-width:0.86608171;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke" />
 </svg>

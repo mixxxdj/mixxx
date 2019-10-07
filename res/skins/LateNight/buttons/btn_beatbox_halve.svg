@@ -5,8 +5,9 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    version="1.1"
-   height="12"
+   height="11"
    width="16"
    id="svg3063">
   <metadata
@@ -42,7 +43,7 @@
     </linearGradient>
     <linearGradient
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.96801856,0,0,-1.0311015,0.93759913,23.387575)"
+       gradientTransform="matrix(0.96801856,0,0,-1.0311015,18.871665,12.545084)"
        y2="1.1144"
        y1="21.841"
        x2="12.525"
@@ -57,13 +58,31 @@
          stop-color="#242424"
          id="stop5424-5" />
     </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.96801856,0,0,-1.0311015,0.93759899,22.387575)"
+       y2="11.044087"
+       y1="32.356445"
+       x2="12.585544"
+       x1="12.585544"
+       id="linearGradient6970-5"
+       xlink:href="#linearGradient4263">
+      <stop
+         id="stop5424-5-5"
+         stop-color="#242424"
+         offset="0" />
+      <stop
+         id="stop5422-3-3"
+         stop-color="#101010"
+         offset="1" />
+    </linearGradient>
   </defs>
   <path
-     style="color:#000000;text-indent:0;text-transform:none;fill:url(#linearGradient6970);stroke-width:0.94349116"
-     d="m 0,0 h 16 l 0.01546,9.0354763 C 16.02106,10.687991 14.854001,12 13.459567,12 H 2.5168294 C 1.122395,12 0.02118003,10.687991 0.01545833,9.0354763 Z"
-     id="path3067-6" />
+     style="color:#000000;text-indent:0;text-transform:none;fill:url(#linearGradient6970-5);fill-opacity:1;stroke-width:0.94349116"
+     d="M -1e-6,0 H 16 l 0.01546,8.0354762 C 16.021061,9.687991 14.854002,11 13.459568,11 H 0 Z"
+     id="path3067-6-3" />
   <path
      style="fill:#bfbfbf;stroke-width:0.85714287"
-     d="M 8,9 4.5358571,3 h 6.9281999 z"
+     d="M 8,8 4.5358571,2 h 6.9281999 z"
      id="path3065-6" />
 </svg>
