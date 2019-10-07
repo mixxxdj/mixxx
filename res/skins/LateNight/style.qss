@@ -1997,7 +1997,7 @@ QMenu {
     margin: 0px;
   }
   QMenu::item {
-    padding: 5px 10px 5px 17px;
+    padding: 5px 13px 5px 20px;
   }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
