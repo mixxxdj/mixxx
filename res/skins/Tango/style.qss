@@ -1233,12 +1233,8 @@ WBeatSpinBox,
   font-weight: bold;
   text-align: center;
   padding-top: 1px;
-  }
-  #BpmLabel {
-    background-color: #252525;
-  }
-  #BpmLabelMini {
-    background-color: #252525;
+  background-color: #252525;
+  border-radius: 2px;
   }
   #SyncButtonOverlay[displayValue="0"]:hover,
   #SyncButtonOverlayMini[displayValue="0"]:hover {

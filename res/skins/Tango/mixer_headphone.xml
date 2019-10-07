@@ -73,9 +73,9 @@ Description:
               <SliderComposed>
                 <TooltipId>headMix</TooltipId>
                 <ObjectName>MixerbarSlider</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
-                <Handle>knobs_sliders/headMix_handle.svg</Handle>
-                <Slider>knobs_sliders/headMix_scale.svg</Slider>
+                <Size>50f,24f</Size>
+                <Handle scalemode="STRETCH_ASPECT">knobs_sliders/headMix_handle.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">knobs_sliders/headMix_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
                   <ConfigKey>[Master],headMix</ConfigKey>

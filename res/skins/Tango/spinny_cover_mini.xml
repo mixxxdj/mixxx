@@ -66,7 +66,7 @@ Variables:
             <TooltipId>coverart</TooltipId>
             <Size>40me,40me</Size>
             <Group>[Channel<Variable name="chanNum"/>]</Group>
-            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="SpinnyCoverColor"/>.svg</DefaultCover>
+            <DefaultCover scalemode="STRETCH_ASPECT">skin:/graphics/cover_default_mini_<Variable name="SpinnyCoverColor"/>.svg</DefaultCover>
             <Connection>
               <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
