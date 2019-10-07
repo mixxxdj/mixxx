@@ -967,11 +967,6 @@ elseif(WIN32)
       version     # ?
       wtsapi32    # ?
 
-      #qtfreetype
-      #qtharfbuzz
-      #qtlibpng
-      #qtpcre2
-
       # NOTE(rryan): If you are adding a plugin here, you must also
       # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
       # for it. Not all imageformats plugins are built as .libs when
@@ -999,6 +994,15 @@ elseif(WIN32)
       # sqldrivers (new in Qt5? or did we just start enabling them)
       Qt5::QSQLiteDriverPlugin
     )
+
+    find_library(QTFREETYPE_LIBRARY qtfreetype)
+    target_link_libraries(mixxx-lib PUBLIC "${QTFREETYPE_LIBRARY}")
+    find_library(QTHARFBUZZ_LIBRARY qtharfbuzz)
+    target_link_libraries(mixxx-lib PUBLIC "${QTHARFBUZZ_LIBRARY}")
+    find_library(QTLIBPNG_LIBRARY qtlibpng)
+    target_link_libraries(mixxx-lib PUBLIC "${QTLIBPNG_LIBRARY}")
+    find_library(QTPCRE2_LIBRARY qtpcre2)
+    target_link_libraries(mixxx-lib PUBLIC "${QTPCRE2_LIBRARY}")
   endif()
 endif()
 
