@@ -691,7 +691,7 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-add_executable(mixxx src/main.cpp)
+add_executable(mixxx WIN32 src/main.cpp)
 target_link_libraries(mixxx PUBLIC mixxx-lib)
 
 #
