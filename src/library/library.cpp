@@ -131,20 +131,20 @@ Library::Library(
     addFeature(m_pCrateFeature);
     m_pBrowseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, pRecordingManager);
-    connect(browseFeature,
+    connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
             &m_scanner,
             &LibraryScanner::scan);
     connect(&m_scanner,
             &LibraryScanner::scanStarted,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanStarted);
     connect(&m_scanner,
             &LibraryScanner::scanFinished,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanFinished);
 
-    addFeature(browseFeature);
+    addFeature(m_pBrowseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     m_pSetlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
     addFeature(m_pSetlogFeature);

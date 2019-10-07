@@ -320,7 +320,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
             connect(pAction.get(),
                     &QAction::triggered,
                     [=](bool) { m_crateMapper.map(); });
-            crateMenu.addAction(pAction.get());
+            m_pCrateMenu->addAction(pAction.get());
             pAction.release();
         }
         m_pMenu->addMenu(m_pCrateMenu);
