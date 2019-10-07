@@ -244,8 +244,9 @@ QHeaderView::down-arrow {
 
 #FxAssignButtonDeck[displayValue="1"] {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #508301,
-    stop:1 #7fcd03);
+    stop:0 #456e05,
+    stop:0.25 #5b9402,
+    stop:1 #659f08);
 }
 
 #SettingsButton[displayValue="0"] {
