@@ -74,6 +74,13 @@ TraktorS2MK3 = new function () {
     // Jog wheels
     this.last_tick_val = [0, 0];
     this.last_tick_time = [0.0, 0.0];
+
+    // VuMeter
+    this.vuLeftConnection = {};
+    this.vuRightConnection = {};
+    this.clipLeftConnection = {};
+    this.clipRightConnection = {};
+    this.vuMeterValues = {"vu-18": (1/6), "vu-12": (1/6*2), "vu-6": (1/6*3), "vu0": (1/6*4), "vu6": (1/6*5)};
 }
 
 TraktorS2MK3.init = function (id) {
@@ -587,6 +594,20 @@ TraktorS2MK3.registerOutputPackets = function () {
     output.addOutput("[Channel1]", "pfl", 0x1A, "B");
     output.addOutput("[Channel2]", "pfl", 0x1B, "B");
 
+    output.addOutput("[Channel1]", "vu-18", 0x1C, "B");
+    output.addOutput("[Channel1]", "vu-12", 0x1D, "B");
+    output.addOutput("[Channel1]", "vu-6", 0x1E, "B");
+    output.addOutput("[Channel1]", "vu0", 0x1F, "B");
+    output.addOutput("[Channel1]", "vu6", 0x20, "B");
+    output.addOutput("[Channel1]", "PeakIndicator", 0x21, "B");
+
+    output.addOutput("[Channel2]", "vu-18", 0x22, "B");
+    output.addOutput("[Channel2]", "vu-12", 0x23, "B");
+    output.addOutput("[Channel2]", "vu-6", 0x24, "B");
+    output.addOutput("[Channel2]", "vu0", 0x25, "B");
+    output.addOutput("[Channel2]", "vu6", 0x26, "B");
+    output.addOutput("[Channel2]", "PeakIndicator", 0x27, "B");
+
     output.addOutput("[ChannelX]", "fxButton1", 0x16, "B");
     output.addOutput("[ChannelX]", "fxButton2", 0x17, "B");
     output.addOutput("[ChannelX]", "fxButton3", 0x18, "B");
@@ -632,12 +653,37 @@ TraktorS2MK3.registerOutputPackets = function () {
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
     this.linkOutput("[Channel2]", "pfl", this.outputHandler);
 
+    // VuMeter
+    this.vuLeftConnection = engine.makeConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
+    this.vuRightConnection = engine.makeConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
+    this.clipLeftConnection = engine.makeConnection("[Channel1]", "PeakIndicator", this.vuOutputHandler);
+    this.clipRightConnection = engine.makeConnection("[Channel2]", "PeakIndicator", this.vuOutputHandler);
+
     TraktorS2MK3.lightDeck();
 }
 
 /* Helper function to link output in a short form */
 TraktorS2MK3.linkOutput = function (group, name, callback) {
     TraktorS2MK3.controller.linkOutput(group, name, group, name, callback);
+}
+
+TraktorS2MK3.vuMeterHandler = function (value, group, key) {
+    for (var vuKey in TraktorS2MK3.vuMeterValues) {
+        if(TraktorS2MK3.vuMeterValues[vuKey] > value) {
+            TraktorS2MK3.vuOutputHandler(false, group, vuKey);
+        } else {
+            TraktorS2MK3.vuOutputHandler(true, group, vuKey);
+        }
+    }
+}
+
+TraktorS2MK3.vuOutputHandler = function (value, group, key) {
+    var led_value = 0x00;
+    if (value) {
+        led_value = 0x7E;
+    }
+
+    TraktorS2MK3.controller.setOutput(group, key, led_value, true);
 }
 
 TraktorS2MK3.outputHandler = function (value, group, key) {
@@ -714,6 +760,13 @@ TraktorS2MK3.messageCallback = function (packet, data) {
 }
 
 TraktorS2MK3.shutdown = function () {
+
+    // VuMeter connections
+    this.vuLeftConnection.disconnect();
+    this.vuRightConnection.disconnect();
+    this.clipLeftConnection.disconnect();
+    this.clipRightConnection.disconnect();
+
     // Deactivate all LEDs
     var data_string = "00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 \n" +
         "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 \n" +
