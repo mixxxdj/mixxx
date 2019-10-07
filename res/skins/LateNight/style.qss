@@ -380,6 +380,7 @@ QHeaderView::down-arrow {
 #KeyButton[displayValue="0"],
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
+#FxAssignButton[displayValue="0"],
 #FxAssignButtonDeck[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
