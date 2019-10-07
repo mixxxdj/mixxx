@@ -71,6 +71,9 @@ TraktorS2MK3 = new function () {
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
     this.quantizeState = 0; // 0 = Off, 1 = On
 
+    this.microphonePressedTimer = 0;
+    this.microphonePressedState = 0; // 0 = Not pressed, 1 = Pressed
+
     // Jog wheels
     this.last_tick_val = [0, 0];
     this.last_tick_time = [0.0, 0.0];
@@ -80,7 +83,7 @@ TraktorS2MK3 = new function () {
     this.vuRightConnection = {};
     this.clipLeftConnection = {};
     this.clipRightConnection = {};
-    this.vuMeterValues = {"vu-18": (1/6), "vu-12": (1/6*2), "vu-6": (1/6*3), "vu0": (1/6*4), "vu6": (1/6*5)};
+    this.vuMeterValues = { "vu-18": (1 / 6), "vu-12": (1 / 6 * 2), "vu-6": (1 / 6 * 3), "vu0": (1 / 6 * 4), "vu6": (1 / 6 * 5) };
 }
 
 TraktorS2MK3.init = function (id) {
@@ -215,6 +218,9 @@ TraktorS2MK3.registerInputPackets = function () {
 
     // There is only one button on the controller, we use to toggle quantization for all channels
     this.registerInputButton(messageShort, "[ChannelX]", "!quantize", 0x06, 0x40, this.quantizeHandler);
+
+    // Microphone
+    this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x06, 0x80, this.microphoneHandler);
 
     // Jog wheels
     this.registerInputButton(messageShort, "[Channel1]", "!jog_touch", 0x08, 0x40, this.jogTouchHandler);
@@ -460,6 +466,39 @@ TraktorS2MK3.quantizeHandler = function (field) {
     TraktorS2MK3.outputHandler(this.quantizeState, field.group, "quantize");
 }
 
+TraktorS2MK3.microphoneHandler = function (field) {
+    if (field.value) {
+        if (!TraktorS2MK3.microphonePressedState) {
+            // Start timer to measure how long button is pressed
+            TraktorS2MK3.microphonePressedTimer = engine.beginTimer(1000, "TraktorS2MK3.microphoneTimer()");
+        }
+
+        TraktorS2MK3.microphonePressedState = !TraktorS2MK3.microphonePressedState;
+        engine.setValue("[Microphone]", "talkover", TraktorS2MK3.microphonePressedState);
+    }
+    else {
+        // Button is released, check if timer is still running
+        if (TraktorS2MK3.microphonePressedTimer !== 0) {
+            // short klick -> permanent activation
+            engine.stopTimer(TraktorS2MK3.microphonePressedTimer);
+            TraktorS2MK3.microphonePressedTimer = 0;
+        } else {
+            TraktorS2MK3.microphonePressedState = false;
+            engine.setValue("[Microphone]", "talkover", TraktorS2MK3.microphonePressedState);
+        }
+    }
+
+    TraktorS2MK3.outputHandler(TraktorS2MK3.microphonePressedState, field.group, "talkover");
+}
+
+TraktorS2MK3.microphoneTimer = function () {
+    // Reset microphone button timer if active
+    if (TraktorS2MK3.microphonePressedTimer !== 0) {
+        engine.stopTimer(TraktorS2MK3.microphonePressedTimer);
+        TraktorS2MK3.microphonePressedTimer = 0;
+    }
+}
+
 TraktorS2MK3.parameterHandler = function (field) {
     engine.setParameter(field.group, field.name, field.value / 4095);
 }
@@ -617,6 +656,7 @@ TraktorS2MK3.registerOutputPackets = function () {
     output.addOutput("[Channel2]", "MaximizeLibrary", 0x2B, "B");
 
     output.addOutput("[ChannelX]", "quantize", 0x3C, "B");
+    output.addOutput("[Microphone]", "talkover", 0x3D, "B");
 
     this.controller.registerOutputPacket(output);
 
@@ -668,8 +708,9 @@ TraktorS2MK3.linkOutput = function (group, name, callback) {
 }
 
 TraktorS2MK3.vuMeterHandler = function (value, group, key) {
+    // TODO: Only send one packet for all LEDs
     for (var vuKey in TraktorS2MK3.vuMeterValues) {
-        if(TraktorS2MK3.vuMeterValues[vuKey] > value) {
+        if (TraktorS2MK3.vuMeterValues[vuKey] > value) {
             TraktorS2MK3.vuOutputHandler(false, group, vuKey);
         } else {
             TraktorS2MK3.vuOutputHandler(true, group, vuKey);
