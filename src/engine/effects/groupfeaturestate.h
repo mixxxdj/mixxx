@@ -10,7 +10,9 @@ struct GroupFeatureState {
               has_beat_fraction(false),
               beat_fraction(0.0),
               has_gain(false),
-              gain(1.0) {
+              gain(1.0),
+              has_bpm(false),
+              bpm(0.0) {
     }
 
     // The beat length in seconds.
@@ -24,6 +26,9 @@ struct GroupFeatureState {
 
     bool has_gain;
     double gain;
+
+    bool has_bpm;
+    double bpm;
 };
 
 #endif /* GROUPFEATURESTATE_H */

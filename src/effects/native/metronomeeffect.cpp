@@ -88,24 +88,30 @@ void MetronomeEffect::processChannel(
         click = kClick48000;
     }
 
+    SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+
     unsigned int maxFrames;
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = bufferParameters.sampleRate() * groupFeatures.beat_length_sec;
+    if (m_pSyncParameter->toBool()) {
+        if (groupFeatures.bpm <= 0)
+            return;
+
+        maxFrames = bufferParameters.sampleRate() * 60 / groupFeatures.bpm;
+
         if (groupFeatures.has_beat_fraction) {
             unsigned int currentFrame =  maxFrames * groupFeatures.beat_fraction;
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&
                     currentFrame < maxFrames - clickSize &&
-                    gs->m_framesSinceClickStart > clickSize) {
+                    gs->m_framesSinceClickStart > clickSize &&
+                    currentFrame != gs->m_previousFrame) {
                 // plays a single click on low speed
                 gs->m_framesSinceClickStart = currentFrame;
             }
+            gs->m_previousFrame = currentFrame;
         }
     } else {
         maxFrames = bufferParameters.sampleRate() * 60 / m_pBpmParameter->value();
     }
-
-    SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.
@@ -136,4 +142,3 @@ void MetronomeEffect::processChannel(
                 copyFrames);
     }
 }
-
