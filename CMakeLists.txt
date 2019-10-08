@@ -1104,6 +1104,10 @@ target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
 find_package(SndFile REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
 target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
+if(WIN32 AND STATIC_DEPS)
+  find_package(G72X REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC G72X::G72X)
+endif()
 
 # SoundTouch
 add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
@@ -1403,6 +1407,8 @@ endif()
 
 # Opus (RFC 6716)
 find_package(Opus)
+find_package(Celt)
+find_package(Silk)
 option(OPUS_ENABLED "Opus (RFC 6716) support" "${Opus_FOUND}")
 if(OPUS_ENABLED)
   if(NOT Opus_FOUND)
@@ -1415,6 +1421,17 @@ if(OPUS_ENABLED)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_include_directories(mixxx-lib PUBLIC ${Opus_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${Opus_LIBRARIES})
+  if(WIN32 AND STATIC_DEPS)
+    if(NOT Celt_FOUND)
+      message(FATAL_ERROR "Opus support with static dependencies requires the celt library.")
+    endif()
+    target_link_libraries(mixxx-lib PUBLIC Celt::Celt)
+
+    if(NOT Silk_FOUND)
+      message(FATAL_ERROR "Opus support with static dependencies requires the silk library.")
+    endif()
+    target_link_libraries(mixxx-lib PUBLIC Silk::Float)
+  endif()
 endif()
 
 # MAD MP3 Decoder
