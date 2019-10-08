@@ -12,6 +12,7 @@ class Deck : public BaseTrackPlayerImpl {
          UserSettingsPointer pConfig,
          EngineMaster* pMixingEngine,
          EffectsManager* pEffectsManager,
+         VisualsManager* pVisualsManager,
          EngineChannel::ChannelOrientation defaultOrientation,
          const QString& group);
     virtual ~Deck();

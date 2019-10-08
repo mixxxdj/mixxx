@@ -144,7 +144,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
+      <ConfigKey persist="true">[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
@@ -207,7 +207,7 @@ Variables:
                     <MarkerColor>#00FF00</MarkerColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
-                      <Color>#00FF00</Color>
+                      <Color>#666666</Color>
                       <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>
@@ -358,7 +358,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
+      <ConfigKey persist="true">[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- /Maxi Sampler -->

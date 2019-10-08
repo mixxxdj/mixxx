@@ -1,7 +1,7 @@
 #include "util/version.h"
 
 #include <QCoreApplication>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QStringList>
 #include <QtDebug>
 #include <QtGlobal>
@@ -22,6 +22,7 @@
 #undef WIN32
 #endif
 
+#include <lame/lame.h>
 #include <FLAC/format.h>
 #include <chromaprint.h>
 #include <rubberband/RubberBandStretcher.h>
@@ -126,7 +127,8 @@ QStringList Version::dependencyVersions() {
             // Should be accurate.
             << QString("libsndfile: %1").arg(sndfile_version)
             // The version of the FLAC headers Mixxx was compiled with.
-            << QString("FLAC: %1").arg(FLAC__VERSION_STRING);
+            << QString("FLAC: %1").arg(FLAC__VERSION_STRING)
+            << QString("libmp3lame: %1").arg(get_lame_version());
 
     return result;
 }
@@ -162,10 +164,10 @@ void Version::logBuildDetails() {
         qDebug() << qPrintable(depVersion);
     }
 
-    qDebug() << "QDesktopServices::storageLocation(HomeLocation):"
-             << QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    qDebug() << "QDesktopServices::storageLocation(DataLocation):"
-             << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    qDebug() << "QStandardPaths::writableLocation(HomeLocation):"
+             << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    qDebug() << "QStandardPaths::writableLocation(DataLocation):"
+             << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     qDebug() << "QCoreApplication::applicationDirPath()"
              << QCoreApplication::applicationDirPath();
 }

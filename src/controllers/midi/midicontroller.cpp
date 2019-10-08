@@ -28,6 +28,10 @@ MidiController::~MidiController() {
     // destructors.
 }
 
+ControllerJSProxy* MidiController::jsProxy() {
+    return new MidiControllerJSProxy(this);
+}
+
 QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }
@@ -186,8 +190,7 @@ void MidiController::commitTemporaryInputMappings() {
     // We want to replace duplicates that exist in m_preset but allow duplicates
     // in m_temporaryInputMappings. To do this, we first remove every key in
     // m_temporaryInputMappings from m_preset.inputMappings.
-    for (QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                 m_temporaryInputMappings.begin();
+    for (auto it = m_temporaryInputMappings.constBegin();
          it != m_temporaryInputMappings.end(); ++it) {
         m_preset.inputMappings.remove(it.key());
     }
@@ -211,9 +214,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
     if (isLearning()) {
         emit(messageReceived(status, control, value));
 
-        QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                m_temporaryInputMappings.find(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
+        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
+        if (it != m_temporaryInputMappings.constEnd()) {
             for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
@@ -221,9 +223,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
     }
 
-    QHash<uint16_t, MidiInputMapping>::const_iterator it =
-            m_preset.inputMappings.find(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    auto it = m_preset.inputMappings.constFind(mappingKey.key);
+    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -243,9 +244,14 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             return;
         }
 
-        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
-        if (!pEngine->execute(function, channel, control, value, status,
-                              mapping.control.group, timestamp)) {
+        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
+        QJSValueList args;
+        args << QJSValue(channel);
+        args << QJSValue(control);
+        args << QJSValue(value);
+        args << QJSValue(status);
+        args << QJSValue(mapping.control.group);
+        if (!pEngine->executeFunction(function, args)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;
         }
@@ -274,8 +280,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping_is_14bit) {
         bool found = false;
-        for (QList<QPair<MidiInputMapping, unsigned char> >::iterator it =
-                     m_fourteen_bit_queued_mappings.begin();
+        for (auto it = m_fourteen_bit_queued_mappings.begin();
              it != m_fourteen_bit_queued_mappings.end(); ++it) {
             if (it->first.control == mapping.control) {
                 if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
@@ -465,19 +470,17 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
         // TODO(rryan): Fake a one value?
         emit(messageReceived(mappingKey.status, mappingKey.control, 0x7F));
 
-        QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                m_temporaryInputMappings.find(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
+        if (it != m_temporaryInputMappings.constEnd()) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), data, timestamp);
             }
             return;
         }
     }
 
-    QHash<uint16_t, MidiInputMapping>::const_iterator it =
-            m_preset.inputMappings.find(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    auto it = m_preset.inputMappings.constFind(mappingKey.key);
+    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }
@@ -491,8 +494,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         if (pEngine == NULL) {
             return;
         }
-        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
-        if (!pEngine->execute(function, data, timestamp)) {
+        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
+        if (!pEngine->executeFunction(function, data)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;
         }

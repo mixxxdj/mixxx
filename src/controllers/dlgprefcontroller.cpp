@@ -11,6 +11,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QtAlgorithms>
 
 #include "controllers/dlgprefcontroller.h"
@@ -33,15 +34,16 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
           m_pInputProxyModel(NULL),
           m_pOutputTableModel(NULL),
           m_pOutputProxyModel(NULL),
-          m_bDirty(false) {
+          m_bDirty(false),
+          m_bState(State::valid) {
     m_ui.setupUi(this);
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
     initTableView(m_ui.m_pScriptsTableWidget);
 
-    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
-            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
+    connect(m_pController, &Controller::presetLoaded,
+            this, &DlgPrefController::slotPresetLoaded);
     // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
     // since 1.11.0. We shouldn't be calling Controller methods because it lives
     // in a different thread. Booleans (like isOpen()) are fine but a complex
@@ -57,6 +59,19 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     } else {
         m_ui.labelDeviceCategory->hide();
     }
+
+    m_ui.groupBoxWarning->hide();
+    m_ui.labelWarning->setText(tr("<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
+            "Please select another preset or disable the controller.</b></font><br><br>"
+            "This preset was designed for a newer Mixxx Controller Engine "
+            "and cannot be used on your current Mixxx installation.<br>"
+            "Your Mixxx installation has Controller Engine version %1. "
+            "This preset requires a Controller Engine version >= %2.<br><br>"
+            "For more information visit the wiki page on "
+            "<a href='https://mixxx.org/wiki/doku.php/controller_engine_versions'>Controller Engine Versions</a>.")
+            .arg("2","1"));
+    QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
+    m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
 
     // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
@@ -223,6 +238,10 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
             url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
     }
     return url;
+}
+
+DlgPreferencePage::State DlgPrefController::state() {
+    return m_bState;
 }
 
 void DlgPrefController::slotDirty() {
@@ -423,6 +442,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
+    checkPresetCompatibility(preset);
     QStringList supportLinks;
 
     QString forumLink = presetForumLink(preset);
@@ -515,7 +535,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
     m_ui.m_pScriptsTableWidget->horizontalHeader()
-            ->setResizeMode(QHeaderView::Stretch);
+            ->setSectionResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -542,9 +562,43 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     }
 }
 
+void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset) {
+    State bPreviousState = m_bState;
+    if (m_ui.chkEnabledDevice->isChecked() && !presetIsSupported(preset)) {
+        m_bState = State::invalid;
+        m_ui.groupBoxWarning->show();
+        m_ui.btnLearningWizard->setEnabled(false);
+        m_ui.btnAddInputMapping->setEnabled(false);
+        m_ui.btnRemoveInputMappings->setEnabled(false);
+        m_ui.btnClearAllInputMappings->setEnabled(false);
+        m_ui.btnAddOutputMapping->setEnabled(false);
+        m_ui.btnRemoveOutputMappings->setEnabled(false);
+        m_ui.btnClearAllOutputMappings->setEnabled(false);
+        m_ui.btnAddScript->setEnabled(false);
+        m_ui.btnRemoveScript->setEnabled(false);
+    } else {
+        m_bState = State::valid;
+        m_ui.groupBoxWarning->hide();
+        bool isMappable = m_pController->isMappable();
+        m_ui.btnLearningWizard->setEnabled(isMappable);
+        m_ui.btnAddInputMapping->setEnabled(true);
+        m_ui.btnRemoveInputMappings->setEnabled(true);
+        m_ui.btnClearAllInputMappings->setEnabled(true);
+        m_ui.btnAddOutputMapping->setEnabled(true);
+        m_ui.btnRemoveOutputMappings->setEnabled(true);
+        m_ui.btnClearAllOutputMappings->setEnabled(true);
+        m_ui.btnAddScript->setEnabled(true);
+        m_ui.btnRemoveScript->setEnabled(true);
+    }
+    if (bPreviousState != m_bState) {
+        emit(stateChanged());
+    }
+}
+
 void DlgPrefController::slotEnableDevice(bool enable) {
     slotDirty();
 
+    checkPresetCompatibility(m_pPreset);
     // Set tree item text to normal/bold.
     emit(controllerEnabled(this, enable));
 }
@@ -557,6 +611,10 @@ void DlgPrefController::enableDevice() {
 void DlgPrefController::disableDevice() {
     emit(closeController(m_pController));
     //TODO: Should probably check if close() actually succeeded.
+}
+
+bool DlgPrefController::presetIsSupported(ControllerPresetPointer preset) {
+    return ControllerEngine::version >= preset->controllerEngineVersion();
 }
 
 void DlgPrefController::addInputMapping() {
@@ -644,7 +702,7 @@ void DlgPrefController::clearAllOutputMappings() {
 void DlgPrefController::addScript() {
     QString scriptFile = QFileDialog::getOpenFileName(
         this, tr("Add Script"),
-        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         tr("Controller Script Files (*.js)"));
 
     if (scriptFile.isNull()) {
@@ -744,5 +802,3 @@ void DlgPrefController::openScript() {
         }
     }
 }
-
-

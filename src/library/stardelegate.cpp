@@ -47,14 +47,14 @@ void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& opti
         return;
     }
 
-    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarRating starRating = index.data().value<StarRating>();
     starRating.paint(painter, option.rect);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,
                              const QModelIndex& index) const {
     Q_UNUSED(option);
-    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarRating starRating = index.data().value<StarRating>();
     return starRating.sizeHint();
 }
 
@@ -62,7 +62,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
                                     const QStyleOptionViewItem& option,
                                     const QModelIndex& index) const {
     // Populate the correct colors based on the styling
-    QStyleOptionViewItemV4 newOption = option;
+    QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
     StarEditor* editor = new StarEditor(parent, m_pTableView, index, newOption);
@@ -73,7 +73,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
 
 void StarDelegate::setEditorData(QWidget* editor,
                                  const QModelIndex& index) const {
-    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarRating starRating = index.data().value<StarRating>();
     StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
     starEditor->setStarRating(starRating);
 }
@@ -94,7 +94,7 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // This slot is called if the mouse pointer enters ANY cell on the
     // QTableView but the code should only be executed on a column with a
     // StarRating.
-    if (qVariantCanConvert<StarRating>(index.data())) {
+    if (index.data().canConvert(qMetaTypeId<StarRating>())) {
         if (m_isOneCellInEditMode) {
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }

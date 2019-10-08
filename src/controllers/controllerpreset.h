@@ -21,7 +21,7 @@ class ConstControllerPresetVisitor;
 
 class ControllerPreset {
   public:
-    ControllerPreset() {}
+    ControllerPreset(): m_iControllerEngineVersion(0) {}
     virtual ~ControllerPreset() {}
 
     struct ScriptFileInfo {
@@ -121,6 +121,14 @@ class ControllerPreset {
         return m_mixxxVersion;
     }
 
+    inline void setControllerEngineVersion(int iControllerEngineVersion) {
+        m_iControllerEngineVersion = iControllerEngineVersion;
+    }
+
+    inline int controllerEngineVersion() const {
+        return m_iControllerEngineVersion;
+    }
+
     inline void addProductMatch(QHash<QString,QString> match) {
         m_productMatches.append(match);
     }
@@ -143,6 +151,7 @@ class ControllerPreset {
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
+    int m_iControllerEngineVersion;
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;

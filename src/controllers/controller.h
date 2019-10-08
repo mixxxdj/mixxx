@@ -12,7 +12,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "controllers/controllerengine.h"
+#include "controllers/engine/controllerengine.h"
 #include "controllers/controllervisitor.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
@@ -20,11 +20,18 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "util/duration.h"
 
+class ControllerJSProxy;
+
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     Controller();
     ~Controller() override;  // Subclass should call close() at minimum.
+
+    // The object that is exposed to the JS scripts as the "controller" object.
+    // Subclasses of Controller can return a subclass of ControllerJSProxy to further
+    // customize their JS api.
+    virtual ControllerJSProxy* jsProxy();
 
     // Returns the extension for the controller (type) preset files.  This is
     // used by the ControllerManager to display only relevant preset files for
@@ -92,7 +99,11 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0);
+    virtual void send(QList<int> data, unsigned int length = 0);
+
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller.
+    virtual void send(QByteArray data) = 0;
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
@@ -139,10 +150,6 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
 
   private:
-    // This must be reimplemented by sub-classes desiring to send raw bytes to a
-    // controller.
-    virtual void send(QByteArray data) = 0;
-
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;
@@ -162,10 +169,32 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bLearning;
     QTime m_userActivityInhibitTimer;
 
+    friend class ControllerJSProxy;
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;
     // For testing
     friend class ControllerPresetValidationTest;
+};
+
+// An object of this class gets exposed to the JS engine, so the methods of this class
+// constitute the api that is provided to scripts under "controller" object.
+// See comments on ControllerEngineJSProxy.
+class ControllerJSProxy: public QObject {
+  Q_OBJECT
+  public:
+    ControllerJSProxy(Controller* m_pController)
+        : m_pController(m_pController) {
+    }
+
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
+    Q_INVOKABLE virtual void send(QList<int> data, unsigned int length = 0) {
+        Q_UNUSED(length);
+        m_pController->send(data, data.length());
+    }
+
+  private:
+    Controller* m_pController;
 };
 
 #endif

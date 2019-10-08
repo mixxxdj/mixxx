@@ -12,7 +12,6 @@
 #include "util/path.h" // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/defs_controllers.h"
-#include "util/compatibility.h"
 #include "util/trace.h"
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
@@ -25,10 +24,14 @@ HidReader::HidReader(hid_device* device)
 HidReader::~HidReader() {
 }
 
+ControllerJSProxy* HidController::jsProxy() {
+    return new HidControllerJSProxy(this);
+}
+
 void HidReader::run() {
     m_stop = 0;
     unsigned char *data = new unsigned char[255];
-    while (load_atomic(m_stop) == 0) {
+    while (m_stop.load() == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data

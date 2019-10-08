@@ -13,41 +13,17 @@ SET "PROGRAMFILES_PATH=%ProgramFiles(x86)%"
 )
 
 rem ====== Edit to suit your environment =========
-SET VCVERSION=140
-SET "MSVC_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio 14.0\VC"
-SET "BUILDTOOLS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual C++ Build Tools"
-set "MSSDK_DIR=%PROGRAMFILES_PATH%\Microsoft SDKs\Windows\v7.1A"
-
-REM XP Compatibility requires the v7.1A SDK
-set "MSSDK_DIR=%PROGRAMFILES_PATH%\Microsoft SDKs\Windows\v7.1A"
-
-if NOT EXIST "%MSSDK_DIR%" (
-echo.
-echo Could not find "%MSSDK_DIR%".
-echo Edit the build_mixxx.bat file and/or install the required software
-echo https://www.microsoft.com/en-us/download/details.aspx?id=8279
-exit /b 1
-)
+SET VCVERSION=141
+SET "MSVC_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\2017\Community\VC"
+SET "BUILDTOOLS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\2017\BuildTools\VC"
+SET BUILDTOOLS_SCRIPT=Auxiliary\Build\vcvarsall.bat
 
 IF EXIST "%MSVC_PATH%" (
+echo Building with Microsoft Visual Studio 2017 Community Edition.
 SET "BUILDTOOLS_PATH=%MSVC_PATH%"
-SET BUILDTOOLS_SCRIPT=vcvarsall.bat
-
-REM Check whether we have a 64-bit compiler available.
-IF EXIST "%MSVC_PATH%\VC\bin\amd64\cl.exe" (
-SET COMPILER_X86=amd64_x86
-SET COMPILER_X64=amd64
-) ELSE (
-SET COMPILER_X86=x86
-SET COMPILER_X64=x86_amd64
-)
-
 ) ELSE (
 IF EXIST "%BUILDTOOLS_PATH%" (
-SET BUILDTOOLS_SCRIPT=vcbuildtools.bat
-
-SET COMPILER_X86=amd64_x86
-SET COMPILER_X64=amd64
+echo Building with Microsoft Visual Studio 2017 Build Tools.
 ) ELSE (
 echo.
 echo Could not find "%MSVC_PATH%" nor "%BUILDTOOLS_PATH%".
@@ -58,7 +34,19 @@ exit /b 1
 )
 REM END EXIST BUILDTOOLS
 )
-REM END EXIST VISUALSTUDIO
+REM END EXIST MSVC_PATH
+
+REM Check whether we have a 64-bit compiler available.
+REM TODO(rryan): Remove hard-coding of compiler version in this path?
+IF EXIST "%BUILDTOOLS_PATH%\Tools\MSVC\14.15.26726\bin\Hostx64\x64\cl.exe" (
+echo Using 64-bit compiler.
+SET COMPILER_X86=amd64_x86
+SET COMPILER_X64=amd64
+) ELSE (
+echo Using 32-bit compiler.
+SET COMPILER_X86=x86
+SET COMPILER_X64=x86_amd64
+)
 
 REM ==================================
 REM Parameter reading and variable setup
@@ -89,7 +77,8 @@ set WINLIB_DIR=%3
 SET BIN_DIR=%WINLIB_DIR%\bin
 SET LIB_DIR=%WINLIB_DIR%\lib
 SET INCLUDE_DIR=%WINLIB_DIR%\include
-set QT_VERSION=5.11.1
+REM TODO(rryan): Remove hard-coding of Qt version.
+set QT_VERSION=5.12.0
 SET QTDIR=%WINLIB_DIR%\Qt-%QT_VERSION%
 
 if NOT EXIST "%BIN_DIR%\scons.py" (
@@ -135,12 +124,11 @@ REM rmdir /s /q %DISTDIR%
 rem /MP Use all CPU cores.
 rem /FS force synchronous PDB writes (prevents PDB corruption with /MP)
 rem /EHsc Do not handle SEH in try / except blocks.
-rem /Zc:threadSafeInit- disable C++11 magic static support (Bug #1653368)
-set CXXFLAGS=/MP /FS /EHsc /Zc:threadSafeInit-
-set CFLAGS=/MP /FS /EHsc /Zc:threadSafeInit-
+set CXXFLAGS=/MP /FS /EHsc
+set CFLAGS=/MP /FS /EHsc
 
 set PATH=%BIN_DIR%;%PATH%
-scons.py mixxx makerelease toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=fastbuild virtualize=0 test=1 qt_sqlite_plugin=0 mssdk_dir="%MSSDK_DIR%" build_number_in_title_bar=0 bundle_pdbs=0
+scons.py mixxx makerelease toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=fastbuild virtualize=0 test=1 qt_sqlite_plugin=0 build_number_in_title_bar=0 bundle_pdbs=0
 
 IF ERRORLEVEL 1 (
 echo ==============================

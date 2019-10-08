@@ -27,7 +27,7 @@ WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig,
     setAcceptDrops(true);
 
     m_pZoom = new ControlProxy(group, "waveform_zoom", this);
-    m_pZoom->connectValueChanged(SLOT(onZoomChange(double)));
+    m_pZoom->connectValueChanged(this, &WWaveformViewer::onZoomChange);
 
     m_pScratchPositionEnable = new ControlProxy(
             group, "scratch_position_enable", this);
@@ -51,8 +51,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
     if (m_waveformWidget) {
-        m_waveformWidget->resize(width(), height(),
-                                 WaveformWidgetFactory::getDevicePixelRatio());
+        m_waveformWidget->resize(width(), height());
     }
 }
 
@@ -141,40 +140,20 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 
 void WWaveformViewer::wheelEvent(QWheelEvent *event) {
     if (m_waveformWidget) {
-        //NOTE: (vrince) to limit the zoom action area uncomment the following line
-        //if (event->x() > width() - m_zoomZoneWidth) {
-            if (event->delta() > 0) {
-                //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
-                onZoomChange(m_waveformWidget->getZoomFactor() + 1);
-            } else {
-                //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
-                onZoomChange(m_waveformWidget->getZoomFactor() - 1);
-            }
-        //}
+        if (event->delta() > 0) {
+            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
+        } else {
+            onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+        }
     }
 }
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
 }
 
 void WWaveformViewer::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_pGroup, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
@@ -198,7 +177,7 @@ void WWaveformViewer::onZoomChange(double zoom) {
     WaveformWidgetFactory::instance()->notifyZoomChange(this);
 }
 
-void WWaveformViewer::setZoom(int zoom) {
+void WWaveformViewer::setZoom(double zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     if (m_waveformWidget) {
         m_waveformWidget->setZoom(zoom);

@@ -1,8 +1,7 @@
 #include "sources/audiosourcestereoproxy.h"
 
-#include "util/sample.h"
 #include "util/logger.h"
-
+#include "util/sample.h"
 
 namespace mixxx {
 
@@ -15,28 +14,26 @@ const Logger kLogger("AudioSourceStereoProxy");
 AudioSourceStereoProxy::AudioSourceStereoProxy(
         AudioSourcePointer pAudioSource,
         SINT maxReadableFrames)
-    : AudioSource(*pAudioSource),
-      m_pAudioSource(std::move(pAudioSource)),
-      m_tempSampleBuffer(
-              (m_pAudioSource->channelCount() != 2) ?
-                      m_pAudioSource->frames2samples(maxReadableFrames) : 0),
-      m_tempWritableSlice(m_tempSampleBuffer) {
+        : AudioSource(*pAudioSource),
+          m_pAudioSource(std::move(pAudioSource)),
+          m_tempSampleBuffer(
+                  (m_pAudioSource->channelCount() != 2) ? m_pAudioSource->frames2samples(maxReadableFrames) : 0),
+          m_tempWritableSlice(m_tempSampleBuffer) {
     setChannelCount(2);
 }
 
 AudioSourceStereoProxy::AudioSourceStereoProxy(
         AudioSourcePointer pAudioSource,
         SampleBuffer::WritableSlice tempWritableSlice)
-    : AudioSource(*pAudioSource),
-      m_pAudioSource(std::move(pAudioSource)),
-      m_tempWritableSlice(std::move(tempWritableSlice)) {
+        : AudioSource(*pAudioSource),
+          m_pAudioSource(std::move(pAudioSource)),
+          m_tempWritableSlice(std::move(tempWritableSlice)) {
     setChannelCount(2);
 }
 
 namespace {
 
-inline
-bool isDisjunct(
+inline bool isDisjunct(
         const SampleBuffer::WritableSlice& slice1,
         const SampleBuffer::WritableSlice& slice2) {
     if (slice1.data() == slice2.data()) {
@@ -52,7 +49,7 @@ bool isDisjunct(
     }
 }
 
-}
+} // namespace
 
 ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
         WritableSampleFrames sampleFrames) {
@@ -119,4 +116,4 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                     writableSlice.length()));
 }
 
-}
+} // namespace mixxx

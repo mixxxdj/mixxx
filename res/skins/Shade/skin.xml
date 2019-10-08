@@ -1,523 +1,573 @@
-	<!--
-	Shade, Skin for Mixxx 2.1.x
-	www.mixxx.org
-	Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
-	This file is part of the "Shade" Skin for Mixxx
-	"Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
-	http://creativecommons.org/licenses/by-sa/3.0/
+  <!--
+  Shade, Skin for Mixxx 2.1.x
+  www.mixxx.org
+  Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
+  This file is part of the "Shade" Skin for Mixxx
+  "Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+  http://creativecommons.org/licenses/by-sa/3.0/
 
-	With every copy of the work, you are required to either provide a copy of the license it self
-	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+  With every copy of the work, you are required to either provide a copy of the license it self
+  or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
 
-	You are free:
-	to Share - to copy, distribute and transmit the work
-	to Remix - to adapt the work
+  You are free:
+  to Share - to copy, distribute and transmit the work
+  to Remix - to adapt the work
 
-	Under the following conditions:
-	Attribution - You must attribute the work in the manner specified by the author or licensor
-	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
-	the title of the work, the URL that is associated with the work.
+  Under the following conditions:
+  Attribution - You must attribute the work in the manner specified by the author or licensor
+  (but not in any way that suggests that they endorse you or your use of the work).
+  A attribution should include the following: The name of the author and/or licensor,
+  the title of the work, the URL that is associated with the work.
 
-	Share Alike - If you alter, transform, or build upon this work, you may distribute
-	the resulting work only under the same or similar license to this one.
+  Share Alike - If you alter, transform, or build upon this work, you may distribute
+  the resulting work only under the same or similar license to this one.
 
-	See CHANGELOG.txt for the list of changes.
-	-->
+  See CHANGELOG.txt for the list of changes.
+  -->
 
 <!DOCTYPE skin>
 <skin>
-	<!--
-	############################################################################################
-	############################################################################################
-	Mixxx skin documentation:
-	http://mixxx.org/wiki/doku.php/creating_skins
+  <!--
+  ############################################################################################
+  ############################################################################################
+  Mixxx skin documentation:
+  http://mixxx.org/wiki/doku.php/creating_skins
 
-	List of controls:
-	http://mixxx.org/wiki/doku.php/mixxxcontrols
+  List of controls:
+  http://mixxx.org/wiki/doku.php/mixxxcontrols
 
-	Qt Style Sheets documentation:
-	https://qt-project.org/doc/qt-4.8/stylesheet.html
+  Qt Style Sheets documentation:
+  https://qt-project.org/doc/qt-4.8/stylesheet.html
 
-	Debugging:
-	To outline WidgetGroups change all occurrences (except this one ;-) of
-	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+  Debugging:
+  To outline WidgetGroups change all occurrences (except this one ;-) of
+  "QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 
-	Parent WidgedGroups are outlined one pixel solid red;
-		Child WidgedGroups are outlined one pixel solid yellow;
-			Grandchild WidgedGroups are outlined one pixel solid green;
-	############################################################################################
-	############################################################################################
-	-->
+  Parent WidgedGroups are outlined one pixel solid red;
+    Child WidgedGroups are outlined one pixel solid yellow;
+      Grandchild WidgedGroups are outlined one pixel solid green;
+  ############################################################################################
+  ############################################################################################
+  -->
 
-	<manifest>
-		<title>Shade</title>
-		<author>jus</author>
-		<version>2.1.0.01</version>
-		<description>A 2-deck split-waveform skin with 4 samplers.</description>
-		<language>en</language>
-		<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
-		<attributes>
-			<attribute config_key="[Master],num_decks">2</attribute>
-			<attribute config_key="[Master],num_samplers">8</attribute>
-			<attribute config_key="[Master],num_preview_decks">1</attribute>
-			<!--Optionally, make elements visible on skin load-->
-			<attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-			<attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-			<attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1],show">0</attribute>
-			<attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
-			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
-			<attribute persist="false" config_key="[Shade],looping">0</attribute>
+  <manifest>
+    <title>Shade</title>
+    <author>jus</author>
+    <version>2.1.0.01</version>
+    <description>A 2-deck split-waveform skin with 4 samplers.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[Master],num_decks">2</attribute>
+      <attribute config_key="[Master],num_samplers">8</attribute>
+      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <!--Optionally, make elements visible on skin load-->
+      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1],show">0</attribute>
+      <attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
 
-			<!--Disable hidden effect routing Buttons-->
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler5]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler6]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler7]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler8]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Master]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler5]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler6]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler7]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler8]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Master]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler5]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler6]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler7]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler8]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Master]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler3]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler4]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler5]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler6]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler7]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler8]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone2]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary1]_enable">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary2]_enable">0</attribute>
-		</attributes>
-	</manifest>
-
-
-	<!--
-	**********************************************
-	General- Skin Colour Scheme
-	**********************************************
-	-->
-	<Schemes>
-		<Scheme>
-			<Name>Classic</Name>
-			<Filters/>
-		</Scheme>
-		<Scheme>
-			<Name>Dark</Name>
-			<Filters>
-				<HSVTweak>
-					<HConst>75</HConst>
-					<SConst>-30</SConst>
-					<VConst>-30</VConst>
-				</HSVTweak>
-				<Add>
-					<Amount>-40</Amount>
-				</Add>
-			</Filters>
-			<Style src="skin:dark.qss"/>
-		</Scheme>
-		<Scheme>
-			<Name>Summer Sunset</Name>
-			<Filters>
-				<HSVTweak>
-					<SMin>100</SMin>
-					<VFact>1.0</VFact>
-					<HFact>0.3</HFact>
-				</HSVTweak>
-				<HSVTweak>
-					<SMax>50</SMax>
-					<HFact>0</HFact>
-					<HConst>50</HConst>
-					<SConst>120</SConst>
-					<VConst>-10</VConst>
-				</HSVTweak>
-			</Filters>
-			<Style src="skin:summer_sunset.qss"/>
-		</Scheme>
-	</Schemes>
+      <!--Disable hidden effect routing Buttons-->
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler5]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler6]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler7]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler8]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler5]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler6]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler7]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler8]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler5]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler6]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler7]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler8]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler3]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler4]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler5]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler6]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler7]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler8]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone2]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary1]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary2]_enable">0</attribute>
+    </attributes>
+  </manifest>
 
 
-	<!--
-	############################################################################################
-	############################################################################################
-	General- Main background picture
-	############################################################################################
-	############################################################################################
-	-->
+  <!--
+  **********************************************
+  General- Skin Colour Scheme
+  **********************************************
+  -->
+  <Schemes>
+    <Scheme>
+      <Name>Classic</Name>
+      <Filters/>
+    </Scheme>
+    <Scheme>
+      <Name>Dark</Name>
+      <Filters>
+        <HSVTweak>
+          <HConst>75</HConst>
+          <SConst>-30</SConst>
+          <VConst>-30</VConst>
+        </HSVTweak>
+        <Add>
+          <Amount>-40</Amount>
+        </Add>
+      </Filters>
+      <Style src="skin:dark.qss"/>
+    </Scheme>
+    <Scheme>
+      <Name>Summer Sunset</Name>
+      <Filters>
+        <HSVTweak>
+          <SMin>100</SMin>
+          <VFact>1.0</VFact>
+          <HFact>0.3</HFact>
+        </HSVTweak>
+        <HSVTweak>
+          <SMax>50</SMax>
+          <HFact>0</HFact>
+          <HConst>50</HConst>
+          <SConst>120</SConst>
+          <VConst>-10</VConst>
+        </HSVTweak>
+      </Filters>
+      <Style src="skin:summer_sunset.qss"/>
+    </Scheme>
+  </Schemes>
 
-	<ObjectName>Mixxx</ObjectName>
-	<Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
-	<Size>1008e,500e</Size>
-	<Layout>vertical</Layout>
+
+  <!--
+  ############################################################################################
+  ############################################################################################
+  General - Main skin container
+  ############################################################################################
+  ############################################################################################
+  -->
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Size>1008e,500e</Size>
+  <Layout>vertical</Layout>
     <LaunchImageStyle>
-    	LaunchImage { background-color: #202020; }
+      LaunchImage { background-color: #202020; }
         QLabel {
-        	image: url(skin:/style/mixxx-icon-logo-symbolic.png);
-          	padding:0;
-            margin:0;
-            border:none;
-            min-width: 208px;
-            min-height: 48px;
-    	    max-width: 208px;
-            max-height: 48px;
+          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          padding:0;
+          margin:0;
+          border:none;
+          min-width: 208px;
+          min-height: 48px;
+          max-width: 208px;
+          max-height: 48px;
         }
         QProgressBar {
-        	background-color: #202020;
-            border:none;
-            min-width: 208px;
-            min-height: 3px;
-            max-width: 208px;
-            max-height: 3px;
+          background-color: #202020;
+          border:none;
+          min-width: 208px;
+          min-height: 3px;
+          max-width: 208px;
+          max-height: 3px;
         }
         QProgressBar::chunk { background-color: #ec4522; }
     </LaunchImageStyle>
 
-	<Children>
-		<WidgetGroup>
-			<ObjectName>DecksAndMixer</ObjectName>
-			<Layout>horizontal</Layout>
-  			<Children>
-				<WidgetGroup>
-					<ObjectName>DeckLeftBorder</ObjectName>
-					<Size>3f,233f</Size>
-					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
-				</WidgetGroup>
-  				<WidgetGroup>
-  					<Size>0e,233f</Size>
-					<Layout>vertical</Layout>
-					<Children>
-		                <WidgetGroup>
-			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-							<Layout>vertical</Layout>
-							<Children>
-	      						<Template src="skin:deck.xml">
-								    <SetVariable name="channum">1</SetVariable>
-	      						</Template>
-								<WidgetGroup>
-									<ObjectName>Deck</ObjectName>
-									<Layout>horizontal</Layout>
-									<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-									<Children>
-										<WidgetGroup>
-											<ObjectName>DeckLeftBorder</ObjectName>
-											<Size>5f,64f</Size>
-											<BackPath>style/style_bg_deck_border.png</BackPath>
-											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-										</WidgetGroup>
-				 						<Template src="skin:deck_effect.xml">
-											<SetVariable name="effectunitnum">1</SetVariable>
-											<SetVariable name="group">BusLeft</SetVariable>
-										</Template>
-				 						<Template src="skin:deck_transport.xml">
-											<SetVariable name="channum">1</SetVariable>
-											<SetVariable name="samplernum1">1</SetVariable>
-											<SetVariable name="samplernum2">2</SetVariable>
-											<SetVariable name="samplernum3">3</SetVariable>
-											<SetVariable name="samplernum4">4</SetVariable>
-											<SetVariable name="micnum"></SetVariable>
-											<SetVariable name="auxnum">1</SetVariable>
-				  						</Template>
-										<WidgetGroup>
-											<ObjectName>DeckRightBorder</ObjectName>
-											<Size>5f,64f</Size>
-											<BackPath>style/style_bg_deck_border.png</BackPath>
-											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-										</WidgetGroup>
-		 					        </Children>
-								</WidgetGroup>
- 					        </Children>
-					    </WidgetGroup>
-					</Children>
-				</WidgetGroup>
-				<WidgetGroup>
-					<Size>261f,233f</Size>
-					<Children>
-						<Template src="skin:mixer_panel.xml">
-						</Template>
-					</Children>
-				</WidgetGroup>
-				<WidgetGroup>
-  					<Size>0e,233f</Size>
-					<Layout>vertical</Layout>
-					<Children>
-	        		    <WidgetGroup>
-						    <Layout>vertical</Layout>
-				            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				            <Children>
-						        <Template src="skin:deck.xml">
-							        <SetVariable name="channum">2</SetVariable>
-						        </Template>
-								<WidgetGroup>
-									<ObjectName>Deck</ObjectName>
-									<Layout>horizontal</Layout>
-									<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-									<Children>
-										<WidgetGroup>
-											<ObjectName>DeckLeftBorder</ObjectName>
-											<Size>5f,64f</Size>
-											<BackPath>style/style_bg_deck_border.png</BackPath>
-											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-										</WidgetGroup>
 
-										<Template src="skin:deck_effect.xml">
-											<SetVariable name="effectunitnum">2</SetVariable>
-											<SetVariable name="group">BusRight</SetVariable>
-				  						</Template>
-				 						<Template src="skin:deck_transport.xml">
-											<SetVariable name="channum">2</SetVariable>
-											<SetVariable name="samplernum1">5</SetVariable>
-											<SetVariable name="samplernum2">6</SetVariable>
-											<SetVariable name="samplernum3">7</SetVariable>
-											<SetVariable name="samplernum4">8</SetVariable>
-											<SetVariable name="micnum">2</SetVariable>
-											<SetVariable name="auxnum">2</SetVariable>
-				  						</Template>
-										<WidgetGroup>
-											<ObjectName>DeckRightBorder</ObjectName>
-											<Size>5f,64f</Size>
-											<BackPath>style/style_bg_deck_border.png</BackPath>
-											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-										</WidgetGroup>
-		 					        </Children>
-								</WidgetGroup>
-					        </Children>
-				        </WidgetGroup>
-					</Children>
-				</WidgetGroup>
-				<WidgetGroup>
-					<ObjectName>DeckRightBorder</ObjectName>
-					<Size>3f,233f</Size>
-					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-				</WidgetGroup>
-			</Children>
-		<Connection>
-			<ConfigKey>[Master],maximize_library</ConfigKey>
-			<BindProperty>visible</BindProperty>
-			<Transform>
-				<Not/>
-			</Transform>
-		</Connection>
-	</WidgetGroup>
+    <Children>
+    <!--
+    ############################################################################################
+    ############################################################################################
+    Singletons - create singletons for scrolling waveforms
+        Above the maximized library there are minimal decks which contain overview waveforms.
+        For the end-of-track warning in those overviews to work instances of scrolling waveforms
+        are required. We load in the maximzed library view, as well, but they are invisble as
+        they are 0px tall. 
+    ############################################################################################
+    ############################################################################################
+    -->
+    <SingletonDefinition>
+      <ObjectName>Waveform1</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
 
-		<!--
-		############################################################################################
-		############################################################################################
-		WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
-		############################################################################################
-		############################################################################################
-		-->
-		<WidgetGroup>
-			<MinimumSize>1008,105</MinimumSize>
-			<SizePolicy>me,me</SizePolicy>
-			<Layout>vertical</Layout>
-			<!--deactivate the standard
-			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			cause push buttons in library will show up with wrong margin/padding -->
-			<Children>
-				<WidgetGroup>
-				  <SizePolicy>me,f</SizePolicy>
-				  <Layout>horizontal</Layout>
-				  <!-- I don't now why this works but a WidgetGroup wrapper around a
-				     WidgetStack with a 'fixed' size policy makes the group track the
-				     minimum size of the current stack widget. -->
-				  <Children>
-				    <WidgetGroup>
-				      <SizePolicy>me,min</SizePolicy>
-				      <Layout>horizontal</Layout>
-				      <Style>QGroupBox { border: 0px solid yellow; margin: 0px;}</Style>
-				      <Children>
-					<WidgetGroup>
-					  <ObjectName>EffectLeftBorder</ObjectName>
-					  <Size>3f,43f</Size>
-					  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
-					</WidgetGroup>
-				        <Template src="skin:looping.xml">
-				          <SetVariable name="channum">1</SetVariable>
-				        </Template>
-				        <Template src="skin:looping.xml">
-				          <SetVariable name="channum">2</SetVariable>
-				        </Template>
-				      </Children>
-				      <Connection>
-				        <ConfigKey>[Shade],looping</ConfigKey>
-				        <BindProperty>visible</BindProperty>
-				      </Connection>
-				    </WidgetGroup>
-				  </Children>
-				  <Connection>
-				    <ConfigKey>[Master],maximize_library</ConfigKey>
-				    <BindProperty>visible</BindProperty>
-				    <Transform>
-				      <Not/>
-				    </Transform>
-				  </Connection>
-				</WidgetGroup>
-			    <Template src="skin:effectrow.xml"/>
-				<Template src="skin:srcrow.xml"/>
-			    <Template src="skin:samplerrow.xml">
-					<SetVariable name="rownum">1</SetVariable>
-					<SetVariable name="samplernum1">1</SetVariable>
-					<SetVariable name="samplernum2">2</SetVariable>
-	                <SetVariable name="samplernum3">5</SetVariable>
-	                <SetVariable name="samplernum4">6</SetVariable>
-				</Template>
+    <SingletonDefinition>
+      <ObjectName>Waveform2</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
 
-			    <Template src="skin:samplerrow.xml">
-					<SetVariable name="rownum">2</SetVariable>
-					<SetVariable name="samplernum1">3</SetVariable>
-					<SetVariable name="samplernum2">4</SetVariable>
-	                <SetVariable name="samplernum3">7</SetVariable>
-	                <SetVariable name="samplernum4">8</SetVariable>
-				</Template>
-				<!--
-				**********************************************
-				Library / Preview Deck / Search / Tree view
-				**********************************************
-				-->
-				<WidgetGroup>
-					<ObjectName>Library</ObjectName>
-					<Size>e,e</Size>
-					<SizePolicy>me,me</SizePolicy>
-					<Layout>horizontal</Layout>
-					<Style>
-					QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
-					<!--
-					<BgColor>#101010</BgColor>
-					<FgColor>#C1C1C1</FgColor>
-					<BgColorRowEven>#101010</BgColorRowEven>
-					<BgColorRowUneven>#151515</BgColorRowUneven>
-					-->
-					</Style>
-					<Children>
-						<Splitter>
-							<Size>me,me</Size>
-							<SplitSizes>1,6</SplitSizes>
-							<Collapsible>1,0</Collapsible>
-							<SplitSizesConfigKey>[Shade],splitSizeLibTree</SplitSizesConfigKey>
-							<Children>
-								<WidgetGroup>
-									<Style>QGroupBox {}</Style>
-									<Layout>vertical</Layout>
-									<Children>
-										<WidgetGroup>
-											<Style>
-												QGroupBox {
-													margin: 2px 0px 4px 3px;
-													padding: 0px;
-													background: transparent;
-												}
-											</Style>
-											<Layout>horizontal</Layout>
-											<Children>
+    <SingletonDefinition>
+      <ObjectName>Overview1</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Overview2</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <WidgetGroup>
+      <ObjectName>DecksAndMixer</ObjectName>
+      <Layout>horizontal</Layout>
+      <Children>
+        <WidgetGroup>
+          <ObjectName>DeckLeftBorder</ObjectName>
+          <Size>3f,233f</Size>
+          <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+        </WidgetGroup>
+        <WidgetGroup>
+          <Size>0e,233f</Size>
+          <Layout>vertical</Layout>
+          <Children>
+            <WidgetGroup>
+              <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+              <Layout>vertical</Layout>
+              <Children>
+                <Template src="skin:deck.xml">
+                  <SetVariable name="channum">1</SetVariable>
+                </Template>
+                <WidgetGroup>
+                  <ObjectName>Deck</ObjectName>
+                  <Layout>horizontal</Layout>
+                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>DeckLeftBorder</ObjectName>
+                      <Size>5f,64f</Size>
+                      <BackPath>style/style_bg_deck_border.png</BackPath>
+                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+                    </WidgetGroup>
+                    <Template src="skin:deck_effect.xml">
+                      <SetVariable name="effectunitnum">1</SetVariable>
+                      <SetVariable name="group">BusLeft</SetVariable>
+                    </Template>
+                    <Template src="skin:deck_transport.xml">
+                      <SetVariable name="channum">1</SetVariable>
+                      <SetVariable name="samplernum1">1</SetVariable>
+                      <SetVariable name="samplernum2">2</SetVariable>
+                      <SetVariable name="samplernum3">3</SetVariable>
+                      <SetVariable name="samplernum4">4</SetVariable>
+                      <SetVariable name="micnum"></SetVariable>
+                      <SetVariable name="auxnum">1</SetVariable>
+                      </Template>
+                    <WidgetGroup>
+                      <ObjectName>DeckRightBorder</ObjectName>
+                      <Size>5f,64f</Size>
+                      <BackPath>style/style_bg_deck_border.png</BackPath>
+                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetGroup>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <Size>261f,233f</Size>
+          <Children>
+            <Template src="skin:mixer_panel.xml"/>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <Size>0e,233f</Size>
+          <Layout>vertical</Layout>
+          <Children>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+              <Children>
+                <Template src="skin:deck.xml">
+                  <SetVariable name="channum">2</SetVariable>
+                </Template>
+                <WidgetGroup>
+                  <ObjectName>Deck</ObjectName>
+                  <Layout>horizontal</Layout>
+                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>DeckLeftBorder</ObjectName>
+                      <Size>5f,64f</Size>
+                      <BackPath>style/style_bg_deck_border.png</BackPath>
+                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+                    </WidgetGroup>
+
+                    <Template src="skin:deck_effect.xml">
+                      <SetVariable name="effectunitnum">2</SetVariable>
+                      <SetVariable name="group">BusRight</SetVariable>
+                    </Template>
+                    <Template src="skin:deck_transport.xml">
+                      <SetVariable name="channum">2</SetVariable>
+                      <SetVariable name="samplernum1">5</SetVariable>
+                      <SetVariable name="samplernum2">6</SetVariable>
+                      <SetVariable name="samplernum3">7</SetVariable>
+                      <SetVariable name="samplernum4">8</SetVariable>
+                      <SetVariable name="micnum">2</SetVariable>
+                      <SetVariable name="auxnum">2</SetVariable>
+                    </Template>
+                    <WidgetGroup>
+                      <ObjectName>DeckRightBorder</ObjectName>
+                      <Size>5f,64f</Size>
+                      <BackPath>style/style_bg_deck_border.png</BackPath>
+                      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetGroup>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <ObjectName>DeckRightBorder</ObjectName>
+          <Size>3f,233f</Size>
+          <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+        </WidgetGroup>
+      </Children>
+      <Connection>
+        <ConfigKey>[Master],maximize_library</ConfigKey>
+        <BindProperty>visible</BindProperty>
+        <Transform>
+          <Not/>
+        </Transform>
+      </Connection>
+    </WidgetGroup>
+
+    <!--
+    ############################################################################################
+    ############################################################################################
+    WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
+    ############################################################################################
+    ############################################################################################
+    -->
+    <WidgetGroup>
+      <MinimumSize>1008,105</MinimumSize>
+      <SizePolicy>me,me</SizePolicy>
+      <Layout>vertical</Layout>
+      <!--deactivate the standard
+      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+      cause push buttons in library will show up with wrong margin/padding -->
+      <Children>
+        <WidgetGroup>
+          <SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <!-- I don't now why this works but a WidgetGroup wrapper around a
+            WidgetStack with a 'fixed' size policy makes the group track the
+            minimum size of the current stack widget. -->
+          <Children>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Style>QGroupBox { border: 0px solid yellow; margin: 0px;}</Style>
+              <Children>
+                <WidgetGroup>
+                  <ObjectName>EffectLeftBorder</ObjectName>
+                  <Size>3f,43f</Size>
+                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+                </WidgetGroup>
+                <Template src="skin:looping.xml">
+                  <SetVariable name="channum">1</SetVariable>
+                </Template>
+                <Template src="skin:looping.xml">
+                  <SetVariable name="channum">2</SetVariable>
+                </Template>
+              </Children>
+              <Connection>
+                <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup>
+          </Children>
+          <Connection>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform><Not/></Transform>
+          </Connection>
+        </WidgetGroup>
+        <Template src="skin:effectrow.xml"/>
+        <Template src="skin:srcrow.xml"/>
+        <Template src="skin:samplerrow.xml">
+          <SetVariable name="row">1</SetVariable>
+          <SetVariable name="samplernum1">1</SetVariable>
+          <SetVariable name="samplernum2">2</SetVariable>
+          <SetVariable name="samplernum3">5</SetVariable>
+          <SetVariable name="samplernum4">6</SetVariable>
+        </Template>
+        <Template src="skin:samplerrow.xml">
+          <SetVariable name="row">2</SetVariable>
+          <SetVariable name="samplernum1">3</SetVariable>
+          <SetVariable name="samplernum2">4</SetVariable>
+          <SetVariable name="samplernum3">7</SetVariable>
+          <SetVariable name="samplernum4">8</SetVariable>
+        </Template>
+
+        <!-- minimal decks, visible with maximized library -->
+        <Template src="skin:decks_row_small.xml"/>
+
+        <!--
+        **********************************************
+        Library / Preview Deck / Search / Tree view
+        **********************************************
+        -->
+        <WidgetGroup>
+          <ObjectName>Library</ObjectName>
+          <Size>e,e</Size>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Style>
+          QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
+          <!--
+          <BgColor>#101010</BgColor>
+          <FgColor>#C1C1C1</FgColor>
+          <BgColorRowEven>#101010</BgColorRowEven>
+          <BgColorRowUneven>#151515</BgColorRowUneven>
+          -->
+          </Style>
+          <Children>
+            <Splitter>
+              <Size>me,me</Size>
+              <SplitSizes>1,6</SplitSizes>
+              <Collapsible>1,0</Collapsible>
+              <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+              <Children>
+                <WidgetGroup>
+                  <Style>QGroupBox {}</Style>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <WidgetGroup>
+                      <Style>
+                        QGroupBox {
+                          margin: 2px 0px 4px 3px;
+                          padding: 0px;
+                          background: transparent;
+                        }
+                      </Style>
+                      <Layout>horizontal</Layout>
+                      <Children>
                         <Template src="skin:preview_deck.xml"/>
-											</Children>
-											<Connection>
-												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-												<BindProperty>visible</BindProperty>
-											</Connection>
-										</WidgetGroup>
-										<!--Search Input Field-->
-										<SearchBox></SearchBox>
-										<!--Library Tree View-->
-						 				<Splitter>
-											<Size>e,me</Size>
-											<Style></Style>
-											<SplitSizes>1,e</SplitSizes>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+                    <!--Search Input Field-->
+                    <SearchBox></SearchBox>
+                    <!--Library Tree View-->
+                    <Splitter>
+                      <Size>e,me</Size>
+                      <Style></Style>
+                      <SplitSizes>1,e</SplitSizes>
                       <Collapsible>0,0</Collapsible>
-											<Children>
-												<LibrarySidebar></LibrarySidebar>
-												<!--Cover Art-->
-												<CoverArt>
-													<MinimumSize>16,16</MinimumSize>
-													<SizePolicy>me,me</SizePolicy>
-													<Connection>
-														<ConfigKey>[Library],show_coverart</ConfigKey>
-														<BindProperty>visible</BindProperty>
-													</Connection>
-												</CoverArt>
-											</Children>
-										</Splitter>
-									</Children>
-								</WidgetGroup>
-								<WidgetGroup>
-									<!-- Library Table-->
-									<Style>QGroupBox {}</Style>
-									<Layout>vertical</Layout>
-									<SizePolicy>me,me</SizePolicy>
-									<Children>
-										<Library></Library>
-									</Children>
-								</WidgetGroup>
-							</Children>
-						</Splitter>
-					</Children>
-				</WidgetGroup>
-			</Children>
-		</WidgetGroup>
-	</Children>
+                      <Children>
+                        <LibrarySidebar></LibrarySidebar>
+                        <!--Cover Art-->
+                        <CoverArt>
+                          <MinimumSize>16,16</MinimumSize>
+                          <SizePolicy>me,me</SizePolicy>
+                          <Connection>
+                            <ConfigKey>[Library],show_coverart</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </CoverArt>
+                      </Children>
+                    </Splitter>
+                  </Children>
+                </WidgetGroup>
+                <WidgetGroup>
+                  <!-- Library Table-->
+                  <Style>QGroupBox {}</Style>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Library></Library>
+                  </Children>
+                </WidgetGroup>
+              </Children>
+            </Splitter>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </WidgetGroup>
+  </Children>
 </skin>

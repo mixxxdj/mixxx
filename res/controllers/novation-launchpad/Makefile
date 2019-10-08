@@ -1,4 +1,4 @@
-SHELL := $(shell which zsh || which bash)
+SHELL := $(shell which bash) -O globstar -O extglob -c
 
 empty :=
 space := $(empty) $(empty)
@@ -7,49 +7,60 @@ join-with = $(subst $(space),$1,$(strip $2))
 
 device = $(call join-with,\ ,$(shell jq -r .controller.device packages/$(1)/package.json))
 manufacturer = $(call join-with,\ ,$(shell jq -r .controller.manufacturer packages/$(1)/package.json))
-mapping = $(buildDir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
-script = $(buildDir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
+path = $(call join-with,\ ,$(shell jq -r .controller.path packages/$(1)/package.json))
+mapping = $(builddir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
+script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 
 arch := $(shell uname)
+
+# List the default Resource directories of Mixxx on different architectures
+installDirDarwin := $(HOME)/Library/Application\ Support/Mixxx
+installDirLinux := $(HOME)/.mixxx
+
+installDir ?= $(installDir$(arch))
+
 package := ./package.json
-buildDir := ./dist
+builddir ?= ./dist
 version := $(shell jq -r .version package.json)
+
+scriptFiles = $(shell ls packages/*/!(node_modules)/**/*.js)
+mappingFiles = $(package) packages/$(1)/$(path)/buttons.js packages/$(1)/$(path)/template.xml.ejs
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
 define targetScriptRules
-$(call script,$(1)) : $(shell ls packages/**/*.js)
+$(call script,$(1)) : $(scriptFiles)
 	./scripts/compile-scripts.js $(1) "$$@"
 endef
 
 define targetMappingRules
-$(call mapping,$(1)) : $(package) packages/$(1)/buttons.js packages/$(1)/template.xml.ejs
+$(call mapping,$(1)) : $(mappingFiles)
 	./scripts/compile-mapping.js $(1) "$$@"
 endef
 
 define compileRule
 compile : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-.DEFAULT : compile
 .PHONY : compile
 endef
 
 define installRule
-install : install_$(arch)
+install : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
+	cd $$(installDir) && mkdir -p controllers
+	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(installDir)/controllers
 
-install_Darwin : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(HOME)/Library/Application\ Support/Mixxx/controllers
-.PHONY : install_Darwin
-
-install_Linux : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(HOME)/.mixxx/controllers
-.PHONY : install_Linux
-
+.PHONY : install
 endef
 
 define releaseRule
-mixxx-launchpad-$(version) : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	zip -9 $$@.zip $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
+$(builddir)/mixxx-launchpad-$(version).zip : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) | $(builddir)
+	zip -j -9 $$@ $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 endef
+
+default : compile
+.PHONY : default
+
+$(builddir):
+	mkdir -p $@
 
 $(foreach target,$(targets),$(eval $(call targetScriptRules,$(target))))
 $(foreach target,$(targets),$(eval $(call targetMappingRules,$(target))))
@@ -57,7 +68,7 @@ $(eval $(call compileRule,$(targets)))
 $(eval $(call installRule,$(targets)))
 $(eval $(call releaseRule,$(targets)))
 
-release : mixxx-launchpad-$(version)
+release : $(builddir)/mixxx-launchpad-$(version).zip
 .PHONY : release
 
 test :
@@ -65,6 +76,20 @@ test :
 	npm run check
 .PHONY : test
 
+watch_install :
+	@echo Stop watching with Ctrl-C
+	@sleep 1 # Wait a bit so users can read
+	@$(MAKE) install
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) install; done
+.PHONY : watch_install
+
+watch :
+	@echo Stop watching with Ctrl-C
+	@sleep 1 # Wait a bit so users can read
+	@$(MAKE)
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE); done
+.PHONY : watch
+
 clean :
-	rm -rf dist
+	rm -rf $(builddir) tmp
 .PHONY : clean

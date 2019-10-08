@@ -14,10 +14,8 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
-          m_pScriptDebugger(new QScriptEngineDebugger()),
           m_pSvgCache(new QHash<QString, QDomElement>()),
           m_pSingletons(new SingletonMap()) {
-    enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
     importScriptExtension("console");
@@ -32,12 +30,7 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
         m_hookRx.setPattern(hooksPattern.toString());
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    // Load the config option once, here, rather than in setupSize.
-    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
-#else
     m_scaleFactor = 1.0;
-#endif
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
@@ -45,7 +38,6 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pConfig(parent.m_pConfig),
           m_variables(parent.variables()),
           m_pScriptEngine(parent.m_pScriptEngine),
-          m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_hookRx(parent.m_hookRx),
           m_pSvgCache(parent.m_pSvgCache),
@@ -62,8 +54,8 @@ SkinContext::SkinContext(const SkinContext& parent)
         newGlobal.setProperty(it.name(), it.value());
     }
 
-    for (QHash<QString, QString>::const_iterator it = m_variables.begin();
-         it != m_variables.end(); ++it) {
+    for (auto it = m_variables.constBegin();
+         it != m_variables.constEnd(); ++it) {
         newGlobal.setProperty(it.key(), it.value());
     }
     m_pScriptEngine->setGlobalObject(newGlobal);
@@ -233,17 +225,6 @@ QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
 
 const QSharedPointer<QScriptEngine> SkinContext::getScriptEngine() const {
     return m_pScriptEngine;
-}
-
-void SkinContext::enableDebugger(bool state) const {
-    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig != NULL &&
-            m_pConfig->getValueString(ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        if (state) {
-            m_pScriptDebugger->attachTo(m_pScriptEngine.data());
-        } else {
-            m_pScriptDebugger->detach();
-        }
-    }
 }
 
 QDebug SkinContext::logWarning(const char* file, const int line,

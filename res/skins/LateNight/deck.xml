@@ -20,15 +20,23 @@
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
-                <SizePolicy>max,min</SizePolicy>
-                <MaximumSize>103,-1</MaximumSize>
+                <SizePolicy>min,min</SizePolicy>
+                <MaximumSize>103,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:spinny.xml"/>
-                  <Template src="skin:deck_coverArt.xml"/>
+                  <WidgetGroup>
+                    <SizePolicy>min,min</SizePolicy>
+                    <MaximumSize>103,</MaximumSize>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:spinny_coverart.xml">
+                        <SetVariable name="MaxSize">102,102</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],big_spinny</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

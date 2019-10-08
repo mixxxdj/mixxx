@@ -1,6 +1,6 @@
 #include "mixer/auxiliary.h"
 
-#include "engine/engineaux.h"
+#include "engine/channels/engineaux.h"
 #include "engine/enginemaster.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"

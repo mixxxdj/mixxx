@@ -9,7 +9,7 @@
 
 namespace mixxx {
 
-class SoundSourceOpus: public SoundSource {
+class SoundSourceOpus final : public SoundSource {
   public:
     // According to the API documentation of op_pcm_seek():
     // "...decoding after seeking may not return exactly the same
@@ -40,14 +40,14 @@ class SoundSourceOpus: public SoundSource {
             OpenMode mode,
             const OpenParams& params) override;
 
-    OggOpusFile *m_pOggOpusFile;
+    OggOpusFile* m_pOggOpusFile;
 
     SampleBuffer m_prefetchSampleBuffer;
 
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderOpus: public SoundSourceProvider {
+class SoundSourceProviderOpus : public SoundSourceProvider {
   public:
     QString getName() const override;
 

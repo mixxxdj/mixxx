@@ -1,5 +1,6 @@
 #include <QStringBuilder>
 #include <QThread>
+#include <QApplication>
 
 #include "library/trackcollection.h"
 
@@ -9,7 +10,6 @@
 #include "util/db/sqltransaction.h"
 
 #include "util/assert.h"
-
 
 namespace {
     mixxx::Logger kLogger("TrackCollection");

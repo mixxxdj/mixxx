@@ -388,9 +388,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Prevents the pitch from changing when the rate changes.")
             << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
-    // Show 4/8 hotcue
     add("hotcue_toggle")
-        <<tr("Toggle displayed hotcue, 4 or 8");
+        <<tr("Changes the number of hotcue buttons displayed in the deck");
 
     // Show Rate Control
     add("rate_toggle")
@@ -731,6 +730,38 @@ void Tooltips::addStandardTooltips() {
     add("starrating")
             << tr("Star Rating")
             << tr("Assign ratings to individual tracks by clicking the stars.");
+
+    // Intro & outro cues
+    add("show_intro_outro_cues")
+            << tr("Show/hide intro & outro markers and associated buttons.");
+
+    add("intro_start")
+            << tr("Intro Start Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("intro_end")
+            << tr("Intro End Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("outro_start")
+            << tr("Outro Start Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("outro_end")
+            << tr("Outro End Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
 
     // Effect Unit Controls
     add("EffectUnit_clear")

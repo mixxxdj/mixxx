@@ -42,11 +42,13 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     if (pTrack == nullptr) {
         return;
     }
-    slotLoadTrack(pTrack);
-
     show();
     raise();
     activateWindow();
+
+    // This must be called after show() to set the window title. Refer to the
+    // comment in slotLoadTrack for details.
+    slotLoadTrack(pTrack);
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
@@ -56,34 +58,45 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
     }
     m_pLoadedTrack = pTrack;
     if (m_pLoadedTrack != nullptr) {
-        QString windowTitle;
-        const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
-        const QString artist = m_pLoadedTrack->getArtist();
-        const QString album = m_pLoadedTrack->getAlbum();
-        const QString year = m_pLoadedTrack->getYear();
-        if (!albumArtist.isEmpty()) {
-            windowTitle = albumArtist;
-        } else if (!artist.isEmpty()) {
-            windowTitle += artist;
-        }
-        if (!album.isEmpty()) {
-            if (!windowTitle.isEmpty()) {
-                windowTitle += " - ";
-            }
-            windowTitle += album;
-        }
-        if (!year.isEmpty()) {
-            if (!windowTitle.isEmpty()) {
-                windowTitle += " ";
-            }
-            windowTitle += QString("(%1)").arg(year);
-        }
-        setWindowTitle(windowTitle);
-
         connect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
-    }
 
+        // Somehow setting the widow title triggered a bug in Xlib that resulted
+        // in a deadlock before the check for isVisible() was added.
+        // Unfortunately the original bug was difficult to reproduce, so I am
+        // not sure if checking isVisible() before setting the window title
+        // actually works around the Xlib bug or merely makes it much less
+        // likely to be triggered. Before the isVisible() check was added,
+        // the window title was getting set on DlgCoverArtFullSize instances
+        // that had never been shown whenever a track was loaded.
+        // https://bugs.launchpad.net/mixxx/+bug/1789059
+        // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
+        if (isVisible()) {
+            QString windowTitle;
+            const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
+            const QString artist = m_pLoadedTrack->getArtist();
+            const QString album = m_pLoadedTrack->getAlbum();
+            const QString year = m_pLoadedTrack->getYear();
+            if (!albumArtist.isEmpty()) {
+                windowTitle = albumArtist;
+            } else if (!artist.isEmpty()) {
+                windowTitle += artist;
+            }
+            if (!album.isEmpty()) {
+                if (!windowTitle.isEmpty()) {
+                    windowTitle += " - ";
+                }
+                windowTitle += album;
+            }
+            if (!year.isEmpty()) {
+                if (!windowTitle.isEmpty()) {
+                    windowTitle += " ";
+                }
+                windowTitle += QString("(%1)").arg(year);
+            }
+            setWindowTitle(windowTitle);
+        }
+    }
     slotTrackCoverArtUpdated();
 }
 
@@ -104,33 +117,29 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
         //          << pixmap.size();
         m_pixmap = pixmap;
-        if (m_pixmap.isNull()) {
-            close();
-        } else {
-            // Scale down dialog if the pixmap is larger than the screen.
-            // Use 90% of screen size instead of 100% to prevent an issue with
-            // whitespace appearing on the side when resizing a window whose
-            // borders touch the edges of the screen.
-            QSize dialogSize = m_pixmap.size();
-            const QSize availableScreenSpace =
-                QApplication::desktop()->availableGeometry().size() * 0.9;
-            if (dialogSize.height() > availableScreenSpace.height()) {
-                dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
-                                 Qt::KeepAspectRatio);
-            } else if (dialogSize.width() > availableScreenSpace.width()) {
-                dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
-                                 Qt::KeepAspectRatio);
-            }
-            QPixmap resizedPixmap = m_pixmap.scaled(size(),
-                Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            coverArt->setPixmap(resizedPixmap);
-            // center the window
-            setGeometry(QStyle::alignedRect(
-                    Qt::LeftToRight,
-                    Qt::AlignCenter,
-                    dialogSize,
-                    QApplication::desktop()->availableGeometry()));
+        // Scale down dialog if the pixmap is larger than the screen.
+        // Use 90% of screen size instead of 100% to prevent an issue with
+        // whitespace appearing on the side when resizing a window whose
+        // borders touch the edges of the screen.
+        QSize dialogSize = m_pixmap.size();
+        const QSize availableScreenSpace =
+            QApplication::desktop()->availableGeometry().size() * 0.9;
+        if (dialogSize.height() > availableScreenSpace.height()) {
+            dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
+                             Qt::KeepAspectRatio);
+        } else if (dialogSize.width() > availableScreenSpace.width()) {
+            dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
+                             Qt::KeepAspectRatio);
         }
+        QPixmap resizedPixmap = m_pixmap.scaled(size(),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        coverArt->setPixmap(resizedPixmap);
+        // center the window
+        setGeometry(QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                dialogSize,
+                QApplication::desktop()->availableGeometry()));
     }
 }
 
@@ -151,14 +160,38 @@ void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverIn
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
-    Q_UNUSED(event);
+    if (!m_pCoverMenu->isVisible() && event->button() == Qt::LeftButton) {
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+        m_coverPressed = true;
+        m_dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    }
+}
 
+void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
+    m_coverPressed = false;
     if (m_pCoverMenu->isVisible()) {
         return;
     }
 
     if (event->button() == Qt::LeftButton && isVisible()) {
-        close();
+        if (m_clickTimer.isActive()) {
+        // short press
+            close();
+        } else {
+        // long press
+            return;
+        }
+        event->accept();
+    }
+}
+
+void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
+    if (m_coverPressed) {
+        move(event->globalPos() - m_dragStartPosition);
+        event->accept();
+    } else {
+        return;
     }
 }
 

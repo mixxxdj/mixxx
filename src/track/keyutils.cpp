@@ -186,8 +186,7 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
     s_notation = notation;
     s_reverseNotation.clear();
 
-    for (QMap<ChromaticKey, QString>::const_iterator it = s_notation.begin();
-         it != s_notation.end(); ++it) {
+    for (auto it = s_notation.constBegin(); it != s_notation.constEnd(); ++it) {
         if (s_reverseNotation.contains(it.value())) {
             qWarning() << "Key notation is surjective (has duplicate values).";
         }
@@ -208,8 +207,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
         // The default value for notation is KeyUtils::CUSTOM, so this executes when the function is
         // called without a notation specified after KeyUtils::setNotation has set up s_notation.
         QMutexLocker locker(&s_notationMutex);
-        QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
-        if (it != s_notation.end()) {
+        auto it = s_notation.constFind(key);
+        if (it != s_notation.constEnd()) {
             return it.value();
         }
     } else if (notation == OPEN_KEY) {
@@ -244,8 +243,8 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     // Try using the user's custom notation.
     {
         QMutexLocker locker(&s_notationMutex);
-        QMap<QString, ChromaticKey>::const_iterator it = s_reverseNotation.find(text);
-        if (it != s_reverseNotation.end()) {
+        auto it = s_reverseNotation.constFind(text);
+        if (it != s_reverseNotation.constEnd()) {
             return it.value();
         }
     }
@@ -291,14 +290,14 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         // from s_letterToMajorKey. Upper-case means major, lower-case means
         // minor. Then apply the sharps or flats to the key.
         QChar letter = keyMatcher.cap(1).at(0);
-        int letterIndex = letter.toLower().toAscii() - 'a';
+        int letterIndex = letter.toLower().toLatin1() - 'a';
         bool major = letter.isUpper();
 
         // Now apply sharps and flats to the letter key.
         QString adjustments = keyMatcher.cap(2);
         int steps = 0;
-        for (QString::const_iterator it = adjustments.begin();
-             it != adjustments.end(); ++it) {
+        for (auto it = adjustments.constBegin();
+             it != adjustments.constEnd(); ++it) {
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 
@@ -412,8 +411,8 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     double max_delta = 0;
     mixxx::track::io::key::ChromaticKey max_key = mixxx::track::io::key::INVALID;
     qDebug() << "Key Histogram";
-    for (QMap<mixxx::track::io::key::ChromaticKey, double>::const_iterator it = key_histogram.begin();
-         it != key_histogram.end(); ++it) {
+    for (auto it = key_histogram.constBegin();
+         it != key_histogram.constEnd(); ++it) {
         qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value();
         if (it.value() > max_delta) {
             max_key = it.key();

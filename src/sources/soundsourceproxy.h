@@ -5,21 +5,18 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-
 // Creates sound sources for tracks. Only intended to be used
-// in a narrow scope and not sharable between multiple threads!
+// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy {
   public:
-    // Initially registers all built-in SoundSource providers and
-    // loads all SoundSource plugins with additional providers. This
-    // function is not thread-safe and must be called only once
-    // upon startup of the application.
-    static void loadPlugins();
+    // Initially registers all built-in SoundSource providers. This function is
+    // not thread-safe and must be called only once upon startup of the
+    // application.
+    static void registerSoundSourceProviders();
 
     static QStringList getSupportedFileExtensions() {
         return s_soundSourceProviders.getRegisteredFileExtensions();
     }
-    static QStringList getSupportedFileExtensionsByPlugins();
     static const QStringList& getSupportedFileNamePatterns() {
         return s_supportedFileNamePatterns;
     }

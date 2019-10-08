@@ -34,7 +34,7 @@ protected:
 
 class GlobalTrackCacheEntry final {
     // We need to hold two shared pointers, the deletingPtr is
-    // responsible for the lifetime of the Track object itselfe.
+    // responsible for the lifetime of the Track object itself.
     // The second one counts the references outside Mixxx, if it
     // is not longer referenced, the track is saved and evicted
     // from the cache.
@@ -78,6 +78,8 @@ public:
     void relocateCachedTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator) const;
 
+    void purgeTrackId(const TrackId& trackId);
+
     // Enforces the eviction of all cached tracks including invocation
     // of the callback and disables the cache permanently.
     void deactivateCache() const;
@@ -115,17 +117,7 @@ public:
                 TrackId trackId,
                 SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
-#if !defined(_MSC_VER) && (_MSC_VER > 1900)
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
-#else
-    // Visual Studio 2015 does not support default generated move constructors
-    GlobalTrackCacheResolver(GlobalTrackCacheResolver&& moveable)
-        : GlobalTrackCacheLocker(std::move(moveable)),
-          m_lookupResult(std::move(moveable.m_lookupResult)),
-          m_strongPtr(std::move(moveable.m_strongPtr)),
-          m_trackRef(std::move(moveable.m_trackRef)) {
-    }
-#endif
 
     GlobalTrackCacheLookupResult getLookupResult() const {
         return m_lookupResult;
@@ -215,6 +207,8 @@ private:
             const TrackPointer& strongPtr,
             TrackRef trackRef,
             TrackId trackId);
+
+    void purgeTrackId(TrackId trackId);
 
     bool evict(Track* plainPtr);
     bool isEvicted(Track* plainPtr) const;

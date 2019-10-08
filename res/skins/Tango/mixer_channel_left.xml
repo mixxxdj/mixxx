@@ -37,7 +37,7 @@ Variables:
           <Template src="skin:quick_fx_knob_left.xml"/><!-- Quick Effect -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
@@ -49,7 +49,7 @@ Variables:
           <WidgetGroup>
             <Size>4f,0min</Size>
             <Connection>
-              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -97,7 +97,7 @@ Variables:
         <Children>
           <Template src="skin:vumeter_mixer.xml"/>
 
-          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
             <ObjectName>PflBoxLeft</ObjectName>

@@ -4,17 +4,18 @@
  * @date April 15, 2011
  */
 
+#include "vinylcontrol/vinylcontrolmanager.h"
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
+#include "util/compatibility.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
-
-#include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,
@@ -55,7 +56,7 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::init() {
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }
 
@@ -88,7 +89,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         QString group = PlayerManager::groupForDeck(i);
         ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
         m_pVcEnabled.push_back(pEnabled);
-        pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, SLOT(map()));
+        pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, QOverload<int>::of(&QSignalMapper::mapped));
         m_vinylControlEnabledMapper.setMapping(pEnabled, i);
 
         // Default cueing should be off.

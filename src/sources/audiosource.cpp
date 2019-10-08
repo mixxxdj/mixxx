@@ -2,7 +2,6 @@
 
 #include "util/logger.h"
 
-
 namespace mixxx {
 
 namespace {

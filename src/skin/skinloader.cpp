@@ -30,6 +30,13 @@ SkinLoader::~SkinLoader() {
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
     QList<QDir> searchPaths;
+
+    // Add user skin path to search paths
+    QDir userSkinsPath(m_pConfig->getSettingsPath());
+    if (userSkinsPath.cd("skins")) {
+        searchPaths.append(userSkinsPath);
+    }
+
     // If we can't find the skins folder then we can't load a skin at all. This
     // is a critical error in the user's Mixxx installation.
     QDir skinsPath(m_pConfig->getResourcePath());
@@ -38,11 +45,6 @@ QList<QDir> SkinLoader::getSkinSearchPaths() const {
                                    skinsPath.absoluteFilePath("skins"));
     }
     searchPaths.append(skinsPath);
-
-    QDir developerSkinsPath(m_pConfig->getResourcePath());
-    if (developerSkinsPath.cd("developer_skins")) {
-        searchPaths.append(developerSkinsPath);
-    }
 
     return searchPaths;
 }
@@ -56,12 +58,21 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     return QString();
 }
 
-QPixmap SkinLoader::getSkinPreview(const QString& skinName) const {
-    QPixmap preview(getSkinPath(skinName) + "/preferences_preview_screenshot.png");
+QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
+    qDebug() << "schemeName =" << schemeName;
+    QPixmap preview;
+    if (!schemeName.isEmpty()) {
+        QString schemeNameUnformatted = schemeName;
+        QString schemeNameFormatted = schemeNameUnformatted.replace(" ","");
+        preview.load(getSkinPath(skinName) + "/skin_preview_" + schemeNameFormatted + ".png");
+    } else {
+        preview.load(getSkinPath(skinName) + "/skin_preview.png");
+    }
     if (!preview.isNull()){
         return preview;
     }
-    return QPixmap(":/images/skin_preview_placeholder.png");
+    preview.load(":/images/skin_preview_placeholder.png");
+    return preview;
 }
 
 QString SkinLoader::getConfiguredSkinPath() const {

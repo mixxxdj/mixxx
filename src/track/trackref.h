@@ -3,6 +3,7 @@
 
 
 #include <QFileInfo>
+#include <QUrl>
 
 #include "track/trackid.h"
 
@@ -28,6 +29,12 @@ public:
     static QString canonicalLocation(const QFileInfo& fileInfo) {
         return fileInfo.canonicalFilePath();
     }
+
+    static QUrl locationUrl(const QFileInfo& fileInfo);
+    static QUrl canonicalLocationUrl(const QFileInfo& fileInfo);
+
+    static QString locationUri(const QFileInfo& fileInfo);
+    static QString canonicalLocationUri(const QFileInfo& fileInfo);
 
     // Converts a QFileInfo and an optional TrackId into a TrackRef. This
     // involves obtaining the file-related track properties from QFileInfo

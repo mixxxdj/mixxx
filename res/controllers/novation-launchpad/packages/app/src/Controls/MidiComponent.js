@@ -1,36 +1,26 @@
 /* @flow */
 import Component from '../Component'
 
-import type { MidiBus, MidiMessage } from '../Launchpad/MidiBus'
-import type { LaunchpadMidiButton } from '../Launchpad/Button'
+import type { LaunchpadDevice } from '../'
+import type { MidiBus } from '../MidiBus'
 
-export type MidiComponentBuilder = (button: LaunchpadMidiButton) => MidiComponent
-export const makeMidiComponent = (midibus: MidiBus) => (button: LaunchpadMidiButton) => new MidiComponent(midibus, button)
+export const childOfMidiComponent = (parent: MidiComponent) => new MidiComponent(parent.midibus)
 
 export default class MidiComponent extends Component {
   midibus: MidiBus
-  button: LaunchpadMidiButton
-  _cb: (data: MidiMessage) => void
+  device: LaunchpadDevice
 
-  constructor (midibus: MidiBus, button: LaunchpadMidiButton) {
+  constructor (midibus: MidiBus) {
     super()
     this.midibus = midibus
-    this.button = button
-    this._cb = (data) => {
-      if (data.value) {
-        this.emit('attack', data)
-      } else {
-        this.emit('release', data)
-      }
-      this.emit('midi', data)
-    }
+    this.device = midibus.device
   }
 
   onMount () {
-    this.midibus.on(this.button.def.name, this._cb)
+    super.onMount()
   }
 
   onUnmount () {
-    this.midibus.removeListener(this.button.def.name, this._cb)
+    super.onUnmount()
   }
 }

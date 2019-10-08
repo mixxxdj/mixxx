@@ -1,7 +1,7 @@
 <!--
 Description:
   Scrolling waveform on top edge of skin with beat grid buttons at the right-hand side.
-  Minimum size is 50px, in netbook mode it's 22px.
+  Minimum size is 22px.
   Expanded beat grid buttons make the waveform grow to 50px.
 Variables:
   group   : [ChannelN]
@@ -30,13 +30,57 @@ Variables:
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#FF4300</PlayPosColor>
-        <EndOfTrackColor>#EA0085</EndOfTrackColor>
+        <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
           <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
+          <Color>#666666</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
+        <MarkRange>
+          <StartControl>intro_start_position</StartControl>
+          <EndControl>intro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <Mark>
+          <Control>intro_start_position</Control>
+          <Text>|&#9698;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>intro_end_position</Control>
+          <Text>&#9698;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_start_position</Control>
+          <Text>|&#9699;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <Text>&#9699;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
         <Mark>
           <Control>cue_point</Control>
           <Text>Q</Text>
@@ -71,6 +115,7 @@ Variables:
           - if you change from a skin which supports more hotcues than buttons are in the current skin
           (and has them activated)
         -->
+        <!--
         <Mark>
           <Control>cue_point</Control>
           <Text>C</Text>
@@ -78,6 +123,7 @@ Variables:
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
+        -->
       </Visual>
 
       <WidgetGroup><!-- Transparent container for beatgrid buttons -->
@@ -85,7 +131,7 @@ Variables:
         <Layout>vertical</Layout>
         <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
             (shifts waveform center mark) so that all buttons are visible -->
-        <Size>99f,50me</Size>
+        <Size>82f,50me</Size>
         <Children>
           <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
           <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
@@ -95,11 +141,12 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
-              <Template src="skin:button_1state.xml">
+              <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
                 <SetVariable name="Size">24f,49f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1min,1f</Size></WidgetGroup>

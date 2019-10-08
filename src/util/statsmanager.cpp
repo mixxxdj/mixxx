@@ -5,7 +5,6 @@
 #include <QMetaType>
 
 #include "util/statsmanager.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
@@ -45,8 +44,8 @@ StatsManager::~StatsManager() {
     qDebug() << "=====================================";
     qDebug() << "ALL STATS";
     qDebug() << "=====================================";
-    for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-         it != m_stats.end(); ++it) {
+    for (auto it = m_stats.constBegin();
+         it != m_stats.constEnd(); ++it) {
         qDebug() << it.value();
     }
 
@@ -54,8 +53,8 @@ StatsManager::~StatsManager() {
         qDebug() << "=====================================";
         qDebug() << "BASE STATS";
         qDebug() << "=====================================";
-        for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
-             it != m_baseStats.end(); ++it) {
+        for (auto it = m_baseStats.constBegin();
+             it != m_baseStats.constEnd(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -64,8 +63,8 @@ StatsManager::~StatsManager() {
         qDebug() << "=====================================";
         qDebug() << "EXPERIMENT STATS";
         qDebug() << "=====================================";
-        for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
-             it != m_experimentStats.end(); ++it) {
+        for (auto it = m_experimentStats.constBegin();
+             it != m_experimentStats.constEnd(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -122,7 +121,6 @@ void StatsManager::writeTimeline(const QString& filename) {
 
     QMap<QString, qint64> startTimes;
     QMap<QString, qint64> endTimes;
-    QMap<QString, Stat> tagStats;
 
     QTextStream out(&timeline);
     foreach (const Event& event, m_events) {
@@ -249,15 +247,15 @@ void StatsManager::run() {
         processIncomingStatReports();
         m_statsPipeLock.unlock();
 
-        if (load_atomic(m_emitAllStats) == 1) {
-            for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-                 it != m_stats.end(); ++it) {
+        if (m_emitAllStats.load() == 1) {
+            for (auto it = m_stats.constBegin();
+                 it != m_stats.constEnd(); ++it) {
                 emit(statUpdated(it.value()));
             }
             m_emitAllStats = 0;
         }
 
-        if (load_atomic(m_quit) == 1) {
+        if (m_quit.load() == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }

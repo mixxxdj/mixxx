@@ -41,6 +41,7 @@ class EvictAndSaveFunctor {
     }
 
     void operator()(Track* plainPtr) {
+        Q_UNUSED(plainPtr); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
         // functor and the owning reference counting object.
@@ -133,6 +134,11 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
     m_pInstance->relocateTracks(pRelocator);
 }
 
+void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
+    DEBUG_ASSERT(m_pInstance);
+    return m_pInstance->purgeTrackId(trackId);
+}
+
 void GlobalTrackCacheLocker::deactivateCache() const {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->deactivate();
@@ -216,6 +222,7 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
+    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 
@@ -319,7 +326,7 @@ void GlobalTrackCache::relocateTracks(
 void GlobalTrackCache::deactivate() {
     // Ideally the cache should be empty when destroyed.
     // But since this is difficult to achieve all remaining
-    // cached tracks will evicted no matter if they are still
+    // cached tracks will be evicted no matter if they are still
     // referenced or not. This ensures that the eviction
     // callback is triggered for all modified tracks before
     // exiting the application.
@@ -333,7 +340,7 @@ void GlobalTrackCache::deactivate() {
 
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= i->second->getPlainPtr();
+        Track* plainPtr= j->second->getPlainPtr();
         m_pSaver->saveCachedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
     }
@@ -580,13 +587,24 @@ TrackRef GlobalTrackCache::initTrackId(
     return trackRefWithId;
 }
 
+void GlobalTrackCache::purgeTrackId(TrackId trackId) {
+    DEBUG_ASSERT(trackId.isValid());
+
+    const auto trackById(m_tracksById.find(trackId));
+    if (m_tracksById.end() != trackById) {
+        Track* track = trackById->second->getPlainPtr();
+        track->resetId();
+        m_tracksById.erase(trackById);
+    }
+}
+
 void GlobalTrackCache::evictAndSave(
         GlobalTrackCacheEntryPointer cacheEntryPtr) {
     DEBUG_ASSERT(cacheEntryPtr);
 
-    // We need to besure this is always called from the main thread
-    // because we can only access the DB from it and we must not loose the
-    // the lock until all changes are persistantly stored in file and DB
+    // We need to be sure this is always called from the main thread
+    // because we can only access the DB from it and we must not lose the
+    // the lock until all changes are persistently stored in file and DB
     // to not hand out the track again with old metadata.
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
@@ -594,7 +612,7 @@ void GlobalTrackCache::evictAndSave(
 
     if (!cacheEntryPtr->getSavingWeakPtr().expired()) {
         // We have handed out (revived) this track again after our reference count
-        // drops to zero and before acquire the lock at the beginning of this function
+        // drops to zero and before acquiring the lock at the beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Skip to evict and save a revived or reallocated track"
@@ -604,8 +622,8 @@ void GlobalTrackCache::evictAndSave(
     }
 
     if (!evict(cacheEntryPtr->getPlainPtr())) {
-        // A scond deleter has already evict the track from cache after our
-        // reference count drops to zero and before acquire the lock at the
+        // A second deleter has already evicted the track from cache after our
+        // reference count drops to zero and before acquiring the lock at the
         // beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
@@ -657,7 +675,7 @@ bool GlobalTrackCache::evict(Track* plainPtr) {
     // Don't erase the pointer from m_cachedTracks here, because
     // this function is invoked from 2 different contexts. The
     // caller is responsible for doing this. Until then the cache
-    // is inconsistent and verifyConsitency() is expected to fail.
+    // is inconsistent and verifyConsistency() is expected to fail.
     return evicted;
 }
 

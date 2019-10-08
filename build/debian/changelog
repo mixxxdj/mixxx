@@ -1,14 +1,44 @@
+mixxx (2.2.1-0ubuntu1) bionic; urgency=medium
+
+  * Bugfix release 
+
+ -- Daniel <daniel@mixxx.org>  Thu, 22 Apr 2019 23:05:28 +0100
+
+mixxx (2.2.0-0ubuntu1) bionic; urgency=medium
+
+  * Bugfix release 
+
+ -- Daniel <daniel@mixxx.org>  Fr, 11 Jan 2019 23:26:08 +0100
+ 
+mixxx (2.1.8-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Sun, 07 Apr 2019 12:14:46 +0200
+
+mixxx (2.1.7-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release  
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Mon, 14 Jan 2019 00:08:23 +0100
+
+mixxx (2.1.6-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Sun, 23 Dec 2018 11:01:23 +0100
+
 mixxx (2.1.4-0ubuntu1) bionic; urgency=medium
 
   * New upstream release.
 
- -- Be <be@mixxx.org> Mon, 30 Aug 2018 07:47:00 +0500
+ -- Be <be@mixxx.org>  Mon, 30 Aug 2018 07:47:00 +0500
 
 mixxx (2.1.3-0ubuntu1) bionic; urgency=medium
 
   * New upstream release.
 
- -- Be <be@mixxx.org> Mon, 20 Aug 2018 12:53:15 +0500
+ -- Be <be@mixxx.org>  Mon, 20 Aug 2018 12:53:15 +0500
 
 mixxx (2.1.2-0ubuntu1) artful; urgency=medium
 

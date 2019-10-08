@@ -13,7 +13,7 @@
 
 namespace mixxx {
 
-class SoundSourceSndFile: public SoundSource {
+class SoundSourceSndFile final : public SoundSource {
   public:
     explicit SoundSourceSndFile(const QUrl& url);
     ~SoundSourceSndFile() override;
@@ -34,7 +34,7 @@ class SoundSourceSndFile: public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderSndFile: public SoundSourceProvider {
+class SoundSourceProviderSndFile : public SoundSourceProvider {
   public:
     QString getName() const override;
 

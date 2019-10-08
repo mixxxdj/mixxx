@@ -6,7 +6,7 @@
 */
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
@@ -26,6 +26,10 @@ Controller::Controller()
 Controller::~Controller() {
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+}
+
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
 }
 
 void Controller::startEngine()
@@ -136,9 +140,7 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
+        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
+        m_pEngine->executeFunction(incomingDataFunction, data);
     }
 }

@@ -31,10 +31,10 @@ QHeaderView::down-arrow {
   background-color: rgba(153,138,60,160);
 }
 QHeaderView::up-arrow {
-  image: url(skin:/btn_lib_sort_up.png)
+  image: url(skin:/btn/btn_lib_sort_up.png)
 }
 QHeaderView::down-arrow {
-  image: url(skin:/btn_lib_sort_down.png)
+  image: url(skin:/btn/btn_lib_sort_down.png)
 }
 
 /* Scroll bars */
@@ -70,3 +70,7 @@ WLibrary QPushButton {
     border: 1px solid #52F904;
   }
 
+/* Hotcue Color: No Color */
+#HotcueButton[highlight="0"] {
+    background-color: #52f904;
+}

@@ -123,7 +123,7 @@
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === 'function') {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
         disconnect: function () {
@@ -193,7 +193,7 @@
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }, true);
+                    }.bind(this), true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -308,6 +308,7 @@
             print('ERROR: No sampler number specified for new SamplerButton.');
             return;
         }
+        this.volumeByVelocity = options.volumeByVelocity;
         this.number = options.number;
         this.group = '[Sampler' + this.number + ']';
         Button.call(this, options);
@@ -319,6 +320,9 @@
                     if (engine.getValue(this.group, 'track_loaded') === 0) {
                         engine.setValue(this.group, 'LoadSelectedTrack', 1);
                     } else {
+                        if (this.volumeByVelocity) {
+                            engine.setValue(this.group, 'volume', this.inValueScale(value));
+                        }
                         engine.setValue(this.group, 'cue_gotoandplay', 1);
                     }
                 }
@@ -364,12 +368,12 @@
             }
         },
         connect: function() {
-            this.connections[0] = engine.makeConnection(this.group, 'track_loaded', this.output);
+            this.connections[0] = engine.makeConnection(this.group, 'track_loaded', this.output.bind(this));
             if (this.playing !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, 'play', this.output);
+                this.connections[1] = engine.makeConnection(this.group, 'play', this.output.bind(this));
             }
             if (this.looping !== undefined) {
-                this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
+                this.connections[2] = engine.makeConnection(this.group, 'repeat', this.output.bind(this));
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
@@ -663,7 +667,7 @@
                 // presses the skin button for show_parameters.
                 this.showParametersConnection = engine.makeConnection(this.group,
                                                     'show_parameters',
-                                                    this.onShowParametersChange);
+                                                    this.onShowParametersChange.bind(this));
                 this.showParametersConnection.trigger();
             }
 
@@ -808,7 +812,7 @@
             outKey: "focused_effect",
             connect: function () {
                 this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                            this.onFocusChange);
+                                                            this.onFocusChange.bind(this));
             },
             disconnect: function () {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
@@ -871,11 +875,11 @@
 
                 this.connect = function () {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                                this.onFocusChange);
+                                                                this.onFocusChange.bind(this));
                     // this.onFocusChange sets this.group and this.outKey, so trigger it
                     // before making the connection for LED output
                     this.connections[0].trigger();
-                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output);
+                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                 };
 
                 this.unshift = function () {
@@ -919,7 +923,7 @@
                     // Component.prototype.trigger() triggering the disconnected connection.
                     this.connections = [engine.makeConnection(eu.group,
                                                               "focused_effect",
-                                                              this.output)];
+                                                              this.output.bind(this))];
                 };
             },
         });
@@ -961,7 +965,7 @@
                     var showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                                                      this.startEffectFocusChooseMode,
+                                                      this.startEffectFocusChooseMode.bind(this),
                                                       true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
