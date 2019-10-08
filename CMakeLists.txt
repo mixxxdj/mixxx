@@ -1444,10 +1444,10 @@ if(WIN32)
     )
     target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
     target_include_directories(mixxx-lib PRIVATE
-      ${MEDIAFOUNDATION_INCLUDE_DIRS}
+      ${MediaFoundation_INCLUDE_DIRS}
     )
     target_link_libraries(mixxx-lib PUBLIC
-      ${MEDIAFOUNDATION_LIBRARIES}
+      ${MediaFoundation_LIBRARIES}
     )
   endif()
 endif()
