@@ -121,6 +121,7 @@ for:
       -DMEDIAFOUNDATION_ENABLED=ON
       -DOPUS_ENABLED=ON
       -DLOCALECOMPARE_ENABLED=ON
+      -DSTATIC_DEPS=ON
       -G "Visual Studio 15 2017 Win64"
       ..
     - cmake --build . --config "Release"
