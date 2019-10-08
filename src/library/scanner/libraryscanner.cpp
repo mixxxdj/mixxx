@@ -11,9 +11,11 @@
 #include "util/trace.h"
 #include "util/file.h"
 #include "util/timer.h"
+#include "util/performancetimer.h"
 #include "library/scanner/scannerutil.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/fwdsqlquery.h"
 
 namespace {
 
@@ -89,6 +91,25 @@ LibraryScanner::~LibraryScanner() {
     cancelAndQuit();
 }
 
+namespace {
+
+const QString kDeleteOrphanedLibraryScannerDirectories =
+        "delete from LibraryHashes where hash <> 0 and directory_path not in (select directory from track_locations)";
+
+// Returns the number of affected rows or -1 on error
+int execCleanupQuery(QSqlDatabase database, const QString& statement) {
+    FwdSqlQuery query(database, statement);
+    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
+        return -1;
+    }
+    if (!query.execPrepared()) {
+        return -1;
+    }
+    return query.numRowsAffected();
+}
+
+} // anonymous namespace
+
 void LibraryScanner::run() {
     kLogger.debug() << "Entering thread";
     {
@@ -101,6 +122,23 @@ void LibraryScanner::run() {
                     << "Failed to open database connection for library scanner";
             kLogger.debug() << "Exiting thread";
             return;
+        }
+
+        {
+            kLogger.info() << "Cleaning up database...";
+            PerformanceTimer timer;
+            timer.start();
+            auto numRows = execCleanupQuery(dbConnection, kDeleteOrphanedLibraryScannerDirectories);
+            if (numRows < 0) {
+                kLogger.warning()
+                        << "Failed to delete orphaned directory hashes";
+            } else if (numRows > 0) {
+                kLogger.info()
+                        << "Deleted" << numRows << "orphaned directory hashes)";
+            }
+            kLogger.info()
+                    << "Finished database cleanup:"
+                    << timer.elapsed().debugMillisWithUnit();
         }
 
         m_libraryHashDao.initialize(dbConnection);
