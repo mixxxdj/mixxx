@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include <type_traits>
+#include <limits>
 
 #include "util/assert.h"
 #include "util/math.h"
@@ -21,15 +21,14 @@ class SpscFifo final {
     typedef S size_type;
 
     explicit SpscFifo(size_type capacity)
-            : m_size(capacity + 1),
+            : m_size(adjust_capacity(capacity) + 1),
               m_data(new T[m_size]),
               m_front(0),
               m_back(0),
               m_pfront(0),
               m_cback(0) {
-        static_assert(std::is_unsigned<size_type>::value, "size_type must be unsigned");
-        DEBUG_ASSERT(capacity > 0);
-        DEBUG_ASSERT(m_size > 0); // no overflow
+        DEBUG_ASSERT(m_size > capacity);
+        DEBUG_ASSERT(m_size < m_size + capacity); // no overflow
         DEBUG_ASSERT(std::atomic_is_lock_free(&m_front));
         DEBUG_ASSERT(std::atomic_is_lock_free(&m_back));
     }
@@ -59,7 +58,9 @@ class SpscFifo final {
     size_type push_skip(size_type count = 1) {
         auto writable = math_min(acquire_writable(count), count);
         if (writable > 0) {
+            DEBUG_ASSERT(m_pfront < m_size);
             DEBUG_ASSERT(writable < m_size);
+            DEBUG_ASSERT(m_pfront < m_pfront + writable); // no overflow
             m_pfront = (m_pfront + writable) % m_size;
             DEBUG_ASSERT(m_pfront < m_size);
             m_front.store(m_pfront, std::memory_order_release);
@@ -73,10 +74,12 @@ class SpscFifo final {
         DEBUG_ASSERT(data || !count);
         auto writable = math_min(acquire_writable(count), count);
         if (writable > 0) {
+            DEBUG_ASSERT(m_pfront < m_size);
             DEBUG_ASSERT(writable < m_size);
             for (size_type i = 0; i < writable; ++i) {
                 m_data[(m_pfront + i) % m_size] = std::move(data[i]);
             }
+            DEBUG_ASSERT(m_pfront < m_pfront + writable); // no overflow
             m_pfront = (m_pfront + writable) % m_size;
             DEBUG_ASSERT(m_pfront < m_size);
             m_front.store(m_pfront, std::memory_order_release);
@@ -90,10 +93,12 @@ class SpscFifo final {
         DEBUG_ASSERT(data || !count);
         auto writable = math_min(acquire_writable(count), count);
         if (writable > 0) {
+            DEBUG_ASSERT(m_pfront < m_size);
             DEBUG_ASSERT(writable < m_size);
             for (size_type i = 0; i < writable; ++i) {
                 m_data[(m_pfront + i) % m_size] = data[i];
             }
+            DEBUG_ASSERT(m_pfront < m_pfront + writable); // no overflow
             m_pfront = (m_pfront + writable) % m_size;
             DEBUG_ASSERT(m_pfront < m_size);
             m_front.store(m_pfront, std::memory_order_release);
@@ -143,7 +148,9 @@ class SpscFifo final {
     size_type pop_skip(size_type count = 1) {
         auto readable = math_min(acquire_readable(count), count);
         if (readable > 0) {
+            DEBUG_ASSERT(m_cback < m_size);
             DEBUG_ASSERT(readable < m_size);
+            DEBUG_ASSERT(m_cback < m_cback + readable); // no overflow
             m_cback = (m_cback + readable) % m_size;
             DEBUG_ASSERT(m_cback < m_size);
             m_back.store(m_cback, std::memory_order_release);
@@ -157,10 +164,12 @@ class SpscFifo final {
         DEBUG_ASSERT(data || !count);
         auto readable = math_min(acquire_readable(count), count);
         if (readable > 0) {
+            DEBUG_ASSERT(m_cback < m_size);
             DEBUG_ASSERT(readable < m_size);
             for (size_type i = 0; i < readable; ++i) {
                 data[i] = std::move(m_data[(m_cback + i) % m_size]);
             }
+            DEBUG_ASSERT(m_cback < m_cback + readable); // no overflow
             m_cback = (m_cback + readable) % m_size;
             DEBUG_ASSERT(m_cback < m_size);
             m_back.store(m_cback, std::memory_order_release);
@@ -180,6 +189,18 @@ class SpscFifo final {
     }
 
   private:
+    static size_type adjust_capacity(size_type capacity) {
+        VERIFY_OR_DEBUG_ASSERT(capacity <= std::numeric_limits<size_type>::max() / 2) {
+            // Max. capacity exceeded - prevent overflow during push/pop operations!
+            capacity = std::numeric_limits<size_type>::max() / 2;
+        }
+        VERIFY_OR_DEBUG_ASSERT(capacity > 0) {
+            // An empty FIFO works, but it would be useless
+            capacity = 1;
+        }
+        return capacity;
+    }
+
     size_type min_writable(size_type back) const {
         return (back + (m_size - 1) - m_pfront) % m_size;
     }
