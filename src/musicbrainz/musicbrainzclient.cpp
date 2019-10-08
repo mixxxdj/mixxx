@@ -240,7 +240,7 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
 
 MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(const ResultList& results) {
     ResultList ret = QSet<Result>::fromList(results).toList();
-    qSort(ret);
+    std::sort(ret.begin(), ret.end());
     return ret;
 }
 

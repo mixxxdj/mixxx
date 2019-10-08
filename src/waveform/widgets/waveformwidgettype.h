@@ -4,8 +4,8 @@
 class WaveformWidgetType {
   public:
     enum Type {
-        // The order must not be changed because the waveforms are refrerenced
-        // from the sotred preferences by a number.
+        // The order must not be changed because the waveforms are referenced
+        // from the sorted preferences by a number.
         EmptyWaveform = 0,
         SoftwareSimpleWaveform, //TODO
         SoftwareWaveform,

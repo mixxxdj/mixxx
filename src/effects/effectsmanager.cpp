@@ -1,7 +1,6 @@
 #include "effects/effectsmanager.h"
 
 #include <QMetaType>
-#include <QtAlgorithms>
 
 #include <algorithm>
 
@@ -89,7 +88,7 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 
-    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
+    std::sort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
     connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),

@@ -21,6 +21,7 @@
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtrackmetadataexport.h"
+#include "library/externaltrackcollection.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -37,7 +38,9 @@
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
-                                 TrackCollection* pTrackCollection, bool sorting)
+                                 TrackCollection* pTrackCollection,
+                                 bool sorting,
+                                 const QList<ExternalTrackCollection*>& externalTrackCollections)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
@@ -90,7 +93,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotPopulateCrateMenu()));
 
     m_pMetadataMenu = new QMenu(this);
-    m_pMetadataMenu->setTitle("Metadata");
+    m_pMetadataMenu->setTitle(tr("Metadata"));
+
+    m_pMetadataUpdateExternalCollectionsMenu = new QMenu(this);
+    m_pMetadataUpdateExternalCollectionsMenu->setTitle(tr("Update external collections"));
 
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("Change BPM"));
@@ -109,7 +115,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
     // right-click)
-    createActions();
+    createActions(externalTrackCollections);
 
     // Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
@@ -218,20 +224,23 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
-        // Show the currently selected track in the large cover art view. Doing
-        // this in selectionChanged slows down scrolling performance so we wait
-        // until the user has stopped interacting first.
+        // Show the currently selected track in the large cover art view and
+        // hightlights crate and playlists. Doing this in selectionChanged
+        // slows down scrolling performance so we wait until the user has
+        // stopped interacting first.
         if (m_selectionChangedSinceLastGuiTick) {
             const QModelIndexList indices = selectionModel()->selectedRows();
-            if (indices.size() > 0 && indices.last().isValid()) {
+            if (indices.size() == 1 && indices.first().isValid()) {
+                // A single track has been selected
                 TrackModel* trackModel = getTrackModel();
                 if (trackModel) {
-                    TrackPointer pTrack = trackModel->getTrack(indices.last());
+                    TrackPointer pTrack = trackModel->getTrack(indices.first());
                     if (pTrack) {
                         emit(trackSelected(pTrack));
                     }
                 }
             } else {
+                // None or multiple tracks have been selected
                 emit(trackSelected(TrackPointer()));
             }
             m_selectionChangedSinceLastGuiTick = false;
@@ -423,7 +432,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // scrollbar positions with respect to different models are backed by map
 }
 
-void WTrackTableView::createActions() {
+void WTrackTableView::createActions(
+        const QList<ExternalTrackCollection*>& externalTrackCollections) {
     DEBUG_ASSERT(m_pMenu);
     DEBUG_ASSERT(m_pSamplerMenu);
 
@@ -476,6 +486,20 @@ void WTrackTableView::createActions() {
     m_pExportMetadataAct = new QAction(tr("Export To File Tags"), this);
     connect(m_pExportMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotExportTrackMetadataIntoFileTags()));
+
+    for (const auto& externalTrackCollection : externalTrackCollections) {
+        if (!externalTrackCollection->isActive()) {
+            continue; // skip
+        }
+        UpdateExternalTrackCollection updateInExternalTrackCollection;
+        updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
+        updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), this);
+        m_updateInExternalTrackCollections += updateInExternalTrackCollection;
+        auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
+        connect(updateInExternalTrackCollection.action, &QAction::triggered,
+                [=](){
+                    slotUpdateExternalTrackCollection(externalTrackCollectionPtr);});
+    }
 
     m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -904,12 +928,41 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     m_pMenu->addSeparator();
     m_pMetadataMenu->clear();
+    m_pMetadataUpdateExternalCollectionsMenu->clear();
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
+
+        for (const auto& updateInExternalTrackCollection : m_updateInExternalTrackCollections) {
+            ExternalTrackCollection* externalTrackCollection =
+                    updateInExternalTrackCollection.externalTrackCollection;
+            if (externalTrackCollection) {
+                updateInExternalTrackCollection.action->setEnabled(
+                        externalTrackCollection->isActive());
+                m_pMetadataUpdateExternalCollectionsMenu->addAction(
+                        updateInExternalTrackCollection.action);
+            }
+        }
+        if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
+            m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
+        }
+
+        for (const auto& updateInExternalTrackCollection : m_updateInExternalTrackCollections) {
+            ExternalTrackCollection* externalTrackCollection =
+                    updateInExternalTrackCollection.externalTrackCollection;
+            if (externalTrackCollection) {
+                updateInExternalTrackCollection.action->setEnabled(
+                        externalTrackCollection->isActive());
+                m_pMetadataUpdateExternalCollectionsMenu->addAction(
+                        updateInExternalTrackCollection.action);
+            }
+        }
+        if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
+            m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
+        }
 
         m_pClearMetadataMenu->clear();
 
@@ -1213,9 +1266,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // in ascending order. This is necessary because if track A is above track B in
         // the table, and you remove track A, the model index for track B will change.
         // Sorting the indices first means we don't have to worry about this.
-        //qSort(m_selectedIndices);
-        //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
-        qSort(selectedRows);
+        //std::sort(m_selectedIndices.begin(), m_selectedIndices.end(), std::greater<QModelIndex>());
+        std::sort(selectedRows.begin(), selectedRows.end());
         int maxRow = 0;
         int minRow = 0;
         if (!selectedRows.isEmpty()) {
@@ -1239,9 +1291,9 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                 // If we're moving the tracks _up_,
                 // then reverse the order of the row selection
                 // to make the algorithm below work as it is
-                qSort(selectedRows.begin(),
+                std::sort(selectedRows.begin(),
                       selectedRows.end(),
-                      qGreater<int>());
+                      std::greater<int>());
             } else {
                if (destRow > maxRow) {
                    // If we're moving the tracks _down_,
@@ -1290,7 +1342,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         for (const QFileInfo& fileInfo : fileList) {
-            fileLocationList.append(TrackRef::location(fileInfo));
+            fileLocationList.append(TrackFile(fileInfo).location());
         }
 
         // Drag-and-drop from an external application
@@ -1511,6 +1563,38 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
             pTrack->markForMetadataExport();
         }
     }
+}
+
+void WTrackTableView::slotUpdateExternalTrackCollection(
+        ExternalTrackCollection* externalTrackCollection) {
+    VERIFY_OR_DEBUG_ASSERT(externalTrackCollection) {
+        return;
+    }
+
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
+        return;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    QList<TrackRef> trackRefs;
+    trackRefs.reserve(indices.size());
+    for (const QModelIndex& index : indices) {
+        trackRefs.append(
+                TrackRef::fromFileInfo(
+                        pTrackModel->getTrackLocation(index),
+                        pTrackModel->getTrackId(index)));
+    }
+
+    externalTrackCollection->updateTracks(std::move(trackRefs));
 }
 
 //slot for reset played count, sets count to 0 of one or more tracks

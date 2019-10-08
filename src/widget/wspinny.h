@@ -21,6 +21,7 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
+class VSyncThread;
 
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
                 public TrackDropTarget {
@@ -45,7 +46,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
-    void render();
+    void render(VSyncThread* vSyncThread);
     void swap();
 
   protected slots:

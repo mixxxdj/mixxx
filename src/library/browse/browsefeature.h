@@ -22,15 +22,16 @@
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
 
+class Library;
 class TrackCollection;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(QObject* parent,
-                  UserSettingsPointer pConfig,
-                  TrackCollection* pTrackCollection,
-                  RecordingManager* pRec);
+    BrowseFeature(Library* parent,
+            UserSettingsPointer pConfig,
+            TrackCollection* pTrackCollection,
+            RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 
     QVariant title();

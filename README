@@ -39,6 +39,7 @@ Mixxx has the following dependencies:
 - libvorbis
 - libvorbisfile
 - libsndfile
+- libmodplug
 - libflac
 - libopus
 - libshout

@@ -91,18 +91,30 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
             pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&m_trackDao, SIGNAL(trackDirty(TrackId)),
-            pBaseTrackCache, SLOT(slotTrackDirty(TrackId)));
-    connect(&m_trackDao, SIGNAL(trackClean(TrackId)),
-            pBaseTrackCache, SLOT(slotTrackClean(TrackId)));
-    connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
-            pBaseTrackCache, SLOT(slotTrackChanged(TrackId)));
-    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<TrackId>)));
-    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<TrackId>)));
-    connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
-            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            pBaseTrackCache,
+            &BaseTrackCache::slotTrackDirty);
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            pBaseTrackCache,
+            &BaseTrackCache::slotTrackClean);
+    connect(&m_trackDao,
+            &TrackDAO::trackChanged,
+            pBaseTrackCache,
+            &BaseTrackCache::slotTrackChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            pBaseTrackCache,
+            &BaseTrackCache::slotTracksAdded);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            pBaseTrackCache,
+            &BaseTrackCache::slotTracksRemoved);
+    connect(&m_trackDao,
+            &TrackDAO::dbTrackAdded,
+            pBaseTrackCache,
+            &BaseTrackCache::slotDbTrackAdded);
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     pTrackCollection->setTrackSource(m_pBaseTrackCache);
@@ -126,14 +138,18 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
                                   m_pTrackCollection, pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
-    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pHiddenView,
+            &DlgHidden::trackSelected,
+            this,
+            &MixxxLibraryFeature::trackSelected);
 
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
                                     m_pTrackCollection, pKeyboard);
     pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
-    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pMissingView,
+            &DlgMissing::trackSelected,
+            this,
+            &MixxxLibraryFeature::trackSelected);
 }
 
 QVariant MixxxLibraryFeature::title() {

@@ -49,7 +49,7 @@ class VisualPlayPosition : public QObject {
     void set(double playPos, double rate, double positionStep,
             double slipPosition, double tempoTrackSeconds);
     double getAtNextVSync(VSyncThread* vsyncThread);
-    void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
+    void getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* playPosition, double* slipPosition);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 

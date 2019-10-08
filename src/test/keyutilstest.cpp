@@ -215,7 +215,7 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
             mixxx::track::io::key::A_MINOR;
     QList<mixxx::track::io::key::ChromaticKey> compatible =
             KeyUtils::getCompatibleKeys(key);
-    qSort(compatible);
+    std::sort(compatible.begin(), compatible.end());
     EXPECT_THAT(compatible, ElementsAre(
         mixxx::track::io::key::C_MAJOR,
         mixxx::track::io::key::D_MINOR,
@@ -224,7 +224,7 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
 
     key = mixxx::track::io::key::F_MAJOR;
     compatible = KeyUtils::getCompatibleKeys(key);
-    qSort(compatible);
+    std::sort(compatible.begin(), compatible.end());
     EXPECT_THAT(compatible, ElementsAre(
         mixxx::track::io::key::C_MAJOR,
         mixxx::track::io::key::F_MAJOR,

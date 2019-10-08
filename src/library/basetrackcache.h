@@ -79,7 +79,7 @@ class BaseTrackCache : public QObject {
   signals:
     void tracksChanged(QSet<TrackId> trackIds);
 
-  private slots:
+  public slots:
     void slotTracksAdded(QSet<TrackId> trackId);
     void slotTracksRemoved(QSet<TrackId> trackId);
     void slotTrackDirty(TrackId trackId);

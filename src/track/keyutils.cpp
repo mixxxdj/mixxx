@@ -203,23 +203,33 @@ QString KeyUtils::keyToString(ChromaticKey key,
         return "INVALID";
     }
 
-    if (notation == CUSTOM) {
-        // The default value for notation is KeyUtils::CUSTOM, so this executes when the function is
+    if (notation == KeyNotation::Custom) {
+        // The default value for notation is KeyUtils::KeyNotation::Custom, so this executes when the function is
         // called without a notation specified after KeyUtils::setNotation has set up s_notation.
         QMutexLocker locker(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
             return it.value();
         }
-    } else if (notation == OPEN_KEY) {
+    } else if (notation == KeyNotation::OpenKey) {
         bool major = keyIsMajor(key);
         int number = keyToOpenKeyNumber(key);
         return QString::number(number) + (major ? "d" : "m");
-    } else if (notation == LANCELOT) {
+    } else if (notation == KeyNotation::OpenKeyAndTraditional) {
+        bool major = keyIsMajor(key);
+        int number = keyToOpenKeyNumber(key);
+        QString trad = s_traditionalKeyNames[static_cast<int>(key)];
+        return QString::number(number) + (major ? "d" : "m") + " (" + trad + ")";
+    } else if (notation == KeyNotation::Lancelot) {
         bool major = keyIsMajor(key);
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
-    } else if (notation == TRADITIONAL) {
+    } else if (notation == KeyNotation::LancelotAndTraditional) {
+        bool major = keyIsMajor(key);
+        int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
+        QString trad = s_traditionalKeyNames[static_cast<int>(key)];
+        return QString::number(number) + (major ? "B" : "A") + " (" + trad + ")";
+    } else if (notation == KeyNotation::Traditional) {
         return s_traditionalKeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
@@ -338,8 +348,9 @@ ChromaticKey KeyUtils::keyFromNumericValue(double value) {
 
 KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
     int value_floored = static_cast<int>(value);
-    if (value_floored < 0 || value_floored >= KEY_NOTATION_MAX) {
-        return INVALID;
+    if (value_floored < static_cast<int>(KeyNotation::Invalid)
+        || value_floored >= static_cast<int>(KeyNotation::NumKeyNotations)) {
+        return KeyNotation::Invalid;
     }
     return static_cast<KeyNotation>(value_floored);
 }
@@ -395,7 +406,7 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-    const KeyChangeList& key_changes, const int iTotalSamples) {
+    const KeyChangeList& key_changes, const int iTotalSamples, int iSampleRate) {
     const int iTotalFrames = iTotalSamples / 2;
     QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
@@ -413,7 +424,7 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     qDebug() << "Key Histogram";
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
-        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value();
+        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / iSampleRate;
         if (it.value() > max_delta) {
             max_key = it.key();
             max_delta = it.value();
@@ -551,7 +562,7 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
         key = mixxx::track::io::key::INVALID;
     }
 
-    if (notation != LANCELOT) {
+    if (notation != KeyNotation::Lancelot && notation != KeyNotation::LancelotAndTraditional) {
         return s_sortKeysCircleOfFifths[static_cast<int>(key)];
     } else {
         return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];

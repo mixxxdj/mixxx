@@ -23,6 +23,7 @@
 #include "util/logger.h"
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
+#include "preferences/dialog/dlgprefdeck.h"
 
 
 namespace {
@@ -580,8 +581,12 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     }
 
     mixxx::Duration elapsed = m_cloneTimer.restart();
-    if (m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
-        // load pressed twice quickly, clone instead of loading
+    // If not present in the config, use & set the default value
+    bool cloneOnDoubleTap = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
+    if (cloneOnDoubleTap && m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
+        // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
+        // so clone another playing deck instead of loading the selected track
         pPlayer->slotCloneDeck();
     } else {
         pPlayer->slotLoadTrack(pTrack, play);

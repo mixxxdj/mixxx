@@ -12,8 +12,8 @@ namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-const QFileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
-const QFileInfo kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
+const TrackFile kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
+const TrackFile kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
 
 class TrackTitleThread: public QThread {
   public:
@@ -27,8 +27,11 @@ class TrackTitleThread: public QThread {
 
     void run() override {
         int loopCount = 0;
-        while (!m_stop.load()) {
+        while (!(m_stop.load() && GlobalTrackCacheLocker().isEmpty())) {
+            // Drop the previous reference to avoid resolving the
+            // same track twice
             m_recentTrackPtr.reset();
+            // Try to resolve the next track by guessing the id
             const TrackId trackId(loopCount % 2);
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
@@ -43,10 +46,17 @@ class TrackTitleThread: public QThread {
                 }
                 ASSERT_TRUE(track->isDirty());
             }
+            // Replace the current reference with this one and keep it alive
+            // until the next loop cycle
             m_recentTrackPtr = std::move(track);
             ++loopCount;
         }
-        m_recentTrackPtr.reset();
+        // If the cache is empty all references must have been dropped.
+        // Why? m_recentTrackPtr is only valid if a pointer has been found
+        // in the cache during the previous cycle, i.e. the cache could not
+        // have been empty. In this case at least another loop cycle follow,
+        // and so on...
+        ASSERT_TRUE(!m_recentTrackPtr);
         qDebug() << "Finished" << loopCount << " thread loops";
     }
 
@@ -56,17 +66,23 @@ class TrackTitleThread: public QThread {
     std::atomic<bool> m_stop;
 };
 
+void deleteTrack(Track* pTrack) {
+    // Delete track objects directly in unit tests with
+    // no main event loop
+    delete pTrack;
+};
+
 } // anonymous namespace
 
 class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSaver {
   public:
-    void saveCachedTrack(Track* pTrack) noexcept override {
+    void saveEvictedTrack(Track* pTrack) noexcept override {
         ASSERT_FALSE(pTrack == nullptr);
     }
 
   protected:
     GlobalTrackCacheTest() {
-        GlobalTrackCache::createInstance(this);
+        GlobalTrackCache::createInstance(this, deleteTrack);
     }
     ~GlobalTrackCacheTest() {
         GlobalTrackCache::destroyInstance();
@@ -156,19 +172,27 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
         // lp1744550: Accessing the track from multiple threads is
         // required to cause a SIGSEGV
-        track->setArtist(track->getTitle());
+        track->setArtist(QString("Artist %1").arg(QString::number(i)));
 
         m_recentTrackPtr = std::move(track);
+
+        // Lookup the track again
+        track = GlobalTrackCacheLocker().lookupTrackById(trackId);
+        EXPECT_TRUE(static_cast<bool>(track));
+
+        // Ensure that track objects are evicted and deleted
+        QCoreApplication::processEvents();
     }
     m_recentTrackPtr.reset();
 
     workerThread.stop();
-    workerThread.wait();
 
     // Ensure that all track objects have been deleted
-    QCoreApplication::processEvents();
+    while (!GlobalTrackCacheLocker().isEmpty()) {
+        QCoreApplication::processEvents();
+    }
 
-    EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
+    workerThread.wait();
 }
 
 TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
@@ -184,4 +208,8 @@ TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
 
     EXPECT_TRUE(static_cast<bool>(track1));
     EXPECT_FALSE(static_cast<bool>(track2));
+
+    track1.reset();
+
+    EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
 }
