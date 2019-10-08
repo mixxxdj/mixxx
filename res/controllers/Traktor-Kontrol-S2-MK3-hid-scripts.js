@@ -71,7 +71,7 @@ TraktorS2MK3 = new function () {
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
     this.quantizeState = 0; // 0 = Off, 1 = On
 
-    this.microphonePressedTimer = 0;
+    this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
     this.microphonePressedState = 0; // 0 = Not pressed, 1 = Pressed
 
     // Jog wheels
@@ -84,6 +84,16 @@ TraktorS2MK3 = new function () {
     this.clipLeftConnection = {};
     this.clipRightConnection = {};
     this.vuMeterValues = { "vu-18": (1 / 6), "vu-12": (1 / 6 * 2), "vu-6": (1 / 6 * 3), "vu0": (1 / 6 * 4), "vu6": (1 / 6 * 5) };
+
+    // Sampler callbacks
+    this.samplerCallbacks = [];
+    this.samplerHotcuesRelation = {
+        "[Channel1]": {
+            1: 1, 2: 2, 3: 3, 4: 4, 5: 9, 6: 10, 7: 11, 8: 12
+        }, "[Channel2]": {
+            1: 5, 2: 6, 3: 7, 4: 8, 5: 13, 6: 14, 7: 15, 8: 16
+        }
+    };
 }
 
 TraktorS2MK3.init = function (id) {
@@ -176,23 +186,23 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[Channel2]", "!samples", 0x05, 0x02, this.padModeHandler);
 
     // Hotcues
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_1", 0x02, 0x10, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_2", 0x02, 0x20, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_3", 0x02, 0x40, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_4", 0x02, 0x80, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_5", 0x03, 0x01, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_6", 0x03, 0x02, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_7", 0x03, 0x04, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_8", 0x03, 0x08, this.hotcueHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_1", 0x02, 0x10, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_2", 0x02, 0x20, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_3", 0x02, 0x40, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_4", 0x02, 0x80, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_5", 0x03, 0x01, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_6", 0x03, 0x02, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_7", 0x03, 0x04, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcue_8", 0x03, 0x08, this.numberButtonHandler);
 
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_1", 0x05, 0x40, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_2", 0x05, 0x80, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_3", 0x06, 0x01, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_4", 0x06, 0x02, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_5", 0x06, 0x04, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_6", 0x06, 0x08, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_7", 0x06, 0x10, this.hotcueHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_8", 0x06, 0x20, this.hotcueHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_1", 0x05, 0x40, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_2", 0x05, 0x80, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_3", 0x06, 0x01, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_4", 0x06, 0x02, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_5", 0x06, 0x04, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_6", 0x06, 0x08, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_7", 0x06, 0x10, this.numberButtonHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcue_8", 0x06, 0x20, this.numberButtonHandler);
 
     // Headphone buttons
     this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x04, 0x01, this.headphoneHandler);
@@ -337,28 +347,6 @@ TraktorS2MK3.keylockHandler = function (field) {
     engine.setValue(field.group, "keylock", !keylock);
 }
 
-TraktorS2MK3.padModeHandler = function (field) {
-    if (field.value === 0) {
-        return;
-    }
-
-    // If we are in hotcues mode and samples mode is activated
-    if (TraktorS2MK3.padModeState[field.group] === 0 && field.name === "!samples") {
-        HIDDebug("Samples");
-        TraktorS2MK3.padModeState[field.group] = 1;
-        TraktorS2MK3.outputHandler(!field.value, field.group, "hotcues");
-        TraktorS2MK3.outputHandler(field.value, field.group, "samples");
-        // TODO: Change number buttons
-    }
-    // If we are in samples mode and hotcues mode is activated
-    else if (field.name === "!hotcues") {
-        TraktorS2MK3.padModeState[field.group] = 0;
-        TraktorS2MK3.outputHandler(field.value, field.group, "hotcues");
-        TraktorS2MK3.outputHandler(!field.value, field.group, "samples");
-        // TODO: Change number buttons
-    }
-}
-
 TraktorS2MK3.syncHandler = function (field) {
     if (field.value === 0) {
         return;
@@ -376,16 +364,62 @@ TraktorS2MK3.cueHandler = function (field) {
     engine.setValue(field.group, "cue_default", field.value);
 }
 
-TraktorS2MK3.hotcueHandler = function (field) {
+TraktorS2MK3.padModeHandler = function (field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    // If we are in hotcues mode and samples mode is activated
+    if (TraktorS2MK3.padModeState[field.group] === 0 && field.name === "!samples") {
+        engine.setValue("[Samplers]", "show_samplers", 1);
+        TraktorS2MK3.padModeState[field.group] = 1;
+        TraktorS2MK3.outputHandler(!field.value, field.group, "hotcues");
+        TraktorS2MK3.outputHandler(field.value, field.group, "samples");
+
+        // Light LEDs for all slots with loaded samplers
+        for (var k in TraktorS2MK3.samplerHotcuesRelation[field.group]) {
+            var loaded = engine.getValue("[Sampler" + TraktorS2MK3.samplerHotcuesRelation[field.group][k] + "]", "track_loaded");
+            TraktorS2MK3.outputHandler(loaded, field.group, "hotcue_" + k + "_enabled");
+        }
+    }
+    // If we are in samples mode and hotcues mode is activated
+    else if (field.name === "!hotcues") {
+        TraktorS2MK3.padModeState[field.group] = 0;
+        TraktorS2MK3.outputHandler(field.value, field.group, "hotcues");
+        TraktorS2MK3.outputHandler(!field.value, field.group, "samples");
+        
+        // Light LEDs for all enabled hotcues
+        for(var i = 1; i <= 8; ++i) {
+            var active = engine.getValue(field.group, "hotcue_" + i + "_enabled");
+            TraktorS2MK3.outputHandler(active, field.group, "hotcue_" + i + "_enabled");
+        }
+    }
+}
+
+TraktorS2MK3.numberButtonHandler = function (field) {
+    HIDDebug(field.id + ": " + field.value);
+
     if (field.value === 0) {
         return;
     }
 
     var hotcueNumber = parseInt(field.id[field.id.length - 1]);
-    if (TraktorS2MK3.shiftPressed[field.group]) {
-        engine.setValue(field.group, "hotcue_" + hotcueNumber + "_clear", field.value);
-    } else {
-        engine.setValue(field.group, "hotcue_" + hotcueNumber + "_activate", field.value);
+    if (TraktorS2MK3.padModeState[field.group] === 0) {
+        // Hotcues mode
+        if (TraktorS2MK3.shiftPressed[field.group]) {
+            engine.setValue(field.group, "hotcue_" + hotcueNumber + "_clear", field.value);
+        } else {
+            engine.setValue(field.group, "hotcue_" + hotcueNumber + "_activate", field.value);
+        }
+    }
+    else {
+        // Samples mode
+        var sampler = TraktorS2MK3.samplerHotcuesRelation[field.group][hotcueNumber];
+        if (TraktorS2MK3.shiftPressed[field.group]) {
+            engine.setValue("[Sampler" + sampler + "]", "cue_default", field.value);
+        } else {
+            engine.setValue("[Sampler" + sampler + "]", "play_stutter", field.value);
+        }
     }
 }
 
@@ -487,8 +521,6 @@ TraktorS2MK3.microphoneHandler = function (field) {
             engine.setValue("[Microphone]", "talkover", TraktorS2MK3.microphonePressedState);
         }
     }
-
-    TraktorS2MK3.outputHandler(TraktorS2MK3.microphonePressedState, field.group, "talkover");
 }
 
 TraktorS2MK3.microphoneTimer = function () {
@@ -672,32 +704,53 @@ TraktorS2MK3.registerOutputPackets = function () {
     this.linkOutput("[Channel1]", "keylock", this.outputHandler);
     this.linkOutput("[Channel2]", "keylock", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "hotcue_1_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_2_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_3_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_4_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_5_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_6_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_7_enabled", this.outputHandler);
-    this.linkOutput("[Channel1]", "hotcue_8_enabled", this.outputHandler);
+    this.linkOutput("[Channel1]", "hotcue_1_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_2_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_3_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_4_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_5_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_6_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_7_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel1]", "hotcue_8_enabled", this.hotcueOutputHandler);
 
-    this.linkOutput("[Channel2]", "hotcue_1_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_2_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_3_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_4_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_5_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_6_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_7_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "hotcue_8_enabled", this.outputHandler);
+    this.linkOutput("[Channel2]", "hotcue_1_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_2_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_3_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_4_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_5_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_6_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_7_enabled", this.hotcueOutputHandler);
+    this.linkOutput("[Channel2]", "hotcue_8_enabled", this.hotcueOutputHandler);
 
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
     this.linkOutput("[Channel2]", "pfl", this.outputHandler);
+
+    this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // VuMeter
     this.vuLeftConnection = engine.makeConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
     this.vuRightConnection = engine.makeConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
     this.clipLeftConnection = engine.makeConnection("[Channel1]", "PeakIndicator", this.vuOutputHandler);
     this.clipRightConnection = engine.makeConnection("[Channel2]", "PeakIndicator", this.vuOutputHandler);
+
+    // Sampler callbacks
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler1]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler2]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler3]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler4]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler5]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler6]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler7]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler8]", "track_loaded", this.samplesOutputHandler));
+
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler9]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler10]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler11]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler12]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler13]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler14]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler15]", "track_loaded", this.samplesOutputHandler));
+    this.samplerCallbacks.push(engine.makeConnection("[Sampler16]", "track_loaded", this.samplesOutputHandler));
 
     TraktorS2MK3.lightDeck();
 }
@@ -734,6 +787,47 @@ TraktorS2MK3.outputHandler = function (value, group, key) {
     }
 
     TraktorS2MK3.controller.setOutput(group, key, led_value, true);
+}
+
+TraktorS2MK3.hotcueOutputHandler = function (value, group, key) {
+    if (TraktorS2MK3.padModeState[group] === 0) {
+        TraktorS2MK3.outputHandler(value, group, key);
+    }
+}
+
+TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
+    // Sampler 1-4, 9-12 -> Channel1
+    // Samples 5-8, 13-16 -> Channel2
+    var sampler = TraktorS2MK3.resolveSampler(group);
+    if (sampler > 0 && sampler < 5) {
+        var deck = "[Channel1]";
+        var num = sampler;
+    }
+    else if (sampler > 4 && sampler < 9) {
+        var deck = "[Channel2]";
+        var num = sampler - 4;
+    } else if (sampler > 8 && sampler < 13) {
+        var deck = "[Channel1]";
+        var num = sampler - 4;
+    } else if (sampler > 12 && sampler < 17) {
+        var deck = "[Channel2]";
+        var num = sampler - 8;
+    }
+
+    // If we are in samples modes light corresponding LED
+    if (TraktorS2MK3.padModeState[deck] === 1) {
+        TraktorS2MK3.outputHandler(value, deck, "hotcue_" + num + "_enabled");
+    }
+}
+
+TraktorS2MK3.resolveSampler = function (group) {
+    if (group == undefined)
+        return undefined;
+    var result = group.match(/\[Sampler[0-9]+\]/);
+    if (!result)
+        return undefined;
+    var str = group.replace(/\[Sampler/, "");
+    return str.substring(0, str.length - 1);
 }
 
 TraktorS2MK3.lightDeck = function () {
@@ -788,8 +882,10 @@ TraktorS2MK3.lightDeck = function () {
     TraktorS2MK3.controller.setOutput("[Channel1]", "MaximizeLibrary", 0x7C, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "MaximizeLibrary", 0x7C, false);
 
+    TraktorS2MK3.controller.setOutput("[ChannelX]", "quantize", 0x7C, false);
+
     // For the last output we should send the packet finally
-    TraktorS2MK3.controller.setOutput("[ChannelX]", "quantize", 0x7C, true);
+    TraktorS2MK3.controller.setOutput("[Microphone]", "talkover", 0x7C, true);
 }
 
 TraktorS2MK3.messageCallback = function (packet, data) {
@@ -802,11 +898,16 @@ TraktorS2MK3.messageCallback = function (packet, data) {
 
 TraktorS2MK3.shutdown = function () {
 
-    // VuMeter connections
+    // Disconnect VuMeter callbacks
     this.vuLeftConnection.disconnect();
     this.vuRightConnection.disconnect();
     this.clipLeftConnection.disconnect();
     this.clipRightConnection.disconnect();
+
+    // Disconnect Sampler callbacks
+    this.samplerCallbacks.forEach(function (item) {
+        item.disconnect();
+    });
 
     // Deactivate all LEDs
     var data_string = "00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 \n" +
