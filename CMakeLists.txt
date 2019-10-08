@@ -859,6 +859,14 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
 # gtest
 target_include_directories(mixxx-lib PUBLIC lib/gtest-1.7.0/include)
+if(MSVC)
+  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
+  # been deprecated and throws a warning. If /W3 is used, this causes an
+  # error. This suppresses the warning/error until we pull in the fixes from
+  # upstream.
+  # See this for details: https://github.com/google/googletest/issues/1111
+  target_compile_definitions(mixxx-lib PUBLIC _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+endif()
 
 # LAME
 find_package(LAME REQUIRED)
@@ -1860,11 +1868,24 @@ add_executable(mixxx-test
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PUBLIC mixxx-lib)
 
+set(GTEST_CMAKE_ARGS "")
+set(GMOCK_CMAKE_ARGS "")
+if(MSVC)
+  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
+  # been deprecated and throws a warning. If /W3 is used, this causes an
+  # error. This suppresses the warning/error until we pull in the fixes from
+  # upstream.
+  # See this for details: https://github.com/google/googletest/issues/1111
+  set(GTEST_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+  set(GMOCK_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+endif()
+
 # gtest
 ExternalProject_Add(mixxx-gtest
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
   INSTALL_COMMAND ""
+  CMAKE_ARGS "${GTEST_CMAKE_ARGS}"
 )
 set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gtest)
@@ -1880,6 +1901,7 @@ ExternalProject_Add(mixxx-gmock
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
   INSTALL_COMMAND ""
+  CMAKE_ARGS "${GMOCK_CMAKE_ARGS}"
 )
 set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gmock)
