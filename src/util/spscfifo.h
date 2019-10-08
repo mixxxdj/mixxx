@@ -14,6 +14,11 @@
 //
 // The implementation contains many (sometimes trivial obvious)
 // debug assertions to ensure that nothing gets out of control!
+//
+// The default push operation moves values into the FIFO, just as
+// the pop operation moves values out of the FIFO. Additionally a
+// copying push operation is provided that operates on immutable
+// data owned by the caller.
 template<typename T, typename S = size_t>
 class SpscFifo final {
   public:
@@ -89,7 +94,7 @@ class SpscFifo final {
     }
 
     // Non-blocking write operation (copy)
-    size_type push(const value_type* data, size_type count = 1) {
+    size_type push_copy(const value_type* data, size_type count = 1) {
         DEBUG_ASSERT(data || !count);
         auto writable = math_min(acquire_writable(count), count);
         if (writable > 0) {
@@ -119,7 +124,7 @@ class SpscFifo final {
 
     // Blocking write operation (copy) that loops until all provided data
     // has been written
-    void push_all(const value_type* data, size_type count = 1) {
+    void push_all_copy(const value_type* data, size_type count = 1) {
         size_type write_count = 0;
         while (write_count < count) {
             write_count += push(data + write_count, count - write_count);

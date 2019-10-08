@@ -33,7 +33,7 @@ class StatsPipe final {
     }
 
     bool write(const StatReport& report) {
-        return m_fifo.push(&report) == 1;
+        return m_fifo.push_copy(&report) == 1;
     }
 
     bool read(StatReport* pReport) {
