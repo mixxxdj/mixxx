@@ -1,63 +1,6 @@
 /****************************************************
  Traktor Kontrol S2 MK3 HID controller script v1.00
-
- USB HID descriptors (only usage 0x1 and 0x80 is used)
- $> usbhid-dump -d17cc:1710 | grep -v : | xxd -r -p | hidrd-convert -o spec
-
- Usage Page (FF01h),          ; FF01h, vendor-defined
- Usage (00h),
- Collection (Application),
-     Usage (01h),
-     Collection (Logical),
-        Report ID (1),
-        Usage (02h),
-        Logical Minimum (0),
-        Logical Maximum (1),
-        Report Size (1),
-        Report Count (64),
-        Input (Variable),
-        Usage (03h),
-        Logical Minimum (0),
-        Logical Maximum (15),
-        Report Size (4),
-        Report Count (6),
-        Input (Variable),
-        Usage (31h),
-        Logical Minimum (0),
-        Logical Maximum (65535),
-        Report Size (16),
-        Report Count (4),
-        Input (Variable),
-    End Collection,
-    Usage (01h),
-    Collection (Logical),
-        Report ID (2),
-        Usage (05h),
-        Logical Minimum (0),
-        Logical Maximum (4095),
-        Report Size (16),
-        Report Count (5),
-        Input (Variable),
-        Usage (04h),
-        Logical Minimum (0),
-        Logical Maximum (4095),
-        Report Size (16),
-        Report Count (14),
-        Input (Variable),
-    End Collection,
-    Usage (80h),
-    Collection (Logical),
-        Report ID (128),
-        Usage (81h),
-        Logical Minimum (0),
-        Logical Maximum (127),
-        Report Size (8),
-        Report Count (61),
-        Output (Variable),
-    End Collection,
-End Collection
-
-/****************************************************/
+****************************************************/
 
 var TraktorS2MK3 = {};
 
@@ -83,7 +26,7 @@ TraktorS2MK3 = new function () {
     this.vuRightConnection = {};
     this.clipLeftConnection = {};
     this.clipRightConnection = {};
-    this.vuMeterValues = { "vu-18": (1 / 6), "vu-12": (1 / 6 * 2), "vu-6": (1 / 6 * 3), "vu0": (1 / 6 * 4), "vu6": (1 / 6 * 5) };
+    this.vuMeterThresholds = { "vu-18": (1 / 6), "vu-12": (1 / 6 * 2), "vu-6": (1 / 6 * 3), "vu0": (1 / 6 * 4), "vu6": (1 / 6 * 5) };
 
     // Sampler callbacks
     this.samplerCallbacks = [];
@@ -100,69 +43,11 @@ TraktorS2MK3.init = function (id) {
     TraktorS2MK3.registerInputPackets();
     TraktorS2MK3.registerOutputPackets();
     HIDDebug("TraktorS2MK3: Init done!");
-
-    // Output package set only the LEDs in the controller
-    // Each byte representing the state of one LED
-    var data_string = "00 00 00 \n" + // Rev Left, FLX Left, Preparation Left
-        "00 00 00 00 \n" + // Browse View Left, Grid Left, Shift Left, Hotcues Left
-        "00 00 00 00 \n" + // Samples Left, Sync Left, Keylock Left, Cue Left
-        "00 00 00 00 \n" + // Play Left, Hotcue1 Left, Hotcue2 Left, Hotcue3 Left
-        "00 00 00 00 \n" + // Hotcue4 Left, Hotcue5 Left, Hotcue6 Left, Hotcue7 Left
-        "00 00 00 00 \n" + // Hotcue8 Left, Sample Mixer LED, FX Select1, FX Select2
-        "00 00 00 00 \n" + // FX Select3, FX Select4, Phones Left, Phones Right
-        "00 00 00 00 \n" + // Level Channel A -18, -12, -6, 0
-        "00 00 00 00 \n" + // Level Channel A 6, Level Channel B -18, -12
-        "00 00 00 00 \n" + // Level Channel B -6, 0, 6, Clip
-        "00 00 00 00 \n" + // Rev Right, FLX Right, Preparation Right, Browse View Right
-        "00 00 00 00 \n" + // Grid Right, Shift Right, Hotcues Right, Samples Right
-        "00 00 00 00 \n" + // Sync Right, Keylock Right, Cue Right, Play Right
-        "00 00 00 00 \n" + // Hotcue1 Right, Hotcue2 Right, Hotcue3 Right, Hotcue4 Right
-        "00 00 00 00 \n" + // Hotcue5 Right, Hotcue6 Right, Hotcue7 Right, Hotcue8 Right
-        "00 00"; // GNT, MIC
-    // this.rawOutput(data_string);
 }
 
 TraktorS2MK3.registerInputPackets = function () {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     var messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
-
-    /* 
-    Offset 0x01, Bitmasks:
-    - 0x01 Rev Left - 0x02 FLX Left - 0x04 Prepation Left - 0x08 Browse View Left 
-    - 0x10 Grid Left - 0x20 Shift Left - 0x40 Hotcues Left - 0x80 Samples Left
-    Offset 0x02, Bitmasks:
-    - 0x01 Sync Left - 0x02 Keylock Left - 0x04 Cue Left - 0x08 Play Left
-    - 0x10 Hotcue1 Left - 0x20 Hotcue2 Left - 0x40 Hotcue3 Left - 0x80 Hotcue4 Left
-    Offset 0x03, Bitmasks:
-    - 0x01 Hotcue5 Left - 0x02 Hotcue6 Left - 0x04 Hotcue7 Left - 0x08 Hotcue8 Left
-    - 0x10 FX Select1 - 0x20 FX Select2 - 0x40 FX Select3 - 0x80 FX Select4
-    Offset 0x04, Bitmasks:
-    - 0x01 Phones Left - 0x02 Phones Right - 0x04 Rev Right - 0x08 FLX Right
-    - 0x10 Prepation Right - 0x20 Browse View Right - 0x40 Grid Right - 0x80 Shift Right
-    Offset 0x05, Bitmasks:
-    - 0x01 Hotcues Right - 0x02 Samples Right - 0x04 Sync Right - 0x08 Keylock Right
-    - 0x10 Cue Right - 0x20 Play Right - 0x40 Hotcue1 Right - 0x80 Hotcue2 Right
-    Offset 0x06, Bitmasks:
-    - 0x01 Hotcue3 Right - 0x02 Hotcue4 Right - 0x04 Hotcue5 Right - 0x08 Hotcue6 Right
-    - 0x10 Hotcue7 Right - 0x20 Hotcue8 Right - 0x40 GNT - 0x80 MIC
-    Offset 0x07, Bitmasks:
-    - 0x01 Browse Left Click - 0x02 Move Left Click - 0x04 Loop Left Click - 0x08 Browse Right Click
-    - 0x10 Move Right Click - 0x20 Loop Right Click - 0x40 ??? - 0x80 ???
-    Offset 0x08, Bitmasks:
-    - 0x01 Browse Left Touch - 0x02 Move Left Touch - 0x04 Loop Left Touch - 0x08 Browse Right Touch
-    - 0x10 Move Right Touch - 0x20 Loop Right Touch - 0x40 Jog Wheel Left Touch - 0x80 Jog Wheel Right Touch
-    Offset 0x09, Bitmasks:
-    - Lowest nibble: Browse Left
-    - Highest nibble: Move Left
-    Offset 0x0A, Bitmasks:
-    - Lowest nibble: Loop Left
-    - Highest nibble: Browse Right
-    Offset 0x0B, Bitmasks:
-    - Lowest nibble: Move Right
-    - Highest nibble: Loop Right
-    Offset 0x0C - 0x0F: Jog Wheel Left
-    Offset 0x10 - 0x13: Jog Wheel Right
-    */
 
     this.registerInputButton(messageShort, "[Channel1]", "!play", 0x02, 0x08, this.playHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!play", 0x05, 0x20, this.playHandler);
@@ -328,6 +213,7 @@ TraktorS2MK3.playHandler = function (field) {
         return;
     }
 
+    // TODO: Shift function
     var playing = engine.getValue(field.group, "play");
     engine.setValue(field.group, "play", !playing);
 }
@@ -352,6 +238,7 @@ TraktorS2MK3.syncHandler = function (field) {
         return;
     }
 
+    // TODO: Shift function / timer
     var sync = engine.getValue(field.group, "sync_enabled");
     engine.setValue(field.group, "sync_enabled", !sync);
 }
@@ -361,6 +248,7 @@ TraktorS2MK3.cueHandler = function (field) {
         return;
     }
 
+    // TODO: Shift function
     engine.setValue(field.group, "cue_default", field.value);
 }
 
@@ -387,9 +275,9 @@ TraktorS2MK3.padModeHandler = function (field) {
         TraktorS2MK3.padModeState[field.group] = 0;
         TraktorS2MK3.outputHandler(field.value, field.group, "hotcues");
         TraktorS2MK3.outputHandler(!field.value, field.group, "samples");
-        
+
         // Light LEDs for all enabled hotcues
-        for(var i = 1; i <= 8; ++i) {
+        for (var i = 1; i <= 8; ++i) {
             var active = engine.getValue(field.group, "hotcue_" + i + "_enabled");
             TraktorS2MK3.outputHandler(active, field.group, "hotcue_" + i + "_enabled");
         }
@@ -397,8 +285,6 @@ TraktorS2MK3.padModeHandler = function (field) {
 }
 
 TraktorS2MK3.numberButtonHandler = function (field) {
-    HIDDebug(field.id + ": " + field.value);
-
     if (field.value === 0) {
         return;
     }
@@ -762,8 +648,8 @@ TraktorS2MK3.linkOutput = function (group, name, callback) {
 
 TraktorS2MK3.vuMeterHandler = function (value, group, key) {
     // TODO: Only send one packet for all LEDs
-    for (var vuKey in TraktorS2MK3.vuMeterValues) {
-        if (TraktorS2MK3.vuMeterValues[vuKey] > value) {
+    for (var vuKey in TraktorS2MK3.vuMeterThresholds) {
+        if (TraktorS2MK3.vuMeterThresholds[vuKey] > value) {
             TraktorS2MK3.vuOutputHandler(false, group, vuKey);
         } else {
             TraktorS2MK3.vuOutputHandler(true, group, vuKey);
