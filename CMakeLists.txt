@@ -781,10 +781,16 @@ include(CPack)
 #
 # Dependencies
 #
+option(STATIC_DEPS "Link dependencies statically" OFF)
 
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Chromaprint::Chromaprint)
+if(WIN32 AND STATIC_DEPS)
+  target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
+  find_package(FFTW REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
+endif()
 
 # Ebur128
 find_package(Ebur128)
@@ -841,6 +847,9 @@ target_link_libraries(mixxx-lib PUBLIC fidlib)
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC FLAC::FLAC)
+if(WIN32 AND STATIC_DEPS)
+  target_compile_definitions(mixxx-lib PUBLIC FLAC__NO_DLL)
+endif()
 
 # FpClassify This is a wrapper around the fpclassify function that prevents
 # inlining It is compiled without optimization and allows to use these function
@@ -885,6 +894,9 @@ target_link_libraries(mixxx-lib PUBLIC ${PortMidi_LIBRARIES})
 # Protobuf
 add_subdirectory(src/proto)
 target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
+if(WIN32 AND NOT STATIC_DEPS)
+  target_compile_definitions(mixxx-lib PUBLIC PROTOBUF_USE_DLLS)
+endif()
 
 # Qt
 find_package(Qt5
@@ -1117,6 +1129,9 @@ target_link_libraries(mixxx-lib PUBLIC SoundTouch)
 find_package(Taglib REQUIRED)
 target_include_directories(mixxx-lib PUBLIC ${TAGLIB_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
+if(WIN32 AND STATIC_DEPS)
+  target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
+endif()
 
 # Threads
 find_package(Threads REQUIRED)
