@@ -72,10 +72,10 @@ Description:
 
               <SliderComposed>
                 <TooltipId>headMix</TooltipId>
+                <Size>60f,24f</Size>
                 <ObjectName>MixerbarSlider</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
-                <Handle>knobs_sliders/headMix_handle.svg</Handle>
-                <Slider>knobs_sliders/headMix_scale.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">knobs_sliders/headMix_handle.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">knobs_sliders/headMix_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
                   <ConfigKey>[Master],headMix</ConfigKey>
