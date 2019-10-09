@@ -1,5 +1,5 @@
 /****************************************************
- Traktor Kontrol S2 MK3 HID controller script v1.00
+ Traktor Kontrol S2 MK3 HID controller script v1.01
 ****************************************************/
 
 var TraktorS2MK3 = {};
@@ -8,14 +8,17 @@ TraktorS2MK3 = new function () {
     this.controller = new HIDController();
     this.shiftPressed = { "[Channel1]": false, "[Channel2]": false };
     this.browseState = { "[Channel1]": 0, "[Channel2]": 0 };
-    this.loopSizeState = { "[Channel1]": 0, "[Channel2]": 0 };
+    this.loopSizeState = { "[Channel1]": 0, "[Channel1]": 0 };
     this.beatjumpState = { "[Channel1]": 0, "[Channel2]": 0 };
     this.fxButtonState = { 1: false, 2: false, 3: false, 4: false };
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
-    this.quantizeState = 0; // 0 = Off, 1 = On
+    this.quantizeState = false; // false = Off, true = On
 
+    // Microphone button
     this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
-    this.microphonePressedState = 0; // 0 = Not pressed, 1 = Pressed
+
+    // Sync buttons
+    this.syncPressedTimer = { "[Channel1]": 0, "[Channel2]": 0 }; // Timer to distinguish between short and long press
 
     // Jog wheels
     this.last_tick_val = [0, 0];
@@ -213,9 +216,24 @@ TraktorS2MK3.playHandler = function (field) {
         return;
     }
 
-    // TODO: Shift function
-    var playing = engine.getValue(field.group, "play");
-    engine.setValue(field.group, "play", !playing);
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "cue_set", field.value);
+    } else {
+        var playing = engine.getValue(field.group, "play");
+        engine.setValue(field.group, "play", !playing);
+    }
+}
+
+TraktorS2MK3.cueHandler = function (field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "cue_gotoandstop", field.value);
+    } else {
+        engine.setValue(field.group, "cue_default", field.value);
+    }
 }
 
 TraktorS2MK3.shiftHandler = function (field) {
@@ -234,22 +252,41 @@ TraktorS2MK3.keylockHandler = function (field) {
 }
 
 TraktorS2MK3.syncHandler = function (field) {
-    if (field.value === 0) {
-        return;
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "beatsync_phase", field.value);
+        // Light LED while pressed
+        TraktorS2MK3.outputHandler(field.value, field.group, "sync_enabled");
     }
+    else {
+        if (field.value) {
+            if (!TraktorS2MK3.syncPressedTimer[field.group]) {
+                // Start timer to measure how long button is pressed
+                TraktorS2MK3.syncPressedTimer[field.group] = engine.beginTimer(1000, "TraktorS2MK3.syncTimer(\"" + field.group + "\")");
+            }
 
-    // TODO: Shift function / timer
-    var sync = engine.getValue(field.group, "sync_enabled");
-    engine.setValue(field.group, "sync_enabled", !sync);
+            var sync = engine.getValue(field.group, "sync_enabled");
+            engine.setValue(field.group, "sync_enabled", !sync);
+        }
+        else {
+            // Button is released, check if timer is still running
+            if (TraktorS2MK3.syncPressedTimer[field.group] === 0) {
+                // long press -> sync lock
+                engine.stopTimer(TraktorS2MK3.syncPressedTimer[field.group]);
+                TraktorS2MK3.syncPressedTimer[field.group] = 0;
+            } else {
+                // short press -> disable sync
+                engine.setValue(field.group, "sync_enabled", 0);
+            }
+        }
+    }
 }
 
-TraktorS2MK3.cueHandler = function (field) {
-    if (field.value === 0) {
-        return;
+TraktorS2MK3.syncTimer = function (group) {
+    // Reset sync button timer if active
+    if (TraktorS2MK3.syncPressedTimer[group] !== 0) {
+        engine.stopTimer(TraktorS2MK3.syncPressedTimer[group]);
+        TraktorS2MK3.syncPressedTimer[group] = 0;
     }
-
-    // TODO: Shift function
-    engine.setValue(field.group, "cue_default", field.value);
 }
 
 TraktorS2MK3.padModeHandler = function (field) {
@@ -388,13 +425,13 @@ TraktorS2MK3.quantizeHandler = function (field) {
 
 TraktorS2MK3.microphoneHandler = function (field) {
     if (field.value) {
-        if (!TraktorS2MK3.microphonePressedState) {
+        if (TraktorS2MK3.microphonePressedTimer === 0) {
             // Start timer to measure how long button is pressed
             TraktorS2MK3.microphonePressedTimer = engine.beginTimer(1000, "TraktorS2MK3.microphoneTimer()");
         }
 
-        TraktorS2MK3.microphonePressedState = !TraktorS2MK3.microphonePressedState;
-        engine.setValue("[Microphone]", "talkover", TraktorS2MK3.microphonePressedState);
+        var talkover = engine.getValue("[Microphone]", "talkover");
+        engine.setValue("[Microphone]", "talkover", !talkover);
     }
     else {
         // Button is released, check if timer is still running
@@ -403,8 +440,7 @@ TraktorS2MK3.microphoneHandler = function (field) {
             engine.stopTimer(TraktorS2MK3.microphonePressedTimer);
             TraktorS2MK3.microphonePressedTimer = 0;
         } else {
-            TraktorS2MK3.microphonePressedState = false;
-            engine.setValue("[Microphone]", "talkover", TraktorS2MK3.microphonePressedState);
+            engine.setValue("[Microphone]", "talkover", 0);
         }
     }
 }
