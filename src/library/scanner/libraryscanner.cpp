@@ -26,6 +26,21 @@ mixxx::Logger kLogger("LibraryScanner");
 
 QAtomicInt s_instanceCounter(0);
 
+const QString kDeleteOrphanedLibraryScannerDirectories =
+        "delete from LibraryHashes where hash <> 0 and directory_path not in (select directory from track_locations)";
+
+// Returns the number of affected rows or -1 on error
+int execCleanupQuery(QSqlDatabase database, const QString& statement) {
+    FwdSqlQuery query(database, statement);
+    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
+        return -1;
+    }
+    if (!query.execPrepared()) {
+        return -1;
+    }
+    return query.numRowsAffected();
+}
+
 } // anonymous namespace
 
 LibraryScanner::LibraryScanner(
@@ -90,25 +105,6 @@ LibraryScanner::LibraryScanner(
 LibraryScanner::~LibraryScanner() {
     cancelAndQuit();
 }
-
-namespace {
-
-const QString kDeleteOrphanedLibraryScannerDirectories =
-        "delete from LibraryHashes where hash <> 0 and directory_path not in (select directory from track_locations)";
-
-// Returns the number of affected rows or -1 on error
-int execCleanupQuery(QSqlDatabase database, const QString& statement) {
-    FwdSqlQuery query(database, statement);
-    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
-        return -1;
-    }
-    if (!query.execPrepared()) {
-        return -1;
-    }
-    return query.numRowsAffected();
-}
-
-} // anonymous namespace
 
 void LibraryScanner::run() {
     kLogger.debug() << "Entering thread";
