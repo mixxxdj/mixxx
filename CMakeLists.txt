@@ -673,6 +673,14 @@ if(WIN32)
   endif()
 
   target_link_libraries(mixxx-lib PUBLIC shell32)
+
+  if(DEBUG OR NOT STATIC_DEPS)
+    target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
+  endif()
+  target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
+  # Force MSVS to generate a manifest (MSVC2010)
+  target_link_options(mixxx-lib PUBLIC /manifest)
+
 elseif(UNIX)
   if(APPLE)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
@@ -936,6 +944,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Test
   Qt5::Widgets
   Qt5::Xml)
+target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
@@ -951,6 +960,7 @@ elseif(WIN32)
 
   get_target_property(QT5_TYPE Qt5::Core TYPE)
   if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+    target_compile_definitions(mixxx-lib PUBLIC QT_NODLL)
     target_link_libraries(mixxx-lib PUBLIC
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -1023,6 +1033,8 @@ elseif(WIN32)
     target_link_libraries(mixxx-lib PUBLIC "${QTLIBPNG_LIBRARY}")
     find_library(QTPCRE2_LIBRARY qtpcre2)
     target_link_libraries(mixxx-lib PUBLIC "${QTPCRE2_LIBRARY}")
+  else()
+    target_compile_definitions(mixxx-lib PUBLIC QT_SHARED)
   endif()
 endif()
 
