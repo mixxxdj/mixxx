@@ -132,10 +132,6 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x03, 0x40, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x03, 0x80, this.fxHandler);
 
-    ///////////////////////////////////
-    // TODO: Sampler button and control
-    ///////////////////////////////////
-
     this.controller.registerInputPacket(messageShort);
 
     this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x01, 0xFFFF, this.parameterHandler);
@@ -683,12 +679,14 @@ TraktorS2MK3.linkOutput = function (group, name, callback) {
 }
 
 TraktorS2MK3.vuMeterHandler = function (value, group, key) {
-    // TODO: Only send one packet for all LEDs
-    for (var vuKey in TraktorS2MK3.vuMeterThresholds) {
-        if (TraktorS2MK3.vuMeterThresholds[vuKey] > value) {
-            TraktorS2MK3.vuOutputHandler(false, group, vuKey);
+    var vuKeys = Object.keys(TraktorS2MK3.vuMeterThresholds);
+    for (var i = 0; i < vuKeys.length; ++i) {
+        // Avoid spamming HID by only sending last LED update
+        var last = (i === vuKeys.length - 1);
+        if (TraktorS2MK3.vuMeterThresholds[vuKeys[i]] > value) {
+            TraktorS2MK3.controller.setOutput(group, vuKeys[i], 0x00, last);
         } else {
-            TraktorS2MK3.vuOutputHandler(true, group, vuKey);
+            TraktorS2MK3.controller.setOutput(group, vuKeys[i], 0x7E, last);
         }
     }
 }
@@ -712,6 +710,7 @@ TraktorS2MK3.outputHandler = function (value, group, key) {
 }
 
 TraktorS2MK3.hotcueOutputHandler = function (value, group, key) {
+    // Light button LED only when we are in hotcue mode
     if (TraktorS2MK3.padModeState[group] === 0) {
         TraktorS2MK3.outputHandler(value, group, key);
     }
@@ -724,8 +723,7 @@ TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
     if (sampler > 0 && sampler < 5) {
         var deck = "[Channel1]";
         var num = sampler;
-    }
-    else if (sampler > 4 && sampler < 9) {
+    } else if (sampler > 4 && sampler < 9) {
         var deck = "[Channel2]";
         var num = sampler - 4;
     } else if (sampler > 8 && sampler < 13) {
