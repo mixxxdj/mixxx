@@ -76,6 +76,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
+              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
               <WidgetGroup><!-- Rate buttons for up=faster -->
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
@@ -176,7 +177,9 @@
             </Connection>
           </WidgetGroup><!-- RateButtons for different rate directions -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- RateControls -->
+
+      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>SyncControls</ObjectName>

@@ -418,8 +418,9 @@ WOverview {
   font-family: "Open Sans";
 }
 
-#Deck3 WLabel, #Deck4 WLabel {
-  color: #0AC8C1;
+#Deck3 WLabel, #Deck4 WLabel,
+#DeckSmall3 WLabel, #DeckSmall4 WLabel {
+  color: #0bd9d1;
 }
 
 QLabel, QRadioButton,
@@ -432,7 +433,7 @@ QTableView, QTextBrowser, QTreeView {
 }
 
 #Deck1 WLabel, #Deck2 WLabel,
-#Deck3 #KeyText, #Deck4 #KeyText,
+#DeckSmall1 WLabel, #DeckSmall2 WLabel,
 #PreviewLabel, #PreviewDeckText, #PreviewTitle,
 #FxUnitLabel, #MicAuxSubTitle,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
@@ -619,14 +620,6 @@ WCoverArt {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
-#RateButtons {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-
-#SyncControls {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-
 #DeckControls {
   qproperty-layoutAlignment: 'AlignCenter';
   border-top: 1px solid #080808;
@@ -728,7 +721,8 @@ WCoverArt {
 }
 
 #BpmContainer {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignCenter';/*
+  background-color: #113133;  */
 }
 
 #BpmText {
@@ -747,22 +741,24 @@ WCoverArt {
   background-color: transparent;
   text-align: center;
   padding: 0px;
-  margin: 0px;
+  margin: 0px;/*
+  background-color: #999933;  */
 }
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  margin-right: 2px;
+  margin-right: 2px;/*
+  background-color: #313349;  */
 }
 
 #RateSlider {
   /* no respected since RateSlider has a connection attached
-  margin: 0px 10px 0px 0px; */
+  margin: 0px 10px 0px 0px;
+  background-color: #113133; */
 }
 
 #RateButtons {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 2px 0px 0px 2px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 /***************** Loop Controls *****************/
@@ -1143,6 +1139,7 @@ WBeatSpinBox,
 
 /********************** Mic Aux **********************/
 #MicAuxRack {
+  padding
 }
 
 #MicRack, #AuxRack {
@@ -1804,7 +1801,7 @@ QHeaderView {
 QScrollBar {
   border: 0px solid #585858;
   background: #000;
-  border-radius: 3px;
+  border-radius: 2px;
   padding: 1px;
   color: #999999;
   font-size: 8pt;
@@ -1833,20 +1830,18 @@ QScrollBar {
     min-width: 15px;
     min-height: 15px;
     background-color: #000;
-    border-radius: 3px;
+    border-radius: 2px;
   }
   QScrollBar::handle:horizontal {
     min-width: 25px;
-    border-radius: 3px;
-    border: 1px solid #725309;
+    border-radius: 2px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #725309,
       stop:1 #412f05);
   }
   QScrollBar::handle:vertical {
     min-height: 25px;
-    border-radius: 3px;
-    border: 1px solid #725309;
+    border-radius: 2px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #725309,
       stop:1 #412f05);
@@ -1866,7 +1861,7 @@ QScrollBar {
 /* library search bar */
 #SearchLineBox {
   padding: 2px;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   margin-left: 2px;
 }
 WSearchLineEdit {

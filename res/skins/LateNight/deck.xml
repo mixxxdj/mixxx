@@ -29,7 +29,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:spinny_coverart.xml">
-                        <SetVariable name="MaxSize">102,102</SetVariable>
+                        <SetVariable name="MaxSize">100,100</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
