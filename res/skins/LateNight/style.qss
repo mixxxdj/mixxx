@@ -20,7 +20,6 @@ QToolTip {
   text-transform: none;
   font-weight: normal;
   background-color: #0f0f0f;
-  color: #cfb32c;
   padding: 3px;
   border: 1px solid #333;
   border-radius: 2px;
@@ -213,8 +212,7 @@ QHeaderView::down-arrow {
 
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"],
-#MicDuckingButton[displayValue="0"] {
+#SettingsButton[displayValue="0"] {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
     stop:1 #0e0e0e);
@@ -224,12 +222,6 @@ QHeaderView::down-arrow {
     margin: 1px 2px 2px 1px;
     border-radius: 1px;
 }
-#MicDuckingButton[displayValue="1"],
-#MicDuckingButton[displayValue="2"] {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #AD5700,
-    stop:1 #DE7000);
-}
 
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
@@ -238,8 +230,8 @@ QHeaderView::down-arrow {
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
 #SettingsButton[displayValue="1"] {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #B69700,
-    stop:1 #eece33);
+    stop:0 #a06d00,
+    stop:1 #f0bb2b);
 }
 
 #FxAssignButtonDeck[displayValue="1"] {
@@ -285,7 +277,6 @@ QHeaderView::down-arrow {
     border-width:  1px 3px 3px 1px;*/
   margin: 1px 3px 3px 1px;
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
-  border-radius: 1px;
   /* ronso0
   TEST pixel fonts instead of icons
   FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
@@ -428,19 +419,42 @@ WOverview {
 }
 
 #Deck3 WLabel, #Deck4 WLabel {
-  color: #09B2AE;
+  color: #0AC8C1;
 }
 
+QLabel, QRadioButton,
+WSearchLineEdit,
+#LibraryBPMSpinBox,
+#LibraryBPMButton::item,
+QTableView, QTextBrowser, QTreeView {
+  color: #eece33;
+  selection-color: #eece33;
+}
+
+#Deck1 WLabel, #Deck2 WLabel,
+#Deck3 #KeyText, #Deck4 #KeyText,
+#PreviewLabel, #PreviewDeckText, #PreviewTitle,
+#FxUnitLabel, #MicAuxSubTitle,
+#SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
+QToolTip,
+WStarRating,
+WBeatSpinBox, #DlgAutoDJ QSpinBox,
+QTableView::indicator,
+WEffectSelector, WEffectSelector QAbstractItemView
+#CategoryLabel, #SkinSettingsLabelButton,
+WSearchLineEdit:focus,
+#LatencyLabel, WTime {
+  color: #f0bb2b;
+}
 #PreviewLabel,
-#MicTitle,
+#FxUnitLabel,
 #MicAuxSubTitle,
-#SamplerTitle,
+#SamplerTitleSmall,
 #Deck1 WLabel, #Deck2 WLabel,
 #Deck3 #KeyText, #Deck4 #KeyText,
 WSearchLineEdit:focus,
 #LatencyLabel,
 WTime {
-  color: #eece33;
   font-weight: bold;
 }
 
@@ -555,7 +569,6 @@ WTime {
     border-radius: 2px;
     }
     WStarRating {
-      color: #f0bb2b;
       font-weight: bold;
       font-size: 20pt;
     }
@@ -791,7 +804,6 @@ WCoverArt {
 
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox {
-  color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
@@ -1049,13 +1061,11 @@ WBeatSpinBox,
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     font-size: 10px/11px;
     padding: 0px;
-    color: #cfb32c;
     text-align: left;
   }
     #PreviewTitle {
       font: bold 14px/14px;
       text-align: left;
-      color: #cfb32c;
       margin: 2px 2px 2px 0px;
     }
     #PreviewBPM {
@@ -1110,7 +1120,6 @@ WBeatSpinBox,
     font-size: 17px/17px;
     text-align: left;
     padding: 3px 0px 2px 3px;
-    color: #eece33;
   }
 
 #SkinSettingsButton {
@@ -1123,7 +1132,6 @@ WBeatSpinBox,
   font-size: 17px/21px;
   text-align: left;
   padding: 0px 0px 0px 3px;
-  color: #eece33;
 }
 
 #SubmenuCover {
@@ -1441,7 +1449,6 @@ WEffectSelector {
   font-weight: bold;
   font-size: 12px/13px;
   text-transform: uppercase;
-  color: #cfb32c;
   background-color: #0f0f0f;
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   min-height: 13px;
@@ -1476,7 +1483,6 @@ WEffectSelector {
     /* On Linux, this is not applied but font color from WEffectSelector
     is inherited.
     On Windows, it must be defined here */
-    color: #cfb32c;
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
@@ -1635,10 +1641,8 @@ QTableView, QTextBrowser, QTreeView {
     stop:1 #444);
   border-bottom: 1px solid #444;
   border-left: 1px solid #0a0a0a;
-  color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
-  selection-color: #cfb32c;
   selection-background-color: #5e4507;
 }
 
@@ -1667,7 +1671,7 @@ QTableView::indicator {/*
   margin: 0px;
   padding: 0px;
   /* Play count next to checkbox
-  color: #cfb32c; */
+  color: #f0bb2b; */
   }
   QTableView::indicator:hover {
     border: 1px solid #888;
@@ -1706,7 +1710,6 @@ QTableView::indicator {/*
   }
 /* BPM value */
 #LibraryBPMButton::item {
-  color: #cfb32c;
   border: 0px;
   margin: 0px;
   padding: 0px;
@@ -1718,7 +1721,6 @@ QTableView::indicator {/*
     background-color: #5e4507;
     }
 #LibraryBPMSpinBox {
-  color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
@@ -1870,7 +1872,6 @@ QScrollBar {
 WSearchLineEdit {
   padding: 2px;
   background: #0f0f0f;
-  color: #cfb32c;
   }
   WSearchLineEdit:focus {
     padding: 2px;
@@ -1931,7 +1932,6 @@ WSearchLineEdit {
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
 QLabel, QRadioButton {
   background: transparent;
-  color: #cfb32c;
 }
 
 /* Additional space for QRadionButtons */

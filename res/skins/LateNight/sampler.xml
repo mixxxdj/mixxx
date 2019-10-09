@@ -28,6 +28,7 @@
 
               <Number>
                 <TooltipId>visual_bpm</TooltipId>
+                <ObjectName>SamplerBpm</ObjectName>
                 <Group>[Sampler<Variable name="samplernum"/>]</Group>
                 <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
                 <Alignment>left</Alignment>
