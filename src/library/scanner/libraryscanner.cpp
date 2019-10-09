@@ -120,11 +120,14 @@ void LibraryScanner::run() {
             return;
         }
 
+        // Clean up the database and fix inconsistencies from previous runs.
+        // See also: https://bugs.launchpad.net/mixxx/+bug/1846945
         {
             kLogger.info() << "Cleaning up database...";
             PerformanceTimer timer;
             timer.start();
-            auto numRows = execCleanupQuery(dbConnection, kDeleteOrphanedLibraryScannerDirectories);
+            auto numRows = execCleanupQuery(dbConnection,
+                    kDeleteOrphanedLibraryScannerDirectories);
             if (numRows < 0) {
                 kLogger.warning()
                         << "Failed to delete orphaned directory hashes";
