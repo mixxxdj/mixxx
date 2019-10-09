@@ -108,8 +108,8 @@ TraktorS2MK3.registerInputPackets = function () {
     // Loop control
     this.registerInputButton(messageShort, "[Channel1]", "!SelectLoop", 0x0A, 0x0F, this.selectLoopHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!SelectLoop", 0x0B, 0xF0, this.selectLoopHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!LoadSelectedTrack", 0x07, 0x04, this.activateLoopHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!LoadSelectedTrack", 0x07, 0x20, this.activateLoopHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x07, 0x04, this.activateLoopHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x07, 0x20, this.activateLoopHandler);
 
     this.registerInputButton(messageShort, "[Channel1]", "!beatjump", 0x09, 0xF0, this.beatjumpHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!beatjump", 0x0B, 0x0F, this.beatjumpHandler);
@@ -360,21 +360,33 @@ TraktorS2MK3.headphoneHandler = function (field) {
 }
 
 TraktorS2MK3.selectTrackHandler = function (field) {
+    var delta = 1;
     if ((field.value + 1) % 16 == TraktorS2MK3.browseState[field.group]) {
-        engine.setValue("[Library]", "MoveUp", 1);
+        delta = -1;
+    }
+
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue("[Library]", "MoveHorizontal", delta);
     } else {
-        engine.setValue("[Library]", "MoveDown", 1);
+        engine.setValue("[Library]", "MoveVertical", delta);
     }
 
     TraktorS2MK3.browseState[field.group] = field.value;
 }
 
 TraktorS2MK3.loadTrackHandler = function (field) {
+    HIDDebug("loadTrackHandler: " + field.group + " - " + field.value);
     if (field.value === 0) {
         return;
     }
 
-    engine.setValue(field.group, "LoadSelectedTrack", field.value);
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "eject", field.value);
+        // Reset eject button
+        engine.setValue(field.group, "eject", 0);
+    } else {
+        engine.setValue(field.group, "LoadSelectedTrack", field.value);
+    }
 }
 
 TraktorS2MK3.maximizeLibraryHandler = function (field) {
@@ -417,10 +429,10 @@ TraktorS2MK3.quantizeHandler = function (field) {
         return;
     }
 
-    this.quantizeState = !this.quantizeState;
-    engine.setValue("[Channel1]", "quantize", this.quantizeState);
-    engine.setValue("[Channel2]", "quantize", this.quantizeState);
-    TraktorS2MK3.outputHandler(this.quantizeState, field.group, "quantize");
+    var res = !(engine.getValue("[Channel1]", "quantize") && engine.getValue("[Channel2]", "quantize"));
+    engine.setValue("[Channel1]", "quantize", res);
+    engine.setValue("[Channel2]", "quantize", res);
+    TraktorS2MK3.outputHandler(res, field.group, "quantize");
 }
 
 TraktorS2MK3.microphoneHandler = function (field) {
@@ -474,10 +486,10 @@ TraktorS2MK3.jogHandler = function (field) {
         var tickDelta = deltas[0];
         var timeDelta = deltas[1];
 
-        var velocity = (tick_delta / timeDelta) / 3;
+        var velocity = (tickDelta / timeDelta) / 3;
         engine.setValue(field.group, "jog", velocity);
         if (engine.getValue(field.group, "scratch2_enable")) {
-            engine.scratchTick(deckNumber, tick_delta);
+            engine.scratchTick(deckNumber, tickDelta);
         }
     }
 }
@@ -679,10 +691,10 @@ TraktorS2MK3.peakOutputHandler = function (value, group, key) {
 TraktorS2MK3.outputHandler = function (value, group, key) {
     HIDDebug("outputHandler.value: " + value);
     var ledValue;
-    if (value === 0) {
+    if (value === 0 || value === false) {
         // Off value
         ledValue = 0x7C;
-    } else if (value === 1) {
+    } else if (value === 1 || value === true) {
         // On value
         ledValue = 0x7E;
     } else {
