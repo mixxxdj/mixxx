@@ -1023,6 +1023,11 @@ elseif(WIN32)
       Qt5::QSQLiteDriverPlugin
     )
 
+    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
+    target_link_libraries(mixxx-lib PUBLIC "${QT5FONTDATABASESUPPORT_LIBRARY}")
+    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt5WindowsUIAutomationSupport)
+    target_link_libraries(mixxx-lib PUBLIC "${QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
+
     find_library(QTFREETYPE_LIBRARY qtfreetype)
     target_link_libraries(mixxx-lib PUBLIC "${QTFREETYPE_LIBRARY}")
     find_library(QTHARFBUZZ_LIBRARY qtharfbuzz)
