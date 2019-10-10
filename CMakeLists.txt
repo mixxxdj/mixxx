@@ -640,6 +640,12 @@ if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
 
+if(MSVC)
+  target_compile_options(mixxx-lib PUBLIC /W4)
+else()
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -pedantic)
+endif()
+
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
 target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
