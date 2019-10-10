@@ -133,7 +133,9 @@ for:
   test_script:
     # Calling mixxx-test under bash to have standard output and use stdbuf to
     # unbuffer standard & error output
-    - cmake --build . --config "Release" --target test
+    - set GTEST_COLOR=1
+    - set CTEST_OUTPUT_ON_FAILURE=1
+    - ctest -C "Release"
     - cmake --build . --config "Release" --target benchmark
 
   artifacts:
