@@ -427,17 +427,36 @@ TraktorS2MK3.activateLoopHandler = function (field) {
         return;
     }
 
-    engine.setValue(field.group, "beatloop_activate", field.value);
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "reloop_andstop", field.value);
+    } else {
+        engine.setValue(field.group, "reloop_toggle", field.value);
+    }
 }
 
 TraktorS2MK3.beatjumpHandler = function (field) {
+    var delta = 1;
     if ((field.value + 1) % 16 === TraktorS2MK3.beatjumpState[field.group]) {
-        engine.setValue(field.group, "beatjump_backward", 1);
-        engine.setValue(field.group, "beatjump_backward", 0);
-    } else {
-        engine.setValue(field.group, "beatjump_forward", 1);
-        engine.setValue(field.group, "beatjump_forward", 0);
+        delta = -1;
     }
+
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        var beatjump_size = engine.getValue(field.group, "beatjump_size");
+        if (delta > 0) {
+            engine.setValue(field.group, "beatjump_size", beatjump_size * 2);
+        } else {
+            engine.setValue(field.group, "beatjump_size", beatjump_size / 2);
+        }
+    } else {
+        if (delta < 0) {
+            engine.setValue(field.group, "beatjump_backward", 1);
+            engine.setValue(field.group, "beatjump_backward", 0);
+        } else {
+            engine.setValue(field.group, "beatjump_forward", 1);
+            engine.setValue(field.group, "beatjump_forward", 0);
+        }
+    }
+
     TraktorS2MK3.beatjumpState[field.group] = field.value;
 }
 
@@ -854,7 +873,7 @@ TraktorS2MK3.lightDeck = function () {
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "flx", 0x7C, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "flx", 0x7C, false);
-    
+
     TraktorS2MK3.controller.setOutput("[Channel1]", "addTrack", 0x7C, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "addTrack", 0x7C, false);
 
