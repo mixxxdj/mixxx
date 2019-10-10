@@ -646,6 +646,15 @@ else()
   target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -pedantic)
 endif()
 
+option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
+if(WARNINGS_FATAL)
+  if(MSVC)
+    target_compile_options(mixxx-lib PUBLIC /WX)
+  else()
+    target_compile_options(mixxx-lib PUBLIC -Werror)
+  endif()
+endif()
+
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
 target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
