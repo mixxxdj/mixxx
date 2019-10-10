@@ -1890,6 +1890,12 @@ if(MSVC)
   set(GTEST_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
   set(GMOCK_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 
+  # Use shared CRT when linking gtest to prevent error LNK2038: mismatch
+  # detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value
+  # 'MD_DynamicRelease'
+  set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
+  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
+
   # Work around the Release/Debug subdirectories on Windows
   foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER "${OUTPUT_CONFIG}" OUTPUT_CONFIG)
