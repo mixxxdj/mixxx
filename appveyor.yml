@@ -126,17 +126,19 @@ for:
       ..
     - cmake --build . --config "Release"
     - cmake --build . --config "Release" --target install
-    - cd ..
+    # Generate EXE/MSI installers
+    - cpack -G "NSIS" -C "Release"
+    - cpack -G "WIX" -C "Release"
 
   test_script:
     # Calling mixxx-test under bash to have standard output and use stdbuf to
     # unbuffer standard & error output
-    - cmake --build cmake_build --config "Release" --target test
-    - cmake --build cmake_build --config "Release" --target benchmark
+    - cmake --build . --config "Release" --target test
+    - cmake --build . --config "Release" --target benchmark
 
   artifacts:
-    - path: '*.exe'
-    - path: '*.msi'
+    - path: 'cmake_build/*.exe'
+    - path: 'cmake_build/*.msi'
 
   on_finish:
     # Uncomment the following line if you don't want the build VM to be destroyed
