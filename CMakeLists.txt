@@ -957,9 +957,6 @@ if(UNIX AND NOT APPLE)
     Qt5::DBus
   )
 elseif(WIN32)
-  find_package(Qt5 COMPONENTS WinExtras REQUIRED)
-  target_link_libraries(mixxx-lib PUBLIC Qt5::WinExtras)
-
   get_target_property(QT5_TYPE Qt5::Core TYPE)
   if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
     target_compile_definitions(mixxx-lib PUBLIC QT_NODLL)
