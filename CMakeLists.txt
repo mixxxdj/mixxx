@@ -1007,12 +1007,11 @@ elseif(WIN32)
       Qt5::QSvgIconPlugin
 
       # imageformats plugins
-      #Qt5::QTgaPlugin
-      #Qt5::QIcoPlugin
+      Qt5::QGifPlugin
+      Qt5::QICOPlugin
+      Qt5::QJpegPlugin
       Qt5::QSvgPlugin
-      #Qt5::QTgaPlugin
-      #Qt5::QGifPlugin
-      #Qt5::QJpegPlugin
+      Qt5::QTgaPlugin
 
       # platform plugins (new in Qt5 for Windows)
       Qt5::QWindowsIntegrationPlugin
