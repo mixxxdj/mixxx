@@ -12,7 +12,6 @@ TraktorS2MK3 = new function () {
     this.beatjumpState = { "[Channel1]": 0, "[Channel2]": 0 };
     this.fxButtonState = { 1: false, 2: false, 3: false, 4: false };
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
-    this.quantizeState = false; // false = Off, true = On
 
     // Microphone button
     this.microphonePressedTimer = 0; // Timer to distinguish between short and long press
@@ -104,6 +103,8 @@ TraktorS2MK3.registerInputPackets = function () {
 
     this.registerInputButton(messageShort, "[Channel1]", "!MaximizeLibrary", 0x01, 0x08, this.maximizeLibraryHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!MaximizeLibrary", 0x04, 0x20, this.maximizeLibraryHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!AddTrack", 0x01, 0x04, this.addTrackHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!AddTrack", 0x04, 0x10, this.addTrackHandler);
 
     // Loop control
     this.registerInputButton(messageShort, "[Channel1]", "!SelectLoop", 0x0A, 0x0F, this.selectLoopHandler);
@@ -131,6 +132,16 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[ChannelX]", "!fx2", 0x03, 0x20, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x03, 0x40, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x03, 0x80, this.fxHandler);
+
+    // Rev / FLX / GRID
+    this.registerInputButton(messageShort, "[Channel1]", "!reverse", 0x01, 0x01, this.reverseHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!reverse", 0x04, 0x04, this.reverseHandler);
+
+    this.registerInputButton(messageShort, "[Channel1]", "!flx", 0x01, 0x02, this.flxHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!flx", 0x04, 0x08, this.flxHandler);
+
+    this.registerInputButton(messageShort, "[Channel1]", "!grid", 0x01, 0x10, this.gridHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!grid", 0x04, 0x40, this.gridHandler);
 
     this.controller.registerInputPacket(messageShort);
 
@@ -361,7 +372,7 @@ TraktorS2MK3.headphoneHandler = function (field) {
 
 TraktorS2MK3.selectTrackHandler = function (field) {
     var delta = 1;
-    if ((field.value + 1) % 16 == TraktorS2MK3.browseState[field.group]) {
+    if ((field.value + 1) % 16 === TraktorS2MK3.browseState[field.group]) {
         delta = -1;
     }
 
@@ -389,6 +400,10 @@ TraktorS2MK3.loadTrackHandler = function (field) {
     }
 }
 
+TraktorS2MK3.addTrackHandler = function (field) {
+    // TODO: Not implemented yet
+}
+
 TraktorS2MK3.maximizeLibraryHandler = function (field) {
     if (field.value === 0) {
         return;
@@ -399,7 +414,7 @@ TraktorS2MK3.maximizeLibraryHandler = function (field) {
 }
 
 TraktorS2MK3.selectLoopHandler = function (field) {
-    if ((field.value + 1) % 16 == TraktorS2MK3.loopSizeState[field.group]) {
+    if ((field.value + 1) % 16 === TraktorS2MK3.loopSizeState[field.group]) {
         engine.setValue(field.group, "loop_halve", 1);
     } else {
         engine.setValue(field.group, "loop_double", 1);
@@ -416,10 +431,12 @@ TraktorS2MK3.activateLoopHandler = function (field) {
 }
 
 TraktorS2MK3.beatjumpHandler = function (field) {
-    if ((field.value + 1) % 16 == TraktorS2MK3.beatjumpState[field.group]) {
+    if ((field.value + 1) % 16 === TraktorS2MK3.beatjumpState[field.group]) {
         engine.setValue(field.group, "beatjump_backward", 1);
+        engine.setValue(field.group, "beatjump_backward", 0);
     } else {
         engine.setValue(field.group, "beatjump_forward", 1);
+        engine.setValue(field.group, "beatjump_forward", 0);
     }
     TraktorS2MK3.beatjumpState[field.group] = field.value;
 }
@@ -552,6 +569,30 @@ TraktorS2MK3.fxHandler = function (field) {
     TraktorS2MK3.outputHandler(TraktorS2MK3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
 }
 
+TraktorS2MK3.reverseHandler = function (field) {
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "reverseroll", field.value);
+    } else {
+        engine.setValue(field.group, "reverse", field.value);
+    }
+
+    TraktorS2MK3.outputHandler(field.value, field.group, "reverse");
+}
+
+TraktorS2MK3.flxHandler = function (field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    var slip = engine.getValue(field.group, "slip_enabled");
+    engine.setValue(field.group, "slip_enabled", !slip);
+    TraktorS2MK3.outputHandler(!slip, field.group, "flx");
+}
+
+TraktorS2MK3.gridHandler = function (field) {
+    // TODO: Not implemented yet
+}
+
 TraktorS2MK3.registerOutputPackets = function () {
     var output = new HIDPacket("output", 0x80);
 
@@ -615,6 +656,18 @@ TraktorS2MK3.registerOutputPackets = function () {
     output.addOutput("[ChannelX]", "fxButton2", 0x17, "B");
     output.addOutput("[ChannelX]", "fxButton3", 0x18, "B");
     output.addOutput("[ChannelX]", "fxButton4", 0x19, "B");
+
+    output.addOutput("[Channel1]", "reverse", 0x01, "B");
+    output.addOutput("[Channel2]", "reverse", 0x28, "B");
+
+    output.addOutput("[Channel1]", "flx", 0x02, "B");
+    output.addOutput("[Channel2]", "flx", 0x29, "B");
+
+    output.addOutput("[Channel1]", "addTrack", 0x03, "B");
+    output.addOutput("[Channel2]", "addTrack", 0x2A, "B");
+
+    output.addOutput("[Channel1]", "grid", 0x05, "B");
+    output.addOutput("[Channel2]", "grid", 0x2C, "B");
 
     output.addOutput("[Channel1]", "MaximizeLibrary", 0x04, "B");
     output.addOutput("[Channel2]", "MaximizeLibrary", 0x2B, "B");
@@ -748,7 +801,7 @@ TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
 }
 
 TraktorS2MK3.resolveSampler = function (group) {
-    if (group == undefined) {
+    if (group === undefined) {
         return undefined;
     }
 
@@ -795,6 +848,18 @@ TraktorS2MK3.lightDeck = function () {
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton2", 0x7C, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", 0x7C, false);
     TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", 0x7C, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", 0x7C, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "flx", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "flx", 0x7C, false);
+    
+    TraktorS2MK3.controller.setOutput("[Channel1]", "addTrack", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "addTrack", 0x7C, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "grid", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "grid", 0x7C, false);
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "MaximizeLibrary", 0x7C, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "MaximizeLibrary", 0x7C, false);
