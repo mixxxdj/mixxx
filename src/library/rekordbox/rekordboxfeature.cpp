@@ -26,6 +26,7 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/file.h"
 #include "util/sandbox.h"
+#include "util/color/color.h"
 #include "waveform/waveform.h"
 
 #include "widget/wlibrary.h"
@@ -660,7 +661,67 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QString anlzPath) {
+void setHotCue(TrackPointer track, double position, int id, QString label, int colorCode) {
+    CuePointer pCue;
+    bool hotCueFound = false;
+
+    for (const CuePointer& trackCue : track->getCuePoints()) {
+        if (trackCue->getHotCue() == id) {
+            pCue = trackCue;
+            hotCueFound = true;
+            break;
+        }
+    }
+
+    if (!hotCueFound) {
+        pCue = CuePointer(track->createAndAddCue());
+    }
+
+    pCue->setPosition(position);
+    pCue->setHotCue(id);
+    pCue->setLabel(label);
+    pCue->setType(Cue::CUE);
+
+    // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
+    switch (colorCode) {
+        case 38:
+        case 42:
+            pCue->setColor(Color::kPredefinedColorsSet.red);
+            break;
+        case 0:
+        case 14:
+        case 18:
+        case 22:
+        case 26:
+            pCue->setColor(Color::kPredefinedColorsSet.green);
+            break;
+        case 30:
+        case 32:
+            pCue->setColor(Color::kPredefinedColorsSet.yellow);
+            break;
+        case 1:
+        case 5:
+        case 62:
+            pCue->setColor(Color::kPredefinedColorsSet.blue);
+            break;
+        case 9:
+            pCue->setColor(Color::kPredefinedColorsSet.cyan);
+            break;
+        case 56:
+        case 60:
+            pCue->setColor(Color::kPredefinedColorsSet.magenta);
+            break;
+        case 45:
+        case 49:
+            pCue->setColor(Color::kPredefinedColorsSet.pink);
+            break;
+        default:
+            pCue->setColor(Color::kPredefinedColorsSet.noColor);
+            break;
+    }
+}                    
+
+void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
     if (!QFile(anlzPath).exists()) {
         return;
     }
@@ -672,13 +733,20 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QStrin
 
     rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
 
+    double sampleRateFrames = sampleRate * 2.0;
+
     double cueLoadPosition = kLongestPosition;
+    QString cueLoadComment;
     double cueLoopPosition = kLongestPosition;
     double loopLength = -1.0;
 
     for (std::vector<rekordbox_anlz_t::tagged_section_t*>::iterator section = anlz.sections()->begin(); section != anlz.sections()->end(); ++section) {
         switch ((*section)->fourcc()) {
         case rekordbox_anlz_t::SECTION_TAGS_BEAT_GRID: {
+            if (ignoreBeatsAndLegacyCues) {
+                break;
+            }
+
             rekordbox_anlz_t::beat_grid_tag_t* beatGridTag = static_cast<rekordbox_anlz_t::beat_grid_tag_t*>((*section)->body());
 
             QVector<double> beats;
@@ -698,9 +766,12 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QStrin
                     *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
 
             track->setBeats(pBeats);
-        } break;
+        } break;        
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {
-            double sampleRateFrames = sampleRate * 2.0;
+            if (ignoreBeatsAndLegacyCues) {
+                break;
+            }
+
             rekordbox_anlz_t::cue_tag_t* cuesTag = static_cast<rekordbox_anlz_t::cue_tag_t*>((*section)->body());
 
             for (std::vector<rekordbox_anlz_t::cue_entry_t*>::iterator cueEntry = cuesTag->cues()->begin(); cueEntry != cuesTag->cues()->end(); ++cueEntry) {
@@ -730,10 +801,43 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QStrin
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    CuePointer pCue(track->createAndAddCue());
-                    pCue->setPosition(position);
-                    pCue->setHotCue(static_cast<int>((*cueEntry)->hot_cue() - 1));
-                    pCue->setType(Cue::CUE);
+                    setHotCue(track, position, static_cast<int>((*cueEntry)->hot_cue() - 1), QString(), -1);
+                } break;
+                }
+            }
+        } break;     
+        case rekordbox_anlz_t::SECTION_TAGS_CUES_2: {
+            rekordbox_anlz_t::cue_extended_tag_t* cuesExtendedTag = static_cast<rekordbox_anlz_t::cue_extended_tag_t*>((*section)->body());
+
+            for (std::vector<rekordbox_anlz_t::cue_extended_entry_t*>::iterator cueExtendedEntry = cuesExtendedTag->cues()->begin(); cueExtendedEntry != cuesExtendedTag->cues()->end(); ++cueExtendedEntry) {
+                int time = static_cast<int>((*cueExtendedEntry)->time()) - timingOffset;
+                // Ensure no offset times are less than 1
+                if (time < 1) {
+                    time = 1;
+                }
+                double position = sampleRateFrames * static_cast<double>(time);
+
+                switch (cuesExtendedTag->type()) {
+                case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
+                    switch ((*cueExtendedEntry)->type()) {
+                    case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
+                        // As Mixxx can only have 1 saved cue point, use the first occurance of a memory cue relative to the start of the track
+                        if (position < cueLoadPosition) {
+                            cueLoadPosition = position;
+                            cueLoadComment = QString::fromStdString((*cueExtendedEntry)->comment());
+                        }
+                    } break;
+                    case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
+                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        if (position < cueLoopPosition) {
+                            cueLoopPosition = position;
+                            loopLength = sampleRateFrames * static_cast<double>((*cueExtendedEntry)->loop_time() - (*cueExtendedEntry)->time());
+                        }
+                    } break;
+                    }
+                } break;
+                case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
+                    setHotCue(track, position, static_cast<int>((*cueExtendedEntry)->hot_cue() - 1), QString::fromStdString((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()));
                 } break;
                 }
             }
@@ -745,6 +849,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, QStrin
 
     if (cueLoadPosition < kLongestPosition) {
         track->setCuePoint(CuePosition(cueLoadPosition, Cue::MANUAL));
+        CuePointer pLoadCue = track->findCueByType(Cue::LOAD);
+        pLoadCue->setLabel(cueLoadComment);
     }
     if (cueLoopPosition < kLongestPosition) {
         CuePointer pCue(track->createAndAddCue());
@@ -852,9 +958,9 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     double sampleRate = static_cast<double>(track->getSampleRate()) / 1000.0;
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
-    readAnalyze(track, sampleRate, timingOffset, anlzPath);
+    readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
-    readAnalyze(track, sampleRate, timingOffset, anlzPathExt);
+    readAnalyze(track, sampleRate, timingOffset, true, anlzPathExt);
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
