@@ -32,6 +32,19 @@ rekordbox_anlz_t::~rekordbox_anlz_t() {
     delete m_sections;
 }
 
+rekordbox_anlz_t::phrase_up_down_t::phrase_up_down_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    _read();
+}
+
+void rekordbox_anlz_t::phrase_up_down_t::_read() {
+    m_id = static_cast<rekordbox_anlz_t::phrase_up_down_id_t>(m__io->read_u2be());
+}
+
+rekordbox_anlz_t::phrase_up_down_t::~phrase_up_down_t() {
+}
+
 rekordbox_anlz_t::path_tag_t::path_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
@@ -124,6 +137,75 @@ void rekordbox_anlz_t::wave_scroll_tag_t::_read() {
 rekordbox_anlz_t::wave_scroll_tag_t::~wave_scroll_tag_t() {
 }
 
+rekordbox_anlz_t::phrase_verse_bridge_t::phrase_verse_bridge_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_entry_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    _read();
+}
+
+void rekordbox_anlz_t::phrase_verse_bridge_t::_read() {
+    m_id = static_cast<rekordbox_anlz_t::phrase_verse_bridge_id_t>(m__io->read_u2be());
+}
+
+rekordbox_anlz_t::phrase_verse_bridge_t::~phrase_verse_bridge_t() {
+}
+
+rekordbox_anlz_t::song_structure_tag_t::song_structure_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    _read();
+}
+
+void rekordbox_anlz_t::song_structure_tag_t::_read() {
+    m_len_entry_bytes = m__io->read_u4be();
+    m_len_entries = m__io->read_u2be();
+    m_style = static_cast<rekordbox_anlz_t::phrase_style_t>(m__io->read_u2be());
+    m__unnamed3 = m__io->read_bytes(6);
+    m_end_beat = m__io->read_u2be();
+    m__unnamed5 = m__io->read_bytes(4);
+    int l_entries = len_entries();
+    m_entries = new std::vector<song_structure_entry_t*>();
+    m_entries->reserve(l_entries);
+    for (int i = 0; i < l_entries; i++) {
+        m_entries->push_back(new song_structure_entry_t(m__io, this, m__root));
+    }
+}
+
+rekordbox_anlz_t::song_structure_tag_t::~song_structure_tag_t() {
+    for (std::vector<song_structure_entry_t*>::iterator it = m_entries->begin(); it != m_entries->end(); ++it) {
+        delete *it;
+    }
+    delete m_entries;
+}
+
+rekordbox_anlz_t::cue_extended_entry_t::cue_extended_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::cue_extended_tag_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    _read();
+}
+
+void rekordbox_anlz_t::cue_extended_entry_t::_read() {
+    m__unnamed0 = m__io->ensure_fixed_contents(std::string("\x50\x43\x50\x32", 4));
+    m_len_header = m__io->read_u4be();
+    m_len_entry = m__io->read_u4be();
+    m_hot_cue = m__io->read_u4be();
+    m_type = static_cast<rekordbox_anlz_t::cue_entry_type_t>(m__io->read_u1());
+    m__unnamed5 = m__io->read_bytes(3);
+    m_time = m__io->read_u4be();
+    m_loop_time = m__io->read_u4be();
+    m__unnamed8 = m__io->read_bytes(12);
+    m_len_comment = m__io->read_u4be();
+    m_comment = kaitai::kstream::bytes_to_str(m__io->read_bytes(len_comment()), std::string("utf-16be"));
+    m_color_code = m__io->read_u1();
+    m_color_red = m__io->read_u1();
+    m_color_green = m__io->read_u1();
+    m_color_blue = m__io->read_u1();
+    m__unnamed15 = m__io->read_bytes(((len_entry() - 48) - len_comment()));
+}
+
+rekordbox_anlz_t::cue_extended_entry_t::~cue_extended_entry_t() {
+}
+
 rekordbox_anlz_t::vbr_tag_t::vbr_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
     m__parent = p__parent;
     m__root = p__root;
@@ -142,6 +224,38 @@ void rekordbox_anlz_t::vbr_tag_t::_read() {
 
 rekordbox_anlz_t::vbr_tag_t::~vbr_tag_t() {
     delete m_index;
+}
+
+rekordbox_anlz_t::song_structure_entry_t::song_structure_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::song_structure_tag_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    _read();
+}
+
+void rekordbox_anlz_t::song_structure_entry_t::_read() {
+    m_phrase_number = m__io->read_u2be();
+    m_beat_number = m__io->read_u2be();
+    switch (_parent()->style()) {
+    case PHRASE_STYLE_UP_DOWN: {
+        m_phrase_id = new phrase_up_down_t(m__io, this, m__root);
+        break;
+    }
+    case PHRASE_STYLE_VERSE_BRIDGE: {
+        m_phrase_id = new phrase_verse_bridge_t(m__io, this, m__root);
+        break;
+    }
+    default: {
+        m_phrase_id = new phrase_verse_bridge_t(m__io, this, m__root);
+        break;
+    }
+    }
+    m__unnamed3 = m__io->read_bytes((_parent()->len_entry_bytes() - 9));
+    m_fill_in = m__io->read_u1();
+    m_fill_in_beat_number = m__io->read_u2be();
+}
+
+rekordbox_anlz_t::song_structure_entry_t::~song_structure_entry_t() {
+    delete m_phrase_id;
 }
 
 rekordbox_anlz_t::cue_entry_t::cue_entry_t(kaitai::kstream* p__io, rekordbox_anlz_t::cue_tag_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
@@ -182,6 +296,31 @@ void rekordbox_anlz_t::beat_grid_beat_t::_read() {
 }
 
 rekordbox_anlz_t::beat_grid_beat_t::~beat_grid_beat_t() {
+}
+
+rekordbox_anlz_t::cue_extended_tag_t::cue_extended_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
+    m__parent = p__parent;
+    m__root = p__root;
+    _read();
+}
+
+void rekordbox_anlz_t::cue_extended_tag_t::_read() {
+    m_type = static_cast<rekordbox_anlz_t::cue_list_type_t>(m__io->read_u4be());
+    m_len_cues = m__io->read_u2be();
+    m__unnamed2 = m__io->read_bytes(2);
+    int l_cues = len_cues();
+    m_cues = new std::vector<cue_extended_entry_t*>();
+    m_cues->reserve(l_cues);
+    for (int i = 0; i < l_cues; i++) {
+        m_cues->push_back(new cue_extended_entry_t(m__io, this, m__root));
+    }
+}
+
+rekordbox_anlz_t::cue_extended_tag_t::~cue_extended_tag_t() {
+    for (std::vector<cue_extended_entry_t*>::iterator it = m_cues->begin(); it != m_cues->end(); ++it) {
+        delete *it;
+    }
+    delete m_cues;
 }
 
 rekordbox_anlz_t::unknown_tag_t::unknown_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
@@ -237,6 +376,12 @@ void rekordbox_anlz_t::tagged_section_t::_read() {
         m_body = new wave_scroll_tag_t(m__io__raw_body, this, m__root);
         break;
     }
+    case 1347638089: {
+        m__raw_body = m__io->read_bytes((len_tag() - 12));
+        m__io__raw_body = new kaitai::kstream(m__raw_body);
+        m_body = new song_structure_tag_t(m__io__raw_body, this, m__root);
+        break;
+    }
     case 1347507290: {
         m__raw_body = m__io->read_bytes((len_tag() - 12));
         m__io__raw_body = new kaitai::kstream(m__raw_body);
@@ -253,6 +398,12 @@ void rekordbox_anlz_t::tagged_section_t::_read() {
         m__raw_body = m__io->read_bytes((len_tag() - 12));
         m__io__raw_body = new kaitai::kstream(m__raw_body);
         m_body = new wave_color_scroll_tag_t(m__io__raw_body, this, m__root);
+        break;
+    }
+    case 1346588466: {
+        m__raw_body = m__io->read_bytes((len_tag() - 12));
+        m__io__raw_body = new kaitai::kstream(m__raw_body);
+        m_body = new cue_extended_tag_t(m__io__raw_body, this, m__root);
         break;
     }
     case 1347441736: {
