@@ -874,7 +874,7 @@ elseif(MINGW)
 else()
   target_compile_definitions(fidlib PRIVATE T_LINUX)
 endif()
-target_include_directories(mixxx-lib PUBLIC lib/fidlib)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PUBLIC fidlib)
 
 # FLAC
@@ -891,7 +891,7 @@ add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
 # gtest
-target_include_directories(mixxx-lib PUBLIC lib/gtest-1.7.0/include)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/gtest-1.7.0/include)
 if(MSVC)
   # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
   # been deprecated and throws a warning. If /W3 is used, this causes an
@@ -912,24 +912,24 @@ target_link_libraries(mixxx-lib PUBLIC OpenGL::GL)
 
 # Ogg Vorbis
 find_package(OggVorbis REQUIRED)
-target_include_directories(mixxx-lib PUBLIC ${OggVorbis_INCLUDE_DIRS})
+target_include_directories(mixxx-lib SYSTEM PUBLIC ${OggVorbis_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_include_directories(mixxx-lib PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
+target_include_directories(mixxx-lib SYSTEM PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PORTAUDIO_LIBRARIES})
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
   lib/portaudio/pa_ringbuffer.c
 )
-target_include_directories(mixxx-lib PUBLIC lib/portaudio)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PUBLIC PortAudioRingBuffer)
 
 # PortMidi
 find_package(PortMidi REQUIRED)
-target_include_directories(mixxx-lib PUBLIC ${PortMidi_INCLUDE_DIRS})
+target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PortMidi_LIBRARIES})
 
 # Protobuf
@@ -973,7 +973,7 @@ target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
-  target_include_directories(mixxx-lib PUBLIC "${X11_INCLUDE_DIR}")
+  target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
   target_link_libraries(mixxx-lib PUBLIC
     "${X11_LIBRARIES}"
     Qt5::X11Extras
@@ -1129,21 +1129,21 @@ elseif(MSVC)
   # may include cmath first.
   target_compile_definitions(QueenMaryDsp PUBLIC _USE_MATH_DEFINES)
 endif()
-target_include_directories(QueenMaryDsp PUBLIC lib/qm-dsp lib/qm-dsp/include)
+target_include_directories(QueenMaryDsp SYSTEM PUBLIC lib/qm-dsp lib/qm-dsp/include)
 target_link_libraries(mixxx-lib PUBLIC QueenMaryDsp)
 
 # ReplayGain
 add_library(ReplayGain STATIC EXCLUDE_FROM_ALL
   lib/replaygain/replaygain.cpp
 )
-target_include_directories(mixxx-lib PRIVATE lib/replaygain)
+target_include_directories(mixxx-lib SYSTEM PRIVATE lib/replaygain)
 target_link_libraries(mixxx-lib PRIVATE ReplayGain)
 
 # Reverb
 add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
 target_include_directories(Reverb PRIVATE src)
 target_link_libraries(Reverb PUBLIC Qt5::Core)
-target_include_directories(mixxx-lib PRIVATE lib/reverb)
+target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PUBLIC Reverb)
 
 # Rubberband
@@ -1176,12 +1176,12 @@ add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
   lib/soundtouch/mmx_optimized.cpp
   lib/soundtouch/sse_optimized.cpp
 )
-target_include_directories(SoundTouch PUBLIC lib/soundtouch)
+target_include_directories(SoundTouch SYSTEM PUBLIC lib/soundtouch)
 target_link_libraries(mixxx-lib PUBLIC SoundTouch)
 
 # TagLib
 find_package(Taglib REQUIRED)
-target_include_directories(mixxx-lib PUBLIC ${TAGLIB_INCLUDE_DIRS})
+target_include_directories(mixxx-lib SYSTEM PUBLIC ${TAGLIB_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
@@ -1195,7 +1195,7 @@ target_link_libraries(mixxx-lib PUBLIC Threads::Threads)
 if(UNIX AND NOT APPLE)
   find_package(GLIB COMPONENTS gobject REQUIRED)
   find_package(Upower REQUIRED)
-  target_include_directories(mixxx-lib PUBLIC ${GLIB_INCLUDE_DIRS})
+  target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
   target_link_libraries(mixxx-lib PUBLIC Upower::Upower)
 endif()
@@ -1300,7 +1300,7 @@ if(COREAUDIO_ENABLED)
     ${COREFOUNDATION_LIBRARY}
   )
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
-  target_include_directories(mixxx-lib PUBLIC lib/apple)
+  target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
 
 # FAAD AAC audio file decoder plugin
@@ -1451,7 +1451,7 @@ if(LOCALECOMPARE_ENABLED)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
-  target_include_directories(mixxx-lib PRIVATE ${SQLite3_INCLUDE_DIRS})
+  target_include_directories(mixxx-lib SYSTEM PRIVATE ${SQLite3_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${SQLite3_LIBRARIES})
 endif()
 
@@ -1469,7 +1469,7 @@ if(OPUS_ENABLED)
     src/encoder/encoderopus.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
-  target_include_directories(mixxx-lib PUBLIC ${Opus_INCLUDE_DIRS})
+  target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${Opus_LIBRARIES})
   if(WIN32 AND STATIC_DEPS)
     if(NOT Celt_FOUND)
@@ -1525,7 +1525,7 @@ if(WIN32)
       src/sources/soundsourcemediafoundation.cpp
     )
     target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
-    target_include_directories(mixxx-lib PRIVATE
+    target_include_directories(mixxx-lib SYSTEM PRIVATE
       ${MediaFoundation_INCLUDE_DIRS}
     )
     target_link_libraries(mixxx-lib PUBLIC
@@ -1604,7 +1604,7 @@ if(HID_ENABLED)
   if(HIDAPI_STATIC)
     message(STATUS "Linking internal libhidapi statically")
     add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
-    target_include_directories(mixxx-hidapi PUBLIC lib/hidapi-0.8.0-rc1/hidapi)
+    target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi-0.8.0-rc1/hidapi)
     if(WIN32)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/windows/hid.c)
     elseif(APPLE)
@@ -1944,7 +1944,7 @@ ExternalProject_Add(mixxx-gtest
 )
 set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gtest)
-target_include_directories(mixxx-test PUBLIC
+target_include_directories(mixxx-test SYSTEM PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
 )
 target_link_libraries(mixxx-test PUBLIC
@@ -1960,7 +1960,7 @@ ExternalProject_Add(mixxx-gmock
 )
 set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gmock)
-target_include_directories(mixxx-test PUBLIC
+target_include_directories(mixxx-test SYSTEM PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
 )
 target_link_libraries(mixxx-test PUBLIC
@@ -1989,7 +1989,7 @@ target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries(gbenchmark Shlwapi)
 endif()
-target_include_directories(gbenchmark PUBLIC lib/benchmark/include)
+target_include_directories(gbenchmark SYSTEM PUBLIC lib/benchmark/include)
 target_link_libraries(mixxx-test PUBLIC gbenchmark)
 
 # Test Suite
