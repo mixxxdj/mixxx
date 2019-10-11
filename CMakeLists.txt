@@ -76,6 +76,26 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 
+# ccache support
+find_program(CCACHE_FOUND "ccache")
+option(CCACHE_SUPPORT "Enable ccache support" ON)
+if(CCACHE_SUPPORT)
+  if(MSVC)
+    message(STATUS "MSVC is not compatible with ccache, support disabled")
+  elseif(CCACHE_FOUND)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      # without this compiler messages in `make` backend would be uncolored
+      set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
+    endif()
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
+    message(STATUS "ccache found, support enabled")
+  else()
+    message(STATUS "Could NOT find ccache, support disabled")
+  endif()
+endif()
+
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
