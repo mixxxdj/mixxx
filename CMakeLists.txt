@@ -1993,6 +1993,7 @@ target_include_directories(gbenchmark PUBLIC lib/benchmark/include)
 target_link_libraries(mixxx-test PUBLIC gbenchmark)
 
 # Test Suite
+include(CTest)
 include(GoogleTest)
 enable_testing()
 gtest_add_tests(
