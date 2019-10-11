@@ -81,19 +81,14 @@ find_program(CCACHE_FOUND "ccache")
 option(CCACHE_SUPPORT "Enable ccache support" ON)
 if(CCACHE_SUPPORT)
   if(MSVC)
-    message(STATUS "MSVC is not compatible with ccache, support disabled")
-  elseif(CCACHE_FOUND)
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      # without this compiler messages in `make` backend would be uncolored
-      set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
-    endif()
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
-    message(STATUS "ccache found, support enabled")
-  else()
-    message(STATUS "Could NOT find ccache, support disabled")
+    message(FATAL_ERROR "ccache support is incompatible with MSVC.")
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # without this compiler messages in `make` backend would be uncolored
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
   endif()
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
 endif()
 
 configure_file(
