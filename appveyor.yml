@@ -51,7 +51,7 @@ for:
 
   install:
     - sudo apt-get update
-    - sudo apt-get -y install gdb libavformat-dev libchromaprint-dev libfaad-dev libflac-dev libid3tag0-dev libmad0-dev libmodplug-dev libmp3lame-dev libmp4v2-dev libopus-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev librubberband-dev libshout3-dev libsndfile1-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev libqt5x11extras5-dev cmake qt5keychain-dev liblilv-dev libsoundtouch-dev
+    - sudo apt-get -y install gdb libavformat-dev libchromaprint-dev libfaad-dev libflac-dev libid3tag0-dev libmad0-dev libmodplug-dev libmp3lame-dev libmp4v2-dev libopus-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev librubberband-dev libshout3-dev libsndfile1-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev libqt5x11extras5-dev cmake qt5keychain-dev liblilv-dev libsoundtouch-dev xsltproc
 
   build_script:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
@@ -63,8 +63,14 @@ for:
 
   test_script:
     - export GTEST_COLOR=1 CTEST_OUTPUT_ON_FAILURE=1
-    - xvfb-run -- cmake --build . --target test
+    - xvfb-run -- ctest -T test
     - xvfb-run -- cmake --build . --target benchmark
+
+  after_test:
+    - curl -OL https://raw.githubusercontent.com/rpavlik/jenkins-ctest-plugin/master/ctest-to-junit.xsl
+    - xsltproc -o ctest-to-junit-results.xml ctest-to-junit.xsl Testing/*/Test.xml
+    - curl -F 'file=@ctest-to-junit-results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+
 
 ########## END UBUNTU SPECIFIC CONFIGURATION ##########
 
@@ -135,8 +141,19 @@ for:
     # unbuffer standard & error output
     - set GTEST_COLOR=1
     - set CTEST_OUTPUT_ON_FAILURE=1
-    - ctest -C "Release"
+    - ctest -C "Release" -T test
     - cmake --build . --config "Release" --target benchmark
+
+  after_test:
+    # Found at https://help.appveyor.com/discussions/suggestions/5298-support-ctest-xml-test-results
+    - ps: |
+        $ctest_xml = Get-ChildItem -Path Testing\*\Test.xml
+        $XSLInputElement = New-Object System.Xml.Xsl.XslCompiledTransform
+        $XSLInputElement.Load("https://raw.githubusercontent.com/rpavlik/jenkins-ctest-plugin/master/ctest-to-junit.xsl")
+        $XSLInputElement.Transform((Resolve-Path $ctest_xml), (Join-Path (Resolve-Path .) "ctest-to-junit-results.xml"))
+        $wc = New-Object 'System.Net.WebClient'
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\ctest-to-junit-results.xml))
+
 
   artifacts:
     - path: 'cmake_build/*.exe'
