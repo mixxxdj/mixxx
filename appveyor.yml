@@ -63,7 +63,7 @@ for:
 
   test_script:
     - export GTEST_COLOR=1 CTEST_OUTPUT_ON_FAILURE=1
-    - xvfb-run -- ctest -T test
+    - xvfb-run -- ctest -T test --no-compress-output
     - xvfb-run -- cmake --build . --target benchmark
 
   after_test:
@@ -141,7 +141,7 @@ for:
     # unbuffer standard & error output
     - set GTEST_COLOR=1
     - set CTEST_OUTPUT_ON_FAILURE=1
-    - ctest -C "Release" -T test
+    - ctest -C "Release" -T test --no-compress-output
     - cmake --build . --config "Release" --target benchmark
 
   after_test:
