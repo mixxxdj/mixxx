@@ -49,9 +49,13 @@ for:
 
   clone_folder: /home/appveyor/projects/mixxx
 
+  cache:
+    - /home/appveyor/.ccache
+
   install:
     - sudo apt-get update
     - sudo apt-get -y install
+      ccache
       cmake
       gdb
       libavformat-dev
@@ -87,6 +91,12 @@ for:
       qt5keychain-dev
       qtscript5-dev
       xsltproc
+
+  before_build:
+     # Limit cache size to 100 MB
+    - ccache -M 100M
+    - ccache -c
+    - ccache -s
 
   build_script:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
