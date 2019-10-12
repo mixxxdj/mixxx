@@ -134,6 +134,7 @@ for:
 
   cache:
     - C:\mixxx-buildserver
+    - C:\Users\appveyor\clcache
 
   environment:
     ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
@@ -141,6 +142,7 @@ for:
     ENVIRONMENT_NAME: 2.3-j00013-PLATFORM-CONFIGURATION-static-36f44bd2-minimal
     QT_VERSION: 5.12.0
     MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
+    PATH: 'C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%'
 
 
   install:
@@ -157,6 +159,7 @@ for:
         7z -o%ENVIRONMENTS_PATH% x %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip || exit 1
       )
     - choco install ninja
+    - python -m pip install git+https://github.com/frerich/clcache.git
 
   before_build:
     - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
@@ -164,6 +167,14 @@ for:
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%
+     # Limit cache size to 100 MB
+    - clcache -M 100000000
+    - clcache -c
+    - clcache -s
+    # Improve clcache performance
+    - set CLCACHE_SERVER=1
+    - set CLCACHE_HARDLINK=1
+    - ps: Start-Process clcache-server
 
   build_script:
     - mkdir cmake_build
