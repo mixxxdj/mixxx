@@ -14,6 +14,7 @@ if(POLICY CMP0071)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
+include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(ExternalProject)
 include(GNUInstallDirs)
@@ -78,7 +79,7 @@ message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 
 # ccache support
 find_program(CCACHE_FOUND "ccache")
-option(CCACHE_SUPPORT "Enable ccache support" ON)
+cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_FOUND;NOT MSVC" OFF)
 if(CCACHE_SUPPORT)
   if(MSVC)
     message(FATAL_ERROR "ccache support is incompatible with MSVC.")
@@ -842,12 +843,7 @@ endif()
 
 # Ebur128
 find_package(Ebur128)
-if(Ebur128_FOUND)
-  set(EBUR128_STATIC_DEFAULT OFF)
-else()
-  set(EBUR128_STATIC_DEFAULT ON)
-endif()
-option(EBUR128_STATIC "Link libebur128 statically" "${EBUR128_STATIC_DEFAULT}")
+cmake_dependent_option(EBUR128_STATIC "Link libebur128 statically" OFF "Ebur128_FOUND" ON)
 if(EBUR128_STATIC)
   set(EBUR128_CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON")
   check_symbol_exists(STAILQ_HEAD sys/queue.h HAVE_STAILQ)
@@ -1237,12 +1233,7 @@ endif()
 #
 
 # Battery meter
-if(WIN32 OR UNIX)
-  set(BATTERY_SUPPORTED ON)
-else()
-  set(BATTERY_SUPPORTED OFF)
-endif()
-option(BATTERY_ENABLED "Battery meter support" "${BATTERY_SUPPORTED}")
+cmake_dependent_option(BATTERY_ENABLED "Battery meter support" ON "WIN32 OR UNIX" OFF)
 if(BATTERY_ENABLED)
   if(WIN32)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterywindows.cpp)
@@ -1301,7 +1292,7 @@ if(NOT CLANG_SANITIZERS STREQUAL "")
 endif()
 
 # CoreAudio MP3/AAC Decoder
-option(COREAUDIO_ENABLED "CoreAudio MP3/AAC Decoder" "${APPLE}")
+cmake_dependent_option(COREAUDIO_ENABLED "CoreAudio MP3/AAC Decoder" ON "APPLE" OFF)
 if(COREAUDIO_ENABLED)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcecoreaudio.cpp
@@ -1321,15 +1312,7 @@ endif()
 # FAAD AAC audio file decoder plugin
 find_package(MP4)
 find_package(MP4v2)
-if(MP4_FOUND OR MP4v2_FOUND)
-  set(FAAD_ENABLED_DEFAULT ON)
-else()
-  set(FAAD_ENABLED_DEFAULT OFF)
-endif()
-option(FAAD_ENABLED
-  "FAAD AAC audio file decoder support"
-  "${FAAD_ENABLED_DEFAULT}"
-)
+cmake_dependent_option(FAAD_ENABLED "FAAD AAC audio file decoder support" ON "MP4_FOUND OR MP4v2_FOUND" OFF)
 if(FAAD_ENABLED)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
@@ -1404,12 +1387,7 @@ endif()
 
 # HSS1394 MIDI device
 find_package(HSS1394)
-if(WIN32 OR APPLE)
-  set(HSS1394_ENABLED_DEFAULT "${HSS1394_FOUND}")
-else()
-  set(HSS1394_ENABLED_DEFAULT "OFF")
-endif()
-option(HSS1394_ENABLED "HSS1394 MIDI device support" "${HSS1394_ENABLED_DEFAULT}")
+cmake_dependent_option(HSS1394_ENABLED "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
 if(HSS1394_ENABLED)
   target_sources(mixxx-lib PRIVATE
     src/controllers/midi/hss1394controller.cpp
@@ -1426,7 +1404,7 @@ endif()
 
 # Lilv (LV2)
 find_package(Lilv)
-option(LILV_ENABLED "Lilv (LV2) support" "${Lilv_FOUND}")
+cmake_dependent_option(LILV_ENABLED "Lilv (LV2) support" ON "Lilv_FOUND" OFF)
 if(LILV_ENABLED)
   if(NOT Lilv_FOUND)
     message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
@@ -1443,7 +1421,7 @@ endif()
 
 # Live Broadcasting (Shoutcast)
 find_package(Shout)
-option(BROADCAST_ENABLED "Live Broadcasting (Shoutcast) support" "${Shout_FOUND}")
+cmake_dependent_option(BROADCAST_ENABLED "Live Broadcasting (Shoutcast) support" ON "Shout_FOUND" OFF)
 if(BROADCAST_ENABLED)
   if(NOT Shout_FOUND)
       message(FATAL_ERROR "Live Broadcasting support requires the libshout and its development headers.")
@@ -1460,7 +1438,7 @@ endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
-option(LOCALECOMPARE_ENABLED "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}")
+cmake_dependent_option(LOCALECOMPARE_ENABLED "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
 if(LOCALECOMPARE_ENABLED)
   if(NOT SQLite3_FOUND)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
@@ -1474,7 +1452,7 @@ endif()
 find_package(Opus)
 find_package(Celt)
 find_package(Silk)
-option(OPUS_ENABLED "Opus (RFC 6716) support" "${Opus_FOUND}")
+cmake_dependent_option(OPUS_ENABLED "Opus (RFC 6716) support" ON "Opus_FOUND" OFF)
 if(OPUS_ENABLED)
   if(NOT Opus_FOUND)
     message(FATAL_ERROR "Opus support requires libopus and libopusfile with development headers.")
@@ -1502,12 +1480,7 @@ endif()
 # MAD MP3 Decoder
 find_package(MAD)
 find_package(ID3Tag)
-if(MAD_FOUND AND ID3Tag_FOUND)
-  set(MAD_ENABLED_DEFAULT ON)
-else()
-  set(MAD_ENABLED_DEFAULT OFF)
-endif()
-option(MAD_ENABLED "MAD MP3 Decoder" "${MAD_ENABLED_DEFAULT}")
+cmake_dependent_option(MAD_ENABLED "MAD MP3 Decoder" ON "MAD_FOUND;ID3Tag_FOUND" OFF)
 if(MAD_ENABLED)
   if(NOT MAD_FOUND)
     message(FATAL_ERROR "MAD support requires libmad and its development headers.")
@@ -1529,29 +1502,27 @@ if(APPLE)
 endif()
 
 # Media Foundation AAC Decoder Plugin
-if(WIN32)
-  find_package(MediaFoundation)
-  option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" "${MediaFoundation_FOUND}")
-  if(MEDIAFOUNDATION_ENABLED)
-    if(NOT MediaFoundation_FOUND)
-        message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
-    endif()
-    target_sources(mixxx-lib PRIVATE
-      src/sources/soundsourcemediafoundation.cpp
-    )
-    target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
-    target_include_directories(mixxx-lib SYSTEM PRIVATE
-      ${MediaFoundation_INCLUDE_DIRS}
-    )
-    target_link_libraries(mixxx-lib PUBLIC
-      ${MediaFoundation_LIBRARIES}
-    )
+find_package(MediaFoundation)
+cmake_dependent_option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
+if(MEDIAFOUNDATION_ENABLED)
+  if(NOT MediaFoundation_FOUND)
+      message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
   endif()
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourcemediafoundation.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
+  target_include_directories(mixxx-lib SYSTEM PRIVATE
+    ${MediaFoundation_INCLUDE_DIRS}
+  )
+  target_link_libraries(mixxx-lib PUBLIC
+    ${MediaFoundation_LIBRARIES}
+  )
 endif()
 
 # Modplug support
 find_package(Modplug)
-option(MODPLUG_ENABLED "Modplug module decoder support" "${Modplug_FOUND}")
+cmake_dependent_option(MODPLUG_ENABLED "Modplug module decoder support" ON "Modplug_FOUND" OFF)
 if(MODPLUG_ENABLED)
   if(NOT Modplug_FOUND)
     message(FATAL_ERROR "Modplug module decoder support requires libmodplug and its development headers.")
@@ -1587,7 +1558,7 @@ endif()
 
 # USB Bulk controller support
 find_package(LibUSB)
-option(BULK_ENABLED "USB Bulk controller support" "${LibUSB_FOUND}")
+cmake_dependent_option(BULK_ENABLED "USB Bulk controller support" ON "LibUSB_FOUND" OFF)
 if(BULK_ENABLED)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
@@ -1602,13 +1573,8 @@ endif()
 
 # USB HID controller support
 find_package(HIDAPI)
-option(HID_ENABLED "USB HID controller support" "ON")
-if(HIDAPI_FOUND)
-  set(HIDAPI_STATIC_DEFAULT OFF)
-else()
-  set(HIDAPI_STATIC_DEFAULT ON)
-endif()
-option(HIDAPI_STATIC "Link HIDAPI library statically" "${HIDAPI_STATIC_DEFAULT}")
+option(HID_ENABLED "USB HID controller support" ON)
+cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
 if(HID_ENABLED)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
@@ -1644,7 +1610,7 @@ if(HID_ENABLED)
 endif()
 
 # Vinyl Control
-option(VINYLCONTROL_ENABLED "Vinyl Control support" ON)
+cmake_dependent_option(VINYLCONTROL_ENABLED "Vinyl Control support" ON "NOT MACAPPSTORE_ENABLED" OFF)
 if(VINYLCONTROL_ENABLED)
   if(MACAPPSTORE_ENABLED)
     message(FATAL_ERROR "Mac App Store and Vinyl Control support are mutually exclusive due to licensing issues.")
@@ -1675,7 +1641,7 @@ endif()
 
 # WavPack audio file support
 find_package(WavPack)
-option(WAVPACK_ENABLED "WavPack audio file support" "${WavPack_FOUND}")
+cmake_dependent_option(WAVPACK_ENABLED "WavPack audio file support" ON "WavPack_FOUND" OFF)
 if(WAVPACK_ENABLED)
   if(NOT WavPack_FOUND)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
