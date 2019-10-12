@@ -131,6 +131,7 @@ for:
     - mkdir cmake_build
     - cd cmake_build
     - cmake
+      -L
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
       -DMEDIAFOUNDATION_ENABLED=ON
