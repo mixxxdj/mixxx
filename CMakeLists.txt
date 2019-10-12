@@ -1717,7 +1717,7 @@ if(NOT OPTIMIZE STREQUAL "off")
       message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
       # SSE and SSE2 are core instructions on x64
       # and consequently raise a warning message from compiler with this flag on x64.
-      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         target_compile_options(mixxx-lib PUBLIC "/arch:SSE2")
       endif()
       target_compile_definitions(mixxx-lib PUBLIC "__SSE__" "__SSE2__")
