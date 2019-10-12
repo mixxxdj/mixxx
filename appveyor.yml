@@ -57,7 +57,16 @@ for:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
     - mkdir cmake_build
     - cd cmake_build
-    - cmake -DMAD_ENABLED=ON -DFAAD_ENABLED=ON -DOPUS_ENABLED=ON -DMODPLUG_ENABLED=ON -DWAVPACK_ENABLED=ON -DHSS1394_ENABLED=OFF -DLOCALECOMPARE_ENABLED=ON ..
+    - cmake
+      -L
+      -DFAAD_ENABLED=ON
+      -DHSS1394_ENABLED=OFF
+      -DLOCALECOMPARE_ENABLED=ON
+      -DMAD_ENABLED=ON
+      -DMODPLUG_ENABLED=ON
+      -DOPUS_ENABLED=ON
+      -DWAVPACK_ENABLED=ON
+      ..
     - cmake --build .
     - sudo cmake --build . --target install
 
