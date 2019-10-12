@@ -14,8 +14,8 @@ if(POLICY CMP0071)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
-include(ExternalProject)
 include(CheckSymbolExists)
+include(ExternalProject)
 include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
