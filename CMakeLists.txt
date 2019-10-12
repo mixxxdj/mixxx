@@ -1333,7 +1333,7 @@ endif()
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
-option(FFMPEG_ENABLED "FFmpeg 4.x support" "OFF")
+option(FFMPEG_ENABLED "FFmpeg 4.x support" OFF)
 if(FFMPEG_ENABLED)
   if(NOT AVCODEC_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
