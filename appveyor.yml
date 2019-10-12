@@ -140,6 +140,7 @@ for:
     ENVIRONMENTS_PATH: C:\mixxx-buildserver
     ENVIRONMENT_NAME: 2.3-j00013-PLATFORM-CONFIGURATION-static-36f44bd2-minimal
     QT_VERSION: 5.12.0
+    MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
 
 
   install:
@@ -155,11 +156,13 @@ for:
         echo Unpacking environment %ENVIRONMENT_NAME% to %ENVIRONMENTS_PATH%... &&
         7z -o%ENVIRONMENTS_PATH% x %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip || exit 1
       )
+    - choco install ninja
 
   before_build:
     - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
     - set QT_PATH=%WINLIB_PATH%\Qt-%QT_VERSION%
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
+    - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%
 
   build_script:
@@ -167,26 +170,27 @@ for:
     - cd cmake_build
     - cmake
       -L
+      -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
       -DMEDIAFOUNDATION_ENABLED=ON
       -DOPUS_ENABLED=ON
       -DLOCALECOMPARE_ENABLED=ON
       -DSTATIC_DEPS=ON
-      -G "Visual Studio 15 2017 Win64"
+      -G "Ninja"
       ..
-    - cmake --build . --config "Release"
-    - cmake --build . --config "Release" --target install
+    - cmake --build .
+    - cmake --build . --target install
     # Generate EXE/MSI installers
-    - cpack -G "NSIS" -C "Release"
-    - cpack -G "WIX" -C "Release"
+    - cpack -G "NSIS"
+    - cpack -G "WIX"
 
   test_script:
     # Calling mixxx-test under bash to have standard output and use stdbuf to
     # unbuffer standard & error output
     - set CTEST_OUTPUT_ON_FAILURE=1
     - ctest -C "Release" -T test --no-compress-output
-    - cmake --build . --config "Release" --target benchmark
+    - cmake --build . --target benchmark
 
   after_test:
     # Found at https://help.appveyor.com/discussions/suggestions/5298-support-ctest-xml-test-results
