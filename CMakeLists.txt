@@ -92,6 +92,17 @@ if(CCACHE_SUPPORT)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
 endif()
 
+# clcache support
+find_program(CLCACHE_FOUND "clcache")
+cmake_dependent_option(CLCACHE_SUPPORT "Enable clcache support" ON "CLCACHE_FOUND;MSVC" OFF)
+if(CLCACHE_SUPPORT)
+  if(NOT MSVC)
+    message(FATAL_ERROR "clcache support requires MSVC.")
+  endif()
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "clcache")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "clcache")
+endif()
+
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
