@@ -76,32 +76,41 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
   set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
-
-# ccache support
-find_program(CCACHE_FOUND "ccache")
-cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_FOUND;NOT MSVC" OFF)
-if(CCACHE_SUPPORT)
-  if(MSVC)
-    message(FATAL_ERROR "ccache support is incompatible with MSVC.")
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    # without this compiler messages in `make` backend would be uncolored
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
+if(MSVC)
+  # clcache support
+  find_program(CLCACHE_FOUND "clcache")
+  if(CLCACHE_FOUND)
+    message(STATUS "Found clcache: ${CLCACHE_FOUND}")
+  else()
+      message(STATUS "Could NOT find clcache (missing executable)")
   endif()
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
+  cmake_dependent_option(CLCACHE_SUPPORT "Enable clcache support" ON "CLCACHE_FOUND" OFF)
+  if(CLCACHE_SUPPORT)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "clcache")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "clcache")
+  endif()
+  message(STATUS "Support for clcache: ${CLCACHE_SUPPORT}")
+else()
+  # ccache support
+  find_program(CCACHE_FOUND "ccache")
+  if(CCACHE_FOUND)
+    message(STATUS "Found ccache: ${CCACHE_FOUND}")
+  else()
+      message(STATUS "Could NOT find ccache (missing executable)")
+  endif()
+  cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_FOUND" OFF)
+  if(CCACHE_SUPPORT)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      # without this compiler messages in `make` backend would be uncolored
+      set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
+    endif()
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
+  endif()
+  message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
-# clcache support
-find_program(CLCACHE_FOUND "clcache")
-cmake_dependent_option(CLCACHE_SUPPORT "Enable clcache support" ON "CLCACHE_FOUND;MSVC" OFF)
-if(CLCACHE_SUPPORT)
-  if(NOT MSVC)
-    message(FATAL_ERROR "clcache support requires MSVC.")
-  endif()
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "clcache")
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "clcache")
-endif()
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
