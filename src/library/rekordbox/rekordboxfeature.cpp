@@ -677,10 +677,13 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
         pCue = CuePointer(track->createAndAddCue());
     }
 
+    pCue->setType(Cue::CUE);
     pCue->setPosition(position);
     pCue->setHotCue(id);
-    pCue->setLabel(label);
-    pCue->setType(Cue::CUE);
+
+    if (!label.isNull()) {
+        pCue->setLabel(label);
+    }
 
     // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
     switch (colorCode) {
@@ -850,7 +853,9 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
     if (cueLoadPosition < kLongestPosition) {
         track->setCuePoint(CuePosition(cueLoadPosition, Cue::MANUAL));
         CuePointer pLoadCue = track->findCueByType(Cue::LOAD);
-        pLoadCue->setLabel(cueLoadComment);
+        if (!cueLoadComment.isNull()) {
+            pLoadCue->setLabel(cueLoadComment);
+        }
     }
     if (cueLoopPosition < kLongestPosition) {
         CuePointer pCue(track->createAndAddCue());
