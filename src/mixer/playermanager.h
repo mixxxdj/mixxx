@@ -12,6 +12,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
 class Auxiliary;
@@ -265,7 +266,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
-    std::unique_ptr<ControlProxy> m_pAutoDjEnabled;
+    parented_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
