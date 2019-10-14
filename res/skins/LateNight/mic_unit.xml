@@ -166,24 +166,12 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-                      <PushButton>
-                        <TooltipId>microphone_talkover</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_mic_talk_down.svg</Pressed>
-                          <Unpressed>buttons/btn_mic_talk.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_mic_talk_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_mic_talk_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_2state.xml">
+                        <SetVariable name="TooltipId">microphone_talkover</SetVariable>
+                        <SetVariable name="Size">42f,24f</SetVariable>
+                        <SetVariable name="icon">mic_talk</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,talkover</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup><!-- /PLAY -->
 

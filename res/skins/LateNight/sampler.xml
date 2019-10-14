@@ -129,21 +129,22 @@
                     <Children>
                       <PushButton>
                         <TooltipId>orientation</TooltipId>
+                        <Size>25f,18f</Size>
                         <NumberStates>3</NumberStates>
                         <State>
                           <Number>0</Number>
                           <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_left.svg</Pressed>
-                          <Unpressed>buttons/btn_xfader_sampler_left.svg</Unpressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_left.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
                           <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_master.svg</Pressed>
-                          <Unpressed>buttons/btn_xfader_sampler_master.svg</Unpressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_master.svg</Unpressed>
                         </State>
                         <State>
                           <Number>2</Number>
                           <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_right.svg</Pressed>
-                          <Unpressed>buttons/btn_xfader_sampler_right.svg</Unpressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_right.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
