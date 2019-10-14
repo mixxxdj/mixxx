@@ -230,8 +230,7 @@ void AutoDJProcessor::fadeNow() {
         pFromDeck = pRightDeck;
         pToDeck = pLeftDeck;
     } else {
-        // Both decks are playing or no decks are playing;
-        // fading now makes no sense.
+        // Neither deck is playing. Fading now makes no sense.
         return;
     }
 
