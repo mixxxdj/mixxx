@@ -4,6 +4,8 @@
   <WidgetGroup>
     <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
+    <SizePolicy>min,max</SizePolicy>
+    <MaximumSize>160,</MaximumSize>
     <Children>
       <WidgetGroup>
         <BackPath>style/background_tile.png</BackPath>

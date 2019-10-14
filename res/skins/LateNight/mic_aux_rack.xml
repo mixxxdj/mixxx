@@ -5,24 +5,37 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup>
-        <SizePolicy>min,min</SizePolicy>
-      </WidgetGroup>
+      <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>MicRack</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">4</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <MinimumSize>1,0</MinimumSize>
+              <MaximumSize>20,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">3</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <MinimumSize>1,0</MinimumSize>
+              <MaximumSize>20,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">2</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <MinimumSize>1,0</MinimumSize>
+              <MaximumSize>20,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="mic1hack">1</SetVariable>
           </Template>
@@ -30,7 +43,7 @@
           <WidgetGroup><!-- Ducking controls -->
             <ObjectName>MicDuckingContainer</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
@@ -63,17 +76,32 @@
       <WidgetGroup><!-- Aux -->
         <ObjectName>AuxRack</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">4</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <MinimumSize>1,0</MinimumSize>
+              <MaximumSize>20,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">3</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <MinimumSize>1,0</MinimumSize>
+              <MaximumSize>20,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">2</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>me,min</SizePolicy>
+              <MinimumSize>1,0</MinimumSize>
+              <MaximumSize>20,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">1</SetVariable>
           </Template>
@@ -81,7 +109,7 @@
       </WidgetGroup><!-- Aux -->
 
       <WidgetGroup>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <MaximumSize>78,i</MaximumSize>
       </WidgetGroup>
 

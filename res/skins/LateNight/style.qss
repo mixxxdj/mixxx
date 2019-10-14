@@ -1143,16 +1143,17 @@ WBeatSpinBox,
 }
 
 #MicRack, #AuxRack {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #1e1e1e;
   padding: 2px 3px 1px 4px;
-  qproperty-layoutSpacing: 5;
+  qproperty-layoutSpacing: 2;
   }
   #MicRack {
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
     margin-left: 3px;
     margin-right: 5px;
   }
   #AuxRack {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     margin-left: 5px;
     margin-right: 3px;
   }
@@ -1200,7 +1201,7 @@ WBeatSpinBox,
 
 #MicDuckingContainer {
   qproperty-layoutAlignment: 'AlignCenter | AlignTop';
-  padding: 1px 0px 0px 0xp;
+  padding: 1px 0px 0px 2px;
   }
   #MicDuckingStrengthKnob {
     margin: 2px 0px 3px 0px;
