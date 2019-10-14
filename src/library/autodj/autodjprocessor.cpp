@@ -267,12 +267,8 @@ void AutoDJProcessor::fadeNow() {
         if (toDeckCurrentPosition >= introStart && introStart >= 0
                 && toDeckCurrentPosition <= introEnd && introEnd >= 0) {
             double timeUntilIntroEnd = introEnd - toDeckCurrentPosition;
-            if (outroEnd >= 0) {
-                // The fade must end by the outro end at the latest.
-                fadeTime = math_min(timeUntilIntroEnd, timeUntilOutroEnd);
-            } else {
-                fadeTime = timeUntilIntroEnd;
-            }
+            // The fade must end by the outro end at the latest.
+            fadeTime = math_min(timeUntilIntroEnd, timeUntilOutroEnd);
         } else {
             fadeTime = math_min(spinboxTime, timeUntilOutroEnd);
         }
