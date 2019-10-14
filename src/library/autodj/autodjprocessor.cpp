@@ -190,7 +190,7 @@ double AutoDJProcessor::getCrossfader() const {
 }
 
 void AutoDJProcessor::setCrossfader(double value) {
-    if (m_pCOCrossfaderReverse->get() > 0.0) {
+    if (m_pCOCrossfaderReverse->toBool()) {
         value *= -1.0;
     }
     m_pCOCrossfader->set(value);
