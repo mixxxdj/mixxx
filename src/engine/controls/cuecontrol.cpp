@@ -333,11 +333,11 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             this, &CueControl::trackBeatsUpdated,
             Qt::DirectConnection);
 
-    CuePointer pLoadCue;
+    CuePointer pMainCue;
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::Type::MainCue) {
-            DEBUG_ASSERT(!pLoadCue);
-            pLoadCue = pCue;
+            DEBUG_ASSERT(!pMainCue);
+            pMainCue = pCue;
         }
     }
 
@@ -350,22 +350,22 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Because of legacy, we store the (load) cue point twice and need to
     // sync both values.
     // The Cue::Type::MainCue from getCuePoints() has the priority
-    CuePosition cuePoint;
-    if (pLoadCue) {
-        cuePoint.setPosition(pLoadCue->getPosition());
+    CuePosition mainCuePoint;
+    if (pMainCue) {
+        mainCuePoint.setPosition(pMainCue->getPosition());
         // adjust the track cue accordingly
-        pNewTrack->setCuePoint(cuePoint);
+        pNewTrack->setCuePoint(mainCuePoint);
     } else {
         // If no load cue point is stored, read from track
         // Note: This is 0:00 for new tracks
-        cuePoint = pNewTrack->getCuePoint();
+        mainCuePoint = pNewTrack->getCuePoint();
         // Than add the load cue to the list of cue
         CuePointer pCue(pNewTrack->createAndAddCue());
-        pCue->setPosition(cuePoint.getPosition());
+        pCue->setPosition(mainCuePoint.getPosition());
         pCue->setHotCue(-1);
         pCue->setType(Cue::Type::MainCue);
     }
-    m_pCuePoint->set(cuePoint.getPosition());
+    m_pCuePoint->set(mainCuePoint.getPosition());
 
     // Update COs with cues from track.
     loadCuesFromTrack();
@@ -378,14 +378,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     if (pAudibleSound) {
         firstSound = pAudibleSound->getPosition();
     }
-
-    double mainCue = m_pCuePoint->get();
-    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"), false)) {
-        if (mainCue != kNoTrigger && mainCue != 0) {
-            m_pIntroStartPosition->set(mainCue);
-        }
-    }
-
 
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
@@ -403,8 +395,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
         break;
     case SeekOnLoadMode::MainCue:
-        if (mainCue != kNoTrigger) {
-            seekExact(mainCue);
+        if (mainCuePoint.getPosition() != kNoTrigger) {
+            seekExact(mainCuePoint.getPosition());
         } else {
             seekExact(0.0);
         }
@@ -473,13 +465,6 @@ void CueControl::loadCuesFromTrack() {
         }
     }
 
-    if (pLoadCue) {
-        double position = pLoadCue->getPosition();
-        m_pCuePoint->set(quantizeCuePoint(position, QuantizeMode::ClosestBeat));
-    } else {
-        m_pCuePoint->set(-1.0);
-    }
-
     if (pIntroCue) {
         double startPosition = pIntroCue->getPosition();
         double endPosition = pIntroCue->getEndPosition();
@@ -508,6 +493,18 @@ void CueControl::loadCuesFromTrack() {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(-1.0);
         m_pOutroEndEnabled->forceSet(0.0);
+    }
+
+    if (pLoadCue) {
+        double position = pLoadCue->getPosition();
+        m_pCuePoint->set(quantizeCuePoint(position, QuantizeMode::ClosestBeat));
+        // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
+        if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"), false)
+                && position != kNoTrigger && position != 0) {
+            m_pIntroStartPosition->set(position);
+        }
+    } else {
+        m_pCuePoint->set(-1.0);
     }
 
     // Detach all hotcues that are no longer present
