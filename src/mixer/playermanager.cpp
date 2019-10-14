@@ -65,8 +65,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-        m_pAutoDjEnabled(make_parented<ControlProxy>("[AutoDJ]", "enabled", this)) {
+        m_pAutoDjEnabled(make_parented<ControlProxy>("[AutoDJ]", "enabled", this)),
+        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
