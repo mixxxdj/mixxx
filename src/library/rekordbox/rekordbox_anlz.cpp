@@ -196,14 +196,44 @@ void rekordbox_anlz_t::cue_extended_entry_t::_read() {
     m__unnamed8 = m__io->read_bytes(12);
     m_len_comment = m__io->read_u4be();
     m_comment = kaitai::kstream::bytes_to_str(m__io->read_bytes(len_comment()), std::string("utf-16be"));
-    m_color_code = m__io->read_u1();
-    m_color_red = m__io->read_u1();
-    m_color_green = m__io->read_u1();
-    m_color_blue = m__io->read_u1();
-    m__unnamed15 = m__io->read_bytes(((len_entry() - 48) - len_comment()));
+    n_color_code = true;
+    if ((len_entry() - len_comment()) > 44) {
+        n_color_code = false;
+        m_color_code = m__io->read_u1();
+    }
+    n_color_red = true;
+    if ((len_entry() - len_comment()) > 45) {
+        n_color_red = false;
+        m_color_red = m__io->read_u1();
+    }
+    n_color_green = true;
+    if ((len_entry() - len_comment()) > 46) {
+        n_color_green = false;
+        m_color_green = m__io->read_u1();
+    }
+    n_color_blue = true;
+    if ((len_entry() - len_comment()) > 47) {
+        n_color_blue = false;
+        m_color_blue = m__io->read_u1();
+    }
+    n__unnamed15 = true;
+    if ((len_entry() - len_comment()) > 48) {
+        n__unnamed15 = false;
+        m__unnamed15 = m__io->read_bytes(((len_entry() - 48) - len_comment()));
+    }
 }
 
 rekordbox_anlz_t::cue_extended_entry_t::~cue_extended_entry_t() {
+    if (!n_color_code) {
+    }
+    if (!n_color_red) {
+    }
+    if (!n_color_green) {
+    }
+    if (!n_color_blue) {
+    }
+    if (!n__unnamed15) {
+    }
 }
 
 rekordbox_anlz_t::vbr_tag_t::vbr_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {

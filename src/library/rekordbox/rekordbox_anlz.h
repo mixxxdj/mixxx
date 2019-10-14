@@ -462,10 +462,40 @@ public:
         uint32_t m_len_comment;
         std::string m_comment;
         uint8_t m_color_code;
+        bool n_color_code;
+
+    public:
+        bool _is_null_color_code() { color_code(); return n_color_code; };
+
+    private:
         uint8_t m_color_red;
+        bool n_color_red;
+
+    public:
+        bool _is_null_color_red() { color_red(); return n_color_red; };
+
+    private:
         uint8_t m_color_green;
+        bool n_color_green;
+
+    public:
+        bool _is_null_color_green() { color_green(); return n_color_green; };
+
+    private:
         uint8_t m_color_blue;
+        bool n_color_blue;
+
+    public:
+        bool _is_null_color_blue() { color_blue(); return n_color_blue; };
+
+    private:
         std::string m__unnamed15;
+        bool n__unnamed15;
+
+    public:
+        bool _is_null__unnamed15() { _unnamed15(); return n__unnamed15; };
+
+    private:
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::cue_extended_tag_t* m__parent;
 
