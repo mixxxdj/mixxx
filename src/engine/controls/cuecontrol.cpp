@@ -386,7 +386,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
     }
 
-    double introStart = m_pIntroStartPosition->get();
 
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
@@ -411,12 +410,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         }
         break;
     case SeekOnLoadMode::IntroStart:
-        if (introStart != kNoTrigger) {
-            seekExact(introStart);
-        } else {
-            seekExact(0.0);
+        {
+            double introStart = m_pIntroStartPosition->get();
+            if (introStart != kNoTrigger) {
+                seekExact(introStart);
+            } else {
+                seekExact(0.0);
+            }
+            break;
         }
-        break;
     default:
         seekExact(0.0);
         break;
