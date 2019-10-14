@@ -99,6 +99,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgAutoDJ::slotTransitionModeChanged);
     QString fadeModeTooltip = tr(
+    "AutoDJ Fade Modes\n"
+    "\n"
     "Full Intro + Outro:\n"
     "Play the full intro and outro. Use the intro or outro length as the\n"
     "crossfade time, whichever is shorter. If no intro or outro are marked,\n"
