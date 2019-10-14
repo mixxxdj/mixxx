@@ -110,7 +110,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     bool okay = false;
     m_iLabelFontSize = context.selectInt(node, "LabelFontSize", &okay);
     if (!okay) {
-        m_iLabelFontSize = 11;
+        m_iLabelFontSize = 10;
     }
 
     // Clear the background pixmap, if it exists.
