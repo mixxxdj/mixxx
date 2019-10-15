@@ -69,6 +69,23 @@
             <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
             <Effect>1</Effect>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </EffectName>
+          <EffectName>
+            <ObjectName>KnobLabel</ObjectName>
+            <Size>40f,12f</Size>
+            <Elide>right</Elide>
+            <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
+            <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
+            <Effect>1</Effect>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </EffectName>
         </Children>
         <Connection>

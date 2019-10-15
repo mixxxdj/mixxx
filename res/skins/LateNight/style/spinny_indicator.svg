@@ -1,1 +1,36 @@
-<svg id="svg2" width="100" height="100" version="1.1" xmlns="http://www.w3.org/2000/svg"><path id="path5574" d="m49.471 0.66992c-1.9143 0-3.4707 1.5564-3.4707 3.4707v34.059c0 1.9143 1.5564 3.4707 3.4707 3.4707h1.0586c1.9143 0 3.4707-1.5564 3.4707-3.4707v-34.059c0-1.9143-1.5564-3.4707-3.4707-3.4707z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/><path id="rect4544" d="m49.568 2.1094h0.86471c1.1515 0 2.0676 1.0929 2.0676 2.4665v33.188c0 1.3737-0.91612 2.4665-2.0676 2.4665h-0.86471c-1.1515 0-2.0676-1.0929-2.0676-2.4665v-33.188c0-1.3737 0.91612-2.4665 2.0676-2.4665z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#fff" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   height="100"
+   width="100"
+   id="svg2">
+  <metadata
+     id="metadata9">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs7" />
+  <path
+     style="color:#000000;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;dominant-baseline:auto;white-space:normal;shape-padding:0;isolation:auto;mix-blend-mode:normal;solid-color:#000000;color-rendering:auto;image-rendering:auto;shape-rendering:auto"
+     dominant-baseline="auto"
+     d="m 49.471,4.0067844 c -1.9143,0 -3.4707,1.5564 -3.4707,3.4707 l 0,30.7221356 c 0,1.9143 1.5564,3.4707 3.4707,3.4707 h 1.0586 c 1.9143,0 3.4707,-1.5564 3.4707,-3.4707 l 0,-30.7221356 c 0,-1.9143 -1.5564,-3.4707 -3.4707,-3.4707 z"
+     id="path5574" />
+  <path
+     style="color:#000000;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;dominant-baseline:auto;white-space:normal;shape-padding:0;isolation:auto;mix-blend-mode:normal;solid-color:#000000;fill:#ffffff;color-rendering:auto;image-rendering:auto;shape-rendering:auto"
+     dominant-baseline="auto"
+     d="m 49.568,5.4462644 h 0.86471 c 1.1515,0 2.0676,1.0929 2.0676,2.4665 l 0,29.8511356 c 0,1.3737 -0.91612,2.4665 -2.0676,2.4665 H 49.568 c -1.1515,0 -2.0676,-1.0929 -2.0676,-2.4665 l 0,-29.8511356 c 0,-1.3737 0.91612,-2.4665 2.0676,-2.4665 z"
+     id="rect4544" />
+</svg>

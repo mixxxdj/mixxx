@@ -12,7 +12,7 @@
     </State>
     <State>
       <Number>1</Number>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>.svg</Unpressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>_set.svg</Unpressed>
       <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_hotcue_<Variable name="number"/>_pressed.svg</Pressed>
     </State>
     <Connection>
