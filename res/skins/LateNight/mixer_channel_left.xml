@@ -83,8 +83,8 @@ vertical layout and a side-by-side layout for two-deck mode -->
 
               <SliderComposed>   <!-- Volume -->
                 <TooltipId>channel_volume</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
-                <Slider>slider_volume_deck.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_volume_deck.svg</Handle>
+                <Slider>skin:knobs_sliders/slider_volume_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,volume</ConfigKey>
@@ -113,39 +113,15 @@ vertical layout and a side-by-side layout for two-deck mode -->
               </WidgetGroup>
 
               <WidgetGroup>
-                <ObjectName>VUMeterBox</ObjectName>
+                <ObjectName>VuMeterChannel2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <StatusLight>
-                    <TooltipId>channel_PeakIndicator</TooltipId>
-                    <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-                    <PathBack>style/clipping_deck.png</PathBack>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                    </Connection>
-                  </StatusLight>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterChannel<Variable name="channum"/></ObjectName>
+                  </SingletonContainer>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup>
-                <ObjectName>VUMeterBox</ObjectName>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>style/volume_display_deck_over.png</PathVu>
-                    <PathBack>style/volume_display_deck.png</PathBack>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                    </Connection>
-                  </VuMeter>
-                </Children>
-              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Pfl button + VU Meter -->
         </Children>
