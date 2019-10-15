@@ -30,16 +30,16 @@
  * all the controls to the values obtained from SoundManager.
  */
 DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, UserSettingsPointer pConfig)
+                           PlayerManager* pPlayerManager, UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
           m_pPlayerManager(pPlayerManager),
-          m_pConfig(pConfig),
+          m_pSettings(pSettings),
+          m_config(pSoundManager),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
-          m_loading(false),
-          m_config(pSoundManager) {
+          m_loading(false) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -228,7 +228,7 @@ void DlgPrefSound::slotApply() {
     {
         ScopedWaitCursor cursor;
         m_pKeylockEngine->set(keylockComboBox->currentIndex());
-        m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+        m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
                        ConfigValue(keylockComboBox->currentIndex()));
 
         err = m_pSoundManager->setConfig(m_config);
@@ -414,12 +414,12 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     }
 
     // Default keylock is Rubberband.
-    int keylock_engine = m_pConfig->getValue(
+    int keylock_engine = m_pSettings->getValue(
             ConfigKey("[Master]", "keylock_engine"), 1);
     keylockComboBox->setCurrentIndex(keylock_engine);
 
     m_loading = false;
-    // DlgPrefSoundItem has it's own inhibit flag 
+    // DlgPrefSoundItem has it's own inhibit flag
     emit(loadPaths(m_config));
 }
 
