@@ -123,6 +123,7 @@ Variables:
                 <MarkerColor>#00FF00</MarkerColor>
                 <LabelTextColor>#ffffff</LabelTextColor>
                 <LabelBackgroundColor>#85000000</LabelBackgroundColor>
+                <ShowCueTimes>false</ShowCueTimes>
                 <DefaultMark>
                   <Align>bottom|right</Align>
                   <Color>#666666</Color>

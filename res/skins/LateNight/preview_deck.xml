@@ -133,6 +133,7 @@
                     <SignalLowColor>#E4C739</SignalLowColor>
                     <PlayPosColor>#00FF00</PlayPosColor>
                     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                    <ShowCueTimes>false</ShowCueTimes>
                     <DefaultMark>
                       <Align>bottom|right</Align>
                       <Color>#FF0000</Color>

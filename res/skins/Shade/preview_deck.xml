@@ -164,6 +164,7 @@
 												<SignalLowColor></SignalLowColor>
 												<SignalColor>#191F24</SignalColor>
 												<PlayPosColor>#00FF00</PlayPosColor>
+												<ShowCueTimes>false</ShowCueTimes>
 												<DefaultMark>
 													<Align>top</Align>
 													<Color>#FD0564</Color>
