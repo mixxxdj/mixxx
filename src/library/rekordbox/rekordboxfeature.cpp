@@ -22,11 +22,11 @@
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/file.h"
 #include "util/sandbox.h"
-#include "util/color/color.h"
 #include "waveform/waveform.h"
 
 #include "widget/wlibrary.h"
@@ -164,6 +164,10 @@ inline bool instanceof (const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
+QString toUnicode(std::string toConvert) {
+    return QTextCodec::codecForName("UTF-16BE")->toUnicode(QByteArray(toConvert.c_str(), toConvert.length()));
+}
+
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
 // https://github.com/Deep-Symmetry/crate-digger/commit/f09fa9fc097a2a428c43245ddd542ac1370c1adc
 // getText is needed because the strings in the PDB file "have a variety of obscure representations".
@@ -180,9 +184,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        QTextCodec* codec = QTextCodec::codecForName("UTF-16BE");
-        std::string utf16be = longUtf16beString->text();
-        return codec->toUnicode(QByteArray(utf16be.c_str(), utf16be.length()));
+        return toUnicode(longUtf16beString->text());
     }
 
     return QString();
@@ -687,42 +689,42 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
 
     // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
     switch (colorCode) {
-        case 38:
-        case 42:
-            pCue->setColor(Color::kPredefinedColorsSet.red);
-            break;
-        case 0:
-        case 14:
-        case 18:
-        case 22:
-        case 26:
-            pCue->setColor(Color::kPredefinedColorsSet.green);
-            break;
-        case 30:
-        case 32:
-            pCue->setColor(Color::kPredefinedColorsSet.yellow);
-            break;
-        case 1:
-        case 5:
-        case 62:
-            pCue->setColor(Color::kPredefinedColorsSet.blue);
-            break;
-        case 9:
-            pCue->setColor(Color::kPredefinedColorsSet.cyan);
-            break;
-        case 56:
-        case 60:
-            pCue->setColor(Color::kPredefinedColorsSet.magenta);
-            break;
-        case 45:
-        case 49:
-            pCue->setColor(Color::kPredefinedColorsSet.pink);
-            break;
-        default:
-            pCue->setColor(Color::kPredefinedColorsSet.noColor);
-            break;
+    case 38:
+    case 42:
+        pCue->setColor(Color::kPredefinedColorsSet.red);
+        break;
+    case 0:
+    case 14:
+    case 18:
+    case 22:
+    case 26:
+        pCue->setColor(Color::kPredefinedColorsSet.green);
+        break;
+    case 30:
+    case 32:
+        pCue->setColor(Color::kPredefinedColorsSet.yellow);
+        break;
+    case 1:
+    case 5:
+    case 62:
+        pCue->setColor(Color::kPredefinedColorsSet.blue);
+        break;
+    case 9:
+        pCue->setColor(Color::kPredefinedColorsSet.cyan);
+        break;
+    case 56:
+    case 60:
+        pCue->setColor(Color::kPredefinedColorsSet.magenta);
+        break;
+    case 45:
+    case 49:
+        pCue->setColor(Color::kPredefinedColorsSet.pink);
+        break;
+    default:
+        pCue->setColor(Color::kPredefinedColorsSet.noColor);
+        break;
     }
-}                    
+}
 
 void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
     if (!QFile(anlzPath).exists()) {
@@ -769,7 +771,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
 
             track->setBeats(pBeats);
-        } break;        
+        } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {
             if (ignoreBeatsAndLegacyCues) {
                 break;
@@ -808,7 +810,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 } break;
                 }
             }
-        } break;     
+        } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES_2: {
             rekordbox_anlz_t::cue_extended_tag_t* cuesExtendedTag = static_cast<rekordbox_anlz_t::cue_extended_tag_t*>((*section)->body());
 
@@ -827,7 +829,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         // As Mixxx can only have 1 saved cue point, use the first occurance of a memory cue relative to the start of the track
                         if (position < cueLoadPosition) {
                             cueLoadPosition = position;
-                            cueLoadComment = QString::fromStdString((*cueExtendedEntry)->comment());
+                            cueLoadComment = toUnicode((*cueExtendedEntry)->comment());
                         }
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
@@ -840,7 +842,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    setHotCue(track, position, static_cast<int>((*cueExtendedEntry)->hot_cue() - 1), QString::fromStdString((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()));
+                    setHotCue(track, position, static_cast<int>((*cueExtendedEntry)->hot_cue() - 1), toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()));
                 } break;
                 }
             }
