@@ -5,18 +5,19 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>MicRack</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+            </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">4</SetVariable>
           </Template>
             <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
+              <SizePolicy>min,min</SizePolicy>
               <MinimumSize>1,0</MinimumSize>
               <MaximumSize>20,</MaximumSize>
             </WidgetGroup>
@@ -24,7 +25,7 @@
             <SetVariable name="micnum">3</SetVariable>
           </Template>
             <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
+              <SizePolicy>min,min</SizePolicy>
               <MinimumSize>1,0</MinimumSize>
               <MaximumSize>20,</MaximumSize>
             </WidgetGroup>
@@ -32,7 +33,7 @@
             <SetVariable name="micnum">2</SetVariable>
           </Template>
             <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
+              <SizePolicy>min,min</SizePolicy>
               <MinimumSize>1,0</MinimumSize>
               <MaximumSize>20,</MaximumSize>
             </WidgetGroup>
@@ -76,13 +77,13 @@
       <WidgetGroup><!-- Aux -->
         <ObjectName>AuxRack</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">4</SetVariable>
           </Template>
             <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
+              <SizePolicy>min,min</SizePolicy>
               <MinimumSize>1,0</MinimumSize>
               <MaximumSize>20,</MaximumSize>
             </WidgetGroup>
@@ -90,7 +91,7 @@
             <SetVariable name="auxnum">3</SetVariable>
           </Template>
             <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
+              <SizePolicy>min,min</SizePolicy>
               <MinimumSize>1,0</MinimumSize>
               <MaximumSize>20,</MaximumSize>
             </WidgetGroup>
@@ -98,13 +99,16 @@
             <SetVariable name="auxnum">2</SetVariable>
           </Template>
             <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
+              <SizePolicy>min,min</SizePolicy>
               <MinimumSize>1,0</MinimumSize>
               <MaximumSize>20,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">1</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+            </WidgetGroup>
         </Children>
       </WidgetGroup><!-- Aux -->
 

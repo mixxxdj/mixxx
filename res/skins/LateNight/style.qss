@@ -1162,7 +1162,7 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #MicAuxInterior {
-    padding: 2px 2px 0px 2px;
+    padding: 2px 1px 0px 1px;
     border-left: 1px solid #0a0a0a;
     background-color: transparent;
     }
@@ -1217,12 +1217,12 @@ WBeatSpinBox,
 
 #MicAuxGainPFlContainer {
   qproperty-layoutAlignment: 'AlignCenter';
-  padding: 0px 0px 0px 3px;
+  padding: 0px 0px 0px 5px;
   margin: 0px;
 }
 
 #MicAuxFxButtons {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 2px 1px;
 }
 
@@ -1232,7 +1232,7 @@ WBeatSpinBox,
 
 #MicAuxVUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 1px 1px 1px 2px;
+  padding: 1px 1px 1px 1px;
 }
 /******************** /Mic Aux ********************/
 

@@ -109,13 +109,13 @@
                 <Children>
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
@@ -132,13 +132,13 @@
                 <Children>
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">4</SetVariable>
                   </Template>

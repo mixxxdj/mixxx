@@ -16,7 +16,9 @@ Variables:
   <PushButton>
     <TooltipId>EffectUnit_<Variable name="Type"/>_enabled</TooltipId>
     <ObjectName>FxAssignButton</ObjectName>
-    <Size><Variable name="Size"/></Size>
+    <MinimumSize><Variable name="MinWidth"/>,22</MinimumSize>
+    <MaximumSize><Variable name="MaxWidth"/>,22</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
