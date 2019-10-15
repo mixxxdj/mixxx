@@ -1,7 +1,6 @@
 <Template>
   <WidgetGroup>
     <Size>243f,59f</Size>
-    <Style>QGroupBox { border: 0px solid red;} QWidget { margin: 0; padding: 0; }</Style>
     <Children>
         <!--
       **********************************************
@@ -10,7 +9,6 @@
       -->
       <PushButton>
         <TooltipId></TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -30,7 +28,6 @@
 
       <PushButton>
         <TooltipId>microphone_talkover</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -52,7 +49,6 @@
 
       <PushButton>
         <TooltipId>mute</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -78,7 +74,6 @@
       -->
       <PushButton>
         <TooltipId>show_samplers</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -98,7 +93,6 @@
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -126,7 +120,6 @@
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -154,7 +147,6 @@
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -182,7 +174,6 @@
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -234,7 +225,6 @@
 
       <PushButton>
         <TooltipId>beatjump_forward</TooltipId>
-        <Style></Style>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -253,7 +243,6 @@
       </PushButton>
       <PushButton>
         <TooltipId>beatjump_backward</TooltipId>
-        <Style></Style>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -278,7 +267,6 @@
       -->
       <PushButton>
         <TooltipId>reverse</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <State>
@@ -311,7 +299,6 @@
       -->
 
       <PushButton>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -336,7 +323,6 @@
       -->
       <PushButton>
         <TooltipId>beatloop_activate</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -368,7 +354,6 @@
       </PushButton>
       <PushButton>
         <TooltipId>reloop_toggle</TooltipId>
-        <Style></Style>
         <Pos>170,14</Pos>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -402,7 +387,6 @@
 
       <PushButton>
         <TooltipId>loop_halve</TooltipId>
-        <Style></Style>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -418,7 +402,6 @@
       </PushButton>
       <PushButton>
         <TooltipId>loop_double</TooltipId>
-        <Style></Style>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -492,7 +475,6 @@
           <PushButton>
             <TooltipId>intro_start</TooltipId>
             <Pos>0,0</Pos>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -526,7 +508,6 @@
           <PushButton>
             <TooltipId>intro_end</TooltipId>
             <Pos>21,0</Pos>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -560,7 +541,6 @@
           <PushButton>
             <TooltipId>outro_start</TooltipId>
             <Pos>0,21</Pos>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -594,7 +574,6 @@
           <PushButton>
             <TooltipId>outro_end</TooltipId>
             <Pos>21,21</Pos>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
