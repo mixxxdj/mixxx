@@ -55,6 +55,7 @@ WOverview::WOverview(
         m_pConfig(pConfig),
         m_endOfTrack(false),
         m_pCueMenu(std::make_unique<CueMenu>(this)),
+        m_bShowCueTimes(true),
         m_iPosSeconds(0),
         m_iPos(0),
         m_pHoveredMark(nullptr),
@@ -181,6 +182,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         m_orientation = Qt::Horizontal;
     }
+
+    m_bShowCueTimes = context.selectBool(node, "ShowCueTimes", true);
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
@@ -955,9 +958,12 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                 continue;
             }
         }
-        if (pMark->m_label.intersects(m_cuePositionLabel)
-                || pMark->m_label.intersects(m_cueTimeDistanceLabel)
-                || pMark->m_label.intersects(m_timeRulerPositionLabel)
+        if (m_bShowCueTimes &&
+                (pMark->m_label.intersects(m_cuePositionLabel)
+                || pMark->m_label.intersects(m_cueTimeDistanceLabel))) {
+            continue;
+        }
+        if (pMark->m_label.intersects(m_timeRulerPositionLabel)
                 || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
             continue;
         }
@@ -965,8 +971,10 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
         pMark->m_label.draw(pPainter);
     }
 
-    m_cuePositionLabel.draw(pPainter);
-    m_cueTimeDistanceLabel.draw(pPainter);
+    if (m_bShowCueTimes) {
+        m_cuePositionLabel.draw(pPainter);
+        m_cueTimeDistanceLabel.draw(pPainter);
+    }
 
     // draw duration of WaveformMarkRanges
     for (auto&& markRange : m_markRanges) {

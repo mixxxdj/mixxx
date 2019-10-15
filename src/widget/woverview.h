@@ -145,6 +145,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     ConstWaveformPointer m_pWaveform;
 
     std::unique_ptr<CueMenu> m_pCueMenu;
+    bool m_bShowCueTimes;
 
     int m_iPosSeconds;
     // Internal storage of slider position in pixels
