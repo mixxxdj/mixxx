@@ -617,7 +617,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     if (m_eState == ADJ_IDLE) {
-        if (!thisDeckPlaying && thisPlayPosition < 1) {
+        if (!thisDeckPlaying) {
             // this is a cueing seek, recalculate the transition, from the
             // new position.
             // This can be our own seek to startPos or a random seek by a user.
@@ -640,6 +640,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         if (m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 if (!otherDeckPlaying) {
+                    // Re-cue the track if the user has seeked it to the very end
+                    if (otherDeck.playPosition() >= 1.0) {
+                        otherDeck.setPlayPosition(otherDeck.startPos);
+                    }
                     otherDeck.play();
                 }
 
@@ -834,10 +838,10 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
     // example to adjust the intro/outro cues, and lets the deck play until the
     // end, seek back to the start point instead of keeping the deck stopped at
     // the end.
-    if (!playing && thisDeck->playPosition() == 1.0 && !thisDeck->isFromDeck) {
-        if (thisDeck->startPos == kKeepPosition) {
-            calculateTransition(getOtherDeck(thisDeck), thisDeck, true);
-        }
+    if (!playing && thisDeck->playPosition() >= 1.0 && !thisDeck->isFromDeck) {
+        // Deck has stopped at the end. Recalculate the transition, because
+        // it has been done from a now irrelevant previous position.
+        calculateTransition(getOtherDeck(thisDeck), thisDeck, true);
         thisDeck->setPlayPosition(thisDeck->startPos);
     }
 }
@@ -995,7 +999,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    //qDebug() << "player" << pAttributes->group << "PlayChanged(" << playing << ")";
+    qDebug() << "player" << pFromDeck->group << "calculateTransition()";
 
     // We require ADJ_IDLE to prevent changing the thresholds in the middle of a
     // fade.
@@ -1036,7 +1040,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double outroLength = outroEnd - outroStart;
 
     double introStart;
-    if (seekToStartPoint) {
+    if (seekToStartPoint || pToDeck->playPosition() >= 1) {
+        // pToDeck->playPosition() >= 1 happens when the user has seeked
+        // or played the track to the very end and forgets about it.
+        // In this case we recue the track just before the transition.
         introStart = getIntroStartPosition(pToDeck);
     } else {
         introStart = pToDeck->playPosition() * toTrackDuration;
@@ -1141,13 +1148,37 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
         break;
     case TransitionMode::FixedSkipSilence:
-        useFixedFadeTime(pFromDeck, pToDeck,
-                getLastSoundPosition(pFromDeck),
-                getFirstSoundPosition(pToDeck));
+        {
+            double startPoint;
+            if (seekToStartPoint || pToDeck->playPosition() >= 1) {
+                // pToDeck->playPosition() >= 1 happens when the user has seeked
+                // or played the track to the very end and forgets about it.
+                // In this case we recue the track just before the transition.
+                startPoint = getFirstSoundPosition(pToDeck);
+            } else {
+                startPoint = pToDeck->playPosition() * toTrackDuration;
+            }
+            useFixedFadeTime(pFromDeck, pToDeck,
+                    getLastSoundPosition(pFromDeck),
+                    startPoint);
+        }
         break;
     case TransitionMode::FixedFullTrack:
     default:
-        useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, 0);
+        {
+            double startPoint;
+            if (seekToStartPoint || pToDeck->playPosition() >= 1) {
+                // pToDeck->playPosition() >= 0 happens when the user has seeked
+                // or played the track to the very end and forgets about it.
+                // In this case we recue the track just before the transition.
+                startPoint = 0;
+            } else {
+                startPoint = pToDeck->playPosition() * toTrackDuration;
+            }
+            useFixedFadeTime(pFromDeck, pToDeck,
+                    getLastSoundPosition(pFromDeck),
+                    startPoint);
+        }
     }
 
     // These are expected to be a fraction of the track length.
@@ -1180,6 +1211,7 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
                 end = pToDeck->duration();
                 VERIFY_OR_DEBUG_ASSERT(end > startPoint) {
                     // as last resort move start point
+                    // The caller makes sures that this never happens  
                     startPoint = pToDeck->duration() - 1;
                 }
             }
