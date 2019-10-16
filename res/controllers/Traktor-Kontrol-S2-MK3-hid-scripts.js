@@ -1,6 +1,10 @@
-/****************************************************
- Traktor Kontrol S2 MK3 HID controller script v1.01
-****************************************************/
+/************************************************************************************/
+/*   Traktor Kontrol S2 MK3 HID controller script v1.00                             */
+/*   Last modification: October 2019                                                */
+/*   Author: Michael Schmidt                                                        */
+/*   https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s2_mk3  */
+/*                                                                                  */
+/************************************************************************************/
 
 var TraktorS2MK3 = {};
 
@@ -204,6 +208,7 @@ TraktorS2MK3.registerInputPackets = function () {
 }
 
 TraktorS2MK3.registerInputJog = function (message, group, name, offset, bitmask, callback) {
+    // Jog wheels have 4 byte input
     message.addControl(group, name, offset, "I", bitmask);
     message.setCallback(group, name, callback);
 }
@@ -386,7 +391,6 @@ TraktorS2MK3.selectTrackHandler = function (field) {
 }
 
 TraktorS2MK3.loadTrackHandler = function (field) {
-    HIDDebug("loadTrackHandler: " + field.group + " - " + field.value);
     if (field.value === 0) {
         return;
     }
@@ -401,7 +405,17 @@ TraktorS2MK3.loadTrackHandler = function (field) {
 }
 
 TraktorS2MK3.addTrackHandler = function (field) {
-    // TODO: Not implemented yet
+    TraktorS2MK3.outputHandler(field.value, field.group, "addTrack");
+
+    if (field.value === 0) {
+        return;
+    }
+
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue("[Library]", "AutoDjAddTop", field.value);
+    } else {
+        engine.setValue("[Library]", "AutoDjAddBottom", field.value);
+    }
 }
 
 TraktorS2MK3.maximizeLibraryHandler = function (field) {
@@ -609,7 +623,13 @@ TraktorS2MK3.flxHandler = function (field) {
 }
 
 TraktorS2MK3.gridHandler = function (field) {
-    // TODO: Not implemented yet
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "beats_translate_match_alignment", field.value);
+    } else {
+        engine.setValue(field.group, "beats_translate_curpos", field.value);
+    }
+
+    TraktorS2MK3.outputHandler(field.value, field.group, "grid");
 }
 
 TraktorS2MK3.registerOutputPackets = function () {
@@ -761,17 +781,14 @@ TraktorS2MK3.peakOutputHandler = function (value, group, key) {
 }
 
 TraktorS2MK3.outputHandler = function (value, group, key) {
-    HIDDebug("outputHandler.value: " + value);
-    var ledValue;
+    // Custom value for multi-colored LEDs
+    var ledValue = value;
     if (value === 0 || value === false) {
         // Off value
         ledValue = 0x7C;
     } else if (value === 1 || value === true) {
         // On value
         ledValue = 0x7E;
-    } else {
-        // Custom value for multi-colored LEDs
-        ledValue = value;
     }
 
     TraktorS2MK3.controller.setOutput(group, key, ledValue, true);
@@ -892,7 +909,7 @@ TraktorS2MK3.lightDeck = function () {
 TraktorS2MK3.messageCallback = function (packet, data) {
     for (name in data) {
         field = data[name];
-        HIDDebug("TraktorS2MK3: messageCallback - field: " + name);
+        HIDDebug("TraktorS2MK3.messageCallback() - field: " + name);
         TraktorS2MK3.controller.processButton(field);
     }
 }
@@ -948,7 +965,6 @@ TraktorS2MK3.toBytes = function (data_string) {
 
 /* Helper function to send a binary string to the controller */
 TraktorS2MK3.rawOutput = function (data_string) {
-    HIDDebug("TraktorS2MK3: Send raw output to controller ...");
     var data = TraktorS2MK3.toBytes(data_string);
     controller.send(data, data.length, 0x80);
 }
