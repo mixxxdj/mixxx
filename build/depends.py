@@ -708,6 +708,11 @@ class PortAudioRingBuffer(Dependence):
     def sources(self, build):
         return ['lib/portaudio/pa_ringbuffer.c']
 
+# https://github.com/rigtorp/SPSCQueue
+class RigtorpSPSCQueue(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/rigtorp/SPSCQueue/include')
+
 class Reverb(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/reverb')
@@ -1573,7 +1578,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, Kaitai, MP3GuessEnc]
+                QueenMaryDsp, Kaitai, MP3GuessEnc, RigtorpSPSCQueue]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

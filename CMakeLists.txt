@@ -1295,6 +1295,10 @@ if(WIN32 AND NOT STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC PROTOBUF_USE_DLLS)
 endif()
 
+# Rigtorp SPSC Queue
+# https://github.com/rigtorp/SPSCQueue
+target_include_directories(mixxx-lib PUBLIC lib/rigtorp/SPSCQueue/include)
+
 # Qt
 find_package(Qt5
   COMPONENTS
