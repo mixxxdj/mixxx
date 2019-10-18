@@ -1407,6 +1407,11 @@ class MixxxCore(Feature):
                 # constructor. This affects both Qt 5.12 and Mixxx.
                 build.env.Append(CXXFLAGS='-Wno-deprecated-copy')
 
+                # Disable warnings that extended alignment operator new (C++17)
+                # is not supported.
+                # TODO: Remove after switching to C++17
+                build.env.Append(CXXFLAGS='-Wno-aligned-new')
+
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override
                 # keyword until Qt fixes qt_metacall.
