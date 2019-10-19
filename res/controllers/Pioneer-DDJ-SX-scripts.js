@@ -114,6 +114,7 @@ PioneerDDJSX.chFaderStart = [null, null, null, null];
 PioneerDDJSX.toggledBrake = [false, false, false, false];
 PioneerDDJSX.scratchMode = [true, true, true, true];
 PioneerDDJSX.wheelLedsBlinkStatus = [0, 0, 0, 0];
+PioneerDDJSX.wheelLedsPosition = [0, 0, 0, 0];
 PioneerDDJSX.setUpSpeedSliderRange = [0.08, 0.08, 0.08, 0.08];
 
 // PAD mode storage:
@@ -1846,7 +1847,11 @@ PioneerDDJSX.wheelLeds = function(value, group, control) {
         }
         PioneerDDJSX.wheelLedsBlinkStatus[deck]++;
     }
-    PioneerDDJSX.wheelLedControl(group, wheelPos);
+    wheelPos = parseInt(wheelPos);
+    if(PioneerDDJSX.wheelLedsPosition[deck] !== wheelPos){
+      PioneerDDJSX.wheelLedControl(group, wheelPos);
+    }
+    PioneerDDJSX.wheelLedsPosition[deck] = wheelPos;
 };
 
 PioneerDDJSX.cueLed = function(value, group, control) {
