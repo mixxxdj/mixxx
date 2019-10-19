@@ -290,6 +290,7 @@ unsigned char AudioPath::minChannelsForType(AudioPathType type) {
 
 // static
 unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
+    Q_UNUSED(type);
     return 2;
 }
 
