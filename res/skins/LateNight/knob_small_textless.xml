@@ -13,8 +13,8 @@
       <KnobComposed>
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <Size><Variable name="Size"/></Size>
-        <Knob>knob_small_indicator.svg</Knob>
-        <BackPath>knob_small_bg.svg</BackPath>
+        <Knob>skin:knobs_sliders/knob_small_indicator.svg</Knob>
+        <BackPath>skin:knobs_sliders/knob_small_bg.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <KnobCenterYOffset>1.602</KnobCenterYOffset>

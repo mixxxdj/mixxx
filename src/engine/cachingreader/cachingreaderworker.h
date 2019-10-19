@@ -146,13 +146,6 @@ class CachingReaderWorker : public EngineWorker {
     // before conversion to a stereo signal.
     mixxx::SampleBuffer m_tempReadBuffer;
 
-    // The maximum readable frame index of the AudioSource. Might
-    // be adjusted when decoding errors occur to prevent reading
-    // the same chunk(s) over and over again.
-    // This frame index references the frame that follows the
-    // last frame with readable sample data.
-    mixxx::IndexRange m_readableFrameIndexRange;
-
     QAtomicInt m_stop;
 };
 
