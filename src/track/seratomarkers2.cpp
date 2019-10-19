@@ -12,8 +12,13 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
         return nullptr;
     }
 
-    quint8 index(data.at(1));
-    quint32 position(qFromBigEndian<quint32>(data.mid(2, 6)));
+    const quint8 index = data.at(1);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    const auto position = qFromBigEndian<quint32>(data.mid(2, 6));
+#else
+    const auto position = qFromBigEndian<quint32>(
+            reinterpret_cast<const uchar*>(data.mid(2, 6).constData()));
+#endif
 
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
@@ -74,15 +79,15 @@ quint32 SeratoMarkers2CueEntry::length() const {
 }
 
 bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData) {
-    if (outerData.left(2).compare("\x01\x01") != 0) {
-        qDebug() << "Unknown outer Serato Markers2 tag version";
+    if (!outerData.startsWith("\x01\x01")) {
+        qWarning() << "Unknown outer Serato Markers2 tag version";
         return false;
     }
 
-    QByteArray data(QByteArray::fromBase64(outerData.mid(2)));
+    const auto data = QByteArray::fromBase64(outerData.mid(2));
 
-    if (data.left(2).compare("\x01\x01") != 0) {
-        qDebug() << "Unknown inner Serato Markers2 tag version";
+    if (!data.startsWith("\x01\x01")) {
+        qWarning() << "Unknown inner Serato Markers2 tag version";
         return false;
     }
 
@@ -96,10 +101,15 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
         offset = entryTypeEndPos + 1;
 
         // Entry Size
-        quint32 entrySize(qFromBigEndian<quint32>(data.mid(offset, 4)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        auto entrySize = qFromBigEndian<quint32>(data.mid(offset, 4));
+#else
+        auto entrySize = qFromBigEndian<quint32>(
+                reinterpret_cast<const uchar*>(data.mid(offset, 4).constData()));
+#endif
         offset += 4;
 
-        QByteArray entryData(data.mid(offset, entrySize));
+        QByteArray entryData = data.mid(offset, entrySize);
         offset += entrySize;
 
         // Entry Content
