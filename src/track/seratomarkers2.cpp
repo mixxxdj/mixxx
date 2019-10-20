@@ -32,6 +32,46 @@ quint32 SeratoMarkers2BpmlockEntry::length() const {
     return 1;
 }
 
+SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray &data)
+{
+    if (data.length() != 4) {
+        return nullptr;
+    }
+
+    // Unknown field, make sure it's 0 in case it's a
+    // null-terminated string
+    if (data.at(0) != '\x00') {
+        return nullptr;
+    }
+
+    QColor color(static_cast<quint8>(data.at(1)),
+                 static_cast<quint8>(data.at(2)),
+                 static_cast<quint8>(data.at(3)));
+
+    SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
+    qDebug() << "SeratoMarkers2ColorEntry" << *pEntry;
+    return SeratoMarkers2EntryPointer(pEntry);
+}
+
+QByteArray SeratoMarkers2ColorEntry::data() const {
+    QByteArray data;
+    data.resize(length());
+
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream << (quint8)0
+           << (quint8)m_color.red()
+           << (quint8)m_color.green()
+           << (quint8)m_color.blue();
+
+    return data;
+}
+
+quint32 SeratoMarkers2ColorEntry::length() const {
+    return 4;
+}
+
 SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
 {
     if (data.length() < 13) {
@@ -148,6 +188,8 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
         SeratoMarkers2EntryPointer pEntry;
         if(entryType.compare("BPMLOCK") == 0) {
             pEntry = SeratoMarkers2BpmlockEntry::parse(entryData);
+        } else if(entryType.compare("COLOR") == 0) {
+            pEntry = SeratoMarkers2ColorEntry::parse(entryData);
         } else if(entryType.compare("CUE") == 0) {
             pEntry = SeratoMarkers2CueEntry::parse(entryData);
         } else {

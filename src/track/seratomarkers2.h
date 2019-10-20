@@ -113,6 +113,55 @@ QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
     return dbg << "locked =" << arg.isLocked();
 }
 
+class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
+public:
+    SeratoMarkers2ColorEntry(QColor color)
+        : m_color(color) {
+    }
+
+    SeratoMarkers2ColorEntry()
+        : m_color(QColor()) {
+    }
+
+    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+
+    QString type() const override {
+        return "COLOR";
+    }
+
+    QByteArray data() const override;
+
+    QColor getColor() const {
+        return m_color;
+    }
+
+    void setColor(QColor color) {
+        m_color = color;
+    }
+
+    quint32 length() const override;
+
+private:
+    QColor m_color;
+};
+
+inline
+bool operator==(const SeratoMarkers2ColorEntry& lhs,
+                const SeratoMarkers2ColorEntry& rhs) {
+    return (lhs.getColor() == rhs.getColor());
+}
+
+inline
+bool operator!=(const SeratoMarkers2ColorEntry& lhs,
+                const SeratoMarkers2ColorEntry& rhs) {
+    return !(lhs == rhs);
+}
+
+inline
+QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
+    return dbg << "color =" << arg.getColor();
+}
+
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
 public:
     SeratoMarkers2CueEntry(quint8 index, quint32 position, QColor color,
