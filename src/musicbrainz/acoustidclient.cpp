@@ -23,7 +23,7 @@ namespace {
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
-const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
+const QString ACOUSTID_URL = "https://api.acoustid.org/v2/lookup";
 constexpr int kDefaultTimeout = 5000; // msec
 
 } // anonymous namespace
@@ -113,10 +113,10 @@ void AcoustidClient::requestFinished() {
             if (reader.readNextStartElement()) {
                 const QStringRef name = reader.name();
                 if (name == "message") {
-                    DEBUG_ASSERT(name.isEmpty()); // fail if we have duplicated message elements. 
+                    DEBUG_ASSERT(name.isEmpty()); // fail if we have duplicated message elements.
                     message = reader.readElementText();
                 } else if (name == "code") {
-                    DEBUG_ASSERT(code.isEmpty()); // fail if we have duplicated code elements. 
+                    DEBUG_ASSERT(code.isEmpty()); // fail if we have duplicated code elements.
                     code = reader.readElementText();
                 }
             }
