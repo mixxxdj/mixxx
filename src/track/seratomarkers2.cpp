@@ -4,6 +4,34 @@
 
 namespace mixxx {
 
+SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray &data)
+{
+    if (data.length() != 1) {
+        return nullptr;
+    }
+
+    const bool locked = data.at(0);
+    SeratoMarkers2BpmlockEntry* pEntry = new SeratoMarkers2BpmlockEntry(locked);
+    qDebug() << "SeratoMarkers2BpmlockEntry" << *pEntry;
+    return SeratoMarkers2EntryPointer(pEntry);
+}
+
+QByteArray SeratoMarkers2BpmlockEntry::data() const {
+    QByteArray data;
+    data.resize(length());
+
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream << (quint8)m_locked;
+
+    return data;
+}
+
+quint32 SeratoMarkers2BpmlockEntry::length() const {
+    return 1;
+}
+
 SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
 {
     if (data.length() < 13) {
@@ -118,7 +146,9 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 
         // Entry Content
         SeratoMarkers2EntryPointer pEntry;
-        if(entryType.compare("CUE") == 0) {
+        if(entryType.compare("BPMLOCK") == 0) {
+            pEntry = SeratoMarkers2BpmlockEntry::parse(entryData);
+        } else if(entryType.compare("CUE") == 0) {
             pEntry = SeratoMarkers2CueEntry::parse(entryData);
         } else {
             pEntry = SeratoMarkers2EntryPointer(new SeratoMarkers2UnknownEntry(entryType, entryData));

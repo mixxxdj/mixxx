@@ -64,6 +64,55 @@ private:
     QByteArray m_data;
 };
 
+class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
+public:
+    SeratoMarkers2BpmlockEntry(bool locked)
+        : m_locked(locked) {
+    }
+
+    SeratoMarkers2BpmlockEntry()
+        : m_locked(false) {
+    }
+
+    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+
+    QString type() const override {
+        return "BPMLOCK";
+    }
+
+    QByteArray data() const override;
+
+    bool isLocked() const  {
+        return m_locked;
+    }
+
+    void setLocked(bool locked) {
+        m_locked = locked;
+    }
+
+    quint32 length() const override;
+
+private:
+    bool m_locked;
+};
+
+inline
+bool operator==(const SeratoMarkers2BpmlockEntry& lhs,
+                const SeratoMarkers2BpmlockEntry& rhs) {
+    return (lhs.isLocked() == rhs.isLocked());
+}
+
+inline
+bool operator!=(const SeratoMarkers2BpmlockEntry& lhs,
+                const SeratoMarkers2BpmlockEntry& rhs) {
+    return !(lhs == rhs);
+}
+
+inline
+QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
+    return dbg << "locked =" << arg.isLocked();
+}
+
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
 public:
     SeratoMarkers2CueEntry(quint8 index, quint32 position, QColor color,
