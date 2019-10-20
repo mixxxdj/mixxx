@@ -6,6 +6,10 @@ namespace mixxx {
 
 SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
 {
+    if (data.length() < 13) {
+        return nullptr;
+    }
+
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
     if (data.at(0) != '\x00') {
