@@ -150,6 +150,90 @@ quint32 SeratoMarkers2CueEntry::length() const {
     return 13 + m_label.length();
 }
 
+SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data)
+{
+    if (data.length() < 21) {
+        return nullptr;
+    }
+
+    // Unknown field, make sure it's 0 in case it's a
+    // null-terminated string
+    if (data.at(0) != '\x00') {
+        return nullptr;
+    }
+
+    const quint8 index = data.at(1);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    const auto startposition = qFromBigEndian<quint32>(data.mid(2, 6));
+    const auto endposition = qFromBigEndian<quint32>(data.mid(6, 10));
+#else
+    const auto startposition = qFromBigEndian<quint32>(
+            reinterpret_cast<const uchar*>(data.mid(2, 6).constData()));
+    const auto endposition = qFromBigEndian<quint32>(
+            reinterpret_cast<const uchar*>(data.mid(6, 10).constData()));
+#endif
+    // Unknown field, make sure it contains the expected "default" value
+    if (data.at(10) != '\xff' &&
+        data.at(11) != '\xff' &&
+        data.at(12) != '\xff' &&
+        data.at(13) != '\xff' &&
+        data.at(14) != '\x00' &&
+        data.at(15) != '\x27' &&
+        data.at(16) != '\xaa' &&
+        data.at(17) != '\xe1') {
+        return nullptr;
+    }
+
+    // Unknown field, make sure it's 0 in case it's a
+    // null-terminated string
+    if (data.at(18) != '\x00') {
+        return nullptr;
+    }
+
+    const bool locked = data.at(19);
+
+    int labelEndPos = data.indexOf('\x00', 20);
+    if (labelEndPos < 0) {
+        return nullptr;
+    }
+    QString label(data.mid(20, labelEndPos - 20));
+
+    if (data.length() > labelEndPos + 1) {
+        return nullptr;
+    }
+
+    SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(index, startposition, endposition, locked, label);
+    qDebug() << "SeratoMarkers2LoopEntry" << *pEntry;
+    return SeratoMarkers2EntryPointer(pEntry);
+}
+
+QByteArray SeratoMarkers2LoopEntry::data() const {
+    QByteArray data;
+    data.resize(length());
+
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream << (quint8)0
+           << m_index
+           << m_startposition
+           << m_endposition;
+
+    stream.writeRawData("\xff\xff\xff\xff\x00\x27\xaa\xe1", 8);
+
+    stream << (quint8)0
+           << (quint8)m_locked;
+
+    QByteArray labelData = m_label.toUtf8();
+    stream.writeRawData(labelData.constData(), labelData.length());
+
+    return data;
+}
+
+quint32 SeratoMarkers2LoopEntry::length() const {
+    return 21 + m_label.length();
+}
+
 bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData) {
     if (!outerData.startsWith("\x01\x01")) {
         qWarning() << "Unknown outer Serato Markers2 tag version";
@@ -192,6 +276,8 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
             pEntry = SeratoMarkers2ColorEntry::parse(entryData);
         } else if(entryType.compare("CUE") == 0) {
             pEntry = SeratoMarkers2CueEntry::parse(entryData);
+        } else if(entryType.compare("LOOP") == 0) {
+            pEntry = SeratoMarkers2LoopEntry::parse(entryData);
         } else {
             pEntry = SeratoMarkers2EntryPointer(new SeratoMarkers2UnknownEntry(entryType, entryData));
             qDebug() << "SeratoMarkers2UnknownEntry" << *pEntry;

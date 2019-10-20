@@ -251,6 +251,109 @@ QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
                << "label =" << arg.getLabel();
 }
 
+class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
+public:
+    SeratoMarkers2LoopEntry(quint8 index, quint32 startposition,
+            quint32 endposition, bool locked,
+            QString label)
+        : m_index(index)
+        , m_startposition(startposition)
+        , m_endposition(endposition)
+        , m_locked(locked)
+        , m_label(label) {
+    }
+
+    SeratoMarkers2LoopEntry()
+        : m_index(0)
+        , m_startposition(0)
+        , m_endposition(0)
+        , m_locked(false)
+        , m_label(QString("")) {
+    }
+
+    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+
+    QString type() const override {
+        return "LOOP";
+    }
+
+    QByteArray data() const override;
+
+    quint8 getIndex() const  {
+        return m_index;
+    }
+
+    void setIndex(quint8 index) {
+        m_index = index;
+    }
+
+    quint32 getStartPosition() const {
+        return m_startposition;
+    }
+
+    void setStartPosition(quint32 startposition) {
+        m_startposition = startposition;
+    }
+
+    quint32 getEndPosition() const {
+        return m_endposition;
+    }
+
+    void setEndPosition(quint32 endposition) {
+        m_endposition = endposition;
+    }
+
+    bool isLocked() const {
+        return m_locked;
+    }
+
+    void setLocked(bool locked) {
+        m_locked = locked;
+    }
+
+    QString getLabel() const  {
+        return m_label;
+    }
+
+    void setLabel(QString label) {
+        m_label = label;
+    }
+
+    quint32 length() const override;
+
+private:
+    quint8 m_index;
+    quint32 m_startposition;
+    quint32 m_endposition;
+    bool m_locked;
+    QString m_label;
+};
+
+inline
+bool operator==(const SeratoMarkers2LoopEntry& lhs,
+                const SeratoMarkers2LoopEntry& rhs) {
+    return (lhs.getIndex() == rhs.getIndex()) &&
+           (lhs.getStartPosition() == rhs.getStartPosition()) &&
+           (lhs.getEndPosition() == rhs.getEndPosition()) &&
+           (lhs.isLocked() == rhs.isLocked()) &&
+           (lhs.getLabel() == rhs.getLabel());
+}
+
+inline
+bool operator!=(const SeratoMarkers2LoopEntry& lhs,
+                const SeratoMarkers2LoopEntry& rhs) {
+    return !(lhs == rhs);
+}
+
+inline
+QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
+    return dbg << "index =" << arg.getIndex() << "/"
+               << "startposition =" << arg.getStartPosition() << "/"
+               << "endposition =" << arg.getEndPosition() << "/"
+               << "locked =" << arg.isLocked() << "/"
+               << "label =" << arg.getLabel();
+}
+
 // DTO for storing information from the SeratoMarkers2 tags used by the Serato
 // DJ Pro software.
 //
