@@ -1,18 +1,25 @@
-/************************************************************************************/
-/*   Traktor Kontrol S2 MK3 HID controller script v1.00                             */
-/*   Last modification: October 2019                                                */
-/*   Author: Michael Schmidt                                                        */
-/*   https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s2_mk3  */
-/*                                                                                  */
-/************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                                          //
+///////////////////////////////////////////////////////////////////////////////////
+/* global engine                                                                 */
+/* global HIDDebug                                                               */
+/* global HIDPacket                                                              */
+/* global HIDController                                                          */
+/* jshint -W016                                                                  */
+///////////////////////////////////////////////////////////////////////////////////
+/*                                                                               */
+/* Traktor Kontrol S2 MK3 HID controller script v1.00                            */
+/* Last modification: October 2019                                               */
+/* Author: Michael Schmidt                                                       */
+/* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s2_mk3 */
+/*                                                                               */
+///////////////////////////////////////////////////////////////////////////////////
 
-var TraktorS2MK3 = {};
-
-TraktorS2MK3 = new function () {
+TraktorS2MK3 = function () {
     this.controller = new HIDController();
     this.shiftPressed = { "[Channel1]": false, "[Channel2]": false };
     this.browseState = { "[Channel1]": 0, "[Channel2]": 0 };
-    this.loopSizeState = { "[Channel1]": 0, "[Channel1]": 0 };
+    this.loopSizeState = { "[Channel1]": 0, "[Channel2]": 0 };
     this.beatjumpState = { "[Channel1]": 0, "[Channel2]": 0 };
     this.fxButtonState = { 1: false, 2: false, 3: false, 4: false };
     this.padModeState = { "[Channel1]": 0, "[Channel2]": 0 }; // 0 = Hotcues Mode, 1 = Samples Mode
@@ -43,13 +50,15 @@ TraktorS2MK3 = new function () {
             1: 5, 2: 6, 3: 7, 4: 8, 5: 13, 6: 14, 7: 15, 8: 16
         }
     };
-}
+};
+
+var TraktorS2MK3 = new TraktorS2MK3();
 
 TraktorS2MK3.init = function (id) {
     TraktorS2MK3.registerInputPackets();
     TraktorS2MK3.registerOutputPackets();
     HIDDebug("TraktorS2MK3: Init done!");
-}
+};
 
 TraktorS2MK3.registerInputPackets = function () {
     var messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
@@ -205,23 +214,23 @@ TraktorS2MK3.registerInputPackets = function () {
     // Dirty hack to set initial values in the packet parser
     var data = TraktorS2MK3.toBytes("01 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 00 00 00 00");
     TraktorS2MK3.incomingData(data);
-}
+};
 
 TraktorS2MK3.registerInputJog = function (message, group, name, offset, bitmask, callback) {
     // Jog wheels have 4 byte input
     message.addControl(group, name, offset, "I", bitmask);
     message.setCallback(group, name, callback);
-}
+};
 
 TraktorS2MK3.registerInputScaler = function (message, group, name, offset, bitmask, callback) {
     message.addControl(group, name, offset, "H", bitmask);
     message.setCallback(group, name, callback);
-}
+};
 
 TraktorS2MK3.registerInputButton = function (message, group, name, offset, bitmask, callback) {
     message.addControl(group, name, offset, "B", bitmask);
     message.setCallback(group, name, callback);
-}
+};
 
 TraktorS2MK3.playHandler = function (field) {
     if (field.value === 0) {
@@ -234,7 +243,7 @@ TraktorS2MK3.playHandler = function (field) {
         var playing = engine.getValue(field.group, "play");
         engine.setValue(field.group, "play", !playing);
     }
-}
+};
 
 TraktorS2MK3.cueHandler = function (field) {
     if (field.value === 0) {
@@ -246,13 +255,13 @@ TraktorS2MK3.cueHandler = function (field) {
     } else {
         engine.setValue(field.group, "cue_default", field.value);
     }
-}
+};
 
 TraktorS2MK3.shiftHandler = function (field) {
     TraktorS2MK3.shiftPressed[field.group] = field.value;
-    var playing = engine.setValue("[Controls]", "touch_shift", field.value);
+    engine.setValue("[Controls]", "touch_shift", field.value);
     TraktorS2MK3.outputHandler(field.value, field.group, "shift");
-}
+};
 
 TraktorS2MK3.keylockHandler = function (field) {
     if (field.value === 0) {
@@ -261,7 +270,7 @@ TraktorS2MK3.keylockHandler = function (field) {
 
     var keylock = engine.getValue(field.group, "keylock");
     engine.setValue(field.group, "keylock", !keylock);
-}
+};
 
 TraktorS2MK3.syncHandler = function (field) {
     if (TraktorS2MK3.shiftPressed[field.group]) {
@@ -289,7 +298,7 @@ TraktorS2MK3.syncHandler = function (field) {
             }
         }
     }
-}
+};
 
 TraktorS2MK3.syncTimer = function (group) {
     // Reset sync button timer if active
@@ -297,7 +306,7 @@ TraktorS2MK3.syncTimer = function (group) {
         engine.stopTimer(TraktorS2MK3.syncPressedTimer[group]);
         TraktorS2MK3.syncPressedTimer[group] = 0;
     }
-}
+};
 
 TraktorS2MK3.padModeHandler = function (field) {
     if (field.value === 0) {
@@ -312,9 +321,11 @@ TraktorS2MK3.padModeHandler = function (field) {
         TraktorS2MK3.outputHandler(field.value, field.group, "samples");
 
         // Light LEDs for all slots with loaded samplers
-        for (var k in TraktorS2MK3.samplerHotcuesRelation[field.group]) {
-            var loaded = engine.getValue("[Sampler" + TraktorS2MK3.samplerHotcuesRelation[field.group][k] + "]", "track_loaded");
-            TraktorS2MK3.outputHandler(loaded, field.group, "hotcue_" + k + "_enabled");
+        for (var key in TraktorS2MK3.samplerHotcuesRelation[field.group]) {
+            if (TraktorS2MK3.samplerHotcuesRelation[field.group].hasOwnProperty(key)) {
+                var loaded = engine.getValue("[Sampler" + TraktorS2MK3.samplerHotcuesRelation[field.group][key] + "]", "track_loaded");
+                TraktorS2MK3.outputHandler(loaded, field.group, "hotcue_" + key + "_enabled");
+            }
         }
     } else if (field.name === "!hotcues") {
         // If we are in samples mode and hotcues mode is activated
@@ -328,7 +339,7 @@ TraktorS2MK3.padModeHandler = function (field) {
             TraktorS2MK3.outputHandler(active, field.group, "hotcue_" + i + "_enabled");
         }
     }
-}
+};
 
 TraktorS2MK3.numberButtonHandler = function (field) {
     if (field.value === 0) {
@@ -364,7 +375,7 @@ TraktorS2MK3.numberButtonHandler = function (field) {
             }
         }
     }
-}
+};
 
 TraktorS2MK3.headphoneHandler = function (field) {
     if (field.value === 0) {
@@ -373,7 +384,7 @@ TraktorS2MK3.headphoneHandler = function (field) {
 
     var pfl = engine.getValue(field.group, "pfl");
     engine.setValue(field.group, "pfl", !pfl);
-}
+};
 
 TraktorS2MK3.selectTrackHandler = function (field) {
     var delta = 1;
@@ -388,7 +399,7 @@ TraktorS2MK3.selectTrackHandler = function (field) {
     }
 
     TraktorS2MK3.browseState[field.group] = field.value;
-}
+};
 
 TraktorS2MK3.loadTrackHandler = function (field) {
     if (field.value === 0) {
@@ -402,7 +413,7 @@ TraktorS2MK3.loadTrackHandler = function (field) {
     } else {
         engine.setValue(field.group, "LoadSelectedTrack", field.value);
     }
-}
+};
 
 TraktorS2MK3.addTrackHandler = function (field) {
     TraktorS2MK3.outputHandler(field.value, field.group, "addTrack");
@@ -416,7 +427,7 @@ TraktorS2MK3.addTrackHandler = function (field) {
     } else {
         engine.setValue("[Library]", "AutoDjAddBottom", field.value);
     }
-}
+};
 
 TraktorS2MK3.maximizeLibraryHandler = function (field) {
     if (field.value === 0) {
@@ -425,7 +436,7 @@ TraktorS2MK3.maximizeLibraryHandler = function (field) {
 
     var maximize = engine.getValue("[Master]", "maximize_library");
     engine.setValue("[Master]", "maximize_library", !maximize);
-}
+};
 
 TraktorS2MK3.selectLoopHandler = function (field) {
     if ((field.value + 1) % 16 === TraktorS2MK3.loopSizeState[field.group]) {
@@ -434,7 +445,7 @@ TraktorS2MK3.selectLoopHandler = function (field) {
         engine.setValue(field.group, "loop_double", 1);
     }
     TraktorS2MK3.loopSizeState[field.group] = field.value;
-}
+};
 
 TraktorS2MK3.activateLoopHandler = function (field) {
     if (field.value === 0) {
@@ -446,7 +457,7 @@ TraktorS2MK3.activateLoopHandler = function (field) {
     } else {
         engine.setValue(field.group, "reloop_toggle", field.value);
     }
-}
+};
 
 TraktorS2MK3.beatjumpHandler = function (field) {
     var delta = 1;
@@ -472,7 +483,7 @@ TraktorS2MK3.beatjumpHandler = function (field) {
     }
 
     TraktorS2MK3.beatjumpState[field.group] = field.value;
-}
+};
 
 TraktorS2MK3.quantizeHandler = function (field) {
     if (field.value === 0) {
@@ -483,7 +494,7 @@ TraktorS2MK3.quantizeHandler = function (field) {
     engine.setValue("[Channel1]", "quantize", res);
     engine.setValue("[Channel2]", "quantize", res);
     TraktorS2MK3.outputHandler(res, field.group, "quantize");
-}
+};
 
 TraktorS2MK3.microphoneHandler = function (field) {
     if (field.value) {
@@ -504,7 +515,7 @@ TraktorS2MK3.microphoneHandler = function (field) {
             engine.setValue("[Microphone]", "talkover", 0);
         }
     }
-}
+};
 
 TraktorS2MK3.microphoneTimer = function () {
     // Reset microphone button timer if active
@@ -512,23 +523,23 @@ TraktorS2MK3.microphoneTimer = function () {
         engine.stopTimer(TraktorS2MK3.microphonePressedTimer);
         TraktorS2MK3.microphonePressedTimer = 0;
     }
-}
+};
 
 TraktorS2MK3.parameterHandler = function (field) {
     engine.setParameter(field.group, field.name, field.value / 4095);
-}
+};
 
 TraktorS2MK3.jogTouchHandler = function (field) {
-    var deckNumber = TraktorS2MK3.controller.resolveDeck(group);
+    var deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
     if (field.value > 0) {
         engine.scratchEnable(deckNumber, 1024, 33.3333, 0.125, 0.125 / 8, true);
     } else {
         engine.scratchDisable(deckNumber);
     }
-}
+};
 
 TraktorS2MK3.jogHandler = function (field) {
-    var deckNumber = TraktorS2MK3.controller.resolveDeck(group);
+    var deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
 
     // Jog wheel control is based on the S4MK2 mapping, might need some more review
     if (engine.isScratching(deckNumber)) {
@@ -542,7 +553,7 @@ TraktorS2MK3.jogHandler = function (field) {
             engine.scratchTick(deckNumber, tickDelta);
         }
     }
-}
+};
 
 TraktorS2MK3.wheelDeltas = function (group, value) {
     // When the wheel is touched, four bytes change, but only the first behaves predictably.
@@ -584,7 +595,7 @@ TraktorS2MK3.wheelDeltas = function (group, value) {
     }
 
     return [tickDelta, timeDelta];
-}
+};
 
 TraktorS2MK3.fxHandler = function (field) {
     if (field.value === 0) {
@@ -600,7 +611,7 @@ TraktorS2MK3.fxHandler = function (field) {
     engine.setValue(group, "group_[Channel1]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
     engine.setValue(group, "group_[Channel2]_enable", TraktorS2MK3.fxButtonState[fxNumber]);
     TraktorS2MK3.outputHandler(TraktorS2MK3.fxButtonState[fxNumber], field.group, "fxButton" + fxNumber);
-}
+};
 
 TraktorS2MK3.reverseHandler = function (field) {
     if (TraktorS2MK3.shiftPressed[field.group]) {
@@ -610,7 +621,7 @@ TraktorS2MK3.reverseHandler = function (field) {
     }
 
     TraktorS2MK3.outputHandler(field.value, field.group, "reverse");
-}
+};
 
 TraktorS2MK3.flxHandler = function (field) {
     if (field.value === 0) {
@@ -620,7 +631,7 @@ TraktorS2MK3.flxHandler = function (field) {
     var slip = engine.getValue(field.group, "slip_enabled");
     engine.setValue(field.group, "slip_enabled", !slip);
     TraktorS2MK3.outputHandler(!slip, field.group, "flx");
-}
+};
 
 TraktorS2MK3.gridHandler = function (field) {
     if (TraktorS2MK3.shiftPressed[field.group]) {
@@ -630,7 +641,7 @@ TraktorS2MK3.gridHandler = function (field) {
     }
 
     TraktorS2MK3.outputHandler(field.value, field.group, "grid");
-}
+};
 
 TraktorS2MK3.registerOutputPackets = function () {
     var output = new HIDPacket("output", 0x80);
@@ -745,18 +756,18 @@ TraktorS2MK3.registerOutputPackets = function () {
     this.clipRightConnection = engine.makeConnection("[Channel2]", "PeakIndicator", this.peakOutputHandler);
 
     // Sampler callbacks
-    for (var i = 1; i <= 16; ++i) {
+    for (i = 1; i <= 16; ++i) {
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler));
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", this.samplesOutputHandler));
     }
 
     TraktorS2MK3.lightDeck();
-}
+};
 
 /* Helper function to link output in a short form */
 TraktorS2MK3.linkOutput = function (group, name, callback) {
     TraktorS2MK3.controller.linkOutput(group, name, group, name, callback);
-}
+};
 
 TraktorS2MK3.vuMeterHandler = function (value, group, key) {
     var vuKeys = Object.keys(TraktorS2MK3.vuMeterThresholds);
@@ -769,7 +780,7 @@ TraktorS2MK3.vuMeterHandler = function (value, group, key) {
             TraktorS2MK3.controller.setOutput(group, vuKeys[i], 0x7E, last);
         }
     }
-}
+};
 
 TraktorS2MK3.peakOutputHandler = function (value, group, key) {
     var ledValue = 0x00;
@@ -778,7 +789,7 @@ TraktorS2MK3.peakOutputHandler = function (value, group, key) {
     }
 
     TraktorS2MK3.controller.setOutput(group, key, ledValue, true);
-}
+};
 
 TraktorS2MK3.outputHandler = function (value, group, key) {
     // Custom value for multi-colored LEDs
@@ -792,33 +803,31 @@ TraktorS2MK3.outputHandler = function (value, group, key) {
     }
 
     TraktorS2MK3.controller.setOutput(group, key, ledValue, true);
-}
+};
 
 TraktorS2MK3.hotcueOutputHandler = function (value, group, key) {
     // Light button LED only when we are in hotcue mode
     if (TraktorS2MK3.padModeState[group] === 0) {
         TraktorS2MK3.outputHandler(value, group, key);
     }
-}
+};
 
 TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
     // Sampler 1-4, 9-12 -> Channel1
     // Samples 5-8, 13-16 -> Channel2
     var sampler = TraktorS2MK3.resolveSampler(group);
+    var deck = "[Channel1]";
+    var num = sampler;
     if (sampler === undefined) {
         return;
-    } else if (sampler > 0 && sampler < 5) {
-        var deck = "[Channel1]";
-        var num = sampler;
     } else if (sampler > 4 && sampler < 9) {
-        var deck = "[Channel2]";
-        var num = sampler - 4;
+        deck = "[Channel2]";
+        num = sampler - 4;
     } else if (sampler > 8 && sampler < 13) {
-        var deck = "[Channel1]";
-        var num = sampler - 4;
+        num = sampler - 4;
     } else if (sampler > 12 && sampler < 17) {
-        var deck = "[Channel2]";
-        var num = sampler - 8;
+        deck = "[Channel2]";
+        num = sampler - 8;
     }
 
     // If we are in samples modes light corresponding LED
@@ -834,7 +843,7 @@ TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
             TraktorS2MK3.outputHandler(value, deck, "hotcue_" + num + "_enabled");
         }
     }
-}
+};
 
 TraktorS2MK3.resolveSampler = function (group) {
     if (group === undefined) {
@@ -847,7 +856,7 @@ TraktorS2MK3.resolveSampler = function (group) {
 
     var str = group.replace(/\[Sampler/, "");
     return str.substring(0, str.length - 1);
-}
+};
 
 TraktorS2MK3.lightDeck = function () {
 
@@ -904,15 +913,16 @@ TraktorS2MK3.lightDeck = function () {
 
     // For the last output we should send the packet finally
     TraktorS2MK3.controller.setOutput("[Microphone]", "talkover", 0x7C, true);
-}
+};
 
 TraktorS2MK3.messageCallback = function (packet, data) {
-    for (name in data) {
-        field = data[name];
-        HIDDebug("TraktorS2MK3.messageCallback() - field: " + name);
-        TraktorS2MK3.controller.processButton(field);
+    for (var name in data) {
+        if (data.hasOwnProperty(name)) {
+            HIDDebug("TraktorS2MK3.messageCallback() - field: " + name);
+            TraktorS2MK3.controller.processButton(data[name]);
+        }
     }
-}
+};
 
 TraktorS2MK3.shutdown = function () {
 
@@ -935,18 +945,18 @@ TraktorS2MK3.shutdown = function () {
     this.rawOutput(data_string);
 
     HIDDebug("TraktorS2MK3: Shutdown done!");
-}
+};
 
 TraktorS2MK3.incomingData = function (data, length) {
     TraktorS2MK3.controller.parsePacket(data, length);
-}
+};
 
 /* Helper function to convert a string into raw bytes */
 TraktorS2MK3.toBytes = function (data_string) {
-    var data = Object();
+    var data = {};
     var splitted = data_string.split(/\s+/);
     data.length = splitted.length;
-    for (j = 0; j < splitted.length; j++) {
+    for (var j = 0; j < splitted.length; j++) {
         var byte_str = splitted[j];
         if (byte_str.length !== 2) {
             HIDDebug("Not two characters: " + byte_str);
@@ -961,10 +971,10 @@ TraktorS2MK3.toBytes = function (data_string) {
     }
 
     return data;
-}
+};
 
 /* Helper function to send a binary string to the controller */
 TraktorS2MK3.rawOutput = function (data_string) {
     var data = TraktorS2MK3.toBytes(data_string);
-    controller.send(data, data.length, 0x80);
-}
+    TraktorS2MK3.controller.send(data, data.length, 0x80);
+};
