@@ -227,6 +227,7 @@ QByteArray SeratoMarkers2LoopEntry::data() const {
 
     QByteArray labelData = m_label.toUtf8();
     stream.writeRawData(labelData.constData(), labelData.length());
+    stream << (qint8)'\0'; // terminating null-byte
 
     return data;
 }
