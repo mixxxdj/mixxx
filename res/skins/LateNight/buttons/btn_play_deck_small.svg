@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg33"
+   version="1.1"
+   height="38"
+   width="38">
+  <metadata
+     id="metadata37">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs7">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0 .9494 -.94623 0 36.011 .050715)"
+       y2="19"
+       y1="19"
+       x2="37"
+       x1=".99975"
+       id="a">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-color="#242424" />
+      <stop
+         id="stop4"
+         offset="1"
+         stop-color="#101010" />
+    </linearGradient>
+  </defs>
+  <rect
+     style="color:#000000;opacity:0.9;stroke-width:0.98623788"
+     id="rect9"
+     ry="2"
+     rx="1.9999999"
+     height="36"
+     width="36"
+     y="1"
+     x="0.5" />
+  <path
+     id="path11"
+     opacity=".9"
+     fill="url(#a)"
+     color="#000000"
+     d="m35.064 33.28c0 1.0519-.84404 1.8988-1.8925 1.8988l-30.28-.000237c-1.0484-9e-6-1.8925-.84686-1.8925-1.8988v-30.381c0-1.0519.84404-1.8988 1.8925-1.8988l32.172.00023739z" />
+  <g
+     id="g23"
+     transform="translate(-10,-7)">
+    <path
+       id="path15"
+       fill="#060606"
+       d="m33 20v11h-3v1h4v-12z" />
+    <path
+       id="path17"
+       fill="#060606"
+       d="m39 20v11h-3v1h4v-12z" />
+    <path
+       id="path19"
+       fill="#bfbfbf"
+       d="m29 19h4v12h-4v-12" />
+    <path
+       id="path21"
+       fill="#bfbfbf"
+       d="m35 19v12h4v-12h-4" />
+  </g>
+  <path
+     id="path25"
+     style="text-indent:0;text-transform:none"
+     fill="#444444"
+     color="#000000"
+     d="m2.0002 0c-1.0994 0-2 .90065-2 2l-.00025 32c-8.5891e-6 1.0994.90065 2 2 2h32c1.0994 0 2-.90065 2-2l.00025-32c9e-6-1.0994-.90065-2-2-2zm.3 1h31.4c.56265 0 1.3.73735 1.3 1.3l-.00025 31.4c-4e-6.56265-.73735 1.3-1.3 1.3h-31.4c-.56265 0-1.3-.73735-1.3-1.3l.00025-31.4c4.5e-6-.56265.73735-1.3 1.3-1.3z" />
+  <g
+     id="g31"
+     transform="translate(-6,-7)">
+    <path
+       id="path27"
+       fill="#060606"
+       d="m21.75 25.156-7.75 5.1875v1.6562l9-6-1.25-.84375z" />
+    <path
+       id="path29"
+       fill="#bfbfbf"
+       d="m13 19 8.9995 6-8.9995 6v-12" />
+  </g>
+</svg>
