@@ -11,14 +11,6 @@ constexpr float kSilenceThreshold = 0.001;
 
 const double kCueNotSet = -1.0;
 
-bool hasIntroCueStart(const Cue& introCue) {
-    return introCue.getPosition() != kCueNotSet;
-}
-
-bool hasOutroCueEnd(const Cue& outroCue) {
-    return outroCue.getEndPosition() > 0.0;
-}
-
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
@@ -27,7 +19,7 @@ bool shouldAnalyze(TrackPointer pTrack) {
     if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
         return true;
     }
-    return !hasIntroCueStart(*pIntroCue) || !hasOutroCueEnd(*pOutroCue);
+    return false;
 }
 
 } // anonymous namespace
