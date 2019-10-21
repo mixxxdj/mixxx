@@ -95,7 +95,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     double outroEnd = mixxx::kAnalysisChannels * m_iSignalEnd;
 
     CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
-    if (pAudibleSound == nullptr || pAudibleSound->getLength() <= 0) {
+    if (pAudibleSound == nullptr) {
         pAudibleSound = pTrack->createAndAddCue();
         pAudibleSound->setType(Cue::Type::AudibleSound);
         pAudibleSound->setPosition(introStart);
