@@ -502,7 +502,7 @@
             **********************************************
             -->
             <PushButton>
-              <TooltipId>headSplitpfl</TooltipId>
+              <TooltipId>headSplit</TooltipId>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
