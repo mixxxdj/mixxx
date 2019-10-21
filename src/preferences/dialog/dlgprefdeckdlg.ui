@@ -74,10 +74,14 @@ CUP mode:
       <item row="1" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxIntroStartMove">
         <property name="toolTip">
-         <string>Automatically moves the intro start cue when the main cue moves.</string>
+         <string>When the analyzer places the intro start point automatically,
+it will place it at the main cue point if the main cue point has been set previously.
+This may be helpful for upgrading to Mixxx 2.3 from earlier versions.
+
+If this option is disabled, the intro start point is automatically placed at the first sound.</string>
         </property>
         <property name="text">
-         <string>Set intro start to main cue for newly analyzed tracks</string>
+         <string>Set intro start to main cue when analyzing tracks</string>
         </property>
        </widget>
       </item>
