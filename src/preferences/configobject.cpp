@@ -96,11 +96,6 @@ ConfigValue::ConfigValue(double dValue)
     : value(QString::number(dValue)) {
 }
 
-ConfigValueKbd::ConfigValueKbd(QString value)
-        : ConfigValue(std::move(value)),
-          m_keys(ConfigValue::value) {
-}
-
 ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
         : m_keys(std::move(keys)) {
     QTextStream(&value) << m_keys.toString();

@@ -105,7 +105,6 @@ class ConfigValueKbd : public ConfigValue {
   public:
     ConfigValueKbd() = default;
     ~ConfigValueKbd() override = default;
-    explicit ConfigValueKbd(QString value);
     explicit ConfigValueKbd(const QKeySequence& keys);
     explicit ConfigValueKbd(const QDomNode) {
         reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
