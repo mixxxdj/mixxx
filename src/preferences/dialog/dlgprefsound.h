@@ -114,7 +114,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bLatencyChanged;
     bool m_bSkipConfigClear;
     bool m_loading;
-    SoundManagerConfig m_config;
 };
 
 #endif
