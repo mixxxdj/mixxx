@@ -498,11 +498,6 @@ void CueControl::loadCuesFromTrack() {
     if (pLoadCue) {
         double position = pLoadCue->getPosition();
         m_pCuePoint->set(quantizeCuePoint(position, QuantizeMode::ClosestBeat));
-        // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
-        if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"), false)
-                && position != kNoTrigger && position != 0) {
-            m_pIntroStartPosition->set(position);
-        }
     } else {
         m_pCuePoint->set(-1.0);
     }
@@ -839,10 +834,6 @@ void CueControl::cueSet(double v) {
     // Store cue point in loaded track
     if (pLoadedTrack) {
         pLoadedTrack->setCuePoint(CuePosition(cue));
-    }
-
-    if (m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"), false)) {
-        introStartSet(cue);
     }
 }
 

@@ -180,12 +180,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // the deck is not at the main cue point and play is pressed).
     bool introStartMoveDefault = (m_seekOnLoadMode == SeekOnLoadMode::MainCue || !seekModeExisted)
             && !(m_cueMode == CueMode::Denon || m_cueMode == CueMode::Numark);
-    m_bMoveIntroStartWithMainCue = m_pConfig->getValue(ConfigKey("[Controls]", "MoveIntroStartWithMainCue"),
+    m_bSetIntroStartAtMainCue = m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"),
          introStartMoveDefault);
-    // This is an ugly hack to ensure CueControl does not override the default value
-    // when it first accesses the ConfigKey and mixxx.cfg is empty.
-    m_pConfig->setValue(ConfigKey("[Controls]", "MoveIntroStart"), m_bMoveIntroStartWithMainCue);
-    checkBoxIntroStartMove->setChecked(m_bMoveIntroStartWithMainCue);
+    // This is an ugly hack to ensure AnalyzerSilence gets the correct default
+    // value because ConfigValue::getValue does not set the value of the ConfigValue
+    // in case no value had been set previously (when mixxx.cfg is empty).
+    m_pConfig->setValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), m_bSetIntroStartAtMainCue);
+    checkBoxIntroStartMove->setChecked(m_bSetIntroStartAtMainCue);
     connect(checkBoxIntroStartMove, &QCheckBox::toggled,
             this, &DlgPrefDeck::slotMoveIntroStartCheckbox);
 
@@ -364,7 +365,7 @@ DlgPrefDeck::~DlgPrefDeck() {
 
 void DlgPrefDeck::slotUpdate() {
     checkBoxIntroStartMove->setChecked(m_pConfig->getValue(
-            ConfigKey("[Controls]", "MoveIntroStart"), false));
+            ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false));
 
     slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
 
@@ -475,7 +476,7 @@ void DlgPrefDeck::slotResetToDefaults() {
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
-    m_bMoveIntroStartWithMainCue = checked;
+    m_bSetIntroStartAtMainCue = checked;
 }
 
 void DlgPrefDeck::slotRateRangeComboBox(int index) {
@@ -606,7 +607,8 @@ void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
 }
 
 void DlgPrefDeck::slotApply() {
-    m_pConfig->set(ConfigKey("[Controls]", "MoveIntroStart"), ConfigValue(m_bMoveIntroStartWithMainCue));
+    m_pConfig->set(ConfigKey("[Controls]", "SetIntroStartAtMainCue"),
+                   ConfigValue(m_bSetIntroStartAtMainCue));
 
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));

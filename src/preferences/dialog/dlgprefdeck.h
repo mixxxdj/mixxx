@@ -123,7 +123,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     CueMode m_cueMode;
 
-    bool m_bMoveIntroStartWithMainCue;
+    bool m_bSetIntroStartAtMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;
     bool m_bCloneDeckOnLoadDoubleTap;
     bool m_bAssignHotcueColors;

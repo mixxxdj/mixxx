@@ -11,11 +11,6 @@ constexpr float kSilenceThreshold = 0.001;
 
 const double kCueNotSet = -1.0;
 
-bool shouldUpdateMainCue(CuePosition mainCue) {
-    return mainCue.getPosition() == kCueNotSet ||
-            mainCue.getPosition() == 0.0;
-}
-
 bool hasIntroCueStart(const Cue& introCue) {
     return introCue.getPosition() != kCueNotSet;
 }
@@ -107,11 +102,25 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     double introStart = mixxx::kAnalysisChannels * m_iSignalStart;
     double outroEnd = mixxx::kAnalysisChannels * m_iSignalEnd;
 
-    if (shouldUpdateMainCue(pTrack->getCuePoint())) {
-        pTrack->setCuePoint(CuePosition(introStart));
+    CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
+    if (pAudibleSound == nullptr || pAudibleSound->getLength() <= 0) {
+        pAudibleSound = pTrack->createAndAddCue();
+        pAudibleSound->setType(Cue::Type::AudibleSound);
+        pAudibleSound->setPosition(introStart);
+        pAudibleSound->setLength(outroEnd - introStart);
     }
 
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
+
+    double oldMainCue = pTrack->getCuePoint().getPosition();
+    // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
+    if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
+            && pIntroCue == nullptr && oldMainCue != kCueNotSet && oldMainCue != 0.0) {
+        introStart = oldMainCue;
+    } else if (oldMainCue == kCueNotSet) {
+        pTrack->setCuePoint(CuePosition(introStart));
+    }
+
     if (!pIntroCue) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
@@ -125,13 +134,5 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pOutroCue->setType(Cue::Type::Outro);
         pOutroCue->setPosition(kCueNotSet);
         pOutroCue->setLength(outroEnd);
-    }
-
-    CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
-    if (pAudibleSound == nullptr || pAudibleSound->getLength() <= 0) {
-        pAudibleSound = pTrack->createAndAddCue();
-        pAudibleSound->setType(Cue::Type::AudibleSound);
-        pAudibleSound->setPosition(introStart);
-        pAudibleSound->setLength(outroEnd - introStart);
     }
 }

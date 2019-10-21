@@ -77,7 +77,7 @@ CUP mode:
          <string>Automatically moves the intro start cue when the main cue moves.</string>
         </property>
         <property name="text">
-         <string>Move intro start with main cue</string>
+         <string>Set intro start to main cue for newly analyzed tracks</string>
         </property>
        </widget>
       </item>
