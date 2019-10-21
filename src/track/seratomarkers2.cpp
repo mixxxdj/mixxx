@@ -174,13 +174,13 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
             reinterpret_cast<const uchar*>(data.mid(6, 10).constData()));
 #endif
     // Unknown field, make sure it contains the expected "default" value
-    if (data.at(10) != '\xff' &&
-        data.at(11) != '\xff' &&
-        data.at(12) != '\xff' &&
-        data.at(13) != '\xff' &&
-        data.at(14) != '\x00' &&
-        data.at(15) != '\x27' &&
-        data.at(16) != '\xaa' &&
+    if (data.at(10) != '\xff' ||
+        data.at(11) != '\xff' ||
+        data.at(12) != '\xff' ||
+        data.at(13) != '\xff' ||
+        data.at(14) != '\x00' ||
+        data.at(15) != '\x27' ||
+        data.at(16) != '\xaa' ||
         data.at(17) != '\xe1') {
         return nullptr;
     }
