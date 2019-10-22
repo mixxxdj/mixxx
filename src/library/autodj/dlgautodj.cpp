@@ -11,12 +11,6 @@
 namespace {
 const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
-const char* kEnableButtonName = "AutoDjEnable";
-const char* kShuffleButtonName = "AutoDjShuffle";
-const char* kSkipButtonName = "AutoDjSkip";
-const char* kAddRandomButtonName = "AutoDjAddRandom";
-const char* kFadeNowButtonName = "AutoDjFadeNow";
-const char* kRepeatButtonName = "AutoDjRepeatPlaylist";
 } // anonymous namespace
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
@@ -25,7 +19,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
                      KeyboardEventFilter* pKeyboard,
-                     const QMap<QString, SkinButton> icons)
+                     bool showButtonText)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
@@ -34,7 +28,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                                                 pTrackCollection, false)),
           m_pAutoDJTableModel(nullptr),
           m_pConfig(pConfig),
-          m_icons(icons) {
+          m_bShowButtonText(showButtonText) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -75,13 +69,13 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             this, &DlgAutoDJ::toggleAutoDJButton);
 
     setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton,
-                      kShuffleButtonName, tr("Shuffle"));
+                      tr("Shuffle"));
     setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton,
-                      kSkipButtonName, tr("Skip"));
+                      tr("Skip"));
     setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton,
-                      kAddRandomButtonName, tr("Random"));
+                      tr("Random"));
     setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton,
-                      kFadeNowButtonName, tr("Fade"));
+                      tr("Fade"));
 
     connect(spinBoxTransition, QOverload<int>::of(&QSpinBox::valueChanged),
             this, &DlgAutoDJ::transitionSliderChanged);
@@ -126,6 +120,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
     connect(pushButtonRepeatPlaylist, &QPushButton::toggled,
             this, &DlgAutoDJ::slotRepeatPlaylistChanged);
+    if (m_bShowButtonText) {
+        pushButtonRepeatPlaylist->setText(tr("Repeat"));
+    }
     bool repeatPlaylist = m_pConfig->getValue<bool>(
             ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference));
     pushButtonRepeatPlaylist->setChecked(repeatPlaylist);
@@ -152,14 +149,10 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pTrackTableView;
 }
 
-void DlgAutoDJ::setupActionButton(QPushButton* pButton, void (DlgAutoDJ::*pSlot)(bool),
-                           QString skinButtonName, QString fallbackText) {
+void DlgAutoDJ::setupActionButton(QPushButton* pButton, void (DlgAutoDJ::*pSlot)(bool), QString fallbackText) {
     connect(pButton, &QPushButton::clicked, this, pSlot);
-    QString iconPath = m_icons.value(skinButtonName).states.value("Off").pixmapSource.getPath();
-    if (iconPath.isEmpty()) {
+    if (m_bShowButtonText) {
         pButton->setText(fallbackText);
-    } else {
-        pButton->setIcon(QIcon(iconPath));
     }
 }
 
@@ -235,18 +228,21 @@ void DlgAutoDJ::transitionSliderChanged(int value) {
 }
 
 void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
-    QString stateName;
     if (state == AutoDJProcessor::ADJ_DISABLED) {
         pushButtonAutoDJ->setChecked(false);
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
-        stateName = "Off";
+        if (m_bShowButtonText) {
+            pushButtonAutoDJ->setText(tr("Enable"));
+        }
         pushButtonFadeNow->setEnabled(false);
         pushButtonSkipNext->setEnabled(false);
     } else {
         // No matter the mode, you can always disable once it is enabled.
         pushButtonAutoDJ->setChecked(true);
         pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
-        stateName = "On";
+        if (m_bShowButtonText) {
+            pushButtonAutoDJ->setText(tr("Disable"));
+        }
 
         // If fading, you can't hit fade now.
         if (state == AutoDJProcessor::ADJ_LEFT_FADING ||
@@ -260,12 +256,6 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         // You can always skip the next track if we are enabled.
         pushButtonSkipNext->setEnabled(true);
     }
-    QString pixmapPath = m_icons.value(kEnableButtonName).states.value(stateName).pixmapSource.getPath();
-    if (pixmapPath.isEmpty()) {
-        pushButtonAutoDJ->setText((state == AutoDJProcessor::ADJ_DISABLED) ? tr("Enable") : tr("Disable"));
-    } else {
-        pushButtonAutoDJ->setIcon(QIcon(pixmapPath));
-    }
 }
 
 void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
@@ -277,13 +267,6 @@ void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
     bool checked = static_cast<bool>(checkState);
     m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
             checked);
-    QString stateName = checked ? "On" : "Off";
-    QString pixmapPath = m_icons.value(kRepeatButtonName).states.value(stateName).pixmapSource.getPath();
-    if (pixmapPath.isEmpty()) {
-        pushButtonRepeatPlaylist->setText(tr("Repeat"));
-    } else {
-        pushButtonRepeatPlaylist->setIcon(QIcon(pixmapPath));
-    }
 }
 
 void DlgAutoDJ::updateSelectionInfo() {

@@ -11,7 +11,6 @@
 #include <QEvent>
 
 #include "library/libraryview.h"
-#include "skin/skinbutton.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
@@ -34,8 +33,8 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
     LibraryView* getActiveView() const;
 
-    const QMap<QString, SkinButton> icons() const {
-        return m_icons;
+    bool getShowButtonText() const {
+        return m_bShowButtonText;
     }
 
   public slots:
@@ -52,7 +51,8 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;
-    QMap<QString, SkinButton> m_icons;
+    bool m_bShowButtonText;
 };
 
 #endif /* WLIBRARY_H */
+

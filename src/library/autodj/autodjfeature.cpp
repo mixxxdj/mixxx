@@ -123,7 +123,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                   m_pAutoDJProcessor,
                                   m_pTrackCollection,
                                   keyboard,
-                                  libraryWidget->icons());
+                                  libraryWidget->getShowButtonText());
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
