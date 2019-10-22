@@ -79,6 +79,7 @@
                 <SignalLowColor></SignalLowColor>
                 <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                 <SignalColor>#EECE33</SignalColor>
+                <ShowCueTimes>false</ShowCueTimes>
                 <MarkerColor>#00FF00</MarkerColor>
                 <DefaultMark>
                   <Align>bottom|right</Align>
