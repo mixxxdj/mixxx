@@ -1148,11 +1148,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_EQ(0.5,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
-    EXPECT_EQ(1.0,
-              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
-
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
     for (int i=0; i<50; ++i) {
         ProcessBuffer();
@@ -1174,11 +1169,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     ProcessBuffer();
-
-    EXPECT_EQ(1.0,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
-    EXPECT_EQ(2.0,
-              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
 
     // Exaggerate the effect with a high rate.
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(2.0));
@@ -1265,7 +1255,7 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
 
     EXPECT_FLOAT_EQ(140.0,
                 ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+    EXPECT_FLOAT_EQ(getRateSliderValue(2.0),
                     ControlObject::getControl(
                             ConfigKey(m_sGroup1, "rate"))->get());
     EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
@@ -1591,7 +1581,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     pHotCueActivate->set(1.0);
     ProcessBuffer();
 
-    // the value was determined experimentally 
+    // the value was determined experimentally
     ASSERT_DOUBLE_EQ(0.11997394884298185, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
     pHotCueActivate->set(0.0);
@@ -1640,11 +1630,10 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 
     ProcessBuffer();
 
-    // we expect that the new beatgrid is allingend to the other playing track
+    // we expect that the new beatgrid is aligned to the other playing track
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-
 
     ProcessBuffer();
 
@@ -1655,11 +1644,11 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 
     ProcessBuffer();
 
-    // we expect that the new beatgrid is allingend to the other playing track
+    // we expect that the new beatgrid is aligned to the other playing track
     // Not the case before fixing lp1808698
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    // Expect to sync on half beats
-    EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    // We used to sync on half beats but now we just sync to simple beat marks.
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
