@@ -9,8 +9,6 @@ constexpr float kSilenceThreshold = 0.001;
 // TODO: Change the above line to:
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
-const double kCueNotSet = -1.0;
-
 bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
@@ -118,7 +116,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     // to 0.0 at a later time after analysis because in that case the intro cue
     // would have already been created by this analyzer.
     bool upgradingWithMainCueAtDefault = (mainCue == 0.0 && pIntroCue == nullptr);
-    if (mainCue == kCueNotSet || upgradingWithMainCueAtDefault) {
+    if (mainCue == Cue::kPositionNotDefined || upgradingWithMainCueAtDefault) {
         pTrack->setCuePoint(CuePosition(firstSound));
     // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
     } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
@@ -130,14 +128,14 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
         pIntroCue->setStartPosition(introStart);
-        pIntroCue->setEndPosition(kCueNotSet);
+        pIntroCue->setEndPosition(Cue::kPositionNotDefined);
     }
 
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
     if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
-        pOutroCue->setStartPosition(kCueNotSet);
+        pOutroCue->setStartPosition(Cue::kPositionNotDefined);
         pOutroCue->setEndPosition(lastSound);
     }
 }
