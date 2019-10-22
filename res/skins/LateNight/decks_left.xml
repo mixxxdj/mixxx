@@ -5,7 +5,6 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>DecksLeftContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>

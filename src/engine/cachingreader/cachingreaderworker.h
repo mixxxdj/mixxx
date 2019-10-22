@@ -69,7 +69,7 @@ typedef struct ReaderStatusUpdate {
         return update;
     }
 
-    static ReaderStatusUpdate trackNotLoaded() {
+    static ReaderStatusUpdate trackUnloaded() {
         ReaderStatusUpdate update;
         update.init(TRACK_UNLOADED, nullptr, mixxx::IndexRange());
         return update;
@@ -101,14 +101,14 @@ class CachingReaderWorker : public EngineWorker {
     CachingReaderWorker(QString group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
-    virtual ~CachingReaderWorker();
+    ~CachingReaderWorker() override = default;
 
     // Request to load a new track. wake() must be called afterwards.
-    virtual void newTrack(TrackPointer pTrack);
+    void newTrack(TrackPointer pTrack);
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
-    virtual void run();
+    void run() override;
 
     void quitWait();
 
@@ -145,13 +145,6 @@ class CachingReaderWorker : public EngineWorker {
     // Temporary buffer for reading samples from all channels
     // before conversion to a stereo signal.
     mixxx::SampleBuffer m_tempReadBuffer;
-
-    // The maximum readable frame index of the AudioSource. Might
-    // be adjusted when decoding errors occur to prevent reading
-    // the same chunk(s) over and over again.
-    // This frame index references the frame that follows the
-    // last frame with readable sample data.
-    mixxx::IndexRange m_readableFrameIndexRange;
 
     QAtomicInt m_stop;
 };

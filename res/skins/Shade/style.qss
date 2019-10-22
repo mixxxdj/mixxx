@@ -19,6 +19,10 @@
   padding: 5px 0px;
 }
 
+WOverview {
+  font-family: "Ubuntu";
+}
+
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),

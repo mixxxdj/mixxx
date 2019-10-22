@@ -14,17 +14,17 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <MinimumSize>55,35</MinimumSize>
-    <MaximumSize>60,-1</MaximumSize>
+    <MaximumSize>60,</MaximumSize>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
-        <ObjectName>EffectButton</ObjectName>
+        <ObjectName>FxButton</ObjectName>
         <Layout>horizontal</Layout>
         <Size>40me,25f</Size>
         <Children>
           <Template src="skin:fx_button.xml">
-            <SetVariable name="icon">fxParameter</SetVariable>
+            <SetVariable name="icon">fx_parameter</SetVariable>
             <SetVariable name="Size">40f,17f</SetVariable>
             <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
           </Template>
@@ -32,8 +32,11 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignBottom</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>40,12</MinimumSize>
+        <MaximumSize>58,12</MaximumSize>
         <Children>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
           <EffectButtonParameterName>
@@ -45,7 +48,7 @@
             <Alignment>center</Alignment>
           </EffectButtonParameterName>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-	     </Children>
+        </Children>
       </WidgetGroup>
 
 
