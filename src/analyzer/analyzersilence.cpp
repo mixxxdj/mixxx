@@ -126,7 +126,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         introStart = mainCue;
     }
 
-    if (!pIntroCue) {
+    if (pIntroCue == nullptr) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
         pIntroCue->setStartPosition(introStart);
@@ -134,7 +134,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     }
 
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
-    if (!pOutroCue) {
+    if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
         pOutroCue->setStartPosition(kCueNotSet);
