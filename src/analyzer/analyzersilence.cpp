@@ -98,7 +98,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (pAudibleSound == nullptr) {
         pAudibleSound = pTrack->createAndAddCue();
         pAudibleSound->setType(Cue::Type::AudibleSound);
-        pAudibleSound->setPosition(firstSound);
+        pAudibleSound->setStartPosition(firstSound);
         pAudibleSound->setLength(lastSound - firstSound);
     }
 
@@ -123,7 +123,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (!pIntroCue) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
-        pIntroCue->setPosition(introStart);
+        pIntroCue->setStartPosition(introStart);
         pIntroCue->setLength(0.0);
     }
 
@@ -131,7 +131,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (!pOutroCue) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
-        pOutroCue->setPosition(kCueNotSet);
+        pOutroCue->setStartPosition(kCueNotSet);
         pOutroCue->setLength(lastSound);
     }
 }

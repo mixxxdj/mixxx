@@ -90,7 +90,7 @@ double Cue::getPosition() const {
     return m_samplePosition;
 }
 
-void Cue::setPosition(double samplePosition) {
+void Cue::setStartPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
     m_samplePosition = samplePosition;
     m_bDirty = true;

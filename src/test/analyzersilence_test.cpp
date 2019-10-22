@@ -168,12 +168,12 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
 
     CuePointer pIntroCue = pTrack->createAndAddCue();
     pIntroCue->setType(Cue::Type::Intro);
-    pIntroCue->setPosition(kManualIntroPosition);
+    pIntroCue->setStartPosition(kManualIntroPosition);
     pIntroCue->setLength(0.0);
 
     CuePointer pOutroCue = pTrack->createAndAddCue();
     pOutroCue->setType(Cue::Type::Outro);
-    pOutroCue->setPosition(-1.0);
+    pOutroCue->setStartPosition(-1.0);
     pOutroCue->setLength(kManualOutroPosition);
 
     // Fill the first half with silence

@@ -40,7 +40,7 @@ class Cue : public QObject {
     void setType(Cue::Type type);
 
     double getPosition() const;
-    void setPosition(double samplePosition);
+    void setStartPosition(double samplePosition);
 
     double getLength() const;
     void setLength(double length);
