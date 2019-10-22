@@ -30,7 +30,7 @@ class Cue : public QObject {
                           // not shown to user
     };
 
-    static constexpr double kPositionNotDefined = -1.0;
+    static constexpr double kNoPosition = -1.0;
 
     ~Cue() override = default;
 

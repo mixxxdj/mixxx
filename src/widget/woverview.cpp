@@ -341,7 +341,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
         if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
-            && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
+            && pMark->getSamplePosition() != Cue::kNoPosition) {
             QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor);
@@ -370,7 +370,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     for (const auto& pMark : m_marks) {
         if (!m_marksToRender.contains(pMark)
             && pMark->isValid()
-            && pMark->getSamplePosition() != Cue::kPositionNotDefined
+            && pMark->getSamplePosition() != Cue::kNoPosition
             && pMark->isVisible()) {
             m_marksToRender.append(pMark);
         }

@@ -116,7 +116,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     // to 0.0 at a later time after analysis because in that case the intro cue
     // would have already been created by this analyzer.
     bool upgradingWithMainCueAtDefault = (mainCue == 0.0 && pIntroCue == nullptr);
-    if (mainCue == Cue::kPositionNotDefined || upgradingWithMainCueAtDefault) {
+    if (mainCue == Cue::kNoPosition || upgradingWithMainCueAtDefault) {
         pTrack->setCuePoint(CuePosition(firstSound));
     // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
     } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
@@ -128,14 +128,14 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
         pIntroCue->setStartPosition(introStart);
-        pIntroCue->setEndPosition(Cue::kPositionNotDefined);
+        pIntroCue->setEndPosition(Cue::kNoPosition);
     }
 
     CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
     if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
-        pOutroCue->setStartPosition(Cue::kPositionNotDefined);
+        pOutroCue->setStartPosition(Cue::kNoPosition);
         pOutroCue->setEndPosition(lastSound);
     }
 }
