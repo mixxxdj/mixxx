@@ -106,11 +106,17 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
 
     double mainCue = pTrack->getCuePoint().getPosition();
     double introStart = firstSound;
-    if (mainCue == kCueNotSet) {
+    // Before Mixxx 2.3, the default position for the main cue was 0.0. In this
+    // case, move the main cue point to the first sound. This case can be
+    // distinguished from a user intentionally setting the main cue position
+    // to 0.0 at a later time after analysis because in that case the intro cue
+    // would have already been created by this analyzer.
+    bool upgradingWithMainCueAtDefault = (mainCue == 0.0 && pIntroCue == nullptr);
+    if (mainCue == kCueNotSet || upgradingWithMainCueAtDefault) {
         pTrack->setCuePoint(CuePosition(firstSound));
     // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
     } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
-            && pIntroCue == nullptr && mainCue != 0.0) {
+            && pIntroCue == nullptr) {
         introStart = mainCue;
     }
 
