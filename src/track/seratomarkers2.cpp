@@ -8,7 +8,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray &d
 {
     if (data.length() != 1) {
         qWarning() << "Parsing SeratoMarkers2BpmlockEntry failed:"
-                 << "Length" << data.length() << "!= 1";
+                   << "Length" << data.length() << "!= 1";
         return nullptr;
     }
 
@@ -46,7 +46,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray &dat
     // null-terminated string
     if (data.at(0) != '\x00') {
         qWarning() << "Parsing SeratoMarkers2ColorEntry failed:"
-                 << "Byte 0: " << data.at(0) << "!= '\\0'";
+                   << "Byte 0: " << data.at(0) << "!= '\\0'";
         return nullptr;
     }
 
@@ -82,7 +82,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
 {
     if (data.length() < 13) {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                 << "Length" << data.length() << "< 13";
+                   << "Length" << data.length() << "< 13";
         return nullptr;
     }
 
@@ -90,7 +90,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
     // null-terminated string
     if (data.at(0) != '\x00') {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                 << "Byte 0: " << data.at(0) << "!= '\\0'";
+                   << "Byte 0: " << data.at(0) << "!= '\\0'";
         return nullptr;
     }
 
@@ -106,7 +106,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
     // null-terminated string
     if (data.at(6) != '\x00') {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                 << "Byte 6: " << data.at(6) << "!= '\\0'";
+                   << "Byte 6: " << data.at(6) << "!= '\\0'";
         return nullptr;
     }
 
@@ -118,21 +118,21 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
     // null-terminated string
     if (data.at(10) != '\x00' || data.at(11) != '\x00') {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                 << "Bytes 10-11:" << data.mid(10, 2) << "!= \"\\0\\0\"";
+                   << "Bytes 10-11:" << data.mid(10, 2) << "!= \"\\0\\0\"";
         return nullptr;
     }
 
     int labelEndPos = data.indexOf('\x00', 12);
     if (labelEndPos < 0) {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                 << "Label end position not found";
+                   << "Label end position not found";
         return nullptr;
     }
     QString label(data.mid(12, labelEndPos - 12));
 
     if (data.length() > labelEndPos + 1) {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                 << "Trailing content" << data.mid(labelEndPos + 1);
+                   << "Trailing content" << data.mid(labelEndPos + 1);
         return nullptr;
     }
 
@@ -173,7 +173,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
 {
     if (data.length() < 21) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                 << "Length" << data.length() << "< 21";
+                   << "Length" << data.length() << "< 21";
         return nullptr;
     }
 
@@ -181,7 +181,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
     // null-terminated string
     if (data.at(0) != '\x00') {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                 << "Byte 0: " << data.at(0) << "!= '\\0'";
+                   << "Byte 0: " << data.at(0) << "!= '\\0'";
         return nullptr;
     }
 
@@ -205,7 +205,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
         data.at(16) != '\xaa' ||
         data.at(17) != '\xe1') {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                 << "Invalid magic value " << data.mid(10, 16);
+                   << "Invalid magic value " << data.mid(10, 16);
         return nullptr;
     }
 
@@ -213,7 +213,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
     // null-terminated string
     if (data.at(18) != '\x00') {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                 << "Byte 18:" << data.at(18) << "!= '\\0'";
+                   << "Byte 18:" << data.at(18) << "!= '\\0'";
         return nullptr;
     }
 
@@ -222,14 +222,14 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
     int labelEndPos = data.indexOf('\x00', 20);
     if (labelEndPos < 0) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                 << "Label end position not found";
+                   << "Label end position not found";
         return nullptr;
     }
     QString label(data.mid(20, labelEndPos - 20));
 
     if (data.length() > labelEndPos + 1) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                 << "Trailing content" << data.mid(labelEndPos + 1);
+                   << "Trailing content" << data.mid(labelEndPos + 1);
         return nullptr;
     }
 
