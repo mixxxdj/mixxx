@@ -17,9 +17,6 @@ class ControlPushButton;
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
-    static const double kBpmUnity;
-    static const double kBpmHalve;
-    static const double kBpmDouble;
     SyncControl(const QString& group, UserSettingsPointer pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     ~SyncControl() override;
@@ -97,8 +94,6 @@ class SyncControl : public EngineControl, public Syncable {
     RateControl* m_pRateControl;
     bool m_bOldScratching;
 
-    // When syncing, sometimes it's better to match half or double the
-    // master bpm.
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     double m_beatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
