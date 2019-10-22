@@ -1,1 +1,74 @@
-<svg id="svg8760" width="26" height="26" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs id="defs8762"><linearGradient id="linearGradient3807-3-3" x1="13" x2="13" y1="1027.4" y2="1049.4" gradientUnits="userSpaceOnUse"><stop id="stop3803-7-6" stop-color="#242424" offset="0"/><stop id="stop3805-5-2" stop-color="#101010" offset="1"/></linearGradient></defs><g id="layer1" transform="translate(0 -1026.4)"><rect id="rect3029-6" x="2" y="1028.4" width="24" height="24" rx="2" ry="2" color="#000000" fill="#060606" opacity=".62085"/><rect id="rect3029-6-6" x="1" y="1027.4" width="24" height="24" rx="2" ry="2" color="#000000" opacity=".72"/><rect id="rect3029" x=".5" y="1026.9" width="23" height="23" rx="2" ry="2" color="#000000" fill="url(#linearGradient3807-3-3)"/><path id="rect3029-96-0" d="m2 1026.4c-1.0994 0-2 0.9006-2 2v20c0 1.0994 0.90065 2 2 2h20c1.0994 0 2-0.9006 2-2v-20c0-1.0994-0.90065-2-2-2zm0.3 1h19.4c0.56265 0 1.3 0.7374 1.3 1.3v19.4c0 0.5626-0.73735 1.3-1.3 1.3h-19.4c-0.56265 0-1.3-0.7374-1.3-1.3v-19.4c0-0.5626 0.73735-1.3 1.3-1.3z" color="#000000" fill="#585858" style="block-progression:tb;text-indent:0;text-transform:none"/><path id="path9276-9-3-7" d="m9 1038.4h3v-3h3v3h3v3h-3v3h-3v-3h-3v-3" fill="#060606"/><path id="path9276-5-5" d="m8 1037.4h3v-3h3v3h3v3h-3v3h-3v-3h-3v-3" fill="#bfbfbf"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   height="26"
+   width="26"
+   id="svg8760">
+  <metadata
+     id="metadata16">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8762">
+    <linearGradient
+       gradientTransform="translate(0,-1026.4)"
+       gradientUnits="userSpaceOnUse"
+       y2="1049.4"
+       y1="1027.4"
+       x2="13"
+       x1="13"
+       id="linearGradient3807-3-3">
+      <stop
+         offset="0"
+         stop-color="#242424"
+         id="stop3803-7-6" />
+      <stop
+         offset="1"
+         stop-color="#101010"
+         id="stop3805-5-2" />
+    </linearGradient>
+  </defs>
+  <rect
+     id="rect3029-6-6"
+     x="0.5"
+     y="1.0000244"
+     width="24"
+     height="24"
+     rx="2"
+     ry="2"
+     style="color:#000000;opacity:0.72000002" />
+  <rect
+     id="rect3029"
+     x="0.5"
+     y="0.50002444"
+     width="23"
+     height="23"
+     rx="2"
+     ry="2"
+     style="color:#000000;fill:url(#linearGradient3807-3-3)" />
+  <path
+     id="rect3029-96-0"
+     d="M 2,0 C 0.9006,0 0,0.9006 0,2 v 20 c 0,1.0994 0.90065,2 2,2 h 20 c 1.0994,0 2,-0.9006 2,-2 V 2 C 24,0.9006 23.09935,0 22,0 Z M 2.3,1 H 21.7 C 22.26265,1 23,1.7374 23,2.3 V 21.7 C 23,22.2626 22.26265,23 21.7,23 H 2.3 C 1.73735,23 1,22.2626 1,21.7 V 2.3 C 1,1.7374 1.73735,1 2.3,1 Z"
+     style="color:#000000;text-indent:0;text-transform:none;fill:#444444" />
+  <path
+     id="path9276-9-3-7"
+     d="m 9,12 h 3 V 9 h 3 v 3 h 3 v 3 h -3 v 3 H 12 V 15 H 9 v -3"
+     style="fill:#060606" />
+  <path
+     id="path9276-5-5"
+     d="m 8,11 h 3 V 8 h 3 v 3 h 3 v 3 h -3 v 3 H 11 V 14 H 8 v -3"
+     style="fill:#bfbfbf" />
+</svg>

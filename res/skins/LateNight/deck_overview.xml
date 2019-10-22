@@ -4,7 +4,7 @@
     <TooltipId>waveform_overview</TooltipId>
     <Channel><Variable name="channum"/></Channel>
     <Size>150me,40me</Size>
-    <BgColor>#1E1E1E</BgColor>
+    <BgColor>#0f0f0f</BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
     <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
     <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>

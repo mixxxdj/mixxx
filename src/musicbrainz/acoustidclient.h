@@ -17,8 +17,6 @@
 #include "musicbrainz/network.h"
 #include "track/track.h"
 
-class QXmlStreamReader;
-
 class AcoustidClient : public QObject {
   Q_OBJECT
 
@@ -47,8 +45,6 @@ class AcoustidClient : public QObject {
     // Cancels all requests.  Finished() will never be emitted for any pending
     // requests.
     void cancelAll();
-
-    QString parseResult(QXmlStreamReader& reader);
 
   signals:
     void finished(int id, const QString& mbid);

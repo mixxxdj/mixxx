@@ -14,12 +14,12 @@
   <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
 
   <WidgetGroup>
-    <Size>-1me,52me</Size>
+    <Size>0me,46me</Size>
     <Layout>stacked</Layout>
     <Children>
 
       <WidgetGroup>
-        <ObjectName>EffectSlot<Variable name="FxNum"/></ObjectName>
+        <ObjectName>FxSlot<Variable name="FxNum"/></ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
@@ -27,7 +27,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>0min,-1min</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
               <Template src="skin:fx_parameter_button.xml">
                 <SetVariable name="FxParameter">1</SetVariable>
               </Template>
@@ -85,12 +85,12 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <MinimumSize>85,26</MinimumSize>
+            <MinimumSize>75,26</MinimumSize>
             <MaximumSize>150,26</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
               <EffectSelector>
-                <MinimumSize>85,26</MinimumSize>
+                <MinimumSize>75,26</MinimumSize>
                 <MaximumSize>150,26</MaximumSize>
                 <SizePolicy>me,f</SizePolicy>
                 <EffectRack><Variable name="FxRack"/></EffectRack>
@@ -109,12 +109,12 @@
           <WidgetGroup>
             <ObjectName>AlignCenter</ObjectName>
             <Layout>vertical</Layout>
-            <Size>30f,-1me</Size>
+            <Size>30f,0me</Size>
             <Children>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxToggleButton</SetVariable>
-                <SetVariable name="icon">fxToggle</SetVariable>
+                <SetVariable name="icon">fx_toggle</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
               </Template>
@@ -125,6 +125,11 @@
           </WidgetGroup>
 
         </Children>
+        <Connection>
+          <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -132,11 +137,9 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>EffectSlot_focused</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
-            <Children>
-            </Children>
+            <BackPath>style/background_tile_fx_focus.png</BackPath>
             <Connection>
               <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
               <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
