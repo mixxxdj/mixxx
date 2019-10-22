@@ -6,13 +6,14 @@
 #include <QUrl>
 #include <QTableView>
 
+#include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
+#include "library/dao/trackdao.h"
 #include "library/previewbuttondelegate.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "control/controlobject.h"
-#include "library/dao/trackdao.h"
+#include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
@@ -103,18 +104,22 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
     m_pBrowseThread = BrowseThread::getInstanceRef();
-    connect(m_pBrowseThread.data(), SIGNAL(clearModel(BrowseTableModel*)),
-            this, SLOT(slotClear(BrowseTableModel*)),
+    connect(m_pBrowseThread.data(),
+            &BrowseThread::clearModel,
+            this,
+            &BrowseTableModel::slotClear,
             Qt::QueuedConnection);
 
     connect(m_pBrowseThread.data(),
-            SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            &BrowseThread::rowsAppended,
             this,
-            SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            &BrowseTableModel::slotInsert,
             Qt::QueuedConnection);
 
-    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
-            this, SLOT(trackLoaded(QString, TrackPointer)));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackLoaded,
+            this,
+            &BrowseTableModel::trackLoaded);
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
@@ -413,10 +418,10 @@ bool BrowseTableModel::isColumnSortable(int column) {
 }
 
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
-    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    WLibraryTableView* pTableView = qobject_cast<WLibraryTableView*>(pParent);
     DEBUG_ASSERT(pTableView);
     if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
         return new PreviewButtonDelegate(pTableView, i);
     }
-    return NULL;
+    return nullptr;
 }

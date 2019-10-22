@@ -13,7 +13,6 @@ Variables:
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>0me,1f</Size></WidgetGroup>
 
       <WidgetGroup>
         <Layout>stacked</Layout>

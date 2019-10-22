@@ -105,7 +105,10 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     if (!m_database.open()) {
         qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &ITunesFeature::onTrackCollectionLoaded);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -196,15 +199,6 @@ void ITunesFeature::activate(bool forceReload) {
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
-        // Usually the maximum number of threads
-        // is > 2 depending on the CPU cores
-        // Unfortunately, within VirtualBox
-        // the maximum number of allowed threads
-        // is 1 at all times We'll need to increase
-        // the number to > 1, otherwise importing the music collection
-        // takes place when the GUI threads terminates, i.e., on
-        // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);

@@ -16,7 +16,7 @@ Build-Depends: debhelper (>= 9),
 # QtSql
 # QtWidgets
 # QtXml
-               qt5-default (>= 5.2.0),
+               qt5-default (>= 5.4.0),
 # We additionally need headers for QtOpenGL, QtScript, and QtSvg.
                qtscript5-dev,
                libqt5opengl5-dev,
@@ -49,6 +49,7 @@ Build-Depends: debhelper (>= 9),
                libhidapi-dev,
                libupower-glib-dev,
                liblilv-dev,
+               libmodplug-dev,
                libmp3lame-dev,
 # for running mixxx-test
                xvfb

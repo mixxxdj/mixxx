@@ -11,7 +11,7 @@
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
+    <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <Size>635me,170min</Size>
     <Children>
@@ -21,7 +21,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <ObjectName>EffectRows</ObjectName>
+            <ObjectName>FxRows</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <BackPath>style/background_tile.png</BackPath>
@@ -30,13 +30,13 @@
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
 
-              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,2f</Size></WidgetGroup>
 
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
 
-              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,2f</Size></WidgetGroup>
 
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">3</SetVariable>
@@ -45,18 +45,76 @@
           </WidgetGroup>
 
           <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
-            <ObjectName>EffectUnitControls</ObjectName>
+            <ObjectName>FxUnitControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
 
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
-              </SingletonContainer>
+              <!-- Fx label + expand | mix mode + Pfl -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>max,min</SizePolicy>
+                <Children>
 
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
-              </SingletonContainer>
+                  <!-- Fx Pfl + Expand_Collapsed -->
+                  <WidgetGroup>
+                    <ObjectName></ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>EmbeddeButtonBox</ObjectName>
+                        <Size>22f,22f</Size>
+                        <Layout>vertical</Layout>
+                        <Children>
+				                  <SingletonContainer>
+				                    <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
+				                  </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>EmbeddeButtonBox</ObjectName>
+                        <Size>22f,22f</Size>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <!-- Label -->
+                  <Label>
+                    <ObjectName>FxUnitLabel</ObjectName>
+                    <Size>me,22f</Size>
+                    <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                    <Alignment>center</Alignment>
+                  </Label>
+
+                  <WidgetGroup>
+                    <Size>0me,22f</Size>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>EmbeddeButtonBox</ObjectName>
+                        <Size>33f,22f</Size>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>3f,</Size></WidgetGroup>
+
+                </Children>
+              </WidgetGroup><!-- Fx label + expand | mix mode + Pfl -->
 
               <WidgetGroup>
                 <MinimumSize>,0</MinimumSize>
@@ -82,16 +140,6 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-
-              <WidgetGroup>
-                <MinimumSize>,2</MinimumSize>
-                <MaximumSize>,7</MaximumSize>
-                <SizePolicy>min,me</SizePolicy>
-              </WidgetGroup>
-
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
-              </SingletonContainer>
 
               <WidgetGroup><Size>,0me</Size></WidgetGroup>
             </Children>

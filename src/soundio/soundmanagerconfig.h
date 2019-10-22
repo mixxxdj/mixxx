@@ -31,6 +31,8 @@ class SoundManager;
 
 class SoundManagerConfig {
 public:
+    explicit SoundManagerConfig(SoundManager* pSoundManager);
+
     enum Defaults {
         API = (1 << 0),
         DEVICES = (1 << 1),
@@ -51,7 +53,7 @@ public:
     bool writeToDisk() const;
     QString getAPI() const;
     void setAPI(const QString &api);
-    bool checkAPI(const SoundManager &soundManager);
+    bool checkAPI();
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
     bool checkSampleRate(const SoundManager &soundManager);
@@ -61,7 +63,7 @@ public:
     unsigned int getDeckCount() const;
     void setDeckCount(unsigned int deckCount);
     void setCorrectDeckCount(int configuredDeckCount);
-    QSet<QString> getDevices() const;
+    QSet<SoundDeviceId> getDevices() const;
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
@@ -72,10 +74,10 @@ public:
     void setSyncBuffers(unsigned int sampleRate);
     bool getForceNetworkClock() const;
     void setForceNetworkClock(bool force);
-    void addOutput(const QString &device, const AudioOutput &out);
-    void addInput(const QString &device, const AudioInput &in);
-    QMultiHash<QString, AudioOutput> getOutputs() const;
-    QMultiHash<QString, AudioInput> getInputs() const;
+    void addOutput(const SoundDeviceId &device, const AudioOutput &out);
+    void addInput(const SoundDeviceId &device, const AudioInput &in);
+    QMultiHash<SoundDeviceId, AudioOutput> getOutputs() const;
+    QMultiHash<SoundDeviceId, AudioInput> getInputs() const;
     void clearOutputs();
     void clearInputs();
     bool hasMicInputs();
@@ -95,9 +97,10 @@ private:
     unsigned int m_audioBufferSizeIndex;
     unsigned int m_syncBuffers;
     bool m_forceNetworkClock;
-    QMultiHash<QString, AudioOutput> m_outputs;
-    QMultiHash<QString, AudioInput> m_inputs;
+    QMultiHash<SoundDeviceId, AudioOutput> m_outputs;
+    QMultiHash<SoundDeviceId, AudioInput> m_inputs;
     int m_iNumMicInputs;
     bool m_bExternalRecordBroadcastConnected;
+    SoundManager* m_pSoundManager;
 };
 #endif

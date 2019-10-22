@@ -14,8 +14,8 @@
       <KnobComposed>
         <TooltipId>EffectSlot_metaknob</TooltipId>
         <Size>25f,25f</Size>
-        <Knob>knob_small_indicator_green.svg</Knob>
-        <BackPath>knob_small_bg.svg</BackPath>
+        <Knob>skin:knobs_sliders/knob_small_indicator_green.svg</Knob>
+        <BackPath>skin:knobs_sliders/knob_small_bg.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <Connection>

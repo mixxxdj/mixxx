@@ -30,6 +30,8 @@ constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
 constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
+// bool kDefaultCloneDeckOnLoad is defined in header file to make it available
+// to playermanager.cpp
 }
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
@@ -164,6 +166,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     checkBoxSeekToCue->setChecked(m_bJumpToCueOnTrackLoad);
     connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
             this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
+
+    // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
+    m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
+    connect(checkBoxCloneDeckOnLoadDoubleTap, SIGNAL(toggled(bool)),
+            this, SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
 
     // Automatically assign a color to new hot cues
     m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
@@ -337,6 +346,9 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
 
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
+
     checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "CueRecall"), false));
 
@@ -413,6 +425,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     // Don't load tracks into playing decks.
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
+    // Clone decks by double-tapping Load button.
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
 
@@ -498,6 +512,10 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
     m_bJumpToCueOnTrackLoad = checked;
 }
 
+void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
+    m_bCloneDeckOnLoadDoubleTap = checked;
+}
+
 void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
     m_bAssignHotcueColors = checked;
 }
@@ -577,6 +595,9 @@ void DlgPrefDeck::slotApply() {
 
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);
+
+    m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
+                        m_bCloneDeckOnLoadDoubleTap);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
     m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);

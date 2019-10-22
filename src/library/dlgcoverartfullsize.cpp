@@ -19,16 +19,24 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(this,
+            &DlgCoverArtFullSize::customContextMenuRequested,
+            this,
+            &DlgCoverArtFullSize::slotCoverMenu);
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::coverInfoSelected,
+            this,
+            &DlgCoverArtFullSize::slotCoverInfoSelected);
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::reloadCoverArt,
+            this,
+            &DlgCoverArtFullSize::slotReloadCoverArt);
 
     if (m_pPlayer != nullptr) {
-        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotLoadTrack(TrackPointer)));
+        connect(pPlayer,
+                &BaseTrackPlayer::newTrackLoaded,
+                this,
+                &DlgCoverArtFullSize::slotLoadTrack);
     }
 
     setupUi(this);
@@ -49,13 +57,17 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
     if (m_pLoadedTrack != nullptr) {
-        disconnect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_pLoadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack = pTrack;
     if (m_pLoadedTrack != nullptr) {
-        connect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
-                this, SLOT(slotTrackCoverArtUpdated()));
+        connect(m_pLoadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
 
         // Somehow setting the widow title triggered a bug in Xlib that resulted
         // in a deadlock before the check for isVisible() was added.

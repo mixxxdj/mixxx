@@ -34,6 +34,8 @@ class Cue : public QObject {
         OUTRO   = 7,
     };
 
+    static constexpr double kPositionNotDefined = -1.0;
+
     ~Cue() override = default;
 
     bool isDirty() const;

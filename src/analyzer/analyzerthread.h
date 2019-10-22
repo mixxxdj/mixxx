@@ -125,8 +125,7 @@ class AnalyzerThread : public WorkerThread {
 
     enum class AnalysisResult {
         Pending,
-        Partial,
-        Complete,
+        Finished,
         Cancelled,
     };
     AnalysisResult analyzeAudioSource(

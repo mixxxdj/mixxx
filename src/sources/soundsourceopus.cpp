@@ -4,10 +4,6 @@
 
 namespace mixxx {
 
-// Depends on kNumberOfPrefetchFrames (see below)
-//static
-const CSAMPLE SoundSourceOpus::kMaxDecodingError = 0.01f;
-
 namespace {
 
 const Logger kLogger("SoundSourceOpus");
@@ -20,7 +16,17 @@ constexpr AudioSignal::SampleRate kSampleRate = AudioSignal::SampleRate(48000);
 //  - Frame sizes from 2.5 ms to 60 ms
 //   => Up to 48000 kHz * 0.06 s = 2880 sample frames per data frame
 // Prefetching 2 * 2880 sample frames while seeking limits the decoding
-// errors to kMaxDecodingError (see definition below) during our tests.
+// errors to kMaxDecodingError during our tests.
+//
+// According to the API documentation of op_pcm_seek():
+// "...decoding after seeking may not return exactly the same
+// values as would be obtained by decoding the stream straight
+// through. However, such differences are expected to be smaller
+// than the loss introduced by Opus's lossy compression."
+// This implementation internally uses prefetching to compensate
+// those differences, although not completely. The following
+// constant indicates the maximum expected difference for
+// testing purposes.
 constexpr SINT kNumberOfPrefetchFrames = 2 * 2880;
 
 // Parameter for op_channel_count()
@@ -377,6 +383,13 @@ QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
     supportedFileExtensions.append("opus");
     return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx
