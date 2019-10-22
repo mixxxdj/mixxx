@@ -91,15 +91,15 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    double introStart = mixxx::kAnalysisChannels * m_iSignalStart;
-    double outroEnd = mixxx::kAnalysisChannels * m_iSignalEnd;
+    double firstSound = mixxx::kAnalysisChannels * m_iSignalStart;
+    double lastSound = mixxx::kAnalysisChannels * m_iSignalEnd;
 
     CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
     if (pAudibleSound == nullptr) {
         pAudibleSound = pTrack->createAndAddCue();
         pAudibleSound->setType(Cue::Type::AudibleSound);
-        pAudibleSound->setPosition(introStart);
-        pAudibleSound->setLength(outroEnd - introStart);
+        pAudibleSound->setPosition(firstSound);
+        pAudibleSound->setLength(lastSound - firstSound);
     }
 
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
@@ -108,15 +108,15 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
     if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
             && pIntroCue == nullptr && mainCue != kCueNotSet && mainCue != 0.0) {
-        introStart = mainCue;
+        firstSound = mainCue;
     } else if (mainCue == kCueNotSet) {
-        pTrack->setCuePoint(CuePosition(introStart));
+        pTrack->setCuePoint(CuePosition(firstSound));
     }
 
     if (!pIntroCue) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
-        pIntroCue->setPosition(introStart);
+        pIntroCue->setPosition(firstSound);
         pIntroCue->setLength(0.0);
     }
 
@@ -125,6 +125,6 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
         pOutroCue = pTrack->createAndAddCue();
         pOutroCue->setType(Cue::Type::Outro);
         pOutroCue->setPosition(kCueNotSet);
-        pOutroCue->setLength(outroEnd);
+        pOutroCue->setLength(lastSound);
     }
 }
