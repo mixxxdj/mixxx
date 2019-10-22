@@ -290,6 +290,16 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
         QString entryType(data.mid(offset, entryTypeEndPos - offset));
         offset = entryTypeEndPos + 1;
 
+        if (entryType.isEmpty()) {
+            // We reached the end of the markers
+            if (offset != data.size()) {
+                qWarning() << "Parsing SeratoMarkers2 failed:"
+                           << "Trailing content" << data.mid(offset);
+                return false;
+            }
+            break;
+        }
+
         // Entry Size
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         auto entrySize = qFromBigEndian<quint32>(data.mid(offset, 4));
