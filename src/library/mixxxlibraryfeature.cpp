@@ -197,10 +197,8 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        QList<TrackId> trackIds = m_trackDao.addMultipleTracks(files, true);
+        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+                urls, true);
         return trackIds.size() > 0;
     }
 }
