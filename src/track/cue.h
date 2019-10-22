@@ -41,6 +41,7 @@ class Cue : public QObject {
 
     double getPosition() const;
     void setStartPosition(double samplePosition);
+    void setEndPosition(double samplePosition);
 
     double getLength() const;
     void setLength(double length);
@@ -73,7 +74,7 @@ class Cue : public QObject {
     int m_iId;
     TrackId m_trackId;
     Cue::Type m_type;
-    double m_samplePosition;
+    double m_sampleStartPosition;
     double m_length;
     int m_iHotCue;
     QString m_label;

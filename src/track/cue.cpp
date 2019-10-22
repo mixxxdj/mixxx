@@ -24,7 +24,7 @@ Cue::Cue(TrackId trackId)
           m_iId(-1),
           m_trackId(trackId),
           m_type(Cue::Type::Invalid),
-          m_samplePosition(-1.0),
+          m_sampleStartPosition(-1.0),
           m_length(0.0),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
@@ -38,7 +38,7 @@ Cue::Cue(int id, TrackId trackId, Cue::Type type, double position, double length
           m_iId(id),
           m_trackId(trackId),
           m_type(type),
-          m_samplePosition(position),
+          m_sampleStartPosition(position),
           m_length(length),
           m_iHotCue(hotCue),
           m_label(label),
@@ -87,12 +87,26 @@ void Cue::setType(Cue::Type type) {
 
 double Cue::getPosition() const {
     QMutexLocker lock(&m_mutex);
-    return m_samplePosition;
+    return m_sampleStartPosition;
 }
 
 void Cue::setStartPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
-    m_samplePosition = samplePosition;
+    m_sampleStartPosition = samplePosition;
+    m_bDirty = true;
+    lock.unlock();
+    emit(updated());
+}
+
+void Cue::setEndPosition(double samplePosition) {
+    QMutexLocker lock(&m_mutex);
+    if (samplePosition == -1.0) {
+        m_length = 0;
+    } else if (m_sampleStartPosition == -1.0) {
+        m_length = samplePosition;
+    } else {
+        m_length = samplePosition - m_sampleStartPosition;
+    }
     m_bDirty = true;
     lock.unlock();
     emit(updated());
@@ -165,12 +179,12 @@ void Cue::setDirty(bool dirty) {
 
 double Cue::getEndPosition() const {
     QMutexLocker lock(&m_mutex);
-    if (m_samplePosition == -1.0) {
+    if (m_sampleStartPosition == -1.0) {
         return m_length;
     } else if (m_length == 0.0) {
         return -1.0;
     } else {
-        return  m_samplePosition + m_length;
+        return m_sampleStartPosition + m_length;
     }
 }
 
