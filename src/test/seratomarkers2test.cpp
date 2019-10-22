@@ -6,6 +6,7 @@
 #include <taglib/tstring.h>
 #include <taglib/textidentificationframe.h>
 #include <QtDebug>
+#include <QDir>
 
 namespace {
 
@@ -73,6 +74,12 @@ class SeratoMarkers2Test : public testing::Test {
 
         EXPECT_EQ(inputValue, loopEntry->data());
    }
+
+    void parseMarkers2Data(const QByteArray inputValue, bool valid) {
+        mixxx::SeratoMarkers2 seratoMarkers2;
+        bool parseOk = mixxx::SeratoMarkers2::parse(&seratoMarkers2, inputValue);
+        EXPECT_EQ(valid, parseOk);
+    }
 };
 
 TEST_F(SeratoMarkers2Test, ParseBpmlockEntry) {
@@ -200,4 +207,24 @@ TEST_F(SeratoMarkers2Test, ParseLoopEntry) {
         false,
         0, 0, 0, false, QString());
 }
+
+TEST_F(SeratoMarkers2Test, ParseMarkers2Data) {
+    QDir dir("src/test/seratomarkers2-data");
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << "*.octet-stream");
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); i++) {
+        QFileInfo fileInfo = list.at(i);
+        QFile file(dir.filePath(fileInfo.fileName()));
+        bool openOk =  file.open(QIODevice::ReadOnly);
+        EXPECT_TRUE(openOk);
+        if (!openOk) {
+            continue;
+        }
+        QByteArray data = file.readAll();
+        parseMarkers2Data(data, true);
+    }
+}
+
 }  // namespace
