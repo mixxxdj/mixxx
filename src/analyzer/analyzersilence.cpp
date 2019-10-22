@@ -105,18 +105,19 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
 
     double mainCue = pTrack->getCuePoint().getPosition();
+    double introStart = firstSound;
     if (mainCue == kCueNotSet) {
         pTrack->setCuePoint(CuePosition(firstSound));
     // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
     } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
             && pIntroCue == nullptr && mainCue != 0.0) {
-        firstSound = mainCue;
+        introStart = mainCue;
     }
 
     if (!pIntroCue) {
         pIntroCue = pTrack->createAndAddCue();
         pIntroCue->setType(Cue::Type::Intro);
-        pIntroCue->setPosition(firstSound);
+        pIntroCue->setPosition(introStart);
         pIntroCue->setLength(0.0);
     }
 
