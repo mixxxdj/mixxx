@@ -166,7 +166,7 @@ QByteArray SeratoMarkers2CueEntry::data() const {
 }
 
 quint32 SeratoMarkers2CueEntry::length() const {
-    return 13 + m_label.length();
+    return 13 + m_label.toUtf8().length();
 }
 
 SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data)
@@ -263,7 +263,7 @@ QByteArray SeratoMarkers2LoopEntry::data() const {
 }
 
 quint32 SeratoMarkers2LoopEntry::length() const {
-    return 21 + m_label.length();
+    return 21 + m_label.toUtf8().length();
 }
 
 bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData) {
