@@ -268,14 +268,16 @@ quint32 SeratoMarkers2LoopEntry::length() const {
 
 bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData) {
     if (!outerData.startsWith("\x01\x01")) {
-        qWarning() << "Unknown outer Serato Markers2 tag version";
+        qWarning() << "Parsing SeratoMarkers2 failed:"
+                   << "Unknown outer Serato Markers2 tag version";
         return false;
     }
 
     const auto data = QByteArray::fromBase64(outerData.mid(2));
 
     if (!data.startsWith("\x01\x01")) {
-        qWarning() << "Unknown inner Serato Markers2 tag version";
+        qWarning() << "Parsing SeratoMarkers2 failed:"
+                   << "Unknown inner Serato Markers2 tag version";
         return false;
     }
 
@@ -316,6 +318,8 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
         }
 
         if(!pEntry) {
+            qWarning() << "Parsing SeratoMarkers2 failed:"
+                       << "Unable to parse entry of type " << entryType;
             return false;
         }
         entries.append(pEntry);
