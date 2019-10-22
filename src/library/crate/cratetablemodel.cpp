@@ -146,15 +146,8 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<QFileInfo> fileInfoList;
-    foreach(QString fileLocation, locations) {
-        QFileInfo fileInfo(fileLocation);
-        if (fileInfo.exists()) {
-            fileInfoList.append(fileInfo);
-        }
-    }
-
-    QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true));
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromLocations(
+            locations);
     if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
         select();
         return trackIds.size();

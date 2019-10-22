@@ -24,6 +24,14 @@ class LibraryHashDAO;
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
   public:
+
+    enum class ResolveTrackIdFlag : int {
+        ResolveOnly = 0,
+        UnhideHidden = 1,
+        AddMissing = 2
+    };
+    Q_DECLARE_FLAGS(ResolveTrackIdFlags, ResolveTrackIdFlag)
+
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
     TrackDAO(
@@ -40,7 +48,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     TrackId getTrackId(const QString& absoluteFilePath);
-    QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
+    QList<TrackId> resolveTrackIds(const QList<QFileInfo> &files,
+            ResolveTrackIdFlags flags);
     QList<TrackId> getTrackIds(const QDir& dir);
 
     // WARNING: Only call this from the main thread instance of TrackDAO.
@@ -51,19 +60,17 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QString getTrackLocation(TrackId trackId);
 
     TrackPointer addSingleTrack(const QFileInfo& fileInfo, bool unremove);
-    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
-
     void addTracksPrepare();
     TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
-    bool onHidingTracks(
+    bool hideTracks(
             const QList<TrackId>& trackIds);
     void afterHidingTracks(
             const QList<TrackId>& trackIds);
 
-    bool onUnhidingTracks(
+    bool unhideTracks(
             const QList<TrackId>& trackIds);
     void afterUnhidingTracks(
             const QList<TrackId>& trackIds);
@@ -158,5 +165,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
+
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
 
 #endif //TRACKDAO_H

@@ -138,26 +138,18 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    // If a track is dropped onto a playlist's name, but the track isn't in the
+    // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
-    // playlist.
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<TrackId> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->unhideTracks(trackIds);
-    } else {
-        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    // Auto DJ playlist.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+            !pSource);
+    if (trackIds.isEmpty()) {
+        return false;
     }
 
-    // remove tracks that could not be added
-    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); trackIdIndex++) {
-        if (!trackIds.at(trackIdIndex).isValid()) {
-            trackIds.removeAt(trackIdIndex--);
-        }
-    }
-
-    // Return whether the tracks were appended.
+    // Return whether appendTracksToPlaylist succeeded.
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
