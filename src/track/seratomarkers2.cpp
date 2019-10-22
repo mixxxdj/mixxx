@@ -339,4 +339,36 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
     return true;
 }
 
+QByteArray SeratoMarkers2::data() const {
+    QByteArray data("\x01\x01", 2);
+
+    for (int i = 0; i < m_entries.size(); i++) {
+        SeratoMarkers2EntryPointer entry = m_entries.at(i);
+        quint32 lengthBE = qToBigEndian(entry->length());
+        data.append(entry->type().toUtf8());
+        data.append('\0');
+        data.append((const char*)&lengthBE, 4);
+        data.append(entry->data());
+    }
+    data.append('\0');
+
+    QByteArray outerData("\x01\x01", 2);
+
+    // A newline char is inserted at every 72 bytes of base64-encoded content.
+    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
+    // and base64-encode them one at a time:
+    int offset = 0;
+    while(offset < data.size()) {
+        if (offset > 0) {
+            outerData.append('\n');
+        }
+        QByteArray block = data.mid(offset, 54);
+        outerData.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
+        offset += block.size();
+    }
+
+    return outerData.leftJustified(470, '\0');
+}
+
+
 } //namespace mixxx

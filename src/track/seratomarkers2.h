@@ -375,6 +375,8 @@ public:
     // SeratoMarkers2 1.0/2.0 specification.
     static bool parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData);
 
+    QByteArray data() const;
+
     const QList<std::shared_ptr<SeratoMarkers2Entry>>& getEntries() const {
         return m_entries;
     }
