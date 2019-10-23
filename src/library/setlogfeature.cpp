@@ -19,7 +19,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
-          m_pSidebarWidget(NULL),
+          m_pSidebarWidget(nullptr),
           m_icon(":/images/library/ic_library_history.svg"),
           m_pMenu(nullptr) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
