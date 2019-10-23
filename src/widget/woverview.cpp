@@ -348,7 +348,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             }
 
             int hotcueNumber = currentCue->getHotCue();
-            if (currentCue->getType() == Cue::Type::HotCue && hotcueNumber != WaveformMark::kNoHotCue) {
+            if (currentCue->getType() == Cue::Type::HotCue && hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
@@ -461,7 +461,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
-        } else if (m_pHoveredMark->getHotCue() != WaveformMark::kNoHotCue) {
+        } else if (m_pHoveredMark->getHotCue() != Cue::kNoHotCue) {
             // Currently the only way WaveformMarks can be associated
             // with their respective Cue objects is by using the hotcue
             // number. If cues without assigned hotcue are drawn on
@@ -743,7 +743,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
                     bool otherHasLabel = !otherMark->m_text.isEmpty()
-                            || otherMark->getHotCue() != WaveformMark::kNoHotCue;
+                            || otherMark->getHotCue() != Cue::kNoHotCue;
                     if (otherAtSameHeight && otherHasLabel) {
                         nextMarkPosition = offset + otherMark->getSamplePosition() * gain;
                         break;
@@ -757,7 +757,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // elipsis character, so always show at least the hotcue number if
             // the label does not fit.
             if ((text.isEmpty() || text == "…")
-                && pMark->getHotCue() != WaveformMark::kNoHotCue) {
+                && pMark->getHotCue() != Cue::kNoHotCue) {
                 text = QString::number(pMark->getHotCue()+1);
             }
 

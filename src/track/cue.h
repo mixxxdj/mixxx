@@ -31,6 +31,7 @@ class Cue : public QObject {
     };
 
     static constexpr double kNoPosition = -1.0;
+    static const int kNoHotCue = -1;
 
     ~Cue() override = default;
 
