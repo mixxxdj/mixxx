@@ -663,7 +663,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double position, int id, QString label, int colorCode) {
+void setHotCue(TrackPointer track, double position, int id, QString label, int colorCode, int colorRed, int colorGreen, int colorBlue) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -686,6 +686,12 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
     if (!label.isNull()) {
         pCue->setLabel(label);
     }
+
+    /*
+TODO(ehendrikd):
+Update setting hotcue colors once proposed PR is merged
+allowing custom hotcue colors/palette
+See: https://github.com/mixxxdj/mixxx/pull/2119
 
     // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
     switch (colorCode) {
@@ -724,6 +730,7 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
         pCue->setColor(Color::kPredefinedColorsSet.noColor);
         break;
     }
+*/
 }
 
 void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
@@ -806,7 +813,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    setHotCue(track, position, static_cast<int>((*cueEntry)->hot_cue() - 1), QString(), -1);
+                    setHotCue(track, position, static_cast<int>((*cueEntry)->hot_cue() - 1), QString(), -1, -1, -1, -1);
                 } break;
                 }
             }
@@ -842,7 +849,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    setHotCue(track, position, static_cast<int>((*cueExtendedEntry)->hot_cue() - 1), toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()));
+                    setHotCue(track, position, static_cast<int>((*cueExtendedEntry)->hot_cue() - 1), toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()), static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()));
                 } break;
                 }
             }
