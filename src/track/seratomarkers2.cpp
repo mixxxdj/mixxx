@@ -365,6 +365,12 @@ QByteArray SeratoMarkers2::data() const {
         QByteArray block = data.mid(offset, 54);
         outerData.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
         offset += block.size();
+
+        // In case that the last block would require padding, Serato seems to
+        // chop off the last byte of the base64-encoded data
+        if (block.size() % 3) {
+            outerData.chop(1);
+        }
     }
 
     return outerData.leftJustified(470, '\0');
