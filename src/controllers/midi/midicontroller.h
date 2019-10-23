@@ -59,7 +59,8 @@ class MidiController : public Controller {
 
   protected:
     virtual void sendShortMsg(unsigned char status,
-            unsigned char byte1, unsigned char byte2) = 0;
+            unsigned char byte1,
+            unsigned char byte2) = 0;
 
     // Alias for send()
     // The length parameter is here for backwards compatibility for when scripts
@@ -117,16 +118,17 @@ class MidiController : public Controller {
     friend class MidiControllerJSProxy;
 };
 
-class MidiControllerJSProxy: public ControllerJSProxy {
-  Q_OBJECT
+class MidiControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
   public:
     MidiControllerJSProxy(MidiController* m_pController)
-    : ControllerJSProxy(m_pController),
-      m_pMidiController(m_pController) {
+            : ControllerJSProxy(m_pController),
+              m_pMidiController(m_pController) {
     }
 
     Q_INVOKABLE void sendShortMsg(unsigned char status,
-            unsigned char byte1, unsigned char byte2) {
+            unsigned char byte1,
+            unsigned char byte2) {
         m_pMidiController->sendShortMsg(status, byte1, byte2);
     }
 

@@ -3,9 +3,9 @@
 
 #include <QVector>
 
-#include "controllers/engine/controllerengine.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/engine/controllerengine.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {

@@ -21,9 +21,7 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
-                                     ControllerManager* controllerManager,
-                                     UserSettingsPointer pConfig)
+DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller, ControllerManager* controllerManager, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
@@ -41,8 +39,7 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     initTableView(m_ui.m_pOutputMappingTableView);
     initTableView(m_ui.m_pScriptsTableWidget);
 
-    connect(m_pController, &Controller::presetLoaded,
-            this, &DlgPrefController::slotPresetLoaded);
+    connect(m_pController, &Controller::presetLoaded, this, &DlgPrefController::slotPresetLoaded);
     // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
     // since 1.11.0. We shouldn't be calling Controller methods because it lives
     // in a different thread. Booleans (like isOpen()) are fine but a complex
@@ -60,7 +57,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     }
 
     m_ui.groupBoxWarning->hide();
-    m_ui.labelWarning->setText(tr("<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
+    m_ui.labelWarning->setText(tr(
+            "<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
             "Please select another preset or disable the controller.</b></font><br><br>"
             "This preset was designed for a newer Mixxx Controller Engine "
             "and cannot be used on your current Mixxx installation.<br>"
@@ -68,7 +66,7 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             "This preset requires a Controller Engine version >= %2.<br><br>"
             "For more information visit the wiki page on "
             "<a href='https://mixxx.org/wiki/doku.php/controller_engine_versions'>Controller Engine Versions</a>.")
-            .arg("2","1"));
+                                       .arg("2", "1"));
     QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
     m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
 

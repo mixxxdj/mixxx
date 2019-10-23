@@ -17,7 +17,8 @@ void FakeControllerJSProxy::sendSysexMsg(QList<int> data, unsigned int length) {
 }
 
 void FakeControllerJSProxy::sendShortMsg(unsigned char status,
-        unsigned char byte1, unsigned char byte2) {
+        unsigned char byte1,
+        unsigned char byte2) {
     Q_UNUSED(status);
     Q_UNUSED(byte1);
     Q_UNUSED(byte2);
@@ -45,8 +46,6 @@ ControllerPresetPointer FakeController::getPreset() const {
     }
 }
 
-
-
 bool FakeController::isMappable() const {
     if (m_bMidiPreset) {
         return m_midiPreset.isMappable();
@@ -73,7 +72,7 @@ void ControllerPresetValidationTest::SetUp() {
 bool ControllerPresetValidationTest::testLoadPreset(const PresetInfo& preset) {
     ControllerPresetPointer pPreset =
             ControllerPresetFileHandler::loadPreset(preset.getPath(),
-                                                    m_presetPaths);
+                    m_presetPaths);
     if (pPreset.isNull()) {
         return false;
     }

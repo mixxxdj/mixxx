@@ -1,10 +1,10 @@
 #include "controllers/engine/colorjsproxy.h"
 
 ColorJSProxy::ColorJSProxy(QJSEngine* pScriptEngine)
-    : m_pScriptEngine(pScriptEngine),
-      m_predefinedColorsList(makePredefinedColorsList(pScriptEngine)){};
+        : m_pScriptEngine(pScriptEngine),
+          m_predefinedColorsList(makePredefinedColorsList(pScriptEngine)){};
 
-ColorJSProxy::~ColorJSProxy() {};
+ColorJSProxy::~ColorJSProxy(){};
 
 QJSValue ColorJSProxy::predefinedColorFromId(int iId) {
     PredefinedColorPointer color(Color::kPredefinedColorsSet.predefinedColorFromId(iId));

@@ -3,14 +3,14 @@
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "preferences/usersettings.h"
-#include "controllers/engine/controllerengine.h"
 #include "controllers/controllerdebug.h"
+#include "controllers/engine/controllerengine.h"
 #include "controllers/softtakeover.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "util/color/color.h"
 #include "util/memory.h"
 #include "util/time.h"
-#include "util/color/color.h"
 
 class ControllerEngineTest : public MixxxTest {
   protected:
@@ -107,8 +107,9 @@ TEST_F(ControllerEngineTest, setParameter_NaN) {
 TEST_F(ControllerEngineTest, getSetParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
                                                 -10.0, 10.0);
-    EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', "
-                        "  engine.getParameter('[Test]', 'co') + 0.1);"));
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setParameter('[Test]', 'co', "
+            "  engine.getParameter('[Test]', 'co') + 0.1);"));
     EXPECT_DOUBLE_EQ(2.0, co->get());
 }
 
@@ -116,8 +117,9 @@ TEST_F(ControllerEngineTest, softTakeover_setValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
                                                 -10.0, 10.0);
     co->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert("engine.softTakeover('[Test]', 'co', true);"
-                                  "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.softTakeover('[Test]', 'co', true);"
+            "engine.setValue('[Test]', 'co', 0.0);"));
     // The first set after enabling is always ignored.
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
@@ -146,8 +148,9 @@ TEST_F(ControllerEngineTest, softTakeover_setParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
                                                 -10.0, 10.0);
     co->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert("engine.softTakeover('[Test]', 'co', true);"
-                                  "engine.setParameter('[Test]', 'co', 1.0);"));
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.softTakeover('[Test]', 'co', true);"
+            "engine.setParameter('[Test]', 'co', 1.0);"));
     // The first set after enabling is always ignored.
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
@@ -176,8 +179,9 @@ TEST_F(ControllerEngineTest, softTakeover_ignoreNextValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
                                                 -10.0, 10.0);
     co->setParameter(0.0);
-    EXPECT_TRUE(evaluateAndAssert("engine.softTakeover('[Test]', 'co', true);"
-                                  "engine.setParameter('[Test]', 'co', 1.0);"));
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.softTakeover('[Test]', 'co', true);"
+            "engine.setParameter('[Test]', 'co', 1.0);"));
     // The first set after enabling is always ignored.
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 
@@ -211,12 +215,11 @@ TEST_F(ControllerEngineTest, trigger) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "var connection = engine.connectControl('[Test]', 'co', reaction);"
-        "engine.trigger('[Test]', 'co');"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "var connection = engine.connectControl('[Test]', 'co', reaction);"
+            "engine.trigger('[Test]', 'co');"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -234,15 +237,14 @@ TEST_F(ControllerEngineTest, connectControl_ByString) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "engine.connectControl('[Test]', 'co', 'reaction');"
-        "engine.trigger('[Test]', 'co');"
-        "function disconnect() { "
-        "  engine.connectControl('[Test]', 'co', 'reaction', 1);"
-        "  engine.trigger('[Test]', 'co'); }"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "engine.connectControl('[Test]', 'co', 'reaction');"
+            "engine.trigger('[Test]', 'co');"
+            "function disconnect() { "
+            "  engine.connectControl('[Test]', 'co', 'reaction', 1);"
+            "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -262,13 +264,12 @@ TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) 
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "engine.connectControl('[Test]', 'co', 'reaction');"
-        "engine.connectControl('[Test]', 'co', 'reaction');"
-        "engine.trigger('[Test]', 'co');"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "engine.connectControl('[Test]', 'co', 'reaction');"
+            "engine.connectControl('[Test]', 'co', 'reaction');"
+            "engine.trigger('[Test]', 'co');"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -286,22 +287,21 @@ TEST_F(ControllerEngineTest,
     auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
 
     QString script(
-        "var incrementCounterCO = function () {"
-        "  var counter = engine.getValue('[Test]', 'counter');"
-        "  engine.setValue('[Test]', 'counter', counter + 1);"
-        "};"
-        "var connection1 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
-        // Make a second connection with the same ControlObject
-        // to check that disconnecting one does not disconnect both.
-        "var connection2 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
-        "function changeTestCoValue() {"
-        "  var testCoValue = engine.getValue('[Test]', 'co');"
-        "  engine.setValue('[Test]', 'co', testCoValue + 1);"
-        "};"
-        "function disconnectConnection2() {"
-        "  connection2.disconnect();"
-        "};"
-    );
+            "var incrementCounterCO = function () {"
+            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  engine.setValue('[Test]', 'counter', counter + 1);"
+            "};"
+            "var connection1 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
+            // Make a second connection with the same ControlObject
+            // to check that disconnecting one does not disconnect both.
+            "var connection2 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
+            "function changeTestCoValue() {"
+            "  var testCoValue = engine.getValue('[Test]', 'co');"
+            "  engine.setValue('[Test]', 'co', testCoValue + 1);"
+            "};"
+            "function disconnectConnection2() {"
+            "  connection2.disconnect();"
+            "};");
 
     evaluateAndAssert(script);
     EXPECT_TRUE(evaluateAndAssert(script));
@@ -325,12 +325,11 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "var connection = engine.connectControl('[Test]', 'co', reaction);"
-        "connection.trigger();"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "var connection = engine.connectControl('[Test]', 'co', reaction);"
+            "connection.trigger();"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -344,15 +343,14 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "engine.connectControl('[Test]', 'co', reaction);"
-        "engine.connectControl('[Test]', 'co', reaction);"
-        // engine.trigger() has no way to know which connection to a ControlObject
-        // to trigger, so it should trigger all of them.
-        "engine.trigger('[Test]', 'co');"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "engine.connectControl('[Test]', 'co', reaction);"
+            "engine.connectControl('[Test]', 'co', reaction);"
+            // engine.trigger() has no way to know which connection to a ControlObject
+            // to trigger, so it should trigger all of them.
+            "engine.trigger('[Test]', 'co');"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -369,16 +367,15 @@ TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "engine.connectControl('[Test]', 'co', reaction);"
-        "engine.connectControl('[Test]', 'co', reaction);"
-        "engine.trigger('[Test]', 'co');"
-        "function disconnect() { "
-        "  engine.connectControl('[Test]', 'co', reaction, 1);"
-        "  engine.trigger('[Test]', 'co'); }"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "engine.connectControl('[Test]', 'co', reaction);"
+            "engine.connectControl('[Test]', 'co', reaction);"
+            "engine.trigger('[Test]', 'co');"
+            "function disconnect() { "
+            "  engine.connectControl('[Test]', 'co', reaction, 1);"
+            "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -394,14 +391,13 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var connection = engine.connectControl('[Test]', 'co', function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); });"
-        "connection.trigger();"
-        "function disconnect() { "
-        "  connection.disconnect();"
-        "  engine.trigger('[Test]', 'co'); }"
-    ));
+            "var connection = engine.connectControl('[Test]', 'co', function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); });"
+            "connection.trigger();"
+            "function disconnect() { "
+            "  connection.disconnect();"
+            "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -418,15 +414,14 @@ TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "var connection = engine.makeConnection('[Test]', 'co', reaction);"
-        "connection.trigger();"
-        "function disconnect() { "
-        "  connection.disconnect();"
-        "  engine.trigger('[Test]', 'co'); }"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "var connection = engine.makeConnection('[Test]', 'co', reaction);"
+            "connection.trigger();"
+            "function disconnect() { "
+            "  connection.disconnect();"
+            "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -440,7 +435,7 @@ TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
     // Test that checks if disconnecting yields the appropriate feedback
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
-    
+
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(success) { "
             "  if (success) {"
@@ -454,8 +449,7 @@ TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
             "reaction(connection.isConnected);"
             "var successful_disconnect = connection.disconnect();"
             "reaction(successful_disconnect);"
-            "reaction(!connection.isConnected);"
-    ));
+            "reaction(!connection.isConnected);"));
     application()->processEvents();
     EXPECT_DOUBLE_EQ(4.0, pass->get());
 }
@@ -473,23 +467,22 @@ TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectContro
     auto dummy = std::make_unique<ControlObject>(ConfigKey("[Test]", "dummy"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var reaction = function(value) { "
-        "  var pass = engine.getValue('[Test]', 'passed');"
-        "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
-        "var connection1 = engine.connectControl('[Test]', 'co', reaction);"
-        "var connection2 = engine.connectControl('[Test]', 'co', reaction);"
-        "function disconnectConnection1() { "
-        "  engine.connectControl('[Test]',"
-        "                        'dummy',"
-        "                        connection1);"
-        "  engine.trigger('[Test]', 'co'); }"
-        // Whether a 4th argument is passed to engine.connectControl does not matter.
-        "function disconnectConnection2() { "
-        "  engine.connectControl('[Test]',"
-        "                        'dummy',"
-        "                        connection2, true);"
-        "  engine.trigger('[Test]', 'co'); }"
-    ));
+            "var reaction = function(value) { "
+            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
+            "var connection1 = engine.connectControl('[Test]', 'co', reaction);"
+            "var connection2 = engine.connectControl('[Test]', 'co', reaction);"
+            "function disconnectConnection1() { "
+            "  engine.connectControl('[Test]',"
+            "                        'dummy',"
+            "                        connection1);"
+            "  engine.trigger('[Test]', 'co'); }"
+            // Whether a 4th argument is passed to engine.connectControl does not matter.
+            "function disconnectConnection2() { "
+            "  engine.connectControl('[Test]',"
+            "                        'dummy',"
+            "                        connection2, true);"
+            "  engine.trigger('[Test]', 'co'); }"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -511,22 +504,21 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
     auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var incrementCounterCO = function () {"
-        "  var counter = engine.getValue('[Test]', 'counter');"
-        "  engine.setValue('[Test]', 'counter', counter + 1);"
-        "};"
-        "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
-        // Make a second connection with the same ControlObject
-        // to check that disconnecting one does not disconnect both.
-        "var connection2 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
-        "function changeTestCoValue() {"
-        "  var testCoValue = engine.getValue('[Test]', 'co');"
-        "  engine.setValue('[Test]', 'co', testCoValue + 1);"
-        "}"
-        "function disconnectConnection1() {"
-        "  connection1.disconnect();"
-        "}"
-    ));
+            "var incrementCounterCO = function () {"
+            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  engine.setValue('[Test]', 'counter', counter + 1);"
+            "};"
+            "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
+            // Make a second connection with the same ControlObject
+            // to check that disconnecting one does not disconnect both.
+            "var connection2 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
+            "function changeTestCoValue() {"
+            "  var testCoValue = engine.getValue('[Test]', 'co');"
+            "  engine.setValue('[Test]', 'co', testCoValue + 1);"
+            "}"
+            "function disconnectConnection1() {"
+            "  connection1.disconnect();"
+            "}"));
     EXPECT_TRUE(evaluateAndAssert("changeTestCoValue()"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -550,17 +542,16 @@ TEST_F(ControllerEngineTest, connectionObject_trigger) {
     auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var incrementCounterCO = function () {"
-        "  var counter = engine.getValue('[Test]', 'counter');"
-        "  engine.setValue('[Test]', 'counter', counter + 1);"
-        "};"
-        "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
-        // Make a second connection with the same ControlObject
-        // to check that triggering a connection object only triggers that callback,
-        // not every callback connected to its ControlObject.
-        "var connection2 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
-        "connection1.trigger();"
-    ));
+            "var incrementCounterCO = function () {"
+            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  engine.setValue('[Test]', 'counter', counter + 1);"
+            "};"
+            "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
+            // Make a second connection with the same ControlObject
+            // to check that triggering a connection object only triggers that callback,
+            // not every callback connected to its ControlObject.
+            "var connection2 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
+            "connection1.trigger();"));
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
@@ -574,17 +565,16 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
     EXPECT_TRUE(evaluateAndAssert(
-        "var TestObject = function () {"
-        "  this.executeTheCallback = true;"
-        "  this.connection = engine.makeConnection('[Test]', 'co', function () {"
-        "    if (this.executeTheCallback) {"
-        "      engine.setValue('[Test]', 'passed', 1);"
-        "    }"
-        "  }.bind(this));"
-        "};"
-        "var someObject = new TestObject();"
-        "someObject.connection.trigger();"
-    ));
+            "var TestObject = function () {"
+            "  this.executeTheCallback = true;"
+            "  this.connection = engine.makeConnection('[Test]', 'co', function () {"
+            "    if (this.executeTheCallback) {"
+            "      engine.setValue('[Test]', 'passed', 1);"
+            "    }"
+            "  }.bind(this));"
+            "};"
+            "var someObject = new TestObject();"
+            "someObject.connection.trigger();"));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
     application()->processEvents();
@@ -604,8 +594,7 @@ TEST_F(ControllerEngineTest, colorProxy) {
         EXPECT_EQ(jsColor.property("alpha").toInt(), color->m_defaultRgba.alpha());
         EXPECT_EQ(jsColor.property("id").toInt(), color->m_iId);
 
-        QJSValue jsColor2 = evaluate("color.predefinedColorsList()["
-                                                        + QString::number(i) + "]");
+        QJSValue jsColor2 = evaluate("color.predefinedColorsList()[" + QString::number(i) + "]");
         EXPECT_EQ(jsColor2.property("red").toInt(), color->m_defaultRgba.red());
         EXPECT_EQ(jsColor2.property("green").toInt(), color->m_defaultRgba.green());
         EXPECT_EQ(jsColor2.property("blue").toInt(), color->m_defaultRgba.blue());

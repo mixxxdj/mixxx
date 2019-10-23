@@ -1,13 +1,13 @@
 #ifndef COLORJSPROXY_H
 #define COLORJSPROXY_H
 
-#include <QObject>
 #include <QJSEngine>
 #include <QJSValue>
+#include <QObject>
 
 #include "util/color/color.h"
 
-class ColorJSProxy: public QObject {
+class ColorJSProxy : public QObject {
     Q_OBJECT
   public:
     ColorJSProxy(QJSEngine* pScriptEngine);

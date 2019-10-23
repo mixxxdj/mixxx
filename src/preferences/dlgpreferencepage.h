@@ -17,7 +17,9 @@ class DlgPreferencePage : public QWidget {
     DlgPreferencePage(QWidget* pParent);
     virtual ~DlgPreferencePage();
 
-    virtual State state() { return State::valid; }
+    virtual State state() {
+        return State::valid;
+    }
 
   signals:
     void stateChanged();

@@ -20,13 +20,12 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupControllerWidgets();
 
     connect(btnOpenUserPresets, &QPushButton::clicked, [=]() {
-            QString presetsPath = userPresetsPath(m_pConfig);
-            openLocalFile(presetsPath);
+        QString presetsPath = userPresetsPath(m_pConfig);
+        openLocalFile(presetsPath);
     });
 
     // Connections
-    connect(m_pControllerManager, &ControllerManager::devicesChanged,
-            this, &DlgPrefControllers::rescanControllers);
+    connect(m_pControllerManager, &ControllerManager::devicesChanged, this, &DlgPrefControllers::rescanControllers);
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
@@ -122,17 +121,14 @@ void DlgPrefControllers::setupControllerWidgets() {
         controllerWindowLink->setFont(0, temp);
 
         DlgPrefController* controllerDlg = new DlgPrefController(
-            this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg, &DlgPrefController::mappingStarted,
-                m_pDlgPreferences, &DlgPreferences::hide);
-        connect(controllerDlg, &DlgPrefController::mappingEnded,
-                m_pDlgPreferences, &DlgPreferences::show);
+                this, pController, m_pControllerManager, m_pConfig);
+        connect(controllerDlg, &DlgPrefController::mappingStarted, m_pDlgPreferences, &DlgPreferences::hide);
+        connect(controllerDlg, &DlgPrefController::mappingEnded, m_pDlgPreferences, &DlgPreferences::show);
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(DlgPreferences::PreferencesPage(controllerDlg, controllerWindowLink));
 
-        connect(controllerDlg, &DlgPrefController::controllerEnabled,
-                this, &DlgPrefControllers::slotHighlightDevice);
+        connect(controllerDlg, &DlgPrefController::controllerEnabled, this, &DlgPrefControllers::slotHighlightDevice);
     }
 
     // If no controllers are available, show the "No controllers available"

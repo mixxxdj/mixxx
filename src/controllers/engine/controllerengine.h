@@ -8,16 +8,16 @@
 #ifndef CONTROLLERENGINE_H
 #define CONTROLLERENGINE_H
 
-#include <QTimerEvent>
 #include <QFileSystemWatcher>
-#include <QMessageBox>
-#include <QtScript>
 #include <QJSEngine>
 #include <QJSValue>
+#include <QMessageBox>
+#include <QTimerEvent>
+#include <QtScript>
 
-#include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/softtakeover.h"
+#include "preferences/usersettings.h"
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
 
@@ -36,7 +36,7 @@ class ScriptConnection {
     ConfigKey key;
     QUuid id;
     QJSValue callback;
-    ControllerEngine *controllerEngine;
+    ControllerEngine* controllerEngine;
 
     void executeCallback(double value) const;
 
@@ -61,8 +61,12 @@ class ScriptConnectionInvokableWrapper : public QObject {
         m_idString = conn.id.toString();
         m_isConnected = true;
     }
-    const QString& readId() const { return m_idString; }
-    bool readIsConnected() const { return m_isConnected; }
+    const QString& readId() const {
+        return m_idString;
+    }
+    bool readIsConnected() const {
+        return m_isConnected;
+    }
     Q_INVOKABLE bool disconnect();
     Q_INVOKABLE void trigger();
 
@@ -79,13 +83,13 @@ class ControllerEngine : public QObject {
     virtual ~ControllerEngine();
 
     // The controller engine version is used to check compatibility of presets.
-  #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     // Qt >= 5.12.0 supports ECMAScript 7 (2016)
     static const int version = 2;
-  #else
+#else
     // Qt < 5.12.0 supports ECMAScript 5 (2009)
     static const int version = 1;
-  #endif
+#endif
 
     // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
@@ -95,13 +99,17 @@ class ControllerEngine : public QObject {
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
     // Look up registered script function prefixes
-    const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
+    const QList<QString>& getScriptFunctionPrefixes() {
+        return m_scriptFunctionPrefixes;
+    };
 
     // Disconnect a ScriptConnection
     bool removeScriptConnection(const ScriptConnection conn);
     void triggerScriptConnection(const ScriptConnection conn);
 
-    inline void setTesting(bool testing) { m_bTesting = testing; };
+    inline void setTesting(bool testing) {
+        m_bTesting = testing;
+    };
 
   protected:
     double getValue(QString group, QString name);
@@ -112,36 +120,32 @@ class ControllerEngine : public QObject {
     void reset(QString group, QString name);
     double getDefaultValue(QString group, QString name);
     double getDefaultParameter(QString group, QString name);
-    QJSValue makeConnection(QString group, QString name,
-                                            const QJSValue callback);
+    QJSValue makeConnection(QString group, QString name, const QJSValue callback);
     // DEPRECATED: Use makeConnection instead.
-    QJSValue connectControl(QString group, QString name,
-                                            const QJSValue passedCallback,
-                                            bool disconnect = false);
+    QJSValue connectControl(QString group, QString name, const QJSValue passedCallback, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     void trigger(QString group, QString name);
     void log(QString message);
     int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
     void stopTimer(int timerId);
-    void scratchEnable(int deck, int intervalsPerRev, double rpm,
-                       double alpha, double beta, bool ramp = true);
+    void scratchEnable(int deck, int intervalsPerRev, double rpm, double alpha, double beta, bool ramp = true);
     void scratchTick(int deck, int interval);
     void scratchDisable(int deck, bool ramp = true);
     bool isScratching(int deck);
     void softTakeover(QString group, QString name, bool set);
     void softTakeoverIgnoreNextValue(QString group, QString name);
-    void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
-    void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
-    void softStart(int deck, bool activate, double factor=1.0);
+    void brake(int deck, bool activate, double factor = 1.0, double rate = 1.0);
+    void spinback(int deck, bool activate, double factor = 1.8, double rate = -10.0);
+    void softStart(int deck, bool activate, double factor = 1.0);
 
     // Handler for timers that scripts set.
-    virtual void timerEvent(QTimerEvent *event);
+    virtual void timerEvent(QTimerEvent* event);
 
   public slots:
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
     bool loadScriptFiles(const QList<QString>& scriptPaths,
-                         const QList<ControllerPreset::ScriptFileInfo>& scripts);
+            const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
     void scriptHasChanged(const QString&);
@@ -165,8 +169,7 @@ class ControllerEngine : public QObject {
     void callFunctionOnObjects(QList<QString>, const QString&, QJSValueList args = QJSValueList());
     // Convert a byteArray to a JS typed array over an ArrayBuffer
     QJSValue byteArrayToScriptValue(const QByteArray byteArray);
-    QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(),
-            int lineNumber = 1);
+    QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(), int lineNumber = 1);
 
     void throwJSError(const QString& message);
 
@@ -174,7 +177,7 @@ class ControllerEngine : public QObject {
     // Precondition: QJSValue.isError() == true
     void showScriptExceptionDialog(QJSValue evaluationResult);
     bool m_bDisplayingExceptionDialog;
-    QJSEngine *m_pScriptEngine;
+    QJSEngine* m_pScriptEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 

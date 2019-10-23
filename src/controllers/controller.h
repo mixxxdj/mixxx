@@ -12,12 +12,12 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "controllers/engine/controllerengine.h"
-#include "controllers/controllervisitor.h"
 #include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
-#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllervisitor.h"
+#include "controllers/engine/controllerengine.h"
 #include "util/duration.h"
 
 class ControllerJSProxy;
@@ -179,11 +179,11 @@ class Controller : public QObject, ConstControllerPresetVisitor {
 // An object of this class gets exposed to the JS engine, so the methods of this class
 // constitute the api that is provided to scripts under "controller" object.
 // See comments on ControllerEngineJSProxy.
-class ControllerJSProxy: public QObject {
-  Q_OBJECT
+class ControllerJSProxy : public QObject {
+    Q_OBJECT
   public:
     ControllerJSProxy(Controller* m_pController)
-        : m_pController(m_pController) {
+            : m_pController(m_pController) {
     }
 
     // The length parameter is here for backwards compatibility for when scripts

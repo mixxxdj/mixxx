@@ -2,8 +2,8 @@
 
 #include "controllers/controller.h"
 #include "controllers/controllerpresetinfoenumerator.h"
-#include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/midi/midicontrollerpreset.h"
 #include "test/mixxxtest.h"
 
 class FakeControllerJSProxy : public ControllerJSProxy {
@@ -16,7 +16,8 @@ class FakeControllerJSProxy : public ControllerJSProxy {
     Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length = 0);
 
     Q_INVOKABLE void sendShortMsg(unsigned char status,
-            unsigned char byte1, unsigned char byte2);
+            unsigned char byte1,
+            unsigned char byte2);
 };
 
 class FakeController : public Controller {
@@ -101,7 +102,6 @@ class ControllerPresetValidationTest : public MixxxTest {
     void SetUp() override;
 
     bool testLoadPreset(const PresetInfo& preset);
-
 
     QStringList m_presetPaths;
     QScopedPointer<PresetInfoEnumerator> m_pEnumerator;

@@ -116,12 +116,12 @@ class HidController final : public Controller {
     friend class HidControllerJSProxy;
 };
 
-class HidControllerJSProxy: public ControllerJSProxy {
-  Q_OBJECT
+class HidControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
   public:
-  HidControllerJSProxy(HidController* m_pController)
-    : ControllerJSProxy(m_pController),
-      m_pHidController(m_pController) {
+    HidControllerJSProxy(HidController* m_pController)
+            : ControllerJSProxy(m_pController),
+              m_pHidController(m_pController) {
     }
 
     Q_INVOKABLE void send(QList<int> data, unsigned int length = 0) override {

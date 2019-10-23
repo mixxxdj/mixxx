@@ -1,8 +1,8 @@
 #ifndef CONTROLLERENGINEJSPROXY_H
 #define CONTROLLERENGINEJSPROXY_H
 
-#include <QObject>
 #include <QJSValue>
+#include <QObject>
 
 class ControllerEngine;
 
@@ -14,7 +14,7 @@ class ControllerEngine;
 // ownership of ControllerEngine. This is problematic when we reload a script file, because we
 // destroy the existing JS engine to create a new one. Then, since the JS engine owns ControllerEngine
 // it will try to delete it. See this Qt bug: https://bugreports.qt.io/browse/QTBUG-41171
-class ControllerEngineJSProxy: public QObject {
+class ControllerEngineJSProxy : public QObject {
     Q_OBJECT
   public:
     ControllerEngineJSProxy(ControllerEngine* m_pEngine);
@@ -29,27 +29,23 @@ class ControllerEngineJSProxy: public QObject {
     Q_INVOKABLE void reset(QString group, QString name);
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
-    Q_INVOKABLE QJSValue makeConnection(QString group, QString name,
-                                            const QJSValue callback);
+    Q_INVOKABLE QJSValue makeConnection(QString group, QString name, const QJSValue callback);
     // DEPRECATED: Use makeConnection instead.
-    Q_INVOKABLE QJSValue connectControl(QString group, QString name,
-                                            const QJSValue passedCallback,
-                                            bool disconnect = false);
+    Q_INVOKABLE QJSValue connectControl(QString group, QString name, const QJSValue passedCallback, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
-    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm,
-                                   double alpha, double beta, bool ramp = true);
+    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm, double alpha, double beta, bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
     Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
-    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0);
+    Q_INVOKABLE void brake(int deck, bool activate, double factor = 1.0, double rate = 1.0);
+    Q_INVOKABLE void spinback(int deck, bool activate, double factor = 1.8, double rate = -10.0);
+    Q_INVOKABLE void softStart(int deck, bool activate, double factor = 1.0);
 
   private:
     ControllerEngine* m_pEngine;
