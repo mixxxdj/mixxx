@@ -616,7 +616,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
 
     if (pCue) {
         int position = pCue->getPosition();
-        if (position != -1) {
+        if (position != Cue::kNoPosition) {
             seekAbs(position);
         }
     }
@@ -637,7 +637,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
 
     if (pCue) {
         int position = pCue->getPosition();
-        if (position != -1) {
+        if (position != Cue::kNoPosition) {
             m_pPlay->set(0.0);
             seekExact(position);
         }
@@ -660,7 +660,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
 
     if (pCue) {
         int position = pCue->getPosition();
-        if (position != -1) {
+        if (position != Cue::kNoPosition) {
             seekAbs(position);
             if (!isPlayingByPlayButton()) {
                 // cueGoto is processed asynchrony.
@@ -690,7 +690,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
 
     if (pCue) {
         if (v) {
-            if (pCue->getPosition() == -1) {
+            if (pCue->getPosition() == Cue::kNoPosition) {
                 hotcueSet(pControl, v);
             } else {
                 if (isPlayingByPlayButton()) {
@@ -700,7 +700,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
                 }
             }
         } else {
-            if (pCue->getPosition() != -1) {
+            if (pCue->getPosition() != Cue::kNoPosition) {
                 hotcueActivatePreview(pControl, v);
             }
         }
@@ -727,7 +727,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
     CuePointer pCue(pControl->getCue());
 
     if (v) {
-        if (pCue && pCue->getPosition() != -1) {
+        if (pCue && pCue->getPosition() != Cue::kNoPosition) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
@@ -747,7 +747,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             // Mark this hotcue as not previewing.
             double position = pControl->getPreviewingPosition();
             pControl->setPreviewing(false);
-            pControl->setPreviewingPosition(-1);
+            pControl->setPreviewingPosition(Cue::kNoPosition);
 
             // If this is the last hotcue to leave preview.
             if (--m_iCurrentlyPreviewingHotcues == 0 && !m_bPreviewing) {
@@ -784,8 +784,8 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
 
     CuePointer pCue(pControl->getCue());
     if (pCue) {
-        // Setting the position to -1 is the same as calling hotcue_x_clear
-        if (newPosition == -1) {
+        // Setting the position to Cue::kNoPosition is the same as calling hotcue_x_clear
+        if (newPosition == Cue::kNoPosition) {
             detachCue(pControl);
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
             pCue->setStartPosition(newPosition);
@@ -808,7 +808,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     // constructor and getPosition()->get() is a ControlObject
     for (const auto& pControl: m_hotcueControls) {
         double position = pControl->getPosition();
-        if (position != -1) {
+        if (position != Cue::kNoPosition) {
             cue_hint.frame = SampleUtil::floorPlayPosToFrame(position);
             cue_hint.frameCount = Hint::kFrameCountForward;
             cue_hint.priority = 10;
@@ -1494,7 +1494,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     }
 
     if (cueMode != CueMode::Denon && cueMode != CueMode::Numark) {
-        if (m_pCuePoint->get() != -1) {
+        if (m_pCuePoint->get() != Cue::kNoPosition) {
             if (newPlay == 0.0 && trackAt == TrackAt::ElseWhere) {
                 if (cueMode == CueMode::Mixxx) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
@@ -1590,7 +1590,7 @@ CueControl::TrackAt CueControl::getTrackAt() const {
         return TrackAt::End;
     }
     double cue = m_pCuePoint->get();
-    if (cue != -1 && fabs(sot.current - cue) < 1.0f) {
+    if (cue != Cue::kNoPosition && fabs(sot.current - cue) < 1.0f) {
         return TrackAt::Cue;
     }
     return TrackAt::ElseWhere;
@@ -1693,7 +1693,7 @@ HotcueControl::HotcueControl(QString group, int i)
     connect(m_hotcuePosition, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcuePositionChanged,
             Qt::DirectConnection);
-    m_hotcuePosition->set(-1);
+    m_hotcuePosition->set(Cue::kNoPosition);
 
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
@@ -1784,7 +1784,7 @@ void HotcueControl::slotHotcueClear(double v) {
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
-    m_hotcueEnabled->forceSet(newPosition == -1 ? 0.0 : 1.0);
+    m_hotcueEnabled->forceSet(newPosition == Cue::kNoPosition ? 0.0 : 1.0);
     emit(hotcuePositionChanged(this, newPosition));
 }
 
