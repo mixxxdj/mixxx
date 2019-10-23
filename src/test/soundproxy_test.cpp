@@ -8,10 +8,6 @@
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
 
-#ifdef __OPUS__
-#include "sources/soundsourceopus.h"
-#endif // __OPUS__
-
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
@@ -35,6 +31,8 @@ const SINT kBufferSizes[] = {
 
 const SINT kMaxReadFrameCount = kBufferSizes[sizeof(kBufferSizes) / sizeof(kBufferSizes[0]) - 1];
 
+const CSAMPLE kMaxDecodingError = 0.01f;
+
 } // anonymous namespace
 
 class SoundSourceProxyTest: public MixxxTest {
@@ -43,12 +41,23 @@ class SoundSourceProxyTest: public MixxxTest {
         QStringList availableFileNameSuffixes;
         availableFileNameSuffixes
                 << ".aiff"
+                << "-alac.caf"
                 << ".flac"
-                << ".m4a"
+                // Files encoded with iTunes 12.3.0 caused issues when
+                // decoding with FFMpeg 3.x, because their start_time
+                // was not correctly handled. The actual FFmpeg version
+                // that fixed this bug is unknown.
+                << "-itunes-12.3.0-aac.m4a"
+                << "-itunes-12.7.0-aac.m4a"
+#if defined(__FFMPEG__) || defined(__COREAUDIO__)
+                << "-itunes-12.7.0-alac.m4a"
+#endif
                 << "-png.mp3"
+                << "-vbr.mp3"
                 << ".ogg"
                 << ".opus"
                 << ".wav"
+                << ".wma"
                 << ".wv";
 
         QStringList supportedFileNameSuffixes;
@@ -56,6 +65,10 @@ class SoundSourceProxyTest: public MixxxTest {
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
+            } else {
+                qInfo()
+                        << "Ignoring unsupported file type"
+                        << fileNameSuffix;
             }
         }
         return supportedFileNameSuffixes;
@@ -69,24 +82,9 @@ class SoundSourceProxyTest: public MixxxTest {
         return filePaths;
     }
 
-    enum class OpenAudioSourceMode {
-        Default,
-        DisableFFmpeg,
-    };
-
-    static mixxx::AudioSourcePointer openAudioSource(const QString& filePath, OpenAudioSourceMode mode = OpenAudioSourceMode::Default) {
+    static mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
         auto pTrack = Track::newTemporary(filePath);
         SoundSourceProxy proxy(pTrack);
-
-        // TODO(XXX): Fix SoundSourceFFmpeg to avoid this special case handling
-        if ((mode == OpenAudioSourceMode::DisableFFmpeg) &&
-                proxy.getSoundSourceProvider() &&
-                (proxy.getSoundSourceProvider()->getName() == "FFmpeg")) {
-            qWarning()
-                    << "Disabling test for FFmpeg:"
-                    << filePath;
-            return mixxx::AudioSourcePointer();
-        }
 
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
@@ -110,23 +108,10 @@ class SoundSourceProxyTest: public MixxxTest {
             const CSAMPLE* actual,
             const char* errorMessage) {
         for (SINT i = 0; i < size; ++i) {
-            EXPECT_EQ(expected[i], actual[i]) << errorMessage;
-        }
-    }
-
-#ifdef __OPUS__
-    // Known issue: Decoding with libopus is not sample accurate
-    static void expectDecodedSamplesEqualOpus(
-            SINT size,
-            const CSAMPLE* expected,
-            const CSAMPLE* actual,
-            const char* errorMessage) {
-        for (SINT i = 0; i < size; ++i) {
             EXPECT_NEAR(expected[i], actual[i],
-                    mixxx::SoundSourceOpus::kMaxDecodingError) << errorMessage;
+                    kMaxDecodingError) << errorMessage;
         }
     }
-#endif // __OPUS__
 
     mixxx::IndexRange skipSampleFrames(
             mixxx::AudioSourcePointer pAudioSource,
@@ -207,8 +192,8 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    auto pTrack = Track::newTemporary(
-            kTestDir.absoluteFilePath("artist.mp3"));
+    auto pTrack = Track::newTemporary(TrackFile(
+            kTestDir, "artist.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
@@ -216,8 +201,8 @@ TEST_F(SoundSourceProxyTest, readArtist) {
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    auto pTrack = Track::newTemporary(
-            kTestDir.absoluteFilePath("TOAL_TPE2.mp3"));
+    auto pTrack = Track::newTemporary(TrackFile(
+            kTestDir, "TOAL_TPE2.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
@@ -283,23 +268,11 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should be equal
             ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
-#ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking forward");
-            } else {
-#endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking forward");
-#ifdef __OPUS__
-            }
-#endif // __OPUS__
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking forward");
 
             // Seek backwards to beginning of chunk and read again
             seekSampleFrames =
@@ -310,23 +283,11 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should again be equal
             ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
-#ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking backward");
-            } else {
-#endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking backward");
-#ifdef __OPUS__
-            }
-#endif // __OPUS__
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking backward");
         }
     }
 }
@@ -421,23 +382,11 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 
                 // Both buffers should be equal
                 ASSERT_EQ(contSampleFrames.frameIndexRange(), skippedSampleFrames.frameIndexRange());
-    #ifdef __OPUS__
-                if (filePath.endsWith(".opus")) {
-                    expectDecodedSamplesEqualOpus(
-                            sampleCount,
-                            &contReadData[0],
-                            &skipReadData[0],
-                            "Decoding mismatch after skipping");
-                } else {
-    #endif // __OPUS__
-                    expectDecodedSamplesEqual(
-                            sampleCount,
-                            &contReadData[0],
-                            &skipReadData[0],
-                            "Decoding mismatch after skipping");
-    #ifdef __OPUS__
-                }
-    #endif // __OPUS__
+                expectDecodedSamplesEqual(
+                        sampleCount,
+                        &contReadData[0],
+                        &skipReadData[0],
+                        "Decoding mismatch after skipping");
 
                 minFrameIndex = contFrameIndex;
             }
@@ -453,7 +402,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
         qDebug() << "Seek boundaries test:" << filePath;
 
         // TODO(XXX): Fix SoundSourceFFmpeg and re-enable testing
-        mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath, OpenAudioSourceMode::DisableFFmpeg));
+        mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
         // Obtaining an AudioSource may fail for unsupported file formats,
         // even if the corresponding file extension is supported, e.g.
         // AAC vs. ALAC in .m4a files
@@ -546,23 +495,11 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 
             const SINT sampleCount =
                     pSeekReadSource->frames2samples(seekSampleFrames.frameLength());
-    #ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking");
-            } else {
-    #endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking");
-    #ifdef __OPUS__
-            }
-    #endif // __OPUS__
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking");
         }
     }
 }

@@ -3,30 +3,24 @@
 #include <QRegExp>
 
 #include "control/controlobject.h"
-#include "library/parser.h"
-#include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/sandbox.h"
 
-#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
-#include "util/filepathurl.h"
-#endif
-
 namespace {
 
 QDrag* dragUrls(
-        const QList<QUrl>& locationUrls,
+        const QList<QUrl>& trackUrls,
         QWidget* pDragSource,
         QString sourceIdentifier) {
-    if (locationUrls.isEmpty()) {
+    if (trackUrls.isEmpty()) {
         return NULL;
     }
 
     QMimeData* mimeData = new QMimeData();
-    mimeData->setUrls(locationUrls);
+    mimeData->setUrls(trackUrls);
     mimeData->setText(sourceIdentifier);
 
     QDrag* drag = new QDrag(pDragSource);
@@ -70,12 +64,6 @@ QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
         bool acceptPlaylists) {
     QList<QFileInfo> fileLocations;
     for (QUrl url : urls) {
-#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
-        // OS X 10.10 sends file references instead of file paths
-        // e.g. "file:///.file/id=6571367.1629051"
-        // QT >= 5.4.1 hides this from us
-        url = ensureFilePathUrl(url);
-#endif
 
         // XXX: Possible WTF alert - Previously we thought we needed
         // toString() here but what you actually want in any case when
@@ -202,9 +190,9 @@ QDrag* DragAndDropHelper::dragTrack(
         TrackPointer pTrack,
         QWidget* pDragSource,
         QString sourceIdentifier) {
-    QList<QUrl> locationUrls;
-    locationUrls.append(urlFromLocation(pTrack->getLocation()));
-    return dragUrls(locationUrls, pDragSource, sourceIdentifier);
+    QList<QUrl> trackUrls;
+    trackUrls.append(pTrack->getFileInfo().toUrl());
+    return dragUrls(trackUrls, pDragSource, sourceIdentifier);
 }
 
 //static
@@ -212,11 +200,11 @@ QDrag* DragAndDropHelper::dragTrackLocations(
         const QList<QString>& locations,
         QWidget* pDragSource,
         QString sourceIdentifier) {
-    QList<QUrl> locationUrls;
+    QList<QUrl> trackUrls;
     foreach (QString location, locations) {
-        locationUrls.append(urlFromLocation(location));
+        trackUrls.append(TrackFile(location).toUrl());
     }
-    return dragUrls(locationUrls, pDragSource, sourceIdentifier);
+    return dragUrls(trackUrls, pDragSource, sourceIdentifier);
 }
 
 //static

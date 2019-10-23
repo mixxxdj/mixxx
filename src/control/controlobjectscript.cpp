@@ -10,11 +10,15 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)),
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
-        connect(this, SIGNAL(trigger(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)),
+        connect(this,
+                &ControlObjectScript::trigger,
+                this,
+                &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
     }
 
@@ -48,10 +52,14 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     }
     if (m_scriptConnections.isEmpty()) {
         // no ScriptConnections left, so disconnect signals
-        disconnect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)));
-        disconnect(this, SIGNAL(trigger(double, QObject*)),
-                this, SLOT(slotValueChanged(double,QObject*)));
+        disconnect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObjectScript::slotValueChanged);
+        disconnect(this,
+                &ControlObjectScript::trigger,
+                this,
+                &ControlObjectScript::slotValueChanged);
     }
     return success;
 }

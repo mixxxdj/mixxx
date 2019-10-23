@@ -41,7 +41,7 @@
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
-      <attribute config_key="[Tango],colorLogo">0</attribute>
+      <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
@@ -84,9 +84,15 @@
       <!-- Samplers -->
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
-      <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_rows">4</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_3_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_4_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_5_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_6_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_7_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <!-- Library -->
@@ -134,19 +140,15 @@
       <SetVariable name="SpinnyCoverColor_34">purple</SetVariable>
       <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
       <Style>
-        #Deck1 #TrackTitle, #Deck1 #TrackArtist,
-        #DeckMini1 #TrackTitleMini, #DeckMini1 #TrackArtistMini,
-        #Deck2 #TrackTitle, #Deck2 #TrackArtist,
-        #DeckMini2 #TrackTitleMini, #DeckMini2 #TrackArtistMini {
+        <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
+        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
           color: #33a8ff;}
-        #Deck3 #TrackTitle, #Deck3 #TrackArtist,
-        #DeckMini3 #TrackTitleMini, #DeckMini3 #TrackArtistMini,
-        #Deck4 #TrackTitle, #Deck4 #TrackArtist,
-        #DeckMini4 #TrackTitleMini, #DeckMini4 #TrackArtistMini {
+        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #d910f0;}
         WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
-        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches
-            artist/title color defined above -->
+        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #001D33;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #3A0440;}
       </Style>
@@ -162,16 +164,13 @@
       <!-- Cyan end-of-track warning -->
       <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
       <Style>
-        #Deck1 #TrackTitle, #Deck1 #TrackArtist,
-        #DeckMini1 #TrackTitleMini, #DeckMini1 #TrackArtistMini,
-        #Deck2 #TrackTitle, #Deck2 #TrackArtist,
-        #DeckMini2 #TrackTitleMini, #DeckMini2 #TrackArtistMini {
+        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
           color: #e145f3;}
-        #Deck3 #TrackTitle, #Deck3 #TrackArtist,
-        #DeckMini3 #TrackTitleMini, #DeckMini3 #TrackArtistMini,
-        #Deck4 #TrackTitle, #Deck4 #TrackArtist,
-        #DeckMini4 #TrackTitleMini, #DeckMini4 #TrackArtistMini {
+        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #3693d9;}
+        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
         <!-- brighter, broader library focus borders -->
@@ -183,7 +182,7 @@
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Style src="skin:../Tango/style.qss" src-mac="skin:../Tango/style-mac.qss"/>
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
@@ -192,32 +191,32 @@
        Launch Image  ################################################
      ###############################################################
 -->
-  <LaunchImageStyle>
-    LaunchImage {
-      background-color: #0f0f0f;
-    }
-    QLabel {
-      image: url(skin:/graphics/logo_160x40.svg);
-      padding: 0;
-      margin: 0px 2px 0px 2px;
-      border: none;
-      min-width: 160px;
-      min-height: 40px;
-      max-width: 160px;
-      max-height: 40px;
-    }
-    QProgressBar {
-      background-color: #333333;
-      border: none;
-      min-width: 164px;
-      min-height: 3px;
-      max-width: 164px;
-      max-height: 3px;
-    }
-    QProgressBar::chunk {
-      background-color: #FF6100;
-    }
-  </LaunchImageStyle>
+    <LaunchImageStyle>
+      LaunchImage {
+        background-color: #0f0f0f;
+      }
+      QLabel {
+        image: url(skin:../Tango//graphics/logo_160x40.svg);
+        padding: 0;
+        margin: 0px 2px 0px 2px;
+        border: none;
+        min-width: 160px;
+        min-height: 40px;
+        max-width: 160px;
+        max-height: 40px;
+      }
+      QProgressBar {
+        background-color: #333333;
+        border: none;
+        min-width: 164px;
+        min-height: 3px;
+        max-width: 164px;
+        max-height: 3px;
+      }
+      QProgressBar::chunk {
+        background-color: #FF6100;
+      }
+    </LaunchImageStyle>
   <Children>
 
 <!--  ################################################################
@@ -241,7 +240,7 @@
     <SingletonDefinition>
       <ObjectName>Waveforms_Singleton</ObjectName>
       <Children>
-        <Template src="skin:waveforms_container.xml"/>
+        <Template src="skin:../Tango/waveforms_container.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -249,7 +248,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton1</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Tango/deck_overview.xml">
           <SetVariable name="chanNum">1</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -260,7 +259,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton2</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Tango/deck_overview.xml">
           <SetVariable name="chanNum">2</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -271,7 +270,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton3</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Tango/deck_overview.xml">
           <SetVariable name="chanNum">3</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -282,7 +281,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton4</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Tango/deck_overview.xml">
           <SetVariable name="chanNum">4</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -293,7 +292,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton1</ObjectName>
       <Children>
-        <Template src="skin:spinny_cover_mini.xml">
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">1</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
         </Template>
@@ -303,7 +302,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton2</ObjectName>
       <Children>
-        <Template src="skin:spinny_cover_mini.xml">
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">2</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
         </Template>
@@ -313,7 +312,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton3</ObjectName>
       <Children>
-        <Template src="skin:spinny_cover_mini.xml">
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">3</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
         </Template>
@@ -323,7 +322,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton4</ObjectName>
       <Children>
-        <Template src="skin:spinny_cover_mini.xml">
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">4</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
         </Template>
@@ -333,7 +332,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck1</ObjectName>
       <Children>
-        <Template src="skin:vumeter_single.xml">
+        <Template src="skin:../Tango/vumeter_single.xml">
           <SetVariable name="group">[Channel1]</SetVariable>
         </Template>
       </Children>
@@ -342,7 +341,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck2</ObjectName>
       <Children>
-        <Template src="skin:vumeter_single.xml">
+        <Template src="skin:../Tango/vumeter_single.xml">
           <SetVariable name="group">[Channel2]</SetVariable>
         </Template>
       </Children>
@@ -351,7 +350,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck3</ObjectName>
       <Children>
-        <Template src="skin:vumeter_single.xml">
+        <Template src="skin:../Tango/vumeter_single.xml">
           <SetVariable name="group">[Channel3]</SetVariable>
         </Template>
       </Children>
@@ -360,7 +359,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck4</ObjectName>
       <Children>
-        <Template src="skin:vumeter_single.xml">
+        <Template src="skin:../Tango/vumeter_single.xml">
           <SetVariable name="group">[Channel4]</SetVariable>
         </Template>
       </Children>
@@ -379,7 +378,7 @@
               <MaximumSize>-1,136</MaximumSize>
               <SizePolicy>min,me</SizePolicy>
               <Children>
-                <Template src="skin:vumeter_single.xml">
+                <Template src="skin:../Tango/vumeter_single.xml">
                   <SetVariable name="group">[Master]</SetVariable>
                 </Template>
                 <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
@@ -399,7 +398,7 @@
     <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
-        <Template src="skin:library.xml"/>
+        <Template src="skin:../Tango/library.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -408,7 +407,7 @@
     <SingletonDefinition>
       <ObjectName>FxUnits_12_Singleton</ObjectName>
       <Children>
-        <Template src="skin:fx_units_12.xml"/>
+        <Template src="skin:../Tango/fx_units_12.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -452,7 +451,7 @@
               <SizePolicy>me,me</SizePolicy>
               <Children>
 
-                <Template src="skin:topbar.xml"/>
+                <Template src="skin:../Tango/topbar.xml"/>
 
                 <!-- stacked  waveforms, decks, FX, samplers, Mic/Aux, Lib normal-->
                 <WidgetGroup>
@@ -488,7 +487,7 @@
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
 
-                            <Template src="skin:decks_12.xml"/>
+                            <Template src="skin:../Tango/decks_12.xml"/>
 
                             <WidgetGroup>
                               <Layout>vertical</Layout>
@@ -504,13 +503,13 @@
                               </Connection>
                             </WidgetGroup>
 
-                            <Template src="skin:decks_34.xml"/>
+                            <Template src="skin:../Tango/decks_34.xml"/>
 
                             <WidgetGroup>
                               <Layout>vertical</Layout>
                               <SizePolicy>me,min</SizePolicy>
                               <Children>
-                                <Template src="skin:fx_units_34.xml"/>
+                                <Template src="skin:../Tango/fx_units_34.xml"/>
                               </Children>
                               <Connection>
                                 <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
@@ -532,9 +531,9 @@
                               </Connection>
                             </WidgetGroup>
 
-                            <Template src="skin:sampler_rack.xml"/>
+                            <Template src="skin:/sampler_rack.xml"/>
 
-                            <Template src="skin:mic_aux_rack.xml"/>
+                            <Template src="skin:../Tango/mic_aux_rack.xml"/>
 
                             <SingletonContainer>
                               <ObjectName>Library_Singleton</ObjectName>
@@ -563,10 +562,10 @@
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,max</SizePolicy>
                       <Children>
-                        <Template src="skin:deck_left_mini.xml">
+                        <Template src="skin:../Tango/deck_left_mini.xml">
                           <SetVariable name="chanNum">1</SetVariable>
                         </Template>
-                        <Template src="skin:deck_right_mini.xml">
+                        <Template src="skin:../Tango/deck_right_mini.xml">
                           <SetVariable name="chanNum">2</SetVariable>
                         </Template>
                       </Children>
@@ -576,10 +575,10 @@
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,max</SizePolicy>
                       <Children>
-                        <Template src="skin:deck_left_mini.xml">
+                        <Template src="skin:../Tango/deck_left_mini.xml">
                           <SetVariable name="chanNum">3</SetVariable>
                         </Template>
-                        <Template src="skin:deck_right_mini.xml">
+                        <Template src="skin:../Tango/deck_right_mini.xml">
                           <SetVariable name="chanNum">4</SetVariable>
                         </Template>
                       </Children>
@@ -610,7 +609,7 @@
 
         <!-- Detect if Star rating fits into deck buttons row.
             Do this here, so it doesn't interfere with expanded skin menu -->
-        <Template src="skin:size_detector_stars.xml"/>
+        <Template src="skin:../Tango/size_detector_stars.xml"/>
 
       </Children>
     </WidgetGroup><!-- /SkinContainer -->

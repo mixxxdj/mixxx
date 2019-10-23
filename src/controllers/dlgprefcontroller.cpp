@@ -12,7 +12,6 @@
 #include <QTableWidgetItem>
 #include <QDesktopServices>
 #include <QStandardPaths>
-#include <QtAlgorithms>
 
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -754,7 +753,7 @@ void DlgPrefController::removeScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.append(index.row());
     }
-    qSort(selectedRows);
+    std::sort(selectedRows.begin(), selectedRows.end());
 
     int lastRow = -1;
     while (!selectedRows.empty()) {

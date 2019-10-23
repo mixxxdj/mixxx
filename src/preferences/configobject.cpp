@@ -81,32 +81,11 @@ QString computeSettingsPath(const QString& configFilename) {
 }
 
 }  // namespace
-
-ConfigKey::ConfigKey() {
-}
-
-ConfigKey::ConfigKey(const ConfigKey& key)
-    : group(key.group),
-      item(key.item) {
-}
-
-ConfigKey::ConfigKey(const QString& g, const QString& i)
-    : group(g),
-      item(i) {
-}
-
 // static
 ConfigKey ConfigKey::parseCommaSeparated(const QString& key) {
     int comma = key.indexOf(",");
     ConfigKey configKey(key.left(comma), key.mid(comma + 1));
     return configKey;
-}
-
-ConfigValue::ConfigValue() {
-}
-
-ConfigValue::ConfigValue(const QString& stValue)
-    : value(stValue) {
 }
 
 ConfigValue::ConfigValue(int iValue)
@@ -117,37 +96,9 @@ ConfigValue::ConfigValue(double dValue)
     : value(QString::number(dValue)) {
 }
 
-void ConfigValue::valCopy(const ConfigValue& configValue) {
-    value = configValue.value;
-}
-
-
-ConfigValueKbd::ConfigValueKbd() {
-}
-
-ConfigValueKbd::ConfigValueKbd(const QString& value)
-        : ConfigValue(value) {
-    m_qKey = QKeySequence(value);
-}
-
-ConfigValueKbd::ConfigValueKbd(const QKeySequence& key) {
-    m_qKey = key;
-    QTextStream(&value) << m_qKey.toString();
-    // qDebug() << "value" << value;
-}
-
-void ConfigValueKbd::valCopy(const ConfigValueKbd& v) {
-    m_qKey = v.m_qKey;
-    QTextStream(&value) << m_qKey.toString();
-}
-
-bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
-    return (s1.value.toUpper() == s2.value.toUpper());
-}
-
-bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
-    //qDebug() << s1.m_qKey << "==" << s2.m_qKey;
-    return (s1.m_qKey == s2.m_qKey);
+ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
+        : m_keys(std::move(keys)) {
+    QTextStream(&value) << m_keys.toString();
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)

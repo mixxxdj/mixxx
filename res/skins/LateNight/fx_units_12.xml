@@ -6,19 +6,17 @@
     <Children>
       <PushButton>
         <TooltipId>EffectUnit_show_parameters</TooltipId>
-        <Size>39f,24f</Size>
+        <Size>20f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxExpand.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxExpand.svg</Unpressed>
-          <Text>FX&#8202;1</Text>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxCollapse.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxCollapse.svg</Unpressed>
-          <Text>FX&#8202;1</Text>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
@@ -33,19 +31,17 @@
     <Children>
       <PushButton>
         <TooltipId>EffectUnit_show_parameters</TooltipId>
-        <Size>39f,24f</Size>
+        <Size>20f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxExpand.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxExpand.svg</Unpressed>
-          <Text>FX&#8202;2</Text>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxCollapse.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fxCollapse.svg</Unpressed>
-          <Text>FX&#8202;2</Text>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
@@ -60,7 +56,7 @@
     <Children>
       <PushButton>
         <TooltipId>EffectUnit_mix_mode</TooltipId>
-        <Size>39f,28f</Size>
+        <Size>31f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -85,7 +81,7 @@
     <Children>
       <PushButton>
         <TooltipId>EffectUnit_mix_mode</TooltipId>
-        <Size>39f,28f</Size>
+        <Size>31f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -113,18 +109,18 @@
         <Layout>vertical</Layout>
         <Children>
           <PushButton>
-            <Size>28f,28f</Size>
+            <Size>20f,20f</Size>
             <TooltipId>EffectUnit_headphones_enabled</TooltipId>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_down.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small_down.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_overdown.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_over.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small_over.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small_over.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[EffectRack1_EffectUnit1],group_[Headphone]_enable</ConfigKey>
@@ -143,18 +139,18 @@
         <Layout>vertical</Layout>
         <Children>
           <PushButton>
-            <Size>28f,28f</Size>
+            <Size>20f,20f</Size>
             <TooltipId>EffectUnit_headphones_enabled</TooltipId>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_down.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small_down.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_overdown.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_over.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small_over.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_pfl_small_over.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[EffectRack1_EffectUnit2],group_[Headphone]_enable</ConfigKey>
@@ -246,16 +242,15 @@
   </SingletonDefinition>
 
   <WidgetGroup>
-    <ObjectName>EffectRack</ObjectName>
+    <ObjectName>FxRack</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <WidgetStack currentpage="[EffectRack1_EffectUnit1],show_parameters" persist="true"><!-- EffectUnit 1 -->
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- EffectUnit 1 mini -->
-            <ObjectName>EffUnit1_mini</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
@@ -268,7 +263,6 @@
 
           <!-- EffectUnit 1 maxi -->
           <WidgetGroup trigger="[EffectRack1_EffectUnit1],show_parameters" on_hide_select="0" persist="true">
-            <ObjectName>EffUnit1_maxi</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
@@ -283,7 +277,7 @@
 
       <!-- EffectUnit 2 -->
       <WidgetStack currentpage="[EffectRack1_EffectUnit2],show_parameters" persist="true">
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- EffectUnit 2 mini -->

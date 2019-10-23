@@ -20,21 +20,22 @@
 #include <QUrl>
 #include <QMimeData>
 
+#include "analyzer/analyzerprogress.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
-#include "woverview.h"
-#include "wskincolor.h"
-#include "widget/controlwidgetconnection.h"
 #include "track/track.h"
-#include "analyzer/analyzerprogress.h"
 #include "util/color/color.h"
 #include "util/compatibility.h"
+#include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 #include "util/timer.h"
-#include "util/dnd.h"
+#include "widget/controlwidgetconnection.h"
+#include "woverview.h"
+#include "wskincolor.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -53,8 +54,13 @@ WOverview::WOverview(
         m_group(group),
         m_pConfig(pConfig),
         m_endOfTrack(false),
-        m_bDrag(false),
+        m_pCueMenu(std::make_unique<CueMenu>(this)),
+        m_bShowCueTimes(true),
+        m_iPosSeconds(0),
         m_iPos(0),
+        m_pHoveredMark(nullptr),
+        m_bHotcueMenuShowing(false),
+        m_bTimeRulerActive(false),
         m_orientation(Qt::Horizontal),
         m_a(1.0),
         m_b(0.0),
@@ -73,10 +79,16 @@ WOverview::WOverview(
     m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
+    m_playpositionControl = new ControlProxy(m_group, "playposition", this);
     setAcceptDrops(true);
+
+    setMouseTracking(true);
 
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
+
+    connect(m_pCueMenu.get(), &QMenu::aboutToHide,
+            this, &WOverview::slotCueMenuAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -84,6 +96,23 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_signalColors.setup(node, context);
 
     m_qColorBackground = m_signalColors.getBgColor();
+
+    m_labelBackgroundColor = context.selectColor(node, "LabelBackgroundColor");
+    if (!m_labelBackgroundColor.isValid()) {
+        m_labelBackgroundColor = m_qColorBackground;
+        m_labelBackgroundColor.setAlpha(255 / 2); // 0 == fully transparent
+    }
+
+    m_labelTextColor = context.selectColor(node, "LabelTextColor");
+    if (!m_labelTextColor.isValid()) {
+        m_labelTextColor = Qt::white;
+    }
+
+    bool okay = false;
+    m_iLabelFontSize = context.selectInt(node, "LabelFontSize", &okay);
+    if (!okay) {
+        m_iLabelFontSize = 10;
+    }
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
@@ -105,9 +134,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_group, node, context, m_signalColors);
     WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
     QColor defaultColor = defaultMark
-            ? defaultMark->getProperties().fillColor()
+            ? defaultMark->fillColor()
             : m_signalColors.getAxesColor();
     m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
+    m_pCueMenu->useColorSet(&m_predefinedColorsRepresentation);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -153,6 +183,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         m_orientation = Qt::Horizontal;
     }
 
+    m_bShowCueTimes = context.selectBool(node, "ShowCueTimes", true);
+
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
     if (!m_connections.isEmpty()) {
@@ -170,17 +202,30 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
-    if (!m_bDrag) {
-        // Calculate handle position. Clamp the value within 0-1 because that's
-        // all we represent with this widget.
-        dParameter = math_clamp(dParameter, 0.0, 1.0);
+    // Calculate handle position. Clamp the value within 0-1 because that's
+    // all we represent with this widget.
+    dParameter = math_clamp(dParameter, 0.0, 1.0);
 
-        int iPos = valueToPosition(dParameter);
-        if (iPos != m_iPos) {
-            m_iPos = iPos;
-            //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
-            update();
-        }
+    bool redraw = false;
+    int oldPos = m_iPos;
+    m_iPos = valueToPosition(dParameter);
+    if (oldPos != m_iPos) {
+        redraw = true;
+    }
+
+    // In case the user is hovering a cue point or holding right click, the
+    // calculated time between the playhead and cue/cursor should be updated at
+    // least once per second, regardless of m_iPos which depends on the length
+    // of the widget.
+    int oldPositionSeconds = m_iPosSeconds;
+    m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
+    if ((m_bTimeRulerActive || m_pHoveredMark != nullptr)
+            && oldPositionSeconds != m_iPosSeconds) {
+        redraw = true;
+    }
+
+    if (redraw) {
+        update();
     }
 }
 
@@ -289,20 +334,47 @@ void WOverview::onRateSliderChange(double /*v*/) {
     update();
 }
 
-// currently only updates the mark color but it could be easily extended.
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
+    m_marksToRender.clear();
     for (CuePointer currentCue: loadedCues) {
-        const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
+        const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
-        if (currentMark && currentMark->isValid()) {
-            WaveformMarkProperties markProperties = currentMark->getProperties();
+        if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
+            && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
             QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
-            if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
-                markProperties.setBaseColor(newColor);
-                currentMark->setProperties(markProperties);
+            if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
+                pMark->setBaseColor(newColor);
             }
+
+            int hotcueNumber = currentCue->getHotCue();
+            if (currentCue->getType() == Cue::CUE && hotcueNumber != WaveformMark::kNoHotCue) {
+                // Prepend the hotcue number to hotcues' labels
+                QString newLabel = currentCue->getLabel();
+                if (newLabel.isEmpty()) {
+                    newLabel = QString::number(hotcueNumber + 1);
+                } else {
+                    newLabel = QString("%1: %2").arg(hotcueNumber + 1).arg(newLabel);
+                }
+
+                if (pMark->m_text != newLabel) {
+                    pMark->m_text = newLabel;
+                }
+            }
+
+            m_marksToRender.append(pMark);
         }
     }
+
+    // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
+    for (const auto& pMark : m_marks) {
+        if (!m_marksToRender.contains(pMark)
+            && pMark->isValid()
+            && pMark->getSamplePosition() != Cue::kPositionNotDefined
+            && pMark->isVisible()) {
+            m_marksToRender.append(pMark);
+        }
+    }
+    std::sort(m_marksToRender.begin(), m_marksToRender.end());
 }
 
 // connecting the tracks cuesUpdated and onMarkChanged is not possible
@@ -312,32 +384,122 @@ void WOverview::receiveCuesUpdated() {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    if (m_orientation == Qt::Horizontal) {
-        m_iPos = math_clamp(e->x(), 0, width() - 1);
-    } else {
-        m_iPos = math_clamp(e->y(), 0, height() - 1);
+    // Do not activate cue hovering while right click is held down and the
+    // button down event was not on a cue.
+    if (m_bTimeRulerActive) {
+        // Prevent showing times beyond the boundaries of the track when the
+        // cursor is dragged outside this widget before releasing right click.
+        m_timeRulerPos.setX(math_clamp(e->pos().x(), 0, width()));
+        m_timeRulerPos.setY(math_clamp(e->pos().y(), 0, height()));
+        update();
+        return;
     }
+
+    m_pHoveredMark.clear();
+    // Without some padding, the user would only have a single pixel width that
+    // would count as hovering over the WaveformMark.
+    float lineHoverPadding = 5.0;
+    // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
+    // before hotcues in m_marksToRender so if there is a hotcue in the same
+    // location, the hotcue gets rendered on top. When right clicking, the
+    // the hotcue rendered on top must be assigned to m_pHoveredMark to show
+    // the CueMenu. To accomplish this, m_marksToRender is iterated in reverse
+    // and the loop breaks as soon as m_pHoveredMark is set.
+    for (int i = m_marksToRender.size() - 1; i >= 0 ; --i) {
+        WaveformMarkPointer pMark = m_marksToRender.at(i);
+        int hoveredPosition;
+        if (m_orientation == Qt::Horizontal) {
+            hoveredPosition = e->x();
+        } else {
+            hoveredPosition = e->y();
+        }
+        bool lineHovered =
+            pMark->m_linePosition >= hoveredPosition - lineHoverPadding
+            && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
+
+        if (pMark->m_label.area().contains(e->pos()) || lineHovered) {
+            m_pHoveredMark = pMark;
+            break;
+        }
+    }
+
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
-    double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    setControlParameterUp(dValue);
-    m_bDrag = false;
+    if (e->button() == Qt::RightButton) {
+        m_bTimeRulerActive = false;
+    }
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
-    m_bDrag = true;
+    if (m_pCurrentTrack == nullptr) {
+        return;
+    }
+
+    if (e->button() == Qt::LeftButton) {
+        if (m_orientation == Qt::Horizontal) {
+            m_iPos = math_clamp(e->x(), 0, width() - 1);
+        } else {
+            m_iPos = math_clamp(e->y(), 0, height() - 1);
+        }
+
+        double dValue = positionToValue(m_iPos);
+        if (m_pHoveredMark != nullptr) {
+            dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            m_iPos = valueToPosition(dValue);
+        }
+        setControlParameterUp(dValue);
+    } else if (e->button() == Qt::RightButton) {
+        if (m_pHoveredMark == nullptr) {
+            m_bTimeRulerActive = true;
+            m_timeRulerPos = e->pos();
+        } else if (m_pHoveredMark->getHotCue() != WaveformMark::kNoHotCue) {
+            // Currently the only way WaveformMarks can be associated
+            // with their respective Cue objects is by using the hotcue
+            // number. If cues without assigned hotcue are drawn on
+            // WOverview in the future, another way to associate
+            // WaveformMarks with Cues will need to be implemented.
+            CuePointer pHoveredCue;
+            QList<CuePointer> cueList = m_pCurrentTrack->getCuePoints();
+            for (const auto& pCue : cueList) {
+                if (pCue->getHotCue() == m_pHoveredMark->getHotCue()) {
+                    pHoveredCue = pCue;
+                    break;
+                }
+            }
+            if (pHoveredCue != nullptr) {
+                m_pCueMenu->setCue(pHoveredCue);
+                m_pCueMenu->setTrack(m_pCurrentTrack);
+                m_pCueMenu->popup(e->globalPos());
+                m_bHotcueMenuShowing = true;
+            }
+        }
+    }
+}
+
+void WOverview::slotCueMenuAboutToHide() {
+    m_bHotcueMenuShowing = false;
+    m_pHoveredMark.clear();
+    update();
+}
+
+void WOverview::leaveEvent(QEvent* e) {
+    Q_UNUSED(e);
+    if (!m_bHotcueMenuShowing) {
+        m_pHoveredMark.clear();
+    }
+    m_bTimeRulerActive = false;
+    update();
 }
 
 void WOverview::paintEvent(QPaintEvent * /*unused*/) {
-    //qDebug() << "WOverview::paintEvent";
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
@@ -348,306 +510,524 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     }
 
     if (m_pCurrentTrack) {
-        // Draw background if end of track
-        if (m_endOfTrack) {
-            painter.setOpacity(0.3);
-            painter.setBrush(m_endOfTrackColor);
-            painter.drawRect(rect().adjusted(1,1,-2,-2));
-            painter.setOpacity(1);
-        }
-
-        // Draw Axis
-        painter.setPen(QPen(m_signalColors.getAxesColor(), 1 * m_scaleFactor));
-        if (m_orientation == Qt::Horizontal) {
-            painter.drawLine(0, height() / 2, width(), height() / 2);
-        } else {
-            painter.drawLine(width() / 2 , 0, width() / 2, height());
-        }
-
-        // Draw waveform pixmap
-        WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
-        if (!m_waveformSourceImage.isNull()) {
-            int diffGain;
-            bool normalize = widgetFactory->isOverviewNormalized();
-            if (normalize && m_pixmapDone && m_waveformPeak > 1) {
-                diffGain = 255 - m_waveformPeak - 1;
-            } else {
-                const double visualGain = widgetFactory->getVisualGain(WaveformWidgetFactory::All);
-                diffGain = 255.0 - 255.0 / visualGain;
-            }
-
-            if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-                QRect sourceRect(0, diffGain, m_waveformSourceImage.width(),
-                    m_waveformSourceImage.height() - 2 * diffGain);
-                QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
-                if (m_orientation == Qt::Vertical) {
-                    // Rotate pixmap
-                    croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
-                }
-                m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
-                                                            Qt::IgnoreAspectRatio,
-                                                            Qt::SmoothTransformation);
-                m_diffGain = diffGain;
-            }
-
-            painter.drawImage(rect(), m_waveformImageScaled);
-
-            // Overlay the played part of the overview-waveform with a skin defined color
-            QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
-            if (playedOverlayColor.alpha() > 0) {
-                if (m_orientation == Qt::Vertical) {
-                    painter.fillRect(0, 0, m_waveformImageScaled.width(),  m_iPos, playedOverlayColor);
-                } else {
-                    painter.fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
-                }
-            }
-        }
-
-        // Draw contour around waveform if end of track
-        if (m_endOfTrack) {
-            painter.setOpacity(0.8);
-            painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
-            painter.setBrush(QColor(0,0,0,0));
-            painter.drawRect(rect().adjusted(0,0,-1,-1));
-            painter.setOpacity(1);
-        }
-
-        if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
-            (m_analyzerProgress < kAnalyzerProgressDone)) {
-            // Paint analyzer Progress
-            painter.setPen(QPen(m_signalColors.getAxesColor(), 3 * m_scaleFactor));
-
-            if (m_analyzerProgress > kAnalyzerProgressNone) {
-                if (m_orientation == Qt::Horizontal) {
-                    painter.drawLine(
-                            width() * m_analyzerProgress,
-                            height() / 2,
-                            width(),
-                            height() / 2);
-                } else {
-                    painter.drawLine(
-                            width() / 2 ,
-                            height() * m_analyzerProgress,
-                            width() / 2,
-                            height());
-                }
-            }
-
-            if (m_analyzerProgress <= kAnalyzerProgressHalf) { // remove text after progress by wf is recognizable
-                if (m_trackLoaded) {
-                    //: Text on waveform overview when file is playable but no waveform is visible
-                    paintText(tr("Ready to play, analyzing .."), &painter);
-                } else {
-                    //: Text on waveform overview when file is cached from source
-                    paintText(tr("Loading track .."), &painter);
-                }
-            } else if (m_analyzerProgress >= kAnalyzerProgressFinalizing) {
-                //: Text on waveform overview during finalizing of waveform analysis
-                paintText(tr("Finalizing .."), &painter);
-            }
-        } else if (!m_trackLoaded) {
-            // This happens if the track samples are not loaded, but we have
-            // a cached track
-            //: Text on waveform overview when file is cached from source
-            paintText(tr("Loading track .."), &painter);
-        }
+        // Refer to util/ScopePainter.h to understand the semantics of
+        // ScopePainter.
+        drawEndOfTrackBackground(&painter);
+        drawAxis(&painter);
+        drawWaveformPixmap(&painter);
+        drawEndOfTrackFrame(&painter);
+        drawAnalyzerProgress(&painter);
 
         double trackSamples = m_trackSamplesControl->get();
         if (m_trackLoaded && trackSamples > 0) {
-            //qDebug() << "WOverview::paintEvent trackSamples > 0";
             const float offset = 1.0f;
-            const float gain = static_cast<float>(length() - 2) / trackSamples;
+            const float gain = static_cast<float>(length() - 2) / m_trackSamplesControl->get();
 
-            // Draw markers (Cue & hotcues)
-            QFont markerFont = painter.font();
-            markerFont.setPixelSize(10 * m_scaleFactor);
-
-            QFont shadowFont = painter.font();
-            shadowFont.setWeight(99);
-            shadowFont.setPixelSize(10 * m_scaleFactor);
-
-            painter.setOpacity(0.9);
-
-            // Draw range (loop)
-            for (auto&& markRange: m_markRanges) {
-                if (!markRange.active() || !markRange.visible()) {
-                    continue;
-                }
-
-                // Active mark ranges by definition have starts/ends that are not
-                // disabled.
-                const double startValue = markRange.start();
-                const double endValue = markRange.end();
-
-                const float startPosition = offset + startValue * gain;
-                const float endPosition = offset + endValue * gain;
-
-                if (startPosition < 0.0 && endPosition < 0.0) {
-                    continue;
-                }
-
-                if (markRange.enabled()) {
-                    painter.setOpacity(0.4);
-                    painter.setPen(markRange.m_activeColor);
-                    painter.setBrush(markRange.m_activeColor);
-                } else {
-                    painter.setOpacity(0.2);
-                    painter.setPen(markRange.m_disabledColor);
-                    painter.setBrush(markRange.m_disabledColor);
-                }
-
-                // let top and bottom of the rect out of the widget
-                if (m_orientation == Qt::Horizontal) {
-                    painter.drawRect(QRectF(QPointF(startPosition, -2.0),
-                                            QPointF(endPosition, height() + 1.0)));
-                } else {
-                    painter.drawRect(QRectF(QPointF(-2.0, startPosition),
-                                            QPointF(width() + 1.0, endPosition)));
-                }
-
-                // draw duration of range
-                if (markRange.showDuration()) {
-                    // TODO: replace with rate_ratio in PR #1765
-                    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
-                    QString duration = mixxx::Duration::formatTime((endValue - startValue)
-                            / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio);
-
-                    QFontMetrics fm(painter.font());
-                    int textWidth = fm.width(duration);
-                    float padding = 3.0;
-                    float x;
-
-                    WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
-                    if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
-                        x = startPosition - textWidth - padding;
-                    } else {
-                        x = endPosition + padding;
-                    }
-
-                    // Ensure the right end of the text does not get cut off by
-                    // the end of the track
-                    if (x + textWidth > width()) {
-                        x = width() - textWidth;
-                    }
-
-                    painter.setOpacity(1.0);
-                    painter.setPen(markRange.m_durationTextColor);
-                    painter.drawText(QPointF(x, fm.ascent()), duration);
-                }
-            }
-
-            for (const auto& currentMark: m_marks) {
-                const WaveformMarkProperties& markProperties = currentMark->getProperties();
-                if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
-                    // Marks are visible by default.
-                    if (currentMark->hasVisible() && !currentMark->isVisible()) {
-                        continue;
-                    }
-
-                    //const float markPosition = 1.0 +
-                    //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                    const float markPosition = offset + currentMark->getSamplePosition() * gain;
-
-                    QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
-
-                    QLineF line;
-                    if (m_orientation == Qt::Horizontal) {
-                        line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
-                    } else {
-                        line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
-                    }
-                    painter.setOpacity(1.0);
-                    painter.setPen(shadowPen);
-                    painter.drawLine(line);
-
-                    painter.setPen(markProperties.fillColor());
-                    painter.drawLine(line);
-
-                    if (!markProperties.m_text.isEmpty()) {
-                        Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
-                        Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
-                        QFontMetricsF metric(markerFont);
-                        QRectF textRect = metric.tightBoundingRect(markProperties.m_text);
-                        QPointF textPoint;
-                        if (m_orientation == Qt::Horizontal) {
-                            if (halign == Qt::AlignLeft) {
-                                textPoint.setX(markPosition - textRect.width());
-                            } else if (halign == Qt::AlignHCenter) {
-                                textPoint.setX(markPosition - textRect.width() / 2);
-                            } else {  // AlignRight
-                                textPoint.setX(markPosition + 0.5f);
-                            }
-
-                            if (valign == Qt::AlignTop) {
-                                textPoint.setY(textRect.height() + 0.5f);
-                            } else if (valign == Qt::AlignVCenter) {
-                                textPoint.setY((textRect.height() + height()) / 2);
-                            } else {  // AlignBottom
-                                textPoint.setY(float(height()) - 0.5f);
-                            }
-                        } else {  // Vertical
-                            if (halign == Qt::AlignLeft) {
-                                textPoint.setX(1.0f);
-                            } else if (halign == Qt::AlignHCenter) {
-                                textPoint.setX((width() - textRect.width()) / 2);
-                            } else {  // AlignRight
-                                textPoint.setX(width() - textRect.width());
-                            }
-
-                            if (valign == Qt::AlignTop) {
-                                textPoint.setY(markPosition - 1.0f);
-                            } else if (valign == Qt::AlignVCenter) {
-                                textPoint.setY(markPosition + textRect.height() / 2);
-                            } else {  // AlignBottom
-                                textPoint.setY(markPosition + metric.ascent());
-                            }
-                        }
-
-                        painter.setPen(shadowPen);
-                        painter.setFont(shadowFont);
-                        painter.drawText(textPoint, markProperties.m_text);
-
-                        painter.setPen(markProperties.m_textColor);
-                        painter.setFont(markerFont);
-                        painter.drawText(textPoint, markProperties.m_text);
-                    }
-                }
-            }
-
-            if (m_orientation == Qt::Vertical) {
-                painter.setTransform(QTransform(0, 1, 1, 0, 0, 0));
-            }
-
-            // draw current position
-            painter.setPen(QPen(QBrush(m_qColorBackground), 1 * m_scaleFactor));
-            painter.setOpacity(0.5);
-            painter.drawLine(m_iPos + 1, 0, m_iPos + 1, breadth());
-            painter.drawLine(m_iPos - 1, 0, m_iPos - 1, breadth());
-
-            painter.setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
-            painter.setOpacity(1.0);
-            painter.drawLine(m_iPos, 0, m_iPos, breadth());
-
-            painter.drawLine(m_iPos - 2, 0, m_iPos, 2);
-            painter.drawLine(m_iPos, 2, m_iPos + 2, 0);
-            painter.drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
-
-            painter.drawLine(m_iPos - 2, breadth() - 1, m_iPos, breadth() - 3);
-            painter.drawLine(m_iPos, breadth() - 3, m_iPos + 2, breadth() - 1);
-            painter.drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
+            drawRangeMarks(&painter, offset, gain);
+            drawMarks(&painter, offset, gain);
+            drawCurrentPosition(&painter);
+            drawTimeRuler(&painter);
+            drawMarkLabels(&painter, offset, gain);
         }
     }
-    painter.end();
+}
+void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
+    if (m_endOfTrack) {
+        PainterScope painterScope(pPainter);
+        pPainter->setOpacity(0.3);
+        pPainter->setBrush(m_endOfTrackColor);
+        pPainter->drawRect(rect().adjusted(1, 1, -2, -2));
+    }
 }
 
-void WOverview::paintText(const QString &text, QPainter *painter) {
+void WOverview::drawAxis(QPainter* pPainter) {
+    PainterScope painterScope(pPainter);
+    pPainter->setPen(QPen(m_signalColors.getAxesColor(), 1 * m_scaleFactor));
+    if (m_orientation == Qt::Horizontal) {
+        pPainter->drawLine(0, height() / 2, width(), height() / 2);
+    } else {
+        pPainter->drawLine(width() / 2, 0, width() / 2, height());
+    }
+}
+
+void WOverview::drawWaveformPixmap(QPainter* pPainter) {
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    if (!m_waveformSourceImage.isNull()) {
+        PainterScope painterScope(pPainter);
+        int diffGain;
+        bool normalize = widgetFactory->isOverviewNormalized();
+        if (normalize && m_pixmapDone && m_waveformPeak > 1) {
+            diffGain = 255 - m_waveformPeak - 1;
+        } else {
+            const double visualGain = widgetFactory->getVisualGain(WaveformWidgetFactory::All);
+            diffGain = 255.0 - 255.0 / visualGain;
+        }
+
+        if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
+            QRect sourceRect(0, diffGain, m_waveformSourceImage.width(), m_waveformSourceImage.height() - 2 * diffGain);
+            QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
+            if (m_orientation == Qt::Vertical) {
+                // Rotate pixmap
+                croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
+            }
+            m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                    Qt::IgnoreAspectRatio,
+                    Qt::SmoothTransformation);
+            m_diffGain = diffGain;
+        }
+
+        pPainter->drawImage(rect(), m_waveformImageScaled);
+
+        // Overlay the played part of the overview-waveform with a skin defined color
+        QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
+        if (playedOverlayColor.alpha() > 0) {
+            if (m_orientation == Qt::Vertical) {
+                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPos, playedOverlayColor);
+            } else {
+                pPainter->fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
+            }
+        }
+    }
+}
+
+void WOverview::drawEndOfTrackFrame(QPainter* pPainter) {
+    if (m_endOfTrack) {
+        PainterScope painterScope(pPainter);
+        pPainter->setOpacity(0.8);
+        pPainter->setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
+        pPainter->setBrush(QColor(0, 0, 0, 0));
+        pPainter->drawRect(rect().adjusted(0, 0, -1, -1));
+    }
+}
+
+void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
+    if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
+            (m_analyzerProgress < kAnalyzerProgressDone)) {
+        PainterScope painterScope(pPainter);
+        pPainter->setPen(QPen(m_signalColors.getAxesColor(), 3 * m_scaleFactor));
+
+        if (m_analyzerProgress > kAnalyzerProgressNone) {
+            if (m_orientation == Qt::Horizontal) {
+                pPainter->drawLine(
+                        width() * m_analyzerProgress,
+                        height() / 2,
+                        width(),
+                        height() / 2);
+            } else {
+                pPainter->drawLine(
+                        width() / 2,
+                        height() * m_analyzerProgress,
+                        width() / 2,
+                        height());
+            }
+        }
+
+        if (m_analyzerProgress <= kAnalyzerProgressHalf) { // remove text after progress by wf is recognizable
+            if (m_trackLoaded) {
+                //: Text on waveform overview when file is playable but no waveform is visible
+                paintText(tr("Ready to play, analyzing .."), pPainter);
+            } else {
+                //: Text on waveform overview when file is cached from source
+                paintText(tr("Loading track .."), pPainter);
+            }
+        } else if (m_analyzerProgress >= kAnalyzerProgressFinalizing) {
+            //: Text on waveform overview during finalizing of waveform analysis
+            paintText(tr("Finalizing .."), pPainter);
+        }
+    } else if (!m_trackLoaded) {
+        // This happens if the track samples are not loaded, but we have
+        // a cached track
+        //: Text on waveform overview when file is cached from source
+        paintText(tr("Loading track .."), pPainter);
+    }
+}
+
+void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain) {
+    for (auto&& markRange : m_markRanges) {
+        if (!markRange.active() || !markRange.visible()) {
+            continue;
+        }
+
+        // Active mark ranges by definition have starts/ends that are not
+        // disabled.
+        const qreal startValue = markRange.start();
+        const qreal endValue = markRange.end();
+
+        const qreal startPosition = offset + startValue * gain;
+        const qreal endPosition = offset + endValue * gain;
+
+        if (startPosition < 0.0 && endPosition < 0.0) {
+            continue;
+        }
+
+        PainterScope painterScope(pPainter);
+
+        if (markRange.enabled()) {
+            pPainter->setOpacity(0.4);
+            pPainter->setPen(markRange.m_activeColor);
+            pPainter->setBrush(markRange.m_activeColor);
+        } else {
+            pPainter->setOpacity(0.2);
+            pPainter->setPen(markRange.m_disabledColor);
+            pPainter->setBrush(markRange.m_disabledColor);
+        }
+
+        // let top and bottom of the rect out of the widget
+        if (m_orientation == Qt::Horizontal) {
+            pPainter->drawRect(QRectF(QPointF(startPosition, -2.0),
+                    QPointF(endPosition, height() + 1.0)));
+        } else {
+            pPainter->drawRect(QRectF(QPointF(-2.0, startPosition),
+                    QPointF(width() + 1.0, endPosition)));
+        }
+    }
+}
+
+void WOverview::drawMarks(QPainter* pPainter, const float offset, const float gain) {
+    QFont markerFont = pPainter->font();
+    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    QFontMetricsF fontMetrics(markerFont);
+
+    // Text labels are rendered so they do not overlap with other WaveformMarks'
+    // labels. If the text would be too wide, it is elided. However, the user
+    // can hover the mouse cursor over a label to show the whole label text,
+    // temporarily hiding any following labels that would be drawn over it.
+    // This requires looping over the WaveformMarks twice and the marks must be
+    // sorted in the order they appear on the waveform.
+    // In the first loop, the lines are drawn and the text to render plus its
+    // location are calculated then stored in a WaveformMarkLabel. The text must
+    // be drawn in the second loop to prevent the lines of following
+    // WaveformMarks getting drawn over it. The second loop is in the separate
+    // drawMarkLabels function so it can be called after drawCurrentPosition so
+    // the view of labels is not obscured by the playhead.
+
+    bool markHovered = false;
+    for (int i = 0; i < m_marksToRender.size(); ++i) {
+        WaveformMarkPointer pMark = m_marksToRender.at(i);
+        PainterScope painterScope(pPainter);
+
+        const qreal markPosition = math_clamp(
+                offset + m_marksToRender.at(i)->getSamplePosition() * gain,
+                0.0, static_cast<qreal>(width()));
+        pMark->m_linePosition = markPosition;
+
+        QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
+
+        QLineF line;
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(markPosition, 0.0, markPosition, height());
+        } else {
+            line.setLine(0.0, markPosition, width(), markPosition);
+        }
+        pPainter->setPen(shadowPen);
+        pPainter->drawLine(line);
+
+        pPainter->setPen(pMark->fillColor());
+        pPainter->drawLine(line);
+
+        if (!pMark->m_text.isEmpty()) {
+            Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
+            Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
+
+            QString text = pMark->m_text;
+
+            // Only allow the text to overlap the following mark if the mouse is
+            // hovering over it. Elide it if it would render over the next
+            // label, but do not elide it if the next mark's label is not at the
+            // same vertical position.
+            if (pMark != m_pHoveredMark && i < m_marksToRender.size()-1) {
+                float nextMarkPosition = -1.0;
+                for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
+                    WaveformMarkPointer otherMark = m_marksToRender.at(m);
+                    bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
+                    // Hotcues always show at least their number.
+                    bool otherHasLabel = !otherMark->m_text.isEmpty()
+                            || otherMark->getHotCue() != WaveformMark::kNoHotCue;
+                    if (otherAtSameHeight && otherHasLabel) {
+                        nextMarkPosition = offset + otherMark->getSamplePosition() * gain;
+                        break;
+                    }
+                }
+                if (nextMarkPosition != -1.0) {
+                    text = fontMetrics.elidedText(text, Qt::ElideRight, nextMarkPosition - markPosition - 5);
+                }
+            }
+            // Sometimes QFontMetrics::elidedText turns the QString into just an
+            // elipsis character, so always show at least the hotcue number if
+            // the label does not fit.
+            if ((text.isEmpty() || text == "…")
+                && pMark->getHotCue() != WaveformMark::kNoHotCue) {
+                text = QString::number(pMark->getHotCue()+1);
+            }
+
+            QRectF textRect = fontMetrics.boundingRect(text);
+            QPointF textPoint;
+            if (m_orientation == Qt::Horizontal) {
+                if (halign == Qt::AlignLeft) {
+                    textPoint.setX(markPosition - textRect.width() - 5.5);
+                } else if (halign == Qt::AlignHCenter) {
+                    textPoint.setX(markPosition - textRect.width() / 2);
+                } else { // AlignRight
+                    textPoint.setX(markPosition + 1.5);
+                }
+
+                if (valign == Qt::AlignTop) {
+                    textPoint.setY(fontMetrics.height());
+                } else if (valign == Qt::AlignVCenter) {
+                    textPoint.setY((textRect.height() + height()) / 2);
+                } else { // AlignBottom
+                    textPoint.setY(float(height()) - 0.5f);
+                }
+            } else { // Vertical
+                if (halign == Qt::AlignLeft) {
+                    textPoint.setX(1.0f);
+                } else if (halign == Qt::AlignHCenter) {
+                    textPoint.setX((width() - textRect.width()) / 2);
+                } else { // AlignRight
+                    textPoint.setX(width() - textRect.width());
+                }
+
+                if (valign == Qt::AlignTop) {
+                    textPoint.setY(markPosition - 1.0f);
+                } else if (valign == Qt::AlignVCenter) {
+                    textPoint.setY(markPosition + textRect.height() / 2);
+                } else { // AlignBottom
+                    textPoint.setY(markPosition + fontMetrics.ascent());
+                }
+            }
+
+            pMark->m_label.prerender(textPoint, QPixmap(), text,
+                    markerFont, m_labelTextColor, m_labelBackgroundColor,
+                    width(), getDevicePixelRatioF(this));
+        }
+
+        // Show cue position when hovered
+        // The area it will be drawn in needs to be calculated here
+        // before drawMarkLabels so drawMarkLabels can avoid drawing
+        // labels over the cue position.
+        // This can happen for example if the user shows the cue position
+        // of a hotcue which is near the intro end position because the
+        // intro_end_position WaveformMark label is drawn at the top.
+        // However, the drawing of this text needs to happen in
+        // drawMarkLabels so none of the WaveformMark lines are drawn
+        // on top of the position text.
+
+        // WaveformMark::m_align refers to the alignment of the label,
+        // so if the label is on bottom draw the position text on top and
+        // vice versa.
+        if (pMark == m_pHoveredMark) {
+            Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
+            QPointF positionTextPoint(markPosition + 1.5, 0);
+            if (valign == Qt::AlignTop) {
+                positionTextPoint.setY(float(height()) - 0.5f);
+            } else {
+                positionTextPoint.setY(fontMetrics.height());
+            }
+
+            double markSamples = pMark->getSamplePosition();
+            double trackSamples = m_trackSamplesControl->get();
+            double currentPositionSamples = m_playpositionControl->get() * trackSamples;
+            double markTime = samplePositionToSeconds(markSamples);
+            double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
+            double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
+            QString cuePositionText = mixxx::Duration::formatTime(markTime) + " -" +
+                    mixxx::Duration::formatTime(markTimeRemaining);
+            QString cueTimeDistanceText = mixxx::Duration::formatTime(fabs(markTimeDistance));
+            // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
+            // the playhead passes the cue
+            if (static_cast<int>(markTimeDistance) < 0) {
+                cueTimeDistanceText = "-" + cueTimeDistanceText;
+            }
+
+            m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
+                    markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+
+            QPointF timeDistancePoint(positionTextPoint.x(), (fontMetrics.height() + height()) / 2);
+            m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
+                    markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            markHovered = true;
+        }
+    }
+    if (!markHovered) {
+        m_cuePositionLabel.clear();
+        m_cueTimeDistanceLabel.clear();
+    }
+}
+
+void WOverview::drawCurrentPosition(QPainter* pPainter) {
+    PainterScope painterScope(pPainter);
+
+    if (m_orientation == Qt::Vertical) {
+        pPainter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
+    }
+
+    pPainter->setPen(QPen(QBrush(m_qColorBackground), 1 * m_scaleFactor));
+    pPainter->setOpacity(0.5);
+    pPainter->drawLine(m_iPos + 1, 0, m_iPos + 1, breadth());
+    pPainter->drawLine(m_iPos - 1, 0, m_iPos - 1, breadth());
+
+    pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+    pPainter->setOpacity(1.0);
+    pPainter->drawLine(m_iPos, 0, m_iPos, breadth());
+
+    pPainter->drawLine(m_iPos - 2, 0, m_iPos, 2);
+    pPainter->drawLine(m_iPos, 2, m_iPos + 2, 0);
+    pPainter->drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
+
+    pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos, breadth() - 3);
+    pPainter->drawLine(m_iPos, breadth() - 3, m_iPos + 2, breadth() - 1);
+    pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
+}
+
+void WOverview::drawTimeRuler(QPainter* pPainter) {
+    QFont markerFont = pPainter->font();
+    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    QFontMetricsF fontMetrics(markerFont);
+
+    QFont shadowFont = pPainter->font();
+    shadowFont.setWeight(99);
+    shadowFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
+
+    if (m_bTimeRulerActive) {
+        QLineF line;
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
+        } else {
+            line.setLine(0.0, m_timeRulerPos.x(), width(), m_timeRulerPos.x());
+        }
+        pPainter->setPen(shadowPen);
+        pPainter->drawLine(line);
+
+        pPainter->setPen(Qt::green);
+        pPainter->drawLine(line);
+
+        QPointF textPoint = m_timeRulerPos;
+        QPointF textPointDistance = m_timeRulerPos;
+        qreal widgetPositionFraction;
+        qreal padding = 1.0; // spacing between line and text
+        if (m_orientation == Qt::Horizontal) {
+            textPoint = QPointF(textPoint.x() + padding, fontMetrics.height());
+            textPointDistance = QPointF(textPointDistance.x() + padding,
+                    (fontMetrics.height() + height()) / 2);
+            widgetPositionFraction = m_timeRulerPos.x() / width();
+        } else {
+            textPoint.setX(0);
+            textPointDistance.setX(0);
+            widgetPositionFraction = m_timeRulerPos.y() / height();
+        }
+        qreal trackSamples = m_trackSamplesControl->get();
+        qreal timePosition = samplePositionToSeconds(
+                widgetPositionFraction * trackSamples);
+        qreal timePositionTillEnd = samplePositionToSeconds(
+                (1 - widgetPositionFraction) * trackSamples);
+        qreal timeDistance = samplePositionToSeconds(
+                (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
+
+        QString timeText = mixxx::Duration::formatTime(timePosition)
+                + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
+
+        m_timeRulerPositionLabel.prerender(textPoint, QPixmap(), timeText,
+                markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+        m_timeRulerPositionLabel.draw(pPainter);
+
+        QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
+        // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
+        // the playhead passes the point
+        if (static_cast<int>(timeDistance) < 0) {
+            timeDistanceText = "-" + timeDistanceText;
+        }
+        m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText,
+                markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+        m_timeRulerDistanceLabel.draw(pPainter);
+    } else {
+        m_timeRulerPositionLabel.clear();
+        m_timeRulerDistanceLabel.clear();
+    }
+}
+
+void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const float gain) {
+    QFont markerFont = pPainter->font();
+    markerFont.setPixelSize(m_iLabelFontSize * m_scaleFactor);
+    QFontMetricsF fontMetrics(markerFont);
+
+    // Draw WaveformMark labels
+    for (const auto& pMark : m_marksToRender) {
+        if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
+            if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
+                continue;
+            }
+        }
+        if (m_bShowCueTimes &&
+                (pMark->m_label.intersects(m_cuePositionLabel)
+                || pMark->m_label.intersects(m_cueTimeDistanceLabel))) {
+            continue;
+        }
+        if (pMark->m_label.intersects(m_timeRulerPositionLabel)
+                || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
+            continue;
+        }
+
+        pMark->m_label.draw(pPainter);
+    }
+
+    if (m_bShowCueTimes) {
+        m_cuePositionLabel.draw(pPainter);
+        m_cueTimeDistanceLabel.draw(pPainter);
+    }
+
+    // draw duration of WaveformMarkRanges
+    for (auto&& markRange : m_markRanges) {
+        if (markRange.showDuration() && markRange.active() && markRange.visible()) {
+            // Active mark ranges by definition have starts/ends that are not
+            // disabled.
+            const qreal startValue = markRange.start();
+            const qreal endValue = markRange.end();
+
+            const qreal startPosition = offset + startValue * gain;
+            const qreal endPosition = offset + endValue * gain;
+
+            if (startPosition < 0.0 && endPosition < 0.0) {
+                continue;
+            }
+            QString duration = mixxx::Duration::formatTime(
+                    samplePositionToSeconds(endValue - startValue));
+
+            QRectF durationRect = fontMetrics.boundingRect(duration);
+            qreal x;
+
+            WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
+            if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
+                x = startPosition - durationRect.width() - 5.5;
+            } else {
+                x = endPosition + 1.5;
+            }
+
+            QPointF durationBottomLeft(x, fontMetrics.height());
+
+            markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(),
+                    duration, markerFont, m_labelTextColor,
+                    m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+
+            if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel)
+                      || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel)
+                      || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel)
+                      || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
+                markRange.m_durationLabel.draw(pPainter);
+            }
+        }
+    }
+}
+
+void WOverview::paintText(const QString& text, QPainter* pPainter) {
+    PainterScope painterScope(pPainter);
     QColor lowColor = m_signalColors.getLowColor();
     lowColor.setAlphaF(0.5);
     QPen lowColorPen(
             QBrush(lowColor), 1.25 * m_scaleFactor,
             Qt::SolidLine, Qt::RoundCap);
-    painter->setPen(lowColorPen);
-    QFont font = painter->font();
+    pPainter->setPen(lowColorPen);
+    QFont font = pPainter->font();
     QFontMetrics fm(font);
     int textWidth = fm.width(text);
     if (textWidth > length()) {
@@ -657,13 +1037,21 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
             pointSize = 6 * m_scaleFactor;
         }
         font.setPointSizeF(pointSize);
-        painter->setFont(font);
+        pPainter->setFont(font);
     }
     if (m_orientation == Qt::Vertical) {
-        painter->setTransform(QTransform(0, 1, -1, 0, width(), 0));
+        pPainter->setTransform(QTransform(0, 1, -1, 0, width(), 0));
     }
-    painter->drawText(10 * m_scaleFactor, 12 * m_scaleFactor, text);
-    painter->resetTransform();
+    pPainter->drawText(10 * m_scaleFactor, 12 * m_scaleFactor, text);
+    pPainter->resetTransform();
+}
+
+double WOverview::samplePositionToSeconds(double sample) {
+    // TODO: replace with rate_ratio in PR #1765
+    double rateRatio = 1.0 + m_pRateDirControl->get()
+            * m_pRateRangeControl->get() * m_pRateSliderControl->get();
+    return sample / m_trackSampleRateControl->get()
+            / mixxx::kEngineChannelCount / rateRatio;
 }
 
 void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
@@ -691,7 +1079,6 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
-
 void WOverview::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

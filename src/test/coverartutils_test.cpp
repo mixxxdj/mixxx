@@ -71,7 +71,11 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
     if (isSupportedFileExtension("m4a")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.m4a"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-itunes-12.3.0-aac.m4a"), pToken, referencePNGImage);
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-aac.m4a"), pToken, referencePNGImage);
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-alac.m4a"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("mp3")) {

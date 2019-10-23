@@ -1,5 +1,4 @@
-#ifndef WCOVERARTLABEL_H
-#define WCOVERARTLABEL_H
+#pragma once
 
 #include <QLabel>
 #include <QMouseEvent>
@@ -8,6 +7,7 @@
 
 #include "track/track.h"
 #include "widget/wcoverartmenu.h"
+#include "util/parented_ptr.h"
 
 class DlgCoverArtFullSize;
 
@@ -15,7 +15,7 @@ class WCoverArtLabel : public QLabel {
     Q_OBJECT
   public:
     explicit WCoverArtLabel(QWidget* parent = nullptr);
-    ~WCoverArtLabel() override;
+    ~WCoverArtLabel() override; // Verifies that the base destructor is virtual
 
     void setCoverArt(const CoverInfo& coverInfo, QPixmap px);
     void loadTrack(TrackPointer pTrack);
@@ -33,9 +33,7 @@ class WCoverArtLabel : public QLabel {
   private:
     QPixmap m_loadedCover;
     TrackPointer m_pLoadedTrack;
-    WCoverArtMenu* m_pCoverMenu;
-    DlgCoverArtFullSize* m_pDlgFullSize;
+    parented_ptr<WCoverArtMenu> m_pCoverMenu;
+    parented_ptr<DlgCoverArtFullSize> m_pDlgFullSize;
     QPixmap m_defaultCover;
 };
-
-#endif // WCOVERARTLABEL_H

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
+
 from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
@@ -20,17 +22,6 @@ class PortAudio(Dependence):
 
     def sources(self, build):
         return ['src/soundio/sounddeviceportaudio.cpp']
-
-
-class OSXFilePathUrlBackport(Dependence):
-
-    def configure(self, build, conf):
-        return
-
-    def sources(self, build):
-        if build.platform_is_osx:
-            return ['src/util/filepathurl.mm']
-        return []
 
 
 class PortMIDI(Dependence):
@@ -208,15 +199,19 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        import sys
-        if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    if os.path.isdir(core):
-                        return core
+        pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
+        try:
+            output = subprocess.check_output(pkg_config_cmd)
+        except OSError:
+            # pkg-config is not installed
+            pass
+        except subprocess.CalledProcessError:
+            # pkg-config failed to find Qt5Core
+            pass
+        else:
+            core = output.decode('utf-8').rstrip()
+            if os.path.isdir(core):
+                return core
 
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
@@ -502,7 +497,9 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['#%s/ebur128' % self.INTERNAL_PATH])
-            if not conf.CheckHeader('sys/queue.h'):
+            import sys
+            if not conf.CheckHeader('sys/queue.h') or sys.platform.startswith('openbsd'):
+                # OpenBSD's queue.h lacks the STAILQ_* macros
                 env.Append(CPPPATH=['#%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
@@ -898,7 +895,9 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
+                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
+                   "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -972,6 +971,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
                    "src/library/columncache.cpp",
@@ -1103,7 +1103,6 @@ class MixxxCore(Feature):
 
                    "src/waveform/renderers/waveformrenderersignalbase.cpp",
                    "src/waveform/renderers/waveformmark.cpp",
-                   "src/waveform/renderers/waveformmarkproperties.cpp",
                    "src/waveform/renderers/waveformmarkset.cpp",
                    "src/waveform/renderers/waveformmarkrange.cpp",
                    "src/waveform/renderers/glwaveformrenderersimplesignal.cpp",
@@ -1112,6 +1111,7 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/glslwaveformrenderersignal.cpp",
                    "src/waveform/renderers/glvsynctestrenderer.cpp",
 
+                   "src/waveform/waveformmarklabel.cpp",
                    "src/waveform/widgets/waveformwidgetabstract.cpp",
                    "src/waveform/widgets/emptywaveformwidget.cpp",
                    "src/waveform/widgets/softwarewaveformwidget.cpp",
@@ -1156,6 +1156,7 @@ class MixxxCore(Feature):
                    "src/track/replaygain.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
+                   "src/track/trackfile.cpp",
                    "src/track/trackmetadata.cpp",
                    "src/track/trackmetadatataglib.cpp",
                    "src/track/tracknumbers.cpp",
@@ -1296,7 +1297,11 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+
+        # In Python 3.x, map() returns a "map object" (instead of a list),
+        # which is evaluated on-demand rather than at once. To invoke uic
+        # for all *.ui files at once, we need to cast it to a list here.
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
@@ -1533,7 +1538,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, OSXFilePathUrlBackport]
+                QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

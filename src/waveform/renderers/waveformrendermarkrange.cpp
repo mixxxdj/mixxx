@@ -13,6 +13,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "util/painterscope.h"
 
 WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -37,7 +38,7 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& con
 }
 
 void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
-    painter->save();
+    PainterScope PainterScope(painter);
 
     painter->setWorldMatrixEnabled(false);
 
@@ -82,8 +83,6 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         }
         painter->drawImage(rect, *selectedImage, rect);
     }
-
-    painter->restore();
 }
 
 void WaveformRenderMarkRange::generateImages() {

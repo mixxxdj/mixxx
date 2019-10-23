@@ -27,9 +27,16 @@
         </Connection>
       </WidgetGroup>
 
-      <SingletonContainer>
-        <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
-      </SingletonContainer>
+      <WidgetGroup>
+        <ObjectName>OverviewBox</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
 
       <!-- Deck controls + Star rating -->
       <WidgetGroup>
@@ -42,10 +49,10 @@
           <WidgetGroup>
             <ObjectName>Stars</ObjectName>
             <Layout>vertical</Layout>
-            <Size>-1min,17me</Size>
+            <Size>0min,17me</Size>
             <Children>
               <StarRating>
-                <Size>-1min,15f</Size>
+                <Size>0min,15f</Size>
                 <Alignment>center</Alignment>
                 <TooltipId>starrating</TooltipId>
                 <Channel><Variable name="channum"/></Channel>

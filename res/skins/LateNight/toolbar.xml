@@ -20,7 +20,7 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
+            <ObjectName>ToolBarDivider</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>
 
@@ -150,7 +150,7 @@
       </PushButton>
 
       <WidgetGroup>
-        <ObjectName>ToolbarDivider</ObjectName>
+        <ObjectName>ToolBarDivider</ObjectName>
         <Size>13f,9min</Size>
       </WidgetGroup>
 
@@ -196,7 +196,7 @@
         <Children>
           <Time>
             <TooltipId>time</TooltipId>
-            <ShowSeconds>false</ShowSeconds>
+            <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
       </WidgetGroup>

@@ -24,6 +24,14 @@ class LibraryHashDAO;
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
   public:
+
+    enum class ResolveTrackIdFlag : int {
+        ResolveOnly = 0,
+        UnhideHidden = 1,
+        AddMissing = 2
+    };
+    Q_DECLARE_FLAGS(ResolveTrackIdFlags, ResolveTrackIdFlag)
+
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
     TrackDAO(
@@ -39,9 +47,10 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     }
     void finish();
 
-    TrackId getTrackId(const QString& absoluteFilePath);
-    QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
-    QList<TrackId> getTrackIds(const QDir& dir);
+    TrackId getTrackId(const QString& absoluteFilePath) const;
+    QList<TrackId> resolveTrackIds(const QList<QFileInfo> &files,
+            ResolveTrackIdFlags flags);
+    QList<TrackId> getAllTrackIds(const QDir& rootDir);
 
     // WARNING: Only call this from the main thread instance of TrackDAO.
     TrackPointer getTrack(TrackId trackId) const;
@@ -49,21 +58,21 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
+    QStringList getTrackLocations(const QList<TrackId>& trackIds);
 
-    TrackPointer addSingleTrack(const QFileInfo& fileInfo, bool unremove);
-    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+    TrackPointer addSingleTrack(const TrackFile& fileInfo, bool unremove);
 
     void addTracksPrepare();
-    TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
+    TrackPointer addTracksAddFile(const TrackFile& trackFile, bool unremove);
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
-    bool onHidingTracks(
+    bool hideTracks(
             const QList<TrackId>& trackIds);
     void afterHidingTracks(
             const QList<TrackId>& trackIds);
 
-    bool onUnhidingTracks(
+    bool unhideTracks(
             const QList<TrackId>& trackIds);
     void afterUnhidingTracks(
             const QList<TrackId>& trackIds);
@@ -90,8 +99,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void markTracksInDirectoriesAsVerified(const QStringList& directories);
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
-    bool detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
-                          QSet<TrackId>* pTracksMovedSetNew,
+    bool detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTracks,
                           const QStringList& addedTracks,
                           volatile const bool* pCancel);
 
@@ -117,8 +125,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
   public slots:
     void databaseTrackAdded(TrackPointer pTrack);
-    void databaseTracksMoved(QSet<TrackId> tracksMovedSetOld, QSet<TrackId> tracksMovedSetNew);
     void databaseTracksChanged(QSet<TrackId> tracksChanged);
+    void databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
 
   private slots:
     void slotTrackDirty(Track* pTrack);
@@ -131,9 +139,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     bool updateTrack(Track* pTrack);
 
     // Callback for GlobalTrackCache
-    QFileInfo relocateCachedTrack(
+    TrackFile relocateCachedTrack(
             TrackId trackId,
-            QFileInfo fileInfo) override;
+            TrackFile fileInfo) override;
 
     QSqlDatabase m_database;
 
@@ -158,5 +166,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
+
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
 
 #endif //TRACKDAO_H

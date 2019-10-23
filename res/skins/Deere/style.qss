@@ -365,6 +365,20 @@ WSearchLineEdit:focus {
   selection-color: #222222;
   selection-background-color: #d2d2d2;
 }
+  /* Clear button */
+  WSearchLineEdit QToolButton {
+    /* C++ code adds 3px in each dimension.
+       height of search box inside the border: 22px
+       make the button use the available height */
+    height: 19px;
+    width: 19px;
+    }
+    WSearchLineEdit QToolButton:!focus {
+      image: url(skin:/icon/ic_lib_clear_search.svg);
+    }
+    WSearchLineEdit QToolButton:focus {
+      image: url(skin:/icon/ic_lib_clear_search_focus.svg);
+    }
 
 /* library preview deck */
 #PreviewDeck {
@@ -736,8 +750,15 @@ QAbstractScrollArea::corner {
 
 WWidget, QLabel {
   font-family: "Open Sans";
-  font-size: 8px;
+  font-size: 12px;
   text-transform: uppercase;
+}
+
+/* This affects the labels for cue points. */
+WOverview,
+/* This is for the label in the edit dialog */
+WOverview QLabel {
+  text-transform: none;
 }
 
 /* Start spacing for Deck overview row (small waveform, option grid) */
@@ -887,7 +908,7 @@ WBeatSpinBox,
 /* End spacing for toolbar */
 
 #Time {
-  font: bold 12px;
+  font: bold 13px;
 }
 
 #KnobLabelH, #HeadSplit {
