@@ -335,6 +335,7 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
         entries.append(pEntry);
     }
 
+    seratoMarkers2->setAllocatedSize(outerData.size());
     seratoMarkers2->setEntries(entries);
     return true;
 }
@@ -373,7 +374,21 @@ QByteArray SeratoMarkers2::data() const {
         }
     }
 
-    return outerData.leftJustified(470, '\0');
+    // Exit early if outerData is empty
+    if (outerData.isEmpty()) {
+        return outerData;
+    }
+
+    int size = getAllocatedSize();
+    if (size <= outerData.size()) {
+        // TODO: Find out how Serato chooses the allocation sizes
+        size = outerData.size() + 1;
+        if (size < 470) {
+            size = 470;
+        }
+    }
+
+    return outerData.leftJustified(size, '\0');
 }
 
 

@@ -368,7 +368,8 @@ public:
     SeratoMarkers2() = default;
     explicit SeratoMarkers2(
             QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
-        : m_entries(std::move(entries)) {
+        : m_allocatedSize(0)
+        , m_entries(std::move(entries)) {
     }
 
     // Parsing and formatting of gain values according to the
@@ -376,6 +377,15 @@ public:
     static bool parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData);
 
     QByteArray data() const;
+
+    int getAllocatedSize() const {
+        return m_allocatedSize;
+    }
+
+    void setAllocatedSize(int size) {
+        DEBUG_ASSERT(size >= 0);
+        m_allocatedSize = size;
+    }
 
     const QList<std::shared_ptr<SeratoMarkers2Entry>>& getEntries() const {
         return m_entries;
@@ -385,6 +395,7 @@ public:
     }
 
 private:
+    int m_allocatedSize;
     QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
 };
 
