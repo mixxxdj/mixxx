@@ -1050,6 +1050,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double outroLength = outroEnd - outroStart;
 
     double toDeckPosition = pToDeck->playPosition() * toTrackDuration;
+    // Store here a possible fadeBeginPos for the transition after next
+    // This is used to check if it will be possible or a re-cue is required.
+    // here it is done for FullIntroOutro and FadeAtOutroStart.
+    // It is adjusted below for the other modes.
     pToDeck->fadeBeginPos = getOutroStartPosition(pToDeck);
 
     double introStart;
