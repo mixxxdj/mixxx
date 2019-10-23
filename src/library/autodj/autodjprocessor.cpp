@@ -1030,12 +1030,22 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double outroEnd = getOutroEndPosition(pFromDeck);
     double outroStart = getOutroStartPosition(pFromDeck);
+    double fromDeckPosition = pFromDeck->playPosition() * pFromDeck->duration();
+
     if (outroStart <= 0.0) {
         // Assume a zero length outro.
         // The outroEnd is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
         // not been placed, getOutroEndPosition will return the end of the track.
         outroStart = outroEnd;
+    }
+    if (fromDeckPosition > outroStart) {
+        // We have already passed outroStart
+        // This can happen if we have just enabled auto DJ
+        outroStart = fromDeckPosition;
+        if (fromDeckPosition > outroEnd) {
+            outroEnd = math_min(outroStart + fabs(m_transitionTime), pFromDeck->duration());
+        }
     }
     double outroLength = outroEnd - outroStart;
 
