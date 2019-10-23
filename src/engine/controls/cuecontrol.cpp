@@ -362,7 +362,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         // Than add the load cue to the list of cue
         CuePointer pCue(pNewTrack->createAndAddCue());
         pCue->setStartPosition(mainCuePoint.getPosition());
-        pCue->setHotCue(-1);
+        pCue->setHotCue(Cue::kNoHotCue);
         pCue->setType(Cue::Type::MainCue);
     }
     m_pCuePoint->set(mainCuePoint.getPosition());
@@ -440,7 +440,7 @@ void CueControl::loadCuesFromTrack() {
         } else if (pCue->getType() == Cue::Type::Outro) {
             DEBUG_ASSERT(!pOutroCue);  // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != -1) {
+        } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
