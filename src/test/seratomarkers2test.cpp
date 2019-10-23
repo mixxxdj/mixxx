@@ -79,6 +79,10 @@ class SeratoMarkers2Test : public testing::Test {
         mixxx::SeratoMarkers2 seratoMarkers2;
         bool parseOk = mixxx::SeratoMarkers2::parse(&seratoMarkers2, inputValue);
         EXPECT_EQ(valid, parseOk);
+        if (!parseOk) {
+            return;
+        }
+        EXPECT_EQ(inputValue, seratoMarkers2.data());
     }
 };
 
