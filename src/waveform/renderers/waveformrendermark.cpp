@@ -69,7 +69,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
-                const int markHalfWidth = pMark->m_image.width() / 2.0;
+                const int markHalfWidth = pMark->m_image.width() / 2.0
+                        / m_waveformRenderer->getDevicePixelRatio();
 
                 // Check if the current point need to be displayed
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
@@ -204,7 +205,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
             height = 2 * labelRectHeight + 1;
         }
 
-        pMark->m_image = QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+        pMark->m_image = QImage(width * m_waveformRenderer->getDevicePixelRatio(),
+                                height * m_waveformRenderer->getDevicePixelRatio(),
+                                QImage::Format_ARGB32_Premultiplied);
+        pMark->m_image.setDevicePixelRatio(m_waveformRenderer->getDevicePixelRatio());
 
         Qt::Alignment markAlignH = pMark->m_align & Qt::AlignHorizontal_Mask;
         Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;
