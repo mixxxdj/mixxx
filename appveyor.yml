@@ -62,7 +62,6 @@ for:
     - sudo cmake --build . --target install
 
   test_script:
-    - cmake --build . --target mixxx-test
     - export GTEST_COLOR=1 CTEST_OUTPUT_ON_FAILURE=1
     - xvfb-run -- cmake --build . --target test
     - xvfb-run -- cmake --build . --target benchmark
@@ -125,7 +124,6 @@ for:
       -G "Visual Studio 15 2017 Win64"
       ..
     - cmake --build . --config "Release"
-    - cmake --build . --config "Release" --target mixxx-test
     - cmake --build . --config "Release" --target install
     - cd ..
 
