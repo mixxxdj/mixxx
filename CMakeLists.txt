@@ -1539,7 +1539,7 @@ target_link_libraries(mixxx-test PUBLIC
 )
 
 # Benchmark
-add_library(benchmark STATIC EXCLUDE_FROM_ALL
+add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
   lib/benchmark/src/benchmark.cc
   lib/benchmark/src/colorprint.cc
   lib/benchmark/src/commandlineflags.cc
@@ -1554,14 +1554,14 @@ add_library(benchmark STATIC EXCLUDE_FROM_ALL
   lib/benchmark/src/walltime.cc
   lib/benchmark/src/re_std.cc
 )
-target_compile_definitions(benchmark PRIVATE HAVE_STD_REGEX)
+target_compile_definitions(gbenchmark PRIVATE HAVE_STD_REGEX)
 find_package(Threads REQUIRED)
-target_link_libraries(benchmark ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(benchmark Shlwapi)
+  target_link_libraries(gbenchmark Shlwapi)
 endif()
-target_include_directories(benchmark PUBLIC lib/benchmark/include)
-target_link_libraries(mixxx-test PUBLIC benchmark)
+target_include_directories(gbenchmark PUBLIC lib/benchmark/include)
+target_link_libraries(mixxx-test PUBLIC gbenchmark)
 
 # Test Suite
 include(GoogleTest)
@@ -1574,14 +1574,13 @@ gtest_add_tests(
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 10)
 
 # Benchmarking
-gtest_add_tests(
-  TARGET mixxx-test
-  TEST_PREFIX benchmark.
-  EXTRA_ARGS --benchmark
+add_custom_target(benchmark
+  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  TEST_LIST benchmark
+  COMMENT "Mixxx Benchmarks"
+  VERBATIM
 )
-set_tests_properties(${benchmark} PROPERTIES TIMEOUT 10)
+add_dependencies(benchmark mixxx-test)
 
 #
 # Resources
