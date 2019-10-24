@@ -269,6 +269,11 @@ void AutoDJProcessor::fadeNow() {
             // The fade must end by the outro end at the latest.
             fadeTime = math_min(timeUntilIntroEnd, timeUntilOutroEnd);
         } else {
+            // If this is true, the fade should have already been started
+            // so the user should not have been able to press the Fade button.
+            VERIFY_OR_DEBUG_ASSERT(timeUntilOutroEnd > 0) {
+                timeUntilOutroEnd = 0;
+            }
             fadeTime = math_min(spinboxTime, timeUntilOutroEnd);
         }
     } else {
