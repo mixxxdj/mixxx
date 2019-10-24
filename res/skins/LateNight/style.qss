@@ -2067,7 +2067,7 @@ WLibrary QRadioButton::indicator:unchecked {
   QPushButton#pushButtonSelectAll {
     margin-left: 12px;
   }
-  
+
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ:!checked {
@@ -2108,11 +2108,11 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 
-/* triangle for closed/opened branches in treeview */
 QTreeView {
   show-decoration-selected: 0;
-  background-color: #151515;
+  background-color: #0f0f0f;
 }
+  /* triangle for closed/opened branches in treeview */
   /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   QTreeView::branch:has-children:!has-siblings:closed,
   QTreeView::branch:closed:has-children:has-siblings {
