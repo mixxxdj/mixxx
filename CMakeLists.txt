@@ -1256,8 +1256,8 @@ endif()
 #
 
 # Battery meter
-cmake_dependent_option(BATTERY_ENABLED "Battery meter support" ON "WIN32 OR UNIX" OFF)
-if(BATTERY_ENABLED)
+cmake_dependent_option(BATTERY "Battery meter support" ON "WIN32 OR UNIX" OFF)
+if(BATTERY)
   if(WIN32)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterywindows.cpp)
   elseif(APPLE)
@@ -1272,8 +1272,8 @@ endif()
 
 
 # Build Time
-option(BUILDTIME_ENABLED "Use __DATE__ and __TIME__" ON)
-if(NOT BUILDTIME_ENABLED)
+option(BUILDTIME "Use __DATE__ and __TIME__" ON)
+if(NOT BUILDTIME)
   # Distributions like openSUSE use tools (e. g. build-compare) to detect
   # whether a built binary differs from a former build to avoid unneeded
   # publishing of packages.
@@ -1284,8 +1284,8 @@ if(NOT BUILDTIME_ENABLED)
 endif()
 
 # Clang Color Diagnostics
-option(CLANG_COLORDIAG_ENABLED "Clang color diagnostics" OFF)
-if(CLANG_COLORDIAG_ENABLED)
+option(CLANG_COLORDIAG "Clang color diagnostics" OFF)
+if(CLANG_COLORDIAG)
   if(NOT CLANG)
     message(FATAL_ERROR "Color Diagnostics are only available when using Clang.")
   endif()
@@ -1294,16 +1294,16 @@ endif()
 
 # Clang Sanitizers
 set(CLANG_SANITIZERS "")
-option(CLANG_ASAN_ENABLED "Clang Address Sanitizer" OFF)
-if(CLANG_ASAN_ENABLED)
+option(CLANG_ASAN "Clang Address Sanitizer" OFF)
+if(CLANG_ASAN)
   list(APPEND CLANG_SANITIZERS "address")
 endif()
-option(CLANG_UBSAN_ENABLED "Clang Undefined Behaviour Sanitizer" OFF)
-if(CLANG_UBSAN_ENABLED)
+option(CLANG_UBSAN "Clang Undefined Behaviour Sanitizer" OFF)
+if(CLANG_UBSAN)
   list(APPEND CLANG_SANITIZERS "undefined")
 endif()
-option(CLANG_TSAN_ENABLED "Clang Thread Sanitizer" OFF)
-if(CLANG_TSAN_ENABLED)
+option(CLANG_TSAN "Clang Thread Sanitizer" OFF)
+if(CLANG_TSAN)
   list(APPEND CLANG_SANITIZERS "thread")
 endif()
 if(NOT CLANG_SANITIZERS STREQUAL "")
@@ -1315,8 +1315,8 @@ if(NOT CLANG_SANITIZERS STREQUAL "")
 endif()
 
 # CoreAudio MP3/AAC Decoder
-cmake_dependent_option(COREAUDIO_ENABLED "CoreAudio MP3/AAC Decoder" ON "APPLE" OFF)
-if(COREAUDIO_ENABLED)
+cmake_dependent_option(COREAUDIO "CoreAudio MP3/AAC Decoder" ON "APPLE" OFF)
+if(COREAUDIO)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcecoreaudio.cpp
     src/sources/v1/legacyaudiosourceadapter.cpp
@@ -1335,8 +1335,8 @@ endif()
 # FAAD AAC audio file decoder plugin
 find_package(MP4)
 find_package(MP4v2)
-cmake_dependent_option(FAAD_ENABLED "FAAD AAC audio file decoder support" ON "MP4_FOUND OR MP4v2_FOUND" OFF)
-if(FAAD_ENABLED)
+cmake_dependent_option(FAAD "FAAD AAC audio file decoder support" ON "MP4_FOUND OR MP4v2_FOUND" OFF)
+if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
   endif()
@@ -1356,8 +1356,8 @@ endif()
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
-option(FFMPEG_ENABLED "FFmpeg 4.x support" OFF)
-if(FFMPEG_ENABLED)
+option(FFMPEG "FFmpeg 4.x support" OFF)
+if(FFMPEG)
   if(NOT AVCODEC_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
   elseif(AVCODEC_VERSION VERSION_LESS 58)
@@ -1396,22 +1396,22 @@ if(FFMPEG_ENABLED)
 endif()
 
 # Google PerfTools
-option(GPERFTOOLS_ENABLED "Google PerfTools libtcmalloc linkage" OFF)
-option(GPERFTOOLSPROFILER_ENABLED "Google PerfTools libprofiler linkage" OFF)
-if(GPERFTOOLS_ENABLED OR GPERFTOOLSPROFILER_ENABLED)
+option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
+option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
+if(GPERFTOOLS OR GPERFTOOLSPROFILER)
   find_package(GPerfTools REQUIRED)
-  if(GPERFTOOLS_ENABLED)
+  if(GPERFTOOLS)
     target_link_libraries(mixxx-lib PUBLIC GPerfTools::tcmalloc)
   endif()
-  if(PERFTOOLSPROFILER_ENABLED)
+  if(PERFTOOLSPROFILER)
     target_link_libraries(mixxx-lib PUBLIC GPerfTools::profiler)
   endif()
 endif()
 
 # HSS1394 MIDI device
 find_package(HSS1394)
-cmake_dependent_option(HSS1394_ENABLED "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
-if(HSS1394_ENABLED)
+cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
+if(HSS1394)
   target_sources(mixxx-lib PRIVATE
     src/controllers/midi/hss1394controller.cpp
     src/controllers/midi/hss1394enumerator.cpp
@@ -1427,8 +1427,8 @@ endif()
 
 # Lilv (LV2)
 find_package(Lilv)
-cmake_dependent_option(LILV_ENABLED "Lilv (LV2) support" ON "Lilv_FOUND" OFF)
-if(LILV_ENABLED)
+cmake_dependent_option(LILV "Lilv (LV2) support" ON "Lilv_FOUND" OFF)
+if(LILV)
   if(NOT Lilv_FOUND)
     message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
   endif()
@@ -1444,8 +1444,8 @@ endif()
 
 # Live Broadcasting (Shoutcast)
 find_package(Shout)
-cmake_dependent_option(BROADCAST_ENABLED "Live Broadcasting (Shoutcast) support" ON "Shout_FOUND" OFF)
-if(BROADCAST_ENABLED)
+cmake_dependent_option(BROADCAST "Live Broadcasting (Shoutcast) support" ON "Shout_FOUND" OFF)
+if(BROADCAST)
   if(NOT Shout_FOUND)
       message(FATAL_ERROR "Live Broadcasting support requires the libshout and its development headers.")
   endif()
@@ -1461,8 +1461,8 @@ endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
-cmake_dependent_option(LOCALECOMPARE_ENABLED "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
-if(LOCALECOMPARE_ENABLED)
+cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
+if(LOCALECOMPARE)
   if(NOT SQLite3_FOUND)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
   endif()
@@ -1473,8 +1473,8 @@ endif()
 
 # Opus (RFC 6716)
 find_package(Opus)
-cmake_dependent_option(OPUS_ENABLED "Opus (RFC 6716) support" ON "Opus_FOUND" OFF)
-if(OPUS_ENABLED)
+cmake_dependent_option(OPUS "Opus (RFC 6716) support" ON "Opus_FOUND" OFF)
+if(OPUS)
   if(NOT Opus_FOUND)
     message(FATAL_ERROR "Opus support requires libopus and libopusfile with development headers.")
   endif()
@@ -1503,8 +1503,8 @@ endif()
 # MAD MP3 Decoder
 find_package(MAD)
 find_package(ID3Tag)
-cmake_dependent_option(MAD_ENABLED "MAD MP3 Decoder" ON "MAD_FOUND;ID3Tag_FOUND" OFF)
-if(MAD_ENABLED)
+cmake_dependent_option(MAD "MAD MP3 Decoder" ON "MAD_FOUND;ID3Tag_FOUND" OFF)
+if(MAD)
   if(NOT MAD_FOUND)
     message(FATAL_ERROR "MAD support requires libmad and its development headers.")
   endif()
@@ -1518,16 +1518,16 @@ endif()
 
 # Mac App Store
 if(APPLE)
-  option(MACAPPSTORE_ENABLED "Build for Mac App Store" OFF)
-  if(MACAPPSTORE_ENABLED)
+  option(MACAPPSTORE "Build for Mac App Store" OFF)
+  if(MACAPPSTORE)
     target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
   endif()
 endif()
 
 # Media Foundation AAC Decoder Plugin
 find_package(MediaFoundation)
-cmake_dependent_option(MEDIAFOUNDATION_ENABLED "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
-if(MEDIAFOUNDATION_ENABLED)
+cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
+if(MEDIAFOUNDATION)
   if(NOT MediaFoundation_FOUND)
       message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
   endif()
@@ -1545,8 +1545,8 @@ endif()
 
 # Modplug support
 find_package(Modplug)
-cmake_dependent_option(MODPLUG_ENABLED "Modplug module decoder support" ON "Modplug_FOUND" OFF)
-if(MODPLUG_ENABLED)
+cmake_dependent_option(MODPLUG "Modplug module decoder support" ON "Modplug_FOUND" OFF)
+if(MODPLUG)
   if(NOT Modplug_FOUND)
     message(FATAL_ERROR "Modplug module decoder support requires libmodplug and its development headers.")
   endif()
@@ -1561,8 +1561,8 @@ endif()
 
 # Profiling
 if(UNIX AND NOT APPLE)
-  option(PROFILING_ENABLED "Profiling (e.g. gprof) support" OFF)
-  if(PROFILING_ENABLED)
+  option(PROFILING "Profiling (e.g. gprof) support" OFF)
+  if(PROFILING)
     target_compile_options(mixxx-lib PUBLIC -pg)
     target_link_options(mixxx-lib PUBLIC -pg)
   endif()
@@ -1570,8 +1570,8 @@ endif()
 
 # QtKeychain
 find_package(Qt5 QUIET OPTIONAL_COMPONENTS Keychain)
-option(QTKEYCHAIN_ENABLED "Secure credentials storage support for Live Broadcasting profiles" OFF)
-if(QTKEYCHAIN_ENABLED)
+option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" OFF)
+if(QTKEYCHAIN)
   if(NOT Qt5_Keychain_FOUND)
     message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")
   endif()
@@ -1581,8 +1581,8 @@ endif()
 
 # USB Bulk controller support
 find_package(LibUSB)
-cmake_dependent_option(BULK_ENABLED "USB Bulk controller support" ON "LibUSB_FOUND" OFF)
-if(BULK_ENABLED)
+cmake_dependent_option(BULK "USB Bulk controller support" ON "LibUSB_FOUND" OFF)
+if(BULK)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
   endif()
@@ -1596,9 +1596,9 @@ endif()
 
 # USB HID controller support
 find_package(HIDAPI)
-option(HID_ENABLED "USB HID controller support" ON)
+option(HID "USB HID controller support" ON)
 cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
-if(HID_ENABLED)
+if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidenumerator.cpp
@@ -1633,9 +1633,9 @@ if(HID_ENABLED)
 endif()
 
 # Vinyl Control
-cmake_dependent_option(VINYLCONTROL_ENABLED "Vinyl Control support" ON "NOT MACAPPSTORE_ENABLED" OFF)
-if(VINYLCONTROL_ENABLED)
-  if(MACAPPSTORE_ENABLED)
+cmake_dependent_option(VINYLCONTROL "Vinyl Control support" ON "NOT MACAPPSTORE" OFF)
+if(VINYLCONTROL)
+  if(MACAPPSTORE)
     message(FATAL_ERROR "Mac App Store and Vinyl Control support are mutually exclusive due to licensing issues.")
   endif()
 
@@ -1664,8 +1664,8 @@ endif()
 
 # WavPack audio file support
 find_package(WavPack)
-cmake_dependent_option(WAVPACK_ENABLED "WavPack audio file support" ON "WavPack_FOUND" OFF)
-if(WAVPACK_ENABLED)
+cmake_dependent_option(WAVPACK "WavPack audio file support" ON "WavPack_FOUND" OFF)
+if(WAVPACK)
   if(NOT WavPack_FOUND)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
   endif()
@@ -1756,7 +1756,7 @@ if(NOT OPTIMIZE STREQUAL "off")
     # Clang sanitizers.
     # Note: It is only included in -O on machines where it does not
     # interfere with debugging
-    if(NOT PROFILING_ENABLED AND NOT CLANG_SANITIZERS)
+    if(NOT PROFILING AND NOT CLANG_SANITIZERS)
       target_compile_options(mixxx-lib PUBLIC "-fomit-frame-pointer")
     endif()
 
