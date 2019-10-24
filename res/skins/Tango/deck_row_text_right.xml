@@ -13,7 +13,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>ArtistTitleTime</ObjectName>
+    <ObjectName>DeckRowText</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>i,me</SizePolicy>
     <Children>

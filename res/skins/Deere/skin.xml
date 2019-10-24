@@ -16,6 +16,7 @@
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_starrating">1</attribute>
@@ -37,6 +38,12 @@
       <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_3_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_4_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_5_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_6_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_7_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <!-- Library -->
@@ -69,7 +76,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Style src="skin:../Deere/style.qss" src-mac="skin:../Deere/style-mac.qss"/>
 
   <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
@@ -103,9 +110,9 @@
     <SetVariable name="SquareButtonMaximumSize">22,22</SetVariable>
     <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
 
-    <SetVariable name="FXAssignmentButtonMinimumSize">26,18</SetVariable>
+    <SetVariable name="FXAssignmentButtonMinimumSize">26,22</SetVariable>
     <SetVariable name="FXAssignmentButtonMaximumSize">26,22</SetVariable>
-    <SetVariable name="FXAssignmentButtonSizePolicy">f,me</SetVariable>
+    <SetVariable name="FXAssignmentButtonSizePolicy">f,f</SetVariable>
 
     <SetVariable name="WideButtonMinimumSize">40,22</SetVariable>
     <SetVariable name="WideButtonMaximumSize">40,22</SetVariable>
@@ -119,8 +126,8 @@
     <SetVariable name="HorizontalStretchButtonMaximumSize">-1,22</SetVariable>
     <SetVariable name="HorizontalStretchButtonSizePolicy">me,f</SetVariable>
 
-    <SetVariable name="VerticalStretchButtonMinimumSize">20,-1</SetVariable>
-    <SetVariable name="VerticalStretchButtonMaximumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMinimumSize">22,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMaximumSize">22,-1</SetVariable>
     <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
 
     <!-- The waveforms (zoomed and overview) use a lot of memory. They appear in multiple places in
@@ -130,7 +137,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow1</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">1</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Traditional Blue -->
@@ -143,7 +150,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow2</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">2</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Traditional Orange -->
@@ -156,7 +163,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow3</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">3</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Violet -->
@@ -169,7 +176,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow4</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">4</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Lime -->
@@ -182,7 +189,7 @@
     <SingletonDefinition>
       <ObjectName>DeckCoverArt1</ObjectName>
       <Children>
-        <Template src="skin:coverart.xml">
+        <Template src="skin:../Deere/coverart.xml">
           <SetVariable name="group">[Channel1]</SetVariable>
         </Template>
       </Children>
@@ -191,7 +198,7 @@
     <SingletonDefinition>
       <ObjectName>DeckCoverArt2</ObjectName>
       <Children>
-        <Template src="skin:coverart.xml">
+        <Template src="skin:../Deere/coverart.xml">
           <SetVariable name="group">[Channel2]</SetVariable>
         </Template>
       </Children>
@@ -200,7 +207,7 @@
     <SingletonDefinition>
       <ObjectName>DeckCoverArt3</ObjectName>
       <Children>
-        <Template src="skin:coverart.xml">
+        <Template src="skin:../Deere/coverart.xml">
           <SetVariable name="group">[Channel3]</SetVariable>
         </Template>
       </Children>
@@ -209,7 +216,7 @@
     <SingletonDefinition>
       <ObjectName>DeckCoverArt4</ObjectName>
       <Children>
-        <Template src="skin:coverart.xml">
+        <Template src="skin:../Deere/coverart.xml">
           <SetVariable name="group">[Channel4]</SetVariable>
         </Template>
       </Children>
@@ -218,8 +225,11 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview1</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel1]</SetVariable>
+          <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -227,8 +237,11 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview2</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel2]</SetVariable>
+          <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -236,8 +249,11 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview3</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel3]</SetVariable>
+          <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -245,8 +261,11 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview4</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skin:../Deere/deck_overview.xml">
           <SetVariable name="group">[Channel4]</SetVariable>
+          <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -254,7 +273,7 @@
     <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
-        <Template src="skin:library.xml"/>
+        <Template src="skin:../Deere/library.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -262,7 +281,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
       <Children>
-        <Template src="skin:tool_bar.xml"/>
+        <Template src="skin:../Deere/tool_bar.xml"/>
 
         <Splitter><!-- Visible when Library is not maximized -->
           <ObjectName>WaveformSplitter</ObjectName>
@@ -327,10 +346,10 @@
               <Layout>vertical</Layout>
               <SizePolicy>min,max</SizePolicy>
               <Children>
-                <Template src="skin:main_decks.xml"/>
-                <Template src="skin:effect_rack.xml"/>
+                <Template src="skin:../Deere/main_decks.xml"/>
+                <Template src="skin:../Deere/effect_rack.xml"/>
                 <Template src="skin:sample_decks.xml"/>
-                <Template src="skin:microphone_rack.xml"/>
+                <Template src="skin:../Deere/microphone_rack.xml"/>
                 <SingletonContainer>
                   <ObjectName>Library</ObjectName>
                 </SingletonContainer>
@@ -345,12 +364,11 @@
           <SizePolicy>me,me</SizePolicy>
           <Children>
 
-            <Template src="skin:decks_small.xml"/>
+            <Template src="skin:../Deere/decks_small.xml"/>
 
             <SingletonContainer>
               <ObjectName>Library</ObjectName>
             </SingletonContainer>
-
           </Children>
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>

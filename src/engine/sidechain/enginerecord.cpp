@@ -134,7 +134,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             m_iMetaDataLife = kMetaDataLifeTimeout;
             m_pCurrentTrack.reset();
 
-            // clean frames couting and get current sample rate.
+            // clean frames counting and get current sample rate.
             m_frames = 0;
             m_sampleRate = m_pSamplerate->get();
 
@@ -191,7 +191,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // Compress audio. Encoder will call method 'write()' below to
         // write a file stream and emit bytesRecorded.
         m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
-        
+
         //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.
         if (m_bCueIsEnabled && metaDataHasChanged()) {

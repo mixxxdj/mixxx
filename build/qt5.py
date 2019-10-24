@@ -34,6 +34,7 @@ selection method.
 
 import os.path
 import re
+import subprocess
 import sys
 
 import SCons.Action
@@ -543,16 +544,15 @@ def _find_qtdirs(qt5dir, module):
     QT5INCDIR = os.path.join(qt5dir,"includedir")
     if sys.platform.startswith('linux'):
         if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-            import subprocess
             try:
                 if not module in ["Qt5DBus", "Qt5Assistant"]:
                     module5 = module.replace('Qt','Qt5')
                 else:
                     module5 = module
                 if not os.path.isdir(QT5LIBDIR):
-                    QT5LIBDIR = subprocess.Popen(["pkg-config", "--variable=libdir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
+                    QT5LIBDIR = subprocess.Popen(["pkg-config", "--variable=libdir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip().decode('utf-8')
                 if not os.path.isdir(QT5INCDIR):
-                    QT5INCDIR = subprocess.Popen(["pkg-config", "--variable=includedir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
+                    QT5INCDIR = subprocess.Popen(["pkg-config", "--variable=includedir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip().decode('utf-8')
             finally:
                 pass
     return QT5LIBDIR, QT5INCDIR, os.path.join(QT5INCDIR,module)
@@ -935,7 +935,8 @@ def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=
         try : self.AppendUnique(CPPDEFINES=moduleDefines[module])
         except: pass
     debugSuffix = ''
-    if (sys.platform.startswith("linux") or sys.platform.startswith("darwin")) and not crosscompiling :
+    if (sys.platform.startswith("linux") or sys.platform.startswith("darwin") or
+        sys.platform.find("bsd") >= 0) and not crosscompiling :
         if debug : debugSuffix = '_debug'
         # Call _find_qtdirs with QtCore to get at least one initialized for later usage with RPATH
         qt_dirs = _find_qtdirs("$QT5DIR","QtCore")

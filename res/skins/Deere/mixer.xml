@@ -14,224 +14,166 @@
         <Layout>vertical</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
+
           <WidgetGroup>
             <ObjectName>DeckControls</ObjectName>
             <SizePolicy>max,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-
-              <WidgetGroup>
-                <ObjectName>DeckControls_SplitWaveforms</ObjectName>
+              <WidgetGroup> <!-- 2 Decks -->
                 <Layout>horizontal</Layout>
                 <Children>
-
-                  <WidgetGroup>
-                    <ObjectName>DeckControls_SplitWaveforms_2Decks</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <Children>
-
-                      <Template src="skin:mixer_controls_left.xml">
-                        <SetVariable name="i">1</SetVariable>
-                      </Template>
-
-                      <Template src="skin:mixer_column_master_vu.xml"/>
-
-                      <Template src="skin:mixer_controls_right.xml">
-                        <SetVariable name="i">2</SetVariable>
-                      </Template>
-
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
-                    </Connection>
-                  </WidgetGroup> <!-- DeckControls_SplitWaveforms_2Decks -->
-
-                  <WidgetGroup>
-                    <ObjectName>DeckControls_SplitWaveforms_4Decks</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <Children>
-
-                      <Template src="skin:mixer_controls_left.xml">
-                        <SetVariable name="i">3</SetVariable>
-                      </Template>
-                      <Template src="skin:mixer_controls_left.xml">
-                        <SetVariable name="i">1</SetVariable>
-                      </Template>
-
-                      <Template src="skin:mixer_column_master_vu.xml"/>
-
-                      <Template src="skin:mixer_controls_right.xml">
-                        <SetVariable name="i">2</SetVariable>
-                      </Template>
-                      <Template src="skin:mixer_controls_right.xml">
-                        <SetVariable name="i">4</SetVariable>
-                      </Template>
-
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup> <!-- DeckControls_SplitWaveforms_4Decks -->
-
+                  <Template src="skin:mixer_controls_2decks_left.xml">
+                    <SetVariable name="i">1</SetVariable>
+                  </Template>
+                  <Template src="skin:mixer_column_master_vu_2decks.xml"/>
+                  <Template src="skin:mixer_controls_2decks_right.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
-                  <Transform>
-                    <Not/>
-                  </Transform>
+                  <Transform><Not/></Transform>
                 </Connection>
-              </WidgetGroup><!-- DeckControls_SplitWaveforms -->
-
-              <WidgetGroup>
-                <ObjectName>DeckControls_StackedWaveforms</ObjectName>
+              </WidgetGroup> <!-- 2 Decks -->
+              <WidgetGroup> <!-- 4 Decks -->
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup>
-                    <ObjectName>DeckControls_StackedWaveforms_2Decks</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:mixer_controls_left.xml">
-                        <SetVariable name="i">1</SetVariable>
-                      </Template>
-
-                      <Template src="skin:mixer_column_master_vu.xml"/>
-
-                      <Template src="skin:mixer_controls_right.xml">
-                        <SetVariable name="i">2</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
-                    </Connection>
-                  </WidgetGroup> <!-- DeckControls_StackedWaveforms_2Decks -->
-
-                  <WidgetGroup>
-                    <ObjectName>DeckControls_StackedWaveforms_4Decks</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <Children>
-
-                          <WidgetGroup>
-                            <ObjectName>DeckControls_StackedWaveforms_4Decks_NoEQs</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <Children>
-                              <Template src="skin:mixer_controls_left.xml">
-                                <SetVariable name="i">3</SetVariable>
-                              </Template>
-                              <Template src="skin:mixer_controls_left.xml">
-                                <SetVariable name="i">1</SetVariable>
-                              </Template>
-
-                              <Template src="skin:mixer_column_master_vu.xml"/>
-
-                              <Template src="skin:mixer_controls_right.xml">
-                                <SetVariable name="i">2</SetVariable>
-                              </Template>
-                              <Template src="skin:mixer_controls_right.xml">
-                                <SetVariable name="i">4</SetVariable>
-                              </Template>
-                            </Children>
-                            <Connection>
-                              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                              <Transform>
-                                <Not/>
-                              </Transform>
-                            </Connection>
-                          </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks_NoEQs -->
-
-                          <WidgetGroup>
-                            <ObjectName>DeckControls_StackedWaveforms_4Decks_WithEQs</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <Children>
-                              <Template src="skin:mixer_controls_condensed_left.xml">
-                                <SetVariable name="i">3</SetVariable>
-                              </Template>
-                              <Template src="skin:mixer_controls_condensed_left.xml">
-                                <SetVariable name="i">1</SetVariable>
-                              </Template>
-
-                              <Template src="skin:mixer_column_master_vu.xml"/>
-
-                              <Template src="skin:mixer_controls_condensed_right.xml">
-                                <SetVariable name="i">2</SetVariable>
-                              </Template>
-                              <Template src="skin:mixer_controls_condensed_right.xml">
-                                <SetVariable name="i">4</SetVariable>
-                              </Template>
-                            </Children>
-                            <Connection>
-                              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks_WithEQs -->
-
-                        </Children>
-                      </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks -->
-
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- DeckControls_StackedWaveforms_4Decks -->
-
+                  <!-- See comments in the templates for explanation of the modes -->
+                  <Template src="skin:mixer_controls_4decks_left.xml">
+                    <SetVariable name="i">3</SetVariable>
+                  </Template>
+                  <Template src="skin:mixer_controls_4decks_left.xml">
+                    <SetVariable name="i">1</SetVariable>
+                  </Template>
+                  <!-- The 4-deck master VU meter column contains the same
+                      structure and mechanisms as the left/right channel controls.
+                      When altering those remember to change i.e. <MaximumSize>
+                      and fixed spacers there as well -->
+                  <Template src="skin:mixer_column_master_vu_4decks.xml"/>
+                  <Template src="skin:mixer_controls_4decks_right.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+                  <Template src="skin:mixer_controls_4decks_right.xml">
+                    <SetVariable name="i">4</SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- DeckControls_StackedWaveforms -->
-
+              </WidgetGroup> <!-- 4 Decks -->
             </Children>
           </WidgetGroup><!-- DeckControls -->
 
           <WidgetGroup><!-- CrossfaderContainer -->
+            <ObjectName>CrossfaderContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>-1,40</MaximumSize>
             <Children>
+
               <WidgetGroup>
-                <ObjectName>CrossfaderContainer</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
                 <Children>
-                  <!-- Slider background is highlighted orange if AutoDJ is enabled -->
                   <WidgetGroup>
-                    <ObjectName>Crossfader</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Layout>horizontal</Layout>
+                    <Size>0min,2f</Size>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>28f,22f</Size>
                     <Children>
-                      <SliderComposed>
-                        <TooltipId>crossfader</TooltipId>
-                        <Size>1me,40f</Size>
-                        <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
-                        <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],crossfader</ConfigKey>
-                          <EmitOnDownPress>false</EmitOnDownPress>
-                        </Connection>
-                      </SliderComposed>
+                      <Template src="skin:crossfader_orientation_button.xml">
+                        <SetVariable name="group">[Channel1]</SetVariable>
+                        <SetVariable name="Unit">Deck1</SetVariable>
+                      </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey>[AutoDJ],enabled</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup><!-- Crossfader -->
-
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Size>0min,0e</Size>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <!-- Slider background is highlighted orange if AutoDJ is enabled -->
+              <WidgetGroup>
+                <ObjectName>Crossfader</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SliderComposed>
+                    <TooltipId>crossfader</TooltipId>
+                    <Size>1me,40f</Size>
+                    <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],crossfader</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
+                </Children>
+                <Connection>
+                  <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Crossfader -->
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>0min,2f</Size>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>28f,22f</Size>
+                    <Children>
+                      <Template src="skin:crossfader_orientation_button.xml">
+                        <SetVariable name="group">[Channel2]</SetVariable>
+                        <SetVariable name="Unit">Deck2</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Size>0min,0e</Size>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
@@ -239,6 +181,31 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- CrossfaderContainer -->
+
+          <SizeAwareStack><!-- Check if xFader buttons fit in without squeezing xFader too much -->
+            <Size>0me,0f</Size>
+            <Children>
+              <WidgetStack><!-- Not enough space -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>120,0</MaximumSize>
+                <Children>
+                  <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Deere],xfader_buttons_fit"><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+              <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>121,0</MinimumSize>
+                <MaximumSize>-1,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[Deere],xfader_buttons_fit"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </SizeAwareStack>
 
         </Children>
       </WidgetGroup><!-- Mixer -->

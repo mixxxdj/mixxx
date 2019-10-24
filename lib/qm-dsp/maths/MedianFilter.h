@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef MEDIAN_FILTER_H
-#define MEDIAN_FILTER_H
+#ifndef QM_DSP_MEDIAN_FILTER_H
+#define QM_DSP_MEDIAN_FILTER_H
 
 #include <algorithm>
 #include <cassert>
@@ -27,17 +26,17 @@ class MedianFilter
 {
 public:
     MedianFilter(int size, float percentile = 50.f) :
-	m_size(size),
-	m_frame(new T[size]),
-	m_sorted(new T[size]),
-	m_sortend(m_sorted + size - 1) {
+        m_size(size),
+        m_frame(new T[size]),
+        m_sorted(new T[size]),
+        m_sortend(m_sorted + size - 1) {
         setPercentile(percentile);
-	reset();
+        reset();
     }
 
     ~MedianFilter() { 
-	delete[] m_frame;
-	delete[] m_sorted;
+        delete[] m_frame;
+        delete[] m_sorted;
     }
 
     void setPercentile(float p) {
@@ -52,15 +51,15 @@ public:
             // we do need to push something, to maintain the filter length
             value = T();
         }
-	drop(m_frame[0]);
-	const int sz1 = m_size-1;
-	for (int i = 0; i < sz1; ++i) m_frame[i] = m_frame[i+1];
-	m_frame[m_size-1] = value;
-	put(value);
+        drop(m_frame[0]);
+        const int sz1 = m_size-1;
+        for (int i = 0; i < sz1; ++i) m_frame[i] = m_frame[i+1];
+        m_frame[m_size-1] = value;
+        put(value);
     }
 
     T get() const {
-	return m_sorted[m_index];
+        return m_sorted[m_index];
     }
 
     int getSize() const {
@@ -68,15 +67,15 @@ public:
     }
 
     T getAt(float percentile) {
-	int ix = int((m_size * percentile) / 100.f);
+        int ix = int((m_size * percentile) / 100.f);
         if (ix >= m_size) ix = m_size-1;
         if (ix < 0) ix = 0;
-	return m_sorted[ix];
+        return m_sorted[ix];
     }
 
     void reset() {
-	for (int i = 0; i < m_size; ++i) m_frame[i] = 0;
-	for (int i = 0; i < m_size; ++i) m_sorted[i] = 0;
+        for (int i = 0; i < m_size; ++i) m_frame[i] = 0;
+        for (int i = 0; i < m_size; ++i) m_sorted[i] = 0;
     }
 
     static std::vector<T> filter(int size, const std::vector<T> &in) {
@@ -102,25 +101,25 @@ private:
     int m_index;
 
     void put(T value) {
-	// precondition: m_sorted contains m_size-1 values, packed at start
-	// postcondition: m_sorted contains m_size values, one of which is value
-	T *point = std::lower_bound(m_sorted, m_sortend, value);
-	const int n = m_sortend - point;
-	for (int i = n; i > 0; --i) point[i] = point[i-1];
-	*point = value;
+        // precondition: m_sorted contains m_size-1 values, packed at start
+        // postcondition: m_sorted contains m_size values, one of which is value
+        T *point = std::lower_bound(m_sorted, m_sortend, value);
+        const int n = m_sortend - point;
+        for (int i = n; i > 0; --i) point[i] = point[i-1];
+        *point = value;
     }
 
     void drop(T value) {
-	// precondition: m_sorted contains m_size values, one of which is value
-	// postcondition: m_sorted contains m_size-1 values, packed at start
-	T *point = std::lower_bound(m_sorted, m_sortend + 1, value);
-	if (*point != value) {
-	    std::cerr << "WARNING: MedianFilter::drop: *point is " << *point
-		      << ", expected " << value << std::endl;
-	}
-	const int n = m_sortend - point;
-	for (int i = 0; i < n; ++i) point[i] = point[i+1];
-	*m_sortend = T(0);
+        // precondition: m_sorted contains m_size values, one of which is value
+        // postcondition: m_sorted contains m_size-1 values, packed at start
+        T *point = std::lower_bound(m_sorted, m_sortend + 1, value);
+        if (*point != value) {
+            std::cerr << "WARNING: MedianFilter::drop: *point is " << *point
+                      << ", expected " << value << std::endl;
+        }
+        const int n = m_sortend - point;
+        for (int i = 0; i < n; ++i) point[i] = point[i+1];
+        *m_sortend = T(0);
     }
 
     MedianFilter(const MedianFilter &); // not provided

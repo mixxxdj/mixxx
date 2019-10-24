@@ -194,41 +194,62 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
 
     // Be notified when a track is modified.
     // We only care when the number of times it's been played changes.
-    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(trackDirty(TrackId)),
-            this, SLOT(slotTrackDirty(TrackId)));
+    connect(&m_pTrackCollection->getTrackDAO(),
+            &TrackDAO::trackDirty,
+            this,
+            &AutoDJCratesDAO::slotTrackDirty);
 
     // Be notified when the status of crates changes.
-    connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
-            this, SLOT(slotCrateInserted(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateDeleted(CrateId)),
-            this, SLOT(slotCrateDeleted(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
-            this, SLOT(slotCrateUpdated(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)),
-            this, SLOT(slotCrateTracksChanged(CrateId,QList<TrackId>,QList<TrackId>)));
+    connect(m_pTrackCollection,
+            &TrackCollection::crateInserted,
+            this,
+            &AutoDJCratesDAO::slotCrateInserted);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateDeleted,
+            this,
+            &AutoDJCratesDAO::slotCrateDeleted);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateUpdated,
+            this,
+            &AutoDJCratesDAO::slotCrateUpdated);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateTracksChanged,
+            this,
+            &AutoDJCratesDAO::slotCrateTracksChanged);
 
     // Be notified when playlists are added/removed.
     // We only care about set-log playlists.
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(added(int)),
-            this, SLOT(slotPlaylistAdded(int)));
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(deleted(int)),
-            this, SLOT(slotPlaylistDeleted(int)));
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::added,
+            this,
+            &AutoDJCratesDAO::slotPlaylistAdded);
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::deleted,
+            this,
+            &AutoDJCratesDAO::slotPlaylistDeleted);
 
     // Be notified when tracks are added/removed from playlists.
     // We only care about the auto-DJ playlist and the set-log playlists.
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(trackAdded(int,TrackId,int)),
-            this, SLOT(slotPlaylistTrackAdded(int,TrackId,int)));
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(trackRemoved(int,TrackId,int)),
-            this, SLOT(slotPlaylistTrackRemoved(int,TrackId,int)));
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::trackAdded,
+            this,
+            &AutoDJCratesDAO::slotPlaylistTrackAdded);
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::trackRemoved,
+            this,
+            &AutoDJCratesDAO::slotPlaylistTrackRemoved);
 
     // Be notified when tracks are loaded to, or unloaded from, a deck.
     // These count as auto-DJ references, i.e. prevent the track from being
     // selected randomly.
-    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString,TrackPointer)),
-            this, SLOT(slotPlayerInfoTrackLoaded(QString,TrackPointer)));
     connect(&PlayerInfo::instance(),
-            SIGNAL(trackUnloaded(QString,TrackPointer)),
-            this, SLOT(slotPlayerInfoTrackUnloaded(QString,TrackPointer)));
+            &PlayerInfo::trackLoaded,
+            this,
+            &AutoDJCratesDAO::slotPlayerInfoTrackLoaded);
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackUnloaded,
+            this,
+            &AutoDJCratesDAO::slotPlayerInfoTrackUnloaded);
 
     // Remember that the auto-DJ-crates database has been created.
     m_bAutoDjCratesDbCreated = true;

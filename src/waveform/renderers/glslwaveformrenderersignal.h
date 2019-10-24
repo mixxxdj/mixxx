@@ -4,12 +4,15 @@
 #include <QGLFramebufferObject>
 #include <QGLShaderProgram>
 #include <QtOpenGL>
+#include <QOpenGLFunctions_2_1>
 
 #include "track/track.h"
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignalBase {
+class GLSLWaveformRendererSignal: public QObject,
+        public WaveformRendererSignalBase,
+        protected QOpenGLFunctions_2_1 {
     Q_OBJECT
   public:
     GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
@@ -51,12 +54,14 @@ class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignal
     std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
 };
 
-class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
-  public:
+class GLSLWaveformRendererFilteredSignal: public GLSLWaveformRendererSignal {
+public:
     GLSLWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {}
-    ~GLSLWaveformRendererFilteredSignal() override {}
+            WaveformWidgetRenderer* waveformWidgetRenderer) :
+            GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {
+    }
+    ~GLSLWaveformRendererFilteredSignal() override {
+    }
 };
 
 class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {

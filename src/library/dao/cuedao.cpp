@@ -6,11 +6,13 @@
 #include <QVariant>
 
 #include "library/dao/cuedao.h"
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/color/color.h"
+#include "util/color/predefinedcolor.h"
 
 int CueDAO::cueCount() {
     qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
@@ -46,14 +48,15 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
     TrackId trackId(record.value(record.indexOf("track_id")));
+    int source = record.value(record.indexOf("source")).toInt();
     int type = record.value(record.indexOf("type")).toInt();
     int position = record.value(record.indexOf("position")).toInt();
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
-    QColor color = QColor::fromRgba(record.value(record.indexOf("color")).toInt());
-    CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type,
-                       position, length, hotcue, label, color));
+    int iColorId = record.value(record.indexOf("color")).toInt();
+    PredefinedColorPointer color = Color::kPredefinedColorsSet.predefinedColorFromId(iColorId);
+    CuePointer pCue(new Cue(id, trackId, (Cue::CueSource)source, (Cue::CueType)type, position, length, hotcue, label, color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -138,14 +141,15 @@ bool CueDAO::saveCue(Cue* cue) {
     if (cue->getId() == -1) {
         // New cue
         QSqlQuery query(m_database);
-        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label, color) VALUES (:track_id, :type, :position, :length, :hotcue, :label, :color)");
+        query.prepare("INSERT INTO " CUE_TABLE " (track_id, source, type, position, length, hotcue, label, color) VALUES (:track_id, :source, :type, :position, :length, :hotcue, :label, :color)");
         query.bindValue(":track_id", cue->getTrackId().toVariant());
+        query.bindValue(":source", cue->getSource());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor().rgba());
+        query.bindValue(":color", cue->getColor()->m_iId);
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -159,6 +163,7 @@ bool CueDAO::saveCue(Cue* cue) {
         QSqlQuery query(m_database);
         query.prepare("UPDATE " CUE_TABLE " SET "
                         "track_id = :track_id,"
+                        "source = :source,"
                         "type = :type,"
                         "position = :position,"
                         "length = :length,"
@@ -168,12 +173,13 @@ bool CueDAO::saveCue(Cue* cue) {
                         " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         query.bindValue(":track_id", cue->getTrackId().toVariant());
+        query.bindValue(":source", cue->getSource());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor().rgba());
+        query.bindValue(":color", cue->getColor()->m_iId);
 
         if (query.exec()) {
             cue->setDirty(false);
@@ -246,7 +252,7 @@ void CueDAO::saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) {
 
     // Delete cues that are no longer on the track.
     QSqlQuery query(m_database);
-    query.prepare(QString("DELETE FROM cues where track_id=:track_id and not id in (%1)")
+    query.prepare(QString("DELETE FROM " CUE_TABLE " where track_id=:track_id and not id in (%1)")
                   .arg(list));
     query.bindValue(":track_id", trackId.toVariant());
 

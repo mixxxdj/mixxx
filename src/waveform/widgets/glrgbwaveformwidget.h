@@ -15,6 +15,7 @@ class GLRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool developerOnly() { return false; }
 

@@ -20,14 +20,15 @@ class AnalyzerKey : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE *pIn, const int iLen) override;
-    void finalize(TrackPointer tio) override;
-    void cleanup(TrackPointer tio) override;
+    bool processSamples(const CSAMPLE *pIn, const int iLen) override;
+    void storeResults(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis);
+            QString pluginId, bool bPreferencesFastAnalysis);
+
+    bool shouldAnalyze(TrackPointer tio) const;
 
     KeyDetectionSettings m_keySettings;
     std::unique_ptr<mixxx::AnalyzerKeyPlugin> m_pPlugin;

@@ -6,10 +6,9 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <Template src="skin:rate_controls.xml"/>
+      <Template src="skin:deck_rate_controls.xml"/>
 
-      <WidgetGroup>  <!-- Deck Channel
-        <ObjectName>Deck<Variable name="channum" /></ObjectName> -->
+      <WidgetGroup>  <!-- Deck Channel -->
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
@@ -19,18 +18,19 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- Big spinny -->
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>103,-1</MaximumSize>
+                <MaximumSize>102,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
                     <SizePolicy>min,min</SizePolicy>
+                    <MaximumSize>103,</MaximumSize>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <SingletonContainer>
-                        <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
-                      </SingletonContainer>
+                      <Template src="skin:spinny_coverart.xml">
+                        <SetVariable name="MaxSize">100,100</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -38,12 +38,18 @@
                   <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- Big spinny -->
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
+                    </Children>
+                  </WidgetGroup>
                   <Template src="skin:deck_row_4_overviewSpinny.xml" />
                 </Children>
               </WidgetGroup>

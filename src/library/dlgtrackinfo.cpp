@@ -1,20 +1,24 @@
 #include <QDesktopServices>
 #include <QtDebug>
 #include <QStringBuilder>
+#include <QComboBox>
 
-#include "util/desktophelper.h"
-#include "library/dlgtrackinfo.h"
-#include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/dao/cue.h"
+#include "library/dlgtrackinfo.h"
+#include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
+#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "util/color/color.h"
+#include "util/compatibility.h"
+#include "util/desktophelper.h"
 #include "util/duration.h"
 
 const int kFilterLength = 80;
 const int kMinBpm = 30;
+
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
@@ -36,66 +40,101 @@ void DlgTrackInfo::init() {
     cueTable->hideColumn(0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
-    connect(btnNext, SIGNAL(clicked()),
-            this, SLOT(slotNext()));
-    connect(btnPrev, SIGNAL(clicked()),
-            this, SLOT(slotPrev()));
-    connect(btnApply, SIGNAL(clicked()),
-            this, SLOT(apply()));
-    connect(btnOK, SIGNAL(clicked()),
-            this, SLOT(OK()));
-    connect(btnCancel, SIGNAL(clicked()),
-            this, SLOT(cancel()));
+    connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
+    connect(btnPrev, &QPushButton::clicked, this, &DlgTrackInfo::slotPrev);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTrackInfo::apply);
+    connect(btnOK, &QPushButton::clicked, this, &DlgTrackInfo::OK);
+    connect(btnCancel, &QPushButton::clicked, this, &DlgTrackInfo::cancel);
 
-    connect(bpmDouble, SIGNAL(clicked()),
-            this, SLOT(slotBpmDouble()));
-    connect(bpmHalve, SIGNAL(clicked()),
-            this, SLOT(slotBpmHalve()));
-    connect(bpmTwoThirds, SIGNAL(clicked()),
-            this, SLOT(slotBpmTwoThirds()));
-    connect(bpmThreeFourth, SIGNAL(clicked()),
-            this, SLOT(slotBpmThreeFourth()));
-    connect(bpmFourThirds, SIGNAL(clicked()),
-            this, SLOT(slotBpmFourThirds()));
-    connect(bpmThreeHalves, SIGNAL(clicked()),
-            this, SLOT(slotBpmThreeHalves()));
-    connect(bpmClear, SIGNAL(clicked()),
-            this, SLOT(slotBpmClear()));
+    connect(bpmDouble,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmDouble);
+    connect(bpmHalve,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmHalve);
+    connect(bpmTwoThirds,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmTwoThirds);
+    connect(bpmThreeFourth,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmThreeFourth);
+    connect(bpmFourThirds,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmFourThirds);
+    connect(bpmThreeHalves,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmThreeHalves);
+    connect(bpmClear,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmClear);
 
-    connect(bpmConst, SIGNAL(stateChanged(int)),
-            this, SLOT(slotBpmConstChanged(int)));
+    connect(bpmConst,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgTrackInfo::slotBpmConstChanged);
 
-    connect(spinBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSpinBpmValueChanged(double)));
+    connect(spinBpm,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotSpinBpmValueChanged);
 
-    connect(txtKey, SIGNAL(editingFinished()),
-            this, SLOT(slotKeyTextChanged()));
+    connect(txtKey,
+            &QLineEdit::editingFinished,
+            this,
+            &DlgTrackInfo::slotKeyTextChanged);
 
-    connect(btnCueActivate, SIGNAL(clicked()),
-            this, SLOT(cueActivate()));
-    connect(btnCueDelete, SIGNAL(clicked()),
-            this, SLOT(cueDelete()));
-    connect(bpmTap, SIGNAL(pressed()),
-            m_pTapFilter.data(), SLOT(tap()));
-    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
-            this, SLOT(slotBpmTap(double, int)));
+    connect(btnCueActivate,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::cueActivate);
+    connect(btnCueDelete,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::cueDelete);
+    connect(bpmTap,
+            &QPushButton::pressed,
+            m_pTapFilter.data(),
+            &TapFilter::tap);
+    connect(m_pTapFilter.data(),
+            &TapFilter::tapped,
+            this,
+            &DlgTrackInfo::slotBpmTap);
 
-    connect(btnImportMetadataFromFile, SIGNAL(clicked()),
-            this, SLOT(slotImportMetadataFromFile()));
-    connect(btnImportMetadataFromMusicBrainz, SIGNAL(clicked()),
-            this, SLOT(slotImportMetadataFromMusicBrainz()));
-    connect(btnOpenFileBrowser, SIGNAL(clicked()),
-            this, SLOT(slotOpenInFileBrowser()));
+    connect(btnImportMetadataFromFile,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotImportMetadataFromFile);
+    connect(btnImportMetadataFromMusicBrainz,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotImportMetadataFromMusicBrainz);
+    connect(btnOpenFileBrowser,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotOpenInFileBrowser);
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache != nullptr) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgTrackInfo::slotCoverFound);
     }
-    connect(m_pWCoverArtLabel, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(m_pWCoverArtLabel,
+            &WCoverArtLabel::coverInfoSelected,
+            this,
+            &DlgTrackInfo::slotCoverInfoSelected);
+    connect(m_pWCoverArtLabel,
+            &WCoverArtLabel::reloadCoverArt,
+            this,
+            &DlgTrackInfo::slotReloadCoverArt);
 }
 
 void DlgTrackInfo::OK() {
@@ -139,7 +178,7 @@ void DlgTrackInfo::cueDelete() {
     }
 
     QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
-    qSort(rowsList);
+    std::sort(rowsList.begin(), rowsList.end());
 
     QListIterator<int> it(rowsList);
     it.toBack();
@@ -221,8 +260,10 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
-    connect(pTrack.get(), SIGNAL(changed(Track*)),
-            this, SLOT(updateTrackMetadata()));
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
@@ -274,7 +315,9 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        if (pCue->getType() == Cue::CUE || pCue->getType() == Cue::LOAD) {
+        Cue::CueType type = pCue->getType();
+        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO
+                || type == Cue::OUTRO) {
             listPoints.push_back(pCue);
         }
     }
@@ -291,25 +334,29 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // them to the user as 1-indexex. Add 1 here. rryan 9/2010
         int iHotcue = pCue->getHotCue() + 1;
         QString hotcue = "";
-        if (iHotcue != -1) {
-            hotcue = QString("%1").arg(iHotcue);
-        }
-
-        int position = pCue->getPosition();
-        double totalSeconds;
-        if (position == -1)
+        hotcue = QString("%1").arg(iHotcue);
+        double position = pCue->getPosition();
+        if (position == -1) {
             continue;
-        else {
-            totalSeconds = float(position) / float(sampleRate) / 2.0;
         }
 
-        int fraction = 100*(totalSeconds - floor(totalSeconds));
-        int seconds = int(totalSeconds) % 60;
-        int mins = int(totalSeconds) / 60;
+        double totalSeconds = position / sampleRate / 2.0;
+
+        bool negative = false;
+        if (totalSeconds < 0) {
+            totalSeconds *= -1;
+            negative = true;
+        }
+
+        int iTotalSeconds = static_cast<int>(totalSeconds);
+        int fraction = 100 * (totalSeconds - iTotalSeconds);
+        int seconds = iTotalSeconds % 60;
+        int mins = iTotalSeconds / 60;
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(
+        QString duration = QString("%1%2:%3.%4").arg(
+            negative ? QString("-") : QString(),
             QString::number(mins),
             QString("%1").arg(seconds, 2, 10, QChar('0')),
             QString("%1").arg(fraction, 2, 10, QChar('0')));
@@ -318,16 +365,70 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
 
+        // Decode cue type to display text
+        QString cueType;
+        switch (pCue->getType()) {
+            case Cue::INVALID:
+                cueType = "?";
+                break;
+            case Cue::CUE:
+                cueType = "Hotcue";
+                break;
+            case Cue::LOAD:
+                cueType = "Main Cue";
+                break;
+            case Cue::BEAT:
+                cueType = "Beat";
+                break;
+            case Cue::LOOP:
+                cueType = "Loop";
+                break;
+            case Cue::JUMP:
+                cueType = "Jump";
+                break;
+            case Cue::INTRO:
+                cueType = "Intro";
+                break;
+            case Cue::OUTRO:
+                cueType = "Outro";
+                break;
+            default:
+                break;
+        }
+
+        QTableWidgetItem* typeItem = new QTableWidgetItem(cueType);
+        // Make the type read only
+        typeItem->setFlags(Qt::NoItemFlags);
+
+        QComboBox* colorComboBox = new QComboBox();
+        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
+        for (int i = 0; i < predefinedColors.count(); i++) {
+            PredefinedColorPointer color = predefinedColors.at(i);
+            QColor defaultRgba = color->m_defaultRgba;
+            colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
+            if (*color != *Color::kPredefinedColorsSet.noColor) {
+                QPixmap pixmap(80, 80);
+                pixmap.fill(defaultRgba);
+                QIcon icon(pixmap);
+                colorComboBox->setItemIcon(i, icon);
+            }
+        }
+        PredefinedColorPointer cueColor = pCue->getColor();
+        colorComboBox->setCurrentIndex(Color::kPredefinedColorsSet.predefinedColorIndex(cueColor));
+
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
-        cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
-        cueTable->setItem(row, 3, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setItem(row, 2, typeItem);
+        cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
+        cueTable->setCellWidget(row, 4, colorComboBox);
+        cueTable->setItem(row, 5, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
     cueTable->setSortingEnabled(true);
     cueTable->horizontalHeader()->setStretchLastSection(true);
+    cueTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
 }
 
 void DlgTrackInfo::saveTrack() {
@@ -336,8 +437,10 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
-               this, SLOT(updateTrackMetadata()));
+    disconnect(m_pLoadedTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
     m_pLoadedTrack->setArtist(txtArtist->text());
@@ -366,29 +469,41 @@ void DlgTrackInfo::saveTrack() {
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
-        QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-        QTableWidgetItem* labelItem = cueTable->item(row, 3);
+        QTableWidgetItem* hotcueItem = cueTable->item(row, 3);
+        QWidget* colorWidget = cueTable->cellWidget(row, 4);
+        QTableWidgetItem* labelItem = cueTable->item(row, 5);
 
-        if (!rowItem || !hotcueItem || !labelItem)
+        VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorWidget && labelItem) {
+            qWarning() << "unable to retrieve cells from cueTable row";
             continue;
+        }
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
         CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
         if (!pCue) {
             continue;
         }
-
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert(QMetaType::Int)) {
-            int iTableHotcue = vHotcue.toInt();
+        bool ok;
+        int iTableHotcue = vHotcue.toInt(&ok);
+        if (ok) {
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1
             pCue->setHotCue(iTableHotcue - 1);
         } else {
             pCue->setHotCue(-1);
         }
+
+        if (pCue->getType() == Cue::CUE) {
+            auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
+            if (colorComboBox) {
+                PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
+                pCue->setColor(color);
+            }
+        }
+        // do nothing for now.
 
         QString label = labelItem->data(Qt::DisplayRole).toString();
         pCue->setLabel(label);
@@ -414,8 +529,10 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
-    connect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
-            this, SLOT(updateTrackMetadata()));
+    connect(m_pLoadedTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -430,8 +547,10 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-
-    disconnect(this, SLOT(updateTrackMetadata()));
+    disconnect(m_pLoadedTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
     m_pLoadedTrack.reset();
 
     txtTrackName->setText("");
@@ -526,9 +645,9 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // almost all cases.
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
-            double cue = m_pLoadedTrack->getCuePoint();
+            CuePosition cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = BeatFactory::makeBeatGrid(
-                    *m_pLoadedTrack, spinBpm->value(), cue);
+                    *m_pLoadedTrack, spinBpm->value(), cue.getPosition());
         } else {
             m_pBeatsClone.clear();
         }
@@ -560,9 +679,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        double cue = m_pLoadedTrack->getCuePoint();
+        CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = BeatFactory::makeBeatGrid(
-                *m_pLoadedTrack, value, cue);
+                *m_pLoadedTrack, value, cue.getPosition());
     }
 
     double oldValue = m_pBeatsClone->getBpm();

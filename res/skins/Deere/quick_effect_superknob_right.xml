@@ -8,9 +8,9 @@
     color: the knob ring color. carmine, yellow or light_blue
 -->
 <Template>
-  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
-  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
+  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack1]</SetVariable>
+  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
@@ -22,23 +22,16 @@
         <SetVariable name="color"><Variable name="color"/></SetVariable>
       </Template>
 
-      <!-- Invert the on/off icons so they match the EQ kill switches. -->
       <PushButton>
         <TooltipId><Variable name="button_TooltipId"/></TooltipId>
-        <Size>15f,15f</Size>
+        <Size>15f,20f</Size>
         <ObjectName>QuickEffectKillButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text></Text>
-          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Text></Text>
-          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>

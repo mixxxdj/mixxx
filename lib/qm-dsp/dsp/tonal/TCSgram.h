@@ -13,8 +13,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _TCSGram_
-#define _TCSGram_
+#ifndef QM_DSP_TCSGRAM_H
+#define QM_DSP_TCSGRAM_H
 
 #include <vector>
 #include <valarray>
@@ -26,24 +26,28 @@ typedef std::vector<std::pair<long, TCSVector> > vectorlist_t;
 
 class TCSGram
 {
-public:	
-	TCSGram();
-	~TCSGram();
-	void getTCSVector(int, TCSVector&) const;
-	void addTCSVector(const TCSVector&);
-	long getTime(size_t) const;
-	long getDuration() const;
-	void printDebug();
-	int getSize() const { return m_VectorList.size(); }
-	void reserve(size_t uSize) { m_VectorList.reserve(uSize); }
-	void clear() { m_VectorList.clear(); }
-	void setFrameDuration(const double dFrameDurationMS) { m_dFrameDurationMS = dFrameDurationMS; }
-	void setNumBins(const unsigned int uNumBins) { m_uNumBins = uNumBins; }
-	void normalize();
+public: 
+    TCSGram();
+    ~TCSGram();
+    void getTCSVector(int, TCSVector&) const;
+    void addTCSVector(const TCSVector&);
+    long getTime(size_t) const;
+    long getDuration() const;
+    void printDebug();
+    int getSize() const { return m_VectorList.size(); }
+    void reserve(size_t uSize) { m_VectorList.reserve(uSize); }
+    void clear() { m_VectorList.clear(); }
+    void setFrameDuration(const double dFrameDurationMS) {
+        m_dFrameDurationMS = dFrameDurationMS;
+    }
+    void setNumBins(const unsigned int uNumBins) {
+        m_uNumBins = uNumBins;
+    }
+    void normalize();
 protected:
-	vectorlist_t m_VectorList;
-	unsigned int m_uNumBins;
-	double m_dFrameDurationMS;
+    vectorlist_t m_VectorList;
+    unsigned int m_uNumBins;
+    double m_dFrameDurationMS;
 };
 
 #endif

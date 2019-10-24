@@ -7,8 +7,8 @@
     This file copyright Chris Cannam, used with permission.
 */
 
-#ifndef _THREAD_H_
-#define _THREAD_H_
+#ifndef QM_DSP_THREAD_H
+#define QM_DSP_THREAD_H
 
 #ifdef _WIN32
 #include <windows.h>

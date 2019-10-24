@@ -8,7 +8,7 @@
 
 /*
  * States:
- * Error        Something errornous has happened and can't go on
+ * Error        Something erroneous has happened and can't go on
  * New          First state before init
  * Init         Initing state don't feed anything in this state
  * Waiting      Waiting something not ready yet
@@ -19,7 +19,7 @@
  * Connected    Is connected to storage or server
  * Connecting   Trying to connect storage or server
  * Disconnected Ain't connected to storage or server
- * 
+ *
  * First state should be NETWORKSTREAMWORKER_STATE_UNKNOWN and
  * if state handling ain't supported by NetworkStreamWorker-class
  * then 'NETWORKSTREAMWORKER_STATE_NEW' should be treated as
@@ -82,7 +82,7 @@ protected:
     void setState(int state);
     void setFunctionCode(int code);
     void incRunCount();
-    
+
 private:
     double m_sampleRate;
     int m_numOutputChannels;

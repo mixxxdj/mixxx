@@ -13,6 +13,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "util/painterscope.h"
 
 WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -37,7 +38,7 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& con
 }
 
 void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
-    painter->save();
+    PainterScope PainterScope(painter);
 
     painter->setWorldMatrixEnabled(false);
 
@@ -45,11 +46,14 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         generateImages();
     }
 
-    for (unsigned int i = 0; i < m_markRanges.size(); i++) {
-        WaveformMarkRange& markRange = m_markRanges[i];
-
+    for (auto&& markRange: m_markRanges) {
         // If the mark range is not active we should not draw it.
         if (!markRange.active()) {
+            continue;
+        }
+
+        // If the mark range is not visible we should not draw it.
+        if (!markRange.visible()) {
             continue;
         }
 
@@ -79,13 +83,11 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         }
         painter->drawImage(rect, *selectedImage, rect);
     }
-
-    painter->restore();
 }
 
 void WaveformRenderMarkRange::generateImages() {
-    for (unsigned int i = 0; i < m_markRanges.size(); i++) {
-        m_markRanges[i].generateImage(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+    for (auto&& markRange: m_markRanges) {
+        markRange.generateImage(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     }
     setDirty(false);
 }

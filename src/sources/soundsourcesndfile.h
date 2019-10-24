@@ -34,18 +34,14 @@ class SoundSourceSndFile final : public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderSndFile: public SoundSourceProvider {
+class SoundSourceProviderSndFile : public SoundSourceProvider {
   public:
     QString getName() const override;
 
-    SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override {
-        Q_UNUSED(supportedFileExtension);
-        // libsnd will be used as a fallback
-        return SoundSourceProviderPriority::LOWER;
-    }
-
     QStringList getSupportedFileExtensions() const override;
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceSndFile>(url);

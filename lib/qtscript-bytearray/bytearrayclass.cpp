@@ -196,10 +196,7 @@ QScriptValue ByteArrayClass::constructor()
 //! [10]
 QScriptValue ByteArrayClass::newInstance(int size)
 {
-    // reportAdditionalMemoryCost is only available on >= Qt 4.7.0.
-#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     engine()->reportAdditionalMemoryCost(size);
-#endif
     return newInstance(QByteArray(size, /*ch=*/0));
 }
 //! [10]
@@ -245,11 +242,8 @@ void ByteArrayClass::resize(QByteArray &ba, int newSize)
 {
     int oldSize = ba.size();
     ba.resize(newSize);
-    // reportAdditionalMemoryCost is only available on >= Qt 4.7.0.
-#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     if (newSize > oldSize)
         engine()->reportAdditionalMemoryCost(newSize - oldSize);
-#endif
 }
 //! [9]
 

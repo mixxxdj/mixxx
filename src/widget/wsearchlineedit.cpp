@@ -62,9 +62,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     setAcceptDrops(false);
 
-    QPixmap pixmap(":/images/library/ic_library_cross.svg");
-    m_clearButton->setIcon(QIcon(pixmap));
-    m_clearButton->setIconSize(pixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
@@ -208,12 +205,15 @@ void WSearchLineEdit::showPlaceholder() {
     m_state = State::Inactive;
 
     setText(tr("Search...", "noun"));
-    setToolTip(
-            tr("Search", "noun") + "\n" + tr("Enter a string to search for") + "\n\n" +
-            tr("Shortcut") + ": \n" + tr("Ctrl+F") + "  " +
-            tr("Focus", "Give search bar input focus") + "\n" + tr("Ctrl+Backspace") + "  " +
-            tr("Clear input", "Clear the search bar input field") + "\n" + tr("Esc") + "  " +
-            tr("Exit search", "Exit search bar and leave focus"));
+    setToolTip(tr("Search", "noun") + "\n" +
+            tr("Enter a string to search for") + "\n" +
+            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") + "\n" +
+            tr("For more information see User Manual > Mixxx Library") + "\n\n" +
+
+            tr("Shortcut") + ": \n" +
+            tr("Ctrl+F") + "  " + tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Ctrl+Backspace") + "  " + tr("Clear input", "Clear the search bar input field") + "\n" +
+            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);

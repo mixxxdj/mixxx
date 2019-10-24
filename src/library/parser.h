@@ -25,6 +25,8 @@ it afterwards for proper functioning
 #include <QString>
 #include <QList>
 
+#include "track/trackfile.h"
+
 class Parser : public QObject {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName) {
@@ -35,7 +37,7 @@ class Parser : public QObject {
     }
 
     Parser();
-    ~Parser();
+    ~Parser() override;
     /**Can be called to parse a pls file
     Note for developers:
     This function should return an empty PtrList
@@ -44,18 +46,20 @@ class Parser : public QObject {
 
 
 protected:
-    /**Pointer to the parsed Filelocations**/
+    // Pointer to the parsed Filelocations
     QList<QString> m_sLocations;
-    /**Returns the number of parsed locations**/
+    // Returns the number of parsed locations
     long countParsed();
-    /**Clears m_psLocations**/
+    // Clears m_psLocations
     void clearLocations();
-    /**Checks if the file does contain binary content**/
+    // Checks if the file does contain binary content
     bool isBinary(QString);
-    /**Checks if the given string represents a local filepath**/
-    bool isFilepath(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
+    // Resolve an absolute or relative file path
+    TrackFile playlistEntryToTrackFile(
+            const QString& playlistEntry,
+            const QString& basePath = QString());
 };
 
 #endif

@@ -8,8 +8,6 @@ Variables:
   SignalColor_4
 -->
 <Template>
-  <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
   <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>

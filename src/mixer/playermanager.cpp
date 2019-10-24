@@ -22,6 +22,7 @@
 #include "util/logger.h"
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
+#include "preferences/dialog/dlgprefdeck.h"
 
 
 namespace {
@@ -571,8 +572,12 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     }
 
     mixxx::Duration elapsed = m_cloneTimer.restart();
-    if (m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
-        // load pressed twice quickly, clone instead of loading
+    // If not present in the config, use & set the default value
+    bool cloneOnDoubleTap = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
+    if (cloneOnDoubleTap && m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
+        // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
+        // so clone another playing deck instead of loading the selected track
         pPlayer->slotCloneDeck();
     } else {
         pPlayer->slotLoadTrack(pTrack, play);
@@ -639,8 +644,9 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler->scheduleTrackById(track->getId());
-        m_pTrackAnalysisScheduler->resume();
+        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+            m_pTrackAnalysisScheduler->resume();
+        }
         // The first progress signal will suspend a running batch analysis
         // until all loaded tracks have been analyzed. Emit it once just now
         // before any signals from the analyzer queue arrive.

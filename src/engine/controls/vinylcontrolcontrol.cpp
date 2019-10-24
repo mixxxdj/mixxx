@@ -1,7 +1,7 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
 #include "vinylcontrol/vinylcontrol.h"
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "util/math.h"
 
 VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
@@ -106,7 +106,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             return; // If off, do nothing.
         case MIXXX_RELATIVE_CUE_ONECUE:
             //if onecue, just seek to the regular cue
-            seekExact(pTrack->getCuePoint());
+            seekExact(pTrack->getCuePoint().getPosition());
             return;
         case MIXXX_RELATIVE_CUE_HOTCUE:
             // Continue processing in this function.

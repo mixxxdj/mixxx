@@ -45,7 +45,8 @@
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
-      <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
@@ -60,7 +61,7 @@
       <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
@@ -70,7 +71,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -81,9 +82,9 @@
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
       <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
-      <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_rows">4</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_3_expanded">0</attribute>
@@ -140,12 +141,13 @@
       <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
       <Style>
         <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
-        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
           color: #33a8ff;}
-        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #d910f0;}
+        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
         <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #001D33;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #3A0440;}
@@ -162,12 +164,13 @@
       <!-- Cyan end-of-track warning -->
       <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
       <Style>
-        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
           color: #e145f3;}
-        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #3693d9;}
+        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
         <!-- brighter, broader library focus borders -->
@@ -241,7 +244,7 @@
       </Children>
     </SingletonDefinition>
 
-    <!-- Overviews are needed in both regular and minmal decks -->
+    <!-- Overviews are needed in both regular and minimal decks -->
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton1</ObjectName>
       <Children>
@@ -280,8 +283,8 @@
       <Children>
         <Template src="skin:../Tango/deck_overview.xml">
           <SetVariable name="chanNum">4</SetVariable>
-          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
-          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -291,6 +294,7 @@
       <Children>
         <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">1</SetVariable>
+          <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -300,6 +304,7 @@
       <Children>
         <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">2</SetVariable>
+          <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -309,6 +314,7 @@
       <Children>
         <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">3</SetVariable>
+          <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -318,10 +324,76 @@
       <Children>
         <Template src="skin:../Tango/spinny_cover_mini.xml">
           <SetVariable name="chanNum">4</SetVariable>
+          <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck1</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/vumeter_single.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck2</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/vumeter_single.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck3</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/vumeter_single.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck4</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/vumeter_single.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VuMeterMaster</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>vertical</Layout>
+          <SizePolicy>min,me</SizePolicy>
+          <Children>
+            <WidgetGroup><!-- VU incl. Label -->
+              <ObjectName>VUMeterFloating</ObjectName>
+              <Layout>vertical</Layout>
+              <MaximumSize>-1,136</MaximumSize>
+              <SizePolicy>min,me</SizePolicy>
+              <Children>
+                <Template src="skin:../Tango/vumeter_single.xml">
+                  <SetVariable name="group">[Master]</SetVariable>
+                </Template>
+                <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
+                <WidgetGroup>
+                  <ObjectName>VUMeterLabelMaster</ObjectName>
+                  <Size>16f,20f</Size>
+                </WidgetGroup>
+                <WidgetGroup><Size>0f,2f</Size></WidgetGroup>
+              </Children>
+            </WidgetGroup><!-- VU incl. Label -->
+            <WidgetGroup><Size>0f,1me</Size></WidgetGroup>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
 
     <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>

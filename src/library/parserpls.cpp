@@ -28,19 +28,16 @@
           not only the filepath;
  **/
 
-ParserPls::ParserPls() : Parser()
-{
+ParserPls::ParserPls() : Parser() {
 }
 
-ParserPls::~ParserPls()
-{
+ParserPls::~ParserPls() {
 }
 
-QList<QString> ParserPls::parse(QString sFilename)
-{
+QList<QString> ParserPls::parse(QString sFilename) {
     //long numEntries =0;
     QFile file(sFilename);
-    QString basepath = sFilename.section('/', 0, -2);
+    const auto basePath = sFilename.section('/', 0, -2);
 
     clearLocations();
 
@@ -63,7 +60,7 @@ QList<QString> ParserPls::parse(QString sFilename)
         QTextStream textstream(ba.constData());
 
         while(!textstream.atEnd()) {
-            QString psLine = getFilepath(&textstream, basepath);
+            QString psLine = getFilePath(&textstream, basePath);
             if(psLine.isNull()) {
                 break;
             } else {
@@ -84,9 +81,7 @@ QList<QString> ParserPls::parse(QString sFilename)
     return QList<QString>(); //if we get here something went wrong :D
 }
 
-long ParserPls::getNumEntries(QTextStream *stream)
-{
-
+long ParserPls::getNumEntries(QTextStream *stream) {
     QString textline;
     textline = stream->readLine();
 
@@ -107,47 +102,32 @@ long ParserPls::getNumEntries(QTextStream *stream)
 }
 
 
-QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
-{
-    QString textline,filename = "";
-    textline = stream->readLine();
+QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
+    QString textline = stream->readLine();
     while (!textline.isEmpty()) {
         if (textline.isNull()) {
             break;
         }
 
         if(textline.contains("File")) {
-            int iPos = textline.indexOf("=",0);
+            int iPos = textline.indexOf("=", 0);
             ++iPos;
 
-            filename = textline.right(textline.length()-iPos);
-
-            //Rythmbox playlists starts with file://<path>
-            //We remove the file protocol if found.
-            filename.remove("file://");
-            QByteArray strlocbytes = filename.toUtf8();
-            QUrl location = QUrl::fromEncoded(strlocbytes);
-            QString trackLocation = location.toString();
-            //qDebug() << trackLocation;
-
-            if(isFilepath(trackLocation)) {
-                return trackLocation;
-            } else {
-                // Try relative to m3u dir
-                QString rel = QDir(basepath).filePath(trackLocation);
-                if (isFilepath(rel)) {
-                    return rel;
-                }
-                // We couldn't match this to a real file so ignore it
+            QString filename = textline.right(textline.length() - iPos);
+            auto trackFile = playlistEntryToTrackFile(filename, basePath);
+            if (trackFile.checkFileExists()) {
+                return trackFile.location();
             }
+            // We couldn't match this to a real file so ignore it
+            qWarning() << trackFile << "not found";
         }
         textline = stream->readLine();
     }
 
     // Signal we reached the end
-    return 0;
-
+    return QString();
 }
+
 bool ParserPls::writePLSFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);

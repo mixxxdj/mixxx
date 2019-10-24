@@ -51,8 +51,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
     if (m_waveformWidget) {
-        m_waveformWidget->resize(width(), height(),
-                                 WaveformWidgetFactory::getDevicePixelRatio());
+        m_waveformWidget->resize(width(), height());
     }
 }
 

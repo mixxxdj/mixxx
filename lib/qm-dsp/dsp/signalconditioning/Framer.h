@@ -13,40 +13,38 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef FRAMER_H
-#define FRAMER_H
+#ifndef QM_DSP_FRAMER_H
+#define QM_DSP_FRAMER_H
 
-//#include <io.h>
-#include <fcntl.h>
-#include <stdio.h>
-
+#include <stdint.h>
 
 class Framer  
 {
 public:
-    void setSource( double* src, unsigned int length );
-    unsigned int getMaxNoFrames();
-    void getFrame( double* dst );
-    void configure( unsigned int frameLength, unsigned int hop );
     Framer();
     virtual ~Framer();
+
+    void setSource(double* src, int64_t length);
+    void configure(int frameLength, int hop);
+    
+    int getMaxNoFrames();
+    void getFrame(double* dst);
 
     void resetCounters();
 
 private:
+    int64_t m_sampleLen;          // DataLength (samples)
+    int m_framesRead;             // Read Frames Index
+ 
+    double* m_srcBuffer;
+    double* m_dataFrame;          // Analysis Frame Buffer
+    double* m_strideFrame;        // Stride Frame Buffer
+    int m_frameLength;            // Analysis Frame Length
+    int m_stepSize;               // Analysis Frame Stride
 
-    unsigned long	m_ulSampleLen;		// DataLength (samples)
-    unsigned int	m_framesRead;		// Read Frames Index
+    int m_maxFrames;
 
-    double*			m_srcBuffer;
-    double*			m_dataFrame;		// Analysis Frame Buffer
-    double*			m_strideFrame;		// Stride Frame Buffer
-    unsigned int	m_frameLength;		// Analysis Frame Length
-    unsigned int	m_stepSize;		// Analysis Frame Stride
-
-    unsigned int	m_maxFrames;
-
-    unsigned long	m_ulSrcIndex;
+    int64_t m_srcIndex;
 };
 
 #endif

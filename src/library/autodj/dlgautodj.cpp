@@ -3,9 +3,10 @@
 #include "library/autodj/dlgautodj.h"
 
 #include "library/playlisttablemodel.h"
-#include "widget/wtracktableview.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/duration.h"
+#include "widget/wtracktableview.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -23,21 +24,35 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
-    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(updateSelectionInfo()));
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrack,
+            this,
+            &DlgAutoDJ::loadTrack);
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrackToPlayer,
+            this,
+            &DlgAutoDJ::loadTrackToPlayer);
+    connect(m_pTrackTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &DlgAutoDJ::trackSelected);
+    connect(m_pTrackTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &DlgAutoDJ::updateSelectionInfo);
 
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
-            m_pTrackTableView, SLOT(setSelectedClick(bool)));
+    connect(pLibrary,
+            &Library::setTrackTableFont,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableFont);
+    connect(pLibrary,
+            &Library::setTrackTableRowHeight,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary,
+            &Library::setSelectedClick,
+            m_pTrackTableView,
+            &WTrackTableView::setSelectedClick);
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -56,32 +71,48 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    connect(pushButtonShuffle, SIGNAL(clicked(bool)),
-            this, SLOT(shufflePlaylistButton(bool)));
+    connect(pushButtonShuffle,
+            &QPushButton::clicked,
+            this,
+            &DlgAutoDJ::shufflePlaylistButton);
 
-    connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
-            this, SLOT(skipNextButton(bool)));
+    connect(pushButtonSkipNext,
+            &QPushButton::clicked,
+            this,
+            &DlgAutoDJ::skipNextButton);
 
-    connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
-            this, SIGNAL(addRandomButton(bool)));
+    connect(pushButtonAddRandom,
+            &QPushButton::clicked,
+            this,
+            &DlgAutoDJ::addRandomButton);
 
-    connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
-            this, SLOT(fadeNowButton(bool)));
+    connect(pushButtonFadeNow,
+            &QPushButton::clicked,
+            this,
+            &DlgAutoDJ::fadeNowButton);
 
-    connect(spinBoxTransition, SIGNAL(valueChanged(int)),
-            this, SLOT(transitionSliderChanged(int)));
+    connect(spinBoxTransition,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgAutoDJ::transitionSliderChanged);
 
-    connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this, SLOT(toggleAutoDJButton(bool)));
+    connect(pushButtonAutoDJ,
+            &QPushButton::toggled,
+            this,
+            &DlgAutoDJ::toggleAutoDJButton);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).
     spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
-    connect(m_pAutoDJProcessor, SIGNAL(transitionTimeChanged(int)),
-            this, SLOT(transitionTimeChanged(int)));
-    connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
-            this, SLOT(autoDJStateChanged(AutoDJProcessor::AutoDJState)));
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::transitionTimeChanged,
+            this,
+            &DlgAutoDJ::transitionTimeChanged);
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::autoDJStateChanged,
+            this,
+            &DlgAutoDJ::autoDJStateChanged);
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
@@ -208,7 +239,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     QString label;
 
     if (!indices.isEmpty()) {
-        label.append(mixxx::Duration::formatSeconds(duration));
+        label.append(mixxx::DurationBase::formatTime(duration));
         label.append(QString(" (%1)").arg(indices.size()));
         labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(label);

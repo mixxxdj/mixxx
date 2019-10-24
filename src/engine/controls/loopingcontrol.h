@@ -8,11 +8,12 @@
 #include <QObject>
 #include <QStack>
 
-#include "preferences/usersettings.h"
-#include "engine/controls/enginecontrol.h"
-#include "track/track.h"
-#include "track/beats.h"
 #include "control/controlvalue.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/controls/ratecontrol.h"
+#include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/track.h"
 
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
@@ -47,9 +48,10 @@ class LoopingControl : public EngineControl {
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
     void hintReader(HintVector* pHintList) override;
+    double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
-
+    void notifySeek(double dNewPlaypos) override;
+    void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
   public slots:
@@ -102,6 +104,10 @@ class LoopingControl : public EngineControl {
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
     bool currentLoopMatchesBeatloopSize();
+
+    // Given loop in and out points, determine if this is a beatloop of a particular
+    // size.
+    double findBeatloopSizeForLoop(double start, double end) const;
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
@@ -124,6 +130,7 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
     ControlObject* m_pSlipEnabled;
+    RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;
 
     bool m_bLoopingEnabled;

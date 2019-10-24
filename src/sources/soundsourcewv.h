@@ -10,7 +10,7 @@ typedef void WavpackContext;
 
 namespace mixxx {
 
-class SoundSourceWV: public SoundSource {
+class SoundSourceWV : public SoundSource {
   public:
     static int32_t ReadBytesCallback(void* id, void* data, int bcount);
     static uint32_t GetPosCallback(void* id);
@@ -43,15 +43,18 @@ class SoundSourceWV: public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderWV: public SoundSourceProvider {
-public:
+class SoundSourceProviderWV : public SoundSourceProvider {
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
 
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
+
     SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
 
-}  // namespace mixxx
+} // namespace mixxx
 
 #endif // MIXXX_SOUNDSOURCEWV_H

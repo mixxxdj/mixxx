@@ -99,7 +99,10 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
             desiredWidth, signalWhenDone);
-    connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
+    connect(watcher,
+            &QFutureWatcher<FutureResult>::finished,
+            this,
+            &CoverArtCache::coverLoaded);
     watcher->setFuture(future);
     return QPixmap();
 }
@@ -197,7 +200,7 @@ void CoverArtCache::guessCover(TrackPointer pTrack) {
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Guessing cover art for"
-                    << pTrack->getLocation();
+                    << pTrack->getFileInfo();
         }
         CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
         pTrack->setCoverInfo(cover);

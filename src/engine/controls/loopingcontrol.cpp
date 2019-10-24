@@ -5,11 +5,12 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/enginebuffer.h"
+#include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -52,7 +53,7 @@ LoopingControl::LoopingControl(QString group,
     m_loopSamples.setValue(m_oldLoopSamples);
     m_currentSample.setValue(0.0);
     m_pActiveBeatLoop = NULL;
-
+    m_pRateControl = NULL;
     //Create loop-in, loop-out, loop-exit, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(group, "loop_in"));
     connect(m_pLoopInButton, &ControlObject::valueChanged,
@@ -353,18 +354,28 @@ double LoopingControl::nextTrigger(bool reverse,
 
     LoopSamples loopSamples = m_loopSamples.getValue();
 
+    // m_bAdjustingLoopIn is true while the LoopIn button is pressed while a loop is active (slotLoopIn)
     if (m_bAdjustingLoopInOld != m_bAdjustingLoopIn) {
         m_bAdjustingLoopInOld = m_bAdjustingLoopIn;
-        if (reverse && !m_bAdjustingLoopIn) {
+
+        // When the LoopIn button is released in reverse mode we jump to the end of the loop to not fall out and disable the active loop
+        // This must not happen in quantized mode. The newly set start is always ahead (in time, but behind spacially) of the current position so we don't jump.
+        // Jumping to the end is then handled when the loop's start is reached later in this function.
+        if (reverse && !m_bAdjustingLoopIn && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopSamples = loopSamples;
             *pTarget = loopSamples.end;
             return currentSample;
         }
     }
 
+    // m_bAdjustingLoopOut is true while the LoopOut button is pressed while a loop is active (slotLoopOut)
     if (m_bAdjustingLoopOutOld != m_bAdjustingLoopOut) {
         m_bAdjustingLoopOutOld = m_bAdjustingLoopOut;
-        if (!reverse && !m_bAdjustingLoopOut) {
+
+        // When the LoopOut button is released in forward mode we jump to the start of the loop to not fall out and disable the active loop
+        // This must not happen in quantized mode. The newly set end is always ahead of the current position so we don't jump.
+        // Jumping to the start is then handled when the loop's end is reached later in this function.
+        if (!reverse && !m_bAdjustingLoopOut && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopSamples = loopSamples;
             *pTarget = loopSamples.start;
             return currentSample;
@@ -450,6 +461,55 @@ void LoopingControl::hintReader(HintVector* pHintList) {
             pHintList->append(loop_hint);
         }
     }
+}
+
+double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos) {
+    // no loop, no adjustment
+    if (!m_bLoopingEnabled) {
+        return dSyncedPlayPos;
+    }
+
+    LoopSamples loopSamples = m_loopSamples.getValue();
+
+    // if the request itself is outside loop do nothing
+    // loop will be disabled later by notifySeek(...) as is was explicitly requested by the user
+    // if the requested position is the exact end of a loop it should also be disabled later by notifySeek(...)
+    if (dRequestedPlaypos < loopSamples.start || dRequestedPlaypos >= loopSamples.end) {
+        return dSyncedPlayPos;
+    }
+
+    // the requested position is inside the loop (e.g hotcue at start)
+    double loopSize = loopSamples.end - loopSamples.start;
+
+    // the synced position is in front of the loop
+    // adjust the synced position to same amount in front of the loop end
+    if (dSyncedPlayPos < loopSamples.start) {
+        double adjustment = loopSamples.start - dSyncedPlayPos;
+
+        // prevents jumping in front of the loop if loop is smaller than adjustment
+        adjustment = fmod(adjustment, loopSize);
+
+        // if the synced position is exactly the start of the loop we would end up at the exact end
+        // as this would disable the loop in notifySeek() replace it with the start of the loop
+        if (adjustment == 0) {
+            return loopSamples.start;
+        }
+        return loopSamples.end - adjustment;
+    }
+
+    // the synced position is behind the loop
+    // adjust the synced position to same amount behind the loop start
+    if (dSyncedPlayPos >= loopSamples.end) {
+        double adjustment = dSyncedPlayPos - loopSamples.end;
+
+        // prevents jumping behind the loop if loop is smaller than adjustment
+        adjustment = fmod(adjustment, loopSize);
+
+        return loopSamples.start + adjustment;
+    }
+
+    // both, requested and synced position are inside the loop -> do nothing
+    return dSyncedPlayPos;
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
@@ -622,6 +682,10 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     m_loopSamples.setValue(loopSamples);
 }
 
+void LoopingControl::setRateControl(RateControl* rateControl) {
+    m_pRateControl = rateControl;
+}
+
 void LoopingControl::slotLoopOut(double pressed) {
     if (m_pTrack == nullptr) {
         return;
@@ -768,13 +832,13 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
+void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
-    if (m_bLoopingEnabled && !adjustingPhase) {
+    if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
-        // Do not jump out of a loop if we adjust a phase (lp1743010)
+        // Jumping to the exact end of a loop is considered jumping out.
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
                 dNewPlaypos < loopSamples.start) {
@@ -782,8 +846,8 @@ void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
             setLoopingEnabled(false);
         }
         if (currentSample <= loopSamples.end &&
-                dNewPlaypos > loopSamples.end) {
-            // jumping out a loop or over a catching loop forward
+                dNewPlaypos >= loopSamples.end) {
+            // jumping out or to the exact end of a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
     }
@@ -819,6 +883,15 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.get(), &Track::beatsUpdated,
                 this, &LoopingControl::slotUpdatedTrackBeats);
+
+        LoopSamples loopSamples = m_loopSamples.getValue();
+        if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
+            double loaded_loop_size = findBeatloopSizeForLoop(
+                loopSamples.start, loopSamples.end);
+            if (loaded_loop_size != -1) {
+                m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
+            }
+        }
     } else {
         m_pTrack.reset();
         m_pBeats.clear();
@@ -910,6 +983,22 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
             loopSamples.end < beatLoopOutPoint + 2;
 }
 
+double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
+    BeatsPointer pBeats = m_pBeats;
+    if (!pBeats) {
+        return -1;
+    }
+
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        double beatLoopOutPoint =
+            pBeats->findNBeatsFromSample(start, s_dBeatSizes[i]);
+        if (end > beatLoopOutPoint - 2 && end < beatLoopOutPoint + 2) {
+            return s_dBeatSizes[i];
+        }
+    }
+    return -1;
+}
+
 void LoopingControl::updateBeatLoopingControls() {
     // O(n) search, but there are only ~10-ish beatloop controls so this is
     // fine.
@@ -933,6 +1022,13 @@ void LoopingControl::updateBeatLoopingControls() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+    // if a seek was queued in the engine buffer move the current sample to its position
+    double p_seekPosition = 0;
+    if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
+        // seek position is already quantized if quantization is enabled
+        m_currentSample.setValue(p_seekPosition);
+    }
+
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {
@@ -968,16 +1064,19 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             newloopSamples.start = currentSample;
         }
     } else {
-        // loop_in is set to the previous beat if quantize is on.  The
-        // closest beat might be ahead of play position which would cause a seek.
-        // TODO: If in reverse, should probably choose nextBeat.
+        // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
+        // The closest beat might be ahead of play position and will cause a catching loop.
         double prevBeat;
         double nextBeat;
         pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat);
 
         if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
+            double beatLength = nextBeat - prevBeat;
+            double loopLength = beatLength * beats;
+
+            double closestBeat = pBeats->findClosestBeat(currentSample);
             if (beats >= 1.0) {
-                newloopSamples.start = prevBeat;
+                newloopSamples.start = closestBeat;
             } else {
                 // In case of beat length less then 1 beat:
                 // (| - beats, ^ - current track's position):
@@ -986,15 +1085,29 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 //
                 // If we press 1/2 beatloop we want loop from 50% to 100%,
                 // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                double beat_len = nextBeat - prevBeat;
-                double loops_per_beat = 1.0 / beats;
-                double beat_pos = currentSample - prevBeat;
-                int beat_frac =
-                        static_cast<int>(floor((beat_pos / beat_len) *
-                                                loops_per_beat));
-                newloopSamples.start = prevBeat + beat_len / loops_per_beat * beat_frac;
+                double samplesSinceLastBeat = currentSample - prevBeat;
+
+                // find the previous beat fraction and check if the current position is closer to this or the next one
+                // place the new loop start to the closer one
+                double previousFractionBeat = prevBeat + floor(samplesSinceLastBeat / loopLength) * loopLength;
+                double samplesSinceLastFractionBeat = currentSample - previousFractionBeat;
+
+                if (samplesSinceLastFractionBeat <= (loopLength / 2.0)) {
+                    newloopSamples.start = previousFractionBeat;
+                } else {
+                    newloopSamples.start = previousFractionBeat + loopLength;
+                }
             }
 
+            // If running reverse, move the loop one loop size to the left.
+            // Thus, the loops end will be closest to the current position
+            bool reverse = false;
+            if (m_pRateControl != NULL) {
+                reverse = m_pRateControl->isReverseButtonPressed();
+            }
+            if (reverse) {
+                newloopSamples.start -= loopLength;
+            }
         } else {
             newloopSamples.start = currentSample;
         }

@@ -43,11 +43,13 @@
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
@@ -155,6 +157,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">1</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -164,6 +167,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">2</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -173,6 +177,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">3</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -182,6 +187,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">4</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -252,7 +258,6 @@
                   <ObjectName>HorizontalSplitter</ObjectName>
                   <Orientation>vertical</Orientation>
                   <SizePolicy>me,min</SizePolicy>
-                  <SplitSizes>1,5</SplitSizes>
                   <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                   <Collapsible>1,0</Collapsible>
                   <Children>

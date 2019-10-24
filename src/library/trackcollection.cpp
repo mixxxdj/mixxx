@@ -10,7 +10,7 @@
 #include "util/db/sqltransaction.h"
 
 #include "util/assert.h"
-
+#include "util/dnd.h"
 
 namespace {
     mixxx::Logger kLogger("TrackCollection");
@@ -68,6 +68,21 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource
     m_pTrackSource = pTrackSource;
 }
 
+bool TrackCollection::addDirectory(const QString& dir) {
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.addDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALREADY_WATCHING:
+        return true;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    }
+    DEBUG_ASSERT("unreachable");
+    return false;
+}
+
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
@@ -80,13 +95,62 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QSet<TrackId> movedIds(
-            m_directoryDao.relocateDirectory(oldDir, newDir));
+    SqlTransaction transaction(m_database);
+    QList<TrackRef> movedTrackRefs =
+            m_directoryDao.relocateDirectory(oldDir, newDir);
+    transaction.commit();
 
-    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+    QList<QPair<TrackRef, TrackRef>> replacedTrackRefs;
+    replacedTrackRefs.reserve(movedTrackRefs.size());
+    for (const auto& movedTrackRef : movedTrackRefs) {
+        auto removedTrackRef = movedTrackRef;
+        // The actual new location is unknown, only the id remains the same
+        auto changedTrackRef = TrackRef::fromFileInfo(TrackFile(), movedTrackRef.getId());
+        replacedTrackRefs.append(qMakePair(removedTrackRef, changedTrackRef));
+    }
+    m_trackDao.databaseTracksReplaced(std::move(replacedTrackRefs));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
+
+QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<QFileInfo>& files, TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(files, flags);
+    if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
+        unhideTracks(trackIds);
+    }
+    return trackIds;
+}
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls, bool addMissing) {
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    if (files.isEmpty()) {
+        return QList<TrackId>();
+    }
+
+    TrackDAO::ResolveTrackIdFlags flags =
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden;
+    if (addMissing) {
+        flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
+    }
+    return resolveTrackIds(files, flags);
+}
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) {
+    QList<QFileInfo> fileInfoList;
+    foreach(QString fileLocation, locations) {
+        QFileInfo fileInfo(fileLocation);
+        fileInfoList.append(fileInfo);
+    }
+    return resolveTrackIds(fileInfoList,
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden
+                    | TrackDAO::ResolveTrackIdFlag::AddMissing);
+}
+
+QList<TrackId> resolveTrackIdsFromUrls(const QList<QUrl>& urls,
+        TrackDAO::ResolveTrackIdFlags flags);
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
@@ -132,7 +196,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.hideTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -157,27 +221,22 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(trackIds)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.unhideTracks(trackIds)) {
         return false;
     }
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    // To update BaseTrackCache
     m_trackDao.afterUnhidingTracks(trackIds);
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
+    // To update labels of CrateFeature, because unhiding might make a
+    // crate track visible again.
+    QSet<CrateId> modifiedCrateSummaries =
+            m_crates.collectCrateIdsOfTracks(trackIds);
     emit(crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
@@ -222,9 +281,9 @@ bool TrackCollection::purgeTracks(
     return true;
 }
 
-bool TrackCollection::purgeTracks(
-        const QDir& dir) {
-    QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
+bool TrackCollection::purgeAllTracks(
+        const QDir& rootDir) {
+    QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
     return purgeTracks(trackIds);
 }
 

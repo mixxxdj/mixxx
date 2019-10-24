@@ -14,7 +14,6 @@
 int DirectoryDAO::addDirectory(const QString& newDir) {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.
-    ScopedTransaction transaction(m_database);
     QStringList dirs = getDirs();
     QString childDir;
     QString parentDir;
@@ -33,7 +32,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     }
 
     if (!parentDir.isEmpty()) {
-        // removeing the old directory won't harm because we are adding the
+        // removing the old directory won't harm because we are adding the
         // parent later in this function
         removeDirectory(parentDir);
     }
@@ -46,7 +45,6 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
         LOG_FAILED_QUERY(query) << "Adding new dir (" % newDir % ") failed.";
         return SQL_ERROR;
     }
-    transaction.commit();
     return ALL_FINE;
 }
 
@@ -80,13 +78,12 @@ int DirectoryDAO::removeDirectory(const QString& dir) {
 }
 
 
-QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
+QList<TrackRef> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                                           const QString& newFolder) {
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
     // location column becomes non-unique.
-    ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR %
                   "=:newFolder WHERE " % DIRECTORYDAO_DIR % " = :oldFolder");
@@ -95,7 +92,7 @@ QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
                                 << oldFolder << "to" << newFolder;
-        return QSet<TrackId>();
+        return {};
     }
 
     // on Windows the absolute path starts with the drive name
@@ -113,35 +110,32 @@ QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                   .arg(startsWithOldFolder, kSqlLikeMatchAll));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-        return QSet<TrackId>();
+        return {};
     }
 
-    QSet<TrackId> trackIds;
-    QList<int> loc_ids;
-    QStringList old_locs;
+    QList<DbId> loc_ids;
+    QList<TrackRef> trackRefs;
     while (query.next()) {
-        trackIds.insert(TrackId(query.value(0)));
-        loc_ids.append(query.value(1).toInt());
-        old_locs.append(query.value(2).toString());
+        loc_ids.append(DbId(query.value(1).toInt()));
+        trackRefs.append(TrackRef::fromFileInfo(query.value(2).toString(), TrackId(query.value(0))));
     }
 
     QString replacement = "UPDATE track_locations SET location = :newloc "
             "WHERE id = :id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        QString newloc = old_locs.at(i);
+        QString newloc = trackRefs.at(i).getLocation();
         newloc.replace(0, oldFolder.size(), newFolder);
         query.bindValue("newloc", newloc);
-        query.bindValue("id", loc_ids.at(i));
+        query.bindValue("id", loc_ids.at(i).toVariant());
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-            return QSet<TrackId>();
+            return {};
         }
     }
 
-    qDebug() << "Relocated tracks:" << trackIds.size();
-    transaction.commit();
-    return trackIds;
+    qDebug() << "Relocated tracks:" << trackRefs.size();
+    return trackRefs;
 }
 
 QStringList DirectoryDAO::getDirs() {

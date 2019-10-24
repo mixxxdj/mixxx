@@ -66,14 +66,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:button_3state.xml">
-            <SetVariable name="TooltipId">orientation</SetVariable>
-            <SetVariable name="Size">34f,15f</SetVariable>
-            <SetVariable name="state_0">orientation_deck<Variable name="deckSide"/>_left</SetVariable>
-            <SetVariable name="state_1">orientation_deck_master</SetVariable>
-            <SetVariable name="state_2">orientation_deck<Variable name="deckSide"/>_right</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
-          </Template>
+          <Template src="skin:button_xfader_deck.xml"/>
         </Children>
       </WidgetGroup>
 
@@ -104,40 +97,22 @@
         <ObjectName>VuAndSlider4decks</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
+
           <WidgetGroup>
-            <ObjectName>VuMeter4Decks</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Size>26,0</Size>
+            <ObjectName>VuMeterChannel4Decks</ObjectName>
+            <Size>26f,0min</Size>
+            <Layout>horizontal</Layout>
             <Children>
-              <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
-                <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-                <PathBack>style/clipping_deck.png</PathBack>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                </Connection>
-              </StatusLight>
-              <VuMeter>
-                <TooltipId>channel_VuMeter</TooltipId>
-                <PathVu>style/volume_display_deck_over.png</PathVu>
-                <PathBack>style/volume_display_deck.png</PathBack>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel<Variable name="channum"/></ObjectName>
+              </SingletonContainer>
             </Children>
           </WidgetGroup>
 
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
-            <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
-            <Slider>slider_volume_deck.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_volume_deck.svg</Handle>
+            <Slider>skin:knobs_sliders/slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>

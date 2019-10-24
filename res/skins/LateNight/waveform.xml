@@ -18,8 +18,8 @@
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
         <DefaultMark>
-          <Align>top</Align>
-          <Color>#00FF00</Color>
+          <Align>top|right</Align>
+          <Color>#FF0000</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
@@ -43,6 +43,50 @@
           <Align>bottom</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <MarkRange>
+          <StartControl>intro_start_position</StartControl>
+          <EndControl>intro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <Color>#0000FF</Color>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </MarkRange>
+        <Mark>
+          <Control>intro_start_position</Control>
+          <Text>|&#9698;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>intro_end_position</Control>
+          <Text>&#9698;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_start_position</Control>
+          <Text>|&#9699;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <Text>&#9699;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
         </Mark>
         <!--
         The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
@@ -74,7 +118,7 @@
             <Children>
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="ObjectName">BeatCurpos</SetVariable>
+                <SetVariable name="ObjectName">BeatGridButton</SetVariable>
                 <SetVariable name="state_0_pressed">beat_curpos_large_down</SetVariable>
                 <SetVariable name="state_0_unpressed">beat_curpos_large</SetVariable>
                 <SetVariable name="Size">26f,52f</SetVariable>
@@ -88,7 +132,7 @@
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="ObjectName">BeatGridButton</SetVariable>
                     <SetVariable name="Icon">beats_earlier</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
@@ -96,7 +140,7 @@
 
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="ObjectName">BeatGridButton</SetVariable>
                     <SetVariable name="Icon">beats_faster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
@@ -110,7 +154,7 @@
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="ObjectName">BeatGridButton</SetVariable>
                     <SetVariable name="Icon">beats_later</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
@@ -118,7 +162,7 @@
 
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="ObjectName">BeatGridButton</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>

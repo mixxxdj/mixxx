@@ -239,8 +239,7 @@ void DlgPrefEQ::populateDeckBoxList(
         box->addItem(tr("None"), QVariant());
         if (pCurrentlySelectedManifest == nullptr) {
             currentIndex = box->count() - 1; // selects "None"
-        }
-        if (currentIndex < 0) {
+        } else if (currentIndex < 0) {
             // current selection is not part of the new list
             // So we need to add it
             box->addItem(pCurrentlySelectedManifest->shortName(),
