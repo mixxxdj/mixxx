@@ -104,13 +104,13 @@ for:
     - cd cmake_build
     - cmake
       -L
-      -DFAAD_ENABLED=ON
-      -DHSS1394_ENABLED=OFF
-      -DLOCALECOMPARE_ENABLED=ON
-      -DMAD_ENABLED=ON
-      -DMODPLUG_ENABLED=ON
-      -DOPUS_ENABLED=ON
-      -DWAVPACK_ENABLED=ON
+      -DFAAD=ON
+      -DHSS1394=OFF
+      -DLOCALECOMPARE=ON
+      -DMAD=ON
+      -DMODPLUG=ON
+      -DOPUS=ON
+      -DWAVPACK=ON
       ..
     - cmake --build .
     - sudo cmake --build . --target install
@@ -194,9 +194,9 @@ for:
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
-      -DMEDIAFOUNDATION_ENABLED=ON
-      -DOPUS_ENABLED=ON
-      -DLOCALECOMPARE_ENABLED=ON
+      -DMEDIAFOUNDATION=ON
+      -DOPUS=ON
+      -DLOCALECOMPARE=ON
       -DSTATIC_DEPS=ON
       -G "Ninja"
       ..
