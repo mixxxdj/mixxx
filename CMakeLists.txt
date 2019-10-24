@@ -1738,7 +1738,7 @@ endif()
 #
 # Tests
 #
-add_executable(mixxx-test EXCLUDE_FROM_ALL
+add_executable(mixxx-test
   src/test/analyserwaveformtest.cpp
   src/test/analyzersilence_test.cpp
   src/test/audiotaperpot_test.cpp
