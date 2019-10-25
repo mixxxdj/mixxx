@@ -1231,15 +1231,17 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
     if (m_transitionTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
-        double toDeckOutroStart = getOutroStartPosition(pToDeck);
+        double toDeckOutroStart = pToDeck->fadeBeginPos;
         if (toDeckOutroStart <= startPoint) {
             // we are already too late
+            // Check OutroEnd as alternative, which is for all transition mode
+            // better than directly default to duration()
             double end = getOutroEndPosition(pToDeck);
             if (end <= startPoint) {
                 end = pToDeck->duration();
                 VERIFY_OR_DEBUG_ASSERT(end > startPoint) {
                     // as last resort move start point
-                    // The caller makes sures that this never happens  
+                    // The caller makes sure that this never happens
                     startPoint = pToDeck->duration() - 1;
                 }
             }
