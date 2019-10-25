@@ -569,7 +569,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
   src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
   src/waveform/renderers/waveformmark.cpp
-  src/waveform/renderers/waveformmarkproperties.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
@@ -591,6 +590,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/vsyncthread.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
+  src/waveform/waveformmarklabel.cpp
   src/waveform/waveformwidgetfactory.cpp
   src/waveform/widgets/emptywaveformwidget.cpp
   src/waveform/widgets/glrgbwaveformwidget.cpp
@@ -607,7 +607,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/widgets/rgbwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
+  src/widget/colormenu.cpp
   src/widget/controlwidgetconnection.cpp
+  src/widget/cuemenu.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
