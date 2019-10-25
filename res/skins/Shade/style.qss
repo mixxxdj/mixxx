@@ -80,8 +80,7 @@ WEffectSelector {
 #fadeModeCombobox {
   height: 18px;
   border: 1px solid #99A0A4;
-  margin-bottom: 2px;
-  margin-left: 10px;
+  margin: 0px 0px 2px 1px;
 }
 
 #fadeModeCombobox::drop-down,
@@ -519,17 +518,9 @@ WLibrary QPushButton {
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #F90562;
   }
-  /* Space in between 'Enable AutoDJ' button and transition time spinbox	*/
-  QPushButton#pushButtonAutoDJ {
-    margin: 1px 12px 3px 1px;
-  }
   /* Space in between 'Recording'	button and recording label */
   QPushButton#pushButtonRecording {
     margin: 1px 6px 3px 1px;
-  }
-  /* Space in between AutoDJ 'Fade'/'Skip' and 'Shuffle'/'Add Random' */
-  QPushButton#pushButtonSkipNext {
-    margin: 1px 12px 3px 1px;
   }
   /* Push 'Select All' button and away from radio buttons	*/
   QPushButton#pushButtonSelectAll {

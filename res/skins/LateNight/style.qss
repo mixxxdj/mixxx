@@ -868,7 +868,7 @@ WBeatSpinBox,
     height: 22px;
     width: 30px;
     padding: 0px 2px 0px 0px;
-    margin: 0px 0px 1px 4px;
+    margin: 0px 1px 1px 1px;
   }
 
   WBeatSpinBox::up-button,
@@ -1514,7 +1514,7 @@ WEffectSelector,
   margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
-  padding: 4px 0px 4px 5px;
+  padding: 4px 0px 4px 2px;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
@@ -1525,7 +1525,7 @@ WEffectSelector,
   #fadeModeCombobox { /*   */
     height: 20px;
     padding: 0px 0px 0px 4px;
-    margin: 1px 2px 2px 4px;
+    margin: 1px 1px 2px 1px;
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
@@ -2024,7 +2024,7 @@ WLibrary QRadioButton {
 
 /* Additional space for QLabels */
 WLibrary QLabel {
-  margin: 2px 3px 5px 3px;
+  margin: 2px 5px 5px 1px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -2044,7 +2044,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  margin: 1px 2px 3px 2px;
+  margin: 1px 1px 3px 1px;
   padding: 0px 3px;
   min-width: 32px;
   height: 20px;
@@ -2053,11 +2053,6 @@ WLibrary QRadioButton::indicator:unchecked {
   /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {
     min-width: 40px;
-    margin-left: 1px;
-    margin-right: 4px;
-  }
-  QPushButton#pushButtonFadeNow {
-    margin-left: 4px;
   }
   #DlgAutoDJ > #horizontalSpacer {
     width: 100px;
