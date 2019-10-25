@@ -490,6 +490,7 @@
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
                     <Library>
+                      <ShowButtonText>false</ShowButtonText>
                     </Library>
                   </Children>
                 </WidgetGroup>
