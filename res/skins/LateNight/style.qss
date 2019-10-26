@@ -1443,78 +1443,6 @@ WBeatSpinBox,
   padding: 3px;
 }
 
-WEffectSelector {
-  font-weight: bold;
-  font-size: 12px/13px;
-  text-transform: uppercase;
-  background-color: #0f0f0f;
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  min-height: 13px;
-  margin: 0px;
-  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-      names start getting cut off. Adding explicit padding improves this. */
-  padding: 4px 0px 4px 5px;
-  /* The 3D frame on the combo box becomes flat when you give it a border
-  border-radius: 3px; */
-  }
-  WEffectSelector::drop-down {
-    border: 0;
-  }
-  WEffectSelector::down-arrow {
-    image: url(skin:/buttons/btn_fx_selector.svg);
-    border: 0;
-    padding: 0;
-    margin: 0;
-    }
-    WEffectSelector::down-arrow:hover {
-      image: url(skin:/buttons/btn_fx_selector_pressed.svg);
-      border: 0;
-      padding: 0;
-      margin: 0;
-    }
-
-  WEffectSelector QAbstractItemView {
-    width: 142px;
-    background-color: #0f0f0f;
-    /* padding-left: 6px; */
-    font-size: 12px/13px;
-    /* On Linux, this is not applied but font color from WEffectSelector
-    is inherited.
-    On Windows, it must be defined here */
-    border: 1px solid #444;
-    border-radius: 2px;
-    padding: 0px;
-    margin: 0px;
-  }
-  /* selected item */
-  WEffectSelector::checked {
-    /* not applied
-    padding-left: 5px;
-    font-weight: bold;	*/
-    padding: 0px;
-    margin: 0px;
-    color: #eee;
-    background-color: #1e1e1e;
-  }
-  /* hovered items */
-  WEffectSelector::item:selected {
-    background-color: #333;
-  /* Already of those two destroys font config and puts tick mark behind text:
-    margin: 0px;
-    padding: 0px; */
-  /* This moves the tick mark behind item text,
-    text sits at left border now
-    border: 0; */
-  }
-  WEffectSelector::indicator {
-  /* This is sufficient to completely hide the tick mark, but
-    this alone would show an empty, shadowed box instead of tick mark
-    background-color: transparent;*/
-  /* This should decrease the tick mark's left & right margin but is not respected */
-    margin: 0px;
-    padding: 0px;
-  }
-
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
   border-radius: 1px;
@@ -2078,36 +2006,29 @@ QTreeView {
   border: 1px solid #585858;
 }
 
+
+WEffectSelector QAbstractItemView,
 QToolTip,
 QMenu {
-  background-color: #0f0f0f;
-  color: #cfb32c;
   padding: 3px;
   border: 1px solid #888;
   border-radius: 2px;
-  }
-  QMenu::separator {
-    height: 0px;
-    border-top: 1px solid #000;
-    border-bottom: 1px solid #222;
-    margin: 4px 1px 4px 1px;
-    margin-left: 4px;
-    margin-right: 4px;
-  }
-  /* actually this only needs to be set for QCheckBox */
-  QMenu::item,
-  QMenu QCheckBox {
-    color: #cfb32c;
-    border: none;
-    background: none;
-    margin: 0px;
-  }
-  QMenu::item {
-    padding: 5px 13px 5px 20px;
-  }
-  QMenu QCheckBox {
-    padding: 2px 10px 2px 3px;
-  }
+}
+/* common colors for WEffectSelector, QMenu, QToolTip */
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox,
+WBeatSpinBox,
+#spinBoxTransition {
+  color: #cfb32c;
+  background-color: #0f0f0f;
+  font-size: 12px/13px;
+}
+  /* hovered items */
+  WEffectSelector::item:selected,
   QMenu::item:selected,
   QMenu QCheckBox:selected,
   QMenu QCheckBox:focus,  /* selected by keyboard */
@@ -2117,10 +2038,80 @@ QMenu {
     /* remove OS focus indicator */
     outline: none;
   }
+  /* hover over checked effect */
+  WEffectSelector::item:checked:selected {
+    background-color: #2a1e03;
+    }
+
+
+WEffectSelector {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0px;
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+      names start getting cut off. Adding explicit padding improves this. */
+  padding: 0px 0px 0px 5px;
+  margin: 0px;
+  /* The 3D frame on the combo box becomes flat when you give it a border
+  border-radius: 3px; */
+  }
+  WEffectSelector::item {
+    height: 22px;
+  }
+  WEffectSelector::down-arrow {
+    image: url(skin:/buttons/btn_fx_selector.svg);
+    }
+    WEffectSelector::down-arrow:hover {
+      image: url(skin:/buttons/btn_fx_selector_pressed.svg);
+    }
+
+  WEffectSelector QAbstractItemView {
+    min-width: 160px;
+  }
+  WEffectSelector::indicator {
+  /* This is sufficient to completely hide the tick mark, but
+    this alone would show an empty, shadowed box instead of tick mark
+    background-color: transparent;*/
+  /* This should decrease the tick mark's left & right margin but is not respected
+    margin: 0px;
+    padding: 0px; */
+  }
+  WEffectSelector::indicator:checked {
+    /* checkbox container is 28 x 22px;
+      use margin + border to create a square checkbox sized like kill buttons */ 
+    margin: 2px;
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
+  }
+  WEffectSelector::checked /* selected item */,
+  WEffectSelector::indicator /* checkbox, tick mark */,
+  WEffectSelector::drop-down,
+  WEffectSelector::indicator:!checked,
+  QMenu::item,
+  QMenu QCheckBox {
+    padding: 0px;
+    margin: 0px;
+    image: none;
+    outline: none;
+    border: 0px solid transparent;
+    }
+  QMenu::separator {
+    height: 0px;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #222;
+    margin: 4px;
+  }
+  QMenu::item {
+    padding: 5px 13px 5px 20px;
+  }
+  QMenu QCheckBox {
+    padding: 2px 10px 2px 3px;
+  }
   QMenu QCheckBox::indicator {
     width: 13px;
     height: 13px;
-    background-color: #0f0f0f;
     border: 1px solid #333;
     border-radius: 1px;
     /* remove OS focus indicator */
@@ -2130,33 +2121,22 @@ QMenu {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #0f0f0f;
     }
-
-  QHeaderView::up-arrow,
-  QHeaderView::down-arrow {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
-    width: 12px;
-    padding-left: 3px;
-    padding-right: 3px;
-    border-right: 1px solid #585858;
-    }
-    QHeaderView::up-arrow {
-      image: url(skin:/style/btn_lib_sort_up.png);
-      }
-    QHeaderView::down-arrow {
-      image: url(skin:/style/btn_lib_sort_down.png);
-    }
-    QHeaderView QMenu::indicator {
+    QMenu::right-arrow {
       width: 10px;
       height: 10px;
-      margin-left: 2px;
-      border: none;
-      background: none;
-      }
-      QHeaderView QMenu::indicator:checked {
-        image: url(skin:/buttons/btn_lib_checkmark.svg);
-      }
-      QMenu::right-arrow {
-        width: 10px;
-        height: 10px;
-        image: url(skin:/style/menu_arrow.svg);
-      }
+      image: url(skin:/style/menu_arrow.svg);
+    }
+    QMenu::right-arrow:selected {
+      image: url(skin:/style/menu_arrow_selected.svg);
+    }
+
+  QHeaderView QMenu::indicator {
+    width: 10px;
+    height: 10px;
+    margin-left: 2px;
+    border: none;
+    background: none;
+    }
+    QHeaderView QMenu::indicator:checked {
+      image: url(skin:/buttons/btn_lib_checkmark.svg);
+    }
