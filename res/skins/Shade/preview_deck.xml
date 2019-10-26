@@ -7,10 +7,6 @@
 				<ObjectName>SamplerTopBorder</ObjectName>
 				<Size>0e,5f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>
-					QGroupBox { border: 0px solid red; } 
-					QWidget { margin: 0px; padding: 0; }
-				</Style>
 			</WidgetGroup>
 
 			<!-- Middle part: left border, text/overview, VU, volume, right border -->
@@ -18,7 +14,6 @@
 				<Size>0e,54f</Size>
 				<Layout>horizontal</Layout>
 				<Style>
-					QGroupBox { border: 0px solid red;} 
 					QWidget { margin: 0; padding: 0; }
 				</Style>
 				<Children>
@@ -29,27 +24,15 @@
 					</WidgetGroup>
 
 					<WidgetGroup>
-						<Style>
-							QGroupBox { border: 0px solid red; } 
-							QWidget { margin: 0; padding: 0; }
-						</Style>
 						<BackPath>style/style_bg_sampler_mid.png</BackPath>
 						<Layout>vertical</Layout>
 						<Children>
 
 							<WidgetGroup>
-								<Style>
-									QGroupBox { border: 0px solid red; } 
-									QWidget { margin: 0; padding: 0; }
-								</Style>
 								<Layout>horizontal</Layout>
 								<Children>
 									<WidgetGroup>
 										<Size>0e,18f</Size>
-										<Style>
-											QGroupBox {border: 0px solid red; } 
-											QWidget { margin: 0; padding: 0; }
-										</Style>
 										<Layout>horizontal</Layout>
 										<Children>
 											<Text>
@@ -70,10 +53,6 @@
 									</WidgetGroup>
 									<WidgetGroup>
 										<Size>35f,18f</Size>
-										<Style>
-											QGroupBox {border: 0px solid red; } 
-											QWidget { margin: 0; padding: 0; }
-										</Style>
 										<Children>
 											<Number>
 												<TooltipId>visual_bpm</TooltipId>
@@ -103,14 +82,9 @@
 
 									<WidgetGroup>
 										<Size>20f,18f</Size>
-										<Style>
-											QGroupBox {border: 0px solid red; } 
-											QWidget { margin: 0; padding: 0; }
-										</Style>
 										<Children>
 											<PushButton>
 												<TooltipId>eject</TooltipId>
-												<Style></Style>
 												<NumberStates>1</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -137,24 +111,15 @@
 							<WidgetGroup>
 								<ObjectName>SamplerMid</ObjectName>
 								<Size>0e,35f</Size>
-								<Style>
-									QGroupBox { border: 0px solid red; } 
-									QWidget { margin: 0px; padding: 0; }
-								</Style>
 								<Layout>horizontal</Layout>
 								<Children>
 									<WidgetGroup>
 										<ObjectName>SamplerMid</ObjectName>
 										<Size>27f,35f</Size>
 										<BackPath>style/style_bg_sampler_mid.png</BackPath>
-										<Style>
-											QGroupBox { border: 0px solid red; } 
-											QWidget { margin: 0px; padding: 0; }
-										</Style>
 										<Children>
 											<PushButton>
 												<TooltipId>play_start</TooltipId>
-												<Style></Style>
 												<NumberStates>2</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -185,15 +150,10 @@
 										<ObjectName>SamplerMid</ObjectName>
 										<Size>0e,35f</Size>
 										<BackPath>style/style_bg_sampler_mid.png</BackPath>
-										<Style>
-											QGroupBox { border: 0px solid red; } 
-											QWidget { margin: 0px; padding: 0; }
-										</Style>
 										<Layout>horizontal</Layout>
 										<Children>
 											<Overview>
 												<TooltipId>waveform_overview</TooltipId>
-												<Style></Style>
 												<Group>[PreviewDeck1]</Group>
 												<Pos>0,0</Pos>
 												<Size>0e,35f</Size>
@@ -204,6 +164,7 @@
 												<SignalLowColor></SignalLowColor>
 												<SignalColor>#191F24</SignalColor>
 												<PlayPosColor>#00FF00</PlayPosColor>
+												<ShowCueTimes>false</ShowCueTimes>
 												<DefaultMark>
 													<Align>top</Align>
 													<Color>#FD0564</Color>
@@ -233,13 +194,11 @@
 						<BackPath>style/style_bg_deck_pane.png</BackPath>
 						<Size>9f,54f</Size>
 						<Style>
-							QGroupBox { border: 0px solid red; } 
 							QWidget { margin: 0px; padding: 2px; }
 						</Style>
 						<Children>
 							<StatusLight>
 								<TooltipId>sampler_PeakIndicator</TooltipId>
-								<Style></Style>
 								<PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
 								<PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
 								<Pos>2,2</Pos>
@@ -250,7 +209,6 @@
 							</StatusLight>
 							<VuMeter>
 								<TooltipId>sampler_VuMeter</TooltipId>
-								<Style></Style>
 								<PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
 								<PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
 								<Pos>2,11</Pos>
@@ -270,14 +228,9 @@
 					<WidgetGroup>
 						<BackPath>style/style_bg_deck_pane.png</BackPath>
 						<Size>10f,54f</Size>
-						<Style>
-							QGroupBox { border: 0px solid red; } 
-							QWidget { margin: 0px; }
-						</Style>
 						<Children>
 							<SliderComposed>
 								<TooltipId>pregain</TooltipId>
-								<Style></Style>
 								<Pos>0,1</Pos>
 								<Size>8f,52f</Size>
 								<Handle>knob_volume_previewdeck.png</Handle>
@@ -303,10 +256,6 @@
 				<ObjectName>SamplerBottomBorder</ObjectName>
 				<Size>0e,5f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>
-					QGroupBox { border: 0px solid red; } 
-					QWidget { margin: 0px; padding: 0; }
-				</Style>
 			</WidgetGroup>
 		</Children>
 	</WidgetGroup>

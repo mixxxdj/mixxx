@@ -901,7 +901,9 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
+                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
+                   "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -1107,7 +1109,6 @@ class MixxxCore(Feature):
 
                    "src/waveform/renderers/waveformrenderersignalbase.cpp",
                    "src/waveform/renderers/waveformmark.cpp",
-                   "src/waveform/renderers/waveformmarkproperties.cpp",
                    "src/waveform/renderers/waveformmarkset.cpp",
                    "src/waveform/renderers/waveformmarkrange.cpp",
                    "src/waveform/renderers/glwaveformrenderersimplesignal.cpp",
@@ -1116,6 +1117,7 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/glslwaveformrenderersignal.cpp",
                    "src/waveform/renderers/glvsynctestrenderer.cpp",
 
+                   "src/waveform/waveformmarklabel.cpp",
                    "src/waveform/widgets/waveformwidgetabstract.cpp",
                    "src/waveform/widgets/emptywaveformwidget.cpp",
                    "src/waveform/widgets/softwarewaveformwidget.cpp",

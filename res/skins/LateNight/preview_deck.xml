@@ -136,13 +136,13 @@
                         <SizePolicy>me,me</SizePolicy>
                         <Group><Variable name="group"/></Group>
                         <BgColor>#0f0f0f</BgColor>
-                        <BgColor>#FFFFFF</BgColor>
                         <SignalColor>#FF8000</SignalColor>
                         <SignalHighColor>#F0EBD1</SignalHighColor>
                         <SignalMidColor>#EECE33</SignalMidColor>
                         <SignalLowColor>#E4C739</SignalLowColor>
                         <PlayPosColor>#00FF00</PlayPosColor>
                         <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                        <ShowCueTimes>false</ShowCueTimes>
                         <DefaultMark>
                           <Align>bottom|right</Align>
                           <Color>#FF0000</Color>

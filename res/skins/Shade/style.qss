@@ -19,7 +19,9 @@
   padding: 5px 0px;
 }
 
-
+WOverview {
+	font-family: "Ubuntu";
+}
 
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox

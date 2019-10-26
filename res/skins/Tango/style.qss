@@ -607,7 +607,7 @@ WLabel#TrackComment {
 }
 
 #DeckOverview {
-    background-color: #0f0f0f;
+  background-color: #0f0f0f;
   }
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
