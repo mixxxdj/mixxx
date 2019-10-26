@@ -1116,7 +1116,19 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 pToDeck->startPos = introStart;
             }
         } else if (outroLength > 0 && introLength <= 0) {
-            pFromDeck->fadeBeginPos = outroStart;
+            if (outroLength + introStart < pToDeck->fadeBeginPos) {
+                pFromDeck->fadeBeginPos = outroStart;
+            } else {
+                // This happens if the toDeck track has no intro set and the
+                // outro of the fromDeck track is longer than the whole toDeck
+                // track
+                outroLength = pToDeck->fadeBeginPos - introStart;
+                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
+                    // We seek to intro start above in this case so this never happens
+                    outroLength = 1;
+                }
+                pFromDeck->fadeBeginPos = outroEnd - outroLength;
+            }
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else if (introLength > 0 && outroLength <= 0) {
@@ -1159,7 +1171,19 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             }
             pToDeck->startPos = introStart;
         } else if (outroLength > 0 && introLength <= 0) {
-            pFromDeck->fadeBeginPos = outroStart;
+            if (outroLength + introStart < pToDeck->fadeBeginPos) {
+                pFromDeck->fadeBeginPos = outroStart;
+            } else {
+                // This happens if the toDeck track has no intro set and the
+                // outro of the fromDeck track is longer than the whole toDeck
+                // track
+                outroLength = pToDeck->fadeBeginPos - introStart;
+                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
+                    // We seek to intro start above in this case so this never happens
+                    outroLength = 1;
+                }
+                pFromDeck->fadeBeginPos = outroEnd - outroLength;
+            }
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else if (introLength > 0 && outroLength <= 0) {
@@ -1231,15 +1255,17 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
     if (m_transitionTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
-        double toDeckOutroStart = getOutroStartPosition(pToDeck);
+        double toDeckOutroStart = pToDeck->fadeBeginPos;
         if (toDeckOutroStart <= startPoint) {
             // we are already too late
+            // Check OutroEnd as alternative, which is for all transition mode
+            // better than directly default to duration()
             double end = getOutroEndPosition(pToDeck);
             if (end <= startPoint) {
                 end = pToDeck->duration();
                 VERIFY_OR_DEBUG_ASSERT(end > startPoint) {
                     // as last resort move start point
-                    // The caller makes sures that this never happens  
+                    // The caller makes sure that this never happens
                     startPoint = pToDeck->duration() - 1;
                 }
             }
