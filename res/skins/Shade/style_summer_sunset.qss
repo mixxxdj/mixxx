@@ -28,8 +28,6 @@ WEffectSelector::item:checked:selected {
   }
 
 QMenu::separator {
-  border-top: 1px solid #7b6e30;
-  border-bottom: 1px solid #cbb74f;
   }
   /* checked effect and menu checkbox */
   WEffectSelector::indicator:checked,

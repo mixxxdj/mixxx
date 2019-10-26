@@ -69,16 +69,17 @@ WBeatSpinBox::down-button,
 WEffectSelector QAbstractItemView,
 QToolTip,
 QMenu {
-  min-width: 120px;
   padding: 2px;
   font: 13px;
+}
+WEffectSelector QAbstractItemView {
+  min-width: 140px;
 }
 /* common colors for WEffectSelector, QMenu, QToolTip */
 WEffectSelector,
 WEffectSelector QAbstractItemView,
 WEffectSelector::down-arrow,
 WEffectSelector::indicator:!checked,
-WEffectSelector::item:checked:selected,
 QToolTip,
 QMenu,
 QMenu::item,
@@ -86,6 +87,7 @@ QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition,
 WLibrary QPushButton:enabled {
+  font: 13px;
   color: #060613;
   background-color: #aab2b7;
   }
@@ -109,7 +111,7 @@ QMenu {
     /* remove OS focus indicator */
     outline: none;
   }
-  /* hover over checked item/effect */
+  /* hover over checked effect */
   WEffectSelector::item:checked:selected {
     background-color: #8699b8;
     }
@@ -136,13 +138,11 @@ QMenu {
 /* common colors for WEffectSelector, QMenu, QToolTip */
 
 
-    
 WEffectSelector {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin-top: 0px;
   margin-bottom: 0px;
   padding-left: 3px;
-  font: 13px;
   }
   WEffectSelector::item {
     height: 22px;
@@ -181,11 +181,13 @@ WEffectSelector {
 QMenu::item {
   padding: 4px 13px 4px 20px;
   }
+  QMenu::item:!enabled {
+    color: #444;
+    }
   QMenu::separator {
     height: 0px;
     border-top: 1px solid #71777a;
-    border-bottom: 1px solid #c3cdd2;
-    margin: 4px 1px;
+    margin: 4px;
   }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
@@ -196,9 +198,6 @@ QMenu::item {
     border-width: 1px;
     border-style: solid;    
   }
-  QMenu::item:!enabled {
-    color: #444;
-    }
   QMenu::right-arrow {
     width: 10px;
     height: 10px;
