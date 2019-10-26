@@ -84,7 +84,13 @@ QHeaderView::section {
 QHeaderView::up-arrow,
 QHeaderView::down-arrow {
   background-color: rgba(63,48,65,160);
-}
+  }
+  QHeaderView::up-arrow {
+    image: url(skin:/btn/btn_lib_sort_up_green.png)
+  }
+  QHeaderView::down-arrow {
+    image: url(skin:/btn/btn_lib_sort_down_green.png)
+  }
 
 WLibrary QPushButton:!enabled {
   background-color: #4C4B4D;
@@ -101,7 +107,7 @@ WLibrary QPushButton:!enabled {
   }
 
 WLibrary QRadioButton::indicator:checked {
- background: url(skin:/btn/btn_lib_radio_button_on_dark.svg) center center;
+ image: url(skin:/btn/btn_lib_radio_button_on_green.svg) center center;
 }
 
 /* Hotcue Color: No Color */
