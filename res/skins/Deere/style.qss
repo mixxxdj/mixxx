@@ -246,7 +246,7 @@ QTableView::indicator {
 
 QTableView::indicator:checked,
 QTableView::indicator:checked:selected {
-  background: url(skin:/icon/ic_library_checkmark.svg);
+  image: url(skin:/icon/ic_library_checkmark.svg);
   border: 1px solid #ff6600;
 }
 
@@ -1128,60 +1128,6 @@ WBeatSpinBox,
   image: url(skin:/icon/ic_power_48px.svg) no-repeat center center;
 }
 
-WEffectSelector {
-  color: #c1cabe;
-  background-color: #444342;
-  /* TODO: use a linear gradient for the background color */
-
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin-top: 0px;
-  margin-bottom: 0px;
-
-  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-   * names start getting cut off. Adding explicit padding improves this. */
-  padding: 0px 6px;
-
-  /* The 3D frame on the combo box becomes flat when you give it a border */
-  border: 1px solid #444342;
-  border-radius: 3px;
-
-  font: 15px;
-}
-
-  WEffectSelector:hover {
-    border: 1px ridge #015d8d;
-  }
-
-  WEffectSelector::drop-down {
-    /* This causes the Qt theme's widget style to magically not apply. Go figure. */
-    border: 0;
-  }
-
-  WEffectSelector::down-arrow {
-    width: 20px;
-    height: 20px;
-    image: url(skin:/icon/ic_chevron_down_48px.svg);
-  }
-
-  WEffectSelector QAbstractItemView {
-    color: #c1cabe;
-    background-color: #201f1f;
-  }
-
-  WEffectSelector::item:!selected {
-    background-color: #201f1f;
-  }
-
-  WEffectSelector::item:selected {
-    background-color: #080808;
-  }
-
-  /* currently loaded effect */
-  WEffectSelector::checked {
-    color: #4495F4;
-    font-weight: bold;
-  }
-
 #EffectKnob {
 }
 
@@ -1831,7 +1777,6 @@ do not highlight either state. */
                                       stop: 0.66 #5F5F5F,
                                       stop: 0.67 #5F5F5F,
                                       stop: 1 #5F5F5F);
-
     border: 0px solid #0080BE;
 }
 
@@ -1844,7 +1789,6 @@ do not highlight either state. */
                                       stop: 0.66 #4B4B4B,
                                       stop: 0.67 #006596,
                                       stop: 1 #006596);
-
     border: 0px solid #006596;
 }
 
@@ -1858,7 +1802,6 @@ do not highlight either state. */
                                       stop: 0.66 #5F5F5F,
                                       stop: 0.67 #0080BE,
                                       stop: 1 #0080BE);
-
     border: 0px solid #0080BE;
 }
 
@@ -1871,7 +1814,6 @@ do not highlight either state. */
                                       stop: 0.660000 #4B4B4B,
                                       stop: 0.670000 #006596,
                                       stop: 1 #006596);
-
     border: 0px solid #006596;
 }
 
@@ -1885,7 +1827,6 @@ do not highlight either state. */
                                       stop: 0.660000 #5F5F5F,
                                       stop: 0.670000 #0080BE,
                                       stop: 1 #0080BE);
-
     border: 0px solid #0080BE;
 }
 
@@ -1939,11 +1880,162 @@ do not highlight either state. */
  ** End Buttons  ***************************************************************
  *******************************************************************************/
 
-QToolTip {
-    background-color: #222222;
-    color: #CCCCCC;
-    border: 1px solid #CCCCCC;
+
+WEffectSelector QAbstractItemView,
+QToolTip,
+QMenu,
+QMenu QCheckBox {
+  padding: 2px;
+  font: 13px;
 }
+WEffectSelector QAbstractItemView {
+  min-width: 140px;
+}
+/* common colors for WEffectSelector, QMenu, QToolTip */
+WEffectSelector QAbstractItemView,
+WEffectSelector::indicator:!checked,
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox {
+  color: #c1cabe;
+  background-color: #201f1f;
+  }
+WEffectSelector QAbstractItemView,
+QToolTip,
+QMenu {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #aaa;
+  border-radius: 1px;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected,
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover  /* mouse hover */ {
+    background-color: #565353;
+    color: #000;
+    /* remove OS focus indicator */
+    outline: none;
+  }
+
+
+
+WEffectSelector {
+  color: #c1cabe;
+  /* TODO: use a linear gradient for the background color */
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+   * names start getting cut off. Adding explicit padding improves this. */
+  padding: 0px 6px;
+  /* The 3D frame on the combo box becomes flat when you give it a border */
+  border: 1px solid #444342;
+  border-radius: 3px;
+  font: 15px;
+}
+
+  WEffectSelector:hover {
+    border: 1px ridge #015d8d;
+  }
+  WEffectSelector::drop-down {
+    /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+    border: 0;
+  }
+  WEffectSelector::down-arrow {
+    width: 20px;
+    height: 20px;
+    image: url(skin:/icon/ic_chevron_down_48px.svg);
+  }
+  WEffectSelector::item:!selected {
+    background-color: #201f1f;
+  }
+  /* currently loaded effect */
+  WEffectSelector::checked {
+    color: #4495F4;
+    font-weight: bold;
+  }
+  WEffectSelector::indicator:checked {
+    /* checkbox container is 28 x 22px;
+      use margin + border to create a square checkbox sized like kill buttons */ 
+    margin: 2px;
+    image: url(skin:/icon/ic_library_checkmark_blue.svg);
+  }
+
+
+  WEffectSelector::checked /* selected item */,
+  WEffectSelector::indicator /* checkbox, tick mark */,
+  WEffectSelector::drop-down,
+  WEffectSelector::indicator:!checked,
+  QMenu::item,
+  QMenu QCheckBox {
+    padding: 0px;
+    margin: 0px;
+    image: none;
+    outline: none;
+    border: 0px solid transparent;
+    }
+  QMenu::separator {
+    height: 0px;
+    border-top: 1px solid #0a0a0a;
+    margin: 4px;
+  }
+  QMenu::item {
+    padding: 5px 13px 5px 20px;
+  }
+  QMenu::item:!enabled {
+    color: #555;
+  }
+  QMenu QCheckBox {
+    padding: 2px 10px 2px 3px;
+  }
+  QMenu QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+    border-radius: 1px;
+    /* remove OS focus indicator */
+    outline: none;
+    }
+  QMenu QCheckBox::indicator:checked {
+    image: url(skin:/icon/ic_library_checkmark.svg);
+    border: 1px solid #0f0f0f;
+    }
+  QMenu QCheckBox::indicator:!checked {
+    image: none;
+    border: 1px solid #666;
+    background-color: #222;
+    }
+  QMenu QCheckBox::indicator:!enabled {
+    color: #555;
+    border: 1px solid #333;
+    }
+  QMenu::right-arrow {
+    width: 10px;
+    height: 10px;
+    image: url(skin:/style/menu_arrow.svg);
+    }
+    QMenu::right-arrow:selected {
+      image: url(skin:/style/menu_arrow_selected.svg);
+    }
+
+  QHeaderView QMenu::indicator {
+    width: 12px;
+    height: 10px;
+    margin-left: 10px;
+    border: none;
+    background: none;
+    }
+    QHeaderView QMenu::indicator:checked {
+    image: url(skin:/icon/ic_library_checkmark_blue.svg);
+    }
+
+
+
+
+
 /*
 
 #Deck1 {
