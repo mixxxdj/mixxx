@@ -26,8 +26,6 @@ WBeatSpinBox,
 wouldn't style the respective spinbox in Shade (anymore),
 that's why we do it in another way here */
 #spinBoxTransition {
-  color: #060613;
-  background-color: #aab2b7;
   font: 13px;
   padding: 0px;
 }
@@ -38,9 +36,12 @@ WBeatSpinBox {
 /* omitting the border definition miraculously makes the spinbox grow */
 /* 0px border OTOH makes the spinbox shrink disproportionately
   border: 0px; */
-  border: 1px solid #72777A;
   margin: 0px 0px 2px 1px;
 }
+#spinBoxTransition,
+WLibrary QPushButton {
+  border: 1px solid #99A0A4;
+  }
 /*
 QSpinBox:editable {
   font-size: 10pt;
@@ -63,44 +64,149 @@ WBeatSpinBox::down-button,
 }
 
 
-WEffectSelector {
+
+
+WEffectSelector QAbstractItemView,
+QToolTip,
+QMenu {
+  min-width: 120px;
+  padding: 2px;
+  font: 13px;
+}
+/* common colors for WEffectSelector, QMenu, QToolTip */
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:!checked,
+WEffectSelector::item:checked:selected,
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox,
+WBeatSpinBox,
+#spinBoxTransition,
+WLibrary QPushButton:enabled {
   color: #060613;
   background-color: #aab2b7;
+  }
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+WEffectSelector::down-arrow,
+QToolTip,
+QMenu {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #060613;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected,
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover  /* mouse hover */ {
+    background-color: lightgray;
+    color: #000;
+    /* remove OS focus indicator */
+    outline: none;
+  }
+  /* hover over checked item/effect */
+  WEffectSelector::item:checked:selected {
+    background-color: #8699b8;
+    }
+  /* checked effect and menu checkbox */
+  WEffectSelector::indicator:checked,
+  QMenu QCheckBox::indicator:checked,
+  QMenu QCheckBox::indicator:!checked:pressed {
+    border-color: #1a2025;
+    background-color: #cf0a57;
+    }
+  /* unchecked menu checkbox */
+  QMenu QCheckBox::indicator:!checked,
+  QMenu QCheckBox::indicator:checked:pressed {
+    border-color: #1a2025;
+    background-color: #7e868b;
+    /* remove OS focus indicator */
+    outline: none;
+    }
+  /* disabled menu checkbox */
+  QMenu QCheckBox::indicator:!enabled {
+    border-color: #767d82;
+    background-color: #7e868b;
+    }
+/* common colors for WEffectSelector, QMenu, QToolTip */
+
+
+    
+WEffectSelector {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin-top: 0px;
   margin-bottom: 0px;
-  border: 1px solid #060613;
   padding-left: 3px;
   font: 13px;
-}
+  }
+  WEffectSelector::item {
+    height: 22px;
+  }
+  WEffectSelector::drop-down {
+    height: 18px;
+    border: 0px;
+  }
+  WEffectSelector::down-arrow {
+    height: 18px;
+    border-width: 0px 0px 0px 1px;
+    margin: 0px;
+    image: url(skin:/btn/btn_spin_down.png) no-repeat;
+    }
+  WEffectSelector::indicator:checked {
+    border-width: 1px;
+    border-style: solid;
+    /* checkbox container is 28 x 22px;
+      use margin + border to create a square checkbox sized like kill buttons */ 
+    margin: 3px 5px 2px 5px;
+  }
+  WEffectSelector::checked /* selected item */,
+  WEffectSelector::indicator /* checkbox, tick mark */,
+  WEffectSelector::drop-down,
+  WEffectSelector::indicator:!checked,
+  QMenu::item,
+  QMenu QCheckBox {
+    padding: 0px;
+    margin: 0px;
+    image: none;
+    outline: none;
+    border: 0px solid transparent;
+    }
 
-WEffectSelector::drop-down {
-  /* This causes the Qt theme's widget style to magically not apply. Go figure. */
-  border: 0;
-}
 
-WEffectSelector::down-arrow {
-  height: 20px;
-  border-style: solid;
-  border-color: #060613;
-  border-width: 0px 0px 0px 1px;
-  image: url(skin:/btn/btn_spin_down.png) no-repeat;
-}
+QMenu::item {
+  padding: 4px 13px 4px 20px;
+  }
+  QMenu::separator {
+    height: 0px;
+    border-top: 1px solid #71777a;
+    border-bottom: 1px solid #c3cdd2;
+    margin: 4px 1px;
+  }
+  QMenu QCheckBox {
+    padding: 2px 10px 2px 3px;
+  }
+  QMenu QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+    border-width: 1px;
+    border-style: solid;    
+  }
+  QMenu::item:!enabled {
+    color: #444;
+    }
+  QMenu::right-arrow {
+    width: 10px;
+    height: 10px;
+    image: url(skin:/style/menu_arrow.svg);
+  }
 
-WEffectSelector QAbstractItemView {
-  color: #060613;
-  background-color: #aab2b7;
-  border: 2px solid #060613;
-  selection-background-color: lightgray;
-}
 
-WEffectSelector::item:selected {
-  background-color: lightgray;
-}
 
-WEffectSelector::checked {
-  color: #EC4522;
-}
 
 #EffectSelectorGroup[highlight="1"] {
   border: 1px solid #52f864;
@@ -313,6 +419,12 @@ WSearchLineEdit {
       image: url(skin:/btn/btn_lib_clear_search_focus.svg);
     }
 
+QHeaderView,
+QHeaderView::section,
+QScrollBar:horizontal,
+QScrollBar:vertical {
+  background-color: #626f87;
+}
 QHeaderView {
   /* Note(ronso0)
   Interferes with skin scaling
@@ -320,7 +432,6 @@ QHeaderView {
   font-size: 10pt;
   font-weight: bold;
   color: #0f0f0f;
-  background-color: #8D98A3;
   border-radius: 0px;
 }
 /*	Library header 'buttons'	*/
@@ -329,7 +440,7 @@ QHeaderView::section {
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;
-  background-color: #8D98A3;
+  background-color: #626f87;
   border-radius: 0px;
 }
 
@@ -337,7 +448,7 @@ QHeaderView::up-arrow,
 QHeaderView::down-arrow {
   width: 12px;
   padding-right: 2px;
-  background-color: rgba(141,152,163,160);
+  background-color: rgba(98,111,135,160);
 }
 QHeaderView::up-arrow {
   image: url(skin:/btn/btn_lib_sort_up.png)
@@ -350,14 +461,12 @@ QHeaderView::down-arrow {
 QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
-  padding: 1px 0px 0px 0px;
-  background-color: #5C5B5D;
+  padding: 0px;
 }
 QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
-  padding: 0px 0px 0px 1px;
-  background-color: #5C5B5D;
+  padding: 0px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page,
@@ -368,7 +477,7 @@ QScrollBar::sub-page {
 }
 QScrollBar::handle:vertical,
 QScrollBar::handle:horizontal {
-  background: #8D98A3;
+  background: #626f87;
   border: 1px solid #1e1e1e;
   border-radius: 1px;
 }
@@ -462,7 +571,6 @@ WLibrary QPushButton {
   color: #0f0f0f;
   margin: 1px 2px 3px 1px;
   padding: 1px 3px 0px 3px;
-  background-color: #99A0A4;
   background-position: center;
   border: 1px solid #99A0A4;
   }
@@ -545,3 +653,8 @@ WLibrary QPushButton {
 #HotcueButton[highlight="8"] {
     background-color: #f2f2ff;
 }
+
+
+
+
+

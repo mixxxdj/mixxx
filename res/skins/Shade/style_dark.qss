@@ -1,13 +1,55 @@
 /* Dark */
-WBeatSpinBox {
-	color: #000000;
-	background-color: #717171;
-}
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:!checked,
+WEffectSelector::item:checked:selected,
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox,
+WBeatSpinBox,
+#spinBoxTransition,
+WLibrary QPushButton:enabled {
+  background-color: #717171;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected,
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover  /* mouse hover */ {
+    background-color: #999;
+  }
 
-WEffectSelector {
-	color: #000000;
-	background-color: #717171;
-}
+/* hover over checked effect */
+WEffectSelector::item:checked:selected {
+  background-color: #555;
+  }
+
+QMenu::separator {
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #888;
+  }
+  /* checked effect and menu checkbox */
+  WEffectSelector::indicator:checked,
+  QMenu QCheckBox::indicator:checked,
+  QMenu QCheckBox::indicator:!checked:pressed {
+    border-color: #111;
+    background-color: #897300;
+    }
+  /* unchecked menu checkbox */
+  QMenu QCheckBox::indicator:!checked,
+  QMenu QCheckBox::indicator:checked:pressed {
+    border-color: #1a2025;
+    background-color: #666;
+    }
+  /* disabled menu checkbox */
+  QMenu QCheckBox::indicator:!enabled {
+    border-color: #555;
+    background-color: #666;
+    }
+
 
 #EffectSelectorGroup[highlight="1"]{ 
 	border: 1px solid #3c8bb2;  
@@ -27,28 +69,6 @@ WSearchLineEdit QToolButton:focus {
   image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
 }
 
-
-QHeaderView {
-  color: #000;
-  background-color: #5C5B5D;
-}
-/*	Library header 'buttons'	*/
-QHeaderView::section {
-  border-right: 1px solid #3F3041;
-  background-color: #5C5B5D;
-  border-radius: 0px;
-}
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
-  background-color: rgba(92,91,93,160);
-}
-QHeaderView::up-arrow {
-  image: url(skin:/btn/btn_lib_sort_up_dark.png)
-}
-QHeaderView::down-arrow {
-  image: url(skin:/btn/btn_lib_sort_down_dark.png)
-}
-
 /* Scroll bars */
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page,
@@ -56,17 +76,20 @@ QScrollBar::sub-page {
   background-color: #000;
 }
 QScrollBar::handle:vertical,
-QScrollBar::handle:horizontal {
-  background: #5C5B5D;
-  border: 1px solid #3F3041;
+QScrollBar::handle:horizontal,
+QHeaderView,
+QHeaderView::section {
+  background: #3f3041;
+  color: #000;
+}
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(63,48,65,160);
 }
 
-WLibrary QPushButton {
-  background-color: #717171;
+WLibrary QPushButton:!enabled {
+  background-color: #4C4B4D;
   }
-  WLibrary QPushButton:!enabled {
-    background-color: #4C4B4D;
-    }
   WLibrary QPushButton:checked {
     color: #000;
     background-color: #B79E00;

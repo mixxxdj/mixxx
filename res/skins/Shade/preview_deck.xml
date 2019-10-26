@@ -1,6 +1,6 @@
 <Template>
 	<WidgetGroup>
-		<Size>i,72f</Size>
+		<Size>e,</Size>
 		<Layout>vertical</Layout>
 		<Children>
 			<WidgetGroup>
