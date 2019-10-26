@@ -2136,6 +2136,9 @@ WEffectSelector {
   QMenu::item {
     padding: 5px 13px 5px 20px;
   }
+  QMenu::item:!enabled {
+    color: #5e4507;
+    }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
   }
@@ -2151,10 +2154,19 @@ WEffectSelector {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #0f0f0f;
     }
-    QMenu::right-arrow {
-      width: 10px;
-      height: 10px;
-      image: url(skin:/style/menu_arrow.svg);
+  /* disabled menu checkbox */
+  QMenu QCheckBox::indicator:!enabled {
+    border: 1px solid #222;
+    background-color: #222;
+    color: #5e4507;
+    }
+  QMenu QCheckBox:!enabled {
+    color: #5e4507;
+    }
+  QMenu::right-arrow {
+    width: 10px;
+    height: 10px;
+    image: url(skin:/style/menu_arrow.svg);
     }
     QMenu::right-arrow:selected {
       image: url(skin:/style/menu_arrow_selected.svg);
