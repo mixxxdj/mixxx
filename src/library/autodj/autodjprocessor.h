@@ -196,15 +196,6 @@ class AutoDJProcessor : public QObject {
     void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
-    // The following virtual signal wrappers are used for testing
-    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play) {
-        emit(loadTrackToPlayer(pTrack, group, play));
-    }
-    virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
-        emit(autoDJStateChanged(state));
-    }
-
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
                                    bool play);
@@ -228,6 +219,16 @@ class AutoDJProcessor : public QObject {
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
+
+  protected:
+    // The following virtual signal wrappers are used for testing
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
+                                   bool play) {
+        emit(loadTrackToPlayer(pTrack, group, play));
+    }
+    virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
+        emit(autoDJStateChanged(state));
+    }
 
   private:
     // Gets or sets the crossfader position while normalizing it so that -1 is
