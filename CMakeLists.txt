@@ -1042,6 +1042,19 @@ add_custom_target(benchmark
 )
 add_dependencies(benchmark mixxx-test)
 
+if(UNIX)
+  add_custom_target(mixxx-testdata
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
+    COMMENT "Symlinking test data to build directory..."
+  )
+else()
+  add_custom_target(mixxx-testdata
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src"
+    COMMENT "Copying test data to build directory..."
+  )
+endif()
+add_dependencies(mixxx-test mixxx-testdata)
+
 #
 # Resources
 #
