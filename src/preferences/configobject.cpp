@@ -215,6 +215,18 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
     }
 }
 
+template<class ValueType>
+QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) {
+    QWriteLocker lock(&m_valuesLock);
+    QList<ConfigKey> filteredList;
+    for (const ConfigKey& key : m_values.uniqueKeys()) {
+        if (key.group == group) {
+            filteredList.append(key);
+        }
+    }
+    return filteredList;
+}
+
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
