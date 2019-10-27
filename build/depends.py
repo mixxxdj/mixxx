@@ -781,6 +781,7 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/hotcuecolorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
                    "src/effects/effectmanifest.cpp",
