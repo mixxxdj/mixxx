@@ -270,6 +270,13 @@ void ConfigObject<ConfigValue>::setValue(
     set(key, ConfigValue(QString::number(value)));
 }
 
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const QColor& value) {
+    set(key, ConfigValue(value.name(QColor::NameFormat::HexArgb)));
+}
+
 template <> template <>
 bool ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const bool& default_value) const {
@@ -304,6 +311,24 @@ double ConfigObject<ConfigValue>::getValue(
     bool ok;
     auto result = value.value.toDouble(&ok);
     return ok ? result : default_value;
+}
+
+template<>
+template<>
+QColor ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const QColor& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    auto color = QColor(value.value);
+    return color.isValid() ? color : default_value;
+}
+
+template<>
+template<>
+QColor ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, QColor());
 }
 
 // For string literal default
