@@ -3,6 +3,7 @@
 
 #include <QAction>
 #include <QModelIndex>
+#include <QMenu>
 
 #include "library/libraryfeature.h"
 
@@ -43,6 +44,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;
+
+    QMenu *m_pMenu;
 };
 
 #endif // BASEEXTERNALLIBRARYFEATURE_H

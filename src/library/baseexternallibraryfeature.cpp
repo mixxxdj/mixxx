@@ -1,13 +1,13 @@
 #include "library/baseexternallibraryfeature.h"
 
-#include <QMenu>
-
 #include "library/basesqltablemodel.h"
+#include <QApplication>
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
                                                        TrackCollection* pCollection)
         : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+          m_pTrackCollection(pCollection),
+          m_pMenu(nullptr) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
@@ -42,13 +42,20 @@ void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QMod
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    //Create the right-click menu
-    QMenu menu;
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addSeparator();
-    menu.addAction(m_pImportAsMixxxPlaylistAction);
-    menu.exec(globalPos);
+    if (m_pMenu == nullptr) {
+       m_pMenu = new QMenu();
+    }
+    // Parent the right-click menu the focussed widget in order to make it
+    // stylable with skin stylesheets rather than ugly OS styling.
+    auto focusWidget = QApplication::focusWidget();
+    m_pMenu->setParent(focusWidget);
+    m_pMenu->clear();
+
+    m_pMenu->addAction(m_pAddToAutoDJAction);
+    m_pMenu->addAction(m_pAddToAutoDJTopAction);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pImportAsMixxxPlaylistAction);
+    m_pMenu->exec(globalPos);
 }
 
 void BaseExternalLibraryFeature::slotAddToAutoDJ() {

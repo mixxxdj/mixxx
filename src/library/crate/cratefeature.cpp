@@ -1,5 +1,6 @@
 #include "library/crate/cratefeature.h"
 
+#include <QApplication>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QLineEdit>
@@ -284,7 +285,7 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // Create the right-click menu and parent it to the sidebar widget in
     // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    m_pMenu = new QMenu(pSidebarWidget);
+//    m_pMenu = new QMenu(pSidebarWidget);
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -368,7 +369,15 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
+    if (m_pMenu == nullptr) {
+       m_pMenu = new QMenu();
+    }
+    // Parent the right-click menu the focussed widget in order to make it
+    // stylable with skin stylesheets rather than ugly OS styling.
+    auto focusWidget = QApplication::focusWidget();
+    m_pMenu->setParent(focusWidget);
     m_pMenu->clear();
+
     m_pMenu->addAction(m_pCreateCrateAction.get());
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRenameCrateAction.get());
@@ -385,6 +394,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     }
     m_pMenu->addAction(m_pExportPlaylistAction.get());
     m_pMenu->addAction(m_pExportTrackFilesAction.get());
+
     m_pMenu->popup(globalPos);
 }
 
