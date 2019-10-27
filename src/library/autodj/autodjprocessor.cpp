@@ -1137,7 +1137,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
-            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
+            useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, outroEnd, introStart);
         }
         break;
     case TransitionMode::FadeAtOutroStart:
@@ -1192,7 +1192,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else {
-            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
+            useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, outroEnd, introStart);
         }
         break;
     case TransitionMode::FixedSkipSilence:
@@ -1209,6 +1209,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 startPoint = toDeckPosition;
             }
             useFixedFadeTime(pFromDeck, pToDeck,
+                    fromDeckPosition,
                     getLastSoundPosition(pFromDeck),
                     startPoint);
         }
@@ -1228,6 +1229,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 startPoint = toDeckPosition;
             }
             useFixedFadeTime(pFromDeck, pToDeck,
+                    fromDeckPosition,
                     pFromDeck->duration(),
                     startPoint);
         }
@@ -1252,7 +1254,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 }
 
 void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
-        DeckAttributes* pToDeck, double endPoint, double startPoint) {
+        DeckAttributes* pToDeck, double fromDeckPosition, double endPoint, double startPoint) {
     if (m_transitionTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
@@ -1276,12 +1278,12 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
         double transitionTime = math_min(toDeckOutroStart - startPoint,
                 m_transitionTime);
 
-        pFromDeck->fadeBeginPos = endPoint - transitionTime;
+        pFromDeck->fadeBeginPos = math_max(endPoint - transitionTime, fromDeckPosition);
         pFromDeck->fadeEndPos = endPoint;
         pToDeck->startPos = startPoint;
     } else {
         pFromDeck->fadeBeginPos = endPoint;
-        pFromDeck->fadeEndPos = endPoint - m_transitionTime;
+        pFromDeck->fadeEndPos = endPoint;
         pToDeck->startPos = startPoint + m_transitionTime;
     }
 }

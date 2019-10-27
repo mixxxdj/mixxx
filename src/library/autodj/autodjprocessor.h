@@ -255,7 +255,7 @@ class AutoDJProcessor : public QObject {
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
-                          double endPoint, double startPoint);
+            double fromDeckPosition, double endPoint, double startPoint);
     DeckAttributes* getOtherDeck(const DeckAttributes* pFromDeck,
                                  bool playing = false);
 
