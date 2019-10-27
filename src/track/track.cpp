@@ -1010,6 +1010,12 @@ Track::ExportMetadataResult Track::exportMetadata(
     // The track's metadata will be exported instantly. The export should
     // only be tried once so we reset the marker flag.
     m_bMarkedForMetadataExport = false;
+    kLogger.debug()
+            << "Old metadata (imported)"
+            << importedFromFile;
+    kLogger.debug()
+            << "New metadata (modified)"
+            << m_record.getMetadata();
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
     if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
