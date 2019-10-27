@@ -850,6 +850,265 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 include(CPack)
 
 #
+# Tests
+#
+add_executable(mixxx-test
+  src/test/analyserwaveformtest.cpp
+  src/test/analyzersilence_test.cpp
+  src/test/audiotaperpot_test.cpp
+  src/test/autodjprocessor_test.cpp
+  src/test/baseeffecttest.cpp
+  src/test/beatgridtest.cpp
+  src/test/beatmaptest.cpp
+  src/test/beatstranslatetest.cpp
+  src/test/bpmcontrol_test.cpp
+  src/test/broadcastprofile_test.cpp
+  src/test/broadcastsettings_test.cpp
+  src/test/channelhandle_test.cpp
+  src/test/configobject_test.cpp
+  src/test/controller_preset_validation_test.cpp
+  src/test/controllerengine_test.cpp
+  src/test/controlobjecttest.cpp
+  src/test/coverartcache_test.cpp
+  src/test/coverartutils_test.cpp
+  src/test/cratestorage_test.cpp
+  src/test/cuecontrol_test.cpp
+  src/test/dbconnectionpool_test.cpp
+  src/test/dbidtest.cpp
+  src/test/directorydaotest.cpp
+  src/test/duration_test.cpp
+  src/test/durationutiltest.cpp
+  src/test/effectchainslottest.cpp
+  src/test/effectslottest.cpp
+  src/test/effectsmanagertest.cpp
+  src/test/enginebufferscalelineartest.cpp
+  src/test/enginebuffertest.cpp
+  src/test/enginefilterbiquadtest.cpp
+  src/test/enginemastertest.cpp
+  src/test/enginemicrophonetest.cpp
+  src/test/enginesynctest.cpp
+  src/test/globaltrackcache_test.cpp
+  src/test/indexrange_test.cpp
+  src/test/keyutilstest.cpp
+  src/test/lcstest.cpp
+  src/test/learningutilstest.cpp
+  src/test/libraryscannertest.cpp
+  src/test/librarytest.cpp
+  src/test/looping_control_test.cpp
+  src/test/main.cpp
+  src/test/mathutiltest.cpp
+  src/test/metadatatest.cpp
+  src/test/metaknob_link_test.cpp
+  src/test/midicontrollertest.cpp
+  src/test/mixxxtest.cpp
+  src/test/movinginterquartilemean_test.cpp
+  src/test/mpscfifotest.cpp
+  src/test/nativeeffects_test.cpp
+  src/test/performancetimer_test.cpp
+  src/test/playcountertest.cpp
+  src/test/playlisttest.cpp
+  src/test/portmidicontroller_test.cpp
+  src/test/portmidienumeratortest.cpp
+  src/test/queryutiltest.cpp
+  src/test/readaheadmanager_test.cpp
+  src/test/replaygaintest.cpp
+  src/test/rescalertest.cpp
+  src/test/samplebuffertest.cpp
+  src/test/sampleutiltest.cpp
+  src/test/schemamanager_test.cpp
+  src/test/searchqueryparsertest.cpp
+  src/test/signalpathtest.cpp
+  src/test/skincontext_test.cpp
+  src/test/softtakeover_test.cpp
+  src/test/soundproxy_test.cpp
+  src/test/soundsourceproviderregistrytest.cpp
+  src/test/sqliteliketest.cpp
+  src/test/synccontroltest.cpp
+  src/test/tableview_test.cpp
+  src/test/taglibtest.cpp
+  src/test/trackdao_test.cpp
+  src/test/trackexport_test.cpp
+  src/test/trackmetadata_test.cpp
+  src/test/tracknumberstest.cpp
+  src/test/trackreftest.cpp
+  src/test/trackupdate_test.cpp
+  src/test/wpushbutton_test.cpp
+  src/test/wwidgetstack_test.cpp
+)
+set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib)
+
+set(GTEST_CMAKE_ARGS "")
+set(GMOCK_CMAKE_ARGS "")
+if(MSVC)
+  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
+  # been deprecated and throws a warning. If /W3 is used, this causes an
+  # error. This suppresses the warning/error until we pull in the fixes from
+  # upstream.
+  # See this for details: https://github.com/google/googletest/issues/1111
+  set(GTEST_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+  set(GMOCK_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+
+  # Use shared CRT when linking gtest to prevent error LNK2038: mismatch
+  # detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value
+  # 'MD_DynamicRelease'
+  set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
+  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
+
+  # Work around the Release/Debug subdirectories on Windows
+  foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER "${OUTPUT_CONFIG}" OUTPUT_CONFIG)
+    set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
+    set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0")
+  endforeach()
+endif()
+
+# gtest
+ExternalProject_Add(mixxx-gtest
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
+  INSTALL_COMMAND ""
+  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GTEST_CMAKE_ARGS}"
+  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
+)
+set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_dependencies(mixxx-test mixxx-gtest)
+target_include_directories(mixxx-test SYSTEM PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
+)
+target_link_libraries(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
+)
+
+# gmock
+ExternalProject_Add(mixxx-gmock
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
+  INSTALL_COMMAND ""
+  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GMOCK_CMAKE_ARGS}"
+  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
+)
+set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
+add_dependencies(mixxx-test mixxx-gmock)
+target_include_directories(mixxx-test SYSTEM PUBLIC
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
+)
+target_link_libraries(mixxx-test PUBLIC
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
+)
+
+# Benchmark
+add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
+  lib/benchmark/src/benchmark.cc
+  lib/benchmark/src/colorprint.cc
+  lib/benchmark/src/commandlineflags.cc
+  lib/benchmark/src/console_reporter.cc
+  lib/benchmark/src/csv_reporter.cc
+  lib/benchmark/src/json_reporter.cc
+  lib/benchmark/src/log.cc
+  lib/benchmark/src/reporter.cc
+  lib/benchmark/src/sleep.cc
+  lib/benchmark/src/string_util.cc
+  lib/benchmark/src/sysinfo.cc
+  lib/benchmark/src/walltime.cc
+  lib/benchmark/src/re_std.cc
+)
+target_compile_definitions(gbenchmark PRIVATE HAVE_STD_REGEX)
+find_package(Threads REQUIRED)
+target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  target_link_libraries(gbenchmark Shlwapi)
+endif()
+target_include_directories(gbenchmark SYSTEM PUBLIC lib/benchmark/include)
+target_link_libraries(mixxx-test PUBLIC gbenchmark)
+
+# Test Suite
+include(CTest)
+include(GoogleTest)
+enable_testing()
+gtest_add_tests(
+  TARGET mixxx-test
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  TEST_LIST testsuite
+)
+set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
+
+# Benchmarking
+add_custom_target(benchmark
+  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMENT "Mixxx Benchmarks"
+  VERBATIM
+)
+add_dependencies(benchmark mixxx-test)
+
+#
+# Resources
+#
+add_library(mixxx-qrc OBJECT EXCLUDE_FROM_ALL res/mixxx.qrc)
+set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
+
+# Add resources to mixxx and mixxx-test binaries, not the mixxx-lib static
+# library. Doing this would require initialization using Q_INIT_RESOURCE()
+# calls that are not present at the moment. Further information can be found
+# at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
+target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
+target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
+
+if(UNIX)
+  add_custom_target(mixxx-res
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
+    COMMENT "Symlinking resources to build directory..."
+  )
+else()
+  add_custom_target(mixxx-res
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMENT "Copying resources to build directory..."
+  )
+endif()
+add_dependencies(mixxx mixxx-res)
+
+# Windows-only resource file
+if(WIN32)
+  string(TIMESTAMP MIXXX_YEAR "%Y")
+
+  file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
+  string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
+
+  # Remove anything after ~ or - in the version number and replace the dots with commas
+  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
+  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
+    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
+    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  endif()
+  set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
+
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(MIXXX_DEBUG 1)
+  else()
+    set(MIXXX_DEBUG 0)
+  endif()
+
+  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
+  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
+    set(MIXXX_PRERELEASE 0)
+  else()
+    set(MIXXX_PRERELEASE 1)
+  endif()
+
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+  )
+  target_sources(mixxx PRIVATE
+    src/mixxx.rc
+    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+  )
+  target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+
+#
 # Dependencies
 #
 option(STATIC_DEPS "Link dependencies statically" OFF)
@@ -1826,263 +2085,4 @@ if(NOT OPTIMIZE STREQUAL "off")
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
   endif()
-endif()
-
-#
-# Tests
-#
-add_executable(mixxx-test
-  src/test/analyserwaveformtest.cpp
-  src/test/analyzersilence_test.cpp
-  src/test/audiotaperpot_test.cpp
-  src/test/autodjprocessor_test.cpp
-  src/test/baseeffecttest.cpp
-  src/test/beatgridtest.cpp
-  src/test/beatmaptest.cpp
-  src/test/beatstranslatetest.cpp
-  src/test/bpmcontrol_test.cpp
-  src/test/broadcastprofile_test.cpp
-  src/test/broadcastsettings_test.cpp
-  src/test/channelhandle_test.cpp
-  src/test/configobject_test.cpp
-  src/test/controller_preset_validation_test.cpp
-  src/test/controllerengine_test.cpp
-  src/test/controlobjecttest.cpp
-  src/test/coverartcache_test.cpp
-  src/test/coverartutils_test.cpp
-  src/test/cratestorage_test.cpp
-  src/test/cuecontrol_test.cpp
-  src/test/dbconnectionpool_test.cpp
-  src/test/dbidtest.cpp
-  src/test/directorydaotest.cpp
-  src/test/duration_test.cpp
-  src/test/durationutiltest.cpp
-  src/test/effectchainslottest.cpp
-  src/test/effectslottest.cpp
-  src/test/effectsmanagertest.cpp
-  src/test/enginebufferscalelineartest.cpp
-  src/test/enginebuffertest.cpp
-  src/test/enginefilterbiquadtest.cpp
-  src/test/enginemastertest.cpp
-  src/test/enginemicrophonetest.cpp
-  src/test/enginesynctest.cpp
-  src/test/globaltrackcache_test.cpp
-  src/test/indexrange_test.cpp
-  src/test/keyutilstest.cpp
-  src/test/lcstest.cpp
-  src/test/learningutilstest.cpp
-  src/test/libraryscannertest.cpp
-  src/test/librarytest.cpp
-  src/test/looping_control_test.cpp
-  src/test/main.cpp
-  src/test/mathutiltest.cpp
-  src/test/metadatatest.cpp
-  src/test/metaknob_link_test.cpp
-  src/test/midicontrollertest.cpp
-  src/test/mixxxtest.cpp
-  src/test/movinginterquartilemean_test.cpp
-  src/test/mpscfifotest.cpp
-  src/test/nativeeffects_test.cpp
-  src/test/performancetimer_test.cpp
-  src/test/playcountertest.cpp
-  src/test/playlisttest.cpp
-  src/test/portmidicontroller_test.cpp
-  src/test/portmidienumeratortest.cpp
-  src/test/queryutiltest.cpp
-  src/test/readaheadmanager_test.cpp
-  src/test/replaygaintest.cpp
-  src/test/rescalertest.cpp
-  src/test/samplebuffertest.cpp
-  src/test/sampleutiltest.cpp
-  src/test/schemamanager_test.cpp
-  src/test/searchqueryparsertest.cpp
-  src/test/signalpathtest.cpp
-  src/test/skincontext_test.cpp
-  src/test/softtakeover_test.cpp
-  src/test/soundproxy_test.cpp
-  src/test/soundsourceproviderregistrytest.cpp
-  src/test/sqliteliketest.cpp
-  src/test/synccontroltest.cpp
-  src/test/tableview_test.cpp
-  src/test/taglibtest.cpp
-  src/test/trackdao_test.cpp
-  src/test/trackexport_test.cpp
-  src/test/trackmetadata_test.cpp
-  src/test/tracknumberstest.cpp
-  src/test/trackreftest.cpp
-  src/test/trackupdate_test.cpp
-  src/test/wpushbutton_test.cpp
-  src/test/wwidgetstack_test.cpp
-)
-set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PUBLIC mixxx-lib)
-
-set(GTEST_CMAKE_ARGS "")
-set(GMOCK_CMAKE_ARGS "")
-if(MSVC)
-  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
-  # been deprecated and throws a warning. If /W3 is used, this causes an
-  # error. This suppresses the warning/error until we pull in the fixes from
-  # upstream.
-  # See this for details: https://github.com/google/googletest/issues/1111
-  set(GTEST_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-  set(GMOCK_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-
-  # Use shared CRT when linking gtest to prevent error LNK2038: mismatch
-  # detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value
-  # 'MD_DynamicRelease'
-  set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
-  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
-
-  # Work around the Release/Debug subdirectories on Windows
-  foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER "${OUTPUT_CONFIG}" OUTPUT_CONFIG)
-    set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
-    set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0")
-  endforeach()
-endif()
-
-# gtest
-ExternalProject_Add(mixxx-gtest
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GTEST_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
-add_dependencies(mixxx-test mixxx-gtest)
-target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
-)
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-
-# gmock
-ExternalProject_Add(mixxx-gmock
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GMOCK_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
-add_dependencies(mixxx-test mixxx-gmock)
-target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
-)
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-
-# Benchmark
-add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
-  lib/benchmark/src/benchmark.cc
-  lib/benchmark/src/colorprint.cc
-  lib/benchmark/src/commandlineflags.cc
-  lib/benchmark/src/console_reporter.cc
-  lib/benchmark/src/csv_reporter.cc
-  lib/benchmark/src/json_reporter.cc
-  lib/benchmark/src/log.cc
-  lib/benchmark/src/reporter.cc
-  lib/benchmark/src/sleep.cc
-  lib/benchmark/src/string_util.cc
-  lib/benchmark/src/sysinfo.cc
-  lib/benchmark/src/walltime.cc
-  lib/benchmark/src/re_std.cc
-)
-target_compile_definitions(gbenchmark PRIVATE HAVE_STD_REGEX)
-find_package(Threads REQUIRED)
-target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(gbenchmark Shlwapi)
-endif()
-target_include_directories(gbenchmark SYSTEM PUBLIC lib/benchmark/include)
-target_link_libraries(mixxx-test PUBLIC gbenchmark)
-
-# Test Suite
-include(CTest)
-include(GoogleTest)
-enable_testing()
-gtest_add_tests(
-  TARGET mixxx-test
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  TEST_LIST testsuite
-)
-set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
-
-# Benchmarking
-add_custom_target(benchmark
-  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMENT "Mixxx Benchmarks"
-  VERBATIM
-)
-add_dependencies(benchmark mixxx-test)
-
-#
-# Resources
-#
-add_library(mixxx-qrc OBJECT EXCLUDE_FROM_ALL res/mixxx.qrc)
-set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
-
-# Add resources to mixxx and mixxx-test binaries, not the mixxx-lib static
-# library. Doing this would require initialization using Q_INIT_RESOURCE()
-# calls that are not present at the moment. Further information can be found
-# at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
-target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
-target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
-
-if(UNIX)
-  add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
-    COMMENT "Symlinking resources to build directory..."
-  )
-else()
-  add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
-    COMMENT "Copying resources to build directory..."
-  )
-endif()
-add_dependencies(mixxx mixxx-res)
-
-# Windows-only resource file
-if(WIN32)
-  string(TIMESTAMP MIXXX_YEAR "%Y")
-
-  file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
-  string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
-
-  # Remove anything after ~ or - in the version number and replace the dots with commas
-  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
-  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
-  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
-    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
-    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
-  endif()
-  set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
-
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(MIXXX_DEBUG 1)
-  else()
-    set(MIXXX_DEBUG 0)
-  endif()
-
-  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
-  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
-    set(MIXXX_PRERELEASE 0)
-  else()
-    set(MIXXX_PRERELEASE 1)
-  endif()
-
-  configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
-    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
-  )
-  target_sources(mixxx PRIVATE
-    src/mixxx.rc
-    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
-  )
-  target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
