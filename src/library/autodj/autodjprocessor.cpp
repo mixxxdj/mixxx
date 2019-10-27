@@ -1061,6 +1061,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     // here it is done for FullIntroOutro and FadeAtOutroStart.
     // It is adjusted below for the other modes.
     pToDeck->fadeBeginPos = getOutroStartPosition(pToDeck);
+    pToDeck->fadeEndPos = getOutroEndPosition(pToDeck);
 
     double introStart;
     if (seekToStartPoint || toDeckPosition >= pToDeck->fadeBeginPos) {
@@ -1240,6 +1241,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->fadeEndPos /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
     pToDeck->fadeBeginPos /= toTrackDuration;
+    pToDeck->fadeEndPos /= toTrackDuration;
 
     pFromDeck->isFromDeck = true;
     pToDeck->isFromDeck = false;
@@ -1259,6 +1261,10 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
         double toDeckOutroStart = pToDeck->fadeBeginPos;
+        if (pToDeck->fadeBeginPos >= pToDeck->fadeEndPos) {
+            // no outro defined, the toDeck will also use the transition time
+            toDeckOutroStart -= m_transitionTime;
+        }
         if (toDeckOutroStart <= startPoint) {
             // we are already too late
             // Check OutroEnd as alternative, which is for all transition mode
