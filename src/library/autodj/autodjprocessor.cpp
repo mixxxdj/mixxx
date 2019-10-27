@@ -932,7 +932,15 @@ double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
-    return samplePositionToSeconds(pDeck->outroStartPosition(), pDeck);
+    double outroStart = samplePositionToSeconds(pDeck->outroStartPosition(), pDeck);
+    if (outroStart < 0.0) {
+        // Assume a zero length outro if outroStartIsNot set.
+        // The outroEnd is automatically placed by AnalyzerSilence, so use
+        // that as a fallback if the user has not placed outroStart. If it has
+        // not been placed, getOutroEndPosition will return the end of the track.
+        outroStart = getOutroEndPosition(pDeck);
+    }
+    return outroStart;
 }
 
 double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
@@ -1037,13 +1045,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double outroStart = getOutroStartPosition(pFromDeck);
     double fromDeckPosition = pFromDeck->playPosition() * pFromDeck->duration();
 
-    if (outroStart <= 0.0) {
-        // Assume a zero length outro.
-        // The outroEnd is automatically placed by AnalyzerSilence, so use
-        // that as a fallback if the user has not placed outroStart. If it has
-        // not been placed, getOutroEndPosition will return the end of the track.
-        outroStart = outroEnd;
-    }
     if (fromDeckPosition > outroStart) {
         // We have already passed outroStart
         // This can happen if we have just enabled auto DJ
