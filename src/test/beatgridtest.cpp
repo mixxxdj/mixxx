@@ -172,15 +172,15 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(nextBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(previousBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_DOUBLE_EQ(nextBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
+        EXPECT_DOUBLE_EQ(previousBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation
     double foundPrevBeat, foundNextBeat;
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
-    EXPECT_EQ(previousBeat, foundPrevBeat);
-    EXPECT_EQ(nextBeat, foundNextBeat);
+    EXPECT_DOUBLE_EQ(previousBeat, foundPrevBeat);
+    EXPECT_DOUBLE_EQ(nextBeat, foundNextBeat);
 }
 
 }  // namespace
