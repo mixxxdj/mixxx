@@ -1079,7 +1079,7 @@ else()
     COMMENT "Copying resources to build directory..."
   )
 endif()
-add_dependencies(mixxx mixxx-res)
+add_dependencies(mixxx-lib mixxx-res)
 
 # Windows-only resource file
 if(WIN32)
