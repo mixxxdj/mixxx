@@ -583,6 +583,13 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return OpenResult::Failed;
     }
 
+    if (m_pavStream->duration == AV_NOPTS_VALUE) {
+        // Streams with unknown or unlimited duration are
+        // not (yet) supported.
+        kLogger.warning()
+                << "Unknown or unlimited stream duration";
+        return OpenResult::Failed;
+    }
     const auto streamFrameIndexRange =
             getStreamFrameIndexRange(*m_pavStream);
     // The nominal frame index range includes the lead-in that
