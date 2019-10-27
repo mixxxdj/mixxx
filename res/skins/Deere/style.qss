@@ -323,9 +323,9 @@ QHeaderView::section {
   padding: 2px;
   background: #1A1A1A;
   border-top: none;
+  border-left: none;
   border-bottom: 1px solid #141414;
-  border-left: 1px solid #141414;
-  border-right: none;
+  border-right: 1px solid #141414;
 }
 
 QHeaderView::section:selected {
@@ -335,10 +335,15 @@ QHeaderView::section:selected {
   background: #1A1A1A;
   border-top: none;
   border-bottom: 1px solid #141414;
-  border-left: 1px solid #141414;
   border-right: none;
 }
 
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(26,26,26,220);
+  margin: 0px -1px 0px 0xp;
+  padding: 0px;
+}
 QHeaderView::up-arrow {
   image: url(skin:/image/style_sort_up.svg)
 }
@@ -354,6 +359,7 @@ WSearchLineEdit {
   border: 1px solid #4B4B4B;
   background-color: #1e1e1e;
   color: #d2d2d2;
+  font-size: 13px;
 }
 
 WSearchLineEdit:focus {
@@ -522,11 +528,11 @@ WLibrary QRadioButton::indicator {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/icon/ic_radio_button_on_18px.svg);
+  image: url(skin:/icon/ic_radio_button_on_18px.svg);
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/icon/ic_radio_button_off_18px.svg);
+  image: url(skin:/icon/ic_radio_button_off_18px.svg);
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
@@ -748,7 +754,9 @@ QAbstractScrollArea::corner {
   background-color: #222;
 }
 
-WWidget, QLabel {
+WWidget,
+QLabel,
+QPushButton {
   font-family: "Open Sans";
   font-size: 12px;
   text-transform: uppercase;
@@ -2020,18 +2028,17 @@ WEffectSelector {
     border: 1px solid #333;
     }
   QMenu::right-arrow {
-    width: 10px;
-    height: 10px;
-    image: url(skin:/style/menu_arrow.svg);
+    width: 16px;
+    height: 16px;
+    image: url(skin:/icon/ic_chevron_right_48px.svg);
     }
     QMenu::right-arrow:selected {
-      image: url(skin:/style/menu_arrow_selected.svg);
     }
 
   QHeaderView QMenu::indicator {
     width: 12px;
     height: 10px;
-    margin-left: 10px;
+    margin-left: 2px;
     border: none;
     background: none;
     }

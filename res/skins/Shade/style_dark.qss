@@ -45,8 +45,12 @@ QMenu::separator {
     }
   /* disabled menu checkbox */
   QMenu QCheckBox::indicator:!enabled {
-    border-color: #555;
+    border-color: #444;
     background-color: #666;
+    }
+  QMenu::item:!enabled,
+  QMenu QCheckBox:!enabled {
+    color: #444;
     }
 
 

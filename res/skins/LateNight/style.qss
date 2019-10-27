@@ -47,7 +47,10 @@ QToolTip {
   border-radius: 2px;
 }
 
-WPushButton, QPushButton {
+WPushButton,
+QPushButton,
+WLibrary QLabel,
+WSearchLineEdit {
   font-size: 11px/12px;
 }
 

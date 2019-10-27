@@ -29,10 +29,21 @@ WSearchLineEdit {
 }
 
 WPushButton {
-  font-family: Ubuntu;
   font-weight: normal;
-  font-size: 12px/12px;
   border-radius: 3px;
+}
+
+WPushButton,
+WSearchLineEdit,
+WLibrary QPushButton,
+WLibrary QLabel,
+WLibrary QRadioButton,
+QMenu,
+QMenu QCheckBox,
+QToolTip,
+QHeaderView {
+  font-family: Ubuntu;
+  font-size: 12px/12px;
 }
 
 WWidgetGroup {
@@ -1389,10 +1400,10 @@ WBeatSpinBox,
 
 /* Kill indicators underneath EQ knobs */
 #EQKilledUnderlay[displayValue="1"] {
-  background: url(skin:/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
+  image: url(skin:/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
 }
 #QuickFxDisabledUnderlay[displayValue="0"] {
-  background: url(skin:/knobs_sliders/knob_quickFX_disabled.svg) no-repeat center center;
+  image: url(skin:/knobs_sliders/knob_quickFX_disabled.svg) no-repeat center center;
 }
 
 #QuickFXSide {
@@ -2093,8 +2104,7 @@ QMenu {
   }
   QMenu::separator {
     height: 0px;
-    border-top: 1px solid #111;
-    border-bottom: 1px solid #222;
+    border-top: 1px solid #0f0f0f;
     margin: 1px 4px 1px 4px;
   }
   /* actually this only needs to be set for QCheckBox */
@@ -2132,6 +2142,35 @@ QMenu {
   QMenu QCheckBox::indicator:checked {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #1e1e1e;
+    }
+  /* disabled menu checkbox */
+  QMenu QCheckBox::indicator:!enabled {
+    background-color: #333;
+    border: 1px solid #222;
+    }
+  QMenu::item:!enabled,
+  QMenu QCheckBox:!enabled {
+    color: #555;
+    }
+  QMenu::right-arrow {
+    width: 8px;
+    height: 16px;
+    margin-right: 4px;
+    image: url(skin:/buttons/btn_arrow_right.svg);
+    }
+    QMenu::right-arrow {
+      image: url(skin:/buttons/btn_arrow_right_hover.svg);
+    }
+
+  QHeaderView QMenu::indicator {
+    width: 10px;
+    height: 10px;
+    margin-left: 2px;
+    border: none;
+    background: none;
+    }
+    QHeaderView QMenu::indicator:checked {
+      image: url(skin:/buttons/btn_lib_checkmark_white.svg);
     }
 
 #TEST {
@@ -2361,23 +2400,23 @@ QHeaderView {
     width: 12px;
     padding-right: 2px;
     border-right: 1px solid #585858;
-    background-color: #333;
+    background-color: rgba(51,51,51,200);
     }
     QHeaderView::up-arrow:hover,
     QHeaderView::down-arrow:hover {
-      background-color: #585858;
+    background-color: rgba(88,88,88,200);
     }
     QHeaderView::up-arrow {
-      image: url(skin:/graphics/library_sort_up.svg)
+      image: url(skin:/graphics/library_sort_up.svg);
       }
       QHeaderView::up-arrow:hover {
-        image: url(skin:/graphics/library_sort_down.svg)
+        image: url(skin:/graphics/library_sort_down.svg);
       }
     QHeaderView::down-arrow {
-      image: url(skin:/graphics/library_sort_down.svg)
+      image: url(skin:/graphics/library_sort_down.svg);
       }
       QHeaderView::down-arrow:hover {
-        image: url(skin:/graphics/library_sort_up.svg)
+        image: url(skin:/graphics/library_sort_up.svg);
       }
 
 /* Scroll bars */
@@ -2639,7 +2678,7 @@ WLibrary QPushButton {
       border: 1px solid #888;
     }
   QTableView::indicator:checked {
-    background: transparent url(skin:/buttons/btn_lib_checkmark.svg);
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
   QTableView::indicator:unchecked {
     background: none;
@@ -2703,11 +2742,11 @@ WLibrary QRadioButton#radioButtonRecentlyAdded {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: transparent url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
+  image: url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: transparent url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
+  image: url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
 }
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
 WOverview {
