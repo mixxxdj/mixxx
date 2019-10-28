@@ -50,6 +50,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pTrackCollection),
           m_crateTableModel(this, pTrackCollection),
+          m_pSidebarWidget(nullptr),
           m_pMenu(nullptr) {
 
     initActions();
@@ -271,7 +272,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
+void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -285,11 +286,8 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
 }
 
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-//    m_pMenu = new QMenu(pSidebarWidget);
-    // just store the sidebar widget pointer for later use in onRightClickChild
-    m_pSideBarWidget = pSidebarWidget;
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -346,13 +344,10 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    if (m_pMenu == nullptr) {
-       m_pMenu = new QMenu();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
     }
-    if (m_pSideBarWidget) {
-        m_pMenu->setParent(m_pSideBarWidget);
-    }
-    m_pMenu->clear();
+    m_pMenu = new QMenu(m_pSidebarWidget);
     m_pMenu->addAction(m_pCreateCrateAction.get());
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pCreateImportPlaylistAction.get());
@@ -380,22 +375,19 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
-    if (m_pMenu == nullptr) {
-       m_pMenu = new QMenu();
-    }
-    if (m_pSideBarWidget) {
-        m_pMenu->setParent(m_pSideBarWidget);
-    }
-//    auto focusWidget = QApplication::focusWidget();
-    // Parent the right-click menu the sidebar widget in order to make it
-    // stylable with skin stylesheets rather than ugly OS styling.
+    // Parent the right-click menu to the sidebar widget when it's created in order
+    // to make it stylable with skin stylesheets rather than (ugly) OS styling.
     // TEST XXX
-    // Parenting the menu to the currently focused widget makes it pop up
-    // at (cursorPos inside main window + globalPos).
-    // Also it won't close like before if clicked inside or outside the menu.
-//    m_pMenu->setParent(focusWidget);
-    m_pMenu->clear();
-
+    // Parenting the menu to the currently focused widget after creation causes some issues:
+    // * menu pops up at (cursorPos inside main window + globalPos)
+    // * menu's cropped by the parent widget geometry
+    // * menu won't close like before if clicked inside or outside the menu
+    // auto focusWidget = QApplication::focusWidget();
+    // m_pMenu->setParent(focusWidget);
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
     m_pMenu->addAction(m_pCreateCrateAction.get());
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRenameCrateAction.get());
@@ -413,20 +405,21 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_pMenu->addAction(m_pExportPlaylistAction.get());
     m_pMenu->addAction(m_pExportTrackFilesAction.get());
 
-    auto focusWidget = QApplication::focusWidget();
-    QPoint curPos = QCursor::pos();
-    QPoint mapToGlobalPos;
-    QPoint mapFromGlobalPos;
-    if (focusWidget) {
-        mapToGlobalPos = focusWidget->mapToGlobal(globalPos);
-        mapFromGlobalPos = focusWidget->mapFromGlobal(globalPos);
-    }
-    qDebug() << "       globalPos        =" << globalPos;
-    qDebug() << "       curPos           =" << curPos;
-    qDebug() << "       mapToGlobalPos   =" << mapToGlobalPos;
-    qDebug() << "       mapFromGlobalPos =" << mapFromGlobalPos;
-    qDebug() << "    m_pMenu->exec(" << mapFromGlobalPos <<")";
-    m_pMenu->exec(mapFromGlobalPos);
+//    auto focusWidget = QApplication::focusWidget();
+//    QPoint curPos = QCursor::pos();
+//    QPoint mapToGlobalPos;
+//    QPoint mapFromGlobalPos;
+//    if (focusWidget) {
+//        mapToGlobalPos = focusWidget->mapToGlobal(globalPos);
+//        mapFromGlobalPos = focusWidget->mapFromGlobal(globalPos);
+//    }
+//    qDebug() << "       globalPos        =" << globalPos;
+//    qDebug() << "       curPos           =" << curPos;
+//    qDebug() << "       mapToGlobalPos   =" << mapToGlobalPos;
+//    qDebug() << "       mapFromGlobalPos =" << mapFromGlobalPos;
+//    qDebug() << "    m_pMenu->exec(" << mapFromGlobalPos <<")";
+//    m_pMenu->exec(mapFromGlobalPos);
+    m_pMenu->popup(globalPos);
 }
 
 void CrateFeature::slotCreateCrate() {

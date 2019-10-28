@@ -62,8 +62,9 @@ class LibraryFeature : public QObject {
     }
 
     // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrary* /* libraryWidget */,
+    virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
+    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {}
     virtual TreeItemModel* getChildModel() = 0;
 
     virtual bool hasTrackTable() {

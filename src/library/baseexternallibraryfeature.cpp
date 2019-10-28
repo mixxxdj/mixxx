@@ -1,4 +1,5 @@
 #include "library/baseexternallibraryfeature.h"
+#include "widget/wlibrarysidebar.h"
 
 #include "library/basesqltablemodel.h"
 #include <QApplication>
@@ -38,24 +39,21 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 }
 
-void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index,
+        WLibrarySidebar* pSidebarWidget) {
+    qDebug() << "   BaseExternalLibraryFeature::onRightClickChild";
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    if (m_pMenu == nullptr) {
-       m_pMenu = new QMenu();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
     }
-    // Parent the right-click menu the focussed widget in order to make it
-    // stylable with skin stylesheets rather than ugly OS styling.
-    auto focusWidget = QApplication::focusWidget();
-    m_pMenu->setParent(focusWidget);
-    m_pMenu->clear();
-
+    m_pMenu = new QMenu(pSidebarWidget);
     m_pMenu->addAction(m_pAddToAutoDJAction);
     m_pMenu->addAction(m_pAddToAutoDJTopAction);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pImportAsMixxxPlaylistAction);
-    m_pMenu->exec(globalPos);
+    m_pMenu->popup(globalPos);
 }
 
 void BaseExternalLibraryFeature::slotAddToAutoDJ() {

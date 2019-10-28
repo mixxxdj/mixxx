@@ -18,7 +18,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
 
   public slots:
     virtual void onRightClick(const QPoint& globalPos);
-    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index,
+            WLibrarySidebar* pSidebarWidget);
 
   protected:
     // Must be implemented by external Libraries copied to Mixxx DB

@@ -38,6 +38,8 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     void activate();
     void activateChild(const QModelIndex& index);
     void onTrackCollectionLoaded();
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
@@ -63,6 +65,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;
+    WLibrarySidebar *m_pSidebarWidget;
     QIcon m_icon;
 };
 

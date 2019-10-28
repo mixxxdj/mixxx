@@ -37,6 +37,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void onTrackCollectionLoaded();
 
   private:
@@ -72,6 +73,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QString m_mixxxItunesRoot;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
+    WLibrarySidebar *m_pSidebarWidget;
     QIcon m_icon;
     QMenu *m_pMenu;
 };

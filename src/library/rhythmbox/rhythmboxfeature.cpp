@@ -9,11 +9,13 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
+#include "widget/wlibrarysidebar.h"
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
+          m_pSidebarWidget(nullptr),
           m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
@@ -133,6 +135,17 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
     emit(enableCoverArtDisplay(false));
+}
+
+void RhythmboxFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+    qDebug() << "   RhythmboxFeature::bindSidebarWidget(" << pSidebarWidget << ")";
+}
+
+void RhythmboxFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    qDebug() << "   RhythmboxFeature::onRightClickChild(" << globalPos << "," << index << "," << m_pSidebarWidget << ")";
+    BaseExternalLibraryFeature::onRightClickChild(globalPos, index, m_pSidebarWidget);
 }
 
 TreeItem* RhythmboxFeature::importMusicCollection() {

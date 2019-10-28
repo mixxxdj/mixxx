@@ -65,9 +65,9 @@ QIcon SetlogFeature::getIcon() {
     return m_icon;
 }
 
-void SetlogFeature::bindWidget(WLibrary* libraryWidget,
+void SetlogFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindWidget(libraryWidget,
+    BasePlaylistFeature::bindLibraryWidget(libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::currentPlayingTrackChanged,
@@ -78,9 +78,8 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
 }
 
 void SetlogFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    m_pMenu = new QMenu(pSidebarWidget);
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -95,7 +94,10 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    m_pMenu->clear();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
 
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;

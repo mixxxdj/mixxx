@@ -43,7 +43,7 @@ class AutoDJFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
@@ -93,6 +93,7 @@ class AutoDJFeature : public LibraryFeature {
     QSignalMapper m_crateMapper;
 
     QIcon m_icon;
+    WLibrarySidebar *m_pSidebarWidget;
     QMenu *m_pMenu;
     QMenu *m_pCrateMenu;
 

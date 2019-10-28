@@ -8,6 +8,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/banshee/bansheeplaylistmodel.h"
+#include "widget/wlibrarysidebar.h"
 
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
@@ -19,6 +20,7 @@ BansheeFeature::BansheeFeature(QObject* parent,
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
+          m_pSidebarWidget(nullptr),
           m_icon(":/images/library/ic_library_banshee.svg") {
     Q_UNUSED(pConfig);
     m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
@@ -59,6 +61,12 @@ QVariant BansheeFeature::title() {
 
 QIcon BansheeFeature::getIcon() {
     return m_icon;
+}
+
+void BansheeFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+    qDebug() << "   BansheeFeature::bindSidebarWidget(" << pSidebarWidget << ")";
 }
 
 void BansheeFeature::activate() {
@@ -125,6 +133,11 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
         emit(showTrackModel(m_pBansheePlaylistModel));
         emit(enableCoverArtDisplay(false));
     }
+}
+
+void BansheeFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    qDebug() << "   BansheeFeature::onRightClickChild(" << globalPos << "," << index << "," << m_pSidebarWidget << ")";
+    BaseExternalLibraryFeature::onRightClickChild(globalPos, index, m_pSidebarWidget);
 }
 
 TreeItemModel* BansheeFeature::getChildModel() {

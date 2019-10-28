@@ -50,6 +50,7 @@ class PlaylistFeature : public BasePlaylistFeature {
   private:
     QString getRootViewHtml() const;
     QIcon m_icon;
+    WLibrarySidebar *m_pSidebarWidget;
     QMenu *m_pMenu;
 };
 

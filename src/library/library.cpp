@@ -295,17 +295,25 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &Library::setTrackTableFont,
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
-    m_pAutoDJFeature->bindSidebarWidget(pSidebarWidget);
-    m_pPlaylistFeature->bindSidebarWidget(pSidebarWidget);
-    m_pCrateFeature->bindSidebarWidget(pSidebarWidget);
-    m_pBrowseFeature->bindSidebarWidget(pSidebarWidget);
-    m_pSetlogFeature->bindSidebarWidget(pSidebarWidget);
-    if (ITunesFeature::isSupported() && m_pITunesFeature) {
-        m_pITunesFeature->bindSidebarWidget(pSidebarWidget);
+//    m_pAutoDJFeature->bindSidebarWidget(pSidebarWidget);
+//    m_pPlaylistFeature->bindSidebarWidget(pSidebarWidget);
+//    m_pCrateFeature->bindSidebarWidget(pSidebarWidget);
+//    m_pBrowseFeature->bindSidebarWidget(pSidebarWidget);
+//    m_pSetlogFeature->bindSidebarWidget(pSidebarWidget);
+//    if (ITunesFeature::isSupported() && m_pITunesFeature) {
+//        m_pITunesFeature->bindSidebarWidget(pSidebarWidget);
+//    }
+
+    QListIterator<LibraryFeature*> feature_it(m_features);
+    while(feature_it.hasNext()) {
+        LibraryFeature* feature = feature_it.next();
+        qDebug() << "   ";
+        qDebug() << "   " << feature << "->bindSidebarWidget(" << pSidebarWidget << ");";
+        feature->bindSidebarWidget(pSidebarWidget);
     }
 }
 
-void Library::bindWidget(WLibrary* pLibraryWidget,
+void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(
@@ -352,12 +360,14 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
+    m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pLibraryWidget, pKeyboard);
+        qDebug() << "   ";
+        qDebug() << "   " << feature << "->bindLibraryWidget(" << pLibraryWidget << ");";
+        feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were

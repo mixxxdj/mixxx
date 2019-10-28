@@ -125,7 +125,7 @@ WWidgetGroup {
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   margin: 0px;
-  padding: 0px 2px 0px 0px;
+  padding: 0px;
   }
   #SkinSettingsClose {
     border-radius:2px;
@@ -143,7 +143,7 @@ WWidgetGroup {
 
 #CategoryLabel,
 #SkinSettingsCategoryButton {
-  font-size: 16px/16px;
+  font-size: 16px/20px;
   text-align: left;
   color: #eeeeee;
   background-color: none;
@@ -215,13 +215,15 @@ WWidgetGroup {
     padding-bottom: 2px;
   }
   #SubmenuHint {
-    color: #666666;
-    background-color: #333;
+    color: #777;
+    margin-bottom: 2px;
   }
 #CoverSpinnyHint {
-  font-size: 13px/13px;
+  font-size: 14px;
   font-weight: bold;
   color: #f56200;
+  background-color: rgba(30,30,30,127);
+  margin: 2px 0px;
 }
 
 
@@ -2114,8 +2116,9 @@ QMenuBar,
   }
   #SkinSettings {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    margin: 1px;
+    margin: 1px 0px 1px 1px;
     padding-left: 5px;
+    border-right: 0px;
   }
   QMenu::separator {
     height: 0px;

@@ -36,7 +36,8 @@ BrowseFeature::BrowseFeature(Library* parent,
           m_pTrackCollection(pTrackCollection),
           m_pLastRightClickedItem(NULL),
           m_pSidebarWidget(nullptr),
-          m_icon(":/images/library/ic_library_computer.svg") {
+          m_icon(":/images/library/ic_library_computer.svg"),
+          m_pMenu(nullptr) {
     connect(this,
             &BrowseFeature::requestAddDir,
             parent,
@@ -221,7 +222,7 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindWidget(WLibrary* libraryWidget,
+void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -230,9 +231,8 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 }
 
 void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    m_pMenu = new QMenu(pSidebarWidget);
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void BrowseFeature::activate() {
@@ -271,7 +271,10 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    m_pMenu->clear();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;

@@ -39,7 +39,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    void bindWidget(WLibrary* pLibrary,
+    void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard);
 
     bool hasTrackTable() override {

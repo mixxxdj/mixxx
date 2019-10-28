@@ -15,6 +15,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
+#include "widget/wlibrarysidebar.h"
 #include "util/sandbox.h"
 
 namespace {
@@ -65,6 +66,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
+          m_pSidebarWidget(nullptr),
           m_icon(":/images/library/ic_library_traktor.svg") {
     QString tableName = "traktor_library";
     QString idColumn = "id";
@@ -179,6 +181,15 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         emit(showTrackModel(m_pTraktorPlaylistModel));
         emit(enableCoverArtDisplay(false));
     }
+}
+
+void TraktorFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
+void TraktorFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    BaseExternalLibraryFeature::onRightClickChild(globalPos, index, m_pSidebarWidget);
 }
 
 TreeItem* TraktorFeature::importLibrary(QString file) {

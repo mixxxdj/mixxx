@@ -42,9 +42,9 @@ class CrateFeature : public LibraryFeature {
                          QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
-    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel() override;
 
@@ -124,7 +124,7 @@ class CrateFeature : public LibraryFeature {
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
-    WLibrarySidebar *m_pSideBarWidget;
+    WLibrarySidebar *m_pSidebarWidget;
     QMenu *m_pMenu;
 };
 

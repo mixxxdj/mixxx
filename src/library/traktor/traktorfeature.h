@@ -52,6 +52,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void activateChild(const QModelIndex& index);
     void refreshLibraryModels();
     void onTrackCollectionLoaded();
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
@@ -80,6 +82,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
+    WLibrarySidebar *m_pSidebarWidget;
     QIcon m_icon;
 };
 

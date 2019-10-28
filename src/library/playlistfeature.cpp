@@ -37,6 +37,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
                               "PLAYLISTHOME"),
           m_icon(":/images/library/ic_library_playlist.svg"),
+          m_pSidebarWidget(nullptr),
           m_pMenu(nullptr) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
@@ -59,15 +60,17 @@ QIcon PlaylistFeature::getIcon() {
 }
 
 void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    m_pMenu = new QMenu(pSidebarWidget);
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 
-    m_pMenu->clear();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
     m_pMenu->addAction(m_pCreatePlaylistAction);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pCreateImportPlaylistAction);
@@ -85,7 +88,10 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-    m_pMenu->clear();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
     m_pMenu->addAction(m_pCreatePlaylistAction);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pAddToAutoDJAction);

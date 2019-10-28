@@ -59,6 +59,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJView(NULL),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig),
           m_icon(":/images/library/ic_library_autodj.svg"),
+          m_pSidebarWidget(nullptr),
           m_pMenu(nullptr),
           m_pCrateMenu(nullptr) {
 
@@ -121,7 +122,7 @@ QIcon AutoDJFeature::getIcon() {
     return m_icon;
 }
 
-void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
+void AutoDJFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
@@ -156,10 +157,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
 }
 
 void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    m_pMenu = new QMenu(pSidebarWidget);
-    m_pCrateMenu = new QMenu(pSidebarWidget);
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -298,11 +297,17 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
-    m_pMenu->clear();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
     if (m_pCratesTreeItem == pClickedItem) {
         // The "Crates" parent item was right-clicked.
         // Bring up the context menu.
-        m_pCrateMenu->clear();
+        if (m_pCrateMenu != nullptr) {
+            delete m_pCrateMenu;
+        }
+        m_pCrateMenu = new QMenu(m_pSidebarWidget);
         m_pCrateMenu->setTitle(tr("Add Crate as Track Source"));
         CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;

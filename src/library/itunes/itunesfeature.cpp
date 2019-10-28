@@ -62,6 +62,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
+          m_pSidebarWidget(nullptr),
           m_icon(":/images/library/ic_library_itunes.svg"),
           m_pMenu(nullptr) {
     QString tableName = "itunes_library";
@@ -148,9 +149,8 @@ QIcon ITunesFeature::getIcon() {
 }
 
 void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // Create the right-click menu and parent it to the sidebar widget in
-    // order to make it stylable with skin stylesheet rather than ugly OS styling.
-    m_pMenu = new QMenu(pSidebarWidget);
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void ITunesFeature::activate() {
@@ -233,7 +233,10 @@ TreeItemModel* ITunesFeature::getChildModel() {
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    m_pMenu->clear();
+    if (m_pMenu != nullptr) {
+        delete m_pMenu;
+    }
+    m_pMenu = new QMenu(m_pSidebarWidget);
     QAction useDefault(tr("Use Default Library"), m_pMenu);
     QAction chooseNew(tr("Choose Library..."), m_pMenu);
     m_pMenu->addAction(&useDefault);
@@ -262,6 +265,11 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         settings.setValue(ITDB_PATH_KEY, dbfile);
         activate(true); // clears tables before parsing
     }
+}
+
+void ITunesFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    qDebug() << "   ITunesFeature::onRightClickChild";
+    BaseExternalLibraryFeature::onRightClickChild(globalPos, index, m_pSidebarWidget);
 }
 
 QString ITunesFeature::getiTunesMusicPath() {

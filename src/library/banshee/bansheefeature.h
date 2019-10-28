@@ -27,6 +27,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     virtual QVariant title();
     virtual QIcon getIcon();
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
     virtual TreeItemModel* getChildModel();
 
@@ -53,6 +55,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFuture<TreeItem*> m_future;
     QString m_title;
     bool m_cancelImport;
+    WLibrarySidebar *m_pSidebarWidget;
     QIcon m_icon;
 
     static QString m_databaseFile;

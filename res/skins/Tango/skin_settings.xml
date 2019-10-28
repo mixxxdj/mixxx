@@ -14,13 +14,13 @@ Description:
   <WidgetGroup>
     <ObjectName>SkinSettingsContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>205f,1me</Size>
+    <Size>200f,1me</Size>
     <Children>
       <WidgetGroup><Size>5f,1me</Size></WidgetGroup>
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
-        <Size>200f,1me</Size>
+        <Size>195f,1me</Size>
         <Children>
 
           <WidgetGroup>
@@ -31,11 +31,8 @@ Description:
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>
                 <Text>Decks</Text>
-                <Size>100min,21f</Size>
+                <Size>160me,21f</Size>
               </Label>
-
-              <!-- push Close button to far right -->
-              <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
               <PushButton>
                 <TooltipId>skin_settings</TooltipId>
@@ -402,23 +399,19 @@ Description:
               <WidgetGroup><!-- hint: enforced small cover/spinny with mixer -->
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>horizontal</Layout>
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>182,20</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>182f,17f</Size>
                 <Children>
-                  <WidgetGroup><Size>55f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>48f,1min</Size></WidgetGroup>
                   <Label>
                     <ObjectName>CoverSpinnyHint</ObjectName>
-                    <MinimumSize>8,13</MinimumSize>
-                    <MaximumSize>8,20</MaximumSize>
-                    <SizePolicy>min,me</SizePolicy>
+                    <Size>19f,17f</Size>
                     <Text> ° </Text>
                   </Label>
-                  <WidgetGroup><Size>40f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>22f,1min</Size></WidgetGroup>
                   <Label>
                     <ObjectName>SubmenuHint</ObjectName>
-                    <MinimumSize>100,13</MinimumSize>
-                    <MaximumSize>-1,20</MaximumSize>
+                    <MinimumSize>100,17</MinimumSize>
+                    <MaximumSize>-1,17</MaximumSize>
                     <SizePolicy>min,me</SizePolicy>
                     <Text>(automatic)</Text>
                   </Label>
@@ -430,9 +423,7 @@ Description:
               </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
 
               <WidgetGroup><!-- small/BIG selector, hidden mixer -->
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>182,20</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>182,17</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>19f,1min</Size></WidgetGroup>
@@ -470,43 +461,42 @@ Description:
 
           <Label><!-- Mixer -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>100min,21f</Size>
+            <Size>182f,21f</Size>
             <Text>Mixer</Text>
           </Label>
           <Template src="skin:../Tango/skin_settings_button_2state.xml">
             <SetVariable name="text">Master/Headphone Mixer</SetVariable>
-            <SetVariable name="width">110</SetVariable>
+            <SetVariable name="width">105</SetVariable>
             <SetVariable name="Setting">[Tango],master_mixer</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Channel mixer toggle + hint for big cover -->
             <Layout>horizontal</Layout>
             <MinimumSize>182,13</MinimumSize>
-            <MaximumSize>182,20</MaximumSize>
+            <MaximumSize>182,17</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Channel Mixer</SetVariable>
-                <SetVariable name="width">110</SetVariable>
+                <SetVariable name="width">105</SetVariable>
                 <SetVariable name="Setting">[Master],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
                 <Layout>horizontal</Layout>
-                <MinimumSize>15,13</MinimumSize>
-                <MaximumSize>15,20</MaximumSize>
+                <MinimumSize>8,13</MinimumSize>
+                <MaximumSize>8,17</MaximumSize>
                 <SizePolicy>f,me</SizePolicy>
                 <Children>
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
-                    <MinimumSize>15,13</MinimumSize>
-                    <MaximumSize>15,20</MaximumSize>
+                    <MinimumSize>8,13</MinimumSize>
+                    <MaximumSize>8,17</MaximumSize>
                     <SizePolicy>f,min</SizePolicy>
                     <Children>
-                      <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                       <Label>
                         <ObjectName>CoverSpinnyHint</ObjectName>
-                        <Size>10f,13min</Size>
+                        <Size>8f,13min</Size>
                         <Text>!</Text>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
@@ -640,7 +630,7 @@ Description:
           <!-- Effects -->
           <Label>
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>182f,1f</Size>
+            <Size>182f,3f</Size>
           </Label>
           <WidgetGroup><!-- Effect Units, 2 or 4 -->
             <Size>182f,20f</Size>
@@ -650,7 +640,7 @@ Description:
               <Template src="skin:../Tango/skin_settings_category_button_2state.xml">
                 <SetVariable name="variant">Big</SetVariable>
                 <SetVariable name="text">Effect Units</SetVariable>
-                <SetVariable name="size">120f,20f</SetVariable>
+                <SetVariable name="size">120f,18f</SetVariable>
                 <SetVariable name="Setting">[EffectRack1],show</SetVariable>
               </Template>
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -740,7 +730,7 @@ Description:
 
           <Label><!-- Misc -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>100min,3f</Size>
+            <Size>182f,3f</Size>
           </Label>
 
           <Template src="skin:../Tango/skin_settings_button_2state.xml">
@@ -806,28 +796,28 @@ Description:
               <Template src="skin:../Tango/button_1state.xml">
                 <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">31f,20f</SetVariable>
+                <SetVariable name="Size">31f,17f</SetVariable>
                 <SetVariable name="state_0_text"> Load /</SetVariable>
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
               </Template>
               <Label>
                 <ObjectName>SkinSettingsLabel</ObjectName>
-                <SizePolicy>min,me</SizePolicy>
+                <Size>11f,17f</Size>
                 <Text> / </Text>
                 <Alignment>center</Alignment>
               </Label>
               <Template src="skin:../Tango/button_1state.xml">
                 <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                <SetVariable name="Size">31f,20f</SetVariable>
+                <SetVariable name="Size">31f,17f</SetVariable>
                 <SetVariable name="state_0_text"> Save </SetVariable>
                 <SetVariable name="Align">left</SetVariable>
                 <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
               </Template>
               <Label>
                 <ObjectName>SkinSettingsLabel</ObjectName>
-                <SizePolicy>min,me</SizePolicy>
+                <Size>50min,17f</Size>
                 <Text>Sampler Bank</Text>
                 <Alignment>center</Alignment>
               </Label>
