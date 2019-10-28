@@ -95,6 +95,7 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
 #endif // __EXTRA_METADATA__
             (lhs.getReplayGain() == rhs.getReplayGain()) &&
 #if defined(__EXTRA_METADATA__)
+            (lhs.getSeratoMarkers2() == rhs.getSeratoMarkers2()) &&
             (lhs.getSubtitle() == rhs.getSubtitle()) &&
 #endif // __EXTRA_METADATA__
             (lhs.getTitle() == rhs.getTitle()) &&
@@ -138,6 +139,7 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
 #endif // __EXTRA_METADATA__
     arg.dbgReplayGain(dbg);
 #if defined(__EXTRA_METADATA__)
+    arg.dbgSeratoMarkers2(dbg);
     arg.dbgSubtitle(dbg);
 #endif // __EXTRA_METADATA__
     arg.dbgTitle(dbg);
