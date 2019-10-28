@@ -122,69 +122,77 @@ WWidgetGroup {
  #######  Skin Settings  ########################################
 ##############################################################*/
 
-#SkinSettingsContainer{
-}
-
-#SkinSettings {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px 0px 0px 0px;
-  text-align: left;
-  background-color: #333;
-}
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 2px;
+  margin: 0px;
+  padding: 0px 2px 0px 0px;
   }
   #SkinSettingsClose {
     border-radius:2px;
-    margin-bottom: 4px;
     background-color: transparent;
     image: url(skin:../Tango/buttons/btn_skinsettings_close.svg) no-repeat center top;
     }
     #SkinSettingsClose:hover {
       border-radius:2px;
-      margin-bottom: 4px;
       background-color: #0f0f0f;
       image: url(skin:../Tango/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
     }
 
-#SkinSettingsCategory {
-  padding: 2px 8px 1px 8px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    border: 1px solid #1e1e1e;
-    border-width: 0px 0px 3px 0px;
-  }
-  #CategoryLabel {
-    font-size: 16px/16px;
-    text-align: left;
-    padding: 5px 0px 0px 3px;
-    color: #eeeeee;
-    background-color: none;
-  }
+#SkinSettingsSeparator {
+}
+
+#CategoryLabel,
+#SkinSettingsCategoryButton {
+  font-size: 16px/16px;
+  text-align: left;
+  color: #eeeeee;
+  background-color: none;
+}
+#CategoryLabel {
+  padding: 2px 0px 0px 15px;
+  border-top: 1px solid #000;
+}
+#SkinSettingsCategoryButton {
+  padding: 2px 0px 0px 0px;
+}
+#SkinSettingsHeader > #CategoryLabel,
+#SkinSettingsCategoryButton {
+  border: 0px;
+  border-radius: 0px;
+}
+#SkinSettingsSubMenu {
+  padding-left: 10px;
+}
 
 #SkinSettingsButton,
 #SkinSettingsButtonMulti  {
   font-size: 12px/12px;
   }
+  #SkinSettingsButton {
+    border-radius: 0px;
+  }
   #SkinSettingsButtonMulti {
     text-align: center;
+    border-radius: 1px;
   }
-  #SkinSettingsButton:hover,
   #SkinSettingsButtonMulti:hover {
-    background-color: #0f0f0f;
+    background-color: #1e1e1e;
   }
-  #SkinSettingsButton[displayValue="0"],
   #SkinSettingsButtonMulti[displayValue="0"],
-  #SkinSettingsLabel {
-    color: #d2d2d2;
-  }
-  #SkinSettingsButton[displayValue="1"],
-  #SkinSettingsButton[displayValue="2"],
-  #SkinSettingsButtonMulti[displayValue="1"] {
-    color: #eeeeee;
-  }
-  #SkinSettingsButtonMulti[displayValue="1"] {
+  #DeckButtonVisibility[displayValue="0"] {
     background-color: #0f0f0f;
+    color: #888;
+    }
+    #SkinSettingsButtonMulti[displayValue="0"]:hover,
+    #DeckButtonVisibility[displayValue="0"]:hover,
+    #DeckButtonVisibility[displayValue="1"]:hover {
+    background-color: #000;
+      border: 1px solid #666;
+    }
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #0f0f0f;
   }
 
 #DeckIndicatorSettings {
@@ -193,20 +201,11 @@ WWidgetGroup {
 #DeckButtonVisibility {
   margin-right: 1px;
   font-weight: bold;
+  border-radius: 1px;
   }
-  #DeckButtonVisibility[displayValue="0"] {
-    color: #888;
-  }
-  #DeckButtonVisibility[displayValue="0"]:hover,
-  #DeckButtonVisibility[displayValue="1"] {
-    background-color: #151515;
-    color: #d2d2d2;
-  }
-  #DeckButtonVisibility[displayValue="1"]:hover {
-    border: 1px solid #d2d2d2;
-  }
+
 #SubmenuCover {
-  background-color: rgba(51, 51, 51, 127);
+  background-color: rgba(30,30,30,127);
 }
 #SkinSettingsLabel,
 #SubmenuHint {
@@ -2094,13 +2093,29 @@ WTrackProperty#SamplerTitle_mini {
  ######  Misc  ##################################################
 ##############################################################*/
 
+QMenuBar,
+QMenuBar::item {
+  color: red;
+  spacing: 50px;
+}
+QMenuBar::item:pressed {
+  margin: 0px 40px;
+}
+
 QToolTip,
-QMenu {
+QMenu,
+QMenuBar,
+#SkinSettings {
   background-color: #1e1e1e;
   color: #ccc;
   padding: 2px;
   border: 1px solid #888;
   border-radius: 0px;
+  }
+  #SkinSettings {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    margin: 1px;
+    padding-left: 5px;
   }
   QMenu::separator {
     height: 0px;
@@ -2109,7 +2124,10 @@ QMenu {
   }
   /* actually this only needs to be set for QCheckBox */
   QMenu::item,
-  QMenu QCheckBox {
+  QMenu QCheckBox,
+  #SkinSettingsLabel,
+  #SkinSettingsButton,
+  #SkinSettingsButtonMulti {
     color: #ccc;
     border: none;
     background: none;
@@ -2124,7 +2142,9 @@ QMenu {
   QMenu::item:selected,
   QMenu QCheckBox:selected,
   QMenu QCheckBox:focus,  /* selected by keyboard */
-  QMenu QCheckBox:hover  /* mouse hover */ {
+  QMenu QCheckBox:hover,  /* mouse hover */
+  #SkinSettingsButton:hover,
+  #SkinSettingsCategoryButton:hover {
     background-color: #555;
     color: white;
     /* remove OS focus indicator */
