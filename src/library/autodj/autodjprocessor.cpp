@@ -647,6 +647,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         if (m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 // cache this before calculating the new transition in otherDeck.play();
+                // thisDeck.fadeBeginPos is equal thisDeck.fadeEndPos in case of zero or
+                // negative transition time
                 bool hasFadeTransition = thisDeck.fadeBeginPos < thisDeck.fadeEndPos;
                 if (!otherDeckPlaying) {
                     // Re-cue the track if the user has seeked it to the very end
