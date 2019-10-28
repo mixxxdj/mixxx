@@ -37,21 +37,11 @@ WOverview QPushButton {
   font-weight: normal;
 }
 
-QToolTip {
-  font-family: Ubuntu;
-  text-transform: none;
-  font-weight: normal;
-  background-color: #0f0f0f;
-  padding: 3px;
-  border: 1px solid #333;
-  border-radius: 2px;
-}
-
 WPushButton,
 QPushButton,
 WLibrary QLabel,
 WSearchLineEdit {
-  font-size: 11px/12px;
+  font-size: 12px/12px;
 }
 
 /************** 3D borders and margin   **************
@@ -230,10 +220,7 @@ WEffectSelector {
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
 #FxAssignButtonDeck[displayValue="0"],
-QHeaderView,
-QHeaderView::section,
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
+QHeaderView, QHeaderView::section {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #222,
     stop:1 #111);
@@ -452,29 +439,31 @@ WOverview {
   color: #0bd9d1;
 }
 
-QLabel, QRadioButton,
-WSearchLineEdit,
-#LibraryBPMSpinBox,
-#LibraryBPMButton::item,
-QTableView, QTextBrowser, QTreeView {
-  color: #eece33;
-  selection-color: #eece33;
-}
-
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckSmall1 WLabel, #DeckSmall2 WLabel,
 #PreviewLabel, #PreviewDeckText, #PreviewTitle,
 #FxUnitLabel, #MicAuxSubTitle,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
-QToolTip,
 WStarRating,
 WBeatSpinBox, #DlgAutoDJ QSpinBox,
 QTableView::indicator,
-WEffectSelector, WEffectSelector QAbstractItemView
-#CategoryLabel, #SkinSettingsLabelButton,
-WSearchLineEdit:focus,
-#LatencyLabel, WTime {
+WLabel#CategoryLabel, #SkinSettingsLabelButton,
+#LatencyLabel, WTime,
+QLabel, QRadioButton,
+#LibraryBPMSpinBox,
+#LibraryBPMButton::item,
+QTableView, QTextBrowser, QTreeView,
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox,
+WBeatSpinBox,
+#spinBoxTransition,
+#SkinSettings,
+WSearchLineEdit,
+WEffectSelector, WEffectSelector QAbstractItemView {
   color: #f0bb2b;
+  selection-color: #f0bb2b;
 }
 #PreviewLabel,
 #FxUnitLabel,
@@ -517,7 +506,7 @@ WTime {
       image: url(skin:/buttons/rec_dot.svg) no-repeat center center;
     }
     #RecDuration {
-      font-size: 10px/12px;
+      font-size: 12px/12px;
       color: #ddd;
     }
     #RecFeedback[displayValue="0"] {
@@ -1112,57 +1101,6 @@ WBeatSpinBox,
 
 
 
-/********************** SkinSettings **********************/
-#SkinSettingsContainer {
-}
-
-#SkinSettings {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  text-align: left;
-  padding: 2px 0px 2px 0px;
-  border: 1px solid #585858;
-  border-width: 0px 0px 1px 1px;
-
-}
-#SkinSettingsHeader {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 2px;
-  }
-  #SkinSettingsClose {
-    margin-bottom: 1px;
-    background-color: transparent;
-    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
-  }
-
-#SkinSettingsCategory {
-  padding: 3px 8px 10px 9px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #1e1e1e;
-  border-width: 0px 0px 3px 0px;
-  margin-bottom: 3px;
-  }
-  #CategoryLabel {
-    font-size: 17px/17px;
-    text-align: left;
-    padding: 3px 0px 2px 3px;
-  }
-
-#SkinSettingsButton {
-  padding-top: 1px;
-  font-size: 12px/14px;
-  color: #d2d2d2;
-}
-
-#SkinSettingsLabelButton {
-  font-size: 17px/21px;
-  text-align: left;
-  padding: 0px 0px 0px 3px;
-}
-
-#SubmenuCover {
-  background-color: rgba(15, 15, 15, 180);
-}
-/********************** SkinSettings **********************/
 
 
 
@@ -1611,7 +1549,10 @@ QTableView:focus, QTreeView:focus {
 
 /* selected items in Tree and Tracks table */
 QTreeView::item:selected,
-QTableView::item:selected {
+QTableView::item:selected,
+/* this doesn't style BPM value in selected row */
+QTableView::item:selected #LibraryBPMSpinBox::item:selected,
+QTableView::item:selected > #LibraryBPMSpinBox::item:selected {
   color: #fff;
   background-color: #5e4507;
 }
@@ -1630,7 +1571,7 @@ QTableView::indicator {/*
   margin: 0px;
   padding: 0px;
   /* Play count next to checkbox
-  color: #f0bb2b; */
+  color: #xxx; */
   }
   QTableView::indicator:hover {
     border: 1px solid #888;
@@ -1674,12 +1615,6 @@ QTableView::indicator {/*
   margin: 0px;
   padding: 0px;
   }
-  /* BPM value in selected row. Should match 'selection-color' &
-  'selection-background-color' of QTableView */
-  #LibraryBPMButton::item:selected {
-    color: #ededed;
-    background-color: #5e4507;
-    }
 #LibraryBPMSpinBox {
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
@@ -1750,6 +1685,11 @@ QHeaderView {
     padding-left: 3px;
     padding-right: 3px;
     border-right: 1px solid #000;
+    /* gradient colors should match those of QHeaderView gradient,
+      with a litte transparency added to not cut off the header label */ 
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 rgba(34,34,34,190),
+      stop:1 rgba(17,17,17,190));
     }
     QHeaderView::up-arrow {
       image: url(skin:/style/btn_lib_sort_up.png);
@@ -2040,32 +1980,37 @@ QTreeView {
 }
 
 
+
 WEffectSelector QAbstractItemView,
 QToolTip,
-QMenu {
+QMenu,
+#SkinSettings {
   padding: 3px;
   border: 1px solid #888;
   border-radius: 2px;
 }
 /* common colors for WEffectSelector, QMenu, QToolTip */
-WEffectSelector,
-WEffectSelector QAbstractItemView,
 QToolTip,
 QMenu,
 QMenu::item,
 QMenu QCheckBox,
 WBeatSpinBox,
-#spinBoxTransition {
-  color: #cfb32c;
+#spinBoxTransition,
+#SkinSettings,
+WSearchLineEdit,
+WEffectSelector,
+WEffectSelector QAbstractItemView {
   background-color: #0f0f0f;
-  font-size: 12px/13px;
+  font-size: 13px/13px;
 }
   /* hovered items */
   WEffectSelector::item:selected,
   QMenu::item:selected,
   QMenu QCheckBox:selected,
   QMenu QCheckBox:focus,  /* selected by keyboard */
-  QMenu QCheckBox:hover  /* mouse hover */ {
+  QMenu QCheckBox:hover, /* mouse hover */
+  #SkinSettingsButton:hover,
+  #SkinSettingsLabelButton:hover {
     background-color: #5E4507;
     color: white;
     /* remove OS focus indicator */
@@ -2080,10 +2025,6 @@ WBeatSpinBox,
 WEffectSelector {
   font-weight: bold;
   text-transform: uppercase;
-  margin: 0px;
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin-top: 0px;
-  margin-bottom: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
   padding: 0px 0px 0px 5px;
@@ -2130,18 +2071,21 @@ WEffectSelector {
     outline: none;
     border: 0px solid transparent;
     }
-  QMenu::separator {
-    height: 0px;
+  QMenu::separator,
+  #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #222;
+  }
+  QMenu::separator{
+    height: 0px;
     margin: 4px;
+  }
+  #SkinSettingsSeparator {
+    margin: 0px 4px 4px 4px;
   }
   QMenu::item {
     padding: 5px 13px 5px 20px;
   }
-  QMenu::item:!enabled {
-    color: #5e4507;
-    }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
   }
@@ -2157,14 +2101,14 @@ WEffectSelector {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #0f0f0f;
     }
-  /* disabled menu checkbox */
+  /* disabled menu item and checkbox */
+  QMenu QCheckBox:!enabled,
+  QMenu::item:!enabled {
+    color: #494949;
+    }
   QMenu QCheckBox::indicator:!enabled {
     border: 1px solid #222;
     background-color: #222;
-    color: #5e4507;
-    }
-  QMenu QCheckBox:!enabled {
-    color: #5e4507;
     }
   QMenu::right-arrow {
     width: 10px;
@@ -2185,3 +2129,58 @@ WEffectSelector {
     QHeaderView QMenu::indicator:checked {
       image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
+/********************** SkinSettings **********************/
+#SkinSettingsContainer {
+}
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  text-align: left;
+  padding: 2px 0px 2px 2px;
+  margin-top: 1px;
+  border-width: 1px 0px 1px 1px;
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0px;
+  
+
+}
+#SkinSettingsHeader {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 2px;
+  }
+  #SkinSettingsClose {
+    margin-bottom: 1px;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
+  }
+
+#SkinSettingsCategory {
+  padding: 1px 8px 4px 3px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  margin-bottom: 3px;
+  }
+  #CategoryLabel {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 3px 0px 2px 3px;
+  }
+
+#SkinSettingsButton {
+  font-size: 12px/12px;
+  padding: 0px;
+  color: #ccc;
+}
+
+#SkinSettingsLabelButton {
+  font-size: 17px;
+  text-align: left;
+}
+
+#SamplerLoadSaveBox {
+  padding-left: 16px;
+}
+
+#SubmenuCover {
+  background-color: rgba(15, 15, 15, 180);
+}
+/********************** SkinSettings **********************/
