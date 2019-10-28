@@ -622,7 +622,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     if (m_eState == ADJ_IDLE) {
-        if (!thisDeckPlaying) {
+        if (!thisDeckPlaying && thisPlayPosition < 1) {
             // this is a cueing seek, recalculate the transition, from the
             // new position.
             // This can be our own seek to startPos or a random seek by a user.
@@ -630,6 +630,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // If using the full track mode with a transition time of 0,
             // thisDeckPlaying will be false but the transition should not be
             // recalculated here.
+            // Don't adjust transition when reaching the end. In this case it is
+            // always stopped.
             calculateTransition(&otherDeck, &thisDeck, false);
         } else if (thisDeck.isRepeat()) {
             // repeat pauses auto DJ
@@ -644,6 +646,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     if (thisPlayPosition >= thisDeck.fadeBeginPos && thisDeck.isFromDeck) {
         if (m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
+                // cache this before calculating the new transition in otherDeck.play();
+                bool hasFadeTransition = thisDeck.fadeBeginPos < thisDeck.fadeEndPos;
                 if (!otherDeckPlaying) {
                     // Re-cue the track if the user has seeked it to the very end
                     if (otherDeck.playPosition() >= otherDeck.fadeBeginPos) {
@@ -656,6 +660,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // that was "on deck" from the top of the queue.
                 removeLoadedTrackFromTopOfQueue(otherDeck);
 
+                if (!hasFadeTransition) {
+                    setCrossfader(thisDeck.isLeft() ? 1.0 : -1.0);
+                    thisDeck.stop();
+                    loadNextTrackFromQueue(thisDeck);
+                    return;
+                }
                 m_transitionProgress = 0.0;
                 // Set the state as FADING.
                 m_eState = thisDeck.isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
@@ -685,24 +695,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             m_transitionProgress = 1.0;
         } else {
             // We are in Fading state.
-
-            // The math below will not work with a transition time of 0.
-            if (thisDeck.fadeBeginPos == thisDeck.fadeEndPos) {
-                setCrossfader(crossfaderTarget);
-                m_transitionProgress = 1.0;
-                // Usually code above will take care of these steps when the
-                // playposition updates again, however this does not occur when
-                // using the Full Track mode with a fade time of 0 because the
-                // toDeck stops.
-                if (thisPlayPosition >= 1) {
-                    otherDeck.play();
-                    loadNextTrackFromQueue(thisDeck);
-                    m_eState = ADJ_IDLE;
-                    emitAutoDJStateChanged(m_eState);
-                }
-                return;
-            }
-
             // Calculate the current transitionProgress, the place between begin
             // and end position and the step we have taken since the last call
             double transitionProgress = (thisPlayPosition - thisDeck.fadeBeginPos) /
