@@ -948,31 +948,33 @@ double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
 double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
-        return 0;
+        return 0.0;
     }
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
     if (pFromTrackAudibleSound) {
-        return samplePositionToSeconds(pFromTrackAudibleSound->getPosition(), pDeck);
-    } else {
-        return 0;
+        double firstSound = pFromTrackAudibleSound->getPosition();
+        if (firstSound > 0.0) {
+            return samplePositionToSeconds(firstSound, pDeck);
+        }
     }
+    return 0.0;
 }
 
 double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
-        return 0;
+        return 0.0;
     }
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
     if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        return samplePositionToSeconds(
-                pFromTrackAudibleSound->getPosition() + pFromTrackAudibleSound->getLength(),
-                pDeck);
-    } else {
-        return pDeck->duration();
+        double lastSound = pFromTrackAudibleSound->getEndPosition();
+        if (lastSound > 0) {
+            return samplePositionToSeconds(lastSound, pDeck);
+        }
     }
+    return pDeck->duration();
 }
 
 double AutoDJProcessor::getMainCuePosition(DeckAttributes* pDeck) {
@@ -983,10 +985,12 @@ double AutoDJProcessor::getMainCuePosition(DeckAttributes* pDeck) {
 
     CuePointer pMainCue = pTrack->findCueByType(Cue::Type::MainCue);
     if (pMainCue) {
-        return samplePositionToSeconds(pMainCue->getPosition(), pDeck);
-    } else {
-        return 0;
+        double mainCue = pMainCue->getPosition();
+        if (mainCue > 0) {
+            return samplePositionToSeconds(mainCue, pDeck);
+        }
     }
+    return 0.0;
 }
 
 
