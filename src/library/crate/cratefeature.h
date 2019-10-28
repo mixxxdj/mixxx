@@ -124,6 +124,7 @@ class CrateFeature : public LibraryFeature {
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
+    WLibrarySidebar *m_pSideBarWidget;
     QMenu *m_pMenu;
 };
 

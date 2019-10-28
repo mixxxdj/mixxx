@@ -5,6 +5,8 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QDesktopServices>
+#include <QPoint>
+#include <QCursor>
 
 #include <algorithm>
 #include <vector>
@@ -286,6 +288,8 @@ void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // Create the right-click menu and parent it to the sidebar widget in
     // order to make it stylable with skin stylesheet rather than ugly OS styling.
 //    m_pMenu = new QMenu(pSidebarWidget);
+    // just store the sidebar widget pointer for later use in onRightClickChild
+    m_pSideBarWidget = pSidebarWidget;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -342,6 +346,12 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
+    if (m_pMenu == nullptr) {
+       m_pMenu = new QMenu();
+    }
+    if (m_pSideBarWidget) {
+        m_pMenu->setParent(m_pSideBarWidget);
+    }
     m_pMenu->clear();
     m_pMenu->addAction(m_pCreateCrateAction.get());
     m_pMenu->addSeparator();
@@ -350,6 +360,7 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    qDebug() << "    onRightClickChild(" << globalPos << ", " << index;
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     CrateId crateId(crateIdFromIndex(index));
@@ -372,10 +383,17 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     if (m_pMenu == nullptr) {
        m_pMenu = new QMenu();
     }
-    // Parent the right-click menu the focussed widget in order to make it
+    if (m_pSideBarWidget) {
+        m_pMenu->setParent(m_pSideBarWidget);
+    }
+//    auto focusWidget = QApplication::focusWidget();
+    // Parent the right-click menu the sidebar widget in order to make it
     // stylable with skin stylesheets rather than ugly OS styling.
-    auto focusWidget = QApplication::focusWidget();
-    m_pMenu->setParent(focusWidget);
+    // TEST XXX
+    // Parenting the menu to the currently focused widget makes it pop up
+    // at (cursorPos inside main window + globalPos).
+    // Also it won't close like before if clicked inside or outside the menu.
+//    m_pMenu->setParent(focusWidget);
     m_pMenu->clear();
 
     m_pMenu->addAction(m_pCreateCrateAction.get());
@@ -395,7 +413,20 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_pMenu->addAction(m_pExportPlaylistAction.get());
     m_pMenu->addAction(m_pExportTrackFilesAction.get());
 
-    m_pMenu->popup(globalPos);
+    auto focusWidget = QApplication::focusWidget();
+    QPoint curPos = QCursor::pos();
+    QPoint mapToGlobalPos;
+    QPoint mapFromGlobalPos;
+    if (focusWidget) {
+        mapToGlobalPos = focusWidget->mapToGlobal(globalPos);
+        mapFromGlobalPos = focusWidget->mapFromGlobal(globalPos);
+    }
+    qDebug() << "       globalPos        =" << globalPos;
+    qDebug() << "       curPos           =" << curPos;
+    qDebug() << "       mapToGlobalPos   =" << mapToGlobalPos;
+    qDebug() << "       mapFromGlobalPos =" << mapFromGlobalPos;
+    qDebug() << "    m_pMenu->exec(" << mapFromGlobalPos <<")";
+    m_pMenu->exec(mapFromGlobalPos);
 }
 
 void CrateFeature::slotCreateCrate() {
