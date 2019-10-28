@@ -204,6 +204,7 @@ Variables:
                     <SignalColor>#bababa</SignalColor>
                     <PlayPosColor>#FF4300</PlayPosColor>
                     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                    <ShowCueTimes>false</ShowCueTimes>
                     <MarkerColor>#00FF00</MarkerColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
