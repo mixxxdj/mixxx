@@ -1,0 +1,208 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>RateContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- BPM + rate -->
+        <ObjectName>AlignCenter</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <MaximumSize>,46</MaximumSize>
+        <Children>
+          <WidgetGroup><!-- BpmContainer + Tap overlay -->
+            <ObjectName>BpmContainer</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>62f,22f</Size>
+            <Children>
+              <!-- In order to make the bpm display tappable, we use an old-style
+              widget group and put the bpm pushbutton on top of the display. -->
+              <PushButton>
+                <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                <Size>62f,22f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                </Connection>
+              </PushButton>
+              <NumberBpm>
+                <ObjectName>BpmText</ObjectName>
+                <TooltipId>visual_bpm</TooltipId>
+                <Size>62f,22f</Size>
+                <Channel><Variable name="channum" /></Channel>
+                <NumberOfDigits>2</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                </Connection>
+              </NumberBpm>
+            </Children>
+          </WidgetGroup><!-- BpmContainer + Tap overlay -->
+
+          <NumberRate>
+            <TooltipId>rate_display</TooltipId>
+            <ObjectName>RateText</ObjectName>
+            <Channel><Variable name="channum" /></Channel>
+            <NumberOfDigits>2</NumberOfDigits>
+          </NumberRate>
+        </Children>
+      </WidgetGroup><!-- BPM + rate -->
+
+      <WidgetGroup>
+        <ObjectName>RateControls</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SliderComposed>
+            <ObjectName>RateSlider</ObjectName>
+            <TooltipId>rate</TooltipId>
+            <Handle scalemode="STRETCH">skin:/knobs_sliders/knob_pitch_deck.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_pitch_deck.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+          <WidgetGroup><!-- RateButtons for different rate directions -->
+            <ObjectName>RateButtons</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+              <WidgetGroup><!-- Rate buttons for up=faster -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_perm_up_rate_perm_up_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">plus_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">plus.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_perm_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_perm_up_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">arrow_right_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">arrow_right.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">arrow_left_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">arrow_left.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_perm_down_rate_perm_down_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">minus_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">minus.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_perm_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_perm_down_small</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate_dir</ConfigKey>
+                  <Transform><IsEqual>1</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Rate buttons for up=faster -->
+
+              <WidgetGroup><!-- Rate buttons for up=slower -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_perm_down_rate_perm_down_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">minus_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">minus.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_perm_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_perm_down_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">arrow_left_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">arrow_left.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">arrow_right_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">arrow_right.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_perm_up_rate_perm_up_small</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="state_0_pressed">plus_overdown.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">plus.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_perm_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_perm_up_small</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate_dir</ConfigKey>
+                  <Transform><IsEqual>-1</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Rate buttons for up=slower -->
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_rate_control_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- RateButtons for different rate directions -->
+        </Children>
+      </WidgetGroup><!-- RateControls -->
+
+      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>SyncControls</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:button_2state_right.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+            <SetVariable name="ObjectName">SyncToggleButton</SetVariable>
+            <SetVariable name="Size">52f,26f</SetVariable>
+            <SetVariable name="state_0_pressed">sync_over.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">sync.svg</SetVariable>
+            <SetVariable name="state_1_pressed">sync_overdown.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">sync_over.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
