@@ -256,8 +256,10 @@ class AutoDJProcessor : public QObject {
             bool seekToStartPoint);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
             double fromDeckPosition, double endPoint, double startPoint);
-    DeckAttributes* getOtherDeck(const DeckAttributes* pFromDeck,
+    DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck,
                                  bool playing = false);
+    DeckAttributes* getFromDeck();
+
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
