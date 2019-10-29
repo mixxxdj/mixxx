@@ -1022,34 +1022,6 @@ WBeatSpinBox,
 
 
 
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  font: bold 10px/10px;
-  color: #666;
-  text-align: center;
-  qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: -1px;
-  text-transform: uppercase;
-}
-
-#MasterHeadphoneMixer WLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  padding: 0px;
-  background-color: #101010;
-  }
-  #FxKnobLabel,
-  #FxButtonLabel {
-    qproperty-alignment: 'AlignLeft | AlignVCenter';
-    }
-
-#FxKnobContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-
-
 /********************** PreviewDeck **********************/
 #PreviewDeck {
   qproperty-layoutAlignment: 'AlignTop';
@@ -1098,8 +1070,6 @@ WBeatSpinBox,
   margin: 0px 0px 0px 2px;
 }
 /********************** PreviewDeck **********************/
-
-
 
 
 
@@ -2131,6 +2101,9 @@ WEffectSelector {
     QHeaderView QMenu::indicator:checked {
       image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
+
+
+
 /********************** SkinSettings **********************/
 #SkinSettingsContainer {
 }
@@ -2143,8 +2116,6 @@ WEffectSelector {
   border-width: 1px 0px 1px 1px;
   border-bottom-right-radius: 0px;
   border-top-right-radius: 0px;
-  
-
 }
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';

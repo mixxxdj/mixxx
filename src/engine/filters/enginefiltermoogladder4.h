@@ -32,14 +32,14 @@ const float kPi = 3.14159265358979323846;
 
 } // anonymous namespace
 
-enum MoogMode {
-    LP,
-    HP,
-    LP_OVERS,
-    HP_OVERS,
+enum class MoogMode {
+    LowPass,
+    HighPass,
+    LowPassOversampling,
+    HighPassOversampling,
 };
 
-template<enum MoogMode MODE>
+template<MoogMode MODE>
 class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   private:
@@ -78,7 +78,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         float kfc = cutoff / sampleRate;
         float kf = kfc;
-        if (MODE == LP_OVERS || MODE == HP_OVERS) {
+        if (MODE == MoogMode::LowPassOversampling || MODE == MoogMode::HighPassOversampling) {
             // m_inputSampeRate is half the actual filter sample rate in oversampling mode
             kf = kfc / 2;
         }
@@ -93,7 +93,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Resonance correction for self oscillation ~4
         m_kacrNew = resonance * (-3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968);
 
-        if (MODE == HP_OVERS || MODE == HP) {
+        if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
             m_postGainNew = 1;
         } else {
             m_postGainNew = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
@@ -202,7 +202,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         pB->m_azt4 = az4 - at4;
 
         // Oversampling if requested
-        if (MODE == LP_OVERS || MODE == HP_OVERS) {
+        if (MODE == MoogMode::LowPassOversampling || MODE == MoogMode::HighPassOversampling) {
             // 1/2-sample delay for phase compensation
             pB->m_amf = (az4 + pB->m_az5) / 2;
             pB->m_az5 = az4;
@@ -229,7 +229,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             pB->m_amf = az4;
         }
 
-        if (MODE == HP_OVERS || MODE == HP) {
+        if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
             return (x1 - 3 * az3 + 2 * az4) * m_postGain;
         }
         return pB->m_amf * m_postGain;
@@ -258,14 +258,14 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     bool m_buffersClear;
 };
 
-class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<LP_OVERS> {
+class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<MoogMode::LowPassOversampling> {
     Q_OBJECT
   public:
     EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
 };
 
 
-class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<HP_OVERS> {
+class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<MoogMode::HighPassOversampling> {
     Q_OBJECT
   public:
     EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);

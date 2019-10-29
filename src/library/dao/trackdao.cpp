@@ -114,7 +114,7 @@ void TrackDAO::finish() {
     @return the track id for the track located at location, or -1 if the track
             is not in the database.
 */
-TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
+TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) const {
 
     TrackId trackId;
 
@@ -135,22 +135,72 @@ TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
     return trackId;
 }
 
-QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
+QList<TrackId> TrackDAO::resolveTrackIds(const QList<QFileInfo>& files,
+        ResolveTrackIdFlags flags) {
     QList<TrackId> trackIds;
     trackIds.reserve(files.size());
 
+    // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
-    {
-        QStringList pathList;
-        pathList.reserve(files.size());
-        for (const auto& file: files) {
-            pathList << file.absoluteFilePath();
-        }
-        query.prepare(QString("SELECT library.id FROM library INNER JOIN "
-                              "track_locations ON library.location = track_locations.id "
-                              "WHERE track_locations.location in (%1)").arg(
-                                      SqlStringFormatter::formatList(m_database, pathList)));
+    query.prepare(
+            "CREATE TEMP TABLE playlist_import "
+            "(location varchar (512))");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return trackIds;
     }
+
+    QStringList pathList;
+    pathList.reserve(files.size());
+    for (const auto& file: files) {
+        pathList << "(" + SqlStringFormatter::format(m_database, file.absoluteFilePath()) + ")";
+    }
+
+    // Add all the track paths temporary to this database.
+    query.prepare(
+            "INSERT INTO playlist_import (location) "
+            "VALUES " + pathList.join(','));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    if (flags & ResolveTrackIdFlag::AddMissing) {
+        // Prepare to add tracks to the database.
+        // This also begins an SQL transaction.
+        addTracksPrepare();
+
+        // Any tracks not already in the database need to be added.
+        query.prepare("SELECT location FROM playlist_import "
+                "WHERE NOT EXISTS (SELECT location FROM track_locations "
+                "WHERE playlist_import.location = track_locations.location)");
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+        const int locationColumn = query.record().indexOf("location");
+        while (query.next()) {
+            QString location = query.value(locationColumn).toString();
+            addTracksAddFile(location, true);
+        }
+
+        // Finish adding tracks to the database.
+        addTracksFinish();
+    }
+
+    query.prepare(
+            "SELECT library.id FROM playlist_import "
+            "INNER JOIN track_locations ON playlist_import.location = track_locations.location "
+            "INNER JOIN library ON library.location = track_locations.id "
+            // the order by clause enforces the native sorting which is used anyway
+            // hopefully optimized away. TODO() verify.
+            "ORDER BY playlist_import.ROWID");
+
+    // Old syntax for a shorter but less readable query. TODO() check performance gain
+    // query.prepare(
+    //    "SELECT library.id FROM playlist_import, "
+    //    "track_locations, library WHERE library.location = track_locations.id "
+    //    "AND playlist_import.location = track_locations.location");
+    //    "ORDER BY playlist_import.ROWID");
+
     if (query.exec()) {
         const int idColumn = query.record().indexOf("id");
         while (query.next()) {
@@ -161,6 +211,12 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
             qDebug() << "TrackDAO::getTrackIds(): Found only" << trackIds.size() << "of" << files.size() << "tracks in library";
         }
     } else {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Drop the temporary playlist-import table.
+    query.prepare("DROP TABLE IF EXISTS playlist_import");
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -204,6 +260,37 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     }
 
     return trackLocation;
+}
+
+QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
+    QString stmt =
+            "SELECT track_locations.location FROM track_locations "
+            "INNER JOIN library on library.location=track_locations.id "
+            "WHERE library.id IN (%1)";
+    {
+        QStringList idList;
+        idList.reserve(ids.size());
+        for (const auto& id : ids) {
+            idList.append(id.toString());
+        }
+        stmt = stmt.arg(idList.join(","));
+    }
+    FwdSqlQuery query(m_database, stmt);
+    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
+        return QStringList();
+    }
+    if (!query.execPrepared()) {
+        return QStringList();
+    }
+    QStringList locations;
+    locations.reserve(ids.size());
+    const int locationColumn = query.record().indexOf("location");
+    DEBUG_ASSERT(locationColumn >= 0);
+    while (query.next()) {
+        locations.append(query.fieldValue(locationColumn).toString());
+    }
+    DEBUG_ASSERT(locations.size() <= ids.size());
+    return locations;
 }
 
 void TrackDAO::saveTrack(Track* pTrack) {
@@ -268,18 +355,46 @@ void TrackDAO::slotTrackClean(Track* pTrack) {
 }
 
 void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
-    emit(dbTrackAdded(pTrack));
-}
-
-void TrackDAO::databaseTracksMoved(QSet<TrackId> tracksMovedSetOld, QSet<TrackId> tracksMovedSetNew) {
-    emit(tracksRemoved(tracksMovedSetNew));
-    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    emit(tracksAdded(tracksMovedSetOld));
+    DEBUG_ASSERT(pTrack);
+    emit dbTrackAdded(pTrack);
 }
 
 void TrackDAO::databaseTracksChanged(QSet<TrackId> tracksChanged) {
     // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    emit(tracksAdded(tracksChanged));
+    if (!tracksChanged.isEmpty()) {
+        emit tracksAdded(tracksChanged);
+    }
+}
+
+void TrackDAO::databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
+    QSet<TrackId> removedTrackIds;
+    QSet<TrackId> changedTrackIds;
+    for (const auto& replacedTrack : replacedTracks) {
+        const auto& removedTrackRef = replacedTrack.first;
+        const auto& changedTrackRef = replacedTrack.second;
+        DEBUG_ASSERT(removedTrackRef.getId().isValid());
+        DEBUG_ASSERT(changedTrackRef.getId().isValid());
+        // The (old)) location of the (re)moved track must be known!
+        DEBUG_ASSERT(!removedTrackRef.getLocation().isEmpty());
+        // The (new) location of the changed track might be empty.
+        DEBUG_ASSERT(removedTrackRef.getLocation() != changedTrackRef.getLocation());
+        changedTrackIds.insert(changedTrackRef.getId());
+        // The ids might be identical if the same track has been only been
+        // relocated. In this case the track has not been removed.
+        if (removedTrackRef.getId() != changedTrackRef.getId()) {
+            // The id must also not match with any other changed track!
+            DEBUG_ASSERT(!changedTrackIds.contains(removedTrackRef.getId()));
+            removedTrackIds.insert(removedTrackRef.getId());
+        }
+    }
+    DEBUG_ASSERT(removedTrackIds.size() <= changedTrackIds.size());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    DEBUG_ASSERT(!removedTrackIds.intersects(changedTrackIds));
+#endif
+    if (!removedTrackIds.isEmpty()) {
+        emit tracksRemoved(removedTrackIds);
+    }
+    databaseTracksChanged(changedTrackIds);
 }
 
 void TrackDAO::slotTrackChanged(Track* pTrack) {
@@ -688,106 +803,7 @@ TrackPointer TrackDAO::addSingleTrack(const TrackFile& trackFile, bool unremove)
     return pTrack;
 }
 
-QList<TrackId> TrackDAO::addMultipleTracks(
-        const QList<QFileInfo>& fileInfoList,
-        bool unremove) {
-    // Prepare to add tracks to the database.
-    // This also begins an SQL transaction.
-    addTracksPrepare();
-
-    // Create a temporary database of the paths of all the imported tracks.
-    QSqlQuery query(m_database);
-    query.prepare("CREATE TEMP TABLE playlist_import "
-                  "(add_index INTEGER PRIMARY KEY, location varchar (512))");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        addTracksFinish(true);
-        return QList<TrackId>();
-    }
-
-    // Add all the track paths to this database.
-    query.prepare("INSERT INTO playlist_import (add_index, location) "
-                  "VALUES (:add_index, :location)");
-    int index = 0;
-    for (const auto& fileInfo: fileInfoList) {
-        query.bindValue(":add_index", index);
-        query.bindValue(":location", fileInfo.absoluteFilePath());
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
-        index++;
-    }
-
-    // If imported-playlist tracks are to be unremoved, do that for all playlist
-    // tracks that were already in the database.
-    if (unremove) {
-        query.prepare("SELECT library.id FROM playlist_import, "
-                      "track_locations, library WHERE library.location = track_locations.id "
-                      "AND playlist_import.location = track_locations.location");
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
-
-        int idColumn = query.record().indexOf("id");
-        QStringList idStringList;
-        while (query.next()) {
-            TrackId trackId(query.value(idColumn));
-            idStringList.append(trackId.toString());
-        }
-
-        query.prepare(QString("UPDATE library SET mixxx_deleted=0 "
-                              "WHERE id in (%1) AND mixxx_deleted=1")
-                      .arg(idStringList.join(",")));
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
-    }
-
-    // Any tracks not already in the database need to be added.
-    query.prepare("SELECT add_index, location FROM playlist_import "
-                  "WHERE NOT EXISTS (SELECT location FROM track_locations "
-                  "WHERE playlist_import.location = track_locations.location)");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-    const int addIndexColumn = query.record().indexOf("add_index");
-    while (query.next()) {
-        int addIndex = query.value(addIndexColumn).toInt();
-        addTracksAddFile(TrackFile(fileInfoList.at(addIndex)), unremove);
-    }
-
-    // Now that we have imported any tracks that were not already in the
-    // library, re-select ordering by playlist_import.add_index to return
-    // the list of track ids in the order that they were requested to be
-    // added.
-    QList<TrackId> trackIds;
-    query.prepare("SELECT library.id FROM playlist_import, "
-                  "track_locations, library WHERE library.location = track_locations.id "
-                  "AND playlist_import.location = track_locations.location "
-                  "ORDER BY playlist_import.add_index");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-    int idColumn = query.record().indexOf("id");
-    while (query.next()) {
-        TrackId trackId(query.value(idColumn));
-        trackIds.append(trackId);
-    }
-
-    // Drop the temporary playlist-import table.
-    query.prepare("DROP TABLE IF EXISTS playlist_import");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Finish adding tracks to the database.
-    addTracksFinish();
-
-    // Return the list of track IDs added to the database.
-    return trackIds;
-}
-
-bool TrackDAO::onHidingTracks(
+bool TrackDAO::hideTracks(
         const QList<TrackId>& trackIds) {
     QStringList idList;
     for (const auto& trackId: trackIds) {
@@ -811,15 +827,16 @@ void TrackDAO::afterHidingTracks(
 // up in the library views again.
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
-bool TrackDAO::onUnhidingTracks(
+bool TrackDAO::unhideTracks(
         const QList<TrackId>& trackIds) {
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
     }
-    FwdSqlQuery query(m_database, QString(
+    FwdSqlQuery query(m_database,
             "UPDATE library SET mixxx_deleted=0 "
-                  "WHERE id in (%1)").arg(idList.join(",")));
+            "WHERE mixxx_deleted!=0 "
+            "AND id in (" + idList.join(",") + ")");
     return !query.hasError() && query.execPrepared();
 }
 
@@ -828,11 +845,11 @@ void TrackDAO::afterUnhidingTracks(
     emit(tracksAdded(QSet<TrackId>::fromList(trackIds)));
 }
 
-QList<TrackId> TrackDAO::getTrackIds(const QDir& dir) {
+QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    const QString dirPath = dir.absolutePath();
+    const QString dirPath = rootDir.absolutePath();
     QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
@@ -1348,14 +1365,20 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     }
 
     // Listen to dirty and changed signals
-    connect(pTrack.get(), SIGNAL(dirty(Track*)),
-            this, SLOT(slotTrackDirty(Track*)),
+    connect(pTrack.get(),
+            &Track::dirty,
+            this,
+            &TrackDAO::slotTrackDirty,
             Qt::DirectConnection);
-    connect(pTrack.get(), SIGNAL(clean(Track*)),
-            this, SLOT(slotTrackClean(Track*)),
+    connect(pTrack.get(),
+            &Track::clean,
+            this,
+            &TrackDAO::slotTrackClean,
             Qt::DirectConnection);
-    connect(pTrack.get(), SIGNAL(changed(Track*)),
-            this, SLOT(slotTrackChanged(Track*)),
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &TrackDAO::slotTrackChanged,
             Qt::DirectConnection);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
@@ -1560,8 +1583,7 @@ namespace {
 // moved instead of being deleted outright, and so we can salvage your
 // existing metadata that you have in your DB (like cue points, etc.).
 // returns falls if canceled
-bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
-        QSet<TrackId>* pTracksMovedSetNew,
+bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTracks,
         const QStringList& addedTracks,
         volatile const bool* pCancel) {
     // This function should not start a transaction on it's own!
@@ -1716,10 +1738,11 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
             }
         }
 
-        // We collect all the old tracks that has to be updated in BaseTrackCache
-        pTracksMovedSetOld->insert(oldTrackId);
-        // We collect collect all the new tracks the where added and deleted to BaseTrackCache
-        pTracksMovedSetNew->insert(newTrackId);
+        if (pReplacedTracks) {
+            auto oldTrackRef = TrackRef::fromFileInfo(oldTrackLocation, oldTrackId);
+            auto newTrackRef = TrackRef::fromFileInfo(newTrackLocation, newTrackId);
+            pReplacedTracks->append(qMakePair(oldTrackRef, newTrackRef));
+        }
     }
     return true;
 }

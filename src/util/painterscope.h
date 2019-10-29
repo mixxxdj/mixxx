@@ -6,6 +6,8 @@
 
 #include <QPainter>
 
+#include "util/assert.h"
+
 // This class provides RAII style management of a QPainter properties.
 //
 // PainterScope will save the painter state on creation, and restore it

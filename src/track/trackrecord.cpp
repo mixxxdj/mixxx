@@ -18,9 +18,9 @@ void TrackRecord::setKeys(const Keys& keys) {
 }
 
 bool TrackRecord::updateGlobalKey(
-        mixxx::track::io::key::ChromaticKey key,
-        mixxx::track::io::key::Source keySource) {
-    if (key == mixxx::track::io::key::INVALID) {
+        track::io::key::ChromaticKey key,
+        track::io::key::Source keySource) {
+    if (key == track::io::key::INVALID) {
         return false;
     } else {
         Keys keys = KeyFactory::makeBasicKeys(key, keySource);
@@ -34,9 +34,9 @@ bool TrackRecord::updateGlobalKey(
 
 bool TrackRecord::updateGlobalKeyText(
         const QString& keyText,
-        mixxx::track::io::key::Source keySource) {
+        track::io::key::Source keySource) {
     Keys keys = KeyFactory::makeBasicKeysFromText(keyText, keySource);
-    if (keys.getGlobalKey() == mixxx::track::io::key::INVALID) {
+    if (keys.getGlobalKey() == track::io::key::INVALID) {
         return false;
     } else {
         if (m_keys.getGlobalKey() != keys.getGlobalKey()) {

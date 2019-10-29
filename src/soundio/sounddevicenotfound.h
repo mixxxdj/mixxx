@@ -15,10 +15,10 @@ class EngineNetworkStream;
 
 class SoundDeviceNotFound : public SoundDevice {
   public:
-    SoundDeviceNotFound(QString internalName)
+    SoundDeviceNotFound(QString name)
             : SoundDevice(UserSettingsPointer(), nullptr) {
-        m_strInternalName = internalName;
-        m_strDisplayName = internalName;
+        m_deviceId.name = name;
+        m_strDisplayName = name;
     }
 
     SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override {

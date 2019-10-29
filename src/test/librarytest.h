@@ -1,5 +1,6 @@
-#ifndef LIBRARYTEST_H
-#define LIBRARYTEST_H
+#pragma once
+
+#include <memory>
 
 #include "test/mixxxtest.h"
 
@@ -9,33 +10,15 @@
 #include "util/db/dbconnectionpooled.h"
 #include "track/globaltrackcache.h"
 
-namespace {
-    const bool kInMemoryDbConnection = true;
-} // anonymous namespace
-
 class LibraryTest : public MixxxTest,
     public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void saveCachedTrack(Track* pTrack) noexcept override {
-        m_trackCollection.exportTrackMetadata(pTrack);
-        m_trackCollection.saveTrack(pTrack);
-    }
+    void saveEvictedTrack(Track* pTrack) noexcept override;
 
   protected:
-    LibraryTest()
-        : m_mixxxDb(config(), kInMemoryDbConnection),
-          m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
-          m_trackCollection(config()) {
-        MixxxDb::initDatabaseSchema(m_dbConnection);
-        m_trackCollection.connectDatabase(m_dbConnection);
-        GlobalTrackCache::createInstance(this);
-    }
-    ~LibraryTest() override {
-        GlobalTrackCache::destroyInstance();
-        m_trackCollection.disconnectDatabase();
-    }
+    LibraryTest();
+    ~LibraryTest() override;
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_mixxxDb.connectionPool();
@@ -46,15 +29,12 @@ class LibraryTest : public MixxxTest,
     }
 
     TrackCollection* collection() {
-        return &m_trackCollection;
+        return m_pTrackCollection.get();
     }
 
   private:
     const MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPooler m_dbConnectionPooler;
     QSqlDatabase m_dbConnection;
-    TrackCollection m_trackCollection;
+    std::unique_ptr<TrackCollection> m_pTrackCollection;
 };
-
-
-#endif /* LIBRARYTEST_H */
