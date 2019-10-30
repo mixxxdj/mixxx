@@ -1183,6 +1183,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         } else if (outroLength > 0 && introLength <= 0) {
             if (outroLength + introStart < pToDeck->fadeBeginPos) {
                 pFromDeck->fadeBeginPos = outroStart;
+                pFromDeck->fadeEndPos = outroEnd;
             } else {
                 // This happens if the toDeck track has no intro set and the
                 // outro of the fromDeck track is longer than the whole toDeck
@@ -1192,9 +1193,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     // We seek to intro start above in this case so this never happens
                     outroLength = 1;
                 }
-                pFromDeck->fadeBeginPos = outroEnd - outroLength;
+                pFromDeck->fadeBeginPos = outroStart;
+                pFromDeck->fadeEndPos = outroStart + outroLength;
             }
-            pFromDeck->fadeEndPos = outroEnd;
             pToDeck->startPos = introStart;
         } else if (introLength > 0 && outroLength <= 0) {
             pFromDeck->fadeBeginPos = outroEnd - introLength;
