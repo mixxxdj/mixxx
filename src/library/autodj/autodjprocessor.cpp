@@ -1301,11 +1301,23 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         // (ADJ_ENABLE_P1LOADED state) then play the track.
         loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
     } else {
-        calculateTransition(getOtherDeck(pDeck, true), pDeck, true);
-        if (pDeck->startPos != kKeepPosition) {
-            // Note: this seek will trigger the playerPositionChanged slot
-            // which may calls the calculateTransition() again without seek = true;
-            pDeck->setPlayPosition(pDeck->startPos);
+        DeckAttributes* fromDeck = getFromDeck();
+        if (!fromDeck) {
+            // We have no from deck yet this happens if you have AutoDJ enabled and
+            // manually load two new tracks. Since we need to seek to the start position
+            // in any case, we adopt the other deck as from deck for now.
+            fromDeck = getOtherDeck(pDeck);
+        }
+        if (fromDeck) {
+            DeckAttributes* toDeck = getOtherDeck(fromDeck);
+            if (toDeck == pDeck) {
+                calculateTransition(fromDeck, getOtherDeck(fromDeck), true);
+                if (pDeck->startPos != kKeepPosition) {
+                    // Note: this seek will trigger the playerPositionChanged slot
+                    // which may calls the calculateTransition() again without seek = true;
+                    pDeck->setPlayPosition(pDeck->startPos);
+                }
+            }
         }
     }
 }
@@ -1416,31 +1428,28 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     }
 }
 
-DeckAttributes* AutoDJProcessor::getOtherDeck(const DeckAttributes* pThisDeck,
-                                              bool playing) {
-    DeckAttributes* pOtherDeck = nullptr;
+DeckAttributes* AutoDJProcessor::getOtherDeck(
+        const DeckAttributes* pThisDeck) {
     if (pThisDeck->isLeft()) {
         // find first right deck
         foreach(DeckAttributes* pDeck, m_decks) {
             if (pDeck->isRight()) {
-                if (!playing || pDeck->isPlaying()) {
-                    pOtherDeck = pDeck;
-                    break;
-                }
+                return pDeck;
             }
         }
-    } else if (pThisDeck->isRight()) {
+        return nullptr;
+    }
+
+    if (pThisDeck->isRight()) {
         // find first left deck
         foreach(DeckAttributes* pDeck, m_decks) {
             if (pDeck->isLeft()) {
-                if (!playing || pDeck->isPlaying()) {
-                    pOtherDeck = pDeck;
-                    break;
-                }
+                return pDeck;
             }
         }
+        return nullptr;
     }
-    return pOtherDeck;
+    return nullptr;
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
