@@ -859,34 +859,23 @@ void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, doubl
     if (sDebug) {
         qDebug() << this << "playerIntroStartChanged" << pAttributes->group << position;
     }
-
-    DeckAttributes* fromDeck;
-    if (pAttributes->isFromDeck) {
-        fromDeck = pAttributes;
-    } else {
-        fromDeck = getOtherDeck(pAttributes);
-    }
-
-    if (!pAttributes->loading && !pAttributes->isPlaying()) {
-        calculateTransition(fromDeck, getOtherDeck(fromDeck, true), false);
-    }
+    // nothing to do, because we want not to re-cue the toDeck and the from
+    // Deck has already passed the intro
 }
 
 void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double position) {
     if (sDebug) {
         qDebug() << this << "playerIntroEndChanged" << pAttributes->group << position;
     }
-
-    DeckAttributes* fromDeck;
     if (pAttributes->isFromDeck) {
-        fromDeck = pAttributes;
-    } else {
-        fromDeck = getOtherDeck(pAttributes);
+        // We have already passed the intro
+        return;
     }
-
-    if (!pAttributes->loading && !pAttributes->isPlaying()) {
-        calculateTransition(fromDeck, getOtherDeck(fromDeck, true), false);
+    DeckAttributes* fromDeck = getFromDeck();
+    if (!fromDeck) {
+        return;
     }
+    calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
 void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, double position) {
@@ -894,16 +883,11 @@ void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, doubl
         qDebug() << this << "playerOutroStartChanged" << pAttributes->group << position;
     }
 
-    DeckAttributes* fromDeck;
-    if (pAttributes->isFromDeck) {
-        fromDeck = pAttributes;
-    } else {
-        fromDeck = getOtherDeck(pAttributes);
+    DeckAttributes* fromDeck = getFromDeck();
+    if (!fromDeck) {
+        return;
     }
-
-    if (!pAttributes->loading && pAttributes->isPlaying()) {
-        calculateTransition(fromDeck, getOtherDeck(fromDeck, false), false);
-    }
+    calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
 void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double position) {
@@ -911,16 +895,11 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
         qDebug() << this << "playerOutroEndChanged" << pAttributes->group << position;
     }
 
-    DeckAttributes* fromDeck;
-    if (pAttributes->isFromDeck) {
-        fromDeck = pAttributes;
-    } else {
-        fromDeck = getOtherDeck(pAttributes);
+    DeckAttributes* fromDeck = getFromDeck();
+    if (!fromDeck) {
+        return;
     }
-
-    if (!pAttributes->loading && pAttributes->isPlaying()) {
-        calculateTransition(fromDeck, getOtherDeck(fromDeck, false), false);
-    }
+    calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
 double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
