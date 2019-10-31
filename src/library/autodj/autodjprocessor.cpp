@@ -1336,7 +1336,10 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         if (fromDeck) {
             DeckAttributes* toDeck = getOtherDeck(fromDeck);
             if (toDeck == pDeck) {
-                calculateTransition(fromDeck, getOtherDeck(fromDeck), true);
+                // Reset startPos, just in case calculateTransition() is not
+                // able to set a new one.
+                pDeck->startPos = kKeepPosition;
+                calculateTransition(fromDeck, pDeck, true);
                 if (pDeck->startPos != kKeepPosition) {
                     // Note: this seek will trigger the playerPositionChanged slot
                     // which may calls the calculateTransition() again without seek = true;
