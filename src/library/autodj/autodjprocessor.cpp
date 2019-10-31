@@ -314,10 +314,14 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
-    DeckAttributes& deck1 = *m_decks[0];
-    DeckAttributes& deck2 = *m_decks[1];
-    bool deck1Playing = deck1.isPlaying();
-    bool deck2Playing = deck2.isPlaying();
+    DeckAttributes* deck1 = m_decks[0];
+    DeckAttributes* deck2 = m_decks[1];
+    VERIFY_OR_DEBUG_ASSERT(deck1 && deck2) {
+        return ADJ_NOT_TWO_DECKS;
+    }
+
+    bool deck1Playing = deck1->isPlaying();
+    bool deck2Playing = deck2->isPlaying();
 
     if (enable) {  // Enable Auto DJ
         if (deck1Playing && deck2Playing) {
@@ -337,22 +341,22 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         // Never load the same track if it is already playing
         if (deck1Playing) {
-            removeLoadedTrackFromTopOfQueue(deck1);
+            removeLoadedTrackFromTopOfQueue(*deck1);
         } else if (deck2Playing) {
-            removeLoadedTrackFromTopOfQueue(deck2);
+            removeLoadedTrackFromTopOfQueue(*deck2);
         } else {
             // If the first track is already cued at a position in the first
             // 2/3 in on of the Auto DJ decks, start it.
             // If the track is paused at a later position, it is probably too
             // close to the end. In this case it is loaded again at the stored
             // cue point.
-            if (deck1.playPosition() < 0.66 &&
-                    removeLoadedTrackFromTopOfQueue(deck1)) {
-                deck1.play();
+            if (deck1->playPosition() < 0.66 &&
+                    removeLoadedTrackFromTopOfQueue(*deck1)) {
+                deck1->play();
                 deck1Playing = true;
-            } else if (deck2.playPosition() < 0.66 &&
-                    removeLoadedTrackFromTopOfQueue(deck2)) {
-                deck2.play();
+            } else if (deck2->playPosition() < 0.66 &&
+                    removeLoadedTrackFromTopOfQueue(*deck2)) {
+                deck2->play();
                 deck2Playing = true;
             }
         }
@@ -376,49 +380,49 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         m_pCOCrossfader->connectValueChanged(this, &AutoDJProcessor::crossfaderChanged);
 
-        connect(&deck1, &DeckAttributes::playPositionChanged,
+        connect(deck1, &DeckAttributes::playPositionChanged,
                 this, &AutoDJProcessor::playerPositionChanged);
-        connect(&deck2, &DeckAttributes::playPositionChanged,
+        connect(deck2, &DeckAttributes::playPositionChanged,
                 this, &AutoDJProcessor::playerPositionChanged);
 
-        connect(&deck1, &DeckAttributes::playChanged,
+        connect(deck1, &DeckAttributes::playChanged,
                 this, &AutoDJProcessor::playerPlayChanged);
-        connect(&deck2, &DeckAttributes::playChanged,
+        connect(deck2, &DeckAttributes::playChanged,
                 this, &AutoDJProcessor::playerPlayChanged);
 
-        connect(&deck1, &DeckAttributes::introStartPositionChanged,
+        connect(deck1, &DeckAttributes::introStartPositionChanged,
                 this, &AutoDJProcessor::playerIntroStartChanged);
-        connect(&deck2, &DeckAttributes::introStartPositionChanged,
+        connect(deck2, &DeckAttributes::introStartPositionChanged,
                 this, &AutoDJProcessor::playerIntroStartChanged);
 
-        connect(&deck1, &DeckAttributes::introEndPositionChanged,
+        connect(deck1, &DeckAttributes::introEndPositionChanged,
                 this, &AutoDJProcessor::playerIntroEndChanged);
-        connect(&deck2, &DeckAttributes::introEndPositionChanged,
+        connect(deck2, &DeckAttributes::introEndPositionChanged,
                 this, &AutoDJProcessor::playerIntroEndChanged);
 
-        connect(&deck1, &DeckAttributes::outroStartPositionChanged,
+        connect(deck1, &DeckAttributes::outroStartPositionChanged,
                 this, &AutoDJProcessor::playerOutroStartChanged);
-        connect(&deck2, &DeckAttributes::outroStartPositionChanged,
+        connect(deck2, &DeckAttributes::outroStartPositionChanged,
                 this, &AutoDJProcessor::playerOutroStartChanged);
 
-        connect(&deck1, &DeckAttributes::outroEndPositionChanged,
+        connect(deck1, &DeckAttributes::outroEndPositionChanged,
                 this, &AutoDJProcessor::playerOutroEndChanged);
-        connect(&deck2, &DeckAttributes::outroEndPositionChanged,
+        connect(deck2, &DeckAttributes::outroEndPositionChanged,
                 this, &AutoDJProcessor::playerOutroEndChanged);
 
-        connect(&deck1, &DeckAttributes::trackLoaded,
+        connect(deck1, &DeckAttributes::trackLoaded,
                 this, &AutoDJProcessor::playerTrackLoaded);
-        connect(&deck2, &DeckAttributes::trackLoaded,
+        connect(deck2, &DeckAttributes::trackLoaded,
                 this, &AutoDJProcessor::playerTrackLoaded);
 
-        connect(&deck1, &DeckAttributes::loadingTrack,
+        connect(deck1, &DeckAttributes::loadingTrack,
                 this, &AutoDJProcessor::playerLoadingTrack);
-        connect(&deck2, &DeckAttributes::loadingTrack,
+        connect(deck2, &DeckAttributes::loadingTrack,
                 this, &AutoDJProcessor::playerLoadingTrack);
 
-        connect(&deck1, &DeckAttributes::playerEmpty,
+        connect(deck1, &DeckAttributes::playerEmpty,
                 this, &AutoDJProcessor::playerEmpty);
-        connect(&deck2, &DeckAttributes::playerEmpty,
+        connect(deck2, &DeckAttributes::playerEmpty,
                 this, &AutoDJProcessor::playerEmpty);
 
         if (!deck1Playing && !deck2Playing) {
@@ -436,19 +440,19 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
-            emitLoadTrackToPlayer(nextTrack, deck1.group, true);
+            emitLoadTrackToPlayer(nextTrack, deck1->group, true);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
                 // Load track into the right deck.
-                emitLoadTrackToPlayer(nextTrack, deck2.group, false);
+                emitLoadTrackToPlayer(nextTrack, deck2->group, false);
                 // Move crossfader to the left.
                 setCrossfader(-1.0);
             } else {
                 // Load track into the left deck.
-                emitLoadTrackToPlayer(nextTrack, deck1.group, false);
+                emitLoadTrackToPlayer(nextTrack, deck1->group, false);
                 // Move crossfader to the right.
                 setCrossfader(1.0);
             }
@@ -462,8 +466,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         m_eState = ADJ_DISABLED;
         disconnect(m_pCOCrossfader, &ControlProxy::valueChanged,
                 this, &AutoDJProcessor::crossfaderChanged);
-        deck1.disconnect(this);
-        deck2.disconnect(this);
+        deck1->disconnect(this);
+        deck2->disconnect(this);
         m_pCOCrossfader->set(0);
         emitAutoDJStateChanged(m_eState);
     }
