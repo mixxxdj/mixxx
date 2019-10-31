@@ -19,17 +19,18 @@
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup><!-- Big spinny -->
-                <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>102,</MaximumSize>
+                <SizePolicy>i,min</SizePolicy>
+                <MaximumSize>107,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
+                    <ObjectName>AlignLeft</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
-                    <MaximumSize>103,</MaximumSize>
+                    <MaximumSize>107,</MaximumSize>
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:spinny_coverart.xml">
-                        <SetVariable name="MaxSize">100,100</SetVariable>
+                        <SetVariable name="MaxSize">105,105</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
