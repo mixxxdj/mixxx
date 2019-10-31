@@ -52,7 +52,7 @@
         </Connection>
       </WidgetGroup><!-- /Kill button + knob -->
 
-      <WidgetGroup>
+      <!--WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,f</SizePolicy>
         <Children>
@@ -94,11 +94,7 @@
           <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup> -->
     </Children>
-    <Connection>
-      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

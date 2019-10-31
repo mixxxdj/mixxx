@@ -32,34 +32,38 @@
               </WidgetGroup>
             </Children>
           </WidgetGroup>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="Color">orange</SetVariable>
-            <SetVariable name="group"><Variable name="group"/></SetVariable>
             <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="label">gain</SetVariable>
             <SetVariable name="TooltipId">pregain</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:eq_knob_4decks.xml">
-        <SetVariable name="FxParameter">4</SetVariable>
-      </Template>
+      <WidgetGroup><Size>1min,8f</Size></WidgetGroup>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">3</SetVariable>
       </Template>
 
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">2</SetVariable>
       </Template>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">1</SetVariable>
       </Template>
 
+      <WidgetGroup><Size>1min,8f</Size></WidgetGroup>
+
       <Template src="skin:quick_effect_knob_4decks.xml"/>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>CrossfaderSwitch4Decks</ObjectName>
@@ -111,8 +115,9 @@
 
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
+            <Size>46f,108f</Size>
             <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_volume_deck.svg</Handle>
-            <Slider>skin:knobs_sliders/slider_volume_deck.svg</Slider>
+            <Slider scalemode="STRETCH_ASPECT">skin:knobs_sliders/slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>

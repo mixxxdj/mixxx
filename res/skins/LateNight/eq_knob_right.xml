@@ -56,9 +56,5 @@
         </Connection>
       </WidgetGroup>
     </Children>
-    <Connection>
-      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

@@ -5,8 +5,9 @@
     <Children>
       <SliderComposed>
         <TooltipId>crossfader</TooltipId>
+        <Size>141f,46f</Size>
         <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-        <Slider>skin:/knobs_sliders/slider_crossfader.svg</Slider>
+        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -139,12 +140,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>max,me</SizePolicy>
                     <Children>
-                      <!-- Spacer -->
-                      <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1min,0me</Size>
-                        <Children/>
-                      </WidgetGroup>
+                      <WidgetGroup><Size>1min,43f</Size></WidgetGroup>
 
                       <WidgetGroup>
                         <ObjectName>VuMeterMaster2Decks</ObjectName>
@@ -157,12 +153,7 @@
                         </Children>
                       </WidgetGroup>
 
-                      <!-- Spacer -->
-                      <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1min,5f</Size>
-                        <Children/>
-                      </WidgetGroup>
+                      <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
@@ -202,14 +193,13 @@
                 <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
+                  <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
-                  <!-- Channel1 xfader switch:
-                      visible if deck is NOT assigned to left side of xFader -->
+                  <!-- Channel1 xfader switch -->
                   <WidgetGroup>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
                         <SetVariable name="group">[Channel1]</SetVariable>
                         <SetVariable name="xfaderLeft">default</SetVariable>
@@ -225,31 +215,54 @@
                   </WidgetGroup><!-- /Channel1 xfader switch -->
 
                   <WidgetGroup>
+                    <Size>13f,0min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
                     <ObjectName>Crossfader</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <SingletonContainer>
-                        <ObjectName>CrossfaderSingleton</ObjectName>
+                      <SliderComposed>
+                        <TooltipId>crossfader</TooltipId>
+                        <Size>141f,46f</Size>
+                        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader.svg</Slider>
+                        <Horizontal>true</Horizontal>
+                        <Connection>
+                          <ConfigKey>[Master],crossfader</ConfigKey>
+                        </Connection>
                         <Connection>
                           <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </SingletonContainer>
+                      </SliderComposed>
                       <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <SingletonContainer>
-                            <ObjectName>CrossfaderSingleton</ObjectName>
+                          <SliderComposed>
+                            <TooltipId>crossfader</TooltipId>
+                            <Size>141f,46f</Size>
+                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader.svg</Slider>
+                            <Horizontal>true</Horizontal>
+                            <Connection>
+                              <ConfigKey>[Master],crossfader</ConfigKey>
+                            </Connection>
                             <Connection>
                               <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
-                          </SingletonContainer>
+                          </SliderComposed>
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
+                            <Size>102f,46f</Size>
                             <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-                            <Slider>skin:/knobs_sliders/slider_crossfader_small.svg</Slider>
+                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader_small.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>
@@ -270,11 +283,19 @@
                     </Children>
                   </WidgetGroup>
 
-                  <!-- Channel2 xfader switch:
-                      visible if deck is NOT assigned to right side of xFader -->
                   <WidgetGroup>
+                    <Size>13f,0min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <!-- Channel2 xfader switch -->
+                  <WidgetGroup>
+                    <ObjectName>AlignLeft</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
@@ -290,6 +311,8 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Channel2 xfader switch -->
+
+                  <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
                 </Children>
                 <Connection>

@@ -778,9 +778,6 @@ WCoverArt {
 }
 
 #RateSlider {
-  /* no respected since RateSlider has a connection attached
-  margin: 0px 10px 0px 0px;
-  background-color: #113133; */
 }
 
 #RateButtons {
@@ -919,7 +916,7 @@ WBeatSpinBox,
 }
 
 #MixerChannel_2Decks {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
 #MixerChannel_4Decks {
@@ -928,12 +925,12 @@ WBeatSpinBox,
 
 #MixerChannel_2Decks_Left {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  padding: 0px 2px;
+  margin: 0px 2px;
 }
 
 #MixerChannel_2Decks_Right {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 0px 2px;
+  margin: 0px 2px;
 }
 
 #VuAndSlider4decks {
@@ -996,15 +993,16 @@ WBeatSpinBox,
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';/*
   background-color:yellow;  */
-  padding: 3px 0px 1px 1px;
+  padding: 0px 0px 0px 1px;
 }
 #CrossfaderAndSwitches2Decks {
   qproperty-layoutAlignment: 'AlignHCenter';
-  padding: 0px;
+  padding: 0px; /*
+  background-color: #456564;  */
 }
 #CrossfaderSwitch4Decks {
   qproperty-layoutAlignment: 'AlignRight';
-  margin: 3px 5px 3px 0px;
+  margin: 5px 5px 3px 0px;
 }
 
 #CrossfaderButtonContainerDeck {
@@ -1373,7 +1371,7 @@ WBeatSpinBox,
 }
 
 #SamplerPitch {
-  padding: 1px 2px 0px 2px;
+  padding: 0px 2px 1px 2px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 

@@ -62,9 +62,10 @@
         <Children>
           <SliderComposed>
             <ObjectName>RateSlider</ObjectName>
+            <Size>40f,113f</Size>
             <TooltipId>rate</TooltipId>
-            <Handle scalemode="STRETCH">skin:/knobs_sliders/knob_pitch_deck.svg</Handle>
-            <Slider>skin:/knobs_sliders/slider_pitch_deck.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_pitch_deck.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_pitch_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>
@@ -76,7 +77,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
               <WidgetGroup><!-- Rate buttons for up=faster -->
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
