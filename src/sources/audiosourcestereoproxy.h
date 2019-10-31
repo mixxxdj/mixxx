@@ -39,6 +39,9 @@ class AudioSourceStereoProxy : public AudioSource {
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames writableSampleFrames) override;
 
+    void adjustFrameIndexRange(
+            IndexRange frameIndexRange) override;
+
   private:
     AudioSourcePointer m_pAudioSource;
     SampleBuffer m_tempSampleBuffer;

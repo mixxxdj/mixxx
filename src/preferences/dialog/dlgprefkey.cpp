@@ -22,6 +22,7 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "util/compatibility.h"
 #include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
@@ -68,23 +69,27 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     loadSettings();
 
     // Connections
-    connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(pluginSelected(int)));
-    connect(banalyzerenabled, SIGNAL(stateChanged(int)),
-            this, SLOT(analyzerEnabled(int)));
-    connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(fastAnalysisEnabled(int)));
-    connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(reanalyzeEnabled(int)));
+    connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &DlgPrefKey::pluginSelected);
+    connect(banalyzerenabled, &QCheckBox::stateChanged,
+            this, &DlgPrefKey::analyzerEnabled);
+    connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,
+            this, &DlgPrefKey::fastAnalysisEnabled);
+    connect(breanalyzeEnabled, &QCheckBox::stateChanged,
+            this, &DlgPrefKey::reanalyzeEnabled);
 
-    connect(radioNotationOpenKey, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationOpenKey(bool)));
-    connect(radioNotationLancelot, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationLancelot(bool)));
-    connect(radioNotationTraditional, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationTraditional(bool)));
-    connect(radioNotationCustom, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationCustom(bool)));
+    connect(radioNotationOpenKey, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationOpenKey);
+    connect(radioNotationOpenKeyAndTraditional, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationOpenKeyAndTraditional);
+    connect(radioNotationLancelot, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationLancelot);
+    connect(radioNotationLancelotAndTraditional, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationLancelotAndTraditional);
+    connect(radioNotationTraditional, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationTraditional);
+    connect(radioNotationCustom, &QRadioButton::toggled,
+            this, &DlgPrefKey::setNotationCustom);
 }
 
 DlgPrefKey::~DlgPrefKey() {
@@ -109,17 +114,23 @@ void DlgPrefKey::loadSettings() {
             notation[it.key()] = it.value()->text();
         }
         setNotationCustom(true);
-        notation_type = KeyUtils::CUSTOM;
+        notation_type = KeyUtils::KeyNotation::Custom;
     } else {
         if (notation_name == KEY_NOTATION_LANCELOT) {
             radioNotationLancelot->setChecked(true);
-            notation_type = KeyUtils::LANCELOT;
+            notation_type = KeyUtils::KeyNotation::Lancelot;
+        } else if (notation_name == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+            radioNotationLancelotAndTraditional->setChecked(true);
+            notation_type = KeyUtils::KeyNotation::LancelotAndTraditional;
         } else if (notation_name == KEY_NOTATION_TRADITIONAL) {
             radioNotationTraditional->setChecked(true);
-            notation_type = KeyUtils::TRADITIONAL;
+            notation_type = KeyUtils::KeyNotation::Traditional;
+        } else if (notation_name == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+            radioNotationOpenKeyAndTraditional->setChecked(true);
+            notation_type = KeyUtils::KeyNotation::OpenKeyAndTraditional;
         } else { // KEY_NOTATION_OPEN_KEY and unknown names
             radioNotationOpenKey->setChecked(true);
-            notation_type = KeyUtils::OPEN_KEY;
+            notation_type = KeyUtils::KeyNotation::OpenKey;
         }
 
         // This is just a handy way to iterate the keys. We don't use the
@@ -150,16 +161,16 @@ void DlgPrefKey::slotResetToDefaults() {
     QString defaultNotation = m_keySettings.getKeyNotationDefault();
     if (defaultNotation == KEY_NOTATION_LANCELOT) {
         radioNotationLancelot->setChecked(true);
-        notation_type = KeyUtils::LANCELOT;
+        notation_type = KeyUtils::KeyNotation::Lancelot;
     } else if (defaultNotation == KEY_NOTATION_TRADITIONAL) {
         radioNotationTraditional->setChecked(true);
-        notation_type = KeyUtils::TRADITIONAL;
+        notation_type = KeyUtils::KeyNotation::Traditional;
     } else if (defaultNotation == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
-        notation_type = KeyUtils::CUSTOM;
+        notation_type = KeyUtils::KeyNotation::Custom;
     } else { // KEY_NOTATION_OPEN_KEY
         radioNotationOpenKey->setChecked(true);
-        notation_type = KeyUtils::OPEN_KEY;
+        notation_type = KeyUtils::KeyNotation::OpenKey;
     }
     setNotation(notation_type);
 
@@ -200,7 +211,7 @@ void DlgPrefKey::slotApply() {
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
     if (radioNotationCustom->isChecked()) {
         notation_name = KEY_NOTATION_CUSTOM;
-        notation_type = KeyUtils::CUSTOM;
+        notation_type = KeyUtils::KeyNotation::Custom;
         for (auto it = m_keyLineEdits.constBegin();
                 it != m_keyLineEdits.end(); ++it) {
             notation[it.key()] = it.value()->text();
@@ -209,14 +220,20 @@ void DlgPrefKey::slotApply() {
     } else {
         if (radioNotationOpenKey->isChecked()) {
             notation_name = KEY_NOTATION_OPEN_KEY;
-            notation_type = KeyUtils::OPEN_KEY;
+            notation_type = KeyUtils::KeyNotation::OpenKey;
+        } else if (radioNotationOpenKeyAndTraditional->isChecked()) {
+            notation_name = KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL;
+            notation_type = KeyUtils::KeyNotation::OpenKeyAndTraditional;
+        } else if (radioNotationLancelotAndTraditional->isChecked()) {
+            notation_name = KEY_NOTATION_LANCELOT_AND_TRADITIONAL;
+            notation_type = KeyUtils::KeyNotation::LancelotAndTraditional;
         } else if (radioNotationTraditional->isChecked()) {
             notation_name = KEY_NOTATION_TRADITIONAL;
-            notation_type = KeyUtils::TRADITIONAL;
+            notation_type = KeyUtils::KeyNotation::Traditional;
         } else {
             // Either Lancelot was chosen or somehow no radio button was chosen.
             notation_name = KEY_NOTATION_LANCELOT;
-            notation_type = KeyUtils::LANCELOT;
+            notation_type = KeyUtils::KeyNotation::Lancelot;
         }
 
         // This is just a handy way to iterate the keys. We don't use the
@@ -282,18 +299,30 @@ void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
 
 void DlgPrefKey::setNotationTraditional(bool active) {
     if (active) {
-        setNotation(KeyUtils::TRADITIONAL);
+        setNotation(KeyUtils::KeyNotation::Traditional);
     }
 }
 
 void DlgPrefKey::setNotationOpenKey(bool active) {
     if (active) {
-        setNotation(KeyUtils::OPEN_KEY);
+        setNotation(KeyUtils::KeyNotation::OpenKey);
+    }
+}
+
+void DlgPrefKey::setNotationOpenKeyAndTraditional(bool active) {
+    if (active) {
+        setNotation(KeyUtils::KeyNotation::OpenKeyAndTraditional);
     }
 }
 
 void DlgPrefKey::setNotationLancelot(bool active) {
     if (active) {
-        setNotation(KeyUtils::LANCELOT);
+        setNotation(KeyUtils::KeyNotation::Lancelot);
+    }
+}
+
+void DlgPrefKey::setNotationLancelotAndTraditional(bool active) {
+    if (active) {
+        setNotation(KeyUtils::KeyNotation::LancelotAndTraditional);
     }
 }

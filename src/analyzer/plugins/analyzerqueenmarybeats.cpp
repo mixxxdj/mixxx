@@ -100,7 +100,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
             firstBeat = 1;
         } else {
             int diff = (beats.at(1) - beats.at(0)) - (beats.at(2) - beats.at(1));
-            // we don't allow a signifcant tempo change after the first beat
+            // we don't allow a significant tempo change after the first beat
             if (diff > 2 || diff < -2) {
                 // first beat is off grid. Skip it.
                 firstBeat = 1;

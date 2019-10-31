@@ -3,8 +3,6 @@
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
-
-      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
       <!--
       **********************************************
       Library / Preview Deck / Search / Tree view
@@ -26,13 +24,19 @@
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>100,-1</MinimumSize>
+                <MinimumSize>100,</MinimumSize>
                 <Children>
 
                   <Template src="skin:preview_deck.xml"/>
 
                   <!--Search Input Field-->
-                  <SearchBox></SearchBox>
+                  <WidgetGroup>
+                    <ObjectName>SearchLineBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <SearchBox></SearchBox>
+                    </Children>
+                  </WidgetGroup>
 
                   <Splitter>
                     <ObjectName>HorizontalSplitter</ObjectName>
@@ -43,7 +47,13 @@
                     <Collapsible>0,0</Collapsible>
                     <Children>
                       <!--Library Tree View-->
-                      <LibrarySidebar></LibrarySidebar>
+                      <WidgetGroup>
+                        <ObjectName>SidebarBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <LibrarySidebar></LibrarySidebar>
+                        </Children>
+                      </WidgetGroup>
                       <!--Cover Art-->
                       <CoverArt>
                         <SizePolicy>me,me</SizePolicy>
@@ -60,7 +70,6 @@
               </WidgetGroup>
               <WidgetGroup>
                 <!-- Library Table-->
-                <Style>QGroupBox {}</Style>
                 <Layout>vertical</Layout>
                 <Children>
                   <Library>

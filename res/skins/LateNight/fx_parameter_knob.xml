@@ -15,53 +15,48 @@
     <ObjectName>FxKnobContainer</ObjectName>
     <Layout>vertical</Layout>
     <MinimumSize>55,35</MinimumSize>
-    <MaximumSize>60,-1</MaximumSize>
+    <MaximumSize>60,</MaximumSize>
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
       <WidgetGroup>
-        <Layout>stacked</Layout>
-        <Size>26me,1min</Size>
+        <ObjectName>FxKnob</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>25me,25f</Size>
         <Children>
-          <WidgetGroup>
-            <ObjectName>EffectKnob</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>25me,25f</Size>
-            <Children>
-              <EffectParameterKnobComposed>
-                <Size>25f,25f</Size>
-                <Knob>skin:knob_small_indicator_green.svg</Knob>
-                <BackPath>skin:knob_small_bg.svg</BackPath>
-                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                <Connection>
-                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
-                </Connection>
-              </EffectParameterKnobComposed>
-	         </Children>
-          </WidgetGroup>
+          <EffectParameterKnobComposed>
+            <Size>25f,25f</Size>
+            <Knob>skin:knobs_sliders/knob_small_indicator_green.svg</Knob>
+            <BackPath>skin:knobs_sliders/knob_small_bg.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+            </Connection>
+          </EffectParameterKnobComposed>
+        </Children>
+      </WidgetGroup>
 
-          <WidgetGroup>
-            <ObjectName>AlignBottom</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>40me,38f</Size>
-            <Children>
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-              <EffectParameterName>
-                <ObjectName>FxKnobLabel</ObjectName>
-                <EffectRack><Variable name="FxRack"/></EffectRack>
-                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-                <Effect><Variable name="FxNum"/></Effect>
-                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
-                <Alignment>center</Alignment>
-              </EffectParameterName>
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-	         </Children>
-          </WidgetGroup>
-
-	     </Children>
+      <WidgetGroup>
+        <ObjectName>AlignBottom</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>40,12</MinimumSize>
+        <MaximumSize>58,12</MaximumSize>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <EffectParameterName>
+            <ObjectName>FxKnobLabel</ObjectName>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+            <Alignment>center</Alignment>
+          </EffectParameterName>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+        </Children>
       </WidgetGroup>
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>

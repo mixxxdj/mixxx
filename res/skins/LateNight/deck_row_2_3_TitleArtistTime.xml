@@ -6,12 +6,12 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>TitleGutter</ObjectName>
+        <ObjectName>TitleRow</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>i,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>AlignLeftTop</ObjectName>
+            <ObjectName>TitleGutter</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>i,min</SizePolicy>
             <Children>
@@ -37,7 +37,7 @@
                 <ObjectName>PlayPositionText</ObjectName>
                 <TooltipId>track_time</TooltipId>
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>-1,19</MaximumSize>
+                <MaximumSize>,19</MaximumSize>
                 <Alignment>right</Alignment>
                 <Channel><Variable name="channum"/></Channel>
                 <Connection>
@@ -47,7 +47,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- TitleRow -->
 
       <WidgetGroup>
         <ObjectName>ArtistRow</ObjectName>
@@ -80,7 +80,7 @@
                 <ObjectName>DurationText</ObjectName>
                 <TooltipId>track_duration</TooltipId>
                 <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>-1,20</MaximumSize>
+                <MaximumSize>,20</MaximumSize>
                 <Property>durationFormatted</Property>
                 <Channel>
                   <Variable name="channum"/>
@@ -89,7 +89,11 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- ArtistRow -->
     </Children>
-  </WidgetGroup>
+    <Connection>
+      <ConfigKey>[Skin],show_rate_controls</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- DeckRow_2_3_ArtistTitleTime -->
 </Template>

@@ -8,18 +8,19 @@
 
 #include "library/autodj/autodjfeature.h"
 
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/autodj/autodjprocessor.h"
+#include "library/autodj/dlgautodj.h"
+#include "library/crate/cratestorage.h"
 #include "library/library.h"
 #include "library/parser.h"
-#include "mixer/playermanager.h"
-#include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
-#include "library/autodj/dlgautodj.h"
 #include "library/treeitem.h"
-#include "library/crate/cratestorage.h"
-#include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
+#include "util/compatibility.h"
 #include "util/dnd.h"
+#include "widget/wlibrary.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -58,8 +59,10 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
-    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::loadTrackToPlayer,
+            this,
+            &AutoDJFeature::loadTrackToPlayer);
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
     // Create the "Crates" tree-item under the root item.
@@ -73,20 +76,30 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     m_childModel.setRootItem(std::move(pRootItem));
 
     // Be notified when the status of crates changes.
-    connect(m_pTrackCollection, SIGNAL(crateInserted(CrateId)),
-            this, SLOT(slotCrateChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateUpdated(CrateId)),
-            this, SLOT(slotCrateChanged(CrateId)));
-    connect(m_pTrackCollection, SIGNAL(crateDeleted(CrateId)),
-            this, SLOT(slotCrateChanged(CrateId)));
+    connect(m_pTrackCollection,
+            &TrackCollection::crateInserted,
+            this,
+            &AutoDJFeature::slotCrateChanged);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateUpdated,
+            this,
+            &AutoDJFeature::slotCrateChanged);
+    connect(m_pTrackCollection,
+            &TrackCollection::crateDeleted,
+            this,
+            &AutoDJFeature::slotCrateChanged);
 
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
-    connect(&m_crateMapper, SIGNAL(mapped(int)),
-            this, SLOT(slotAddCrateToAutoDj(int)));
+    connect(&m_crateMapper,
+            QOverload<int>::of(&QSignalMapper::mapped),
+            this,
+            &AutoDJFeature::slotAddCrateToAutoDj);
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
-    connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
-            this, SLOT(slotRemoveCrateFromAutoDj()));
+    connect(m_pRemoveCrateFromAutoDj,
+            &QAction::triggered,
+            this,
+            &AutoDJFeature::slotRemoveCrateFromAutoDj);
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -111,19 +124,29 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                   m_pTrackCollection,
                                   keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
-    connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::loadTrack,
+            this,
+            &AutoDJFeature::loadTrack);
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::loadTrackToPlayer,
+            this,
+            &AutoDJFeature::loadTrackToPlayer);
 
-    connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::trackSelected,
+            this,
+            &AutoDJFeature::trackSelected);
 
     // Be informed when the user wants to add another random track.
-    connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
-            this,SLOT(slotRandomQueue(int)));
-    connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
-            this, SLOT(slotAddRandomTrack()));
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::randomTrackRequested,
+            this,
+            &AutoDJFeature::slotRandomQueue);
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::addRandomButton,
+            this,
+            &AutoDJFeature::slotAddRandomTrack);
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -138,26 +161,18 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    // If a track is dropped onto a playlist's name, but the track isn't in the
+    // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
-    // playlist.
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<TrackId> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->unhideTracks(trackIds);
-    } else {
-        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    // Auto DJ playlist.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+            !pSource);
+    if (trackIds.isEmpty()) {
+        return false;
     }
 
-    // remove tracks that could not be added
-    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); trackIdIndex++) {
-        if (!trackIds.at(trackIdIndex).isValid()) {
-            trackIds.removeAt(trackIdIndex--);
-        }
-    }
-
-    // Return whether the tracks were appended.
+    // Return whether appendTracksToPlaylist succeeded.
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
@@ -280,7 +295,9 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
             m_crateMapper.setMapping(pAction.get(), crate.getId().value());
-            connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+            connect(pAction.get(),
+                    &QAction::triggered,
+                    [=](bool) { m_crateMapper.map(); });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }

@@ -86,20 +86,34 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,
                                       m_library);
-    connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
-            this, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
-            this, SLOT(stopAnalysis()));
+    connect(m_pAnalysisView,
+            &DlgAnalysis::loadTrack,
+            this,
+            &AnalysisFeature::loadTrack);
+    connect(m_pAnalysisView,
+            &DlgAnalysis::loadTrackToPlayer,
+            this,
+            [=](TrackPointer track, QString group) {
+                emit loadTrackToPlayer(track, group, false);
+            });
+    connect(m_pAnalysisView,
+            &DlgAnalysis::analyzeTracks,
+            this,
+            &AnalysisFeature::analyzeTracks);
+    connect(m_pAnalysisView,
+            &DlgAnalysis::stopAnalysis,
+            this,
+            &AnalysisFeature::stopAnalysis);
 
-    connect(m_pAnalysisView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pAnalysisView,
+            &DlgAnalysis::trackSelected,
+            this,
+            &AnalysisFeature::trackSelected);
 
-    connect(this, SIGNAL(analysisActive(bool)),
-            m_pAnalysisView, SLOT(slotAnalysisActive(bool)));
+    connect(this,
+            &AnalysisFeature::analysisActive,
+            m_pAnalysisView,
+            &DlgAnalysis::slotAnalysisActive);
 
     m_pAnalysisView->installEventFilter(keyboard);
 
@@ -197,10 +211,8 @@ void AnalysisFeature::stopAnalysis() {
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    Q_UNUSED(pSource);
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds = m_library->trackCollection().getTrackDAO().addMultipleTracks(files, true);
+    QList<TrackId> trackIds = m_library->trackCollection().resolveTrackIdsFromUrls(urls,
+            !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

@@ -119,9 +119,6 @@ void QuantizeControl::updateClosestBeat(double dCurrentSample) {
         double currentClosestBeat =
                 (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
                         prevBeat : nextBeat;
-        VERIFY_OR_DEBUG_ASSERT(even(static_cast<int>(currentClosestBeat))) {
-            currentClosestBeat--;
-        }
         if (closestBeat != currentClosestBeat) {
             m_pCOClosestBeat->set(currentClosestBeat);
         }

@@ -24,36 +24,58 @@ SidebarModel::SidebarModel(
           m_iDefaultSelectedIndex(0),
           m_pressedUntilClickedTimer(new QTimer(this)) {
     m_pressedUntilClickedTimer->setSingleShot(true);
-    connect(m_pressedUntilClickedTimer, SIGNAL(timeout()), this, SLOT(slotPressedUntilClickedTimeout()));
+    connect(m_pressedUntilClickedTimer,
+            &QTimer::timeout,
+            this,
+            &SidebarModel::slotPressedUntilClickedTimeout);
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
-    connect(feature, SIGNAL(featureIsLoading(LibraryFeature*, bool)),
-            this, SLOT(slotFeatureIsLoading(LibraryFeature*, bool)));
-    connect(feature, SIGNAL(featureLoadingFinished(LibraryFeature*)),
-            this, SLOT(slotFeatureLoadingFinished(LibraryFeature*)));
-    connect(feature, SIGNAL(featureSelect(LibraryFeature*, const QModelIndex&)),
-            this, SLOT(slotFeatureSelect(LibraryFeature*, const QModelIndex&)));
+    connect(feature,
+            &LibraryFeature::featureIsLoading,
+            this,
+            &SidebarModel::slotFeatureIsLoading);
+    connect(feature,
+            &LibraryFeature::featureLoadingFinished,
+            this,
+            &SidebarModel::slotFeatureLoadingFinished);
+    connect(feature,
+            &LibraryFeature::featureSelect,
+            this,
+            &SidebarModel::slotFeatureSelect);
 
     QAbstractItemModel* model = feature->getChildModel();
 
-    connect(model, SIGNAL(modelAboutToBeReset()),
-            this, SLOT(slotModelAboutToBeReset()));
-    connect(model, SIGNAL(modelReset()),
-            this, SLOT(slotModelReset()));
-    connect(model, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
-            this, SLOT(slotDataChanged(const QModelIndex&,const QModelIndex&)));
+    connect(model,
+            &QAbstractItemModel::modelAboutToBeReset,
+            this,
+            &SidebarModel::slotModelAboutToBeReset);
+    connect(model,
+            &QAbstractItemModel::modelReset,
+            this,
+            &SidebarModel::slotModelReset);
+    connect(model,
+            &QAbstractItemModel::dataChanged,
+            this,
+            &SidebarModel::slotDataChanged);
 
-    connect(model, SIGNAL(rowsAboutToBeInserted(const QModelIndex&, int, int)),
-            this, SLOT(slotRowsAboutToBeInserted(const QModelIndex&, int, int)));
-    connect(model, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)),
-            this, SLOT(slotRowsAboutToBeRemoved(const QModelIndex&, int, int)));
-    connect(model, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
-            this, SLOT(slotRowsInserted(const QModelIndex&, int, int)));
-    connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-            this, SLOT(slotRowsRemoved(const QModelIndex&, int, int)));
-
+    connect(model,
+            &QAbstractItemModel::rowsAboutToBeInserted,
+            this,
+            &SidebarModel::slotRowsAboutToBeInserted);
+    connect(model,
+            &QAbstractItemModel::rowsAboutToBeRemoved,
+            this,
+            &SidebarModel::slotRowsAboutToBeRemoved);
+    connect(model,
+            &QAbstractItemModel::rowsInserted,
+            this,
+            &SidebarModel::slotRowsInserted);
+    connect(model,
+            &QAbstractItemModel::rowsRemoved,
+            this,
+            &SidebarModel::slotRowsRemoved);
 }
 
 QModelIndex SidebarModel::getDefaultSelection() {
@@ -295,7 +317,6 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->activate();
             m_sFeatures[index.row()]->onRightClick(globalPos);
         }
         else
@@ -303,7 +324,6 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->feature();
-                feature->activateChild(index);
                 feature->onRightClickChild(globalPos, index);
             }
         }
