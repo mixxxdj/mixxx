@@ -549,26 +549,39 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         return;
     }
 
-    DeckAttributes& thisDeck = *pAttributes;
-    // prefer to fade to deck 0 or 1
-    int otherDeckIndex = 0;
-    if (thisDeck.index == 0) {
-        otherDeckIndex = 1;
+    DeckAttributes* thisDeck = pAttributes;
+    DeckAttributes* otherDeck = getOtherDeck(thisDeck);
+    if (!otherDeck) {
+        // This happens if this deck has no orientation or
+        // there is no deck with the opposite orientation
+        return;
     }
-    DeckAttributes& otherDeck = *m_decks[otherDeckIndex];
 
-    DeckAttributes& leftDeck = *m_decks[0];
-    DeckAttributes& rightDeck = *m_decks[1];
-
-    bool leftDeckPlaying = leftDeck.isPlaying();
-    bool rightDeckPlaying = rightDeck.isPlaying();
-
-    bool thisDeckPlaying = thisDeck.isPlaying();
-    bool otherDeckPlaying = otherDeck.isPlaying();
+    bool thisDeckPlaying = thisDeck->isPlaying();
+    bool otherDeckPlaying = otherDeck->isPlaying();
 
     // To switch out of ADJ_ENABLE_P1LOADED we wait for a playposition update
     // for either deck.
     if (m_eState == ADJ_ENABLE_P1LOADED) {
+
+        DeckAttributes* leftDeck;
+        DeckAttributes* rightDeck;
+
+
+        if (thisDeck->isLeft()) {
+            leftDeck = thisDeck;
+            DEBUG_ASSERT(otherDeck->isRight());
+            rightDeck = otherDeck;
+        } else {
+            DEBUG_ASSERT(thisDeck->isRight());
+            rightDeck = thisDeck;
+            DEBUG_ASSERT(otherDeck->isLeft());
+            leftDeck = otherDeck;
+        }
+
+        bool leftDeckPlaying = leftDeck->isPlaying();
+        bool rightDeckPlaying = rightDeck->isPlaying();
+
         if (leftDeckPlaying || rightDeckPlaying) {
             // One of left and right is playing. Switch to IDLE mode and make
             // sure our thresholds are configured (by calling calculateFadeThresholds
@@ -584,17 +597,17 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // will remove it from the top of the queue and request another
                 // track. Remove the left deck's current track from the queue
                 // since it is the track we requested in toggleAutoDJ.
-                removeLoadedTrackFromTopOfQueue(leftDeck);
+                removeLoadedTrackFromTopOfQueue(*leftDeck);
 
                 // Load the next track into the right player since it is not
                 // playing.
-                loadNextTrackFromQueue(rightDeck);
+                loadNextTrackFromQueue(*rightDeck);
 
                 // Note: calculateTransition() is called in playerTrackLoaded()
             } else {
                 // At least right deck is playing
                 // Set crossfade thresholds for right deck.
-                calculateTransition(&rightDeck, &leftDeck, false);
+                calculateTransition(rightDeck, leftDeck, false);
             }
             emitAutoDJStateChanged(m_eState);
         }
@@ -611,7 +624,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         // Once P1 or P2 has stopped switch out of fading mode to idle.
         // If the user stops the toDeck during a fade, let the fade continue
         // and do not load the next track.
-        if (!otherDeckPlaying && otherDeck.isFromDeck) {
+        if (!otherDeckPlaying && otherDeck->isFromDeck) {
             // Force crossfader all the way to the (non fading) toDeck.
             if (m_eState == ADJ_RIGHT_FADING) {
                 setCrossfader(-1.0);
@@ -622,10 +635,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // Invalidate threshold calculated for the old otherDeck
             // This avoids starting a fade back before the new track is
             // loaded into the otherDeck
-            thisDeck.fadeBeginPos = 1.0;
-            thisDeck.fadeEndPos = 1.0;
+            thisDeck->fadeBeginPos = 1.0;
+            thisDeck->fadeEndPos = 1.0;
             // Load the next track to otherDeck.
-            loadNextTrackFromQueue(otherDeck);
+            loadNextTrackFromQueue(*otherDeck);
             emitAutoDJStateChanged(m_eState);
             return;
         }
@@ -642,8 +655,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // recalculated here.
             // Don't adjust transition when reaching the end. In this case it is
             // always stopped.
-            calculateTransition(&otherDeck, &thisDeck, false);
-        } else if (thisDeck.isRepeat()) {
+            calculateTransition(otherDeck, thisDeck, false);
+        } else if (thisDeck->isRepeat()) {
             // repeat pauses auto DJ
             return;
         }
@@ -653,34 +666,34 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // - transition into fading mode, play the other deck and fade to it.
     // - check if fading is done and stop the deck
     // - update the crossfader
-    if (thisPlayPosition >= thisDeck.fadeBeginPos && thisDeck.isFromDeck) {
+    if (thisPlayPosition >= thisDeck->fadeBeginPos && thisDeck->isFromDeck) {
         if (m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 // cache this before calculating the new transition in otherDeck.play();
                 // thisDeck.fadeBeginPos is equal thisDeck.fadeEndPos in case of zero or
                 // negative transition time
-                bool hasFadeTransition = thisDeck.fadeBeginPos < thisDeck.fadeEndPos;
+                bool hasFadeTransition = thisDeck->fadeBeginPos < thisDeck->fadeEndPos;
                 if (!otherDeckPlaying) {
                     // Re-cue the track if the user has seeked it to the very end
-                    if (otherDeck.playPosition() >= otherDeck.fadeBeginPos) {
-                        otherDeck.setPlayPosition(otherDeck.startPos);
+                    if (otherDeck->playPosition() >= otherDeck->fadeBeginPos) {
+                        otherDeck->setPlayPosition(otherDeck->startPos);
                     }
-                    otherDeck.play();
+                    otherDeck->play();
                 }
 
                 // Now that we have started the other deck playing, remove the track
                 // that was "on deck" from the top of the queue.
-                removeLoadedTrackFromTopOfQueue(otherDeck);
+                removeLoadedTrackFromTopOfQueue(*otherDeck);
 
                 if (!hasFadeTransition) {
-                    setCrossfader(thisDeck.isLeft() ? 1.0 : -1.0);
-                    thisDeck.stop();
-                    loadNextTrackFromQueue(thisDeck);
+                    setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
+                    thisDeck->stop();
+                    loadNextTrackFromQueue(*thisDeck);
                     return;
                 }
                 m_transitionProgress = 0.0;
                 // Set the state as FADING.
-                m_eState = thisDeck.isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
+                m_eState = thisDeck->isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
                 emitAutoDJStateChanged(m_eState);
             }
         }
@@ -703,14 +716,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // We don't handle mode switches here since that's handled by
             // the next playerPositionChanged call otherDeck (see the
             // P1/P2FADING case above).
-            thisDeck.stop();
+            thisDeck->stop();
             m_transitionProgress = 1.0;
         } else {
             // We are in Fading state.
             // Calculate the current transitionProgress, the place between begin
             // and end position and the step we have taken since the last call
-            double transitionProgress = (thisPlayPosition - thisDeck.fadeBeginPos) /
-                    (thisDeck.fadeEndPos - thisDeck.fadeBeginPos);
+            double transitionProgress = (thisPlayPosition - thisDeck->fadeBeginPos) /
+                    (thisDeck->fadeEndPos - thisDeck->fadeBeginPos);
             double transitionStep = transitionProgress - m_transitionProgress;
             if (transitionStep > 0.0) {
                 // We have made progress.
@@ -837,9 +850,16 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
     if (sDebug) {
         qDebug() << this << "playerPlayChanged" << thisDeck->group << playing;
     }
-    // In case both decks were stopped and now this one just started, make this
-    // deck the "from deck".
-    if (playing && !getOtherDeck(thisDeck)->isPlaying()) {
+
+    DeckAttributes* otherDeck = getOtherDeck(thisDeck);
+    if (!otherDeck) {
+        // This happens if all decks have center orientation
+        return;
+    }
+
+    if (playing && otherDeck->isPlaying()) {
+        // In case both decks were stopped and now this one just started, make
+        // this deck the "from deck".
         calculateTransition(thisDeck, getOtherDeck(thisDeck), false);
     }
 
@@ -848,9 +868,10 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
     // end, seek back to the start point instead of keeping the deck stopped at
     // the end.
     if (!playing && thisDeck->playPosition() >= 1.0 && !thisDeck->isFromDeck) {
-        // Deck has stopped at the end. Recalculate the transition, because
+        // toDeck has stopped at the end. Recalculate the transition, because
         // it has been done from a now irrelevant previous position.
-        calculateTransition(getOtherDeck(thisDeck), thisDeck, true);
+        // This forces the other deck to be the fromDeck.
+        calculateTransition(otherDeck, thisDeck, true);
         thisDeck->setPlayPosition(thisDeck->startPos);
     }
 }
