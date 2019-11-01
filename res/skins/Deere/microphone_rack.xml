@@ -21,19 +21,27 @@
             to the preferences pane for easy set up. Once Mic 1 is
             set up, this widget hides itself. -->
 
-          <Template src="skin:microphone.xml">
-            <SetVariable name="i"></SetVariable>
-          </Template>
+          <Template src="skin:microphone.xml"/>
+          <Template src="skin:microphone_unconfigured.xml"/>
 
           <Template src="skin:microphone.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
 
           <Template src="skin:microphone.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
 
           <Template src="skin:microphone.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
 
@@ -117,16 +125,28 @@
           <Template src="skin:auxiliary.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
 
           <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
 
           <Template src="skin:auxiliary.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
 
           <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
 
