@@ -3,12 +3,16 @@
 #include <QMenu>
 
 #include "library/basesqltablemodel.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wlibrarysidebar.h"
 
-BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
-                                                       TrackCollection* pCollection)
-        : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+BaseExternalLibraryFeature::BaseExternalLibraryFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : LibraryFeature(pLibrary, std::move(pConfig)),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,

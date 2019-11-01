@@ -3,6 +3,7 @@
 #include "library/autodj/dlgautodj.h"
 
 #include "library/playlisttablemodel.h"
+#include "library/trackcollectionmanager.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -13,24 +14,25 @@ const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
 } // anonymous namespace
 
-DlgAutoDJ::DlgAutoDJ(QWidget* parent,
+DlgAutoDJ::DlgAutoDJ(
+        QWidget* parent,
         UserSettingsPointer pConfig,
         Library* pLibrary,
         AutoDJProcessor* pProcessor,
-        TrackCollection* pTrackCollection,
         KeyboardEventFilter* pKeyboard,
         bool showButtonText)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
+          m_pConfig(std::move(pConfig)),
           m_pAutoDJProcessor(pProcessor),
-          // no sorting
-          m_pTrackTableView(new WTrackTableView(this, pConfig, pTrackCollection, false)),
-          m_pAutoDJTableModel(nullptr),
-          m_pConfig(pConfig),
-          m_bShowButtonText(showButtonText) {
+          m_pTrackTableView(new WTrackTableView(this, m_pConfig,
+                                                pLibrary->trackCollections(), /*no sorting*/ false)),
+          m_bShowButtonText(showButtonText),
+          m_pAutoDJTableModel(nullptr) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
+
     connect(m_pTrackTableView,
             &WTrackTableView::loadTrack,
             this,

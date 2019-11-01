@@ -10,7 +10,7 @@ class TrackDAOTest : public LibraryTest {
 
 
 TEST_F(TrackDAOTest, detectMovedTracks) {
-    TrackDAO& trackDAO = collection()->getTrackDAO();
+    TrackDAO& trackDAO = internalCollection()->getTrackDAO();
 
     QString filename("file.mp3");
 

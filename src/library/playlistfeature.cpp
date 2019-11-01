@@ -8,7 +8,9 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/playlisttablemodel.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
@@ -32,14 +34,15 @@ QString createPlaylistLabel(
 } // anonymous namespace
 
 
-PlaylistFeature::PlaylistFeature(QObject* parent,
-                                 TrackCollection* pTrackCollection,
-                                 UserSettingsPointer pConfig)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "PLAYLISTHOME"),
+PlaylistFeature::PlaylistFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BasePlaylistFeature(pLibrary, pConfig, "PLAYLISTHOME"),
           m_icon(":/images/library/ic_library_playlist.svg") {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.playlist");
+    m_pPlaylistTableModel = new PlaylistTableModel(
+            this,
+            pLibrary->trackCollections(),
+            "mixxx.db.model.playlist");
 
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
@@ -113,7 +116,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+    QList<TrackId> trackIds = m_pLibrary->trackCollections()->internalCollection()->resolveTrackIdsFromUrls(urls,
             !pSource);
     if (!trackIds.size()) {
         return false;
@@ -133,6 +136,8 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
+    QSqlDatabase database = m_pLibrary->trackCollections()->internalCollection()->database();
+
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
@@ -149,13 +154,13 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
         "GROUP BY Playlists.id");
     queryString.append(mixxx::DbConnection::collateLexicographically(
             " ORDER BY sort_name"));
-    QSqlQuery query(m_pTrackCollection->database());
+    QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable("PlaylistsCountsDurations");
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
@@ -186,7 +191,8 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlDatabase database = m_pLibrary->trackCollections()->internalCollection()->database();
+    QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable("PlaylistsCountsDurations");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);

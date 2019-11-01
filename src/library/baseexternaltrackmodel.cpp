@@ -1,15 +1,15 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
-                                               TrackCollection* pTrackCollection,
+                                               TrackCollectionManager* pTrackCollectionManager,
                                                const char* settingsNamespace,
                                                const QString& trackTable,
                                                QSharedPointer<BaseTrackCache> trackSource)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
+        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
     QString viewTable = trackTable + "_view";
     QStringList columns;
     columns << "id";
@@ -56,7 +56,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     }
 
     bool track_already_in_library = false;
-    TrackPointer pTrack = m_pTrackCollection->getOrAddTrack(
+    TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
             TrackRef::fromFileInfo(location),
             &track_already_in_library);
 

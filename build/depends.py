@@ -1006,6 +1006,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",

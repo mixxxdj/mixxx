@@ -4,12 +4,12 @@
 #include <QList>
 #include <QString>
 
+#include "preferences/usersettings.h"
 #include "track/trackref.h"
 
-
-class Track;
-
+class Library;
 class LibraryFeature;
+class Track;
 
 // This interface and base class enable to synchronize external
 // track collections with Mixxx. It provides methods that will
@@ -92,7 +92,8 @@ Q_OBJECT
     // Create the corresponding library feature (if desired) that will
     // be hooked into the side pane in Mixxx.
     virtual LibraryFeature* newLibraryFeature(
-            QObject* /*parent*/) {
+            Library* /*library*/,
+            UserSettingsPointer /*userSettings*/) {
         return nullptr;
     }
 

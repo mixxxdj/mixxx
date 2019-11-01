@@ -14,20 +14,20 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
-BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
+BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
                                          UserSettingsPointer pConfig,
-                                         TrackCollection* pTrackCollection,
                                          QString rootViewName)
-        : LibraryFeature(pConfig, parent),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_pPlaylistTableModel(NULL),
+        : LibraryFeature(pLibrary, std::move(pConfig)),
+          m_pTrackCollectionManager(pLibrary->trackCollections()),
+          m_playlistDao(m_pTrackCollectionManager->internalCollection()->getPlaylistDAO()),
+          m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction,
@@ -126,7 +126,6 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    Library* pLibrary = static_cast<Library*>(parent);
     connect(pLibrary,
             &Library::trackSelected,
             this,
@@ -529,7 +528,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pTrackCollectionManager,
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -577,7 +576,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pTrackCollectionManager,
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());

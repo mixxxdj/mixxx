@@ -18,15 +18,14 @@ class WLibrary;
 class KeyboardEventFilter;
 class PlaylistDAO;
 class PlaylistTableModel;
-class TrackCollection;
+class TrackCollectionManager;
 class TreeItem;
 
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BasePlaylistFeature(QObject* parent,
+    BasePlaylistFeature(Library* pLibrary,
                         UserSettingsPointer pConfig,
-                        TrackCollection* pTrackCollection,
                         QString rootViewName);
     virtual ~BasePlaylistFeature();
 
@@ -86,7 +85,8 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollectionManager* const m_pTrackCollectionManager;
+
     PlaylistDAO &m_playlistDao;
     PlaylistTableModel* m_pPlaylistTableModel;
     QAction *m_pCreatePlaylistAction;

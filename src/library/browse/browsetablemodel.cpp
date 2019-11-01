@@ -9,19 +9,20 @@
 #include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "library/dao/trackdao.h"
 #include "library/previewbuttondelegate.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
-                                   TrackCollection* pTrackCollection,
+                                   TrackCollectionManager* pTrackCollectionManager,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->database(),
+        : TrackModel(pTrackCollectionManager->internalCollection()->database(),
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
-          m_pTrackCollection(pTrackCollection),
+          m_pTrackCollectionManager(pTrackCollectionManager),
           m_pRecordingManager(pRecordingManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
     QStringList header_data;
@@ -170,7 +171,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     // them edit the tracks in a way that persists across sessions
     // and we didn't want to edit the files on disk by default
     // unless the user opts in to that.
-    return m_pTrackCollection->getOrAddTrack(
+    return m_pTrackCollectionManager->getOrAddTrack(
             TrackRef::fromFileInfo(trackLocation));
 }
 

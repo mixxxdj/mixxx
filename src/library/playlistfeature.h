@@ -22,8 +22,9 @@ class WLibrarySidebar;
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection,
-                    UserSettingsPointer pConfig);
+    PlaylistFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
     virtual ~PlaylistFeature();
 
     QVariant title() override;

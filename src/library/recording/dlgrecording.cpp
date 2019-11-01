@@ -2,25 +2,25 @@
 
 #include "control/controlobject.h"
 #include "library/recording/dlgrecording.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
 DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
-                           Library* pLibrary, TrackCollection* pTrackCollection,
+                           Library* pLibrary,
                            RecordingManager* pRecordingManager, KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_browseModel(this, m_pTrackCollection, pRecordingManager),
+          m_pTrackTableView(new WTrackTableView(this, pConfig, pLibrary->trackCollections(), true)),
+          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
     setupUi(this);
-    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection, true);
+
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView,

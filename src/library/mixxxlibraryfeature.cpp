@@ -14,6 +14,7 @@
 #include "library/queryutil.h"
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "treeitem.h"
 #include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
@@ -22,17 +23,15 @@
 #include "library/dlgmissing.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         TrackCollection* pTrackCollection,
                                          UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary),
+        : LibraryFeature(pLibrary, std::move(pConfig)),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_pLibrary(pLibrary),
-          m_pMissingView(NULL),
-          m_pHiddenView(NULL),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_icon(":/images/library/ic_library_tracks.svg") {
+          m_icon(":/images/library/ic_library_tracks.svg"),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pLibraryTableModel(nullptr),
+          m_pMissingView(nullptr),
+          m_pHiddenView(nullptr) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -66,7 +65,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(pTrackCollection->database());
+    QSqlQuery query(m_pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -89,39 +88,12 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-            pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-
-    auto pTrackDAO = &pTrackCollection->getTrackDAO();
-    connect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            pBaseTrackCache,
-            &BaseTrackCache::slotTrackDirty);
-    connect(pTrackDAO,
-            &TrackDAO::trackClean,
-            pBaseTrackCache,
-            &BaseTrackCache::slotTrackClean);
-    connect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            pBaseTrackCache,
-            &BaseTrackCache::slotTrackChanged);
-    connect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            pBaseTrackCache,
-            &BaseTrackCache::slotTracksAdded);
-    connect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            pBaseTrackCache,
-            &BaseTrackCache::slotTracksRemoved);
-    connect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            pBaseTrackCache,
-            &BaseTrackCache::slotDbTrackAdded);
-
+            m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    pTrackCollection->setTrackSource(m_pBaseTrackCache);
+    m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this, pLibrary->trackCollections(), "mixxx.db.model.library");
 
     auto pRootItem = std::make_unique<TreeItem>(this);
     pRootItem->appendChild(kMissingTitle);
@@ -130,14 +102,10 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_childModel.setRootItem(std::move(pRootItem));
 }
 
-MixxxLibraryFeature::~MixxxLibraryFeature() {
-    delete m_pLibraryTableModel;
-}
-
 void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                      KeyboardEventFilter* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
-                                  m_pTrackCollection, pKeyboard);
+                                  pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
     connect(m_pHiddenView,
             &DlgHidden::trackSelected,
@@ -145,7 +113,7 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &MixxxLibraryFeature::trackSelected);
 
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
-                                    m_pTrackCollection, pKeyboard);
+                                    pKeyboard);
     pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
     connect(m_pMissingView,
             &DlgMissing::trackSelected,

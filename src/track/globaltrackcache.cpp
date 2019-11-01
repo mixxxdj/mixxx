@@ -354,25 +354,35 @@ void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
 }
 
 void GlobalTrackCache::deactivate() {
+    DEBUG_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
+
+    if (!isEmpty()) {
+        kLogger.warning()
+                << "Not empty when deactivating:"
+                << m_tracksById.size()
+                << '/'
+                << m_tracksByCanonicalLocation.size();
+    }
+
     // Ideally the cache should be empty when destroyed.
     // But since this is difficult to achieve all remaining
     // cached tracks will be evicted no matter if they are still
     // referenced or not. This ensures that the eviction
     // callback is triggered for all modified tracks before
     // exiting the application.
-    auto i = m_tracksById.begin();
-    while (i != m_tracksById.end()) {
+    while (!m_tracksById.empty()) {
+        auto i = m_tracksById.begin();
         Track* plainPtr= i->second->getPlainPtr();
         saveEvictedTrack(plainPtr);
         m_tracksByCanonicalLocation.erase(plainPtr->getCanonicalLocation());
-        i = m_tracksById.erase(i);
+        m_tracksById.erase(i);
     }
 
-    auto j = m_tracksByCanonicalLocation.begin();
-    while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= j->second->getPlainPtr();
+    while (!m_tracksByCanonicalLocation.empty()) {
+        auto i = m_tracksByCanonicalLocation.begin();
+        Track* plainPtr= i->second->getPlainPtr();
         saveEvictedTrack(plainPtr);
-        j = m_tracksByCanonicalLocation.erase(j);
+        m_tracksByCanonicalLocation.erase(i);
     }
 
     // Verify that all cached tracks have been evicted

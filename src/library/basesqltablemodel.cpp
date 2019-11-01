@@ -6,12 +6,14 @@
 
 #include "library/basesqltablemodel.h"
 
+#include "library/bpmdelegate.h"
 #include "library/coverartdelegate.h"
+#include "library/locationdelegate.h"
+#include "library/previewbuttondelegate.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
-#include "library/bpmdelegate.h"
-#include "library/previewbuttondelegate.h"
-#include "library/locationdelegate.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
@@ -23,33 +25,36 @@
 #include "util/performancetimer.h"
 #include "widget/wlibrarytableview.h"
 
-static const bool sDebug = false;
+namespace {
+
+const bool sDebug = false;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-static const int kIdColumn = 0;
-static const int kMaxSortColumns = 3;
+const int kIdColumn = 0;
+const int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
-static const char* COLUMNS_SORTING = "ColumnsSorting";
+const char* COLUMNS_SORTING = "ColumnsSorting";
+
+} // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
-                                     TrackCollection* pTrackCollection,
+                                     TrackCollectionManager* pTrackCollectionManager,
                                      const char* settingsNamespace)
         : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->database(), settingsNamespace),
-          m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->database()),
+          TrackModel(pTrackCollectionManager->internalCollection()->database(), settingsNamespace),
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_database(pTrackCollectionManager->internalCollection()->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
-    DEBUG_ASSERT(m_pTrackCollection);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::trackLoaded,
             this,
             &BaseSqlTableModel::trackLoaded);
-    connect(&m_pTrackCollection->getTrackDAO(),
+    connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::forceModelUpdate,
             this,
             &BaseSqlTableModel::select);
@@ -844,7 +849,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_pTrackCollection->getTrackById(trackId);
+    TrackPointer pTrack = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
     if (!pTrack) {
         return false;
     }
@@ -920,7 +925,7 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollection->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -1148,7 +1153,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_pTrackCollection->hideTracks(trackIds);
+    m_pTrackCollectionManager->hideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

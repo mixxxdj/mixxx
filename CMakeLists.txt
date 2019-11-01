@@ -401,6 +401,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/starrating.cpp
   src/library/tableitemdelegate.cpp
   src/library/trackcollection.cpp
+  src/library/trackcollectionmanager.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp

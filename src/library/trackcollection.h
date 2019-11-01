@@ -14,6 +14,7 @@
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
 
+// forward declaration(s)
 class BaseTrackCache;
 
 // Manages the internal database.
@@ -22,7 +23,8 @@ class TrackCollection : public QObject,
     Q_OBJECT
 
   public:
-    explicit TrackCollection(
+    TrackCollection(
+            QObject* parent,
             const UserSettingsPointer& pConfig);
     ~TrackCollection() override;
 
@@ -54,10 +56,12 @@ class TrackCollection : public QObject,
         return m_analysisDao;
     }
 
+    void connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
+    QWeakPointer<BaseTrackCache> disconnectTrackSource();
+
     QSharedPointer<BaseTrackCache> getTrackSource() const {
         return m_pTrackSource;
     }
-    void setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
 
     // This function returns a track ID of all file in the list not already visible,
     // it adds and unhides the tracks as well.
@@ -67,9 +71,6 @@ class TrackCollection : public QObject,
             bool addMissing);
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations);
-
-    bool hideTracks(const QList<TrackId>& trackIds);
-    bool unhideTracks(const QList<TrackId>& trackIds);
 
     bool insertCrate(const Crate& crate, CrateId* pCrateId = nullptr);
     bool updateCrate(const Crate& crate);
@@ -81,14 +82,7 @@ class TrackCollection : public QObject,
 
     TrackPointer getTrackById(
             const TrackId& trackId) const;
-    TrackPointer getOrAddTrack(
-            const TrackRef& trackRef,
-            bool* pAlreadyInLibrary = nullptr);
 
-    // Might be called from any thread
-    void exportTrackMetadata(Track* pTrack) const;
-
-    // Must be called from the main thread
     void saveTrack(Track* pTrack);
 
   signals:
@@ -104,16 +98,28 @@ class TrackCollection : public QObject,
             const QSet<CrateId>& crates);
 
   private:
-    friend class Library;
+    friend class TrackCollectionManager;
     friend class Upgrade;
 
+    // No parent during database schema upgrade
+    TrackCollection(const UserSettingsPointer& pConfig)
+            : TrackCollection(nullptr, pConfig) {
+    }
+
+    bool hideTracks(const QList<TrackId>& trackIds);
+    bool unhideTracks(const QList<TrackId>& trackIds);
     void hideAllTracks(const QDir& rootDir);
 
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
 
     bool addDirectory(const QString& dir);
+    bool removeDirectory(const QString& dir);
     void relocateDirectory(QString oldDir, QString newDir);
+
+    TrackPointer getOrAddTrack(
+            const TrackRef& trackRef,
+            bool* pAlreadyInLibrary = nullptr);
 
     QSqlDatabase m_database;
 

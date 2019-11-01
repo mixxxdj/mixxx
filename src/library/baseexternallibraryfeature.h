@@ -9,13 +9,14 @@
 
 class BaseSqlTableModel;
 class TrackCollection;
-class WLibrarySidebar;
 
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
-    virtual ~BaseExternalLibraryFeature();
+    BaseExternalLibraryFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
+    ~BaseExternalLibraryFeature() override;
 
   public slots:
     virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
@@ -31,9 +32,9 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
-    QModelIndex m_lastRightClickedIndex;
-
     TrackCollection* const m_pTrackCollection;
+
+    QModelIndex m_lastRightClickedIndex;
 
   private slots:
     void slotAddToAutoDJ();

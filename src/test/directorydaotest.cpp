@@ -40,7 +40,7 @@ class DirectoryDAOTest : public LibraryTest {
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
-    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     // prepend dir with '/' so that QT thinks the dir starts at the root
     QString testdir(QDir::tempPath() + "/TestDir/a");
     QString testChild(QDir::tempPath() + "/TestDir/a/child");
@@ -88,7 +88,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, removeDirTest) {
-    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     QString testdir = getTestDataDir().path();
 
     // check if directory doa adds and thinks everything is ok
@@ -111,7 +111,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, getDirTest) {
-    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     QString testdir = "/a/c";
     QString testdir2 = "b/d";
 
@@ -126,7 +126,7 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, relocateDirTest) {
-    DirectoryDAO &directoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO &directoryDao = internalCollection()->getDirectoryDAO();
 
     // use a temp dir so that we always use a real existing system path
     QString testdir(QDir::tempPath() + "/TestDir");
@@ -136,7 +136,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     directoryDao.addDirectory(testdir);
     directoryDao.addDirectory(test2);
 
-    TrackDAO &trackDAO = collection()->getTrackDAO();
+    TrackDAO &trackDAO = internalCollection()->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
     trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(testdir, "a" + m_supportedFileExt)), false);
