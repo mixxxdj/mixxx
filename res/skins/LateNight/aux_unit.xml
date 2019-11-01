@@ -147,47 +147,112 @@
               </WidgetGroup>
 
             </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- MicAuxInterior -->
 
           <!-- MicAuxMainControls * Label, Play, xfader orientation -->
+          <!-- needs an extra wrapper, otherwise (with <Connection> attached)
+              outer borders of MixAuxFrame won't show up -->
           <WidgetGroup>
-            <ObjectName>MicAuxFrame</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>MicAuxMainControls</ObjectName>
+                <ObjectName>MicAuxFrame</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-
-                  <Label>
-                    <ObjectName>MicAuxSubTitle</ObjectName>
-                    <Size>,17f</Size>
-                    <Text>Aux <Variable name="auxnum"/></Text>
-                    <Alignment>center</Alignment>
-                  </Label>
-
-                  <WidgetGroup><!-- PLAY -->
-                    <ObjectName>AuxPlayButton</ObjectName>
+                  <WidgetGroup>
+                    <ObjectName>MicAuxMainControls</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-                      <Template src="skin:button_2state.xml">
-                        <SetVariable name="TooltipId">master_enable</SetVariable>
-                        <SetVariable name="Size">42f,24f</SetVariable>
-                        <SetVariable name="icon">aux_play</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
-                      </Template>
+
+                      <Label>
+                        <ObjectName>MicAuxSubTitle</ObjectName>
+                        <Size>,17f</Size>
+                        <Text>Aux <Variable name="auxnum"/></Text>
+                        <Alignment>center</Alignment>
+                      </Label>
+
+                      <WidgetGroup><!-- PLAY -->
+                        <ObjectName>MicAuxTalkPlayButton</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,me</SizePolicy>
+                        <Children>
+                          <Template src="skin:button_2state.xml">
+                            <SetVariable name="TooltipId">mute</SetVariable>
+                            <SetVariable name="Size">42f,24f</SetVariable>
+                            <SetVariable name="icon">aux_play</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- /PLAY -->
+
+                      <Template src="skin:button_xfader_aux.xml"/>
+
                     </Children>
-                  </WidgetGroup><!-- /PLAY -->
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- MicAuxFrame -->
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- MicAuxMainControls * Label, Play, xfader orientation -->
 
-                  <Template src="skin:button_xfader_aux.xml"/>
+          <!-- Mic unconfigured: Label, Add button -->
+          <!-- also needs an extra wrapper, see MicAuxFrame -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>MicAuxFrameUnconfigured</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>MicAuxMainControls</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
 
+                      <Label>
+                        <ObjectName>MicAuxSubTitle</ObjectName>
+                        <Size>,17f</Size>
+                        <Text>Aux <Variable name="auxnum"/></Text>
+                        <Alignment>center</Alignment>
+                      </Label>
+                      <WidgetGroup><!-- select Mic sound device -->
+                        <ObjectName>AlignHCenter</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Size>42f,32f</Size>
+                        <Children>
+                          <Template src="skin:button_2state.xml">
+                            <SetVariable name="TooltipId">master_enable</SetVariable>
+                            <SetVariable name="Size">42f,24f</SetVariable>
+                            <SetVariable name="icon">aux_play</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- select Aux sound device -->
+
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- MicAuxMainControls * Label, Play, xfader orientation -->
+            <Connection>
+              <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Mic unconfigured: Label, Add button -->
 
         </Children>
       </WidgetGroup>
