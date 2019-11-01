@@ -70,11 +70,11 @@ class Library: public QObject,
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
 
-    inline int getTrackTableRowHeight() const {
+    int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
     }
 
-    inline const QFont& getTrackTableFont() const {
+    const QFont& getTrackTableFont() const {
         return m_trackTableFont;
     }
 
@@ -96,6 +96,13 @@ class Library: public QObject,
 
     void purgeTracks(const QList<TrackId>& trackIds);
     void purgeAllTracks(const QDir& rootDir);
+
+    // Save the track in both the internal database and external libaries.
+    // Export of metadata is deferred until the track is evicted from the
+    // cache to prevent file corruption due to concurrent access.
+    // Returns true if the track was dirty and has been saved, otherwise
+    // false.
+    bool saveTrack(const TrackPointer& pTrack);
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
@@ -147,6 +154,18 @@ class Library: public QObject,
   private:
     // Callback for GlobalTrackCache
     void saveEvictedTrack(Track* pTrack) noexcept override;
+
+    // Might be called from any thread
+    enum class TrackMetadataExportMode {
+        Immediate,
+        Deferred,
+    };
+    void saveTrack(
+            Track* pTrack,
+            TrackMetadataExportMode mode);
+    void exportTrackMetadata(
+            Track* pTrack,
+            TrackMetadataExportMode mode) const;
 
     const UserSettingsPointer m_pConfig;
 

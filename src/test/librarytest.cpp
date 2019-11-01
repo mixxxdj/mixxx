@@ -31,6 +31,5 @@ LibraryTest::~LibraryTest() {
 }
 
 void LibraryTest::saveEvictedTrack(Track* pTrack) noexcept {
-    m_pTrackCollection->exportTrackMetadata(pTrack);
     m_pTrackCollection->saveTrack(pTrack);
 }

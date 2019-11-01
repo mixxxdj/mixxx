@@ -30,6 +30,7 @@
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 
+#include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
 #include "util/logger.h"
@@ -569,19 +570,34 @@ void Library::setEditMedatataSelectedClick(bool enabled) {
     emit(setSelectedClick(enabled));
 }
 
-void Library::saveEvictedTrack(Track* pTrack) noexcept {
-    // It can produce dangerous signal loops if the track is still
-    // sending signals while being saved!
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    DEBUG_ASSERT(pTrack->signalsBlocked());
+bool Library::saveTrack(const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return false;
+    }
+    if (!pTrack->isDirty()) {
+        return false;
+    }
+    saveTrack(pTrack.get(), TrackMetadataExportMode::Deferred);
+    DEBUG_ASSERT(!pTrack->isDirty());
+    return true;
+}
 
+// Export metadata and save the track in both the internal database
+// and external libaries.
+void Library::saveEvictedTrack(Track* pTrack) noexcept {
+    saveTrack(pTrack, TrackMetadataExportMode::Immediate);
+}
+
+void Library::saveTrack(
+        Track* pTrack,
+        TrackMetadataExportMode mode) {
     // The metadata must be exported while the cache is locked to
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
-    m_pTrackCollection->exportTrackMetadata(pTrack);
+    exportTrackMetadata(pTrack, mode);
 
-    // Th dirty flag is reset while saving the track in the internal
+    // The dirty flag is reset while saving the track in the internal
     // collection!
     const bool trackDirty = pTrack->isDirty();
 
@@ -589,7 +605,7 @@ void Library::saveEvictedTrack(Track* pTrack) noexcept {
     // locked to prevent that a new track is created from outdated
     // metadata in the database before saving finished.
     kLogger.debug()
-            << "Saving cached track"
+            << "Saving track"
             << pTrack->getLocation()
             << "in internal collection";
     m_pTrackCollection->saveTrack(pTrack);
@@ -613,7 +629,7 @@ void Library::saveEvictedTrack(Track* pTrack) noexcept {
             }
         }
     } else {
-        // Track has been deleted from the local internal collection/database
+        // Track has been deleted from the internal collection/database
         // while it was cached in-memory
         kLogger.debug()
                 << "Purging deleted track"
@@ -624,6 +640,32 @@ void Library::saveEvictedTrack(Track* pTrack) noexcept {
         for (const auto& externalTrackCollection : m_externalTrackCollections) {
             externalTrackCollection->purgeTracks(
                     QStringList{pTrack->getLocation()});
+        }
+    }
+}
+
+void Library::exportTrackMetadata(
+        Track* pTrack,
+        TrackMetadataExportMode mode) const {
+    DEBUG_ASSERT(pTrack);
+
+    // Write audio meta data, if explicitly requested by the user
+    // for individual tracks or enabled in the preferences for all
+    // tracks.
+    //
+    // This must be done before updating the database, because
+    // a timestamp is used to keep track of when metadata has been
+    // last synchronized. Exporting metadata will update this time
+    // stamp on the track object!
+    if (pTrack->isMarkedForMetadataExport() ||
+            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
+        switch (mode) {
+        case TrackMetadataExportMode::Immediate:
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+            break;
+        case TrackMetadataExportMode::Deferred:
+            pTrack->markForMetadataExport();
+            break;
         }
     }
 }

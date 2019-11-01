@@ -4,7 +4,6 @@
 
 #include "library/trackcollection.h"
 
-#include "sources/soundsourceproxy.h"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"
@@ -424,23 +423,6 @@ bool TrackCollection::updateAutoDjCrate(
     }
     crate.setAutoDjSource(isAutoDjSource);
     return updateCrate(crate);
-}
-
-void TrackCollection::exportTrackMetadata(Track* pTrack) const {
-    DEBUG_ASSERT(pTrack);
-
-    // Write audio meta data, if explicitly requested by the user
-    // for individual tracks or enabled in the preferences for all
-    // tracks.
-    //
-    // This must be done before updating the database, because
-    // a timestamp is used to keep track of when metadata has been
-    // last synchronized. Exporting metadata will update this time
-    // stamp on the track object!
-    if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
-        SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
-    }
 }
 
 void TrackCollection::saveTrack(Track* pTrack) {
