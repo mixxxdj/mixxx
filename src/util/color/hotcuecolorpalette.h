@@ -15,3 +15,8 @@ class HotcueColorPalette {
 
     QList<QColor> m_colorList;
 };
+
+inline bool operator==(
+        const HotcueColorPalette& lhs, const HotcueColorPalette& rhs) {
+    return lhs.m_colorList == rhs.m_colorList;
+}
