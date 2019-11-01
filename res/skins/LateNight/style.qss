@@ -47,6 +47,11 @@ QToolTip {
   border-radius: 2px;
 }
 
+QMenu {
+  background-color: green;
+  border: 1px solid orange;
+}
+
 WPushButton, QPushButton {
   font-size: 11px/12px;
 }

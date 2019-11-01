@@ -1951,6 +1951,11 @@ QToolTip {
     color: #CCCCCC;
     border: 1px solid #CCCCCC;
 }
+
+QMenu {
+  background-color: green;
+  border: 1px solid orange;
+}
 /*
 
 #Deck1 {
