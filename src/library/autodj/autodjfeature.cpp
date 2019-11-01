@@ -115,7 +115,7 @@ QIcon AutoDJFeature::getIcon() {
     return m_icon;
 }
 
-void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
+void AutoDJFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,

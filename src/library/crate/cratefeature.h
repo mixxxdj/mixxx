@@ -41,7 +41,7 @@ class CrateFeature : public LibraryFeature {
                          QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
     TreeItemModel* getChildModel() override;

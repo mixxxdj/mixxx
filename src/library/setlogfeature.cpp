@@ -63,9 +63,9 @@ QIcon SetlogFeature::getIcon() {
     return m_icon;
 }
 
-void SetlogFeature::bindWidget(WLibrary* libraryWidget,
+void SetlogFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindWidget(libraryWidget,
+    BasePlaylistFeature::bindLibraryWidget(libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::currentPlayingTrackChanged,

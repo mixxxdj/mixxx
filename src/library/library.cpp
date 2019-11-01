@@ -299,9 +299,14 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &Library::setTrackTableFont,
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
+
+
+    for (const auto& feature : m_features) {
+        feature->bindSidebarWidget(pSidebarWidget);
+    }
 }
 
-void Library::bindWidget(WLibrary* pLibraryWidget,
+void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(
@@ -348,12 +353,10 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
+    m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
-    QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pLibraryWidget, pKeyboard);
+    for (const auto& feature : m_features) {
+        feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were

@@ -267,7 +267,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
+void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
