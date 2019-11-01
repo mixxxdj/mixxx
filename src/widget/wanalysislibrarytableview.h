@@ -6,13 +6,13 @@
 #include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
 
-class TrackCollection;
+class Library;
 
 class WAnalysisLibraryTableView : public WTrackTableView
 {
     public:
         WAnalysisLibraryTableView(QWidget* parent, UserSettingsPointer pConfig,
-                                 TrackCollection* pTrackCollection);
+                                 Library* pLibrary);
 
         void onSearch(const QString& text) override;
 };

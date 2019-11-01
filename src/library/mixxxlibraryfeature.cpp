@@ -136,7 +136,7 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                      KeyboardEventFilter* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
-                                  m_pTrackCollection, pKeyboard);
+                                  pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
     connect(m_pHiddenView,
             &DlgHidden::trackSelected,
@@ -144,7 +144,7 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &MixxxLibraryFeature::trackSelected);
 
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
-                                    m_pTrackCollection, pKeyboard);
+                                    pKeyboard);
     pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
     connect(m_pMissingView,
             &DlgMissing::trackSelected,

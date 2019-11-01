@@ -63,6 +63,10 @@ class Library: public QObject,
         return *m_pTrackCollection;
     }
 
+    const QList<ExternalTrackCollection*>& externalTrackCollections() const {
+        return m_externalTrackCollections;
+    }
+
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);

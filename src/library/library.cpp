@@ -315,9 +315,8 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
             new WTrackTableView(
                     pLibraryWidget,
                     m_pConfig,
-                    m_pTrackCollection,
-                    true,
-                    m_externalTrackCollections);
+                    this,
+                    true);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
             &Library::showTrackModel,

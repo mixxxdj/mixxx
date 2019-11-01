@@ -6,12 +6,12 @@
 #include "util/assert.h"
 
 DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-                     Library* pLibrary, TrackCollection* pTrackCollection,
+                     Library* pLibrary,
                      KeyboardEventFilter* pKeyboard)
          : QWidget(parent),
            Ui::DlgHidden(),
            m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pLibrary, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 

@@ -3,8 +3,8 @@
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
                                                    UserSettingsPointer pConfig,
-                                                   TrackCollection* pTrackCollection)
-        : WTrackTableView(parent, pConfig, pTrackCollection, true) {
+                                                   Library* pLibrary)
+        : WTrackTableView(parent, pConfig, pLibrary, true) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }

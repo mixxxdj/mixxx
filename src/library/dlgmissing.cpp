@@ -6,11 +6,11 @@
 
 DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                        Library* pLibrary,
-                       TrackCollection* pTrackCollection, KeyboardEventFilter* pKeyboard)
+                       KeyboardEventFilter* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
            m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pLibrary, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 

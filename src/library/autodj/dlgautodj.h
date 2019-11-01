@@ -23,7 +23,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
             UserSettingsPointer pConfig,
             Library* pLibrary,
             AutoDJProcessor* pProcessor,
-            TrackCollection* pTrackCollection,
             KeyboardEventFilter* pKeyboard,
             bool showButtonText);
     ~DlgAutoDJ() override;

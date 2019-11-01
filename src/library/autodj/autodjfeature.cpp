@@ -116,13 +116,14 @@ QIcon AutoDJFeature::getIcon() {
     return m_icon;
 }
 
-void AutoDJFeature::bindLibraryWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
-    m_pAutoDJView = new DlgAutoDJ(libraryWidget,
+void AutoDJFeature::bindLibraryWidget(
+        WLibrary* libraryWidget,
+        KeyboardEventFilter* keyboard) {
+    m_pAutoDJView = new DlgAutoDJ(
+            libraryWidget,
             m_pConfig,
             m_pLibrary,
             m_pAutoDJProcessor,
-            m_pTrackCollection,
             keyboard,
             libraryWidget->getShowButtonText());
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);

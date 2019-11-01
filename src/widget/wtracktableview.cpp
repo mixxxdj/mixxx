@@ -16,6 +16,7 @@
 #include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
 #include "library/coverartcache.h"
+#include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
 #include "library/crate/cratefeaturehelper.h"
@@ -38,14 +39,13 @@
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
-                                 TrackCollection* pTrackCollection,
-                                 bool sorting,
-                                 const QList<ExternalTrackCollection*>& externalTrackCollections)
+                                 Library* pLibrary,
+                                 bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
+          m_pLibrary(pLibrary),
           m_sorting(sorting),
           m_iCoverSourceColumn(-1),
           m_iCoverTypeColumn(-1),
@@ -115,7 +115,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
     // right-click)
-    createActions(externalTrackCollections);
+    createActions();
 
     // Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
@@ -434,8 +434,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // scrollbar positions with respect to different models are backed by map
 }
 
-void WTrackTableView::createActions(
-        const QList<ExternalTrackCollection*>& externalTrackCollections) {
+void WTrackTableView::createActions() {
     DEBUG_ASSERT(m_pMenu);
     DEBUG_ASSERT(m_pSamplerMenu);
 
@@ -489,7 +488,7 @@ void WTrackTableView::createActions(
     connect(m_pExportMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
-    for (const auto& externalTrackCollection : externalTrackCollections) {
+    for (const auto& externalTrackCollection : m_pLibrary->externalTrackCollections()) {
         if (!externalTrackCollection->isActive()) {
             continue; // skip
         }
@@ -1515,10 +1514,10 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollection().getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollection->unhideTracks(trackIds);
+    m_pLibrary->trackCollection().unhideTracks(trackIds);
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
@@ -1634,7 +1633,7 @@ void WTrackTableView::slotPopulatePlaylistMenu() {
         return;
     }
     m_pPlaylistMenu->clear();
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollection().getPlaylistDAO();
     QMap<QString,int> playlists;
     int numPlaylists = playlistDao.playlistCount();
     for (int i = 0; i < numPlaylists; ++i) {
@@ -1670,7 +1669,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollection().getPlaylistDAO();
 
     if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
         QString name;
@@ -1710,7 +1709,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollection->unhideTracks(trackIds);
+    m_pLibrary->trackCollection().unhideTracks(trackIds);
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
@@ -1724,7 +1723,7 @@ void WTrackTableView::slotPopulateCrateMenu() {
     m_pCrateMenu->clear();
     const QList<TrackId> trackIds = getSelectedTrackIds();
 
-    CrateSummarySelectResult allCrates(m_pTrackCollection->crates().selectCratesWithTrackCount(trackIds));
+    CrateSummarySelectResult allCrates(m_pLibrary->trackCollection().crates().selectCratesWithTrackCount(trackIds));
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
@@ -1796,16 +1795,16 @@ void WTrackTableView::updateSelectionCrates(QWidget* pWidget) {
     pCheckBox->setTristate(false);
     if(!pCheckBox->isChecked()) {
         if (crateId.isValid()) {
-            m_pTrackCollection->removeCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollection().removeCrateTracks(crateId, trackIds);
         }
     } else {
         if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
             crateId = CrateFeatureHelper(
-                    m_pTrackCollection, m_pConfig).createEmptyCrate();
+                    &m_pLibrary->trackCollection(), m_pConfig).createEmptyCrate();
         }
         if (crateId.isValid()) {
-            m_pTrackCollection->unhideTracks(trackIds);
-            m_pTrackCollection->addCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollection().unhideTracks(trackIds);
+            m_pLibrary->trackCollection().addCrateTracks(crateId, trackIds);
         }
     }
 }
@@ -1819,11 +1818,11 @@ void WTrackTableView::addSelectionToNewCrate() {
     }
 
     CrateId crateId = CrateFeatureHelper(
-            m_pTrackCollection, m_pConfig).createEmptyCrate();
+            &m_pLibrary->trackCollection(), m_pConfig).createEmptyCrate();
 
     if (crateId.isValid()) {
-        m_pTrackCollection->unhideTracks(trackIds);
-        m_pTrackCollection->addCrateTracks(crateId, trackIds);
+        m_pLibrary->trackCollection().unhideTracks(trackIds);
+        m_pLibrary->trackCollection().addCrateTracks(crateId, trackIds);
     }
 
 }
@@ -2086,7 +2085,7 @@ void WTrackTableView::slotClearWaveform() {
         return;
     }
 
-    AnalysisDao& analysisDao = m_pTrackCollection->getAnalysisDAO();
+    AnalysisDao& analysisDao = m_pLibrary->trackCollection().getAnalysisDAO();
     QModelIndexList indices = selectionModel()->selectedRows();
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
