@@ -69,15 +69,6 @@
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute config_key="[Master],skin_settings">0</attribute>
-      <!-- this skin uses Auxiliary master, and not mute -->
-      <attribute persist="false" config_key="[Auxiliary1],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary1],mute">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary2],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary2],mute">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary3],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary3],mute">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary4],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary4],mute">0</attribute>
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
