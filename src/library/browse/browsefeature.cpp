@@ -285,7 +285,12 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     foreach (const QString& str, m_quickLinkList) {
         if (str == path) {
-             return;
+            // if path is a QuickLink:
+            // show remove action
+            menu.addAction(m_pRemoveQuickLinkAction);
+            menu.exec(globalPos);
+            onLazyChildExpandation(index);
+            return;
         }
      }
 
