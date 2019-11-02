@@ -23,9 +23,9 @@ class WCueMenuPopup : public QWidget {
 
     void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 
-    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
+    void useColorSet(const HotcueColorPalette& palette) {
         if (m_pColorPicker != nullptr) {
-            m_pColorPicker->useColorSet(pColorRepresentation);
+            m_pColorPicker->useColorSet(palette);
         }
     }
 
@@ -54,7 +54,7 @@ class WCueMenuPopup : public QWidget {
   private slots:
     void slotEditLabel();
     void slotDeleteCue();
-    void slotChangeCueColor(PredefinedColorPointer pColor);
+    void slotChangeCueColor(const QColor& color);
 
   private:
     CuePointer m_pCue;

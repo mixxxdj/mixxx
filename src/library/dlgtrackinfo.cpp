@@ -1,17 +1,18 @@
-#include <QDesktopServices>
-#include <QtDebug>
-#include <QStringBuilder>
 #include <QComboBox>
+#include <QDesktopServices>
+#include <QStringBuilder>
+#include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtrackinfo.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "util/color/color.h"
+#include "util/color/hotcuecolorpalette.h"
 #include "util/compatibility.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
@@ -22,11 +23,12 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(QWidget* parent)
-            : QDialog(parent),
-              m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
-              m_dLastTapedBpm(-1.),
-              m_pWCoverArtLabel(new WCoverArtLabel(this)) {
+DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent)
+        : QDialog(parent),
+          m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+          m_dLastTapedBpm(-1.),
+          m_pWCoverArtLabel(new WCoverArtLabel(this)),
+          m_pConfig(pConfig) {
     init();
 }
 
@@ -400,21 +402,22 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the type read only
         typeItem->setFlags(Qt::NoItemFlags);
 
+        HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+        auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
+        QList<QColor> hotcueColorList =
+                colorPaletteSettings.getHotcueColorPalette().m_colorList;
         QComboBox* colorComboBox = new QComboBox();
-        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
-        for (int i = 0; i < predefinedColors.count(); i++) {
-            PredefinedColorPointer color = predefinedColors.at(i);
-            QColor defaultRgba = color->m_defaultRgba;
-            colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
-            if (*color != *Color::kPredefinedColorsSet.noColor) {
-                QPixmap pixmap(80, 80);
-                pixmap.fill(defaultRgba);
-                QIcon icon(pixmap);
-                colorComboBox->setItemIcon(i, icon);
-            }
+        for (int i = 0; i < hotcueColorList.count(); i++) {
+            QColor color = hotcueColorList.at(i);
+            colorComboBox->addItem("", color);
+            QPixmap pixmap(80, 80);
+            pixmap.fill(color);
+            QIcon icon(pixmap);
+            colorComboBox->setItemIcon(i, icon);
         }
-        PredefinedColorPointer cueColor = pCue->getColor();
-        colorComboBox->setCurrentIndex(Color::kPredefinedColorsSet.predefinedColorIndex(cueColor));
+        QColor cueColor = pCue->getColor();
+        int colorIndex = hotcueColorList.indexOf(cueColor);
+        colorComboBox->setCurrentIndex(math_min(colorIndex, 0));
 
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
@@ -499,7 +502,14 @@ void DlgTrackInfo::saveTrack() {
         if (pCue->getType() == Cue::Type::HotCue) {
             auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
             if (colorComboBox) {
-                PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
+                HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+                auto colorPalette =
+                        colorPaletteSettings.getHotcueColorPalette();
+                QList<QColor> hotcueColorList =
+                        colorPaletteSettings.getHotcueColorPalette()
+                                .m_colorList;
+                QColor color =
+                        hotcueColorList.at(colorComboBox->currentIndex());
                 pCue->setColor(color);
             }
         }

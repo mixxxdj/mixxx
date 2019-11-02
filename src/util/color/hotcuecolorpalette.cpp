@@ -4,10 +4,6 @@
 
 #include "hotcuecolorpalette.h"
 
-HotcueColorPalette::HotcueColorPalette(QList<QColor> colorList)
-        : m_colorList(colorList) {
-}
-
 const HotcueColorPalette HotcueColorPalette::mixxxPalette =
         HotcueColorPalette(QList<QColor>{
                 QColor("#c50a08"),
