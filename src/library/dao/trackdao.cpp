@@ -1745,7 +1745,7 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
     return true;
 }
 
-void TrackDAO::markTracksAsMixxxDeleted(const QDir& rootDir) {
+void TrackDAO::hideAllTracks(const QDir& rootDir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
