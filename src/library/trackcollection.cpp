@@ -220,7 +220,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 }
 
 void TrackCollection::hideAllTracks(const QDir& rootDir) {
-    m_trackDao.markTracksAsMixxxDeleted(rootDir);
+    m_trackDao.hideAllTracks(rootDir);
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
