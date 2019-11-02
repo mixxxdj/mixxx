@@ -20,16 +20,16 @@ class CueMenu : public QMenu {
         m_pTrack = pTrack;
     }
 
-    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
+    void useColorSet(const HotcueColorPalette& colorPalette) {
         if (m_pColorMenu != nullptr) {
-            m_pColorMenu->useColorSet(pColorRepresentation);
+            m_pColorMenu->useColorPalette(colorPalette);
         }
     }
 
   private slots:
     void slotEditLabel();
     void slotRemoveCue();
-    void slotChangeCueColor(PredefinedColorPointer pColor);
+    void slotChangeCueColor(QColor color);
 
   private:
     CuePointer m_pCue;

@@ -467,6 +467,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
+  src/preferences/hotcuecolorpalettesettings.cpp
   src/recording/recordingmanager.cpp
   src/skin/colorschemeparser.cpp
   src/skin/imgcolor.cpp
@@ -523,6 +524,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/predefinedcolor.cpp
+  src/util/color/hotcuecolorpalette.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -2152,3 +2154,4 @@ if(NOT OPTIMIZE STREQUAL "off")
     endif()
   endif()
 endif()
+
