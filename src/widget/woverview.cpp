@@ -133,11 +133,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
-    WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
-    QColor defaultColor = defaultMark
-            ? defaultMark->fillColor()
-            : m_signalColors.getAxesColor();
-    m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
     HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
     m_pCueMenu->useColorSet(colorPalette);
