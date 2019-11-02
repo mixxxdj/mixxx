@@ -94,17 +94,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_7_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
- 
-      <!-- this skin uses Auxiliary master, and not mute -->
-      <attribute persist="false" config_key="[Auxiliary1],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary1],mute">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary2],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary2],mute">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary3],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary3],mute">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary4],master">0</attribute>
-      <attribute persist="false" config_key="[Auxiliary4],mute">0</attribute>   
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute> 
 
       <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
