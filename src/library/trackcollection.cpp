@@ -443,3 +443,26 @@ void TrackCollection::saveTrack(Track* pTrack) {
 
     m_trackDao.saveTrack(pTrack);
 }
+
+TrackPointer TrackCollection::getTrackById(
+        const TrackId& trackId) const {
+    return m_trackDao.getTrackById(trackId);
+}
+
+TrackPointer TrackCollection::getOrAddTrack(
+        const TrackRef& trackRef,
+        bool* pAlreadyInLibrary) {
+    TrackPointer pTrack;
+    if (trackRef.hasId()) {
+        pTrack = getTrackById(trackRef.getId());
+        if (pAlreadyInLibrary) {
+            *pAlreadyInLibrary = pTrack != nullptr;
+        }
+    }
+    if (!pTrack && trackRef.hasLocation()) {
+        pTrack = m_trackDao.getOrAddTrackByLocation(
+                trackRef.getLocation(),
+                pAlreadyInLibrary);
+    }
+    return pTrack;
+}

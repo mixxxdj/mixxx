@@ -56,7 +56,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  Functions that might be reimplemented/overridden in derived classes
     ///////////////////////////////////////////////////////////////////////////
     //  This class also has protected variables that should be used in children
-    //  m_database, m_pTrackCollection, m_trackDAO
+    //  m_database, m_pTrackCollection
 
     // calls readWriteFlags() by default, reimplement this if the child calls
     // should be readOnly

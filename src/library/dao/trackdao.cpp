@@ -1182,12 +1182,22 @@ struct ColumnPopulator {
 
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
-TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
+TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     if (!trackId.isValid()) {
         return TrackPointer();
     }
 
-    ScopedTimer t("TrackDAO::getTrackFromDB");
+    // The GlobalTrackCache is only locked while executing the following line.
+    auto pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
+    if (pTrack) {
+        return pTrack;
+    }
+
+    // Accessing the database is a time consuming operation that should not
+    // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
+    // will be locked again after the query has been executed (see below)
+    // and potential race conditions will be resolved.
+    ScopedTimer t("TrackDAO::getTrackById");
     QSqlQuery query(m_database);
 
     ColumnPopulator columns[] = {
@@ -1281,7 +1291,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     const QString trackLocation(queryRecord.value(0).toString());
 
     GlobalTrackCacheResolver cacheResolver(TrackFile(trackLocation), trackId);
-    TrackPointer pTrack = cacheResolver.getTrack();
+    pTrack = cacheResolver.getTrack();
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         // Just to be safe, but this should never happen!!
         return pTrack;
@@ -1392,18 +1402,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     }
 
     return pTrack;
-}
-
-TrackPointer TrackDAO::getTrack(TrackId trackId) const {
-    //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
-
-    // The GlobalTrackCache is only locked while executing the following line.
-    TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
-    // Accessing the database is a time consuming operation that should
-    // not be executed with a lock on the GlobalTrackCache. The GlobalTrackCache will
-    // be locked again after the query has been executed and potential
-    // race conditions will be resolved in getTrackFromDB()
-    return pTrack ? pTrack : getTrackFromDB(trackId);
 }
 
 // Saves a track's info back to the database
@@ -1971,18 +1969,17 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
     }
 }
 
-TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
-                                     bool processCoverArt,
-                                     bool* pAlreadyInLibrary) {
+TrackPointer TrackDAO::getOrAddTrackByLocation(
+        const QString& trackLocation,
+        bool* pAlreadyInLibrary) {
     const TrackId trackId = getTrackId(trackLocation);
-    const bool trackAlreadyInLibrary = trackId.isValid();
     if (pAlreadyInLibrary) {
-        *pAlreadyInLibrary = trackAlreadyInLibrary;
+        *pAlreadyInLibrary = trackId.isValid();
     }
 
     TrackPointer pTrack;
-    if (trackAlreadyInLibrary) {
-        pTrack = getTrack(trackId);
+    if (trackId.isValid()) {
+        pTrack = getTrackById(trackId);
         if (!pTrack) {
             qWarning() << "Failed to load track"
                     << trackLocation;
@@ -1996,15 +1993,12 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                     << trackLocation;
             return pTrack;
         }
-        DEBUG_ASSERT(pTrack);
-        // If the track wasn't in the library already then it has not yet been
-        // checked for cover art. If processCoverArt is true then we should request
-        // cover processing via CoverArtCache asynchronously.
-        if (processCoverArt) {
-            CoverArtCache* pCache = CoverArtCache::instance();
-            if (pCache != nullptr) {
-                pCache->requestGuessCover(pTrack);
-            }
+        // If the track wasn't in the library already then it has not yet
+        // been checked for cover art.
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache) {
+            // Process cover art asynchronously
+            pCache->requestGuessCover(pTrack);
         }
     }
 

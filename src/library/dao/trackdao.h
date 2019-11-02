@@ -52,9 +52,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             ResolveTrackIdFlags flags);
     QList<TrackId> getAllTrackIds(const QDir& rootDir);
 
-    // WARNING: Only call this from the main thread instance of TrackDAO.
-    TrackPointer getTrack(TrackId trackId) const;
-
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
@@ -81,16 +78,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QList<TrackId>& trackIds);
     void afterPurgingTracks(
             const QList<TrackId>& trackIds);
-
-    // Fetches trackLocation from the database or adds it. If searchForCoverArt
-    // is true, searches the track and its directory for cover art via
-    // asynchronous request to CoverArtCache. If adding or fetching the track
-    // fails, returns a transient TrackPointer for trackLocation. If
-    // pAlreadyInLibrary is non-NULL, sets it to whether trackLocation was
-    // already in the database.
-    TrackPointer getOrAddTrack(const QString& trackLocation,
-                               bool processCoverArt,
-                               bool* pAlreadyInLibrary);
 
     void markTracksAsMixxxDeleted(const QString& dir);
 
@@ -134,7 +121,20 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void slotTrackClean(Track* pTrack);
 
   private:
-    TrackPointer getTrackFromDB(TrackId trackId) const;
+    friend class TrackCollection;
+
+    // WARNING: Only call this from the main thread instance of TrackDAO.
+    TrackPointer getTrackById(TrackId trackId) const;
+
+    // Fetches trackLocation from the database or adds it. If searchForCoverArt
+    // is true, searches the track and its directory for cover art via
+    // asynchronous request to CoverArtCache. If adding or fetching the track
+    // fails, returns a transient TrackPointer for trackLocation. If
+    // pAlreadyInLibrary is non-NULL, sets it to whether trackLocation was
+    // already in the database.
+    TrackPointer getOrAddTrackByLocation(
+                const QString& trackLocation,
+                bool* pAlreadyInLibrary = nullptr);
 
     bool updateTrack(Track* pTrack);
 

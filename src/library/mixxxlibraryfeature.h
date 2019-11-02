@@ -60,7 +60,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
     TreeItemModel m_childModel;
-    TrackDAO& m_trackDao;
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     QIcon m_icon;
