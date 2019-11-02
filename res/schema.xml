@@ -489,4 +489,29 @@ METADATA
       ALTER TABLE library ADD COLUMN color INTEGER;
     </sql>
   </revision>
+  <revision version="32" min_compatible="3">
+    <description>
+      Convert the PredefinedColor ID to the actual RGBA value.
+    </description>
+    <sql>
+      <!-- No Color becomes white-->
+      UPDATE cues SET color=0xFFF2F2FF WHERE color=0;
+      <!-- Red -->
+      UPDATE cues SET color=0xFFC50A08 WHERE color=1;
+      <!-- Green -->
+      UPDATE cues SET color=0xFF32BE44 WHERE color=2;
+      <!-- Blue -->
+      UPDATE cues SET color=0xFF0044FF WHERE color=3;
+      <!-- Yellow -->
+      UPDATE cues SET color=0xFFF8D200 WHERE color=4;
+      <!-- Celeste -->
+      UPDATE cues SET color=0xFF42D4F4 WHERE color=5;
+      <!-- Magenta -->
+      UPDATE cues SET color=0xFFAF00CC WHERE color=6;
+      <!-- Pink -->
+      UPDATE cues SET color=0xFFFCA6D7 WHERE color=7;
+      <!-- White -->
+      UPDATE cues SET color=0xFFF2F2FF WHERE color=8;
+    </sql>
+  </revision>
 </schema>
