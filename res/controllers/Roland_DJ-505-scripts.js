@@ -1013,7 +1013,7 @@ DJ505.PadSection = function (deck, offset) {
      *   0x0A       Coral          0x1A       Coral (Dim)
      *   0x0B       Azure          0x1B       Azure (Dim)
      *   0x0C       Turquoise      0x1C       Turquoise (Dim)
-     *   0x0C       Aquamarine     0x1C       Aquamarine (Dim)
+     *   0x0D       Aquamarine     0x1D       Aquamarine (Dim)
      *   0x0E       Green          0x1E       Green (Dim)
      *   0x0F       White          0x1F       White (Dim)
      */
