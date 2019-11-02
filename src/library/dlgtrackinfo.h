@@ -18,7 +18,7 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(QWidget* parent);
+    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent);
     virtual ~DlgTrackInfo();
 
   public slots:
@@ -85,6 +85,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     CoverInfo m_loadedCoverInfo;
     WCoverArtLabel* m_pWCoverArtLabel;
+    UserSettingsPointer m_pConfig;
 };
 
 #endif /* DLGTRACKINFO_H */

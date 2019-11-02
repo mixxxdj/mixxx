@@ -13,6 +13,10 @@ WColorPickerAction::WColorPickerAction(WColorPicker::ColorOption colorOption, QW
     setDefaultWidget(pWidget);
 }
 
-void WColorPickerAction::setSelectedColor(PredefinedColorPointer pColor) {
-    m_pColorPicker->setSelectedColor(pColor);
+void WColorPickerAction::resetSelectedColor() {
+    m_pColorPicker->resetSelectedColor();
+}
+
+void WColorPickerAction::setSelectedColor(QColor color) {
+    m_pColorPicker->setSelectedColor(color);
 }

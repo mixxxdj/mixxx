@@ -1,11 +1,13 @@
 #pragma once
 
+#include <QGridLayout>
 #include <QPushButton>
 #include <QMap>
 #include <QWidget>
 #include <QStyleFactory>
 
 #include "util/color/color.h"
+#include "util/color/hotcuecolorpalette.h"
 
 class WColorPicker : public QWidget {
     Q_OBJECT
@@ -17,17 +19,21 @@ class WColorPicker : public QWidget {
 
     explicit WColorPicker(ColorOption colorOption, QWidget* parent = nullptr);
 
-    void setSelectedColor(PredefinedColorPointer pColor = nullptr);
-    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
+    void resetSelectedColor();
+    void setSelectedColor(const QColor& color);
+    void useColorSet(const HotcueColorPalette& palette);
 
   signals:
-    void colorPicked(PredefinedColorPointer pColor);
+    void colorPicked(QColor color);
 
   private slots:
-    void slotColorPicked(PredefinedColorPointer pColor);
+    void slotColorPicked(const QColor& color);
 
   private:
-    QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
-    PredefinedColorPointer m_pSelectedColor;
+    void addColorButton(const QColor& color, QGridLayout* pLayout, int row, int column);
+    ColorOption m_colorOption;
+    QColor m_selectedColor;
+    HotcueColorPalette m_palette;
+    QList<QPushButton*> m_colorButtons;
     QStyle* m_pStyle;
 };

@@ -313,7 +313,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/errordialoghandler.cpp
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp
-  src/library/trackloader.cpp
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
@@ -410,6 +409,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/tableitemdelegate.cpp
   src/library/trackcollection.cpp
   src/library/trackcollectionmanager.cpp
+  src/library/trackloader.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
@@ -473,6 +473,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
+  src/preferences/hotcuecolorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
@@ -533,6 +534,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
+  src/util/color/hotcuecolorpalette.cpp
   src/util/color/predefinedcolor.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp

@@ -81,7 +81,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
-    void slotColorPicked(PredefinedColorPointer pColor);
+    void slotColorPicked(const QColor& color);
 
     void slotClearBeats();
     void slotClearPlayCount();

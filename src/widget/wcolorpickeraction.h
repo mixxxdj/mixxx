@@ -14,10 +14,11 @@ class WColorPickerAction : public QWidgetAction {
             WColorPicker::ColorOption colorOption,
             QWidget* parent = nullptr);
 
-    void setSelectedColor(PredefinedColorPointer pColor = nullptr);
+    void resetSelectedColor();
+    void setSelectedColor(QColor color = QColor());
 
   signals:
-    void colorPicked(PredefinedColorPointer pColor);
+    void colorPicked(QColor color);
 
   private:
     parented_ptr<WColorPicker> m_pColorPicker;

@@ -6,12 +6,13 @@
 #include "engine/enginebuffer.h"
 #include "engine/controls/cuecontrol.h"
 
+#include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "control/controlindicator.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "util/sample.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "util/color/color.h"
+#include "util/sample.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 // TODO: Convert these doubles to a standard enum
 // and convert elseif logic to switch statements
@@ -25,6 +26,7 @@ static const double CUE_MODE_CUP = 5.0;
 CueControl::CueControl(QString group,
                        UserSettingsPointer pConfig) :
         EngineControl(group, pConfig),
+        m_pConfig(pConfig),
         m_bPreviewing(false),
         // m_pPlay->toBoo() -> engine play state
         // m_pPlay->set(1.0) -> emulate play button press
@@ -597,9 +599,12 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
 
-    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
-        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
-        pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
+    ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
+    if (getConfig()->getValue(autoHotcueColorsKey, false)) {
+        HotcueColorPaletteSettings colorPaletteSettings(getConfig());
+        auto hotcueColorPalette = colorPaletteSettings.getHotcueColorPalette();
+        auto colors = hotcueColorPalette.m_colorList;
+        pCue->setColor(colors.at((hotcue % (colors.count() - 1)) + 1));
     };
 
     // If quantize is enabled and we are not playing, jump to the cue point
@@ -1684,20 +1689,20 @@ void CueControl::hotcueFocusColorPrev(double v) {
         return;
     }
 
-    PredefinedColorPointer pColor = pControl->getColor();
-    if (!pColor) {
-        return;
-    }
+    QColor color = pControl->getColor();
+    DEBUG_ASSERT(color.isValid());
+
+    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    HotcueColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set
-    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) - 1;
+    int iColorIndex = colorPalette.indexOf(color) - 1;
     if (iColorIndex <= 0) {
-        iColorIndex = Color::kPredefinedColorsSet.allColors.size() - 1;
+        iColorIndex = colorPalette.size() - 1;
     }
-    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
-    DEBUG_ASSERT(pColor != nullptr);
+    color = colorPalette.at(iColorIndex);
 
-    pControl->setColor(pColor);
+    pControl->setColor(color);
 }
 
 void CueControl::hotcueFocusColorNext(double v) {
@@ -1715,20 +1720,20 @@ void CueControl::hotcueFocusColorNext(double v) {
         return;
     }
 
-    PredefinedColorPointer pColor = pControl->getColor();
-    if (!pColor) {
-        return;
-    }
+    QColor color = pControl->getColor();
+    DEBUG_ASSERT(color.isValid());
 
-    // Get next color in color set
-    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) + 1;
-    if (iColorIndex >= Color::kPredefinedColorsSet.allColors.size()) {
+    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    HotcueColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
+
+    // Get previous color in color set
+    int iColorIndex = colorPalette.indexOf(color) + 1;
+    if (iColorIndex >= colorPalette.size()) {
         iColorIndex = 0;
     }
-    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
-    DEBUG_ASSERT(pColor != nullptr);
+    color = colorPalette.at(iColorIndex);
 
-    pControl->setColor(pColor);
+    pControl->setColor(color);
 }
 
 
@@ -1845,9 +1850,9 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit hotcuePositionChanged(this, newPosition);
 }
 
-void HotcueControl::slotHotcueColorChanged(double newColorId) {
-    m_pCue->setColor(Color::kPredefinedColorsSet.predefinedColorFromId(newColorId));
-    emit hotcueColorChanged(this, newColorId);
+void HotcueControl::slotHotcueColorChanged(double newColor) {
+    m_pCue->setColor(QColor::fromRgba(newColor));
+    emit(hotcueColorChanged(this, newColor));
 }
 
 double HotcueControl::getPosition() const {
@@ -1861,12 +1866,12 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
-PredefinedColorPointer HotcueControl::getColor() const {
-    return Color::kPredefinedColorsSet.predefinedColorFromId(m_hotcueColor->get());
+QColor HotcueControl::getColor() const {
+    return QColor::fromRgba(m_hotcueColor->get());
 }
 
-void HotcueControl::setColor(PredefinedColorPointer newColor) {
-    m_hotcueColor->set(static_cast<double>(newColor->m_iId));
+void HotcueControl::setColor(const QColor& newColor) {
+    m_hotcueColor->set(newColor.rgba());
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where

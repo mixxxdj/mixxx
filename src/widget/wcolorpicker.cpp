@@ -1,6 +1,5 @@
 #include "widget/wcolorpicker.h"
 
-#include <QGridLayout>
 #include <QMapIterator>
 #include <QPushButton>
 #include <QStyle>
@@ -13,7 +12,9 @@ namespace {
 }
 
 WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
-        : QWidget(parent) {
+        : QWidget(parent),
+          m_colorOption(colorOption),
+          m_palette(HotcueColorPalette::mixxxPalette) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
@@ -33,93 +34,130 @@ WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
 
     int row = 0;
     int column = 0;
-    for (const auto& pColor : Color::kPredefinedColorsSet.allColors) {
-        if (colorOption != ColorOption::AllowNoColor &&
-                pColor == Color::kPredefinedColorsSet.noColor) {
-            continue;
-        }
 
-        parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
-        if (m_pStyle) {
-            pColorButton->setStyle(m_pStyle);
-        }
+    if (m_colorOption == ColorOption::AllowNoColor) {
+        addColorButton(QColor(), pLayout, row, column);
+        column++;
+    }
 
-        if (pColor->m_defaultRgba.isValid()) {
-            // Set the background color of the button. This can't be overridden in skin stylesheets.
-            pColorButton->setStyleSheet(
-                    QString("QPushButton { background-color: #%1; }").arg(pColor->m_defaultRgba.rgb(), 6, 16, QChar('0'))
-            );
-        } else {
-            pColorButton->setProperty("noColor", true);
-        }
-
-        pColorButton->setToolTip(pColor->m_sDisplayName);
-        pColorButton->setCheckable(true);
-        m_pColorButtons.insert(pColor, pColorButton);
-
-        pLayout->addWidget(pColorButton, row, column);
+    for (const auto& color : m_palette) {
+        addColorButton(color, pLayout, row, column);
         column++;
         if (column == kNumColumns) {
             column = 0;
             row++;
         }
-
-        connect(this,
-                &WColorPicker::colorPicked,
-                this,
-                &WColorPicker::slotColorPicked);
-        connect(pColorButton,
-                &QPushButton::clicked,
-                this,
-                [pColor, this]() {
-                    emit colorPicked(pColor);
-                });
     }
+}
+
+void WColorPicker::addColorButton(const QColor& color, QGridLayout* pLayout, int row, int column) {
     setLayout(pLayout);
-}
-
-void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
-    if (m_pSelectedColor) {
-        auto it = m_pColorButtons.constFind(m_pSelectedColor);
-        if (it != m_pColorButtons.constEnd()) {
-            it.value()->setChecked(false);
-            // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
-            it.value()->style()->unpolish(it.value());
-            it.value()->style()->polish(it.value());
-        }
+    parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
+    if (m_pStyle) {
+        pColorButton->setStyle(m_pStyle);
     }
 
-    if (pColor) {
-        auto it = m_pColorButtons.constFind(pColor);
-        if (it != m_pColorButtons.constEnd()) {
-            it.value()->setChecked(true);
-            // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
-            it.value()->style()->unpolish(it.value());
-            it.value()->style()->polish(it.value());
-        }
-    }
-
-    m_pSelectedColor = pColor;
-}
-
-void WColorPicker::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
-    QMapIterator<PredefinedColorPointer, QPushButton*> i(m_pColorButtons);
-    while (i.hasNext()) {
-        i.next();
-        PredefinedColorPointer pColor = i.key();
-        QPushButton* pColorButton = i.value();
-        QColor color = (pColorRepresentation == nullptr) ? pColor->m_defaultRgba : pColorRepresentation->representationFor(pColor);
-
+    if (color.isValid()) {
         // Set the background color of the button. This can't be overridden in skin stylesheets.
         pColorButton->setStyleSheet(
-            QString("QPushButton { background-color: #%1; }").arg(color.rgb(), 6, 16, QChar('0'))
-        );
+                QString("QPushButton { background-color: %1; }").arg(color.name()));
+    } else {
+        pColorButton->setProperty("noColor", true);
+    }
 
-        pColorButton->setToolTip(pColor->m_sDisplayName);
+    pColorButton->setCheckable(true);
+    m_colorButtons.append(pColorButton);
+
+    pLayout->addWidget(pColorButton, row, column);
+
+    connect(this,
+            &WColorPicker::colorPicked,
+            this,
+            &WColorPicker::slotColorPicked);
+    connect(pColorButton,
+            &QPushButton::clicked,
+            this,
+            [color, this]() {
+                emit colorPicked(color);
+            });
+}
+
+void WColorPicker::resetSelectedColor() {
+    // Unset currently selected color
+    int i;
+    if (m_colorOption == ColorOption::AllowNoColor && !m_selectedColor.isValid()) {
+        i = 0;
+    } else {
+        i = m_palette.indexOf(m_selectedColor);
+        if (i == -1) {
+            return;
+        }
+        if (m_colorOption == ColorOption::AllowNoColor) {
+            i++;
+        }
+    }
+
+    DEBUG_ASSERT(i < m_colorButtons.size());
+
+    QPushButton* pButton = m_colorButtons.at(i);
+    VERIFY_OR_DEBUG_ASSERT(pButton != nullptr) {
+        return;
+    }
+    pButton->setChecked(false);
+    // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
+    pButton->style()->unpolish(pButton);
+    pButton->style()->polish(pButton);
+}
+
+void WColorPicker::setSelectedColor(const QColor& color) {
+    resetSelectedColor();
+
+    m_selectedColor = color;
+
+    int i;
+    if (m_colorOption == ColorOption::AllowNoColor && !color.isValid()) {
+        i = 0;
+    } else {
+        i = m_palette.indexOf(color);
+        if (i == -1) {
+            return;
+        }
+        if (m_colorOption == ColorOption::AllowNoColor) {
+            i++;
+        }
+    }
+
+    DEBUG_ASSERT(i < m_colorButtons.size());
+
+    QPushButton* pButton = m_colorButtons.at(i);
+    VERIFY_OR_DEBUG_ASSERT(pButton != nullptr) {
+        return;
+    }
+    pButton->setChecked(true);
+    // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
+    pButton->style()->unpolish(pButton);
+    pButton->style()->polish(pButton);
+}
+
+void WColorPicker::useColorSet(const HotcueColorPalette& palette) {
+    for (int i = 0; i < m_colorButtons.size(); ++i) {
+        int j = i;
+        if (m_colorOption == ColorOption::AllowNoColor) {
+            j++;
+        }
+
+        if (i >= palette.size() || j >= m_colorButtons.size()) {
+            return;
+        }
+
+        // Set the background color of the button. This can't be overridden in skin stylesheets.
+        m_colorButtons.at(j)->setStyleSheet(
+                QString("QPushButton { background-color: %1; }")
+                .arg(palette.at(i).name()));
     }
 }
 
 
-void WColorPicker::slotColorPicked(PredefinedColorPointer pColor) {
-    setSelectedColor(pColor);
+void WColorPicker::slotColorPicked(const QColor& color) {
+    setSelectedColor(color);
 }
