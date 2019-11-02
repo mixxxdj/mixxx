@@ -25,6 +25,7 @@
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/compatibility.h"
@@ -137,7 +138,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             ? defaultMark->fillColor()
             : m_signalColors.getAxesColor();
     m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
-    m_pCueMenu->useColorSet(&m_predefinedColorsRepresentation);
+    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
+    m_pCueMenu->useColorSet(colorPalette);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -341,7 +344,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
         if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
             && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
-            QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
+            QColor newColor = currentCue->getColor();
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor);
             }
