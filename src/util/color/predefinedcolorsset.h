@@ -3,7 +3,6 @@
 #include <QColor>
 #include <QObject>
 
-#include "predefinedcolorsrepresentation.h"
 #include "util/color/predefinedcolor.h"
 
 // This class defines a set of predefined colors and provides some handy functions to work with them.
@@ -70,13 +69,6 @@ class PredefinedColorsSet final {
             white,
     };
 
-    PredefinedColorsSet()
-            : m_defaultRepresentation() {
-        for (PredefinedColorPointer color : allColors) {
-            m_defaultRepresentation.setCustomRgba(color, color->m_defaultRgba);
-        }
-    }
-
     // Returns the position of a PredefinedColor in the allColors list.
     int predefinedColorIndex(PredefinedColorPointer searchedColor) const {
         for (int position = 0; position < allColors.count(); ++position) {
@@ -109,12 +101,4 @@ class PredefinedColorsSet final {
         }
         return noColor;
     };
-
-    // The default color representation, i.e. maps each predefined color to its default Rgba.
-    PredefinedColorsRepresentation defaultRepresentation() const {
-        return m_defaultRepresentation;
-    };
-
-  private:
-    PredefinedColorsRepresentation m_defaultRepresentation;
 };
