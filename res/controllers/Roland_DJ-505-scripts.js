@@ -1016,6 +1016,29 @@ DJ505.PadSection = function (deck, offset) {
      *   0x0D       Aquamarine     0x1D       Aquamarine (Dim)
      *   0x0E       Green          0x1E       Green (Dim)
      *   0x0F       White          0x1F       White (Dim)
+     *
+     * Serato DJ Pro maps its cue colors to MIDI values like this:
+     *
+     *   Number Default Cue  Serato Color       MIDI value Color
+     *   ------ ------------ -----------------  ---------  ----------
+     *        1            1 #CC0000 / #C02626  0x01       Red
+     *        2              #CC4400 / #DB4E27  0x0A       Coral
+     *        3            2 #CC8800 / #F8821A  0x02       Orange
+     *        4            4 #CCCC00 / #FAC313  0x04       Yellow
+     *        5              #88CC00 / #4EB648  0x0E       Green
+     *        6              #44CC00 / #006838  0x0E       Green
+     *        7            5 #00CC00 / #1FAD26  0x05       Applegreen
+     *        8              #00CC44 / #8DC63F  0x0D       Aquamarine
+     *        9              #00CC88 / #2B3673  0x0D       Aquamarine
+     *       10            7 #00CCCC / #1DBEBD  0x0C       Turquoise
+     *       11              #0088CC / #0F88CA  0x07       Celeste
+     *       12              #0044CC / #16308B  0x03       Blue
+     *       13            3 #0000CC / #173BA2  0x03       Blue
+     *       14              #4400CC / #5C3F97  0x0B       Azure
+     *       15            8 #8800CC / #6823B6  0x08       Purple
+     *       16            6 #CC00CC / #CE359E  0x06       Magenta
+     *       17              #CC0088 / #DC1D49  0x06       Magenta
+     *       18              #CC0044 / #C71136  0x01       Red
      */
     components.ComponentContainer.call(this);
     this.modes = {
