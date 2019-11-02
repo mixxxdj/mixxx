@@ -17,7 +17,6 @@ BansheeFeature::BansheeFeature(QObject* parent,
                                TrackCollection* pTrackCollection,
                                UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_banshee.svg") {
     Q_UNUSED(pConfig);

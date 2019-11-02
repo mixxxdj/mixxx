@@ -63,7 +63,6 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_traktor.svg") {
     QString tableName = "traktor_library";

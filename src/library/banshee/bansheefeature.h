@@ -40,9 +40,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
-    TrackCollection* m_pTrackCollection;
-    //a new DB connection for the worker thread
 
+    //a new DB connection for the worker thread
     BansheeDbConnection m_connection;
 
     QSqlDatabase m_database;

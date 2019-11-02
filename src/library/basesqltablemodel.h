@@ -99,7 +99,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // Use this if you want a model that can be changed
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollection* const m_pTrackCollection;
+
     QSqlDatabase m_database;
 
     QString m_previewDeckGroup;

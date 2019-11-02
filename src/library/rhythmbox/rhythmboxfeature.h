@@ -51,7 +51,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     BaseExternalTrackModel* m_pRhythmboxTrackModel;
     BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;
 
-    TrackCollection* m_pTrackCollection;
     // new DB object because of threads
     QSqlDatabase m_database;
     bool m_isActivated;
