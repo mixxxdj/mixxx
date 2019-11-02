@@ -1,0 +1,71 @@
+<!-- Description:
+        draws a black line to separate
+         * rate controls  | Artist/Title  (small or no spinny) 
+         * big spinny     | Artist/Title         
+ -->
+<Template>
+  <WidgetGroup>
+    <Size>1f,0me</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <Size>1f,0me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>DeckRateSeparator</ObjectName>
+            <Size>1f,0me</Size>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>1f,0me</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckRateSeparator</ObjectName>
+                <Size>1f,0me</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
+      <WidgetGroup>
+        <Size>1f,0me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>DeckRateSeparator</ObjectName>
+            <Size>1f,0me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -16,12 +16,14 @@
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
       </Template>
 
-      <Template src="skin:button_1state_right.xml">
+      <Template src="skin:button_2state_right.xml">
         <SetVariable name="TooltipId">pitch_down</SetVariable>
         <SetVariable name="ObjectName">KeyButton</SetVariable>
         <SetVariable name="Size">16f,22f</SetVariable>
         <SetVariable name="state_0_pressed">prev_down.svg</SetVariable>
         <SetVariable name="state_0_unpressed">prev.svg</SetVariable>
+        <SetVariable name="state_1_pressed">prev_down.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">prev_down.svg</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
       </Template>
@@ -41,12 +43,14 @@
         </Connection>
       </Key>
 
-      <Template src="skin:button_1state_right.xml">
+      <Template src="skin:button_2state_right.xml">
         <SetVariable name="TooltipId">pitch_up</SetVariable>
         <SetVariable name="ObjectName">KeyButton</SetVariable>
         <SetVariable name="Size">16f,22f</SetVariable>
         <SetVariable name="state_0_pressed">next_down.svg</SetVariable>
         <SetVariable name="state_0_unpressed">next.svg</SetVariable>
+        <SetVariable name="state_1_pressed">next_down.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">next_down.svg</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
       </Template>

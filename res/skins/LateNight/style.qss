@@ -153,10 +153,14 @@ WSearchLineEdit,
 #VinylButton,
 #VinylTristateButton,
 #FxAssignButtonDeck {
-  border: 1px solid #0f0f0f;
+  border: 1px solid #080808;
   border-radius: 1px;
   margin: 1px;
 }
+#KeyButton {
+  margin-left: 0px;
+}
+
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
@@ -406,7 +410,6 @@ QHeaderView::down-arrow {
   color: #bfbfbf;
 }
 
-#KeyButton[displayValue="1"],
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
 #FxAssignButton[displayValue="1"],
@@ -416,6 +419,10 @@ QHeaderView::down-arrow {
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
 #SettingsButton[displayValue="1"] {
   color: #0e0e0e;
+}
+
+#KeyButton[displayValue="1"] {
+  color: #d2d2d2;
 }
 
 #FxAssignButtonDeck[displayValue="1"] {
@@ -554,9 +561,8 @@ WTime {
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
-  padding: 0px 0px 1px 1px;
-  border-bottom: 1px solid #080808;
-  border-left: 1px solid #080808;
+  padding: 0px 0px 1px 0px;
+  border-bottom: 1px solid #0c0c0c;
 }
 
 #DeckRows234 {
@@ -564,25 +570,24 @@ WTime {
 
 #DeckRow_2_3_ArtistTitleTime {
   background-color: #1e1e1e;
-  padding-left: 2px;
+  padding-left: 1px;
+  margin: 2px 0px 2px 0xp;
   }
-  #DeckRow_2_3_ArtistTitleTime[highlight="0"] {
-    border-left: none;
-  }
-  /* show left border only with rate controlsy */
-  #DeckRow_2_3_ArtistTitleTime[highlight="1"] {
-    border-left: 1px solid #080808;
+
+  /* see deck_rate_artist_separator.xml for visibilty conditions */
+  #DeckRateSeparator {
+    background-color: #0c0c0c;
   }
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-    padding: 2px 3px 2px 0px;
+    padding: 0px 3px 2px 0px;
   }
   #TimeGutter, #DurationGutter {
     qproperty-layoutAlignment: 'AlignRight | AlignBottom';
     padding: 2px;
   }
   #ArtistRow {
-    border-top: 1px solid #080808;
+    border-top: 1px solid #0c0c0c;
     
   }
 
@@ -617,13 +622,14 @@ WTime {
 #CoverArtContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
+  padding: 2px 1px 2px 0px;
   }
   #SpinnyContainer {
-    border-left: 1px solid #080808;
+    border-left: 1px solid #0c0c0c;
   }
   #SpinnyContainer[highlight="0"],
   #CoverArtContainer[highlight="0"] {
-    border-top: 1px solid #080808;
+    border-top: 1px solid #0c0c0c;
   }
   #SpinnyContainer[highlight="1"],
   #CoverArtContainer[highlight="1"] {
@@ -648,7 +654,7 @@ WCoverArt {
 
 #DeckControls {
   qproperty-layoutAlignment: 'AlignCenter';
-  border-top: 1px solid #080808;
+  border-top: 1px solid #0c0c0c;
   padding: 0px 2px;
 }
 
@@ -704,11 +710,11 @@ WCoverArt {
   
   #BpmTextSmall,
   #KeyTextSmall {
-    border-left: 1px solid #080808;
-    border-top: 1px solid #080808;
+    border-left: 1px solid #0c0c0c;
+    border-top: 1px solid #0c0c0c;
   }
   #BpmTextSmall {
-    border-right: 1px solid #080808;
+    border-right: 1px solid #0c0c0c;
     margin-top
   }
   #KeyTextSmall {
@@ -944,7 +950,7 @@ WBeatSpinBox,
 
 #VuMeterBox,
 #VuMeterBoxMasterSingle {
-  background-color: #080808;
+  background-color: #040404;
   qproperty-layoutSpacing: 1;
 }
 #VuMeterBox {
@@ -1022,7 +1028,7 @@ WBeatSpinBox,
     background-color: #0f0f0f;
   }
   #CrossfaderButton[value="1"] {
-    background-color: #333;
+    background-color: #262626;
   }
 /********************** Mixer **********************/
 
@@ -1072,7 +1078,7 @@ WBeatSpinBox,
   }
   #PreviewLabel {
     qproperty-alignment: 'AlignVCenter | AlignHCenter';
-    border-right: 1px solid #080808;
+    border-right: 1px solid #0c0c0c;
     text-align: center;
     padding: 1px 3px 1px 2px;
     margin-bottom: 1px;
@@ -1097,7 +1103,7 @@ WBeatSpinBox,
 #PreviewPlay {
   padding: 3px 1px 1px 2px;
   margin-right: 1px;
-  border-top: 1px solid #080808;
+  border-top: 1px solid #0c0c0c;
 }
 
 #PreviewVuMeter {
@@ -1288,7 +1294,7 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 1px 3px 1px 4px;
   background-color: #1e1e1e;
-  border: 1px solid #080808;
+  border: 1px solid #0c0c0c;
   border-width: 0px 1px 0px 0px;
 }
 
@@ -1322,7 +1328,7 @@ WBeatSpinBox,
 #SamplerPlay {
   padding: 3px 1px 1px 0px;
   border-right: 1px solid #000;
-  border-top: 1px solid #080808;
+  border-top: 1px solid #0c0c0c;
   border-right: 0px;
   border-bottom: 0px;
   border-left: 0px;
@@ -1336,7 +1342,7 @@ WBeatSpinBox,
 }
 
 #SamplerButtonGrid {
-  border: 1px solid #080808;
+  border: 1px solid #0c0c0c;
   border-width: 1px 1px 0px 0px;
   padding: 1px 0px;
 }
@@ -1357,14 +1363,14 @@ WBeatSpinBox,
 
 #SamplerGain {
   padding: 0px 0px 0px 2px;
-  border: 1px solid #080808;
+  border: 1px solid #0c0c0c;
   border-width: 1px 0px 0px 0px;
 }
 
 #SamplerVU {
   padding: 1px 3px 0px 3px;
   qproperty-layoutAlignment: 'AlignCenter';
-  border: 1px solid #080808;
+  border: 1px solid #0c0c0c;
   border-top: 0px;
   border-left: 0px;
   border-bottom: 0px;

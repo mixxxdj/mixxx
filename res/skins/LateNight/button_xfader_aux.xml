@@ -25,8 +25,8 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_left.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_left.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_left_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_left_off.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
@@ -50,8 +50,8 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_mid.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_mid.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_mid_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_mid_off.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
@@ -76,8 +76,8 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_right.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_right.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_right_off.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_xfader_aux_right_off.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
