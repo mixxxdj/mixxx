@@ -1,19 +1,20 @@
+#include <QApplication>
 #include <QStringBuilder>
 #include <QThread>
-#include <QApplication>
 
 #include "library/trackcollection.h"
 
 #include "sources/soundsourceproxy.h"
 #include "track/globaltrackcache.h"
-#include "util/logger.h"
-#include "util/db/sqltransaction.h"
-
 #include "util/assert.h"
+#include "util/db/sqltransaction.h"
 #include "util/dnd.h"
+#include "util/logger.h"
 
 namespace {
-    mixxx::Logger kLogger("TrackCollection");
+
+mixxx::Logger kLogger("TrackCollection");
+
 } // anonymous namespace
 
 TrackCollection::TrackCollection(
@@ -216,6 +217,10 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     emit(crateSummaryChanged(modifiedCrateSummaries));
 
     return true;
+}
+
+void TrackCollection::hideAllTracks(const QDir& rootDir) {
+    m_trackDao.markTracksAsMixxxDeleted(rootDir);
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {

@@ -1,12 +1,11 @@
-#ifndef TRACKCOLLECTION_H
-#define TRACKCOLLECTION_H
+#pragma once
 
+#include <QDir>
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
-#include "library/basetrackcache.h"
 #include "library/crate/cratestorage.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cuedao.h"
@@ -15,11 +14,9 @@
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
 
+class BaseTrackCache;
 
-// forward declaration(s)
-class Track;
-
-// Manages everything around tracks.
+// Manages the internal database.
 class TrackCollection : public QObject,
     public virtual /*implements*/ SqlStorage {
     Q_OBJECT
@@ -111,8 +108,12 @@ class TrackCollection : public QObject,
   private:
     friend class Library;
     friend class Upgrade;
+
+    void hideAllTracks(const QDir& rootDir);
+
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
+
     bool addDirectory(const QString& dir);
     void relocateDirectory(QString oldDir, QString newDir);
 
@@ -130,5 +131,3 @@ class TrackCollection : public QObject,
 
     QSharedPointer<BaseTrackCache> m_pTrackSource;
 };
-
-#endif // TRACKCOLLECTION_H

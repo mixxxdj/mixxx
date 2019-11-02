@@ -508,7 +508,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
         case Library::HideTracks:
             // Mark all tracks in this directory as deleted but DON'T purge them
             // in case the user re-adds them manually.
-            m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
+            m_pTrackCollection->hideAllTracks(dir);
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
