@@ -1745,11 +1745,11 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
     return true;
 }
 
-void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
+void TrackDAO::markTracksAsMixxxDeleted(const QDir& rootDir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = SqlLikeWildcardEscaper::apply(dir + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
+    QString likeClause = SqlLikeWildcardEscaper::apply(rootDir.absolutePath() + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
@@ -1758,7 +1758,7 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
                   .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dir;
+        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
     }
 
     QStringList trackIds;

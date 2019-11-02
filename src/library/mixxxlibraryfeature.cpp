@@ -91,7 +91,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
             pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
 
-    auto pTrackDAO = &pTrackCollection.getTrackDAO();
+    auto pTrackDAO = &pTrackCollection->getTrackDAO();
     connect(pTrackDAO,
             &TrackDAO::trackDirty,
             pBaseTrackCache,
