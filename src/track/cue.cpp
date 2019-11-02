@@ -28,12 +28,18 @@ Cue::Cue(TrackId trackId)
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(Color::kPredefinedColorsSet.noColor) {
+          m_color(QColor()) {
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, Cue::Type type, double position, double length,
-         int hotCue, QString label, PredefinedColorPointer color)
+Cue::Cue(int id,
+        TrackId trackId,
+        Cue::Type type,
+        double position,
+        double length,
+        int hotCue,
+        QString label,
+        QColor color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -153,12 +159,12 @@ void Cue::setLabel(const QString label) {
     emit updated();
 }
 
-PredefinedColorPointer Cue::getColor() const {
+QColor Cue::getColor() const {
     QMutexLocker lock(&m_mutex);
     return m_color;
 }
 
-void Cue::setColor(const PredefinedColorPointer color) {
+void Cue::setColor(const QColor& color) {
     QMutexLocker lock(&m_mutex);
     m_color = color;
     m_bDirty = true;

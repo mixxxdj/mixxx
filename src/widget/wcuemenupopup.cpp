@@ -96,7 +96,7 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
         m_pCueNumber->setText(QString(""));
         m_pCuePosition->setText(QString(""));
         m_pEditLabel->setText(QString(""));
-        m_pColorPicker->setSelectedColor();
+        m_pColorPicker->setSelectedColor(QColor());
     }
 }
 
@@ -107,15 +107,12 @@ void WCueMenuPopup::slotEditLabel() {
     m_pCue->setLabel(m_pEditLabel->text());
 }
 
-void WCueMenuPopup::slotChangeCueColor(PredefinedColorPointer pColor) {
+void WCueMenuPopup::slotChangeCueColor(const QColor& color) {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(pColor != nullptr) {
-        return;
-    }
-    m_pCue->setColor(pColor);
-    m_pColorPicker->setSelectedColor(pColor);
+    m_pCue->setColor(color);
+    m_pColorPicker->setSelectedColor(color);
     hide();
 }
 

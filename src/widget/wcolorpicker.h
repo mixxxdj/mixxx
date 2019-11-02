@@ -6,20 +6,22 @@
 #include <QStyleFactory>
 
 #include "util/color/color.h"
+#include "util/color/hotcuecolorpalette.h"
 
 class WColorPicker : public QWidget {
     Q_OBJECT
   public:
     WColorPicker(QWidget* parent = nullptr);
 
-    void setSelectedColor(PredefinedColorPointer pColor = nullptr);
-    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
+    void setSelectedColor(const QColor& color);
+    void useColorSet(const HotcueColorPalette& palette);
 
   signals:
-    void colorPicked(PredefinedColorPointer pColor);
+    void colorPicked(QColor color);
 
   private:
-    QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
-    PredefinedColorPointer m_pSelectedColor;
+    QColor m_selectedColor;
+    HotcueColorPalette m_palette;
+    QList<QPushButton*> m_colorButtons;
     QStyle* m_pStyle;
 };
