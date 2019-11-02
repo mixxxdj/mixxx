@@ -12,12 +12,11 @@
 #include <QString>
 
 #include "library/libraryfeature.h"
-#include "library/dao/playlistdao.h"
-#include "library/dao/trackdao.h"
 #include "track/track.h"
 
 class WLibrary;
 class KeyboardEventFilter;
+class PlaylistDAO;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
@@ -89,7 +88,6 @@ class BasePlaylistFeature : public LibraryFeature {
 
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
-    TrackDAO &m_trackDao;
     PlaylistTableModel* m_pPlaylistTableModel;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;

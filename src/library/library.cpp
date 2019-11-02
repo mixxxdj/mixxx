@@ -452,8 +452,8 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, NULL);
+    auto trackRef = TrackRef::fromFileInfo(location);
+    TrackPointer pTrack = m_pTrackCollection->getOrAddTrack(trackRef);
     if (pTrack) {
         emit(loadTrackToPlayer(pTrack, group));
     }

@@ -844,7 +844,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+    TrackPointer pTrack = m_pTrackCollection->getTrackById(trackId);
     if (!pTrack) {
         return false;
     }
@@ -920,7 +920,7 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollection->getTrackDAO().getTrack(getTrackId(index));
+    return m_pTrackCollection->getTrackById(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {

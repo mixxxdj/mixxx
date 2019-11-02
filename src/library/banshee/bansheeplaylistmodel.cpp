@@ -315,8 +315,9 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     }
 
     bool track_already_in_library = false;
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, &track_already_in_library);
+    TrackPointer pTrack = m_pTrackCollection->getOrAddTrack(
+            TrackRef::fromFileInfo(location),
+            &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from Banshee. If it was already in the library

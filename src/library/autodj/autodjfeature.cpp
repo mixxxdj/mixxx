@@ -254,7 +254,7 @@ void AutoDJFeature::slotAddRandomTrack() {
             }
 
             if (randomTrackId.isValid()) {
-                pRandomTrack = m_pTrackCollection->getTrackDAO().getTrack(randomTrackId);
+                pRandomTrack = m_pTrackCollection->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
                     qWarning() << "Track does not exist:"
                             << randomTrackId;

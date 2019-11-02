@@ -153,13 +153,13 @@ void BrowseTableModel::setPath(const MDir& path) {
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
-    QString track_location = getTrackLocation(index);
-    if (m_pRecordingManager->getRecordingLocation() == track_location) {
+    QString trackLocation = getTrackLocation(index);
+    if (m_pRecordingManager->getRecordingLocation() == trackLocation) {
         QMessageBox::critical(
             0, tr("Mixxx Library"),
             tr("Could not load the following file because"
                " it is in use by Mixxx or another application.")
-            + "\n" +track_location);
+            + "\n" + trackLocation);
         return TrackPointer();
     }
     // NOTE(uklotzde, 2015-12-08): Accessing tracks from the browse view
@@ -170,8 +170,8 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     // them edit the tracks in a way that persists across sessions
     // and we didn't want to edit the files on disk by default
     // unless the user opts in to that.
-    return m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(track_location, true, NULL);
+    return m_pTrackCollection->getOrAddTrack(
+            TrackRef::fromFileInfo(trackLocation));
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {

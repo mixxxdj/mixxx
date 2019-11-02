@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QStandardPaths>
 
+#include "library/dao/playlistdao.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -26,7 +27,6 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
         : LibraryFeature(pConfig, parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);

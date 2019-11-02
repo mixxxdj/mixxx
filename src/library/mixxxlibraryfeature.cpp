@@ -30,7 +30,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibrary(pLibrary),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
-          m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_icon(":/images/library/ic_library_tracks.svg") {
@@ -91,27 +90,29 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
             pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&m_trackDao,
+
+    auto pTrackDAO = &pTrackCollection.getTrackDAO();
+    connect(pTrackDAO,
             &TrackDAO::trackDirty,
             pBaseTrackCache,
             &BaseTrackCache::slotTrackDirty);
-    connect(&m_trackDao,
+    connect(pTrackDAO,
             &TrackDAO::trackClean,
             pBaseTrackCache,
             &BaseTrackCache::slotTrackClean);
-    connect(&m_trackDao,
+    connect(pTrackDAO,
             &TrackDAO::trackChanged,
             pBaseTrackCache,
             &BaseTrackCache::slotTrackChanged);
-    connect(&m_trackDao,
+    connect(pTrackDAO,
             &TrackDAO::tracksAdded,
             pBaseTrackCache,
             &BaseTrackCache::slotTracksAdded);
-    connect(&m_trackDao,
+    connect(pTrackDAO,
             &TrackDAO::tracksRemoved,
             pBaseTrackCache,
             &BaseTrackCache::slotTracksRemoved);
-    connect(&m_trackDao,
+    connect(pTrackDAO,
             &TrackDAO::dbTrackAdded,
             pBaseTrackCache,
             &BaseTrackCache::slotDbTrackAdded);
