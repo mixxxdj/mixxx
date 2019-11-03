@@ -7,9 +7,10 @@
 #include <QList>
 #include <QMutex>
 
-#include "engine/controls/enginecontrol.h"
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+#include "engine/controls/enginecontrol.h"
+#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 
 #define NUM_HOT_CUES 37
@@ -194,6 +195,7 @@ class CueControl : public EngineControl {
     double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 
+    HotcueColorPaletteSettings m_colorPaletteSettings;
     bool m_bPreviewing;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;

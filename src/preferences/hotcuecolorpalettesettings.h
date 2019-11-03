@@ -5,7 +5,7 @@
 
 class HotcueColorPaletteSettings {
   public:
-    HotcueColorPaletteSettings(UserSettingsPointer pConfig)
+    explicit HotcueColorPaletteSettings(UserSettingsPointer pConfig)
             : m_pConfig(pConfig) {
     }
 
