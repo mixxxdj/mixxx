@@ -1760,7 +1760,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled->setReadOnly();
 
     // The id of the predefined color assigned to this color.
-    m_hotcueColor = new ControlObject(keyForControl(i, "color_id"));
+    m_hotcueColor = new ControlObject(keyForControl(i, "color"));
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
