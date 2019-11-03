@@ -79,7 +79,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
 
     connect(spinBoxTransition, QOverload<int>::of(&QSpinBox::valueChanged),
             this, &DlgAutoDJ::transitionSliderChanged);
-
+    fadeModeCombobox->addItem(tr("Skip Silence (intro+outro)"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroSkipSilence));
     fadeModeCombobox->addItem(tr("Full Intro + Outro"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
     fadeModeCombobox->addItem(tr("Fade At Outro Start"),
