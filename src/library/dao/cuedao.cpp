@@ -11,7 +11,6 @@
 #include "library/queryutil.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
-#include "util/color/predefinedcolor.h"
 
 int CueDAO::cueCount() {
     qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();

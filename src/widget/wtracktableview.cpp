@@ -39,7 +39,6 @@
 #include "util/assert.h"
 #include "util/parented_ptr.h"
 #include "util/desktophelper.h"
-#include "util/color/predefinedcolorsset.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,

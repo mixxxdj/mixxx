@@ -15,7 +15,6 @@
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
-#include "util/color/predefinedcolorsrepresentation.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 

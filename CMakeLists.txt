@@ -535,7 +535,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/hotcuecolorpalette.cpp
-  src/util/color/predefinedcolor.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
