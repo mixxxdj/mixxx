@@ -69,10 +69,12 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
 }
 
 
-BulkController::BulkController(libusb_context* context,
-                               libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc)
-        : m_context(context),
+BulkController::BulkController(UserSettingsPointer pConfig,
+        libusb_context* context,
+        libusb_device_handle* handle,
+        struct libusb_device_descriptor* desc)
+        : Controller(pConfig),
+          m_context(context),
           m_phandle(handle),
           in_epaddr(0),
           out_epaddr(0)
