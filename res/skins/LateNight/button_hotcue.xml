@@ -28,7 +28,7 @@
       <ConnectValueFromWidget>false</ConnectValueFromWidget>
     </Connection>
     <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color_id</ConfigKey>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color</ConfigKey>
       <BindProperty>highlight</BindProperty>
     </Connection>
   </PushButton>
