@@ -620,10 +620,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
     // In FADING states, we expect that both tracks are playing.
     // Normally the the fading fromDeck stops after the transition is over and
-    // we need to replace it with a new track from the queue. In the rare case the
-    // toDeck stops first, we replace this one and stop the transition.
-    // Then we switch the crossfader fully to the new track side,
-    // switch to IDLE mode and load the next track into the other deck.
+    // we need to replace it with a new track from the queue.
     if (m_eState == ADJ_LEFT_FADING || m_eState == ADJ_RIGHT_FADING) {
         // Once P1 or P2 has stopped switch out of fading mode to idle.
         // If the user stops the toDeck during a fade, let the fade continue
@@ -861,7 +858,7 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
         return;
     }
 
-    if (playing && otherDeck->isPlaying()) {
+    if (playing && !otherDeck->isPlaying()) {
         // In case both decks were stopped and now this one just started, make
         // this deck the "from deck".
         calculateTransition(thisDeck, getOtherDeck(thisDeck), false);
@@ -875,8 +872,13 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
         // toDeck has stopped at the end. Recalculate the transition, because
         // it has been done from a now irrelevant previous position.
         // This forces the other deck to be the fromDeck.
+        thisDeck->startPos = kKeepPosition;
         calculateTransition(otherDeck, thisDeck, true);
-        thisDeck->setPlayPosition(thisDeck->startPos);
+        if (thisDeck->startPos != kKeepPosition) {
+            // Note: this seek will trigger the playerPositionChanged slot
+            // which may calls the calculateTransition() again without seek = true;
+            thisDeck->setPlayPosition(thisDeck->startPos);
+        }
     }
 }
 
@@ -1326,18 +1328,12 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         // (ADJ_ENABLE_P1LOADED state) then play the track.
         loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
     } else {
-        DeckAttributes* fromDeck = getFromDeck();
-        if (!fromDeck) {
-            // We have no from deck yet this happens if you have AutoDJ enabled and
-            // manually load two new tracks. Since we need to seek to the start position
-            // in any case, we adopt the other deck as from deck for now.
-            fromDeck = getOtherDeck(pDeck);
-        }
+        // this deck has just changed the track so it becomes the toDeck
+        DeckAttributes* fromDeck = getOtherDeck(pDeck);
         if (fromDeck) {
+            // check if this deck has suitable alignment
             DeckAttributes* toDeck = getOtherDeck(fromDeck);
             if (toDeck == pDeck) {
-                // Reset startPos, just in case calculateTransition() is not
-                // able to set a new one.
                 pDeck->startPos = kKeepPosition;
                 calculateTransition(fromDeck, pDeck, true);
                 if (pDeck->startPos != kKeepPosition) {
