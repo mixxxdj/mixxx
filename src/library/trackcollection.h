@@ -81,14 +81,14 @@ class TrackCollection : public QObject,
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
+    // Might be called from any thread
+    void exportTrackMetadata(Track* pTrack) const;
+
     TrackPointer getTrackById(
             const TrackId& trackId) const;
     TrackPointer getOrAddTrack(
             const TrackRef& trackRef,
             bool* pAlreadyInLibrary = nullptr);
-
-    // Might be called from any thread
-    void exportTrackMetadata(Track* pTrack) const;
 
     // Must be called from the main thread
     void saveTrack(Track* pTrack);
