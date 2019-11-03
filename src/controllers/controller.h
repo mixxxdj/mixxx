@@ -23,7 +23,7 @@
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
-    Controller();
+    Controller(UserSettingsPointer pConfig);
     ~Controller() override;  // Subclass should call close() at minimum.
 
     // Returns the extension for the controller (type) preset files.  This is
@@ -161,6 +161,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bIsOpen;
     bool m_bLearning;
     QElapsedTimer m_userActivityInhibitTimer;
+
+    UserSettingsPointer m_pConfig;
 
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;
