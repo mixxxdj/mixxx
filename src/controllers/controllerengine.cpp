@@ -215,7 +215,7 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
 
-    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
+    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine, m_pConfig);
     engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
