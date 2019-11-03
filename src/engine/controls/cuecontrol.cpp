@@ -27,6 +27,7 @@ CueControl::CueControl(QString group,
                        UserSettingsPointer pConfig) :
         EngineControl(group, pConfig),
         m_pConfig(pConfig),
+        m_colorPaletteSettings(HotcueColorPaletteSettings(pConfig)),
         m_bPreviewing(false),
         // m_pPlay->toBoo() -> engine play state
         // m_pPlay->set(1.0) -> emulate play button press
@@ -601,8 +602,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
 
     ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
     if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        HotcueColorPaletteSettings colorPaletteSettings(getConfig());
-        auto hotcueColorPalette = colorPaletteSettings.getHotcueColorPalette();
+        auto hotcueColorPalette =
+                m_colorPaletteSettings.getHotcueColorPalette();
         auto colors = hotcueColorPalette.m_colorList;
         pCue->setColor(colors.at((hotcue % (colors.count() - 1)) + 1));
     };
