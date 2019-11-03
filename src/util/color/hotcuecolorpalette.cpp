@@ -9,8 +9,7 @@ HotcueColorPalette::HotcueColorPalette(QList<QColor> colorList)
 }
 
 const HotcueColorPalette HotcueColorPalette::mixxxPalette =
-        HotcueColorPalette(QList<QColor>{
-                QColor("#c50a08"),
+        HotcueColorPalette(QList<QColor>{QColor("#c50a08"),
                 QColor("#32be44"),
                 QColor("#0044ff"),
                 QColor("#f8d200"),
