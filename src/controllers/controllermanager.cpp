@@ -127,7 +127,7 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
-    m_enumerators.append(new PortMidiEnumerator());
+    m_enumerators.append(new PortMidiEnumerator(m_pConfig));
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
 #endif
@@ -135,7 +135,7 @@ void ControllerManager::slotInitialize() {
     m_enumerators.append(new BulkEnumerator());
 #endif
 #ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
+    m_enumerators.append(new HidEnumerator(m_pConfig));
 #endif
 }
 
