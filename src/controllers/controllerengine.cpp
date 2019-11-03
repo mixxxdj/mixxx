@@ -29,9 +29,11 @@ const int kDecks = 16;
 const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
-ControllerEngine::ControllerEngine(Controller* controller)
+ControllerEngine::ControllerEngine(
+        Controller* controller, UserSettingsPointer pConfig)
         : m_pEngine(nullptr),
           m_pController(controller),
+          m_pConfig(pConfig),
           m_bPopups(false),
           m_pBaClass(nullptr) {
     // Handle error dialog buttons
