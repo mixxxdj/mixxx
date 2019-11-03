@@ -1083,6 +1083,69 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double introLength = introEnd - introStart;
 
     switch (m_transitionMode) {
+    case TransitionMode::IntroOutroSkipSilence:
+        // assumes introEnd- and outroStart-cues are set
+        // on the first downbeat of the phrase after the intro
+        // or on the first downbeat of the outro-phrase.
+        //
+        // In the diagrams below,
+        // - is part of a track outside the outro/intro,
+        // p is the part after/before the outro/intro
+        //   this can be of arbitrary (even 0) length
+        // o is part of the outro
+        // i is part of the intro
+        // | marks the boundaries of the transition
+        //
+        // When outro > intro:
+        // -----o|oooop|
+        //       |piii-|----
+        //
+        // When outro < intro:
+        // ------|-ooop|
+        //       |piii-|----
+        //
+        // The mode is phrase aware because the intro and outro
+        // parts always end at the same time.
+        // to achieve this, the tracks are aligned so the intro
+        // and outro parts overlap for at least 
+        // $$ 2^n \ \text{beats} \ \text{and} \ n \in \N $$.
+        // Everything longer than that is considered as the 
+        // `p` part in the diagrams.
+        //
+        // only works if outro-start and intro-start
+        // are defined, otherwise fall back to FullIntroOutro
+        // behavior.
+
+        if (outroLength > 0 && introLength > 0) {
+            
+            // review: do I have to check getLoadedTrack()==nullptr?
+            // review: should this rather get a DeckAttributes::bpm() method instead?
+            const double introBpm =   pToDeck->getLoadedTrack()->getBpm();
+            const double outroBpm = pFromDeck->getLoadedTrack()->getBpm();
+            
+            // calc number of beats in intro/outro
+            const unsigned int introLenBeats = static_cast<int>((introBpm/60)*introLength);
+            const unsigned int outroLenBeats = static_cast<int>((outroBpm/60)*outroLength);
+            // get the next lower power of two 
+            const unsigned int introLenPowOf2 = 1 << static_cast<int>(log2(introLenBeats));
+            const unsigned int outroLenPowOf2 = 1 << static_cast<int>(log2(outroLenBeats));
+            // convert from beats back into seconds
+            const double introLenPowOf2Time = introLenPowOf2*(60/introBpm);
+            const double outroLenPowOf2Time = outroLenPowOf2*(60/outroBpm);
+            if (introLength > outroLength) {
+                pFromDeck->fadeBeginPos = outroStart+outroLenPowOf2Time-introLenPowOf2Time;
+            } else {
+                pFromDeck->fadeBeginPos = outroStart+outroLenPowOf2Time-introLength;
+            }
+            pFromDeck->fadeEndPos = outroEnd;
+            pToDeck->startPos = introStart;
+            
+            break;
+        } else {
+            // fallthrough; (explicit) (C++17)
+        }
+        // silince gcc&clang warning
+        // fall through
     case TransitionMode::FullIntroOutro:
         // Use the outro or intro length for the transition time, whichever is
         // shorter. Let the full outro and intro play; do not cut off any part
