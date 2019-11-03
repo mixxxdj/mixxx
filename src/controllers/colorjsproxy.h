@@ -5,13 +5,14 @@
 #include <QScriptEngine>
 #include <QScriptValue>
 
-#include "preferences/usersettings.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "util/color/color.h"
 
 class ColorJSProxy final : public QObject {
     Q_OBJECT
   public:
-    ColorJSProxy(QScriptEngine* pScriptEngine, UserSettingsPointer pConfig);
+    ColorJSProxy(QScriptEngine* pScriptEngine,
+            HotcueColorPaletteSettings colorPaletteSettings);
 
     ~ColorJSProxy() override;
 
@@ -22,11 +23,11 @@ class ColorJSProxy final : public QObject {
     Q_INVOKABLE QScriptValue colorFromHexCode(uint colorCode);
 
   private:
-    QScriptValue makeHotcueColorPalette(
-            QScriptEngine* pScriptEngine, UserSettingsPointer pConfig);
+    QScriptValue makeHotcueColorPalette(QScriptEngine* pScriptEngine,
+            HotcueColorPaletteSettings colorPaletteSettings);
     QScriptEngine* m_pScriptEngine;
     QScriptValue m_hotcueColorPalette;
-    UserSettingsPointer m_pConfig;
+    HotcueColorPaletteSettings m_colorPaletteSettings;
 };
 
 #endif /* COLORJSPROXY_H */

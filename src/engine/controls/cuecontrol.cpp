@@ -24,19 +24,19 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
 
-CueControl::CueControl(QString group,
-                       UserSettingsPointer pConfig) :
-        EngineControl(group, pConfig),
-        m_bPreviewing(false),
-        // m_pPlay->toBoo() -> engine play state
-        // m_pPlay->set(1.0) -> emulate play button press
-        m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
-        m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
-        m_iCurrentlyPreviewingHotcues(0),
-        m_bypassCueSetByPlay(false),
-        m_iNumHotCues(NUM_HOT_CUES),
-        m_pLoadedTrack(),
-        m_mutex(QMutex::Recursive) {
+CueControl::CueControl(QString group, UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_colorPaletteSettings(HotcueColorPaletteSettings(pConfig)),
+          m_bPreviewing(false),
+          // m_pPlay->toBoo() -> engine play state
+          // m_pPlay->set(1.0) -> emulate play button press
+          m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
+          m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
+          m_iCurrentlyPreviewingHotcues(0),
+          m_bypassCueSetByPlay(false),
+          m_iNumHotCues(NUM_HOT_CUES),
+          m_pLoadedTrack(),
+          m_mutex(QMutex::Recursive) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
@@ -585,8 +585,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
 
     ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
     if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        HotcueColorPaletteSettings colorPaletteSettings(getConfig());
-        auto hotcueColorPalette = colorPaletteSettings.getHotcueColorPalette();
+        auto hotcueColorPalette =
+                m_colorPaletteSettings.getHotcueColorPalette();
         auto colors = hotcueColorPalette.m_colorList;
         pCue->setColor(colors.at((hotcue % (colors.count() - 1)) + 1));
     };
