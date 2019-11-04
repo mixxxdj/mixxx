@@ -8,7 +8,7 @@
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
-#include "util/color/hotcuecolorpalette.h"
+#include "util/color/colorpalette.h"
 #include "util/memory.h"
 #include "util/time.h"
 
@@ -620,7 +620,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
 }
 
 TEST_F(ControllerEngineTest, colorProxyTestMixxxPalette) {
-    QList<QColor> allColors = HotcueColorPalette::mixxxPalette.m_colorList;
+    QList<QColor> allColors = ColorPalette::mixxxHotcuesPalette.m_colorList;
     for (int i = 0; i < allColors.length(); ++i) {
         QColor color = allColors[i];
         qDebug() << "Testing color " << color.name();

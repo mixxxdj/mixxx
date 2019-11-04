@@ -2,14 +2,14 @@
 
 #include <QMenu>
 
-#include "util/color/hotcuecolorpalette.h"
+#include "util/color/colorpalette.h"
 
 class ColorMenu : public QMenu {
     Q_OBJECT
   public:
     ColorMenu(QWidget *parent = nullptr);
 
-    void useColorPalette(const HotcueColorPalette& colorPalette);
+    void useColorPalette(const ColorPalette& colorPalette);
 
   signals:
     void colorPicked(QColor pColor);

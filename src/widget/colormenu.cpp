@@ -6,10 +6,10 @@ ColorMenu::ColorMenu(QWidget *parent)
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
     setTitle(tr("Set color"));
-    useColorPalette(HotcueColorPalette::mixxxPalette);
+    useColorPalette(ColorPalette::mixxxHotcuesPalette);
 }
 
-void ColorMenu::useColorPalette(const HotcueColorPalette& colorPalette) {
+void ColorMenu::useColorPalette(const ColorPalette& colorPalette) {
     clear();
     for (const auto& pColor : colorPalette.m_colorList) {
         QAction* pColorAction = new QAction(this);
