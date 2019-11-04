@@ -4,7 +4,7 @@
 ColorJSProxy::ColorJSProxy(QScriptEngine* pScriptEngine,
         HotcueColorPaletteSettings colorPaletteSettings)
         : m_pScriptEngine(pScriptEngine),
-          m_hotcueColorPalette(
+          m_JsHotcueColorPalette(
                   makeHotcueColorPalette(pScriptEngine, colorPaletteSettings)),
           m_colorPaletteSettings(colorPaletteSettings) {
 }
@@ -12,7 +12,7 @@ ColorJSProxy::ColorJSProxy(QScriptEngine* pScriptEngine,
 ColorJSProxy::~ColorJSProxy() = default;
 
 Q_INVOKABLE QScriptValue ColorJSProxy::hotcueColorPalette() {
-    return m_hotcueColorPalette;
+    return m_JsHotcueColorPalette;
 }
 
 QScriptValue ColorJSProxy::colorFromHexCode(uint colorCode) {
