@@ -9,6 +9,7 @@
 #include <QUrl>
 #include <QIcon>
 #include <QPoint>
+#include <QPointer>
 
 #include "library/crate/cratetablemodel.h"
 
@@ -24,7 +25,7 @@
 // forward declaration(s)
 class Library;
 class TrackCollection;
-
+class WLibrarySidebar;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
@@ -43,6 +44,7 @@ class CrateFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel() override;
 
@@ -121,6 +123,8 @@ class CrateFeature : public LibraryFeature {
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pAnalyzeCrateAction;
+
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 

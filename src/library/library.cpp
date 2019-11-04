@@ -11,23 +11,25 @@
 #include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+
+#include "library/autodj/autodjfeature.h"
+#include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/crate/cratefeature.h"
-#include "library/rhythmbox/rhythmboxfeature.h"
-#include "library/banshee/bansheefeature.h"
-#include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/autodj/autodjfeature.h"
 #include "library/playlistfeature.h"
-#include "library/traktor/traktorfeature.h"
-#include "library/librarycontrol.h"
+#include "library/recording/recordingfeature.h"
+#include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/setlogfeature.h"
+#include "library/traktor/traktorfeature.h"
+
 #include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
 #include "util/logger.h"
@@ -135,6 +137,7 @@ Library::Library(
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
+
     BrowseFeature* browseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, pRecordingManager);
     connect(browseFeature,
@@ -149,8 +152,8 @@ Library::Library(
             &LibraryScanner::scanFinished,
             browseFeature,
             &BrowseFeature::slotLibraryScanFinished);
-
     addFeature(browseFeature);
+
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
 

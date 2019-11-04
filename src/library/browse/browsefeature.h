@@ -24,6 +24,7 @@
 
 class Library;
 class TrackCollection;
+class WLibrarySidebar;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
@@ -39,6 +40,7 @@ class BrowseFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -77,6 +79,7 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QIcon m_icon;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 #endif // BROWSEFEATURE_H

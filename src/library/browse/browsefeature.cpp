@@ -20,6 +20,7 @@
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "widget/wlibrarysidebar.h"
 
 const QString kQuickLinksSeparator = "-+-";
 
@@ -226,6 +227,11 @@ void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
     libraryWidget->registerView("BROWSEHOME", edit);
 }
 
+void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
     emit disableSearch();
@@ -275,7 +281,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         return;
     }
 
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
         menu.addAction(m_pRemoveQuickLinkAction);
         menu.exec(globalPos);

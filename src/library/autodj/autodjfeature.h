@@ -15,6 +15,7 @@
 #include <QPoint>
 #include <QAction>
 #include <QSignalMapper>
+#include <QPointer>
 
 #include "library/libraryfeature.h"
 #include "preferences/usersettings.h"
@@ -27,6 +28,7 @@ class Library;
 class PlayerManagerInterface;
 class TrackCollection;
 class AutoDJProcessor;
+class WLibrarySidebar;
 
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
@@ -45,6 +47,7 @@ class AutoDJFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -92,6 +95,7 @@ class AutoDJFeature : public LibraryFeature {
     QSignalMapper m_crateMapper;
 
     QIcon m_icon;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:
     // Add a crate to the auto-DJ queue.
