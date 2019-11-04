@@ -104,6 +104,7 @@ class DeckAttributes : public QObject {
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
+    void rateChanged(DeckAttributes* pDeck);
 
   private slots:
     void slotPlayPosChanged(double v);
@@ -115,6 +116,7 @@ class DeckAttributes : public QObject {
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotPlayerEmpty();
+    void slotRateChanged(double v);
 
   public:
     int index;
@@ -223,6 +225,7 @@ class AutoDJProcessor : public QObject {
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
+    void playerRateChanged(DeckAttributes* pDeck);
 
     void controlEnable(double value);
     void controlFadeNow(double value);

@@ -56,6 +56,9 @@ DeckAttributes::DeckAttributes(int index,
     m_introEndPos.connectValueChanged(this, &DeckAttributes::slotIntroEndPositionChanged);
     m_outroStartPos.connectValueChanged(this, &DeckAttributes::slotOutroStartPositionChanged);
     m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
+    m_rateDir.connectValueChanged(this, &DeckAttributes::slotRateChanged);
+    m_rateRange.connectValueChanged(this, &DeckAttributes::slotRateChanged);
+    m_rateSlider.connectValueChanged(this, &DeckAttributes::slotRateChanged);
 }
 
 DeckAttributes::~DeckAttributes() {
@@ -96,6 +99,11 @@ void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
 
 void DeckAttributes::slotPlayerEmpty() {
     emit(playerEmpty(this));
+}
+
+void DeckAttributes::slotRateChanged(double v) {
+    Q_UNUSED(v);
+    emit(rateChanged(this));
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
@@ -444,6 +452,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 this, &AutoDJProcessor::playerEmpty);
         connect(deck2, &DeckAttributes::playerEmpty,
                 this, &AutoDJProcessor::playerEmpty);
+
+        connect(deck1, &DeckAttributes::rateChanged,
+                 this, &AutoDJProcessor::playerRateChanged);
+        connect(deck2, &DeckAttributes::rateChanged,
+                 this, &AutoDJProcessor::playerRateChanged);
 
         if (!deck1Playing && !deck2Playing) {
             // Both decks are stopped. Load a track into deck 1 and start it
@@ -1394,6 +1407,19 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
     // Load the next track. If we are the first AutoDJ track
     // (ADJ_ENABLE_P1LOADED state) then play the track.
     loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
+}
+
+
+void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
+    if (sDebug) {
+        qDebug() << this << "playerRateChanged" << pAttributes->group;
+    }
+
+    DeckAttributes* fromDeck = getFromDeck();
+    if (!fromDeck) {
+        return;
+    }
+    calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {
