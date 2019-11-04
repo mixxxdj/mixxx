@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QColorDialog>
 #include <QMenu>
 
 #include "util/color/colorpalette.h"
@@ -10,10 +11,21 @@ class ColorMenu : public QMenu {
     ColorMenu(QWidget *parent = nullptr);
 
     void useColorPalette(const ColorPalette& colorPalette);
+    void setCurrentColor(QColor currentColor);
 
   signals:
     void colorPicked(QColor pColor);
 
+  private slots:
+    void openColorDialog();
+
   private:
-    QList<QAction*> m_pColorActions;
+    void createPaletteColorsActions(const ColorPalette& colorPalette);
+    void createOtherColorAction();
+    void selectCurrentColorAction(const QColor& currentColor) const;
+
+    QColor m_currentColor;
+    QAction* m_pOtherColorAction;
+    QActionGroup* m_pActionGroup;
+    QColorDialog* m_pColorDialog;
 };

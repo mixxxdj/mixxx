@@ -14,6 +14,7 @@ class CueMenu : public QMenu {
 
     void setCue(CuePointer pCue) {
         m_pCue = pCue;
+        m_pColorMenu->setCurrentColor(m_pCue->getColor());
     }
 
     void setTrack(TrackPointer pTrack) {
