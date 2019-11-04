@@ -1693,8 +1693,8 @@ void CueControl::hotcueFocusColorPrev(double v) {
     QColor color = pControl->getColor();
     DEBUG_ASSERT(color.isValid());
 
-    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
-    HotcueColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
+    HotcueColorPaletteSettings m_colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set
     int iColorIndex = colorPalette.indexOf(color) - 1;
@@ -1725,7 +1725,7 @@ void CueControl::hotcueFocusColorNext(double v) {
     DEBUG_ASSERT(color.isValid());
 
     HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
-    HotcueColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
+    ColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set
     int iColorIndex = colorPalette.indexOf(color) + 1;

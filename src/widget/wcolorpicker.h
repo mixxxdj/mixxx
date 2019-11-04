@@ -7,7 +7,7 @@
 #include <QStyleFactory>
 
 #include "util/color/color.h"
-#include "util/color/hotcuecolorpalette.h"
+#include "util/color/colorpalette.h"
 
 class WColorPicker : public QWidget {
     Q_OBJECT
@@ -21,7 +21,7 @@ class WColorPicker : public QWidget {
 
     void resetSelectedColor();
     void setSelectedColor(const QColor& color);
-    void useColorSet(const HotcueColorPalette& palette);
+    void useColorSet(const ColorPalette& palette);
 
   signals:
     void colorPicked(QColor color);
@@ -33,7 +33,7 @@ class WColorPicker : public QWidget {
     void addColorButton(const QColor& color, QGridLayout* pLayout, int row, int column);
     ColorOption m_colorOption;
     QColor m_selectedColor;
-    HotcueColorPalette m_palette;
+    ColorPalette m_palette;
     QList<QPushButton*> m_colorButtons;
     QStyle* m_pStyle;
 };

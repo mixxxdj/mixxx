@@ -1278,7 +1278,7 @@ class MixxxCore(Feature):
                    "src/util/cache.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
-                   "src/util/color/hotcuecolorpalette.cpp",
+                   "src/util/color/colorpalette.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",

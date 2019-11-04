@@ -14,7 +14,7 @@ namespace {
 WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
         : QWidget(parent),
           m_colorOption(colorOption),
-          m_palette(HotcueColorPalette::mixxxPalette) {
+          m_palette(ColorPalette::mixxxPalette) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
@@ -139,7 +139,7 @@ void WColorPicker::setSelectedColor(const QColor& color) {
     pButton->style()->polish(pButton);
 }
 
-void WColorPicker::useColorSet(const HotcueColorPalette& palette) {
+void WColorPicker::useColorSet(const ColorPalette& palette) {
     for (int i = 0; i < m_colorButtons.size(); ++i) {
         int j = i;
         if (m_colorOption == ColorOption::AllowNoColor) {
