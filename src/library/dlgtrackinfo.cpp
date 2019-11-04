@@ -11,7 +11,7 @@
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "util/color/hotcuecolorpalette.h"
+#include "util/color/colorpalette.h"
 #include "util/compatibility.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"

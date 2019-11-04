@@ -1,11 +1,7 @@
-//
-// Created by Ferran Pujol Camins on 27/10/2019.
-//
+#include "colorpalette.h"
 
-#include "hotcuecolorpalette.h"
-
-const HotcueColorPalette HotcueColorPalette::mixxxPalette =
-        HotcueColorPalette(QList<QColor>{QColor("#c50a08"),
+const ColorPalette ColorPalette::mixxxPalette =
+        ColorPalette(QList<QColor>{QColor("#c50a08"),
                 QColor("#32be44"),
                 QColor("#0044ff"),
                 QColor("#f8d200"),
