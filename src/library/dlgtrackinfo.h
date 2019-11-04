@@ -39,9 +39,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void cancel();
     void trackUpdated();
 
-    void cueActivate();
-    void cueDelete();
-
     void slotBpmDouble();
     void slotBpmHalve();
     void slotBpmTwoThirds();
@@ -69,12 +66,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private:
     void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
-    void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
     void clear();
     void init();
-    QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
     BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
