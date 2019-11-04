@@ -23,7 +23,7 @@ class WCueMenuPopup : public QWidget {
 
     void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 
-    void useColorSet(const HotcueColorPalette& palette) {
+    void useColorSet(const ColorPalette& palette) {
         if (m_pColorPicker != nullptr) {
             m_pColorPicker->useColorSet(palette);
         }

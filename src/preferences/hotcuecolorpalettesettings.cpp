@@ -2,7 +2,7 @@
 
 const QString HotcueColorPaletteSettings::sGroup = "[HotcueColorPalette]";
 
-HotcueColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
+ColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
     QList<QColor> colorList;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(sGroup)) {
         QColor color = m_pConfig->getValue<QColor>(key);
@@ -13,14 +13,14 @@ HotcueColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
 
     // If no palette is defined in the settings, we use the default one.
     if (colorList.isEmpty()) {
-        return HotcueColorPalette::mixxxPalette;
+        return ColorPalette::mixxxPalette;
     }
 
     return colorList;
 }
 
 void HotcueColorPaletteSettings::setHotcueColorPalette(
-        const HotcueColorPalette& colorPalette) {
+        const ColorPalette& colorPalette) {
     removePalette();
 
     for (int index = 0; index < colorPalette.m_colorList.count(); ++index) {
