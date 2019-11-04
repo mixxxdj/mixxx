@@ -67,7 +67,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    // (currently unused, keept for consistency with other types)
+    // (currently unused, kept for consistency with other types)
     void addDeck();
 
     // Add number of decks according to configuration.
@@ -215,6 +215,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.
     void noMicrophoneInputConfigured();
+
+    // Emitted when the user tries to enable an auxiliary master control when
+    // there is no input configured.
+    void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no
     // input configured.

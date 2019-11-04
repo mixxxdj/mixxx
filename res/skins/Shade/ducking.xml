@@ -2,11 +2,9 @@
   <WidgetGroup>
     <Size>74f,54f</Size>
     <BackPath>style/style_bg_ducking.png</BackPath>
-    <Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
     <Children>
       <PushButton>
         <TooltipId></TooltipId>
-        <Style></Style>
         <NumberStates>3</NumberStates>
         <State>
           <Number>0</Number>
@@ -33,7 +31,6 @@
 
       <Knob>
         <TooltipId></TooltipId>
-        <Style></Style>
         <NumberStates>64</NumberStates>
         <Path>knobs/knob_rotary_s%1.png</Path>
         <Pos>27,22</Pos>

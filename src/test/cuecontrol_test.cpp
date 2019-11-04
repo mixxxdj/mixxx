@@ -29,7 +29,7 @@ class CueControlTest : public BaseSignalPathTest {
 
     TrackPointer createTestTrack() const {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        return std::make_unique<Track>(kTrackLocationTest, SecurityTokenPointer());
+        return Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
     }
 
     void loadTrack(TrackPointer pTrack) {
@@ -156,7 +156,8 @@ TEST_F(CueControlTest, LoadTrackWithIntroEndAndOutroStart) {
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(-1.0, m_pCuePoint->get());
+    // Default Cue is at 0.0
+    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-1.0, m_pIntroStartPosition->get());
     EXPECT_DOUBLE_EQ(150.0, m_pIntroEndPosition->get());
     EXPECT_DOUBLE_EQ(250.0, m_pOutroStartPosition->get());
@@ -307,7 +308,8 @@ TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(-1.0, m_pCuePoint->get());
+    // Default Cue is at 0.0
+    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
 
     // Set cue and check if track is seeked to it.

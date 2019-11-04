@@ -41,7 +41,7 @@ class SoundDevicePortAudio : public SoundDevice {
   public:
     SoundDevicePortAudio(UserSettingsPointer config,
                          SoundManager* sm, const PaDeviceInfo* deviceInfo,
-                         unsigned int devIndex);
+                         unsigned int devIndex, QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId);
     ~SoundDevicePortAudio() override;
 
     SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
@@ -79,8 +79,6 @@ class SoundDevicePortAudio : public SoundDevice {
 
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
-    // PortAudio device index for this device.
-    PaDeviceIndex m_devId;
     // Struct containing information about this device. Don't free() it, it
     // belongs to PortAudio.
     const PaDeviceInfo* m_deviceInfo;
@@ -104,7 +102,6 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
-
 };
 
 #endif

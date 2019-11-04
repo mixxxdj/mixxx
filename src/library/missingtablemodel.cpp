@@ -1,8 +1,6 @@
-#include <QtSql>
-
-#include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
-#include "library/librarytablemodel.h"
+
+#include "library/library.h"
 #include "library/dao/trackschema.h"
 
 namespace {
@@ -12,9 +10,10 @@ const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
 } // anonymous namespace
 
 MissingTableModel::MissingTableModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent, pTrackCollection,
-                            "mixxx.db.model.missing") {
+                                     Library* pLibrary)
+        : BaseSqlTableModel(parent, &pLibrary->trackCollection(),
+                            "mixxx.db.model.missing"),
+          m_pLibrary(pLibrary) {
     setTableModel();
 }
 
@@ -64,7 +63,7 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_pTrackCollection->purgeTracks(trackIds);
+    m_pLibrary->purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

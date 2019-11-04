@@ -33,7 +33,7 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     void slotCuesUpdated();
 
   private:
-    void generateMarkImage(WaveformMark* pMark);
+    void generateMarkImage(WaveformMarkPointer pMark);
 
     PredefinedColorsRepresentation m_predefinedColorsRepresentation;
 

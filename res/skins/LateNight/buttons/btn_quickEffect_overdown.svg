@@ -1,1 +1,65 @@
-<svg id="svg3249" width="18" height="18" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs id="defs3251"><linearGradient id="linearGradient3807-3" x1="13" x2="13" y1="1027.4" y2="1049.4" gradientTransform="matrix(.56522 0 0 .56522 2.2174 -1630.3)" gradientUnits="userSpaceOnUse"><stop id="stop4819" stop-color="#659f08" offset="0"/><stop id="stop4825" stop-color="#5b9402" offset=".72857"/><stop id="stop4823" stop-color="#456e05" offset="1"/></linearGradient></defs><g id="layer1" transform="translate(0 -1034.4)"><rect id="rect3029" transform="scale(1,-1)" x="2.5" y="-1049.9" width="13" height="13" color="#000000" fill="url(#linearGradient3807-3)" stroke="#979797"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   height="18"
+   width="18"
+   id="svg3249">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3251">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(.56522 0 0 .56522 2.2174 -1630.3)"
+       y2="1049.4"
+       y1="1027.4"
+       x2="13"
+       x1="13"
+       id="linearGradient3807-3">
+      <stop
+         style="stop-color:#73b503;stop-opacity:1"
+         offset="0"
+         stop-color="#7fcd03"
+         id="stop4819" />
+      <stop
+         style="stop-color:#5a8e02;stop-opacity:1"
+         offset=".72857"
+         stop-color="#66a602"
+         id="stop4825" />
+      <stop
+         style="stop-color:#446b01;stop-opacity:1"
+         offset="1"
+         stop-color="#508301"
+         id="stop4823" />
+    </linearGradient>
+  </defs>
+  <g
+     transform="translate(0 -1034.4)"
+     id="layer1">
+    <rect
+       stroke="#979797"
+       fill="url(#linearGradient3807-3)"
+       color="#000000"
+       height="13"
+       width="13"
+       y="-1049.9"
+       x="2.5"
+       transform="scale(1,-1)"
+       id="rect3029" />
+  </g>
+</svg>

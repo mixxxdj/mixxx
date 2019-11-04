@@ -36,8 +36,10 @@ void Tooltips::addStandardTooltips() {
 
     add("waveform_overview")
             << tr("Waveform Overview")
-            << tr("Shows information about the track currently loaded in this channel.")
-            << tr("Jump around in the track by clicking anywhere on the waveform.")
+            << tr("Shows information about the track currently loaded in this deck.") << "\n"
+            << tr("Left click to jump around in the track.")
+            << tr("Right click hotcues to edit their labels and colors.")
+            << tr("Right click anywhere else to show the time at that point.")
             << dropTracksHere;
 
     QString scratchMouse = tr("Use the mouse to scratch, spin-back or throw tracks.");
@@ -543,7 +545,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
             << tr("If hotcue is not set, sets the hotcue to the current play position.")
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."));
+            << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."))
+            << tr("Right click hotcues on the overview waveform to edit their labels and colors.");
 
     // Status displays and toggle buttons
     add("toggle_recording")

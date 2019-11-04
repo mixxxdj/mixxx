@@ -21,6 +21,7 @@
 #include <float.h>
 
 #include <QtDebug>
+#include <QRegularExpression>
 #include <QThread>
 
 #ifdef __LINUX__
@@ -83,6 +84,8 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
+const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
+
 } // anonymous namespace
 
 
@@ -90,10 +93,10 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
                                            SoundManager* sm,
                                            const PaDeviceInfo* deviceInfo,
-                                           unsigned int devIndex)
+                                           unsigned int devIndex,
+                                           QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId)
         : SoundDevice(config, sm),
           m_pStream(NULL),
-          m_devId(devIndex),
           m_deviceInfo(deviceInfo),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
@@ -107,8 +110,25 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    m_strInternalName = QString("%1, %2").arg(QString::number(m_devId),
-            deviceInfo->name);
+    if (apiIndexToTypeId.value(deviceInfo->hostApi) == paALSA) {
+        // PortAudio gives the device name including the ALSA hw device. The
+        // ALSA hw device is an only somewhat reliable identifier; it may change
+        // when an audio interface is unplugged or Linux is restarted. Separating
+        // the name from the hw device allows for making the use of both pieces
+        // of information in SoundManagerConfig::readFromDisk to minimize how
+        // often users need to reconfigure their sound hardware.
+        QRegularExpressionMatch match = kAlsaHwDeviceRegex.match(deviceInfo->name);
+        if (match.hasMatch()) {
+            m_deviceId.name = match.captured(1);
+            m_deviceId.alsaHwDevice = match.captured(3);
+        } else {
+            // Special ALSA devices like "default" and "pulse" do not match the regex
+            m_deviceId.name = deviceInfo->name;
+        }
+    } else {
+        m_deviceId.name = deviceInfo->name;
+    }
+    m_deviceId.portAudioIndex = devIndex;
     m_strDisplayName = QString::fromLocal8Bit(deviceInfo->name);
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
@@ -134,7 +154,7 @@ SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
 SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
-    qDebug() << "SoundDevicePortAudio::open()" << getInternalName();
+    qDebug() << "SoundDevicePortAudio::open()" << m_deviceId;
     PaError err;
 
     if (m_audioOutputs.empty() && m_audioInputs.empty()) {
@@ -227,17 +247,17 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     }
 
     //Fill out the rest of the info.
-    m_outputParams.device = m_devId;
+    m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
     m_outputParams.hostApiSpecificStreamInfo = NULL;
 
-    m_inputParams.device  = m_devId;
+    m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
     m_inputParams.hostApiSpecificStreamInfo = NULL;
 
-    qDebug() << "Opening stream with id" << m_devId;
+    qDebug() << "Opening stream with id" << m_deviceId.portAudioIndex;
 
     m_lastCallbackEntrytoDacSecs = bufferMSec / 1000.0;
 
@@ -340,7 +360,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         err = Pa_CloseStream(pStream);
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:"
-                       << Pa_GetErrorText(err) << getInternalName();
+                       << Pa_GetErrorText(err) << m_deviceId;
         }
         return SOUNDDEVICE_ERROR_ERR;
     } else {
@@ -372,7 +392,7 @@ bool SoundDevicePortAudio::isOpen() const {
 }
 
 SoundDeviceError SoundDevicePortAudio::close() {
-    //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
+    //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
     PaStream* pStream = m_pStream;
     m_pStream = NULL;
     if (pStream) {
@@ -386,7 +406,7 @@ SoundDeviceError SoundDevicePortAudio::close() {
         // Real PaErrors are always negative.
         if (err < 0) {
             qWarning() << "PortAudio: Stream already stopped:"
-                       << Pa_GetErrorText(err) << getInternalName();
+                       << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
 
@@ -402,7 +422,7 @@ SoundDeviceError SoundDevicePortAudio::close() {
 
         if (err != paNoError) {
             qWarning() << "PortAudio: Stop stream error:"
-                       << Pa_GetErrorText(err) << getInternalName();
+                       << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
 
@@ -410,7 +430,7 @@ SoundDeviceError SoundDevicePortAudio::close() {
         err = Pa_CloseStream(pStream);
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:"
-                       << Pa_GetErrorText(err) << getInternalName();
+                       << Pa_GetErrorText(err) << m_deviceId;
             return SOUNDDEVICE_ERROR_ERR;
         }
 
@@ -473,7 +493,7 @@ void SoundDevicePortAudio::readProcess() {
                         size1 / m_inputParams.channelCount);
                 CSAMPLE* lastFrame = &dataPtr1[size1 - m_inputParams.channelCount];
                 if (err == paInputOverflowed) {
-                    //qDebug() << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed" << getInternalName();
+                    //qDebug() << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed" << m_deviceId;
                     m_pSoundManager->underflowHappened(12);
                 }
                 if (size2 > 0) {
@@ -481,7 +501,7 @@ void SoundDevicePortAudio::readProcess() {
                             size2 / m_inputParams.channelCount);
                     lastFrame = &dataPtr2[size2 - m_inputParams.channelCount];
                     if (err == paInputOverflowed) {
-                        //qDebug() << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed" << getInternalName();
+                        //qDebug() << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed" << m_deviceId;
                         m_pSoundManager->underflowHappened(13);
                     }
                 }
@@ -497,7 +517,7 @@ void SoundDevicePortAudio::readProcess() {
                         if (err == paInputOverflowed) {
                             //qDebug()
                             //        << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed"
-                            //        << getInternalName();
+                            //        << m_deviceId;
                             m_pSoundManager->underflowHappened(14);
                         }
                     } else {
@@ -652,14 +672,14 @@ void SoundDevicePortAudio::writeProcess() {
                 PaError err = Pa_WriteStream(pStream, dataPtr1,
                         size1 / m_outputParams.channelCount);
                 if (err == paOutputUnderflowed) {
-                    //qDebug() << "SoundDevicePortAudio::writeProcess() Pa_ReadStream paOutputUnderflowed" << getInternalName();
+                    //qDebug() << "SoundDevicePortAudio::writeProcess() Pa_ReadStream paOutputUnderflowed" << m_deviceId;
                     m_pSoundManager->underflowHappened(19);
                 }
                 if (size2 > 0) {
                     PaError err = Pa_WriteStream(pStream, dataPtr2,
                             size2 / m_outputParams.channelCount);
                     if (err == paOutputUnderflowed) {
-                        //qDebug() << "SoundDevicePortAudio::writeProcess() Pa_WriteStream paOutputUnderflowed" << getInternalName();
+                        //qDebug() << "SoundDevicePortAudio::writeProcess() Pa_WriteStream paOutputUnderflowed" << m_deviceId;
                         m_pSoundManager->underflowHappened(20);
                     }
                 }
@@ -675,7 +695,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
         PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
     Trace trace("SoundDevicePortAudio::callbackProcessDrift %1",
-            getInternalName());
+            m_deviceId.debugName());
 
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
         m_pSoundManager->underflowHappened(7);
@@ -807,7 +827,7 @@ int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
-    Trace trace("SoundDevicePortAudio::callbackProcess %1", getInternalName());
+    Trace trace("SoundDevicePortAudio::callbackProcess %1", m_deviceId.debugName());
 
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
         m_pSoundManager->underflowHappened(1);
@@ -862,9 +882,9 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     updateCallbackEntryToDacTime(timeInfo);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
-                getInternalName());
+                m_deviceId.debugName());
 
-    //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
+    //qDebug() << "SoundDevicePortAudio::callbackProcess:" << m_deviceId;
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
     if (!m_bSetThreadPriority) {
@@ -929,7 +949,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     // Send audio from the soundcard's input off to the SoundManager...
     if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input %1",
-                getInternalName());
+                m_deviceId.debugName());
         composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
     }
@@ -938,13 +958,13 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
-                getInternalName());
+                m_deviceId.debugName());
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
 
     if (out) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess output %1",
-                getInternalName());
+                m_deviceId.debugName());
 
         if (m_outputParams.channelCount <= 0) {
             qWarning()

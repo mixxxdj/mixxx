@@ -5,6 +5,7 @@
 #include <QDomNode>
 #include <QMouseEvent>
 #include <QWidget>
+#include <QTimer>
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
@@ -47,6 +48,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     void paintEvent(QPaintEvent* /*unused*/) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void mousePressEvent(QMouseEvent* /*unused*/) override;
+    void mouseReleaseEvent(QMouseEvent* /*unused*/) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
@@ -67,6 +69,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     CoverInfo m_lastRequestedCover;
     BaseTrackPlayer* m_pPlayer;
     DlgCoverArtFullSize* m_pDlgFullSize;
+    QTimer m_clickTimer;
 };
 
 #endif // WCOVERART_H

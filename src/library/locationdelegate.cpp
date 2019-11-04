@@ -1,20 +1,19 @@
-#include <QtDebug>
-
-#include <QTableView>
-#include <QPainter>
-
 #include "library/locationdelegate.h"
 
+#include <QPainter>
+
+
 LocationDelegate::LocationDelegate(QTableView* pTableView)
-        : QStyledItemDelegate(pTableView),
-          m_pTableView(pTableView) {
+        : TableItemDelegate(pTableView) {
 }
 
-void LocationDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
-                         const QModelIndex& index) const {
-    QString elidedLocation =
-            option.fontMetrics.elidedText(index.data().toString(),
-                                          Qt::ElideLeft,
-                                          m_pTableView->columnWidth(index.column()));
-    painter->drawText(option.rect, Qt::AlignVCenter, elidedLocation);
+void LocationDelegate::paintItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    QString elidedText = option.fontMetrics.elidedText(
+            index.data().toString(),
+            Qt::ElideLeft,
+            columnWidth(index));
+    painter->drawText(option.rect, Qt::AlignVCenter, elidedText);
 }

@@ -9,16 +9,15 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>EffectFocusButton</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>30f,-1me</Size>
+    <Size>30f,0me</Size>
     <Children>
-      <WidgetGroup><Size>5f,-1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>EffectFocusButton</ObjectName>
+        <ObjectName>FxFocusButton</ObjectName>
         <Layout>vertical</Layout>
-        <Size>-1min,20f</Size>
+        <Size>0min,20f</Size>
         <Children>
           <PushButton>
             <TooltipId>EffectSlot_focus</TooltipId>
@@ -51,7 +50,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>5f,-1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
