@@ -17,8 +17,8 @@ Microphone::Microphone(QObject* pParent, const QString& group, int index,
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
     pSoundManager->registerInput(micInput, pMicrophone);
 
-    m_pInputConfigured.reset(new ControlProxy(group, "input_configured", this));
-    m_pTalkoverEnabled.reset(new ControlProxy(group, "talkover", this));
+    m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
+    m_pTalkoverEnabled = make_parented<ControlProxy>(group, "talkover", this);
     m_pTalkoverEnabled->connectValueChanged(this, &Microphone::slotTalkoverEnabled);
 }
 

@@ -498,6 +498,8 @@ void PlayerManager::addAuxiliaryInner() {
 
     Auxiliary* pAuxiliary = new Auxiliary(this, group, index, m_pSoundManager,
                                           m_pEngine, m_pEffectsManager);
+    connect(pAuxiliary, SIGNAL(noAuxiliaryInputConfigured()),
+            this, SIGNAL(noAuxiliaryInputConfigured()));
     m_auxiliaries.append(pAuxiliary);
 }
 
