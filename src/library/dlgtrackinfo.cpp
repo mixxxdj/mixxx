@@ -24,7 +24,7 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent)
+DlgTrackInfo::DlgTrackInfo(QWidget* parent, UserSettingsPointer pConfig)
         : QDialog(parent),
           m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
           m_dLastTapedBpm(-1.),
