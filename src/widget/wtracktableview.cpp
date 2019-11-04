@@ -1729,11 +1729,14 @@ void WTrackTableView::slotPopulateCrateMenu() {
         // with the mouse, but not with the keyboard. :focus works for the
         // keyboard but with the mouse, the last clicked item keeps the style
         // after the mouse cursor is moved to hover over another item.
-        pCheckBox->setStyleSheet(
-            QString("QCheckBox {color: %1;}").arg(
-                    pCheckBox->palette().text().color().name()) + "\n" +
-            QString("QCheckBox:hover {background-color: %1;}").arg(
-                    pCheckBox->palette().highlight().color().name()));
+
+        // ronso0 Disabling this stylesheet allows to override the OS style
+        // of the :hover and :focus state.
+//        pCheckBox->setStyleSheet(
+//            QString("QCheckBox {color: %1;}").arg(
+//                    pCheckBox->palette().text().color().name()) + "\n" +
+//            QString("QCheckBox:hover {background-color: %1;}").arg(
+//                    pCheckBox->palette().highlight().color().name()));
         pAction->setEnabled(!crate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
 

@@ -21,6 +21,7 @@
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -115,7 +116,7 @@ QIcon AutoDJFeature::getIcon() {
     return m_icon;
 }
 
-void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
+void AutoDJFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
@@ -147,6 +148,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             &DlgAutoDJ::addRandomButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
+}
+
+void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -285,10 +291,11 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
+    QMenu menu(m_pSidebarWidget);
     if (m_pCratesTreeItem == pClickedItem) {
         // The "Crates" parent item was right-clicked.
         // Bring up the context menu.
-        QMenu crateMenu;
+        QMenu crateMenu(m_pSidebarWidget);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
         CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;
@@ -301,16 +308,14 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
             crateMenu.addAction(pAction.get());
             pAction.release();
         }
-        QMenu contextMenu;
-        contextMenu.addMenu(&crateMenu);
-        contextMenu.exec(globalPos);
+        menu.addMenu(&crateMenu);
+        menu.exec(globalPos);
     } else {
         // A crate child item was right-clicked.
         // Bring up the context menu.
         m_pRemoveCrateFromAutoDj->setData(pClickedItem->getData()); // the selected CrateId
-        QMenu contextMenu;
-        contextMenu.addAction(m_pRemoveCrateFromAutoDj);
-        contextMenu.exec(globalPos);
+        menu.addAction(m_pRemoveCrateFromAutoDj);
+        menu.exec(globalPos);
     }
 }
 

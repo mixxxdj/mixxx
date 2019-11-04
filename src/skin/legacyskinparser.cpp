@@ -1323,9 +1323,9 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     connect(m_pLibrary, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&)));
 
-    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
+    m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard);
 
-    // This must come after the bindWidget or we will not style any of the
+    // This must come after the bindLibraryWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     commonWidgetSetup(node, pLibraryWidget, false);
 

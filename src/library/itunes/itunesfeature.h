@@ -9,6 +9,7 @@
 #include <QFuture>
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QPointer>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
@@ -17,6 +18,7 @@
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
+class WLibrarySidebar;
 
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -27,6 +29,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -34,7 +37,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void activate();
     void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
+    void onRightClick(const QPoint& globalPos) override;
     void onTrackCollectionLoaded();
 
   private:
@@ -70,6 +73,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QString m_mixxxItunesRoot;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
     QIcon m_icon;
 };
 
