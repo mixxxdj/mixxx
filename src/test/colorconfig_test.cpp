@@ -4,7 +4,7 @@
 #include "test/mixxxtest.h"
 
 #include <preferences/hotcuecolorpalettesettings.h>
-#include <util/color/hotcuecolorpalette.h>
+#include <util/color/colorpalette.h>
 
 class ColorConfigTest : public MixxxTest {};
 
@@ -35,7 +35,7 @@ TEST_F(ColorConfigTest, GetDefaultColorWhenNoStoredColor) {
 
 TEST_F(ColorConfigTest, SaveColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    HotcueColorPalette originalColorPalette(QList<QColor>{
+    ColorPalette originalColorPalette(QList<QColor>{
             QColor("#66FF9900"),
             QColor("#FF9900"),
             QColor("#00000000"),
@@ -44,20 +44,20 @@ TEST_F(ColorConfigTest, SaveColorPalette) {
     ConfigKey key("[ColorPalette]", "colorPalette");
     colorPaletteSettings.setHotcueColorPalette(originalColorPalette);
     saveAndReloadConfig();
-    HotcueColorPalette colorPaletteFromConfig =
+    ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
     ASSERT_EQ(originalColorPalette, colorPaletteFromConfig);
 }
 
 TEST_F(ColorConfigTest, ReplaceColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    HotcueColorPalette colorPalette1(QList<QColor>{
+    ColorPalette colorPalette1(QList<QColor>{
             QColor("#66FF9900"),
             QColor("#FF9900"),
             QColor("#00000000"),
             QColor("#FFFFFF"),
     });
-    HotcueColorPalette colorPalette2(QList<QColor>{
+    ColorPalette colorPalette2(QList<QColor>{
             QColor("#0000FF"),
             QColor("#FF0000"),
     });
@@ -66,14 +66,14 @@ TEST_F(ColorConfigTest, ReplaceColorPalette) {
     saveAndReloadConfig();
     colorPaletteSettings.setHotcueColorPalette(colorPalette2);
     saveAndReloadConfig();
-    HotcueColorPalette colorPaletteFromConfig =
+    ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
     ASSERT_EQ(colorPalette2, colorPaletteFromConfig);
 }
 
 TEST_F(ColorConfigTest, DefaultColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    HotcueColorPalette colorPaletteFromConfig =
+    ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
-    ASSERT_EQ(HotcueColorPalette::mixxxPalette, colorPaletteFromConfig);
+    ASSERT_EQ(ColorPalette::mixxxHotcuesPalette, colorPaletteFromConfig);
 }

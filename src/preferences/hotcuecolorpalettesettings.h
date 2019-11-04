@@ -1,7 +1,7 @@
 #pragma once
 
 #include "preferences/usersettings.h"
-#include "util/color/hotcuecolorpalette.h"
+#include "util/color/colorpalette.h"
 
 class HotcueColorPaletteSettings {
   public:
@@ -9,9 +9,9 @@ class HotcueColorPaletteSettings {
             : m_pConfig(pConfig) {
     }
 
-    HotcueColorPalette getHotcueColorPalette() const;
+    ColorPalette getHotcueColorPalette() const;
 
-    void setHotcueColorPalette(const HotcueColorPalette& colorPalette);
+    void setHotcueColorPalette(const ColorPalette& colorPalette);
 
   private:
     static const QString sGroup;

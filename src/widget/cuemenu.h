@@ -20,7 +20,7 @@ class CueMenu : public QMenu {
         m_pTrack = pTrack;
     }
 
-    void useColorSet(const HotcueColorPalette& colorPalette) {
+    void useColorSet(const ColorPalette& colorPalette) {
         if (m_pColorMenu != nullptr) {
             m_pColorMenu->useColorPalette(colorPalette);
         }
