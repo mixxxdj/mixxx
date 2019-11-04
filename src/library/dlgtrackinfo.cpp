@@ -39,7 +39,6 @@ DlgTrackInfo::~DlgTrackInfo() {
 void DlgTrackInfo::init() {
     setupUi(this);
 
-    cueTable->hideColumn(0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
     connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
@@ -92,14 +91,6 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotKeyTextChanged);
 
-    connect(btnCueActivate,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::cueActivate);
-    connect(btnCueDelete,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::cueDelete);
     connect(bpmTap,
             &QPushButton::pressed,
             m_pTapFilter.data(),
@@ -163,30 +154,6 @@ void DlgTrackInfo::slotNext() {
 
 void DlgTrackInfo::slotPrev() {
     emit(previous());
-}
-
-void DlgTrackInfo::cueActivate() {
-
-}
-
-void DlgTrackInfo::cueDelete() {
-    QList<QTableWidgetItem*> selected = cueTable->selectedItems();
-    QListIterator<QTableWidgetItem*> item_it(selected);
-
-    QSet<int> rowsToDelete;
-    while(item_it.hasNext()) {
-        QTableWidgetItem* item = item_it.next();
-        rowsToDelete.insert(item->row());
-    }
-
-    QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
-    std::sort(rowsList.begin(), rowsList.end());
-
-    QListIterator<int> it(rowsList);
-    it.toBack();
-    while (it.hasPrevious()) {
-        cueTable->removeRow(it.previous());
-    }
 }
 
 void DlgTrackInfo::populateFields(const Track& track) {
@@ -257,7 +224,6 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = pTrack;
 
     populateFields(*m_pLoadedTrack);
-    populateCues(m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
     // We already listen to changed() so we don't need to listen to individual
@@ -309,131 +275,6 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
 }
 
-void DlgTrackInfo::populateCues(TrackPointer pTrack) {
-    int sampleRate = pTrack->getSampleRate();
-
-    QList<CuePointer> listPoints;
-    const QList<CuePointer> cuePoints = pTrack->getCuePoints();
-    QListIterator<CuePointer> it(cuePoints);
-    while (it.hasNext()) {
-        CuePointer pCue = it.next();
-        Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO
-                || type == Cue::OUTRO) {
-            listPoints.push_back(pCue);
-        }
-    }
-    it = QListIterator<CuePointer>(listPoints);
-    cueTable->setSortingEnabled(false);
-    int row = 0;
-
-    while (it.hasNext()) {
-        CuePointer pCue(it.next());
-
-        QString rowStr = QString("%1").arg(row);
-
-        // All hotcues are stored in Cue's as 0-indexed, but the GUI presents
-        // them to the user as 1-indexex. Add 1 here. rryan 9/2010
-        int iHotcue = pCue->getHotCue() + 1;
-        QString hotcue = "";
-        hotcue = QString("%1").arg(iHotcue);
-        double position = pCue->getPosition();
-        if (position == -1) {
-            continue;
-        }
-
-        double totalSeconds = position / sampleRate / 2.0;
-
-        bool negative = false;
-        if (totalSeconds < 0) {
-            totalSeconds *= -1;
-            negative = true;
-        }
-
-        int iTotalSeconds = static_cast<int>(totalSeconds);
-        int fraction = 100 * (totalSeconds - iTotalSeconds);
-        int seconds = iTotalSeconds % 60;
-        int mins = iTotalSeconds / 60;
-        //int hours = mins / 60; //Not going to worry about this for now. :)
-
-        //Construct a nicely formatted duration string now.
-        QString duration = QString("%1%2:%3.%4").arg(
-            negative ? QString("-") : QString(),
-            QString::number(mins),
-            QString("%1").arg(seconds, 2, 10, QChar('0')),
-            QString("%1").arg(fraction, 2, 10, QChar('0')));
-
-        QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
-        // Make the duration read only
-        durationItem->setFlags(Qt::NoItemFlags);
-
-        // Decode cue type to display text
-        QString cueType;
-        switch (pCue->getType()) {
-            case Cue::INVALID:
-                cueType = "?";
-                break;
-            case Cue::CUE:
-                cueType = "Hotcue";
-                break;
-            case Cue::LOAD:
-                cueType = "Main Cue";
-                break;
-            case Cue::BEAT:
-                cueType = "Beat";
-                break;
-            case Cue::LOOP:
-                cueType = "Loop";
-                break;
-            case Cue::JUMP:
-                cueType = "Jump";
-                break;
-            case Cue::INTRO:
-                cueType = "Intro";
-                break;
-            case Cue::OUTRO:
-                cueType = "Outro";
-                break;
-            default:
-                break;
-        }
-
-        QTableWidgetItem* typeItem = new QTableWidgetItem(cueType);
-        // Make the type read only
-        typeItem->setFlags(Qt::NoItemFlags);
-
-        HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
-        auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
-        QList<QColor> hotcueColorList =
-                colorPaletteSettings.getHotcueColorPalette().m_colorList;
-        QComboBox* colorComboBox = new QComboBox();
-        for (int i = 0; i < hotcueColorList.count(); i++) {
-            QColor color = hotcueColorList.at(i);
-            colorComboBox->addItem("", color);
-            QPixmap pixmap(80, 80);
-            pixmap.fill(color);
-            QIcon icon(pixmap);
-            colorComboBox->setItemIcon(i, icon);
-        }
-        QColor cueColor = pCue->getColor();
-        int colorIndex = hotcueColorList.indexOf(cueColor);
-        colorComboBox->setCurrentIndex(math_min(colorIndex, 0));
-
-        m_cueMap[row] = pCue;
-        cueTable->insertRow(row);
-        cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
-        cueTable->setItem(row, 1, durationItem);
-        cueTable->setItem(row, 2, typeItem);
-        cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
-        cueTable->setCellWidget(row, 4, colorComboBox);
-        cueTable->setItem(row, 5, new QTableWidgetItem(pCue->getLabel()));
-        row += 1;
-    }
-    cueTable->setSortingEnabled(true);
-    cueTable->horizontalHeader()->setStretchLastSection(true);
-    cueTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
-}
-
 void DlgTrackInfo::saveTrack() {
     if (!m_pLoadedTrack)
         return;
@@ -468,73 +309,6 @@ void DlgTrackInfo::saveTrack() {
     slotKeyTextChanged();
 
     m_pLoadedTrack->setKeys(m_keysClone);
-
-    QSet<int> updatedRows;
-    for (int row = 0; row < cueTable->rowCount(); ++row) {
-        QTableWidgetItem* rowItem = cueTable->item(row, 0);
-        QTableWidgetItem* hotcueItem = cueTable->item(row, 3);
-        QWidget* colorWidget = cueTable->cellWidget(row, 4);
-        QTableWidgetItem* labelItem = cueTable->item(row, 5);
-
-        VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorWidget && labelItem) {
-            qWarning() << "unable to retrieve cells from cueTable row";
-            continue;
-        }
-
-        int oldRow = rowItem->data(Qt::DisplayRole).toInt();
-        CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
-        if (!pCue) {
-            continue;
-        }
-        updatedRows.insert(oldRow);
-
-        QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        bool ok;
-        int iTableHotcue = vHotcue.toInt(&ok);
-        if (ok) {
-            // The GUI shows hotcues as 1-indexed, but they are actually
-            // 0-indexed, so subtract 1
-            pCue->setHotCue(iTableHotcue - 1);
-        } else {
-            pCue->setHotCue(-1);
-        }
-
-        if (pCue->getType() == Cue::CUE) {
-            auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
-            if (colorComboBox) {
-                HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
-                auto colorPalette =
-                        colorPaletteSettings.getHotcueColorPalette();
-                QList<QColor> hotcueColorList =
-                        colorPaletteSettings.getHotcueColorPalette()
-                                .m_colorList;
-                QColor color =
-                        hotcueColorList.at(colorComboBox->currentIndex());
-                pCue->setColor(color);
-            }
-        }
-        // do nothing for now.
-
-        QString label = labelItem->data(Qt::DisplayRole).toString();
-        pCue->setLabel(label);
-    }
-
-    QMutableHashIterator<int,CuePointer> it(m_cueMap);
-    // Everything that was not processed above was removed.
-    while (it.hasNext()) {
-        it.next();
-        int oldRow = it.key();
-
-        // If cue's old row is not in updatedRows then it must have been
-        // deleted.
-        if (updatedRows.contains(oldRow)) {
-            continue;
-        }
-        CuePointer pCue(it.value());
-        it.remove();
-        qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
-        m_pLoadedTrack->removeCue(pCue);
-    }
 
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
@@ -584,10 +358,6 @@ void DlgTrackInfo::clear() {
     txtBpm->setText("");
     txtKey->setText("");
     txtReplayGain->setText("");
-
-    m_cueMap.clear();
-    cueTable->clearContents();
-    cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
