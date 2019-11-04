@@ -26,7 +26,7 @@ class ColorJSProxy final : public QObject {
     QScriptValue makeHotcueColorPalette(QScriptEngine* pScriptEngine,
             HotcueColorPaletteSettings colorPaletteSettings);
     QScriptEngine* m_pScriptEngine;
-    QScriptValue m_hotcueColorPalette;
+    QScriptValue m_JsHotcueColorPalette;
     HotcueColorPaletteSettings m_colorPaletteSettings;
 };
 
