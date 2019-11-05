@@ -15,7 +15,7 @@
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 
-TraktorS2MK3 = function () {
+var TraktorS2MK3 = new function () {
     this.controller = new HIDController();
     this.shiftPressed = { "[Channel1]": false, "[Channel2]": false };
     this.browseState = { "[Channel1]": 0, "[Channel2]": 0 };
@@ -51,8 +51,6 @@ TraktorS2MK3 = function () {
         }
     };
 };
-
-var TraktorS2MK3 = new TraktorS2MK3();
 
 TraktorS2MK3.init = function (id) {
     TraktorS2MK3.registerInputPackets();
@@ -761,7 +759,7 @@ TraktorS2MK3.registerOutputPackets = function () {
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", this.samplesOutputHandler));
     }
 
-    TraktorS2MK3.lightDeck();
+    TraktorS2MK3.lightDeck(false);
 };
 
 /* Helper function to link output in a short form */
@@ -773,7 +771,7 @@ TraktorS2MK3.vuMeterHandler = function (value, group, key) {
     var vuKeys = Object.keys(TraktorS2MK3.vuMeterThresholds);
     for (var i = 0; i < vuKeys.length; ++i) {
         // Avoid spamming HID by only sending last LED update
-        var last = (i === vuKeys.length - 1);
+        var last = (i === (vuKeys.length - 1));
         if (TraktorS2MK3.vuMeterThresholds[vuKeys[i]] > value) {
             TraktorS2MK3.controller.setOutput(group, vuKeys[i], 0x00, last);
         } else {
@@ -858,74 +856,80 @@ TraktorS2MK3.resolveSampler = function (group) {
     return str.substring(0, str.length - 1);
 };
 
-TraktorS2MK3.lightDeck = function () {
+TraktorS2MK3.lightDeck = function (switchOff) {
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "play_indicator", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "play_indicator", 0x7C, false);
-
-    TraktorS2MK3.controller.setOutput("[Channel1]", "cue_indicator", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "cue_indicator", 0x7C, false);
-
-    TraktorS2MK3.controller.setOutput("[Channel1]", "shift", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "shift", 0x7C, false);
-
-    TraktorS2MK3.controller.setOutput("[Channel1]", "sync_enabled", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "sync_enabled", 0x7C, false);
-
-    // Hotcues mode is default start value
-    TraktorS2MK3.controller.setOutput("[Channel1]", "hotcues", 0x7E, false);
-    TraktorS2MK3.controller.setOutput("[Channel1]", "samples", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "hotcues", 0x7E, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "samples", 0x7C, false);
-
-    TraktorS2MK3.controller.setOutput("[Channel1]", "keylock", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "keylock", 0x7C, false);
-
-    for (var i = 1; i <= 8; ++i) {
-        TraktorS2MK3.controller.setOutput("[Channel1]", "hotcue_" + i + "_enabled", 0x7C, false);
-        TraktorS2MK3.controller.setOutput("[Channel2]", "hotcue_" + i + "_enabled", 0x7C, false);
+    var valueSoftLight = 0x7C;
+    var valueFullLight = 0x7E;
+    if(switchOff) {
+        valueSoftLight = 0x00;
+        valueFullLight = 0x00;
     }
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "pfl", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "pfl", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "play_indicator", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "play_indicator", valueSoftLight, false);
 
-    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton1", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton2", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "cue_indicator", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "cue_indicator", valueSoftLight, false);
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "shift", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "shift", valueSoftLight, false);
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "flx", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "flx", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "sync_enabled", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "sync_enabled", valueSoftLight, false);
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "addTrack", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "addTrack", 0x7C, false);
+    // Hotcues mode is default start value
+    TraktorS2MK3.controller.setOutput("[Channel1]", "hotcues", valueFullLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "hotcues", valueFullLight, false);
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "grid", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "grid", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "samples", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "samples", valueSoftLight, false);
 
-    TraktorS2MK3.controller.setOutput("[Channel1]", "MaximizeLibrary", 0x7C, false);
-    TraktorS2MK3.controller.setOutput("[Channel2]", "MaximizeLibrary", 0x7C, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "keylock", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "keylock", valueSoftLight, false);
 
-    TraktorS2MK3.controller.setOutput("[ChannelX]", "quantize", 0x7C, false);
+    for (var i = 1; i <= 8; ++i) {
+        TraktorS2MK3.controller.setOutput("[Channel1]", "hotcue_" + i + "_enabled", valueSoftLight, false);
+        TraktorS2MK3.controller.setOutput("[Channel2]", "hotcue_" + i + "_enabled", valueSoftLight, false);
+    }
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "pfl", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "pfl", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton1", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton2", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton3", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[ChannelX]", "fxButton4", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "reverse", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "flx", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "flx", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "addTrack", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "addTrack", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "grid", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "grid", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[Channel1]", "MaximizeLibrary", valueSoftLight, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "MaximizeLibrary", valueSoftLight, false);
+
+    TraktorS2MK3.controller.setOutput("[ChannelX]", "quantize", valueSoftLight, false);
 
     // For the last output we should send the packet finally
-    TraktorS2MK3.controller.setOutput("[Microphone]", "talkover", 0x7C, true);
+    TraktorS2MK3.controller.setOutput("[Microphone]", "talkover", valueSoftLight, true);
 };
 
 TraktorS2MK3.messageCallback = function (packet, data) {
     for (var name in data) {
         if (data.hasOwnProperty(name)) {
-            HIDDebug("TraktorS2MK3.messageCallback() - field: " + name);
             TraktorS2MK3.controller.processButton(data[name]);
         }
     }
 };
 
 TraktorS2MK3.shutdown = function () {
-
     // Disconnect VuMeter callbacks
     this.vuLeftConnection.disconnect();
     this.vuRightConnection.disconnect();
@@ -938,11 +942,7 @@ TraktorS2MK3.shutdown = function () {
     });
 
     // Deactivate all LEDs
-    var data_string = "00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 \n" +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 \n" +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 \n" +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00";
-    this.rawOutput(data_string);
+    TraktorS2MK3.lightDeck(true);
 
     HIDDebug("TraktorS2MK3: Shutdown done!");
 };
@@ -971,10 +971,4 @@ TraktorS2MK3.toBytes = function (data_string) {
     }
 
     return data;
-};
-
-/* Helper function to send a binary string to the controller */
-TraktorS2MK3.rawOutput = function (data_string) {
-    var data = TraktorS2MK3.toBytes(data_string);
-    TraktorS2MK3.controller.send(data, data.length, 0x80);
 };
