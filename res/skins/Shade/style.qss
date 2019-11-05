@@ -547,8 +547,3 @@ WLibrary QPushButton {
 #HotcueButton[highlight="8"] {
     background-color: #f2f2ff;
 }
-
-QMenu {
-  background-color: green;
-  border: 1px solid orange;
-}
