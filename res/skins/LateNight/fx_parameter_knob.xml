@@ -71,7 +71,7 @@
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
-            <SetVariable name="Size">10f,5f</SetVariable>
+            <SetVariable name="Size">9f,5f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
           </Template>
 

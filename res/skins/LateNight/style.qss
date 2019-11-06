@@ -1549,7 +1549,7 @@ WEffectSelector {
   border-radius: 1px;
   }
   #FxSuperLinkButton {
-    margin: 0px 2px 0px 1px;
+    margin: 0px 2px 0px 2px;
     }
   #FxSuperLinkInvertButton {
     margin: 0px;
