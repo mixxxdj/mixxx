@@ -708,6 +708,7 @@ if(DEBUG_ASSERTIONS_FATAL)
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC
+  "${CMAKE_SYSTEM_PROCESSOR}"
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
   # Disable assert.h assertions in release mode. Some libraries use
