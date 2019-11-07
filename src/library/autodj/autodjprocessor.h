@@ -50,6 +50,10 @@ class DeckAttributes : public QObject {
         return m_playPos.get();
     }
 
+    double trackTime() const;
+
+    double timeElapsed() const;
+
     void setPlayPosition(double playpos) {
         m_playPos.set(playpos);
     }
@@ -82,9 +86,11 @@ class DeckAttributes : public QObject {
         return m_sampleRate.get();
     }
 
-    double duration() const {
+    double trackDuration() const {
         return m_duration.get();
     }
+
+    double calcRateRatio() const;
 
     TrackPointer getLoadedTrack() const;
 
@@ -98,6 +104,7 @@ class DeckAttributes : public QObject {
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
+    void rateChanged(DeckAttributes* pDeck);
 
   private slots:
     void slotPlayPosChanged(double v);
@@ -109,6 +116,7 @@ class DeckAttributes : public QObject {
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotPlayerEmpty();
+    void slotRateChanged(double v);
 
   public:
     int index;
@@ -130,6 +138,9 @@ class DeckAttributes : public QObject {
     ControlProxy m_outroEndPos;
     ControlProxy m_sampleRate;
     ControlProxy m_duration;
+    ControlProxy m_rateDir;
+    ControlProxy m_rateRange;
+    ControlProxy m_rateSlider;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -196,15 +207,6 @@ class AutoDJProcessor : public QObject {
     void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
-    // The following virtual signal wrappers are used for testing
-    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play) {
-        emit(loadTrackToPlayer(pTrack, group, play));
-    }
-    virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
-        emit(autoDJStateChanged(state));
-    }
-
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
                                    bool play);
@@ -223,11 +225,22 @@ class AutoDJProcessor : public QObject {
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
+    void playerRateChanged(DeckAttributes* pDeck);
 
     void controlEnable(double value);
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
+
+  protected:
+    // The following virtual signal wrappers are used for testing
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
+                                   bool play) {
+        emit(loadTrackToPlayer(pTrack, group, play));
+    }
+    virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
+        emit(autoDJStateChanged(state));
+    }
 
   private:
     // Gets or sets the crossfader position while normalizing it so that -1 is
@@ -245,7 +258,6 @@ class AutoDJProcessor : public QObject {
     double getOutroEndPosition(DeckAttributes* pDeck);
     double getFirstSoundPosition(DeckAttributes* pDeck);
     double getLastSoundPosition(DeckAttributes* pDeck);
-    double getMainCuePosition(DeckAttributes* pDeck);
     double samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
@@ -254,9 +266,10 @@ class AutoDJProcessor : public QObject {
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
-                          double endPoint, double startPoint);
-    DeckAttributes* getOtherDeck(const DeckAttributes* pFromDeck,
-                                 bool playing = false);
+            double fromDeckPosition, double endPoint, double startPoint);
+    DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
+    DeckAttributes* getFromDeck();
+
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.

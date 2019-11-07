@@ -1457,7 +1457,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     pAutoDJTableModel->appendTrack(testId);
 
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
@@ -1504,7 +1503,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
 
     // Deck is still playing, because the crossfader is processed in the next audio
     // calback.
-    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine

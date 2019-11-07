@@ -201,7 +201,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dParameter);
+    // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
     // Calculate handle position. Clamp the value within 0-1 because that's
     // all we represent with this widget.
