@@ -4,7 +4,7 @@
   <WidgetGroup>
     <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,max</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <MaximumSize>160,</MaximumSize>
     <Children>
       <WidgetGroup>
@@ -184,10 +184,10 @@
                         <SizePolicy>min,me</SizePolicy>
                         <Children>
                           <Template src="skin:button_2state.xml">
-                            <SetVariable name="TooltipId">mute</SetVariable>
+                            <SetVariable name="TooltipId">master</SetVariable>
                             <SetVariable name="Size">42f,24f</SetVariable>
                             <SetVariable name="icon">aux_play</SetVariable>
-                            <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
                           </Template>
                         </Children>
                       </WidgetGroup><!-- /PLAY -->
@@ -229,14 +229,13 @@
                         <Alignment>center</Alignment>
                       </Label>
                       <WidgetGroup><!-- select Mic sound device -->
-                        <ObjectName>AlignHCenter</ObjectName>
+                        <ObjectName>AlignCenter</ObjectName>
                         <Layout>vertical</Layout>
-                        <Size>42f,32f</Size>
+                        <Size>42min,42me</Size>
                         <Children>
-                          <Template src="skin:button_2state.xml">
-                            <SetVariable name="TooltipId">master_enable</SetVariable>
-                            <SetVariable name="Size">42f,24f</SetVariable>
-                            <SetVariable name="icon">aux_play</SetVariable>
+                          <Template src="skin:button_1state.xml">
+                            <SetVariable name="Size">26f,26f</SetVariable>
+                            <SetVariable name="Icon">plus</SetVariable>
                             <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
                           </Template>
                         </Children>
