@@ -1612,7 +1612,7 @@ endif()
 # FAAD AAC audio file decoder plugin
 find_package(MP4)
 find_package(MP4v2)
-cmake_dependent_option(FAAD "FAAD AAC audio file decoder support" ON "MP4_FOUND OR MP4v2_FOUND" OFF)
+option(FAAD "FAAD AAC audio file decoder support" OFF)
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
