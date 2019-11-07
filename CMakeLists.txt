@@ -703,6 +703,10 @@ if(WARNINGS_FATAL)
 endif()
 
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
+if(DEBUG_ASSERTIONS_FATAL)
+  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL)
+endif()
+
 target_compile_definitions(mixxx-lib PUBLIC
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
@@ -710,7 +714,6 @@ target_compile_definitions(mixxx-lib PUBLIC
   # this as a signal for when to enable code that should be disabled
   # in release mode.
   $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
-  $<$<BOOL:DEBUG_ASSERTIONS_FATAL>:MIXXX_DEBUG_ASSERTIONS_FATAL>
 )
 
 if(WIN32)
