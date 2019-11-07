@@ -1376,8 +1376,6 @@ elseif(WIN32)
     target_link_libraries(mixxx-lib PUBLIC "${QTLIBPNG_LIBRARY}")
     find_library(QTPCRE2_LIBRARY qtpcre2)
     target_link_libraries(mixxx-lib PUBLIC "${QTPCRE2_LIBRARY}")
-  else()
-    target_compile_definitions(mixxx-lib PUBLIC QT_SHARED)
   endif()
 endif()
 
