@@ -86,6 +86,7 @@ WLibrary,
 #FxSlot3[highlight="0"],
 #SamplerButtons,
 #MicAuxFrame,
+#MicAuxFrameUnconfigured,
 WSearchLineEdit,
 #OverviewBox,
 #KeyText {
@@ -784,7 +785,7 @@ WCoverArt {
 }
 
 #RateButtons {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-left: 2px;
 }
 
 /***************** Loop Controls *****************/
@@ -1205,8 +1206,10 @@ WBeatSpinBox,
     }
   #MicAuxFrame {
     border-left: 0px;
-    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
     border-top-left-radius: 0px;
+  }
+  #MicAuxFrameUnconfigured {
   }
   #MicAuxMainControls {
     background-color: #1e1e1e;

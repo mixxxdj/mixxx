@@ -510,12 +510,7 @@ WWidgetGroup {
     image: url(skin:/buttons/btn_aux_unit.svg) no-repeat center left;
   }
   #MicUnitLabel, #AuxUnitLabel {
-    /* not applied
-    border-left: 1px solid #453117;
-    background-color: #456411;
-    margin-left: -2px;
-    background-color: #911669; */
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     color: #b4b4b4;
     font-size: 16px/22px;
     font-weight: bold;
@@ -907,7 +902,8 @@ WLabel#TrackComment {
 #PlayCue[displayValue="0"]:hover,
 #SamplerPlayCue[displayValue="0"]:hover,
 #MicTalkover[displayValue="0"]:hover,
-#AuxEnable[displayValue="0"]:hover {
+#AuxEnable[displayValue="0"]:hover,
+#MicAuxAdd[displayValue="0"]:hover {
   border: 1px solid #ff9900;
   }
   #SamplerPlayCue[displayValue="0"]:hover {
@@ -935,7 +931,8 @@ WLabel#TrackComment {
   }
 
 #MicTalkover[displayValue="0"],
-#AuxEnable[displayValue="0"] {
+#AuxEnable[displayValue="0"],
+#MicAuxAdd[displayValue="0"] {
   background-color: #777;
   border: 1px solid #0f0f0f;
   }
@@ -946,6 +943,12 @@ WLabel#TrackComment {
   #PlayUnderlay[displayValue="1"] {
     border: 1px solid #ff8000;
   }
+
+#MicAuxAdd {
+  font: 17px;
+  font-weight: bold;
+  color: #0f0f0f;
+}
 
 #HotCues_Sampler_Preview {
   qproperty-layoutAlignment: 'AlignBottom';
