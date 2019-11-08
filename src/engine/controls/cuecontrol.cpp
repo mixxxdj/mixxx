@@ -1617,8 +1617,9 @@ double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
         // Quantize to previous beat, fall back to next beat.
         return prevBeat != -1.0 ? prevBeat : (nextBeat != -1.0 ? nextBeat : position);
     } else if (mode == QuantizeMode::NextBeat) {
-        // Quantize to next beat, fall back to previous beat.
-        return nextBeat != -1.0 ? nextBeat : (prevBeat != -1.0 ? prevBeat : position);
+        // use current position if we are already exactly on the grid,
+        // otherwise quantize to next beat, fall back to previous beat.
+        return prevBeat == position ? position : (nextBeat != -1.0 ? nextBeat : (prevBeat != -1.0 ? prevBeat : position));
     } else {
         qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
         return -1.0;
