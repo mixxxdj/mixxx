@@ -755,9 +755,9 @@ elseif(UNIX)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
     target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx/")
+      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/share/mixxx")
     target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_LIB_PATH="${CMAKE_INSTALL_PREFIX}/lib/mixxx/")
+      mixxx-lib PUBLIC UNIX_LIB_PATH="${CMAKE_INSTALL_PREFIX}/lib/mixxx")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
