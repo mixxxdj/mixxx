@@ -70,6 +70,14 @@ find_package_handle_standard_args(
   SndFile_INCLUDE_DIR
 )
 
+file(STRINGS "${SndFile_INCLUDE_DIR}/sndfile.h" SndFile_SUPPORTS_SET_COMPRESSION_LEVEL REGEX ".*SFC_SET_COMPRESSION_LEVEL.*")
+if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
+  set(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL ON)
+else()
+  set(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL OFF)
+endif()
+mark_as_advanced(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
+
 if(SndFile_FOUND)
   set(SndFile_LIBRARIES "${SndFile_LIBRARY}")
   set(SndFile_INCLUDE_DIRS "${SndFile_INCLUDE_DIR}")
