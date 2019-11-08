@@ -17,7 +17,7 @@
               <PushButton>
                 <TooltipId>show_samplers</TooltipId>
                 <ObjectName>FxExpandCollapseButton</ObjectName>
-                <Size>24f,24f</Size>
+                <Size>26f,26f</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
