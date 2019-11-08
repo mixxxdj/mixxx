@@ -14,6 +14,12 @@ if(POLICY CMP0071)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
+
+# Speed up builds on HDDs
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GNU is GNU GCC
+  add_compile_options(-pipe)
+endif()
+
 include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(ExternalProject)
