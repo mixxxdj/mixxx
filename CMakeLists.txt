@@ -1292,10 +1292,11 @@ target_link_libraries(mixxx-lib PUBLIC
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
-  find_package(Qt5 COMPONENTS DBus REQUIRED)
+  find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
   target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
   target_link_libraries(mixxx-lib PUBLIC
     "${X11_LIBRARIES}"
+    Qt5::X11Extras
     Qt5::DBus
   )
 elseif(WIN32)
