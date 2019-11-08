@@ -1598,15 +1598,16 @@ CueControl::TrackAt CueControl::getTrackAt() const {
 
 double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    const double position = sampleOfTrack.current;
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
-        return sampleOfTrack.current;
+        return position;
     }
 
     if (mode == QuantizeMode::ClosestBeat) {
         double closestBeat = m_pClosestBeat->get();
-        return closestBeat != -1.0 ? closestBeat : sampleOfTrack.current;
+        return closestBeat != -1.0 ? closestBeat : position;
     }
 
     double prevBeat = m_pPrevBeat->get();
@@ -1614,10 +1615,10 @@ double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
 
     if (mode == QuantizeMode::PreviousBeat) {
         // Quantize to previous beat, fall back to next beat.
-        return prevBeat != -1.0 ? prevBeat : (nextBeat != -1.0 ? nextBeat : sampleOfTrack.current);
+        return prevBeat != -1.0 ? prevBeat : (nextBeat != -1.0 ? nextBeat : position);
     } else if (mode == QuantizeMode::NextBeat) {
         // Quantize to next beat, fall back to previous beat.
-        return nextBeat != -1.0 ? nextBeat : (prevBeat != -1.0 ? prevBeat : sampleOfTrack.current);
+        return nextBeat != -1.0 ? nextBeat : (prevBeat != -1.0 ? prevBeat : position);
     } else {
         qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
         return -1.0;
