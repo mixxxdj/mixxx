@@ -1,4 +1,6 @@
 <Template>
+  <SetVariable name="btn_type">elevated</SetVariable>
+  <SetVariable name="btn_format">square</SetVariable>
   <WidgetGroup>
     <BackPath>style/background_tile.png</BackPath>
     <SizePolicy>min,min</SizePolicy>
@@ -20,7 +22,7 @@
           </WidgetGroup>
 
           <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
-            <ObjectName>AlignLeftTop</ObjectName>
+            <ObjectName>LoopControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>f,max</SizePolicy>
             <Children>
@@ -31,11 +33,8 @@
                 <Children>
                   <Template src="skin:button_2state_right.xml">
                     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+                    <SetVariable name="ObjectName">LoopActivate</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">loop_down.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">loop.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">loop_overdown.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">loop_over.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
                   </Template>
@@ -55,11 +54,8 @@
                 <Children>
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+                    <SetVariable name="ObjectName">Reloop</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">reloop_down.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">reloop.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">reloop_overdown.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">reloop_over.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
@@ -67,18 +63,16 @@
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">loop_in</SetVariable>
+                    <SetVariable name="ObjectName">LoopIn</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">loop_in_overdown.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">loop_in.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,loop_in</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
                   </Template>
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">loop_out</SetVariable>
+                    <SetVariable name="ObjectName">LoopOut</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">loop_out_overdown.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">loop_out.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
                   </Template>
@@ -93,17 +87,17 @@
           </WidgetGroup>
 
           <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
-            <ObjectName>AlignLeftTop</ObjectName>
+            <ObjectName>BeatjumpControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>f,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- beatjump size -->
                 <ObjectName>AlignLeftTop</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>26f,min</SizePolicy>
+                <SizePolicy>0min,26f</SizePolicy>
                 <Children>
-                  <!-- put this spacer here so BeatSpinBox expands with HiDPI scaling -->
-                  <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
+                  <!-- put this spacer here so BeatSpinBox expands with HiDPI scaling
+                  <WidgetGroup><Size>0f,26f</Size></WidgetGroup> -->
                   <BeatSpinBox>
                     <TooltipId>beatjump_size</TooltipId>
                     <Size>58f,26f</Size>
@@ -119,18 +113,16 @@
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">beatjump_backward</SetVariable>
+                    <SetVariable name="ObjectName">JumpBack</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">arrow_left_overdown.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">arrow_left.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_backward</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_backward</SetVariable>
                   </Template>
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">beatjump_forward</SetVariable>
+                    <SetVariable name="ObjectName">JumpForward</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">arrow_right_overdown.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">arrow_right.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_forward</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_forward</SetVariable>
                   </Template>
@@ -179,8 +171,8 @@
               </WidgetGroup>
             </Children>
             <Connection>
-                <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
-                <BindProperty>visible</BindProperty>
+              <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- / Intro + Outro -->
 
@@ -226,17 +218,41 @@
                     </Connection>
                   </WidgetGroup>
 
-                  <Template src="skin:button_2state_right_display.xml">
-                    <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
-                    <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="state_0_pressed">cue_down.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">cue.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">cue_overdown.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">cue_over.svg</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,cue_default</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_gotoandstop</SetVariable>
-                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,cue_indicator</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
+                  <PushButton>
+                    <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                    <ObjectName>CueDeck</ObjectName>
+                    <Size>51f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Text><Variable name="state_0_text"/></Text>
+                      <Alignment><Variable name="Align"/></Alignment>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_pressed.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text><Variable name="state_1_text"/></Text>
+                      <Alignment><Variable name="Align"/></Alignment>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_set.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_pressed.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
 
                 </Children>
               </WidgetGroup><!-- /HotCues 1-4(5), Cue -->
@@ -267,22 +283,29 @@
                     </Connection>
                   </WidgetGroup>
 
-                  <Template src="skin:button_1state_right.xml">
-                    <SetVariable name="TooltipId">reverse</SetVariable>
-                    <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="state_0_unpressed">reverse.svg</SetVariable>
-                    <SetVariable name="state_0_pressed">reverse_overdown.svg</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,reverse</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reverseroll</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
+                  <WidgetGroup>
+                    <Size>51f,26f</Size>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+                      <Template src="skin:button_1state_right.xml">
+                        <SetVariable name="TooltipId">reverse</SetVariable>
+                        <SetVariable name="ObjectName">Reverse</SetVariable>
+                        <SetVariable name="Size">51f,25f</SetVariable>
+                        <SetVariable name="btn_format">wide</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,reverse</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reverseroll</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
 
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                    <SetVariable name="ObjectName">PlayDeck</SetVariable>
                     <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="state_0_unpressed">play_deck.svg</SetVariable>
-                    <SetVariable name="state_0_pressed">play_deck_down.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">play_deck_over.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">play_deck_overdown.svg</SetVariable>
+                    <SetVariable name="btn_format">wide</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>

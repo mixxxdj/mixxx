@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="btn_type">elevated</SetVariable>
   <SetVariable name="group">[Master]</SetVariable>
   <SetVariable name="Type">master</SetVariable>
   <WidgetGroup>
@@ -33,6 +34,7 @@
                     <Children>
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="type">small</SetVariable>
                         <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="TooltipId">master_gain</SetVariable>
                         <SetVariable name="control">gain</SetVariable>
@@ -46,6 +48,7 @@
                     <Children>
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="type">small</SetVariable>
                         <SetVariable name="Color">red</SetVariable>
                         <SetVariable name="TooltipId">balance</SetVariable>
                         <SetVariable name="control">balance</SetVariable>
@@ -54,6 +57,8 @@
                   </WidgetGroup>
                 </Children>
               </WidgetGroup>
+
+              <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
 
               <!-- Master knob labels -->
               <WidgetGroup>
@@ -76,17 +81,19 @@
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Booth knob -->
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
+                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="Color">orange</SetVariable>
+                    <SetVariable name="type">small</SetVariable>
                     <SetVariable name="TooltipId">booth_gain</SetVariable>
                     <SetVariable name="control">booth_gain</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
                   <Label>
                     <ObjectName>KnobLabel</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
@@ -100,20 +107,18 @@
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
               <WidgetGroup><!-- FX buttons 1/2 -->
                 <ObjectName>AlignHCenter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
@@ -122,21 +127,16 @@
                 </Children>
               </WidgetGroup><!-- /FX buttons 1/2 -->
 
-              <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
-
-              <!-- FX buttons 3/4 -->
-              <WidgetGroup>
+              <WidgetGroup><!-- FX buttons 3/4 -->
                 <ObjectName>AlignHCenter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
                     <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MaxWidth">35</SetVariable>
                     <SetVariable name="Text">FX&#8202;</SetVariable>
@@ -197,6 +197,7 @@
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="Color">orange</SetVariable>
+                        <SetVariable name="type">small</SetVariable>
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headGain</SetVariable>
@@ -211,6 +212,7 @@
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="Color">green</SetVariable>
+                        <SetVariable name="type">small</SetVariable>
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headMix</SetVariable>
@@ -219,6 +221,8 @@
                   </WidgetGroup>
                 </Children>
               </WidgetGroup>
+
+              <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- Headphone knob labels -->
                 <Layout>horizontal</Layout>
@@ -253,18 +257,18 @@
                   <PushButton>
                     <TooltipId>headSplit</TooltipId>
                     <ObjectName>SplitCueButton</ObjectName>
-                    <Size>76f,23f</Size>
+                    <Size>76f,24f</Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>false</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Unpressed>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_pressed.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue_over.svg</Unpressed>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_splitcue_over.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active_pressed.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>

@@ -12,19 +12,23 @@
         <Children>
 
           <WidgetGroup>
-            <Size>42f,42f</Size>
+            <Size>45f,46f</Size>
             <Layout>horizontal</Layout>
             <!-- hack/trick: remove the css border (top & left) from SpinnyContainer
                 so we can use the Spinny singleton from regular decks :) -->
             <Style>QWidget {border: none};</Style>
             <Children>
+              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
               <SingletonContainer>
                 <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
               </SingletonContainer>
+              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
-
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>OverviewBox</ObjectName>
@@ -122,11 +126,10 @@
             <Children>
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
-                <SetVariable name="Size">38f,38f</SetVariable>
-                <SetVariable name="state_0_unpressed">play_deck_small.svg</SetVariable>
-                <SetVariable name="state_0_pressed">play_deck_small_down.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">play_deck_small_over.svg</SetVariable>
-                <SetVariable name="state_1_pressed">play_deck_small_overdown.svg</SetVariable>
+                <SetVariable name="ObjectName">PlayButtonDeckSmall</SetVariable>
+                <SetVariable name="Size">34f,34f</SetVariable>
+                <SetVariable name="btn_type">embedded</SetVariable>
+                <SetVariable name="btn_format">square_big</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>

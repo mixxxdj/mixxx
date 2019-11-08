@@ -149,53 +149,6 @@ Description:
                 </Children>
               </WidgetGroup><!-- Big Spinny -->
 
-              <!-- A hack involving a SizeAwareStack and WidgetStacks
-                that toggles [Tango],no_spinny_no_cover when both
-                [Skin],show_spinnies and [Skin],show_coverart are 0 -->
-              <WidgetGroup>
-                <Size>3f,0f</Size>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <Size>1f,0f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                  <WidgetGroup>
-                    <Size>1f,0f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                  <!-- "Toggle" -->
-                  <SizeAwareStack>
-                    <Children>
-                      <WidgetStack>
-                        <SizePolicy>me,f</SizePolicy>
-                        <MaximumSize>1,0</MaximumSize>
-                        <Children>
-                          <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
-                          <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
-                        </Children>
-                      </WidgetStack>
-                      <WidgetStack>
-                        <SizePolicy>me,f</SizePolicy>
-                        <MinimumSize>2,0</MinimumSize>
-                        <Children>
-                          <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
-                          <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
-                        </Children>
-                      </WidgetStack>
-                    </Children>
-                  </SizeAwareStack>
-                </Children>
-              </WidgetGroup>
-
             </Children>
           </WidgetGroup><!-- /Deck / General -->
 

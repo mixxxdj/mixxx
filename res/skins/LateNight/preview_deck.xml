@@ -72,19 +72,13 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <PushButton>
-                        <TooltipId>eject</TooltipId>
-                        <NumberStates>1</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_eject_over.svg</Pressed>
-                          <Unpressed>buttons/btn_eject.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,eject</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_1state.xml">
+                        <SetVariable name="TooltipId">eject</SetVariable>
+                        <SetVariable name="btn_type"></SetVariable>
+                        <SetVariable name="btn_format">eject</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                        <SetVariable name="Size">25,18</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -97,32 +91,20 @@
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <WidgetGroup>
-                    <ObjectName>PreviewPlay</ObjectName>
+                    <ObjectName>PreviewPlayBox</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <PushButton>
-                        <TooltipId>play_start</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_play_preview_down.svg</Pressed>
-                          <Unpressed>buttons/btn_play_preview.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_play_preview_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_play_preview_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,play</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,start</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_2state_right_display.xml">
+                        <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                        <SetVariable name="ObjectName">PlayButtonPreview</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="btn_type">embedded</SetVariable>
+                        <SetVariable name="btn_format">square</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,start</SetVariable>
+                        <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
 

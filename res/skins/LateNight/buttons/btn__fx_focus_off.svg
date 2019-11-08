@@ -1,0 +1,20 @@
+<svg width="21" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="a" x1="256.73999" x2="484.70999" y1="472.03" y2="472.03" gradientTransform="matrix(-.02689375 -.08131675 .08068125 -.02710559 -17.729844 51.688341)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#060606" offset="0"/>
+			<stop stop-color="#343434" offset="1"/>
+		</linearGradient>
+	</defs>
+	<g transform="translate(.04999998 -.08295842)">
+		<g transform="matrix(.76872597 .34140352 -.34140352 .76872597 1.504911 -10.097772)">
+			<g transform="matrix(.10676 0 0 .10676 -19.071124 -31.786292)" opacity=".49300005">
+				<path d="m270.69379 536.40673c20.01433 60.04489 85.31772 92.31846 145.17067 71.75942 60.21816-19.46338 93.09981-84.46428 73.08548-144.50917-78.29686-151.10046-253.52045-44.94758-218.25615 72.74975z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" opacity="1" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+			</g>
+			<g transform="matrix(.10746967 0 0 .10746967 -20.137858 -33.659792)" fill="#050505" opacity=".93999999">
+				<path d="m270.69379 536.40673c20.01433 60.04489 85.31772 92.31846 145.17067 71.75942 60.21816-19.46338 93.09981-84.46428 73.08548-144.50917-20.01433-60.04488-85.31957-92.31785-145.17252-71.7588-60.21816 19.46339-93.09796 84.46366-73.08363 144.50855z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#050505" image-rendering="auto" opacity="1" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+			</g>
+		</g>
+		<path d="m11.186356 1.2636715c-1.3020582-.0916159-2.6422052.0771242-3.9531254.5351562-5.2875947 1.7077135-8.17857564 7.4460999-6.42382826 12.7519533 1.75509276 5.306898 7.49078446 8.151822 12.73828166 6.31836 5.287593-1.707715 8.176622-7.446101 6.421875-12.7519539-1.316639-3.9811374-4.873239-6.5784013-8.783203-6.8535156z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#404040" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+		<path d="m7.4081644 2.98355a9.1929467 9.2653595 0 1 1 5.8135456 17.578491 9.1929467 9.2653595 0 1 1-5.8135456-17.578491z" fill="url(#a)"/>
+	</g>
+</svg>

@@ -130,6 +130,19 @@
   </LaunchImageStyle>
 
   <Children>
+    <!-- Set the '3D button mode'
+        * elevated (like before): buttons are elevated
+          and have a drop shadow and light borders
+        * embedded: buttons are embedded and have dark borders
+      Affects:  - rate buttons incl. SyncButton
+                - mixer Pfl buttons
+                - Fx unit control buttons
+        -->
+    <SetVariable name="btn_type">embedded</SetVariable>
+    <!--SetVariable name="btn_type">elevated</SetVariable-->
+
+    <SetVariable name="Align">center</SetVariable>
+    
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
 

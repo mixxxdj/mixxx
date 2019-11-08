@@ -16,8 +16,8 @@ Variables:
   <PushButton>
     <TooltipId>EffectUnit_<Variable name="Type"/>_enabled</TooltipId>
     <ObjectName>FxAssignButton</ObjectName>
-    <MinimumSize><Variable name="MinWidth"/>,22</MinimumSize>
-    <MaximumSize><Variable name="MaxWidth"/>,22</MaximumSize>
+    <MinimumSize><Variable name="MinWidth"/>,20</MinimumSize>
+    <MaximumSize><Variable name="MaxWidth"/>,20</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
@@ -25,15 +25,15 @@ Variables:
       <Number>0</Number>
       <Text><Variable name="Text"/><Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_fx_assign.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_fx_assign.svg</Unpressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_pressed.svg</Pressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="Text"/><Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_fx_assign_over.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_fx_assign_over.svg</Unpressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_pressed.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>

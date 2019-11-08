@@ -49,10 +49,9 @@
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
                 <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
-                <SetVariable name="Size">45f,23f</SetVariable>
-                <SetVariable name="state_0">mic_duck_off</SetVariable>
-                <SetVariable name="state_1">mic_duck_auto</SetVariable>
-                <SetVariable name="state_2">mic_duck_manual</SetVariable>
+                <SetVariable name="Size">44f,24f</SetVariable>
+                <SetVariable name="btn_type">embedded</SetVariable>
+                <SetVariable name="btn_format">talk</SetVariable>
                 <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
               </Template>
               <WidgetGroup>
@@ -62,7 +61,8 @@
                 <Children>
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
-                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="type">small</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
                     <SetVariable name="control">duckStrength</SetVariable>

@@ -8,7 +8,7 @@
     FxUnit
 -->
 <Template>
-  <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
+  <SetVariable name="FxRack_FxUnit">[EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
 
   <WidgetGroup>
     <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
@@ -21,7 +21,6 @@
         <ObjectName>FxRows</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
-        <BackPath>style/background_tile.png</BackPath>
         <Children>
 
           <WidgetGroup>
@@ -40,8 +39,6 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>2f,1min</Size></WidgetGroup>
-
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -52,8 +49,6 @@
               </Template>
             </Children>
           </WidgetGroup>
-
-          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>2f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -74,7 +69,7 @@
         <SizePolicy>max,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><Size>3f,</Size></WidgetGroup>
+          <WidgetGroup><Size>2f,</Size></WidgetGroup>
 
           <WidgetGroup><!-- Super knob, optional -->
             <Layout>horizontal</Layout>
@@ -118,20 +113,28 @@
                     <Alignment>center</Alignment>
                   </Label>
                   <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
-                  <WidgetGroup>
-                    <ObjectName>EmbeddeButtonBox</ObjectName>
-                    <Size>22f,22f</Size>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
+                  <PushButton>
+                    <TooltipId>EffectUnit_show_parameters</TooltipId>
+                    <ObjectName>FxExpandCollapseButton</ObjectName>
+                    <Size>26f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_pressed.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_pressed.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
                 </Children>
               </WidgetGroup>
-
-              <WidgetGroup><Size>,3f</Size></WidgetGroup>
 
               <!-- MixMode_Collapsed + Pfl -->
               <WidgetGroup>
@@ -139,27 +142,34 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup>
-                    <ObjectName>EmbeddeButtonBox</ObjectName>
-                    <Size>33f,22f</Size>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
-                  <WidgetGroup><Size>3f,</Size></WidgetGroup>
-                  <WidgetGroup>
-                    <ObjectName>EmbeddeButtonBox</ObjectName>
-                    <Size>22f,22f</Size>
-                    <Layout>vertical</Layout>
-                    <Children>
-				              <SingletonContainer>
-				                <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
-				              </SingletonContainer>
-                    </Children>
-                  </WidgetGroup>
+                  <PushButton>
+                    <TooltipId>mix_mode</TooltipId>
+                    <ObjectName>MixModeButton</ObjectName>
+                    <Size>39f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_pressed.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_pressed.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="FxRack_FxUnit"/>,mix_mode</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="ObjectName">PflButton</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="btn_format">square</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit"/>,group_[Headphone]_enable</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- MixMode_Collapsed + Pfl -->
 

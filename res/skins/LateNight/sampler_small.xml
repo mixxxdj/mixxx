@@ -13,11 +13,9 @@
         <Children>
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+            <SetVariable name="ObjectName">PlayButtonSampler</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
-            <SetVariable name="state_0_pressed">play_sampler_down.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">play_sampler.svg</SetVariable>
-            <SetVariable name="state_1_pressed">play_sampler_overdown.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">play_sampler_over.svg</SetVariable>
+            <SetVariable name="btn_format">square_big</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -75,22 +73,22 @@
 
               <PushButton>
                 <TooltipId>orientation</TooltipId>
-                <Size>25f,18f</Size>
+                <Size>21f,18f</Size>
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_left.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_left.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_left.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_left.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_master.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_master.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_master.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_master.svg</Unpressed>
                 </State>
                 <State>
                   <Number>2</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_right.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_right.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_right.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_right.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
@@ -98,18 +96,20 @@
                 </Connection>
               </PushButton>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="icon">keylock_sampler</SetVariable>
+                <SetVariable name="btn_type"></SetVariable>
+                <SetVariable name="btn_format">keylock</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
-                <SetVariable name="Size">21,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="icon">eject_sampler</SetVariable>
+                <SetVariable name="btn_type"></SetVariable>
+                <SetVariable name="btn_format">eject</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
-                <SetVariable name="Size">21,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
             </Children>

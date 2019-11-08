@@ -22,11 +22,13 @@ Variables:
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
+      <Text><Variable name="Text"/></Text>
       <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_down.svg</Pressed>
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
+      <Text><Variable name="Text"/></Text>
       <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_overdown.svg</Pressed>
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_over.svg</Unpressed>
     </State>

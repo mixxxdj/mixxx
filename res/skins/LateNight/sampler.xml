@@ -57,11 +57,9 @@
                 <Children>
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                    <SetVariable name="ObjectName">PlayButtonSampler</SetVariable>
                     <SetVariable name="Size">34f,34f</SetVariable>
-                    <SetVariable name="state_0_pressed">play_sampler_down.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">play_sampler.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">play_sampler_overdown.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">play_sampler_over.svg</SetVariable>
+                    <SetVariable name="btn_format">square_big</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -69,35 +67,42 @@
                 </Children>
               </WidgetGroup>
 
-              <Overview>
-                <TooltipId>waveform_overview</TooltipId>
+              <WidgetGroup>
+                <ObjectName>OverviewBox</ObjectName>
+                <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
-                <Group><Variable name="group"/></Group>
-                <BgColor>#0f0f0f</BgColor>
-                <SignalHighColor></SignalHighColor>
-                <SignalMidColor></SignalMidColor>
-                <SignalLowColor></SignalLowColor>
-                <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-                <SignalColor>#EECE33</SignalColor>
-                <ShowCueTimes>false</ShowCueTimes>
-                <MarkerColor>#00FF00</MarkerColor>
-                <DefaultMark>
-                  <Align>bottom|right</Align>
-                  <Color>#FF0000</Color>
-                  <TextColor>#FFFFFF</TextColor>
-                  <Text> %1 </Text>
-                </DefaultMark>
-                <Mark>
-                  <Control>cue_point</Control>
-                  <Text> C </Text>
-                  <Align>top|right</Align>
-                  <Color>#FF001C</Color>
-                  <TextColor>#FFFFFF</TextColor>
-                </Mark>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-                </Connection>
-              </Overview>
+                <Children>
+                  <Overview>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Group><Variable name="group"/></Group>
+                    <BgColor>#0f0f0f</BgColor>
+                    <SignalHighColor></SignalHighColor>
+                    <SignalMidColor></SignalMidColor>
+                    <SignalLowColor></SignalLowColor>
+                    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                    <SignalColor>#EECE33</SignalColor>
+                    <ShowCueTimes>false</ShowCueTimes>
+                    <MarkerColor>#00FF00</MarkerColor>
+                    <DefaultMark>
+                      <Align>bottom|right</Align>
+                      <Color>#FF0000</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text> C </Text>
+                      <Align>top|right</Align>
+                      <Color>#FF001C</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </Overview>
+                </Children>
+              </WidgetGroup>
 
               <!-- Sampler controls -->
               <WidgetGroup>
@@ -109,17 +114,19 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:button_2state_nohover.xml">
+                      <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">repeat</SetVariable>
-                        <SetVariable name="icon">repeat</SetVariable>
+                        <SetVariable name="btn_type"></SetVariable>
+                        <SetVariable name="btn_format">repeat</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
-                        <SetVariable name="Size">25,18</SetVariable>
+                        <SetVariable name="Size">21f,18f</SetVariable>
                       </Template>
-                      <Template src="skin:button_2state_nohover.xml">
+                      <Template src="skin:button_1state.xml">
                         <SetVariable name="TooltipId">eject</SetVariable>
-                        <SetVariable name="icon">eject</SetVariable>
+                        <SetVariable name="btn_type"></SetVariable>
+                        <SetVariable name="btn_format">eject</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
-                        <SetVariable name="Size">25,18</SetVariable>
+                        <SetVariable name="Size">21f,18f</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -130,33 +137,34 @@
                     <Children>
                       <PushButton>
                         <TooltipId>orientation</TooltipId>
-                        <Size>25f,18f</Size>
+                        <Size>21f,18f</Size>
                         <NumberStates>3</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_left.svg</Pressed>
-                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_left.svg</Unpressed>
+                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_left.svg</Pressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_left.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_master.svg</Pressed>
-                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_master.svg</Unpressed>
+                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_master.svg</Pressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_master.svg</Unpressed>
                         </State>
                         <State>
                           <Number>2</Number>
-                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_right.svg</Pressed>
-                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_xfader_sampler_right.svg</Unpressed>
+                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_right.svg</Pressed>
+                          <Unpressed scalemode="STRETCH_ASPECT">buttons/btn__xfader_sampler_right.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
-                      <Template src="skin:button_2state_nohover.xml">
+                      <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">keylock</SetVariable>
-                        <SetVariable name="icon">keylock</SetVariable>
+                        <SetVariable name="btn_type"></SetVariable>
+                        <SetVariable name="btn_format">keylock</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
-                        <SetVariable name="Size">25,18</SetVariable>
+                        <SetVariable name="Size">21f,18f</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -172,6 +180,7 @@
                     <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="Color">orange</SetVariable>
+                    <SetVariable name="type">small</SetVariable>
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
                     <SetVariable name="control">pregain</SetVariable>
                   </Template>
@@ -234,23 +243,25 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Hotcues 5-8 -->
-                </Children>
-              </WidgetGroup>
 
-              <WidgetGroup>
-                <SizePolicy>me,min</SizePolicy>
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                  </WidgetGroup>
+                </Children>
               </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>SamplerPfl</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <Size>0min,0min</Size>
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
-                    <SetVariable name="icon">pfl</SetVariable>
+                    <SetVariable name="ObjectName">PflButton</SetVariable>
+                    <SetVariable name="btn_type">embedded</SetVariable>
+                    <SetVariable name="btn_format">square</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-                    <SetVariable name="Size">26,26</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /SamplerPfl -->
@@ -299,6 +310,7 @@
 
       <!-- Pitch Control -->
       <WidgetGroup>
+        <ObjectName>SamplerRateControls</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -309,8 +321,9 @@
             <Children>
               <SliderComposed>
                 <TooltipId>rate</TooltipId>
+                <Size>26f,65f</Size>
                 <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_pitch_sampler.svg</Handle>
-                <Slider>skin:knobs_sliders/slider_pitch_sampler.svg</Slider>
+                <Slider scalemode="STRETCH_ASPECT">skin:knobs_sliders/slider_pitch_sampler.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>
@@ -320,15 +333,15 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>SamplerSyncButton</ObjectName>
+            <ObjectName>AlignHCenter</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:button_1state_right.xml">
+              <Template src="skin:button_2state_right.xml">
                 <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
-                <SetVariable name="Size">28f,26f</SetVariable>
-                <SetVariable name="state_0_pressed">sync_sampler_overdown.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">sync_sampler.svg</SetVariable>
+                <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="btn_format">square</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>

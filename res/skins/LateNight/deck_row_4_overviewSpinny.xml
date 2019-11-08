@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="btn_type"></SetVariable>
   <WidgetGroup>
     <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
     <Layout>horizontal</Layout>
@@ -49,7 +50,7 @@
           <WidgetGroup>
             <ObjectName>Stars</ObjectName>
             <Layout>vertical</Layout>
-            <Size>0min,17me</Size>
+            <Size>0min,15f</Size>
             <Children>
               <StarRating>
                 <Size>0min,15f</Size>
@@ -60,34 +61,34 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
 
           <!-- Deck controls row 1 -->
           <WidgetGroup>
+            <ObjectName>DeckControlButtons</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
-                <SetVariable name="icon">slip</SetVariable>
+                <SetVariable name="btn_format">slip</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">quantize</SetVariable>
-                <SetVariable name="icon">quantize</SetVariable>
+                <SetVariable name="btn_format">quantize</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="state_0_unpressed">beat_curpos</SetVariable>
-                <SetVariable name="state_0_pressed">beat_curpos_over</SetVariable>
+                <SetVariable name="btn_format">beat_curpos</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
             </Children>
@@ -95,27 +96,28 @@
 
           <!-- Deck controls row 2 -->
           <WidgetGroup>
+            <ObjectName>DeckControlButtons</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="icon">eject</SetVariable>
+                <SetVariable name="btn_format">eject</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">repeat</SetVariable>
-                <SetVariable name="icon">repeat</SetVariable>
+                <SetVariable name="btn_format">repeat</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="icon">keylock</SetVariable>
+                <SetVariable name="btn_format">keylock</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
             </Children>

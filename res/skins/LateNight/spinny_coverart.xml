@@ -105,7 +105,54 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+      <!-- A hack involving a SizeAwareStack and WidgetStacks
+        that toggles [Tango],no_spinny_no_cover when both
+        [Skin],show_spinnies and [Skin],show_coverart are 0 -->
+      <WidgetGroup>
+        <Size>0f,3f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>0f,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>0f,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- "Toggle" -->
+          <SizeAwareStack>
+            <Children>
+              <WidgetStack>
+                <SizePolicy>f,me</SizePolicy>
+                <MaximumSize>0,1</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+              <WidgetStack>
+                <SizePolicy>f,me</SizePolicy>
+                <MinimumSize>0,2</MinimumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </SizeAwareStack>
+        </Children>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>
+
 </Template>
