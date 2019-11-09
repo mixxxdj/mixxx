@@ -118,12 +118,12 @@ QIcon AutoDJFeature::getIcon() {
 void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                  m_pConfig,
-                                  m_pLibrary,
-                                  m_pAutoDJProcessor,
-                                  m_pTrackCollection,
-                                  keyboard,
-                                  libraryWidget->getShowButtonText());
+            m_pConfig,
+            m_pLibrary,
+            m_pAutoDJProcessor,
+            m_pTrackCollection,
+            keyboard,
+            libraryWidget->getShowButtonText());
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
@@ -264,8 +264,8 @@ void AutoDJFeature::slotAddRandomTrack() {
                 }
                 if (!pRandomTrack->checkFileExists()) {
                     qWarning() << "Track does not exist:"
-                            << pRandomTrack->getInfo()
-                            << pRandomTrack->getFileInfo();
+                               << pRandomTrack->getInfo()
+                               << pRandomTrack->getFileInfo();
                     pRandomTrack.reset();
                 }
             }

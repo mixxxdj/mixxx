@@ -3,12 +3,12 @@
 
 #include <QWidget>
 
-#include "engine/controls/ratecontrol.h"
 #include "engine/controls/cuecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -18,7 +18,7 @@ class MixxxMainWindow;
 class ControlObject;
 
 namespace {
-    constexpr bool kDefaultCloneDeckOnLoad = true;
+constexpr bool kDefaultCloneDeckOnLoad = true;
 }
 
 namespace TrackTime {

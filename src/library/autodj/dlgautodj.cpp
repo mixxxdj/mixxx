@@ -14,39 +14,52 @@ const char* kRepeatPlaylistPreference = "Requeue";
 } // anonymous namespace
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
-                     UserSettingsPointer pConfig,
-                     Library* pLibrary,
-                     AutoDJProcessor* pProcessor,
-                     TrackCollection* pTrackCollection,
-                     KeyboardEventFilter* pKeyboard,
-                     bool showButtonText)
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        AutoDJProcessor* pProcessor,
+        TrackCollection* pTrackCollection,
+        KeyboardEventFilter* pKeyboard,
+        bool showButtonText)
         : QWidget(parent),
           Ui::DlgAutoDJ(),
           m_pAutoDJProcessor(pProcessor),
           // no sorting
-          m_pTrackTableView(new WTrackTableView(this, pConfig,
-                                                pTrackCollection, false)),
+          m_pTrackTableView(new WTrackTableView(this, pConfig, pTrackCollection, false)),
           m_pAutoDJTableModel(nullptr),
           m_pConfig(pConfig),
           m_bShowButtonText(showButtonText) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
-    connect(m_pTrackTableView, &WTrackTableView::loadTrack,
-            this, &DlgAutoDJ::loadTrack);
-    connect(m_pTrackTableView, &WTrackTableView::loadTrackToPlayer,
-            this, &DlgAutoDJ::loadTrackToPlayer);
-    connect(m_pTrackTableView, &WTrackTableView::trackSelected,
-            this, &DlgAutoDJ::trackSelected);
-    connect(m_pTrackTableView, &WTrackTableView::trackSelected,
-            this, &DlgAutoDJ::updateSelectionInfo);
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrack,
+            this,
+            &DlgAutoDJ::loadTrack);
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrackToPlayer,
+            this,
+            &DlgAutoDJ::loadTrackToPlayer);
+    connect(m_pTrackTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &DlgAutoDJ::trackSelected);
+    connect(m_pTrackTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &DlgAutoDJ::updateSelectionInfo);
 
-    connect(pLibrary, &Library::setTrackTableFont,
-            m_pTrackTableView, &WTrackTableView::setTrackTableFont);
-    connect(pLibrary, &Library::setTrackTableRowHeight,
-            m_pTrackTableView, &WTrackTableView::setTrackTableRowHeight);
-    connect(pLibrary, &Library::setSelectedClick,
-            m_pTrackTableView, &WTrackTableView::setSelectedClick);
+    connect(pLibrary,
+            &Library::setTrackTableFont,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableFont);
+    connect(pLibrary,
+            &Library::setTrackTableRowHeight,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary,
+            &Library::setSelectedClick,
+            m_pTrackTableView,
+            &WTrackTableView::setSelectedClick);
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -65,61 +78,61 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    connect(pushButtonAutoDJ, &QPushButton::toggled,
-            this, &DlgAutoDJ::toggleAutoDJButton);
+    connect(pushButtonAutoDJ, &QPushButton::toggled, this, &DlgAutoDJ::toggleAutoDJButton);
 
-    setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton,
-                      tr("Shuffle"));
-    setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton,
-                      tr("Skip"));
-    setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton,
-                      tr("Random"));
-    setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton,
-                      tr("Fade"));
+    setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
+    setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
+    setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton, tr("Random"));
+    setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton, tr("Fade"));
 
-    connect(spinBoxTransition, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &DlgAutoDJ::transitionSliderChanged);
+    connect(spinBoxTransition,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgAutoDJ::transitionSliderChanged);
 
     fadeModeCombobox->addItem(tr("Full Intro + Outro"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
+            static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
     fadeModeCombobox->addItem(tr("Fade At Outro Start"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::FadeAtOutroStart));
+            static_cast<int>(AutoDJProcessor::TransitionMode::FadeAtOutroStart));
     fadeModeCombobox->addItem(tr("Full Track"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
     fadeModeCombobox->addItem(tr("Skip Silence"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
-    connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &DlgAutoDJ::slotTransitionModeChanged);
+    connect(fadeModeCombobox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgAutoDJ::slotTransitionModeChanged);
     QString fadeModeTooltip = tr(
-    "AutoDJ Fade Modes\n"
-    "\n"
-    "Full Intro + Outro:\n"
-    "Play the full intro and outro. Use the intro or outro length as the\n"
-    "crossfade time, whichever is shorter. If no intro or outro are marked,\n"
-    "use the selected crossfade time.\n"
-    "\n"
-    "Fade At Outro Start:\n"
-    "Start crossfading at the outro start. If the outro is longer than the\n"
-    "intro, cut off the end of the outro. Use the intro or outro length as\n"
-    "the crossfade time, whichever is shorter. If no intro or outro are\n"
-    "marked, use the selected crossfade time.\n"
-    "\n"
-    "Full Track:\n"
-    "Play the whole track. Begin crossfading from the selected number of\n"
-    "seconds before the end of the track. A negative crossfade time adds\n"
-    "silence between tracks.\n"
-    "\n"
-    "Skip Silence:\n"
-    "Play the whole track except for silence at the beginning and end.\n"
-    "Begin crossfading from the selected number of seconds before the\n"
-    "last sound."
-    );
+            "AutoDJ Fade Modes\n"
+            "\n"
+            "Full Intro + Outro:\n"
+            "Play the full intro and outro. Use the intro or outro length as the\n"
+            "crossfade time, whichever is shorter. If no intro or outro are marked,\n"
+            "use the selected crossfade time.\n"
+            "\n"
+            "Fade At Outro Start:\n"
+            "Start crossfading at the outro start. If the outro is longer than the\n"
+            "intro, cut off the end of the outro. Use the intro or outro length as\n"
+            "the crossfade time, whichever is shorter. If no intro or outro are\n"
+            "marked, use the selected crossfade time.\n"
+            "\n"
+            "Full Track:\n"
+            "Play the whole track. Begin crossfading from the selected number of\n"
+            "seconds before the end of the track. A negative crossfade time adds\n"
+            "silence between tracks.\n"
+            "\n"
+            "Skip Silence:\n"
+            "Play the whole track except for silence at the beginning and end.\n"
+            "Begin crossfading from the selected number of seconds before the\n"
+            "last sound.");
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
-    connect(pushButtonRepeatPlaylist, &QPushButton::toggled,
-            this, &DlgAutoDJ::slotRepeatPlaylistChanged);
+    connect(pushButtonRepeatPlaylist,
+            &QPushButton::toggled,
+            this,
+            &DlgAutoDJ::slotRepeatPlaylistChanged);
     if (m_bShowButtonText) {
         pushButtonRepeatPlaylist->setText(tr("Repeat"));
     }
@@ -132,10 +145,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).
     spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
-    connect(m_pAutoDJProcessor, &AutoDJProcessor::transitionTimeChanged,
-            this, &DlgAutoDJ::transitionTimeChanged);
-    connect(m_pAutoDJProcessor, &AutoDJProcessor::autoDJStateChanged,
-            this, &DlgAutoDJ::autoDJStateChanged);
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::transitionTimeChanged,
+            this,
+            &DlgAutoDJ::transitionTimeChanged);
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::autoDJStateChanged,
+            this,
+            &DlgAutoDJ::autoDJStateChanged);
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
@@ -149,7 +166,9 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pTrackTableView;
 }
 
-void DlgAutoDJ::setupActionButton(QPushButton* pButton, void (DlgAutoDJ::*pSlot)(bool), QString fallbackText) {
+void DlgAutoDJ::setupActionButton(QPushButton* pButton,
+        void (DlgAutoDJ::*pSlot)(bool),
+        QString fallbackText) {
     connect(pButton, &QPushButton::clicked, this, pSlot);
     if (m_bShowButtonText) {
         pButton->setText(fallbackText);
@@ -260,7 +279,7 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
 
 void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
     m_pAutoDJProcessor->setTransitionMode(static_cast<AutoDJProcessor::TransitionMode>(
-          fadeModeCombobox->itemData(comboboxIndex).toInt()));
+            fadeModeCombobox->itemData(comboboxIndex).toInt()));
 }
 
 void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {

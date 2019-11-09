@@ -52,8 +52,10 @@ const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 } // anonymous namespace
 
-EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                           EngineChannel* pChannel, EngineMaster* pMixingEngine)
+EngineBuffer::EngineBuffer(const QString& group,
+        UserSettingsPointer pConfig,
+        EngineChannel* pChannel,
+        EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),

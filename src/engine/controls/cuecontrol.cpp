@@ -303,7 +303,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        for (const auto& pControl: m_hotcueControls) {
+        for (const auto& pControl : m_hotcueControls) {
             detachCue(pControl);
         }
 
@@ -334,7 +334,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             Qt::DirectConnection);
 
     CuePointer pMainCue;
-    for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
+    for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::Type::MainCue) {
             DEBUG_ASSERT(!pMainCue);
             pMainCue = pCue;
@@ -345,7 +345,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     lock.unlock();
     // Use pNewTrack from now, because m_pLoadedTrack might have been reset
     // immediately after leaving the locking scope!
-
 
     // Because of legacy, we store the (load) cue point twice and need to
     // sync both values.
@@ -383,7 +382,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
         if (!(m_pVinylControlEnabled->get() &&
-                m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+                    m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekExact(0.0);
         }
         break;
@@ -401,16 +400,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::IntroStart:
-        {
-            double introStart = m_pIntroStartPosition->get();
-            if (introStart != Cue::kNoPosition) {
-                seekExact(introStart);
-            } else {
-                seekExact(0.0);
-            }
-            break;
+    case SeekOnLoadMode::IntroStart: {
+        double introStart = m_pIntroStartPosition->get();
+        if (introStart != Cue::kNoPosition) {
+            seekExact(introStart);
+        } else {
+            seekExact(0.0);
         }
+        break;
+    }
     default:
         seekExact(0.0);
         break;
@@ -432,13 +430,13 @@ void CueControl::loadCuesFromTrack() {
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::Type::MainCue) {
-            DEBUG_ASSERT(!pLoadCue);  // There should be only one MainCue cue
+            DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
             pLoadCue = pCue;
         } else if (pCue->getType() == Cue::Type::Intro) {
-            DEBUG_ASSERT(!pIntroCue);  // There should be only one Intro cue
+            DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
             pIntroCue = pCue;
         } else if (pCue->getType() == Cue::Type::Outro) {
-            DEBUG_ASSERT(!pOutroCue);  // There should be only one Outro cue
+            DEBUG_ASSERT(!pOutroCue); // There should be only one Outro cue
             pOutroCue = pCue;
         } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
             int hotcue = pCue->getHotCue();
@@ -1440,9 +1438,9 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     QMutexLocker lock(&m_mutex);
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
     if ((cueMode == CueMode::Denon || cueMode == CueMode::Numark) &&
-        newPlay && playPossible &&
-        !m_pPlay->toBool() &&
-        !m_bypassCueSetByPlay) {
+            newPlay && playPossible &&
+            !m_pPlay->toBool() &&
+            !m_bypassCueSetByPlay) {
         // in Denon mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
@@ -1485,7 +1483,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
         } else if (cueMode == CueMode::Mixxx || cueMode == CueMode::MixxxNoBlinking ||
-                   cueMode == CueMode::Numark) {
+                cueMode == CueMode::Numark) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer mode
@@ -1718,7 +1716,7 @@ bool CueControl::isPlayingByPlayButton() {
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                                            static_cast<int>(SeekOnLoadMode::IntroStart));
+            static_cast<int>(SeekOnLoadMode::IntroStart));
     return static_cast<SeekOnLoadMode>(configValue);
 }
 
