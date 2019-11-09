@@ -1090,6 +1090,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double outroStart = getOutroStartPosition(pFromDeck);
     double fromDeckPosition = pFromDeck->timeElapsed();
 
+    VERIFY_OR_DEBUG_ASSERT(outroEnd <= fromTrackTime) {
+        outroEnd = fromTrackTime;
+    }
+
     if (fromDeckPosition > outroStart) {
         // We have already passed outroStart
         // This can happen if we have just enabled auto DJ
@@ -1292,7 +1296,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->isFromDeck = true;
     pToDeck->isFromDeck = false;
 
-    DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1);
+    VERIFY_OR_DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1) {
+        pFromDeck->fadeBeginPos = 0;
+    }
 
     if (sDebug) {
         qDebug() << this << "calculateTransition" << pFromDeck->group

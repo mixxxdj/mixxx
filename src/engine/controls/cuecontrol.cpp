@@ -1598,16 +1598,20 @@ CueControl::TrackAt CueControl::getTrackAt() const {
 
 double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    const double position = sampleOfTrack.current;
+    const double currentPos = sampleOfTrack.current;
+    const double total = sampleOfTrack.total;
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
-        return position;
+        return currentPos;
     }
 
     if (mode == QuantizeMode::ClosestBeat) {
         double closestBeat = m_pClosestBeat->get();
-        return closestBeat != -1.0 ? closestBeat : position;
+        if (closestBeat != -1.0 && closestBeat <= total) {
+            return closestBeat;
+        }
+        return currentPos;
     }
 
     double prevBeat = m_pPrevBeat->get();
@@ -1617,73 +1621,86 @@ double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
         // Quantize to previous beat, fall back to next beat.
         if (prevBeat != -1.0) {
             return prevBeat;
-        } else if (nextBeat != -1.0) {
-            return nextBeat;
-        } else {
-            return position;
         }
-    } else if (mode == QuantizeMode::NextBeat) {
+        if (nextBeat != -1.0 && nextBeat <= total) {
+            return nextBeat;
+        }
+        return currentPos;
+    }
+    if (mode == QuantizeMode::NextBeat) {
         // use current position if we are already exactly on the grid,
         // otherwise quantize to next beat, fall back to previous beat.
-        if (prevBeat == position) {
-            return position;
-        } else if (nextBeat != -1.0) {
-            return nextBeat;
-        } else if (prevBeat != -1.0) {
-            return prevBeat;
-        } else {
-            return position;
+        if (prevBeat == currentPos) {
+            return currentPos;
         }
-    } else {
-        qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
-        return -1.0;
+        if (nextBeat != -1.0 && nextBeat <= total) {
+            return nextBeat;
+        }
+        if (prevBeat != -1.0) {
+            return prevBeat;
+        }
+        return currentPos;
     }
+    DEBUG_ASSERT(!"PROGRAMMING ERROR: Invalid quantize mode");
+    return currentPos;
 }
 
-double CueControl::quantizeCuePoint(double position, QuantizeMode mode) {
+double CueControl::quantizeCuePoint(double cuePos, QuantizeMode mode) {
+    // we need to use m_pTrackSamples here because SampleOfTrack
+    // is set later by the engine and not during EngineBuffer::slotTrackLoaded
+    const double total = m_pTrackSamples->get();
+
+    VERIFY_OR_DEBUG_ASSERT(cuePos <= total) {
+        cuePos = total;
+    }
+
     // Don't quantize unset cues, manual cues or when quantization is disabled.
-    if (position == Cue::kNoPosition || !m_pQuantizeEnabled->toBool()) {
-        return position;
+    if (cuePos == Cue::kNoPosition || !m_pQuantizeEnabled->toBool()) {
+        return cuePos;
     }
 
     BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
-        return position;
+        return cuePos;
     }
 
     if (mode == QuantizeMode::ClosestBeat) {
-        double closestBeat = pBeats->findClosestBeat(position);
-        return closestBeat != -1.0 ? closestBeat : position;
+        double closestBeat = pBeats->findClosestBeat(cuePos);
+        if (closestBeat != -1.0 && closestBeat <= total) {
+            return closestBeat;
+        }
+        return cuePos;
     }
 
     double prevBeat, nextBeat;
-    pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    pBeats->findPrevNextBeats(cuePos, &prevBeat, &nextBeat);
 
-   if (mode == QuantizeMode::PreviousBeat) {
+    if (mode == QuantizeMode::PreviousBeat) {
         // Quantize to previous beat, fall back to next beat.
         if (prevBeat != -1.0) {
             return prevBeat;
-        } else if (nextBeat != -1.0) {
-            return nextBeat;
-        } else {
-            return position;
         }
-    } else if (mode == QuantizeMode::NextBeat) {
-        // use current position if we are already exactly on the grid,
-        // otherwise quantize to next beat, fall back to previous beat.
-        if (prevBeat == position) {
-            return position;
-        } else if (nextBeat != -1.0) {
+        if (nextBeat != -1.0 && nextBeat <= total) {
             return nextBeat;
-        } else if (prevBeat != -1.0) {
-            return prevBeat;
-        } else {
-            return position;
         }
-    } else {
-        qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
-        return -1.0;
+        return cuePos;
     }
+    if (mode == QuantizeMode::NextBeat) {
+        // use current cuePos if we are already exactly on the grid,
+        // otherwise quantize to next beat, fall back to previous beat.
+        if (prevBeat == cuePos) {
+            return cuePos;
+        }
+        if (nextBeat != -1.0 && nextBeat <= total) {
+            return nextBeat;
+        }
+        if (prevBeat != -1.0) {
+            return prevBeat;
+        }
+        return cuePos;
+    }
+    DEBUG_ASSERT(!"PROGRAMMING ERROR: Invalid quantize mode");
+    return cuePos;
 }
 
 bool CueControl::isTrackAtZeroPos() {
