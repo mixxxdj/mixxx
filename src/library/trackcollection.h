@@ -59,8 +59,6 @@ class TrackCollection : public QObject,
     }
     void setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
 
-    void cancelLibraryScan();
-
     // This function returns a track ID of all file in the list not already visible,
     // it adds and unhides the tracks as well.
     QList<TrackId> resolveTrackIds(const QList<QFileInfo> &files,
