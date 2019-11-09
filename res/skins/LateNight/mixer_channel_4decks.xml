@@ -11,23 +11,27 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="btn_format">square</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+          </Template>
+          <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Children>
-              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">pfl</SetVariable>
-                <SetVariable name="ObjectName">PflButton</SetVariable>
-                <SetVariable name="Size">26,26</SetVariable>
-                <SetVariable name="btn_format">square</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-          <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
           <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="Color">orange</SetVariable>
@@ -35,10 +39,11 @@
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="TooltipId">pregain</SetVariable>
           </Template>
+          <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>1min,8f</Size></WidgetGroup>
+      <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">3</SetVariable>
@@ -59,7 +64,7 @@
         <SetVariable name="Text">L</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>1min,8f</Size></WidgetGroup>
+      <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
 
       <Template src="skin:quick_effect_knob_4decks.xml"/>
 
@@ -104,7 +109,7 @@
 
           <WidgetGroup>
             <ObjectName>VuMeterChannel4Decks</ObjectName>
-            <Size>26f,0min</Size>
+            <Size>22f,0min</Size>
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>
@@ -126,9 +131,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Size>0min,0me</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup>

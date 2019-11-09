@@ -125,9 +125,46 @@
                     <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                 </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup><!-- /FX buttons 1/2 -->
 
-              <WidgetGroup><!-- FX buttons 3/4 -->
+              <WidgetGroup><!-- FX buttons 1-4 -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:fx_assign_button.xml">
+                    <SetVariable name="MinWidth">28</SetVariable>
+                    <SetVariable name="MaxWidth">32</SetVariable>
+                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="FxUnit">1</SetVariable>
+                  </Template>
+                  <Template src="skin:fx_assign_button.xml">
+                    <SetVariable name="MinWidth">22</SetVariable>
+                    <SetVariable name="MaxWidth">22</SetVariable>
+                    <SetVariable name="FxUnit">2</SetVariable>
+                  </Template>
+                  <Template src="skin:fx_assign_button.xml">
+                    <SetVariable name="MinWidth">22</SetVariable>
+                    <SetVariable name="MaxWidth">22</SetVariable>
+                    <SetVariable name="FxUnit">3</SetVariable>
+                  </Template>
+                  <Template src="skin:fx_assign_button.xml">
+                    <SetVariable name="MinWidth">22</SetVariable>
+                    <SetVariable name="MaxWidth">22</SetVariable>
+                    <SetVariable name="FxUnit">4</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /FX buttons 1-4 -->
+
+              <!-- FX buttons 3/4<WidgetGroup>
                 <ObjectName>AlignHCenter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
@@ -147,7 +184,7 @@
                   <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /FX buttons 3/4 -->
+              </WidgetGroup> -->
 
               <WidgetGroup>
                 <Layout>vertical</Layout>

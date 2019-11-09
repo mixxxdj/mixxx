@@ -72,12 +72,12 @@
           <Template src="skin:fx_assign_button_deck.xml">
             <SetVariable name="FxUnit">1</SetVariable>
             <SetVariable name="Width">28</SetVariable>
-            <SetVariable name="Text">&#8202;FX&#8202;</SetVariable>
+            <SetVariable name="Text">&#8202;&#8202;FX</SetVariable>
           </Template>
           <Template src="skin:fx_assign_button_deck.xml">
             <SetVariable name="FxUnit">2</SetVariable>
             <SetVariable name="Width">28</SetVariable>
-            <SetVariable name="Text">&#8202;FX&#8202;</SetVariable>
+            <SetVariable name="Text">&#8202;&#8202;FX</SetVariable>
           </Template>
         </Children>
         <Connection>

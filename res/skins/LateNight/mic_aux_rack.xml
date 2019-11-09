@@ -49,7 +49,7 @@
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
                 <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
-                <SetVariable name="Size">44f,24f</SetVariable>
+                <SetVariable name="Size">42f,24f</SetVariable>
                 <SetVariable name="btn_type">embedded</SetVariable>
                 <SetVariable name="btn_format">talk</SetVariable>
                 <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>

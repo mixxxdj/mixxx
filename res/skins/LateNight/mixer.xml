@@ -215,7 +215,7 @@
                   </WidgetGroup><!-- /Channel1 xfader switch -->
 
                   <WidgetGroup>
-                    <Size>13f,0min</Size>
+                    <Size>11f,0min</Size>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -284,7 +284,7 @@
                   </WidgetGroup>
 
                   <WidgetGroup>
-                    <Size>13f,0min</Size>
+                    <Size>11f,0min</Size>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                       <BindProperty>visible</BindProperty>

@@ -1,11 +1,16 @@
 <svg width="26" height="26" version="1.1" xmlns="http://www.w3.org/2000/svg">
 	<defs>
-		<linearGradient id="a" x1="-24.500031" x2="-1.5000305" y1="-13" y2="-13" gradientTransform="translate(26.000061)" gradientUnits="userSpaceOnUse">
+		<linearGradient id="b" x1="-24.500031" x2="-1.5000305" y1="-13" y2="-13" gradientTransform="matrix(.95652174 0 0 .95652174 25.434811 -.56521739)" gradientUnits="userSpaceOnUse">
 			<stop stop-opacity=".47451" offset="0"/>
 			<stop stop-opacity="0" offset=".50727087"/>
 			<stop stop-opacity=".0047619" offset="1"/>
 		</linearGradient>
+		<linearGradient id="a" x1="1" x2="25" y1="13" y2="13" gradientTransform="translate(1.0920716e-7,-25.999999)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#202020" stop-opacity=".80808079" offset="0"/>
+			<stop stop-color="#404040" stop-opacity=".74747473" offset=".30102351"/>
+			<stop stop-opacity=".82323235" offset="1"/>
+		</linearGradient>
 	</defs>
-	<rect transform="rotate(90)" x="1.5000305" y="-24.5" width="23" height="23" rx="1.5" ry="1.5" color="#000000" fill="url(#a)"/>
-	<rect transform="scale(1,-1)" x="1.5" y="-24.500031" width="23" height="23" rx=".30000001" ry=".30000001" fill="none" stroke="#555" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
+	<rect transform="rotate(90)" x="2" y="-24" width="22" height="22" color="#000000" fill="url(#b)"/>
+	<rect transform="rotate(90)" x="1.5000002" y="-24.500002" width="23" height="23" rx=".2" ry=".19999997" fill="none" stroke="url(#a)" stroke-linecap="square" stroke-opacity=".39215686" style="paint-order:fill markers stroke"/>
 </svg>

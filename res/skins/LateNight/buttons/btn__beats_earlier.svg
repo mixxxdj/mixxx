@@ -1,1 +1,10 @@
-<svg width="22" height="22" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="m6 20h2v-9h-2z" fill="#888"/><path d="m14 20h-2v-12h2z" fill="#888"/><path d="m8 2v3l11 1e-6v2l-11-1e-6v3l-7-4z" fill="#aaa"/><g fill="#888"><path d="m14 4h-2v-2h2z"/><path d="m20 20h-2v-12h2z"/><path d="m20 4h-2v-2h2z"/></g></svg>
+<svg width="24" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<path d="m7 21h2v-9h-2z" fill="#888"/>
+	<path d="m15 21h-2v-12h2z" fill="#888"/>
+	<path d="m9 3v3l11 1e-6v2l-11-1e-6v3l-7-4z" fill="#aaa"/>
+	<g transform="translate(1,1)" fill="#888">
+		<path d="m14 4h-2v-2h2z"/>
+		<path d="m20 20h-2v-12h2z"/>
+		<path d="m20 4h-2v-2h2z"/>
+	</g>
+</svg>

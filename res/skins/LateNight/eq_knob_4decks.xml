@@ -11,15 +11,16 @@
       <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <!-- Kill button -->
           <WidgetGroup>
-            <ObjectName>EQKillButtonBoxLeft</ObjectName>
+            <ObjectName>EQKillButtonBox4Decks</ObjectName>
             <Layout>vertical</Layout>
-            <Size>22f,34f</Size>
+            <Size>20f,34f</Size>
             <Children>
               <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
               <EffectPushButton>
@@ -50,6 +51,16 @@
             </Connection>
           </WidgetGroup>
 
+          <WidgetGroup>
+            <ObjectName>EQKillButtonBox4Decks</ObjectName>
+            <Size>20f,34f</Size>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
           <!-- EQ knob -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -68,6 +79,8 @@
               </EffectParameterKnobComposed>
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
         </Children>
         <Connection>
