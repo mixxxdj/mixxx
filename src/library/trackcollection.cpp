@@ -4,6 +4,7 @@
 
 #include "library/trackcollection.h"
 
+#include "library/basetrackcache.h"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"
@@ -18,8 +19,7 @@ mixxx::Logger kLogger("TrackCollection");
 
 TrackCollection::TrackCollection(
         const UserSettingsPointer& pConfig)
-        : m_pConfig(pConfig),
-          m_analysisDao(pConfig),
+        : m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
 }
