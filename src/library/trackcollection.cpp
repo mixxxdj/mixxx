@@ -4,12 +4,13 @@
 
 #include "library/trackcollection.h"
 
-#include "sources/soundsourceproxy.h"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"
 #include "util/dnd.h"
 #include "util/logger.h"
+
+#include "sources/soundsourceproxy.h"
 
 namespace {
 
@@ -19,8 +20,7 @@ mixxx::Logger kLogger("TrackCollection");
 
 TrackCollection::TrackCollection(
         const UserSettingsPointer& pConfig)
-        : m_pConfig(pConfig),
-          m_analysisDao(pConfig),
+        : m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
 }
@@ -232,9 +232,8 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
-    // To update BaseTrackCache
+    // to update BaseTrackCache
     m_trackDao.afterUnhidingTracks(trackIds);
-    // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs

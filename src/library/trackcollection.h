@@ -117,8 +117,6 @@ class TrackCollection : public QObject,
     bool addDirectory(const QString& dir);
     void relocateDirectory(QString oldDir, QString newDir);
 
-    UserSettingsPointer m_pConfig;
-
     QSqlDatabase m_database;
 
     PlaylistDAO m_playlistDao;
