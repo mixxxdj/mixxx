@@ -25,10 +25,6 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
-const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
-// normally * 2 is sufficient.
-// We allow to buffer two extra chunks for a CPU overload case, when
-// the broadcast thread is not scheduled in time.
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 }
