@@ -3131,7 +3131,7 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="97"/>
         <source>Full Track</source>
-        <translation>Vollständigen Titel</translation>
+        <translation>Vollständiger Titel</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="99"/>
@@ -3162,7 +3162,7 @@ Skip Silence:
 Play the whole track except for silence at the beginning and end.
 Begin crossfading from the selected number of seconds before the
 last sound.</source>
-        <translation>Auto DJ Fade Modes Mod
+        <translation>Auto-DJ Überblendmodus
 
 Vollständiges Intro + Outro:
 Spiele das komplette Intro und Outro. Verwende die Intro- oder Outro-Länge als
@@ -3171,18 +3171,18 @@ verwende die ausgewählte Überblendzeit.
 
 Beim Outro-Start überblenden:
 Beginne beim Outro-Start mit dem Überblenden. Wenn das Outro länger ist als das
-Intro, schneide das Ende des Outro ab. Verwende die Intro- oder Outro-Länge als
-Überblendzeit, je nachdem  welcher Wert kürzer ist. Wenn kein Intro oder Outro vorhanden ist,
+Intro, schneide das Ende des Outros ab. Verwende die Intro- oder Outro-Länge als
+Überblendzeit, je nachdem welcher Wert kürzer ist. Wenn kein Intro oder Outro vorhanden ist,
 verwende die ausgewählte Überblendzeit.
 
-Vollständigen Titel:
+Vollständiger Titel:
 Spiele den gesamten Titel. Beginne mit dem Überblenden ab der ausgewählten Anzahl von
 Sekunden vor dem Ende des Titels. Eine negative Überblendzeit fügt
 Stille zwischen den Titeln hinzu.
 
 Stille überspringen: 
-Spiele den gesamten Titel mit Ausnahme der Stille am Anfang und Ende.
-Beginne  mit dem Überblenden ab der ausgewählten Anzahl von Sekunden vor dem
+Spiele den gesamten Titel mit Ausnahme der Stille an Anfang und Ende.
+Beginne mit dem Überblenden ab der ausgewählten Anzahl von Sekunden vor dem
 letzter Ton.</translation>
     </message>
     <message>
