@@ -146,7 +146,9 @@ class WOverview : public WWidget, public TrackDropTarget {
     std::unique_ptr<CueMenu> m_pCueMenu;
     bool m_bShowCueTimes;
 
+    // True if slider is dragged. Only used when m_bEventWhileDrag is false
     int m_iPosSeconds;
+    bool m_bDrag;
     // Internal storage of slider position in pixels
     int m_iPos;
 
