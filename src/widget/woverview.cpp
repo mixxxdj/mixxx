@@ -55,9 +55,9 @@ WOverview::WOverview(
           m_pConfig(pConfig),
           m_endOfTrack(false),
           m_pCueMenu(std::make_unique<CueMenu>(this)),
-          m_bDrag(false),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
+          m_bDrag(false),
           m_iPos(0),
           m_pHoveredMark(nullptr),
           m_bHotcueMenuShowing(false),
@@ -477,6 +477,10 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             m_bDrag = true;
         }
     } else if (e->button() == Qt::RightButton) {
+        if (m_bDrag) {
+            m_iPos = valueToPosition(m_playpositionControl->get());
+            m_bDrag = false;
+        }
         if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
@@ -501,6 +505,19 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 m_bHotcueMenuShowing = true;
             }
         }
+    }
+}
+
+void WOverview::keyPressEvent(QKeyEvent* e) {
+    // TODO() this events gets lost on the way. Fix it.
+    qDebug() << "WOverview::keyPressEvent" << e->key();
+    if (e->key() == Qt::Key_Escape) {
+        if (m_bDrag) {
+            m_iPos = valueToPosition(m_playpositionControl->get());
+            m_bDrag = false;
+        }
+    } else {
+        QWidget::keyPressEvent(e);
     }
 }
 
