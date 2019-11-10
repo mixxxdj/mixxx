@@ -1149,7 +1149,7 @@ void CueControl::introStartSet(double v) {
             pCue->setType(Cue::Type::Intro);
         }
         pCue->setStartPosition(position);
-        pCue->setLength(introEnd != Cue::kNoPosition ? introEnd - position : 0.0);
+        pCue->setEndPosition(introEnd);
     }
 }
 
@@ -1167,7 +1167,7 @@ void CueControl::introStartClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (introEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(introEnd);
+            pCue->setEndPosition(introEnd);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1226,13 +1226,8 @@ void CueControl::introEndSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Intro);
         }
-        if (introStart != Cue::kNoPosition) {
-            pCue->setStartPosition(introStart);
-            pCue->setLength(position - introStart);
-        } else {
-            pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(position);
-        }
+        pCue->setStartPosition(introStart);
+        pCue->setEndPosition(position);
     }
 }
 
@@ -1250,7 +1245,7 @@ void CueControl::introEndClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (introStart != Cue::kNoPosition) {
             pCue->setStartPosition(introStart);
-            pCue->setLength(0.0);
+            pCue->setEndPosition(Cue::kNoPosition);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1310,7 +1305,7 @@ void CueControl::outroStartSet(double v) {
             pCue->setType(Cue::Type::Outro);
         }
         pCue->setStartPosition(position);
-        pCue->setLength(outroEnd != Cue::kNoPosition ? outroEnd - position : 0.0);
+        pCue->setEndPosition(outroEnd);
     }
 }
 
@@ -1328,7 +1323,7 @@ void CueControl::outroStartClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (outroEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(outroEnd);
+            pCue->setEndPosition(outroEnd);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1387,13 +1382,8 @@ void CueControl::outroEndSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Outro);
         }
-        if (outroStart != Cue::kNoPosition) {
-            pCue->setStartPosition(outroStart);
-            pCue->setLength(position - outroStart);
-        } else {
-            pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(position);
-        }
+        pCue->setStartPosition(outroStart);
+        pCue->setEndPosition(position);
     }
 }
 
@@ -1411,7 +1401,7 @@ void CueControl::outroEndClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (outroStart != Cue::kNoPosition) {
             pCue->setStartPosition(outroStart);
-            pCue->setLength(0.0);
+            pCue->setEndPosition(Cue::kNoPosition);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
