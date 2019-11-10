@@ -737,7 +737,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                        if (query_insert_to_playlists.lastError().nativeErrorCode() == QString::number(SQLITE_CONSTRAINT)) {
                             // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
                             query_insert_to_playlists.bindValue(":name", playlistname );
