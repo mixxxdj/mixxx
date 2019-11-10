@@ -224,7 +224,6 @@ class AutoDJProcessorTest : public LibraryTest {
     QScopedPointer<MockAutoDJProcessor> pProcessor;
 };
 
-
 TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FullIntroOutro);
 
@@ -1416,7 +1415,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     // Seek track to End
     deck1.playposition.set(1.0);
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
-
 
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio

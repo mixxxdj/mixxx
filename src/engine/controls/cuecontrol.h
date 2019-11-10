@@ -28,14 +28,15 @@ enum class CueMode {
 };
 
 enum class SeekOnLoadMode {
-    MainCue = 0,  // Use main cue point
+    MainCue = 0,    // Use main cue point
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
-    IntroStart = 3,  // Use intro start cue point
+    IntroStart = 3, // Use intro start cue point
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
-    return static_cast<SeekOnLoadMode>(int(value));;
+    return static_cast<SeekOnLoadMode>(int(value));
+    ;
 }
 
 class HotcueControl : public QObject {

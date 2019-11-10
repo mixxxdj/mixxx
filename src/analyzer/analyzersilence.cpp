@@ -118,9 +118,9 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     bool upgradingWithMainCueAtDefault = (mainCue == 0.0 && pIntroCue == nullptr);
     if (mainCue == Cue::kNoPosition || upgradingWithMainCueAtDefault) {
         pTrack->setCuePoint(CuePosition(firstSound));
-    // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
-    } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false)
-            && pIntroCue == nullptr) {
+        // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
+    } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
+            pIntroCue == nullptr) {
         introStart = mainCue;
     }
 

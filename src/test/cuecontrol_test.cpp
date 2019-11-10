@@ -79,11 +79,11 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(150.0);
-    pIntro->setLength(50.0);
+    pIntro->setEndPosition(200.0);
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
     pOutro->setStartPosition(250.0);
-    pOutro->setLength(50.0);
+    pOutro->setEndPosition(300.0);
 
     loadTrack(pTrack);
 
@@ -99,11 +99,11 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
 
     unloadTrack();
 
-    EXPECT_DOUBLE_EQ(-1.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
@@ -116,18 +116,18 @@ TEST_F(CueControlTest, LoadTrackWithDetectedCues) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(100.0);
-    pIntro->setLength(0.0);
+    pIntro->setEndPosition(Cue::kNoPosition);
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
-    pOutro->setStartPosition(-1.0);
-    pOutro->setLength(200.0);
+    pOutro->setStartPosition(Cue::kNoPosition);
+    pOutro->setEndPosition(200.0);
 
     loadTrack(pTrack);
 
     EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(100.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
     EXPECT_DOUBLE_EQ(200.0, m_pOutroEndPosition->get());
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
@@ -139,20 +139,20 @@ TEST_F(CueControlTest, LoadTrackWithIntroEndAndOutroStart) {
     TrackPointer pTrack = createTestTrack();
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
-    pIntro->setStartPosition(-1.0);
-    pIntro->setLength(150.0);
+    pIntro->setStartPosition(Cue::kNoPosition);
+    pIntro->setEndPosition(150.0);
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
     pOutro->setStartPosition(250.0);
-    pOutro->setLength(0.0);
+    pOutro->setEndPosition(Cue::kNoPosition);
 
     loadTrack(pTrack);
 
     EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
     EXPECT_DOUBLE_EQ(150.0, m_pIntroEndPosition->get());
     EXPECT_DOUBLE_EQ(250.0, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
@@ -176,12 +176,12 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(2.1 * beatLength);
-    pIntro->setLength(1.2 * beatLength);
+    pIntro->setEndPosition(3.3 * beatLength);
 
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
     pOutro->setStartPosition(11.1 * beatLength);
-    pOutro->setLength(4.4 * beatLength);
+    pOutro->setEndPosition(15.5 * beatLength);
 
     loadTrack(pTrack);
 
@@ -204,12 +204,12 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(250.0);
-    pIntro->setLength(150.0);
+    pIntro->setEndPosition(400.0);
 
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
     pOutro->setStartPosition(550.0);
-    pOutro->setLength(250.0);
+    pOutro->setEndPosition(800.0);
 
     loadTrack(pTrack);
 
@@ -232,12 +232,12 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(210.0);
-    pIntro->setLength(120.0);
+    pIntro->setEndPosition(330.0);
 
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
     pOutro->setStartPosition(770.0);
-    pOutro->setLength(220.0);
+    pOutro->setEndPosition(990.0);
 
     loadTrack(pTrack);
 
@@ -254,7 +254,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(250.0);
-    pIntro->setLength(150.0);
+    pIntro->setEndPosition(400.0);
 
     loadTrack(pTrack);
 
@@ -309,7 +309,7 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     m_pIntroStartSet->slotSet(0);
     EXPECT_DOUBLE_EQ(100.0, m_pIntroStartPosition->get());
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
 
     CuePointer pCue = pTrack->findCueByType(Cue::Type::Intro);
@@ -338,7 +338,7 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     // Clear intro start cue
     m_pIntroStartClear->slotSet(1);
     m_pIntroStartClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_DOUBLE_EQ(500.0, m_pIntroEndPosition->get());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
@@ -346,16 +346,16 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     pCue = pTrack->findCueByType(Cue::Type::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(-1.0, pCue->getPosition());
+        EXPECT_DOUBLE_EQ(Cue::kNoPosition, pCue->getPosition());
         EXPECT_DOUBLE_EQ(500.0, pCue->getLength());
     }
 
     // Clear intro end cue
     m_pIntroEndClear->slotSet(1);
     m_pIntroEndClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(-1.0, m_pIntroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(Cue::Type::Intro));
@@ -370,7 +370,7 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     m_pOutroStartSet->slotSet(0);
     EXPECT_DOUBLE_EQ(750.0, m_pOutroStartPosition->get());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     CuePointer pCue = pTrack->findCueByType(Cue::Type::Outro);
@@ -399,7 +399,7 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     // Clear outro start cue
     m_pOutroStartClear->slotSet(1);
     m_pOutroStartClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
     EXPECT_DOUBLE_EQ(1000.0, m_pOutroEndPosition->get());
     EXPECT_TRUE(m_pOutroEndEnabled->toBool());
@@ -407,16 +407,16 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     pCue = pTrack->findCueByType(Cue::Type::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(-1.0, pCue->getPosition());
+        EXPECT_DOUBLE_EQ(Cue::kNoPosition, pCue->getPosition());
         EXPECT_DOUBLE_EQ(1000.0, pCue->getLength());
     }
 
     // Clear outro end cue
     m_pOutroEndClear->slotSet(1);
     m_pOutroEndClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroStartPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(-1.0, m_pOutroEndPosition->get());
+    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(Cue::Type::Outro));

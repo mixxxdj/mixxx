@@ -303,7 +303,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        for (const auto& pControl: m_hotcueControls) {
+        for (const auto& pControl : m_hotcueControls) {
             detachCue(pControl);
         }
 
@@ -334,7 +334,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             Qt::DirectConnection);
 
     CuePointer pMainCue;
-    for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
+    for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::Type::MainCue) {
             DEBUG_ASSERT(!pMainCue);
             pMainCue = pCue;
@@ -345,7 +345,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     lock.unlock();
     // Use pNewTrack from now, because m_pLoadedTrack might have been reset
     // immediately after leaving the locking scope!
-
 
     // Because of legacy, we store the (load) cue point twice and need to
     // sync both values.
@@ -383,7 +382,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
         if (!(m_pVinylControlEnabled->get() &&
-                m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+                    m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekExact(0.0);
         }
         break;
@@ -401,16 +400,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::IntroStart:
-        {
-            double introStart = m_pIntroStartPosition->get();
-            if (introStart != Cue::kNoPosition) {
-                seekExact(introStart);
-            } else {
-                seekExact(0.0);
-            }
-            break;
+    case SeekOnLoadMode::IntroStart: {
+        double introStart = m_pIntroStartPosition->get();
+        if (introStart != Cue::kNoPosition) {
+            seekExact(introStart);
+        } else {
+            seekExact(0.0);
         }
+        break;
+    }
     default:
         seekExact(0.0);
         break;
@@ -432,13 +430,13 @@ void CueControl::loadCuesFromTrack() {
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == Cue::Type::MainCue) {
-            DEBUG_ASSERT(!pLoadCue);  // There should be only one MainCue cue
+            DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
             pLoadCue = pCue;
         } else if (pCue->getType() == Cue::Type::Intro) {
-            DEBUG_ASSERT(!pIntroCue);  // There should be only one Intro cue
+            DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
             pIntroCue = pCue;
         } else if (pCue->getType() == Cue::Type::Outro) {
-            DEBUG_ASSERT(!pOutroCue);  // There should be only one Outro cue
+            DEBUG_ASSERT(!pOutroCue); // There should be only one Outro cue
             pOutroCue = pCue;
         } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
             int hotcue = pCue->getHotCue();
@@ -1151,7 +1149,7 @@ void CueControl::introStartSet(double v) {
             pCue->setType(Cue::Type::Intro);
         }
         pCue->setStartPosition(position);
-        pCue->setLength(introEnd != Cue::kNoPosition ? introEnd - position : 0.0);
+        pCue->setEndPosition(introEnd);
     }
 }
 
@@ -1169,7 +1167,7 @@ void CueControl::introStartClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (introEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(introEnd);
+            pCue->setEndPosition(introEnd);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1228,13 +1226,8 @@ void CueControl::introEndSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Intro);
         }
-        if (introStart != Cue::kNoPosition) {
-            pCue->setStartPosition(introStart);
-            pCue->setLength(position - introStart);
-        } else {
-            pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(position);
-        }
+        pCue->setStartPosition(introStart);
+        pCue->setEndPosition(position);
     }
 }
 
@@ -1252,7 +1245,7 @@ void CueControl::introEndClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (introStart != Cue::kNoPosition) {
             pCue->setStartPosition(introStart);
-            pCue->setLength(0.0);
+            pCue->setEndPosition(Cue::kNoPosition);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1312,7 +1305,7 @@ void CueControl::outroStartSet(double v) {
             pCue->setType(Cue::Type::Outro);
         }
         pCue->setStartPosition(position);
-        pCue->setLength(outroEnd != Cue::kNoPosition ? outroEnd - position : 0.0);
+        pCue->setEndPosition(outroEnd);
     }
 }
 
@@ -1330,7 +1323,7 @@ void CueControl::outroStartClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (outroEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(outroEnd);
+            pCue->setEndPosition(outroEnd);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1389,13 +1382,8 @@ void CueControl::outroEndSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Outro);
         }
-        if (outroStart != Cue::kNoPosition) {
-            pCue->setStartPosition(outroStart);
-            pCue->setLength(position - outroStart);
-        } else {
-            pCue->setStartPosition(Cue::kNoPosition);
-            pCue->setLength(position);
-        }
+        pCue->setStartPosition(outroStart);
+        pCue->setEndPosition(position);
     }
 }
 
@@ -1413,7 +1401,7 @@ void CueControl::outroEndClear(double v) {
         CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (outroStart != Cue::kNoPosition) {
             pCue->setStartPosition(outroStart);
-            pCue->setLength(0.0);
+            pCue->setEndPosition(Cue::kNoPosition);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1440,9 +1428,9 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     QMutexLocker lock(&m_mutex);
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));
     if ((cueMode == CueMode::Denon || cueMode == CueMode::Numark) &&
-        newPlay && playPossible &&
-        !m_pPlay->toBool() &&
-        !m_bypassCueSetByPlay) {
+            newPlay && playPossible &&
+            !m_pPlay->toBool() &&
+            !m_bypassCueSetByPlay) {
         // in Denon mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
@@ -1485,7 +1473,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
         } else if (cueMode == CueMode::Mixxx || cueMode == CueMode::MixxxNoBlinking ||
-                   cueMode == CueMode::Numark) {
+                cueMode == CueMode::Numark) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer mode
@@ -1598,16 +1586,20 @@ CueControl::TrackAt CueControl::getTrackAt() const {
 
 double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    const double position = sampleOfTrack.current;
+    const double currentPos = sampleOfTrack.current;
+    const double total = sampleOfTrack.total;
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
-        return position;
+        return currentPos;
     }
 
     if (mode == QuantizeMode::ClosestBeat) {
         double closestBeat = m_pClosestBeat->get();
-        return closestBeat != -1.0 ? closestBeat : position;
+        if (closestBeat != -1.0 && closestBeat <= total) {
+            return closestBeat;
+        }
+        return currentPos;
     }
 
     double prevBeat = m_pPrevBeat->get();
@@ -1617,73 +1609,86 @@ double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
         // Quantize to previous beat, fall back to next beat.
         if (prevBeat != -1.0) {
             return prevBeat;
-        } else if (nextBeat != -1.0) {
-            return nextBeat;
-        } else {
-            return position;
         }
-    } else if (mode == QuantizeMode::NextBeat) {
+        if (nextBeat != -1.0 && nextBeat <= total) {
+            return nextBeat;
+        }
+        return currentPos;
+    }
+    if (mode == QuantizeMode::NextBeat) {
         // use current position if we are already exactly on the grid,
         // otherwise quantize to next beat, fall back to previous beat.
-        if (prevBeat == position) {
-            return position;
-        } else if (nextBeat != -1.0) {
-            return nextBeat;
-        } else if (prevBeat != -1.0) {
-            return prevBeat;
-        } else {
-            return position;
+        if (prevBeat == currentPos) {
+            return currentPos;
         }
-    } else {
-        qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
-        return -1.0;
+        if (nextBeat != -1.0 && nextBeat <= total) {
+            return nextBeat;
+        }
+        if (prevBeat != -1.0) {
+            return prevBeat;
+        }
+        return currentPos;
     }
+    DEBUG_ASSERT(!"PROGRAMMING ERROR: Invalid quantize mode");
+    return currentPos;
 }
 
-double CueControl::quantizeCuePoint(double position, QuantizeMode mode) {
+double CueControl::quantizeCuePoint(double cuePos, QuantizeMode mode) {
+    // we need to use m_pTrackSamples here because SampleOfTrack
+    // is set later by the engine and not during EngineBuffer::slotTrackLoaded
+    const double total = m_pTrackSamples->get();
+
+    VERIFY_OR_DEBUG_ASSERT(cuePos <= total) {
+        cuePos = total;
+    }
+
     // Don't quantize unset cues, manual cues or when quantization is disabled.
-    if (position == Cue::kNoPosition || !m_pQuantizeEnabled->toBool()) {
-        return position;
+    if (cuePos == Cue::kNoPosition || !m_pQuantizeEnabled->toBool()) {
+        return cuePos;
     }
 
     BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
-        return position;
+        return cuePos;
     }
 
     if (mode == QuantizeMode::ClosestBeat) {
-        double closestBeat = pBeats->findClosestBeat(position);
-        return closestBeat != -1.0 ? closestBeat : position;
+        double closestBeat = pBeats->findClosestBeat(cuePos);
+        if (closestBeat != -1.0 && closestBeat <= total) {
+            return closestBeat;
+        }
+        return cuePos;
     }
 
     double prevBeat, nextBeat;
-    pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    pBeats->findPrevNextBeats(cuePos, &prevBeat, &nextBeat);
 
-   if (mode == QuantizeMode::PreviousBeat) {
+    if (mode == QuantizeMode::PreviousBeat) {
         // Quantize to previous beat, fall back to next beat.
         if (prevBeat != -1.0) {
             return prevBeat;
-        } else if (nextBeat != -1.0) {
-            return nextBeat;
-        } else {
-            return position;
         }
-    } else if (mode == QuantizeMode::NextBeat) {
-        // use current position if we are already exactly on the grid,
-        // otherwise quantize to next beat, fall back to previous beat.
-        if (prevBeat == position) {
-            return position;
-        } else if (nextBeat != -1.0) {
+        if (nextBeat != -1.0 && nextBeat <= total) {
             return nextBeat;
-        } else if (prevBeat != -1.0) {
-            return prevBeat;
-        } else {
-            return position;
         }
-    } else {
-        qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
-        return -1.0;
+        return cuePos;
     }
+    if (mode == QuantizeMode::NextBeat) {
+        // use current cuePos if we are already exactly on the grid,
+        // otherwise quantize to next beat, fall back to previous beat.
+        if (prevBeat == cuePos) {
+            return cuePos;
+        }
+        if (nextBeat != -1.0 && nextBeat <= total) {
+            return nextBeat;
+        }
+        if (prevBeat != -1.0) {
+            return prevBeat;
+        }
+        return cuePos;
+    }
+    DEBUG_ASSERT(!"PROGRAMMING ERROR: Invalid quantize mode");
+    return cuePos;
 }
 
 bool CueControl::isTrackAtZeroPos() {
@@ -1701,7 +1706,7 @@ bool CueControl::isPlayingByPlayButton() {
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                                            static_cast<int>(SeekOnLoadMode::IntroStart));
+            static_cast<int>(SeekOnLoadMode::IntroStart));
     return static_cast<SeekOnLoadMode>(configValue);
 }
 

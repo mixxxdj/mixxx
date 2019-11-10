@@ -121,9 +121,9 @@ class DeckAttributes : public QObject {
   public:
     int index;
     QString group;
-    double startPos; // Set in toDeck nature
+    double startPos;     // Set in toDeck nature
     double fadeBeginPos; // set in fromDeck nature
-    double fadeEndPos; // set in fromDeck nature
+    double fadeEndPos;   // set in fromDeck nature
     bool isFromDeck;
     bool loading; // The data is inconsistent during loading a deck
 
@@ -234,8 +234,7 @@ class AutoDJProcessor : public QObject {
 
   protected:
     // The following virtual signal wrappers are used for testing
-    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play) {
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
         emit(loadTrackToPlayer(pTrack, group, play));
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
@@ -265,11 +264,13 @@ class AutoDJProcessor : public QObject {
     void calculateTransition(DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
-    void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
-            double fromDeckPosition, double endPoint, double startPoint);
+    void useFixedFadeTime(DeckAttributes* pFromDeck,
+            DeckAttributes* pToDeck,
+            double fromDeckPosition,
+            double endPoint,
+            double startPoint);
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
-
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
