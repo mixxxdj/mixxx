@@ -349,11 +349,14 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                             remainingFrameIndexRange.start(),
                             m_readableFrameIndexRange.start());
             DEBUG_ASSERT(prerollFrameIndexRange.length() <= remainingFrameIndexRange.length());
-            if (kLogger.traceEnabled()) {
-                kLogger.trace()
-                        << "Prepending"
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Preroll: Filling the first"
                         << prerollFrameIndexRange.length()
-                        << "frames of silence";
+                        << "sample frames in"
+                        << remainingFrameIndexRange
+                        << "with silence. Audio signal starts at"
+                        << m_readableFrameIndexRange.start();
             }
             const SINT prerollFrames = prerollFrameIndexRange.length();
             const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
