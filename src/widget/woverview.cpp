@@ -55,6 +55,7 @@ WOverview::WOverview(
           m_pConfig(pConfig),
           m_endOfTrack(false),
           m_pCueMenu(std::make_unique<CueMenu>(this)),
+          m_bDrag(false),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
           m_iPos(0),
@@ -202,6 +203,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
+    if (m_bDrag) {
+        // don't move slider under the mouse
+        return;
+    }
     // Calculate handle position. Clamp the value within 0-1 because that's
     // all we represent with this widget.
     dParameter = math_clamp(dParameter, 0.0, 1.0);
@@ -379,6 +384,14 @@ void WOverview::receiveCuesUpdated() {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
+    if (m_bDrag) {
+        if (m_orientation == Qt::Horizontal) {
+            m_iPos = math_clamp(e->x(), 0, width() - 1);
+        } else {
+            m_iPos = math_clamp(e->y(), 0, height() - 1);
+        }
+    }
+
     // Do not activate cue hovering while right click is held down and the
     // button down event was not on a cue.
     if (m_bTimeRulerActive) {
@@ -423,9 +436,15 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
+    double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::RightButton) {
+    if (e->button() == Qt::LeftButton) {
+        setControlParameterUp(dValue);
+        m_bDrag = false;
+    } else if (e->button() == Qt::RightButton) {
+        // Do not seek when releasing a right click. This is important to
+        // prevent accidental seeking when trying to right click a hotcue.
         m_bTimeRulerActive = false;
     }
 }
@@ -436,7 +455,6 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     if (m_pCurrentTrack == nullptr) {
         return;
     }
-
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
             m_iPos = math_clamp(e->x(), 0, width() - 1);
@@ -448,8 +466,11 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPos = valueToPosition(dValue);
+            setControlParameterUp(dValue);
+            m_bDrag = false;
+        } else {
+            m_bDrag = true;
         }
-        setControlParameterUp(dValue);
     } else if (e->button() == Qt::RightButton) {
         if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
@@ -489,6 +510,7 @@ void WOverview::leaveEvent(QEvent* e) {
     if (!m_bHotcueMenuShowing) {
         m_pHoveredMark.clear();
     }
+    m_bDrag = false;
     m_bTimeRulerActive = false;
     update();
 }
