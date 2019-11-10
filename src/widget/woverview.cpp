@@ -436,12 +436,15 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
-    double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
-        setControlParameterUp(dValue);
-        m_bDrag = false;
+        if (m_bDrag) {
+            double dValue = positionToValue(m_iPos);
+            setControlParameterUp(dValue);
+            m_bDrag = false;
+        }
+        m_bTimeRulerActive = false;
     } else if (e->button() == Qt::RightButton) {
         // Do not seek when releasing a right click. This is important to
         // prevent accidental seeking when trying to right click a hotcue.
@@ -901,17 +904,19 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
     if (m_bTimeRulerActive) {
-        QLineF line;
-        if (m_orientation == Qt::Horizontal) {
-            line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
-        } else {
-            line.setLine(0.0, m_timeRulerPos.x(), width(), m_timeRulerPos.x());
-        }
-        pPainter->setPen(shadowPen);
-        pPainter->drawLine(line);
+        if (!m_bDrag) {
+            QLineF line;
+            if (m_orientation == Qt::Horizontal) {
+                line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
+            } else {
+                line.setLine(0.0, m_timeRulerPos.x(), width(), m_timeRulerPos.x());
+            }
+            pPainter->setPen(shadowPen);
+            pPainter->drawLine(line);
 
-        pPainter->setPen(Qt::green);
-        pPainter->drawLine(line);
+            pPainter->setPen(Qt::green);
+            pPainter->drawLine(line);
+        }
 
         QPointF textPoint = m_timeRulerPos;
         QPointF textPointDistance = m_timeRulerPos;
