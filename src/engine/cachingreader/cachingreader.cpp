@@ -40,9 +40,8 @@ const SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
-
 CachingReader::CachingReader(QString group,
-                             UserSettingsPointer config)
+        UserSettingsPointer config)
         : m_pConfig(config),
           // Limit the number of in-flight requests to the worker. This should
           // prevent to overload the worker when it is not able to fetch those
@@ -63,7 +62,6 @@ CachingReader::CachingReader(QString group,
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kSamples * kNumberOfCachedChunksInMemory),
           m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusUpdateFIFO) {
-
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
@@ -265,7 +263,7 @@ void CachingReader::process() {
                 // TRACK_LOADED without a chunk in between, assert this here.
                 DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING ||
                         (m_state.load() == STATE_TRACK_LOADED &&
-                         !m_mruCachingReaderChunk && !m_lruCachingReaderChunk));
+                                !m_mruCachingReaderChunk && !m_lruCachingReaderChunk));
                 // now purge also the recently used chunk list from the old track.
                 if (m_mruCachingReaderChunk || m_lruCachingReaderChunk) {
                     DEBUG_ASSERT(m_state.load() == STATE_TRACK_LOADING);

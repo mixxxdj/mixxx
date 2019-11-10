@@ -440,11 +440,12 @@ METADATA
   </revision>
   <revision version="29" min_compatible="3">
     <description>
-      Add source to cue. Default is MANUAL.
-      <!-- See track/cue.h. -->
+      This was used in the development of 2.3 to track whether cues were placed
+      manually or automatically. However, this turned out to be unnecessary.
+      This version is left as a placeholder so users who were using the master
+      branch will have their database updated correctly for the subsequent
+      schema change.
     </description>
-    <sql>
-      ALTER TABLE cues ADD COLUMN source INTEGER DEFAULT 2 NOT NULL;
-    </sql>
+    <sql/>
   </revision>
 </schema>

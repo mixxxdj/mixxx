@@ -1318,6 +1318,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pLibraryWidget->setup(node, *m_pContext);
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary, SIGNAL(search(const QString&)),

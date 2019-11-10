@@ -5,11 +5,11 @@
 #define ENGINE_CACHINGREADER_H
 
 #include <QAtomicInt>
-#include <QList>
-#include <QVector>
-#include <QLinkedList>
 #include <QHash>
+#include <QLinkedList>
+#include <QList>
 #include <QVarLengthArray>
+#include <QVector>
 
 #include "util/types.h"
 #include "preferences/usersettings.h"
