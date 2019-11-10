@@ -187,7 +187,7 @@ class QuickEffectRack : public PerGroupRack {
     }
 
     QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
-                                        const QString& group) const {
+                                        const QString& group) const override {
         return formatEffectSlotGroupString(getRackNumber(), iEffectSlotNumber,
                                            group);
     }
@@ -203,7 +203,7 @@ class QuickEffectRack : public PerGroupRack {
 
     virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
                                                        const unsigned int iChainSlotNumber,
-                                                       const QString& group) const {
+                                                       const QString& group) const override {
         Q_UNUSED(iChainSlotNumber);
         return formatEffectChainSlotGroupString(iRackNumber, group);
     }
@@ -239,7 +239,7 @@ class EqualizerRack : public PerGroupRack {
     }
 
     QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
-                                        const QString& group) const {
+                                        const QString& group) const override {
         return formatEffectSlotGroupString(getRackNumber(), iEffectSlotNumber,
                                            group);
     }
@@ -254,7 +254,7 @@ class EqualizerRack : public PerGroupRack {
                                           const QString& group) override;
     virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
                                                        const unsigned int iChainSlotNumber,
-                                                       const QString& group) const {
+                                                       const QString& group) const override {
         Q_UNUSED(iChainSlotNumber);
         return formatEffectChainSlotGroupString(iRackNumber, group);
     }

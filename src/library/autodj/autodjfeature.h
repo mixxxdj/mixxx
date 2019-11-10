@@ -39,27 +39,27 @@ class AutoDJFeature : public LibraryFeature {
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+                    KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
     bool hasTrackTable() override {
         return true;
     }
 
   public slots:
-    void activate();
+    void activate() override;
 
     // Temporary, until WCrateTableView can be written.
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   private:
     UserSettingsPointer m_pConfig;
