@@ -3140,7 +3140,7 @@
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="107"/>
-        <source>AutoDJ Fade Modes
+        <source>Auto DJ Fade Modes
 
 Full Intro + Outro:
 Play the full intro and outro. Use the intro or outro length as the
@@ -4699,6 +4699,21 @@ CUP mode:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="164"/>
+        <source>Auto hotcue colors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="174"/>
+        <source>Automatically assigns a predefined color to a newly created hotcue point, based on its index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="177"/>
+        <source>Assign predefined colors to newly created hotcue points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="184"/>
         <source>Playing track protection</source>
         <translation type="unfinished"></translation>
@@ -4735,21 +4750,6 @@ If this option is disabled, the intro start point is automatically placed at the
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="154"/>
         <source>Track load point</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="164"/>
-        <source>Auto hot cue colors</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="174"/>
-        <source>Automatically assigns a predefined color to a newly created hot cue point, based on its index.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="177"/>
-        <source>Assign predefined colors to newly created hot cue points</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -10571,6 +10571,11 @@ Fully right: end of the effect period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/skin/tooltips.cpp" line="592"/>
+        <source>Hot Cue - Track will seek to nearest previous hotcue point.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/skin/tooltips.cpp" line="597"/>
         <source>Sets the track Loop-In Marker to the current play position.</source>
         <translation type="unfinished"></translation>
@@ -11982,11 +11987,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="591"/>
         <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="592"/>
-        <source>Hot Cue - Track will seek to nearest previous hot cue point.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
