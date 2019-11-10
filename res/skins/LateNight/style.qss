@@ -279,8 +279,8 @@ QHeaderView::down-arrow {
   }
   #KeyButton[displayValue="1"] {
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #870000,
-      stop:1 #B40000);
+      stop:0 #890000,
+      stop:1 #db0000);
   }
 
 #HotcueButton,
@@ -312,7 +312,7 @@ QHeaderView::down-arrow {
 #SamplerSyncButton,
 #FxUnitControls WPushButton,
 #FxExpandCollapseButton,
-#FxToggleButton, #FxParameterButton,
+#FxAssignButton, #FxToggleButton, #FxParameterButton,
 #SplitCueButton,
 #PlayButtonPreview,
 #BeatgridButtons WPushButton,
@@ -324,13 +324,9 @@ QHeaderView::down-arrow {
     border-width:  1px 3px 3px 1px;*/
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
   margin: 1px;
-  border-radius: 2px;
-}
-#FxAssignButton {
-  margin: 1px;
   border-radius: 1px;
 }
-#MicAuxUnit #FxAssignButton {
+#SplitCueButton {
   border-radius: 1px;
 }
 

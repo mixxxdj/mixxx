@@ -305,7 +305,7 @@
                     <State>
                       <Number>1</Number>
                       <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active_pressed.svg</Pressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_pressed.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>
