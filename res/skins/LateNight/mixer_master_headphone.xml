@@ -116,12 +116,12 @@
                 <Children>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MaxWidth">35</SetVariable>
-                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="Text">FX</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MaxWidth">35</SetVariable>
-                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="Text">FX</SetVariable>
                     <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                 </Children>
@@ -139,7 +139,7 @@
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="MinWidth">28</SetVariable>
                     <SetVariable name="MaxWidth">32</SetVariable>
-                    <SetVariable name="Text">FX&#8202;</SetVariable>
+                    <SetVariable name="Text">FX</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                   <Template src="skin:fx_assign_button.xml">

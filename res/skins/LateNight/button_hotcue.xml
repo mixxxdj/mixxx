@@ -19,7 +19,7 @@
         <State>
           <Number>1</Number>
           <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="btn_type_format"/>_set.svg</Unpressed>
-          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="btn_type_format"/>_active_pressed.svg</Pressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="btn_type_format"/>_pressed.svg</Pressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_activate</ConfigKey>
