@@ -34,12 +34,10 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
-          m_outputDrift(false),
           m_inputDrift(false),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
-          m_targetTime(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_targetTime(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
