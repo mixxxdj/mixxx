@@ -1566,7 +1566,6 @@ WPushButton:hover {
 /*"Pressed" state*/
 WPushButton[value="1"],
 WPushButton[value="2"] {
-    /*color: #FDFDFD;*/
     color: #FDFDFD;
     background-color: #006596;
     border: 0px solid #006596;
@@ -1577,6 +1576,14 @@ WPushButton[value="2"]:hover {
     color: #FDFDFD;
     background-color: #0080BE;
     border: 0px solid #0080BE;
+}
+
+#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
+    color: #FDFDFD;
+}
+
+#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
+    color: #1f1e1e;
 }
 
 #PlayToggle[value="0"] {
