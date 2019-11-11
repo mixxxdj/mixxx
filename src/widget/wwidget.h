@@ -47,9 +47,17 @@ class WWidget : public QWidget, public WBaseWidget {
     Q_PROPERTY(double value READ getControlParameterDisplay);
     Q_PROPERTY(double backgroundColorRgba READ getBackgroundColorRgba WRITE
                     setBackgroundColorRgba);
+    Q_PROPERTY(bool hasBackgroundColor READ hasBackgroundColor);
+    Q_PROPERTY(bool backgroundIsDark READ backgroundIsDark);
 
     double getBackgroundColorRgba() const;
     void setBackgroundColorRgba(double rgba);
+    bool hasBackgroundColor() const {
+        return m_backgroundColorRgba >= 0;
+    }
+    bool backgroundIsDark() const {
+        return m_bBackgroundIsDark;
+    }
 
   protected:
     bool touchIsRightButton();
@@ -67,6 +75,7 @@ class WWidget : public QWidget, public WBaseWidget {
     ControlProxy* m_pTouchShift;
     double m_scaleFactor;
     double m_backgroundColorRgba;
+    bool m_bBackgroundIsDark;
 };
 
 #endif
