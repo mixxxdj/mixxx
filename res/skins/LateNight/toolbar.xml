@@ -8,13 +8,14 @@
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-        <SetVariable name="Size">84f,24f</SetVariable>
+        <SetVariable name="Size">84f,20f</SetVariable>
         <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
         <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
         <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
       </Template>
 
       <WidgetGroup>
+        <ObjectName>ToolBarSection</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -27,7 +28,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">48f,24f</SetVariable>
+            <SetVariable name="Size">48f,20f</SetVariable>
             <SetVariable name="state_0_text">MIXER</SetVariable>
             <SetVariable name="state_1_text">MIXER</SetVariable>
             <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
@@ -36,7 +37,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_effects</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">59f,24f</SetVariable>
+            <SetVariable name="Size">59f,20f</SetVariable>
             <SetVariable name="state_0_text">EFFECTS</SetVariable>
             <SetVariable name="state_1_text">EFFECTS</SetVariable>
             <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
@@ -45,7 +46,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">71f,24f</SetVariable>
+            <SetVariable name="Size">71f,20f</SetVariable>
             <SetVariable name="state_0_text">SAMPLERS</SetVariable>
             <SetVariable name="state_1_text">SAMPLERS</SetVariable>
             <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
@@ -54,7 +55,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">61f,24f</SetVariable>
+            <SetVariable name="Size">61f,20f</SetVariable>
             <SetVariable name="state_0_text">MIC/AUX</SetVariable>
             <SetVariable name="state_1_text">MIC/AUX</SetVariable>
             <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
@@ -78,7 +79,7 @@
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
-        <Size>72f,24f</Size>
+        <Size>72f,20f</Size>
         <!-- minus 1px border
             = 70x18 available for text -->
         <Children>
@@ -92,18 +93,22 @@
 
           <WidgetGroup><!-- Rec dot + RecDuration -->
             <Layout>horizontal</Layout>
-            <Size>68f,18f</Size>
+            <Size>68f,20f</Size>
             <Children>
               <Label>
                 <ObjectName>RecDot</ObjectName>
-                <Size>15f,18f</Size>
+                <Size>15f,20f</Size>
               </Label>  
 
               <RecordingDuration>
                 <ObjectName>RecDuration</ObjectName>
-                <Size>53f,18f</Size>
+                <Size>53f,20f</Size>
                 <InactiveText>REC</InactiveText>
                 <Alignment>center</Alignment>
+                <Connection>
+                  <ConfigKey>[Recording],status</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
               </RecordingDuration>
             </Children>
           </WidgetGroup><!-- /Rec dot + RecDuration -->
@@ -112,7 +117,7 @@
           <Template src="skin:button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">65f,18f</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
@@ -120,25 +125,25 @@
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
       <PushButton>
-        <Size>82f,24f</Size>
+        <Size>82f,20f</Size>
         <TooltipId>skin_settings</TooltipId>
         <ObjectName>BroadcastButton</ObjectName>
         <NumberStates>4</NumberStates>
-        <State>
+        <State><!-- Off -->
           <Number>0</Number>
           <Text>Broadcast</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>Broadcast</Text>
+          <Text>Connecting...</Text>
         </State>
         <State>
           <Number>2</Number>
-          <Text>Broadcast</Text>
+          <Text>ON AIR</Text>
         </State>
         <State>
           <Number>3</Number>
-          <Text>Broadcast</Text>
+          <Text>Conn. Failed</Text>
         </State>
         <Connection>
           <ConfigKey persist="true">[Shoutcast],enabled</ConfigKey>
@@ -155,7 +160,7 @@
       </WidgetGroup>
 
       <PushButton>
-        <Size>80f,24f</Size>
+        <Size>80f,20f</Size>
         <TooltipId>skin_settings</TooltipId>
         <ObjectName>SettingsButton</ObjectName>
         <NumberStates>2</NumberStates>

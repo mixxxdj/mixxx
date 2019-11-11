@@ -4,6 +4,12 @@
     background-color: #fff;
 }
 
+#SkinContainer {
+  background-color: #0f0f0f;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+/************** font settings ************************/
 #Mixxx, WWidget,
 WLabel, QLabel,
 WPushButton, QPushButton,
@@ -47,11 +53,16 @@ QToolTip {
   border-radius: 2px;
 }
 
-WPushButton, QPushButton {
+WPushButton, QPushButton,
+#RecDuration[highlight="0"],
+#RecDuration[highlight="1"] {
   font-size: 11px/12px;
 }
+/************** font settings ************************/
 
-/************** 3D borders and margin   **************
+
+
+/************** 3D borders & margin     **************
  ************** of major GUI containers **************/
 #Deck1, #DeckSmall1,
 #Deck2, #DeckSmall2,
@@ -95,8 +106,14 @@ WSearchLineEdit,
   border-right: 1px solid #333;
   border-bottom-left-radius: 1px;
   border-top-right-radius: 1px; /*
-  any color would cover the background tetxture
+  any color would cover the background texture
   background-color: #131313;  */
+}
+
+#WaveformsContainer {
+  border-bottom: 1px solid #000;
+  background-color: #1e1e1e;
+  padding-bottom: 1px;
 }
 
 #Deck1, #Deck2,
@@ -126,54 +143,65 @@ WSearchLineEdit,
 }
 
 #Deck1, #DeckSmall1,
-#Deck3, #DeckSmall3,
-#FxUnit1, #FxUnit3 {
-  margin-right: 3px;
-  margin-left: 3px;
-}
 #Deck2, #DeckSmall2,
+#Deck3, #DeckSmall3,
 #Deck4, #DeckSmall4,
+#FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4 {
   margin-right: 3px;
   margin-left: 3px;
 }
 
-#MicRack {
+#MicRack, #AuxRack {
   margin-left: 3px;
   margin-right: 3px;
 }
-#AuxRack {
-  margin-left: 3px;
-  margin-right: 3px;
-}
-/************** 3D borders and margin   **************
+/************** 3D borders & margin     **************
  ************** of major GUI containers **************/
 
 
+
+/************** Button styles ************************/
 /************** Button borders **************/
-#KeyButton,
-#VinylButton,
-#VinylTristateButton,
-#FxAssignButtonDeck,  
-#RecBox,
-#GuiToggleButton,
-#BroadcastButton,
-#SettingsButton {
-  border: 1px solid #080808;
-  border-radius: 1px;
-}
-#VinylButton,
-#VinylTristateButton,
-#FxAssignButtonDeck {
-  margin: 1px 0px 1px 2px;
-}
-#KeyButton {
-  margin: 1px 2px 1px 0px;
-}
-#KeyText {
-  margin: 0px 2px 0px 0px;
+
+
+/************** Button backgrounds **************/
+QHeaderView,
+QHeaderView::section,
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #222,
+    stop:1 #111);
 }
 
+#DeckRow_1_KeyVinylFx WPushButton[displayValue="0"],
+#VinylTristateButton[displayValue="1"], #VinylTristateButton[displayValue="2"],
+#GuiToggleButton[displayValue="0"],
+#RecFeedback[displayValue="0"],
+#BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"] {
+  border-width: 2px;
+  border-image: url(skin:buttons/btn_embedded_library.svg) 2 2 2 2;
+  }
+  #KeyButton[displayValue="1"],
+  #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
+  #FxAssignButtonDeck[displayValue="1"],
+  #GuiToggleButton[displayValue="1"],
+  #RecFeedback[displayValue="1"], #RecFeedback[displayValue="2"],
+  #BroadcastButton[displayValue="1"], #BroadcastButton[displayValue="2"],
+  #BroadcastButton[displayValue="3"],
+  #SettingsButton[displayValue="1"] {
+    border-width: 2px;
+    border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 2 2 2;
+  }
+
+#BeatgridButtonsToggle {
+  border-width: 3px;
+  border-image: url(skin:buttons/btn_embedded_square.svg) 3 3 3 3;
+}
+
+/* Library controls in AutoDJ etc. */
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
@@ -210,81 +238,8 @@ WEffectSelector {
   border-image: url(skin:buttons/btn_elevated_fx_selector.svg) 1 2 2 1;
   background-color: #0f0f0f;
 }
-/************** Button borders **************/
 
-
-/************** Button backgrounds **************/
-
-#VinylButton[displayValue="0"],
-#VinylTristateButton,
-#FxAssignButtonDeck[displayValue="0"],
-#GuiToggleButton[displayValue="0"],
-#BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"],
-QHeaderView,
-QHeaderView::section,
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #222,
-    stop:1 #111);
-}
-
-#MicDuckingButton {
-    margin: 1px 2px 2px 1px;
-    border-radius: 1px;
-}
-
-#VinylButton[displayValue="1"],
-#VinylButton[displayValue="2"],
-#GuiToggleButton[displayValue="1"],
-#GuiToggleButton[displayValue="2"],
-#BroadcastButton[displayValue="1"], /* connecting: yellow */
-#SettingsButton[displayValue="1"] {
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #a06d00,
-    stop:1 #f0bb2b);/*
-  border-radius: 2px;*/
-}
-
-#FxAssignButtonDeck[displayValue="1"] {
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #456e05,
-    stop:0.25 #5b9402,
-    stop:1 #659f08);
-}
-
-#SettingsButton[displayValue="0"] {
-  image: url(skin:/buttons/btn__settings_off.svg) no-repeat left center;
-  }
-  #SettingsButton[displayValue="1"] {
-    image: url(skin:/buttons/btn__settings_on.svg) no-repeat left center;
-  }
-
-#BroadcastButton[displayValue="2"] { /* good: green */
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #3F8A2B,
-    stop:1 #26A803);
-  }
-  #BroadcastButton[displayValue="3"] {  /* failure: pink */
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #962D8B,
-      stop:1 #E602CD);
-  }
-
-#KeyButton[displayValue="0"] {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #282828,
-    stop:1 #0e0e0e);
-  }
-  #KeyButton[displayValue="1"] {
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #890000,
-      stop:1 #db0000);
-  }
-
-#HotcueButton,
-#SpecialCueButton {
+#HotcueButton {
   /* ronso0
   TEST pixel fonts instead of icons
   FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
@@ -326,10 +281,8 @@ QHeaderView::down-arrow {
   margin: 1px;
   border-radius: 1px;
 }
-#SplitCueButton {
-  border-radius: 1px;
-}
 
+/* button background colors */ 
 /* embedded buttons */
 #RateControls WPushButton[value="0"], #SyncButton[value="0"],
 #PflButton[value="0"],
@@ -341,31 +294,39 @@ QHeaderView::down-arrow {
 #MicDuckingButton[value="0"],
 #PlayButtonPreview[displayValue="0"],
 QPushButton#pushButtonAutoDJ:enabled,
-#BeatgridButtonsToggle, #BeatgridButtons WPushButton[displayValue="0"] {
+#BeatgridButtonsToggle, #BeatgridButtons WPushButton[displayValue="0"],
+#DeckRow_1_KeyVinylFx WPushButton[displayValue="0"],
+#VinylTristateButton[displayValue="1"], #VinylTristateButton[displayValue="2"],
+#GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
+#BroadcastButton[displayValue="0"], #SettingsButton[displayValue="0"] {
   background-color: #262626;
 }
-/* elevated buttons */
+/* elevated buttons & embedded buttons in top row & toolbar
+      brighter bg color to enhance contrast in darker containers
+      and with small size respectively */
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
 #HotcueButton[displayValue="0"],
-#FxToggleButton[displayValue="0"], #FxAssignButton[displayValue="0"],
-#FxParameterButton[displayValue="0"],
+#FxAssignButton[displayValue="0"],
+#FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
   background-color: #2c2c2c;
 }
 
-
-#FxToggleButton[displayValue="1"],
-#FxAssignButton[displayValue="1"],
-#QuickEffectButton[displayValue="1"] {
+/* Green/Lime Fx-related buttons */
+#FxToggleButton[displayValue="1"], #QuickEffectButton[displayValue="1"],
+#FxAssignButton[displayValue="1"], #FxAssignButtonDeck[displayValue="1"],
+#BroadcastButton[displayValue="2"] {
   background-color: #659f08;
-}
-#FxParameterButton[displayValue="1"] {
-  background-color: #666;
-}
-/* Hotcue Color: Red
-   this is also the default color if Auto-Color
-   in Preferences > Decks is Off */
+  }
+  /* Greay fo active Fx parameters */
+  #FxParameterButton[displayValue="1"] {
+    background-color: #888;
+  }
+
+/* Red
+   this is also the default hotcue color if
+   Auto-Color in Preferences > Decks is Off */
 #RateControls WPushButton[value="1"], #SyncButton[value="1"],
 /* define red buttons in DeckRow_5_LoopCuesTransport indivually,
 because somehow bg color for #SpecialCueButton can't be overwritten */ 
@@ -379,13 +340,26 @@ because somehow bg color for #SpecialCueButton can't be overwritten */
 #MicDuckingButton[value="1"],
 #PlayButtonPreview[displayValue="1"],
 QPushButton#pushButtonRecording:checked,
+#RecFeedback[displayValue="2"],
 #BeatgridButtons WPushButton[value="1"],
+#KeyButton[displayValue="1"],
 #HotcueButton[displayValue="1"][highlight="0"],
 #HotcueButton[displayValue="2"][highlight="0"],
 #HotcueButton[displayValue="1"][highlight="1"],
 #HotcueButton[displayValue="2"][highlight="1"] {
   background-color: #db0000;
 }
+
+#BroadcastButton[displayValue="3"] {
+/* pink */
+  }
+
+/* Orange/yellow */
+#VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
+#GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"],
+#BroadcastButton[displayValue="1"], /* connecting: yellow */
+#RecFeedback[displayValue="1"], /* initialize recording */
+#SettingsButton[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 #DlgAnalysis > QPushButton:checked,
 #MicDuckingButton[value="1"],
@@ -431,19 +405,7 @@ QPushButton#pushButtonAutoDJ:checked,
 #HotcueButton[displayValue="2"][highlight="8"] {
   background-color: #f2f2ff;
 }
-
-#BeatgridButtonsToggle {
-  border-width: 3px;
-  border-image: url(skin:buttons/btn_embedded_square.svg) 3 3 3 3;
-  image: url(skin:/buttons/btn__beatgrid_buttons_toggle.svg) no-repeat center center;  /*
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-          stop:0 #282828,
-          stop:0.13 #1a1a1a,
-          stop:0.87 #1a1a1a,
-          stop:1 #0e0e0e);  */
-  }
-
-/************** Button backgrounds **************/
+/************** Button styles ************************/
 
 
 
@@ -454,33 +416,33 @@ QPushButton#pushButtonAutoDJ:checked,
   #SamplerSyncButton {
     image: url(skin:/buttons/btn__sync_sampler.svg) no-repeat center center;
   }
-#RatePermUp {
-  image: url(skin:/buttons/btn__plus.svg) no-repeat center center;
-}
-#RateTempUp,
-#JumpForward {
-  image: url(skin:/buttons/btn__arrow_right.svg) no-repeat center center;
-}
-#RatePermDown {
-  image: url(skin:/buttons/btn__minus.svg) no-repeat center center;
-}
-#RateTempDown,
-#JumpBack {
-  image: url(skin:/buttons/btn__arrow_left.svg) no-repeat center center;
-}
+  #RatePermUp {
+    image: url(skin:/buttons/btn__plus.svg) no-repeat center center;
+  }
+  #RateTempUp,
+  #JumpForward {
+    image: url(skin:/buttons/btn__arrow_right.svg) no-repeat center center;
+  }
+  #RatePermDown {
+    image: url(skin:/buttons/btn__minus.svg) no-repeat center center;
+  }
+  #RateTempDown,
+  #JumpBack {
+    image: url(skin:/buttons/btn__arrow_left.svg) no-repeat center center;
+  }
 
 #LoopActivate {
   image: url(skin:/buttons/btn__loop.svg) no-repeat center center;
-}
-#Reloop {
-  image: url(skin:/buttons/btn__reloop.svg) no-repeat center center;
-}
-#LoopIn {
-  image: url(skin:/buttons/btn__loop_in.svg) no-repeat center center;
-}
-#LoopOut {
-  image: url(skin:/buttons/btn__loop_out.svg) no-repeat center center;
-}
+  }
+  #Reloop {
+    image: url(skin:/buttons/btn__reloop.svg) no-repeat center center;
+  }
+  #LoopIn {
+    image: url(skin:/buttons/btn__loop_in.svg) no-repeat center center;
+  }
+  #LoopOut {
+    image: url(skin:/buttons/btn__loop_out.svg) no-repeat center center;
+  }
 
 #PflButton {
   image: url(skin:/buttons/btn__pfl.svg) no-repeat center center;
@@ -488,41 +450,41 @@ QPushButton#pushButtonAutoDJ:checked,
 
 #Hotcue1 WPushButton {
   image: url(skin:/buttons/btn__1.svg) no-repeat center center;
-}
-#Hotcue2 WPushButton {
-  image: url(skin:/buttons/btn__2.svg) no-repeat center center;
-}
-#Hotcue3 WPushButton {
-  image: url(skin:/buttons/btn__3.svg) no-repeat center center;
-}
-#Hotcue4 WPushButton {
-  image: url(skin:/buttons/btn__4.svg) no-repeat center center;
-}
-#Hotcue5 WPushButton {
-  image: url(skin:/buttons/btn__5.svg) no-repeat center center;
-}
-#Hotcue6 WPushButton {
-  image: url(skin:/buttons/btn__6.svg) no-repeat center center;
-}
-#Hotcue7 WPushButton {
-  image: url(skin:/buttons/btn__7.svg) no-repeat center center;
-}
-#Hotcue8 WPushButton {
-  image: url(skin:/buttons/btn__8.svg) no-repeat center center;
-}
+  }
+  #Hotcue2 WPushButton {
+    image: url(skin:/buttons/btn__2.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton {
+    image: url(skin:/buttons/btn__3.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton {
+    image: url(skin:/buttons/btn__4.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton {
+    image: url(skin:/buttons/btn__5.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton {
+    image: url(skin:/buttons/btn__6.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton {
+    image: url(skin:/buttons/btn__7.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton {
+    image: url(skin:/buttons/btn__8.svg) no-repeat center center;
+  }
 
 #SpecialCueButton_intro_start WPushButton {
   image: url(skin:/buttons/btn__intro_start.svg) no-repeat center center;
-}
-#SpecialCueButton_intro_end WPushButton {
-  image: url(skin:/buttons/btn__intro_end.svg) no-repeat center center;
-}
-#SpecialCueButton_outro_start WPushButton {
-  image: url(skin:/buttons/btn__outro_start.svg) no-repeat center center;
-}
-#SpecialCueButton_outro_end WPushButton {
-  image: url(skin:/buttons/btn__outro_end.svg) no-repeat center center;
-}
+  }
+  #SpecialCueButton_intro_end WPushButton {
+    image: url(skin:/buttons/btn__intro_end.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_start WPushButton {
+    image: url(skin:/buttons/btn__outro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_end WPushButton {
+    image: url(skin:/buttons/btn__outro_end.svg) no-repeat center center;
+  }
 
 #PlayDeck {
   image: url(skin:/buttons/btn__play_deck.svg) no-repeat center center;
@@ -621,21 +583,26 @@ QPushButton#pushButtonAutoDJ:checked,
     image: url(skin:/buttons/btn__fx_toggle_active.svg) no-repeat center center;
   }
 
-#BeatCurposLarge {
-  image: url(skin:/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+#BeatgridButtonsToggle {
+  border-width: 3px;
+  border-image: url(skin:buttons/btn_embedded_square.svg) 3 3 3 3;
+  image: url(skin:/buttons/btn__beatgrid_buttons_toggle.svg) no-repeat center center;
   }
-  #BeatsEarlier {
-    image: url(skin:/buttons/btn__beats_earlier.svg) no-repeat center center;
-  }
-  #BeatsLater {
-    image: url(skin:/buttons/btn__beats_later.svg) no-repeat center center;
-  }
-  #BeatsSlower {
-    image: url(skin:/buttons/btn__beats_slower.svg) no-repeat center center;
-  }
-  #BeatsFaster {
-    image: url(skin:/buttons/btn__beats_faster.svg) no-repeat center center;
-  }
+  #BeatCurposLarge {
+    image: url(skin:/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+    }
+    #BeatsEarlier {
+      image: url(skin:/buttons/btn__beats_earlier.svg) no-repeat center center;
+    }
+    #BeatsLater {
+      image: url(skin:/buttons/btn__beats_later.svg) no-repeat center center;
+    }
+    #BeatsSlower {
+      image: url(skin:/buttons/btn__beats_slower.svg) no-repeat center center;
+    }
+    #BeatsFaster {
+      image: url(skin:/buttons/btn__beats_faster.svg) no-repeat center center;
+    }
 
 #MicTalkButton {
   image: url(skin:/buttons/btn__mic_talk.svg) no-repeat center center;
@@ -653,12 +620,34 @@ QPushButton#pushButtonAutoDJ:checked,
     image: url(skin:/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
+#RecDot {
+  background: transparent;
+  image: url(skin:/buttons/btn__rec_dot.svg) no-repeat center center;
+}
 
+#SettingsButton[displayValue="0"] {
+  /* for some reason the alignment isn't rescpected, so the icons
+    have to be sized like available area (76x16px) */
+  image: url(skin:/buttons/btn__settings_off.svg) no-repeat left top;
+  }
+  #SettingsButton[displayValue="1"] {
+    image: url(skin:/buttons/btn__settings_on.svg) no-repeat left top;
+  }
+
+#ToolbarLogo {
+  image: url(skin:style/mixxx_logo.svg) no-repeat center center;
+}
+
+WSearchLineEdit QToolButton:!focus {
+  image: url(skin:/buttons/btn__lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    image: url(skin:/buttons/btn__lib_clear_search_focus.svg);
+  }
 /************** Button icons **************/
 
 
-
-/*************** Button labels ***************/
+/*************** Button text colors ***************/
 #KeyButton[displayValue="0"],
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
@@ -666,9 +655,15 @@ QPushButton#pushButtonAutoDJ:checked,
 #FxAssignButtonDeck[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"] {
+#SettingsButton[displayValue="0"],
+#RecDuration[highlight="0"],
+#RecDuration[highlight="1"] {
   color: #bfbfbf;
-}
+  }
+  #RecDuration[highlight="2"] {
+    color: #d2d2d2;
+    font-size: 12px/12px;
+  }
 
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
@@ -688,16 +683,12 @@ QPushButton#pushButtonAutoDJ:checked,
 #EQKillButton[displayValue="1"] {
   color: #d2d2d2;
 }
-/*************** Button labels ***************/
+/*************** Button text colors ******************/
+/************** Button styles ************************/
 
 
-#GuiToggleButton,
-#BroadcastButton,
-#SettingsButton,
-#RecBox {
-  margin: 2px 3px 2px 2px;
-}
 
+/************** Label styles ************************/
 #KeyText,
 #PlayPositionText,
 #PlayPositionTextSmall,
@@ -751,56 +742,28 @@ WSearchLineEdit:focus,
 WTime {
   font-weight: bold;
 }
+/************** Label styles ************************/
 
-#SkinContainer {
-  background-color: #0f0f0f;
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
+
+
 
 #ToolBar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   background-color: #1e1e1e;
-  padding: 1px 0px 1px 2px;
-}
-
+  padding: 1px 0px 2px 2px;
+  }
+  #ToolBar, #ToolBarSection {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+    qproperty-layoutSpacing: 2;
+  }
   #ToolBarDivider {
     background: transparent;
     image: url(skin:/style/toolbar_divider.png) no-repeat center center;
-    margin: 0px 5px;
+    margin: 0px 3px;
   }
 
   #RecBox {
     qproperty-layoutAlignment: 'AlignCenter';
-    border-radius: 1px;
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #282828,
-      stop:1 #0e0e0e);
     }
-    #RecDot {
-      background: transparent;
-      image: url(skin:/buttons/rec_dot.svg) no-repeat center center;
-    }
-    #RecDuration {
-      font-size: 10px/12px;
-      color: #ddd;
-    }
-    #RecFeedback[displayValue="0"] {
-      background-color: (x1:0, y1:0, x2:0, y2:1,
-        stop:0 #282828,
-        stop:1 #0e0e0e);
-    }
-    #RecFeedback[displayValue="1"],
-    #RecFeedback[displayValue="2"] {
-      background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #840600,
-        stop:1 #AD0800);
-    }
-
-  #ToolbarLogo {
-    background: transparent;
-    margin: 3px 0px;
-    image: url(skin:style/mixxx_logo.svg) no-repeat center center;
-  }
 
   #ClockWidget {
     qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
@@ -815,12 +778,6 @@ WTime {
     font-size: 10px/10px;
   }
 
-#WaveformsContainer {
-  border-bottom: 1px solid #000;
-  background-color: #1e1e1e;
-  padding-bottom: 1px;
-}
-
 
 /********************** Decks **********************/
 #DeckRow_1_KeyVinylFx {
@@ -829,9 +786,12 @@ WTime {
   but without it the top border of #DeckRow_2_3_ArtistTitleTime
   wouldn't show up.... :? */
   background-color: #1e1e1e;
-  padding: 0px -1px 1px 0px;
+  padding: 1px 0px 2px 0px;
   border-bottom: 1px solid #0c0c0c;
-}
+  }
+  #KeyButtons, #VinylButtons, #FxAssingButtonsDeck {
+    qproperty-layoutSpacing: 2;
+  }
 
 #DeckRows234 {
 }
@@ -1759,9 +1719,6 @@ WEffectSelector {
     }
     WEffectSelector::down-arrow:hover {
       image: url(skin:/buttons/btn__fx_selector_down_pressed.svg);
-      border: 0;
-      padding: 0;
-      margin: 0;
     }
 
   WEffectSelector QAbstractItemView {
@@ -2161,7 +2118,7 @@ WSearchLineEdit {
   background: #0f0f0f;
   }
   WSearchLineEdit:focus {
-    padding: 2px;
+    padding: 2px 0px 2px 2px;
     border: 2px solid #FF6600;
   }
   /* Clear button */
@@ -2171,13 +2128,7 @@ WSearchLineEdit {
        make the button use the available height */
     height: 19px;
     width: 19px;
-    margin-right: -3px;
-    }
-    WSearchLineEdit QToolButton:!focus {
-      image: url(skin:/buttons/btn__lib_clear_search.svg);
-    }
-    WSearchLineEdit QToolButton:focus {
-      image: url(skin:/buttons/btn__lib_clear_search_focus.svg);
+    margin-right: -1px;
     }
 
 /* HorizontalSplitter

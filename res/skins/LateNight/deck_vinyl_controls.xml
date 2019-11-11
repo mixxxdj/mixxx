@@ -19,48 +19,55 @@
       </StatusLight>
 
       <!-- increase margin -->
-      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+      <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
 
-      <!-- &#8202; is a hack to push text labels to the left or right
-           because the kerning of some letters/numbers destroys the desired
-           effect of center 'Align' and 'text-alignment' -->
-      <Template src="skin:button_2state.xml">
-        <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
-        <SetVariable name="ObjectName">VinylButton</SetVariable>
-        <SetVariable name="Size">41f,22f</SetVariable>
-        <SetVariable name="state_0_text">&#8202;&#8202;VINYL</SetVariable>
-        <SetVariable name="state_1_text">&#8202;&#8202;VINYL</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <ObjectName>VinylButtons</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,f</SizePolicy>
+        <Children>
+          <!-- &#8202; is a hack to push text labels to the left or right
+               because the kerning of some letters/numbers destroys the desired
+               effect of center 'Align' and 'text-alignment' -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">39f,20f</SetVariable>
+            <SetVariable name="state_0_text">&#8202;&#8202;VINYL</SetVariable>
+            <SetVariable name="state_1_text">&#8202;&#8202;VINYL</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
+          </Template>
 
-      <Template src="skin:button_3state_persist.xml">
-        <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
-        <SetVariable name="ObjectName">VinylTristateButton</SetVariable>
-        <SetVariable name="Size">44f,22f</SetVariable>
-        <SetVariable name="state_0_text">ABS</SetVariable>
-        <SetVariable name="state_1_text">REL</SetVariable>
-        <SetVariable name="state_2_text">&#8202;CONST</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
-      </Template>
+          <Template src="skin:button_3state_persist.xml">
+            <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
+            <SetVariable name="ObjectName">VinylTristateButton</SetVariable>
+            <SetVariable name="Size">42f,20f</SetVariable>
+            <SetVariable name="state_0_text">ABS</SetVariable>
+            <SetVariable name="state_1_text">REL</SetVariable>
+            <SetVariable name="state_2_text">&#8202;CONST</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
+          </Template>
 
-      <Template src="skin:button_3state_persist.xml">
-        <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
-        <SetVariable name="ObjectName">VinylButton</SetVariable>
-        <SetVariable name="Size">30f,22f</SetVariable>
-        <SetVariable name="state_0_text">&#8202;CUE</SetVariable>
-        <SetVariable name="state_1_text">&#8202;CUE</SetVariable>
-        <SetVariable name="state_2_text">&#8202;HOT</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
-      </Template>
+          <Template src="skin:button_3state_persist.xml">
+            <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">28f,20f</SetVariable>
+            <SetVariable name="state_0_text">&#8202;CUE</SetVariable>
+            <SetVariable name="state_1_text">&#8202;CUE</SetVariable>
+            <SetVariable name="state_2_text">&#8202;HOT</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
+          </Template>
 
-      <Template src="skin:button_2state.xml">
-        <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
-        <SetVariable name="ObjectName">VinylButton</SetVariable>
-        <SetVariable name="Size">35f,22f</SetVariable>
-        <SetVariable name="state_0_text">&#8202;PASS</SetVariable>
-        <SetVariable name="state_1_text">&#8202;PASS</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
-      </Template>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylButton</SetVariable>
+            <SetVariable name="Size">33f,20f</SetVariable>
+            <SetVariable name="state_0_text">&#8202;PASS</SetVariable>
+            <SetVariable name="state_1_text">&#8202;PASS</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
 
     </Children>
     <Connection>

@@ -16,7 +16,7 @@ Variables:
   <PushButton>
     <TooltipId>EffectUnit_<Variable name="Type"/>_enabled</TooltipId>
     <ObjectName>FxAssignButtonDeck</ObjectName>
-    <Size><Variable name="Width"/>f,22f</Size>
+    <Size><Variable name="Width"/>f,20f</Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>

@@ -7,5 +7,5 @@
 		</linearGradient>
 	</defs>
 	<rect transform="matrix(0,-1,-1,0,0,0)" x="-22.500031" y="-74.5" width="21" height="73" rx="1.5" ry="1.5" color="#000000" fill="url(#a)"/>
-	<rect x="1.5" y="1.5" width="73" height="21" rx=".30000001" ry=".30000001" fill="none" stroke="#c8c8c8" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
+	<rect x="1.5" y="1.5" width="73" height="21" rx=".5" ry=".5" fill="none" stroke="#c8c8c8" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
 </svg>
