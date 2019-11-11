@@ -506,19 +506,6 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
 }
 
-void WOverview::keyPressEvent(QKeyEvent* e) {
-    // TODO() this events gets lost on the way. Fix it.
-    qDebug() << "WOverview::keyPressEvent" << e->key();
-    if (e->key() == Qt::Key_Escape) {
-        if (m_bDrag) {
-            m_iPos = valueToPosition(m_playpositionControl->get());
-            m_bDrag = false;
-        }
-    } else {
-        QWidget::keyPressEvent(e);
-    }
-}
-
 void WOverview::slotCueMenuAboutToHide() {
     m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
