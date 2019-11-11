@@ -1013,6 +1013,7 @@ WLabel#TrackComment {
 #HotcueButton[displayValue="1"][highlight="2"],
 #HotcueButton[displayValue="2"][highlight="2"] {
     background-color: #32be44;
+    color: #111;
 }
 
 /* Hotcue Color: Blue */
@@ -1024,14 +1025,14 @@ WLabel#TrackComment {
 /* Hotcue Color: Yellow */
 #HotcueButton[displayValue="1"][highlight="4"],
 #HotcueButton[displayValue="2"][highlight="4"] {
-    color: #333;
+    color: #222;
     background-color: #f8d200;
 }
 
 /* Hotcue Color: Celeste */
 #HotcueButton[displayValue="1"][highlight="5"],
 #HotcueButton[displayValue="2"][highlight="5"] {
-    color: #333;
+    color: #111;
     background-color: #42d4f4;
 }
 
@@ -1051,7 +1052,7 @@ WLabel#TrackComment {
 /* Hotcue Color: White */
 #HotcueButton[displayValue="1"][highlight="8"],
 #HotcueButton[displayValue="2"][highlight="8"] {
-    color: #333;
+    color: #222;
     background-color: #f2f2ff;
 }
 
@@ -2171,9 +2172,19 @@ QMenuBar,
     background-color: #333;
     border: 1px solid #222;
     }
+  QMenu QCheckBox::indicator:!enabled:checked {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
+    }
   QMenu::item:!enabled,
   QMenu QCheckBox:!enabled {
     color: #555;
+    }
+  QCheckBox::indicator:indeterminate {
+    image: url(skin:/buttons/btn_lib_checkmark_dark_grey.svg);
+    border: 1px solid #1e1e1e;
+    }
+  QCheckBox::indicator:indeterminate:!enabled {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
     }
   QMenu::right-arrow {
     width: 8px;

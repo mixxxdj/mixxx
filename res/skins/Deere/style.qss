@@ -2025,23 +2025,31 @@ WEffectSelector {
   QMenu QCheckBox::indicator {
     width: 13px;
     height: 13px;
+    border: 1px solid #555;
     border-radius: 1px;
     /* remove OS focus indicator */
     outline: none;
     }
   QMenu QCheckBox::indicator:checked {
     image: url(skin:/icon/ic_library_checkmark.svg);
-    border: 1px solid #0f0f0f;
     }
-  QMenu QCheckBox::indicator:!checked {
-    image: none;
-    border: 1px solid #666;
-    background-color: #222;
-    }
+  /* disabled menu item and checkbox */
+  QMenu QCheckBox:!enabled,
+  QMenu::item:!enabled,
   QMenu QCheckBox::indicator:!enabled {
     color: #555;
-    border: 1px solid #333;
     }
+  QMenu QCheckBox::indicator:!enabled {
+    border: 1px solid #333;
+    background-color: #222;
+    }
+  QMenu QCheckBox::indicator:!enabled:checked {
+    image: url(skin:/icon/ic_library_checkmark_grey.svg);
+    }
+  QCheckBox::indicator:indeterminate {
+    image: url(skin:/icon/ic_library_checkmark_grey.svg);
+    }
+
   QMenu::right-arrow {
     width: 16px;
     height: 16px;

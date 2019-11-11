@@ -121,28 +121,36 @@ QMenu {
     }
   /* checked effect and menu checkbox */
   WEffectSelector::indicator:checked,
-  QMenu QCheckBox::indicator:checked,
-  QMenu QCheckBox::indicator:!checked:pressed {
+  QMenu QCheckBox::indicator:checked {
     border-color: #1a2025;
     background-color: #cf0a57;
     image: url(skin:/btn/btn_lib_checkmark_black.svg);
     }
   /* unchecked menu checkbox */
-  QMenu QCheckBox::indicator:!checked,
-  QMenu QCheckBox::indicator:checked:pressed {
+  QMenu QCheckBox::indicator:!checked {
     border-color: #1a2025;
     background-color: #7e868b;
     /* remove OS focus indicator */
     outline: none;
     }
   /* disabled menu checkbox */
+  QMenu::item:!enabled,
+  QMenu QCheckBox:!enabled {
+    color: #666;
+    }
   QMenu QCheckBox::indicator:!enabled {
     border-color: #767d82;
     background-color: #7e868b;
     }
-  QMenu::item:!enabled,
-  QMenu QCheckBox:!enabled {
-    color: #666;
+  QMenu QCheckBox::indicator:!enabled:checked {
+    image: url(skin:/btn/btn_lib_checkmark_grey.svg);
+    }
+  QCheckBox::indicator:indeterminate {
+    background-color: #cf0a57;
+    }
+  QCheckBox::indicator:indeterminate,
+  QCheckBox::indicator:indeterminate:!enabled {
+    image: url(skin:/btn/btn_lib_checkmark_dark_grey.svg);
     }
 /* common colors for WEffectSelector, QMenu, QToolTip */
 

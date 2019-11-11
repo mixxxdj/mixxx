@@ -2101,24 +2101,34 @@ WEffectSelector {
   QMenu QCheckBox::indicator {
     width: 13px;
     height: 13px;
-    border: 1px solid #333;
     border-radius: 1px;
     /* remove OS focus indicator */
     outline: none;
     }
   QMenu QCheckBox::indicator:checked {
+    border: 1px solid #333;
     image: url(skin:/buttons/btn_lib_checkmark.svg);
-    border: 1px solid #0f0f0f;
     }
   /* disabled menu item and checkbox */
   QMenu QCheckBox:!enabled,
-  QMenu::item:!enabled {
+  QMenu::item:!enabled,
+  QMenu QCheckBox::indicator:!enabled {
     color: #494949;
     }
-  QMenu QCheckBox::indicator:!enabled {
+  QMenu QCheckBox::indicator:!enabled:!checked {
     border: 1px solid #222;
     background-color: #222;
     }
+  QMenu QCheckBox::indicator:!enabled:checked {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
+    border: 1px solid #222;
+    background-color: #222;
+    }
+  QCheckBox::indicator:indeterminate,
+  QCheckBox::indicator:indeterminate:!enabled {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
+    }
+
   QMenu::right-arrow {
     width: 10px;
     height: 10px;
