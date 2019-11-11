@@ -298,6 +298,8 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
+    // Reset the color CO to -1
+    pControl->setColor(QColor());
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1742,6 +1744,7 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
+    m_hotcueColor->set(-1);
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1851,7 +1854,11 @@ QColor HotcueControl::getColor() const {
 }
 
 void HotcueControl::setColor(const QColor& newColor) {
-    m_hotcueColor->set(newColor.rgba());
+    if (newColor.isValid()) {
+        m_hotcueColor->set(newColor.rgba());
+    } else {
+        m_hotcueColor->set(-1);
+    }
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
