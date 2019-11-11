@@ -342,7 +342,7 @@ QHeaderView::down-arrow {
 #PlayButtonPreview[displayValue="0"],
 QPushButton#pushButtonAutoDJ:enabled,
 #BeatgridButtonsToggle, #BeatgridButtons WPushButton[displayValue="0"] {
-  background-color: #222;
+  background-color: #262626;
 }
 /* elevated buttons */
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
@@ -351,7 +351,7 @@ QPushButton#pushButtonAutoDJ:enabled,
 #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
-  background-color: #282828;
+  background-color: #2c2c2c;
 }
 
 
@@ -1177,7 +1177,7 @@ WBeatSpinBox,
 
 #MixerChannelControls {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-bottom: 2px;
+  padding: 0px 5px 2px 5px;
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -1248,10 +1248,10 @@ WBeatSpinBox,
 }
 
 #EQKillButtonBoxLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 #EQKillButtonBoxRight {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
 #CrossfaderAndSwitches2Decks {

@@ -1,7 +1,4 @@
 <svg width="141" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-	<g display="none">
-		<rect x="-1902.9451" y="-1208.74" width="3838.3003" height="2486.3296" fill="#1e1e1e" style="paint-order:fill markers stroke"/>
-	</g>
 	<path d="m 134.00001,20 v 4 H 7 v -4 z" color="#000000" fill="#050505" stroke-width=".99999994"/>
 	<g transform="translate(0 -.5)" fill="#050505" stroke-width=".99979782">
 		<path d="m70.999796 26.5-2e-4 9h-.999596l2e-4-9z" color="#000000"/>

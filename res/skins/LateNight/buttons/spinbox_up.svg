@@ -12,6 +12,6 @@
 	</defs>
 	<path d="m 1,11 16,-2.62e-4 V 0 H 1 Z" color="#000000" fill="url(#a)" stroke-width=".94349116" style="text-indent:0;text-transform:none"/>
 	<path d="m9.0050588 3-3.4641429 6.0000003h6.9282001z" fill="none" stroke="#000" stroke-width="1.6"/>
-	<path d="m9.0050588 3-3.4641429 6.0000003h6.9282001z" fill="#d2d2d1" stroke-width=".85714287"/>
+	<path d="m9.0050588 3-3.4641429 6.0000003h6.9282001z" fill="#bfbfbe" stroke-width=".85714287"/>
 	<rect width="1" height="24.007122" fill="url(#b)" style="paint-order:fill markers stroke"/>
 </svg>

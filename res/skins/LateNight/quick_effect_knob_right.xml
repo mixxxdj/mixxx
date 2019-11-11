@@ -28,9 +28,16 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>EQKillButtonBoxRight</ObjectName>
+            <Size>2f,34f</Size>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>22f,34f</Size>
+            <Size>18f,34f</Size>
             <Children>
               <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
               <PushButton>

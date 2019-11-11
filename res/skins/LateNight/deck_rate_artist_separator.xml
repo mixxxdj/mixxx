@@ -1,26 +1,86 @@
 <!-- Description:
         draws a black line to separate
          * rate controls  | Artist/Title  (small or no spinny) 
-         * big spinny     | Artist/Title         
+         * big spinny     | Artist/Title
+         
+          Conditions:
+          * rate controls
+            a) small spinnycover
+            b) big spinnycover
+              b1) spinny
+              
+          * no rate controls
+            a) big spinnycover
+              a1) spinny
+ 
  -->
 <Template>
   <WidgetGroup>
     <Size>1f,0me</Size>
     <Layout>horizontal</Layout>
     <Children>
+      <!-- rate controls -->
       <WidgetGroup>
         <Size>1f,0me</Size>
         <Layout>horizontal</Layout>
         <Children>
+
+          <!-- rate controls + small spinny/cover -->
           <WidgetGroup>
             <ObjectName>DeckRateSeparator</ObjectName>
             <Size>1f,0me</Size>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+              <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
+
+          <!-- rate controls + BIG spinny/cover -->
+          <WidgetGroup>
+            <Size>1f,0me</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <!-- rate controls + spinny + BIG spinny/cover -->
+              <WidgetGroup>
+                <ObjectName>DeckRateSeparator</ObjectName>
+                <Size>1f,0me</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <!-- rate controls + no spinny/cover + BIG spinny/cover -->
+              <WidgetGroup>
+                <ObjectName>DeckRateSeparator</ObjectName>
+                <Size>1f,0me</Size>
+                <Connection>
+                  <ConfigKey persist="true">[LateNight],no_spinny_no_cover</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
+      <!--no rate controls + spinny + BIG spinny/cover -->
+      <WidgetGroup>
+        <Size>1f,0me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
           <WidgetGroup>
             <Size>1f,0me</Size>
             <Layout>horizontal</Layout>
@@ -29,43 +89,24 @@
                 <ObjectName>DeckRateSeparator</ObjectName>
                 <Size>1f,0me</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
-              <Transform><Not/></Transform>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-      
-      <WidgetGroup>
-        <Size>1f,0me</Size>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>DeckRateSeparator</ObjectName>
-            <Size>1f,0me</Size>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

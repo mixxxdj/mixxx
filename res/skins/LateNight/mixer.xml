@@ -97,11 +97,6 @@
         <Children>
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>2f,min</Size>
-          </WidgetGroup>
-
-          <WidgetGroup>
             <ObjectName>Mixer</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
@@ -140,7 +135,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>max,me</SizePolicy>
                     <Children>
-                      <WidgetGroup><Size>1min,43f</Size></WidgetGroup>
+                      <WidgetGroup><Size>1min,44f</Size></WidgetGroup>
 
                       <WidgetGroup>
                         <ObjectName>VuMeterMaster2Decks</ObjectName>
@@ -325,13 +320,8 @@
 
             </Children>
           </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>2f,min</Size>
-          </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- MixerChannelControls -->
 
       <!-- Master & Headphone Controls -->
       <Template src="skin:mixer_master_headphone.xml"/>
