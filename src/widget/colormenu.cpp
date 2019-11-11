@@ -56,7 +56,7 @@ void ColorMenu::createPaletteColorsActions(const ColorPalette& colorPalette) {
 
 void ColorMenu::createColorPickerAction() {
     m_pColorPickerAction = new QAction(m_pActionGroup);
-    m_pColorPickerAction->setText("...");
+    m_pColorPickerAction->setText(tr("Other") + "…");
     m_pColorPickerAction->setCheckable(true);
     addAction(m_pColorPickerAction);
     connect(m_pColorPickerAction,
