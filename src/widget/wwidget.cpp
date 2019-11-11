@@ -37,6 +37,30 @@ WWidget::~WWidget() {
     delete m_pTouchShift;
 }
 
+double WWidget::getBackgroundColorRgba() const {
+    if (m_backgroundColorRgba >= 0) {
+        return m_backgroundColorRgba;
+    }
+    return -1;
+}
+
+void WWidget::setBackgroundColorRgba(double rgba) {
+    QColor backgroundColor = QColor::fromRgba(rgba);
+    QColor textColor = Color::chooseColorByBrightness(
+            backgroundColor, Qt::white, Qt::black);
+
+    QString style =
+            "background-color: %1;"
+            "color: %2;";
+
+    if (rgba >= 0) {
+        setStyleSheet(style.arg(backgroundColor.name()).arg(textColor.name()));
+    } else {
+        setStyleSheet("");
+    }
+    m_backgroundColorRgba = rgba;
+}
+
 bool WWidget::touchIsRightButton() {
     return (m_pTouchShift->get() != 0.0);
 }
