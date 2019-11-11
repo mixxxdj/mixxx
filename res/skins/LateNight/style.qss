@@ -450,9 +450,6 @@ QTableView::indicator,
 WLabel#CategoryLabel, #SkinSettingsLabelButton,
 #LatencyLabel, WTime,
 QLabel, QRadioButton,
-#LibraryBPMSpinBox,
-#LibraryBPMButton::item,
-QTableView, QTextBrowser, QTreeView,
 QToolTip,
 QMenu,
 QMenu::item,
@@ -460,10 +457,11 @@ QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
+WEffectSelector, WEffectSelector QAbstractItemView,
 WSearchLineEdit,
-WEffectSelector, WEffectSelector QAbstractItemView {
+QTableView, QTextBrowser, QTreeView,
+#LibraryBPMButton::item {
   color: #f0bb2b;
-  selection-color: #f0bb2b;
 }
 #PreviewLabel,
 #FxUnitLabel,
@@ -1553,6 +1551,18 @@ QTableView::item:selected > #LibraryBPMSpinBox::item:selected {
   background-color: #5e4507;
 }
 
+/* Table cell in edit mode */
+WLibrary QLineEdit,
+#LibraryBPMSpinBox {
+  color: #ddd;
+  background-color: #0f0f0f;
+  selection-color: #000;
+  selection-background-color: #ccc;
+}
+WLibrary QLineEdit {
+  border: 1px solid #5E4507;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator {/*
   This results in 10x10px + 1px border = 12x12px
@@ -1611,17 +1621,18 @@ QTableView::indicator {/*
   margin: 0px;
   padding: 0px;
   }
+#LibraryBPMButton::item:selected {
+  selection-color: #fff;
+  background-color: #5E4507;
+}
 #LibraryBPMSpinBox {
-  background-color: #0f0f0f;
-  selection-color: #0f0f0f;
-  selection-background-color: #d2d2d2;
   /* This combination of negative top/bottom padding & margin
     creates a 1px border around the spinbox' text area.
     Increased left/right padding/margin removes the overlap of
-    text of activated spinbox and left-over text from regular
+    text of activated spinbox and text artefact from regular
     BPM value display. */
   padding: -1px -8px -1px -4px;
-  margin: -2px 0px -2px -2px;
+  margin: -2px 0px -2px -3px;
   /* As soon as any border property is set, the up/down buttons
     lose their style & icons
   border: 0px;

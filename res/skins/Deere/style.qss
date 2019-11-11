@@ -235,6 +235,19 @@ QTreeView::branch:selected,
   background-color: #006596;
 }
 
+/* Table cell in edit mode */
+WLibrary QLineEdit,
+#LibraryBPMSpinBox {
+  color: #ddd;
+  background-color: #0f0f0f;
+  selection-color: #000;
+  selection-background-color: #ccc;
+}
+WLibrary QLineEdit {
+  border: 1px solid #006596;
+}
+
+
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 10px;
@@ -255,7 +268,11 @@ QTableView::indicator:unchecked {
   border: 1px solid rgba(151,151,151,128);
 }
 
-/* BPM lock icon in the library "BPM" column. */
+/* focused BPM cell in the library "BPM" column */
+#LibraryBPMButton:focus {
+  outline: none;
+}
+/* BPM lock icon */
 #LibraryBPMButton::indicator:checked {
   image: url(skin:/icon/ic_library_bpm_locked.svg);
 }
@@ -265,10 +282,6 @@ QTableView::indicator:unchecked {
 }
 
 #LibraryBPMSpinBox {
-  color: #fff;
-  selection-color: #0f0f0f;
-  background-color: #0f0f0f;
-  selection-background-color: #888;
   /* This combination of negative top/bottom padding & margin
     creates a 1px border around the spinbox' text area.
     Increased left/right padding/margin removes the overlap of
@@ -843,7 +856,9 @@ WBeatSpinBox,
     margin: 3px 0px 0px 2px;
   }
   WBeatSpinBox:hover,
-  #DlgAutoDJ QSpinBox:hover {
+  #DlgAutoDJ QSpinBox:hover,
+  WBeatSpinBox:focus,
+  #DlgAutoDJ QSpinBox:focus {
     border: 1px ridge #015d8d;
   }
   WBeatSpinBox::down-button,

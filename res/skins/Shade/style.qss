@@ -256,68 +256,30 @@ QTreeView {
   selection-background-color: #666;
 }
 
-QTreeView {
-  min-height: 90px;
-  min-width: 90px;
-  border-style: solid;
-  border-color: #585858;
-  show-decoration-selected: 0;
-  /* Don't define top margin here, it won't shift ScrollBar.
-  Defined by SearchBox	*/
-  margin: 0px;
-  }
-  QTreeView:focus,
-  QTableView:focus { /*
-    New Library navigation COs only work if TreeView or TableView have focus.
-    Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-    In conjunction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
-    border-color: #ff6600;
-  }
-
-/*  Closed branch of tree 	*/
-QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings {
-  image: url(skin:/style/style_branch_closed.png);
-  }
-  QTreeView::branch:has-children:!has-siblings:closed:selected,
-  QTreeView::branch:closed:has-children:has-siblings:selected {
-    image: url(skin:/style/style_branch_closed_selected.png);
-    background-color: #666;
-  }
-
-/*  Open branch of tree 	*/
-QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings {
-  image: url(skin:/style/style_branch_open.png);
-  }
-  QTreeView::branch:open:has-children:!has-siblings:selected,
-  QTreeView::branch:open:has-children:has-siblings:selected {
-    border-image: none;
-    image: url(skin:/style/style_branch_open_selected.png);
-    background-color: #666;
-  }
-  /* space left of selected child item */
-  QTreeView::branch:!has-children:!has-siblings:closed:selected,
-  QTreeView::branch:closed:!has-children:has-siblings:selected,
-  QTreeView::branch:open:!has-children:!has-siblings:selected,
-  QTreeView::branch:open:!has-children:has-siblings:selected {
-    border-image: none;
-    background-color: #0f0f0f;
-  }
-
+QTableView::item:selected,
 QTreeView::item:selected,
-QTableView::item:selected {
+QTreeView::branch:selected,
+#LibraryBPMButton::item:selected {
   border-image: none;
   background-image: none;
   color: #fff;
-  background-color: #666;
+  background-color: #656d75;
   }
 
 QTreeView::item:!selected {
-  border-image: none;
-  background-image: none;
-  background-color: #0f0f0f;
-  color: #999;
+  }
+
+  /* Table cell in edit mode */
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    color: #ddd;
+    background-color: #0f0f0f;
+    selection-color: #000;
+    selection-background-color: #ccc;
+  }
+
+  WLibrary QLineEdit {
+    border: 1px solid #656d75;
   }
 
   /* BPM lock icon in the library "BPM" column. */
@@ -330,16 +292,16 @@ QTreeView::item:!selected {
   #LibraryBPMButton::item {
     color: #cfcfcf;
     }
-    #LibraryBPMButton::item:selected {
-      color: #ededed;
-      background-color: #666;
-      }
+    /* remove OS focus indicator from BPM cell */
+    WLibrary QCheckBox {
+      outline: none;
+    }
 
   #LibraryBPMSpinBox {
     color: #fff;
-    selection-color: #0f0f0f;
     background-color: #0f0f0f;
-    selection-background-color: #888;
+    selection-color: #000;
+    selection-background-color: #ddd;
     /* This combination of negative top/bottom padding & margin
     creates a 1px border around the spinbox' text area.
     Increased left/right padding/margin removes the overlap of
@@ -434,6 +396,53 @@ WSearchLineEdit {
     WSearchLineEdit QToolButton:focus {
       image: url(skin:/btn/btn_lib_clear_search_focus.svg);
     }
+
+
+QTreeView {
+  min-height: 90px;
+  min-width: 90px;
+  show-decoration-selected: 0;
+  /* Don't define top margin here, it won't shift ScrollBar.
+  Defined by SearchBox	*/
+  margin: 0px;
+  }
+  QTreeView:focus,
+  QTableView:focus { /*
+    New Library navigation COs only work if TreeView or TableView have focus.
+    Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
+    In conjunction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
+    border-color: #ff6600;
+  }
+
+/*  Closed branch of tree 	*/
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+  image: url(skin:/style/style_branch_closed.png);
+  }
+  QTreeView::branch:has-children:!has-siblings:closed:selected,
+  QTreeView::branch:closed:has-children:has-siblings:selected {
+    image: url(skin:/style/style_branch_closed_selected.png);
+  }
+
+/*  Open branch of tree 	*/
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+  image: url(skin:/style/style_branch_open.png);
+  }
+  QTreeView::branch:open:has-children:!has-siblings:selected,
+  QTreeView::branch:open:has-children:has-siblings:selected {
+    border-image: none;
+    image: url(skin:/style/style_branch_open_selected.png);
+  }
+  /* space left of selected child item */
+  QTreeView::branch:!has-children:!has-siblings:closed:selected,
+  QTreeView::branch:closed:!has-children:has-siblings:selected,
+  QTreeView::branch:open:!has-children:!has-siblings:selected,
+  QTreeView::branch:open:!has-children:has-siblings:selected {
+    border-image: none;
+    background-color: #0f0f0f;
+  }
+
 
 QHeaderView,
 QHeaderView::section,

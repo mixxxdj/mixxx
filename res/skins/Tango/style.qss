@@ -2311,7 +2311,8 @@ QTreeView {
 }
 
 /* selected table row */
-QTableView::item:selected {
+QTableView::item:selected,
+#LibraryBPMButton::item:selected {
   color: #fff;
   background-color: #555;
   /* overrides color:
@@ -2320,7 +2321,7 @@ QTableView::item:selected {
   selection-background-color: #125454; */
   }
   /* focused cell */
-  QTableView::item:focus {/*
+  QTableView::item:focus {/* 
     background-color: #666; */
     /* overrides font color:
     selection-color: #ff5411; */
@@ -2329,6 +2330,17 @@ QTableView::item:selected {
     /* this outer border is drawn in addition to inner (dotted)
       focus border defined by OS theme
     border: 1px solid #ccc; */
+  }
+  /* Table cell in edit mode */
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    color: #ddd;
+    background-color: #0f0f0f;
+    selection-color: #000;
+    selection-background-color: #ccc;
+  }
+  WLibrary QLineEdit {
+    border: 1px solid #555;
   }
 
 QTreeView {
@@ -2625,17 +2637,7 @@ WLibrary QPushButton {
   #LibraryBPMButton::item {
     color: #cfcfcf;
     }
-    /* BPM value in selected row. Should match 'selection-color' &
-    'selection-background-color' of QTableView */
-    #LibraryBPMButton::item:selected {
-      color: #ededed;
-      background-color: #555;
-      }
   #LibraryBPMSpinBox {
-    color: #fff;
-    background-color: #0f0f0f;
-    selection-color: #0f0f0f;
-    selection-background-color: #888;
     /* This combination of negative top/bottom padding & margin
       creates a 1px border around the spinbox' text area.
       Increased left/right padding/margin removes the overlap of

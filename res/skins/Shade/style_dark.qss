@@ -72,6 +72,36 @@ WSearchLineEdit QToolButton:focus {
   image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
 }
 
+QTreeView::item:selected,
+QTableView::item:selected,
+QTreeView::branch:selected,
+#LibraryBPMButton::item:selected {
+  border-image: none;
+  background-image: none;
+  color: #000;
+  background-color: #666;
+  }
+
+  /* Table cell in edit mode */
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    color: #ddd;
+    background-color: #0f0f0f;
+    selection-color: #000;
+    selection-background-color: #aaa;
+  }
+
+  WLibrary QLineEdit {
+    border: 1px solid #666;
+  }
+
+/* checkbox in library "Played" column */
+QTableView::indicator:unchecked:selected {
+  background: none;
+  color: #cfcfcf;
+  border: 1px solid #000;
+  }
+
 /* Scroll bars */
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page,
