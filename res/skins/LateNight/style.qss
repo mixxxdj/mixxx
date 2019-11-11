@@ -973,6 +973,32 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  font: bold 10px/10px;
+  color: #666;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
+  padding-top: -1px;
+  text-transform: uppercase;
+}
+
+#MasterHeadphoneMixer WLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  padding: 0px;
+  background-color: #101010;
+  }
+  #FxKnobLabel,
+  #FxButtonLabel {
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    }
+
+#FxKnobContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #KillButtonLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding-left: 2px;
