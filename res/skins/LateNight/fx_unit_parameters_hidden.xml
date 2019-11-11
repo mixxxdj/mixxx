@@ -143,7 +143,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <PushButton>
-                    <TooltipId>mix_mode</TooltipId>
+                    <TooltipId>EffectUnit_mix_mode</TooltipId>
                     <ObjectName>MixModeButton</ObjectName>
                     <Size>39f,26f</Size>
                     <NumberStates>2</NumberStates>
