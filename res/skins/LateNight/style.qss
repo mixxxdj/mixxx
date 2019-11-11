@@ -716,44 +716,6 @@ QPushButton#pushButtonAutoDJ:checked,
 }
 /* ToDo
   * orange Play button when playing from Cue / Hotcue */
-/* Hotcue Color: Green */
-#HotcueButton[displayValue="1"][highlight="2"],
-#HotcueButton[displayValue="2"][highlight="2"] {
-  background-color: #32be44;
-}
-/* Hotcue Color: Blue */
-#HotcueButton[displayValue="1"][highlight="3"],
-#HotcueButton[displayValue="2"][highlight="3"],
-#SpecialCueButton[value="1"] {
-  background-color: #0044ff;
-}
-/* Hotcue Color: Yellow */
-#HotcueButton[displayValue="1"][highlight="4"],
-#HotcueButton[displayValue="2"][highlight="4"] {
-  background-color: #f8d200;
-}
-/* Hotcue Color: Celeste */
-#HotcueButton[displayValue="1"][highlight="5"],
-#HotcueButton[displayValue="2"][highlight="5"] {
-  background-color: #42d4f4;
-}
-/* Hotcue Color: Purple */
-#HotcueButton[displayValue="1"][highlight="6"],
-#HotcueButton[displayValue="2"][highlight="6"] {
-  background-color: #af00cc;
-}
-/* Hotcue Color: Pink */
-#HotcueButton[displayValue="1"][highlight="7"],
-#HotcueButton[displayValue="2"][highlight="7"] {
-  background-color: #fca6d7;
-}
-/* Hotcue Color: White */
-#HotcueButton[displayValue="1"][highlight="8"],
-#HotcueButton[displayValue="2"][highlight="8"] {
-  background-color: #f2f2ff;
-}
-/************** Button borders & backgrounds **********************************/
-
 
 
 /************** Button icons **************************************************/

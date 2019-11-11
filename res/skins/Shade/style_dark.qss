@@ -187,8 +187,3 @@ WLibrary QPushButton:enabled {
 WLibrary QRadioButton::indicator:checked {
  image: url(skin:/btn/btn_lib_radio_button_on_mustard.svg) center center;
 }
-
-/* Hotcue Color: No Color */
-#HotcueButton[highlight="0"] {
-    background-color: #b39a00;
-}
