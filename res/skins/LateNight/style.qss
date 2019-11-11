@@ -1757,13 +1757,15 @@ WEffectSelector {
   #fadeModeCombobox::drop-down {
     border: 0;
   }
-  WEffectSelector::down-arrow {
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
     image: url(skin:/buttons/btn__fx_selector_down.svg);
     border: 0;
     padding: 0;
     margin: 0;
     }
-    WEffectSelector::down-arrow:hover {
+    WEffectSelector::down-arrow:hover,
+    #fadeModeCombobox::down-arrow:hover {
       image: url(skin:/buttons/btn__fx_selector_down_pressed.svg);
     }
 
