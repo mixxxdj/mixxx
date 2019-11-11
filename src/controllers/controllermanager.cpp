@@ -132,7 +132,7 @@ void ControllerManager::slotInitialize() {
     m_enumerators.append(new Hss1394Enumerator());
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator());
+    m_enumerators.append(new BulkEnumerator(m_pConfig));
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator(m_pConfig));
