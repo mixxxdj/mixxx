@@ -28,8 +28,8 @@
         <Children>
           <EffectParameterKnobComposed>
             <Size>25f,25f</Size>
-            <Knob>skin:knobs_sliders/knob_indicator_small_white.svg</Knob>
-            <BackPath>skin:knobs_sliders/knob_bg_small_no_scale.svg</BackPath>
+            <Knob>skin:knobs_sliders/knob_indicator_fx_white.svg</Knob>
+            <BackPath>skin:knobs_sliders/knob_bg_fx.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <Connection>
