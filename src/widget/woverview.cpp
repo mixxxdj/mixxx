@@ -63,6 +63,7 @@ WOverview::WOverview(
           m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
+          m_iLabelFontSize(10),
           m_a(1.0),
           m_b(0.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
@@ -109,9 +110,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     bool okay = false;
-    m_iLabelFontSize = context.selectInt(node, "LabelFontSize", &okay);
-    if (!okay) {
-        m_iLabelFontSize = 10;
+    int labelFontSize = context.selectInt(node, "LabelFontSize", &okay);
+    if (okay) {
+        m_iLabelFontSize = labelFontSize;
     }
 
     // Clear the background pixmap, if it exists.
