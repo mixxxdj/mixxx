@@ -81,7 +81,7 @@ QIcon AnalysisFeature::getIcon() {
     return m_icon;
 }
 
-void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
+void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,

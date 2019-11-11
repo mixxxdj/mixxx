@@ -10,12 +10,14 @@
 #include <QUrl>
 #include <QObject>
 #include <QPoint>
+#include <QPointer>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
 class TreeItem;
+class WLibrarySidebar;
 
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -26,6 +28,8 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     QVariant title();
     QIcon getIcon();
+
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
@@ -47,6 +51,7 @@ class PlaylistFeature : public BasePlaylistFeature {
   private:
     QString getRootViewHtml() const;
     QIcon m_icon;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 #endif /* PLAYLISTFEATURE_H */

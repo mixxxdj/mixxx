@@ -45,29 +45,29 @@ WOverview::WOverview(
         const char* group,
         PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig,
-        QWidget* parent) :
-        WWidget(parent),
-        m_actualCompletion(0),
-        m_pixmapDone(false),
-        m_waveformPeak(-1.0),
-        m_diffGain(0),
-        m_devicePixelRatio(1.0),
-        m_group(group),
-        m_pConfig(pConfig),
-        m_endOfTrack(false),
-        m_pCueMenu(std::make_unique<CueMenu>(this)),
-        m_bShowCueTimes(true),
-        m_iPosSeconds(0),
-        m_iPos(0),
-        m_pHoveredMark(nullptr),
-        m_bHotcueMenuShowing(false),
-        m_bTimeRulerActive(false),
-        m_orientation(Qt::Horizontal),
-        m_a(1.0),
-        m_b(0.0),
-        m_analyzerProgress(kAnalyzerProgressUnknown),
-        m_trackLoaded(false),
-        m_scaleFactor(1.0) {
+        QWidget* parent)
+        : WWidget(parent),
+          m_actualCompletion(0),
+          m_pixmapDone(false),
+          m_waveformPeak(-1.0),
+          m_diffGain(0),
+          m_devicePixelRatio(1.0),
+          m_group(group),
+          m_pConfig(pConfig),
+          m_endOfTrack(false),
+          m_pCueMenu(std::make_unique<CueMenu>(this)),
+          m_bShowCueTimes(true),
+          m_iPosSeconds(0),
+          m_iPos(0),
+          m_pHoveredMark(nullptr),
+          m_bHotcueMenuShowing(false),
+          m_bTimeRulerActive(false),
+          m_orientation(Qt::Horizontal),
+          m_a(1.0),
+          m_b(0.0),
+          m_analyzerProgress(kAnalyzerProgressUnknown),
+          m_trackLoaded(false),
+          m_scaleFactor(1.0) {
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
@@ -88,8 +88,7 @@ WOverview::WOverview(
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
 
-    connect(m_pCueMenu.get(), &QMenu::aboutToHide,
-            this, &WOverview::slotCueMenuAboutToHide);
+    connect(m_pCueMenu.get(), &QMenu::aboutToHide, this, &WOverview::slotCueMenuAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -199,6 +198,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
+    // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
     // Calculate handle position. Clamp the value within 0-1 because that's
     // all we represent with this widget.
@@ -217,8 +217,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // of the widget.
     int oldPositionSeconds = m_iPosSeconds;
     m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
-    if ((m_bTimeRulerActive || m_pHoveredMark != nullptr)
-            && oldPositionSeconds != m_iPosSeconds) {
+    if ((m_bTimeRulerActive || m_pHoveredMark != nullptr) && oldPositionSeconds != m_iPosSeconds) {
         redraw = true;
     }
 
@@ -337,15 +336,14 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     for (CuePointer currentCue: loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
-        if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
-            && pMark->getSamplePosition() != Cue::kPositionNotDefined) {
+        if (pMark != nullptr && pMark->isValid() && pMark->isVisible() && pMark->getSamplePosition() != Cue::kNoPosition) {
             QColor newColor = currentCue->getColor();
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor);
             }
 
             int hotcueNumber = currentCue->getHotCue();
-            if (currentCue->getType() == Cue::CUE && hotcueNumber != WaveformMark::kNoHotCue) {
+            if (currentCue->getType() == Cue::Type::HotCue && hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
@@ -365,10 +363,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
     // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
     for (const auto& pMark : m_marks) {
-        if (!m_marksToRender.contains(pMark)
-            && pMark->isValid()
-            && pMark->getSamplePosition() != Cue::kPositionNotDefined
-            && pMark->isVisible()) {
+        if (!m_marksToRender.contains(pMark) && pMark->isValid() && pMark->getSamplePosition() != Cue::kNoPosition && pMark->isVisible()) {
             m_marksToRender.append(pMark);
         }
     }
@@ -403,7 +398,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // the hotcue rendered on top must be assigned to m_pHoveredMark to show
     // the CueMenu. To accomplish this, m_marksToRender is iterated in reverse
     // and the loop breaks as soon as m_pHoveredMark is set.
-    for (int i = m_marksToRender.size() - 1; i >= 0 ; --i) {
+    for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         int hoveredPosition;
         if (m_orientation == Qt::Horizontal) {
@@ -412,8 +407,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
             hoveredPosition = e->y();
         }
         bool lineHovered =
-            pMark->m_linePosition >= hoveredPosition - lineHoverPadding
-            && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
+                pMark->m_linePosition >= hoveredPosition - lineHoverPadding && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
 
         if (pMark->m_label.area().contains(e->pos()) || lineHovered) {
             m_pHoveredMark = pMark;
@@ -458,7 +452,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
-        } else if (m_pHoveredMark->getHotCue() != WaveformMark::kNoHotCue) {
+        } else if (m_pHoveredMark->getHotCue() != Cue::kNoHotCue) {
             // Currently the only way WaveformMarks can be associated
             // with their respective Cue objects is by using the hotcue
             // number. If cues without assigned hotcue are drawn on
@@ -706,7 +700,8 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         const qreal markPosition = math_clamp(
                 offset + m_marksToRender.at(i)->getSamplePosition() * gain,
-                0.0, static_cast<qreal>(width()));
+                0.0,
+                static_cast<qreal>(width()));
         pMark->m_linePosition = markPosition;
 
         QPen shadowPen(QBrush(pMark->borderColor()), 2.5 * m_scaleFactor);
@@ -733,14 +728,13 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // hovering over it. Elide it if it would render over the next
             // label, but do not elide it if the next mark's label is not at the
             // same vertical position.
-            if (pMark != m_pHoveredMark && i < m_marksToRender.size()-1) {
+            if (pMark != m_pHoveredMark && i < m_marksToRender.size() - 1) {
                 float nextMarkPosition = -1.0;
                 for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
                     WaveformMarkPointer otherMark = m_marksToRender.at(m);
                     bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
-                    bool otherHasLabel = !otherMark->m_text.isEmpty()
-                            || otherMark->getHotCue() != WaveformMark::kNoHotCue;
+                    bool otherHasLabel = !otherMark->m_text.isEmpty() || otherMark->getHotCue() != Cue::kNoHotCue;
                     if (otherAtSameHeight && otherHasLabel) {
                         nextMarkPosition = offset + otherMark->getSamplePosition() * gain;
                         break;
@@ -753,9 +747,8 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // Sometimes QFontMetrics::elidedText turns the QString into just an
             // elipsis character, so always show at least the hotcue number if
             // the label does not fit.
-            if ((text.isEmpty() || text == "…")
-                && pMark->getHotCue() != WaveformMark::kNoHotCue) {
-                text = QString::number(pMark->getHotCue()+1);
+            if ((text.isEmpty() || text == "…") && pMark->getHotCue() != Cue::kNoHotCue) {
+                text = QString::number(pMark->getHotCue() + 1);
             }
 
             QRectF textRect = fontMetrics.boundingRect(text);
@@ -794,9 +787,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
 
-            pMark->m_label.prerender(textPoint, QPixmap(), text,
-                    markerFont, m_labelTextColor, m_labelBackgroundColor,
-                    width(), getDevicePixelRatioF(this));
+            pMark->m_label.prerender(textPoint, QPixmap(), text, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         }
 
         // Show cue position when hovered
@@ -837,12 +828,10 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 cueTimeDistanceText = "-" + cueTimeDistanceText;
             }
 
-            m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText,
-                    markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            m_cuePositionLabel.prerender(positionTextPoint, QPixmap(), cuePositionText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
             QPointF timeDistancePoint(positionTextPoint.x(), (fontMetrics.height() + height()) / 2);
-            m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText,
-                    markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            m_cueTimeDistanceLabel.prerender(timeDistancePoint, QPixmap(), cueTimeDistanceText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
             markHovered = true;
         }
     }
@@ -922,11 +911,9 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         qreal timeDistance = samplePositionToSeconds(
                 (widgetPositionFraction - m_playpositionControl->get()) * trackSamples);
 
-        QString timeText = mixxx::Duration::formatTime(timePosition)
-                + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
+        QString timeText = mixxx::Duration::formatTime(timePosition) + " -" + mixxx::Duration::formatTime(timePositionTillEnd);
 
-        m_timeRulerPositionLabel.prerender(textPoint, QPixmap(), timeText,
-                markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+        m_timeRulerPositionLabel.prerender(textPoint, QPixmap(), timeText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
@@ -935,8 +922,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
         if (static_cast<int>(timeDistance) < 0) {
             timeDistanceText = "-" + timeDistanceText;
         }
-        m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText,
-                markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+        m_timeRulerDistanceLabel.prerender(textPointDistance, QPixmap(), timeDistanceText, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
@@ -957,12 +943,10 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
             }
         }
         if (m_bShowCueTimes &&
-                (pMark->m_label.intersects(m_cuePositionLabel)
-                || pMark->m_label.intersects(m_cueTimeDistanceLabel))) {
+                (pMark->m_label.intersects(m_cuePositionLabel) || pMark->m_label.intersects(m_cueTimeDistanceLabel))) {
             continue;
         }
-        if (pMark->m_label.intersects(m_timeRulerPositionLabel)
-                || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
+        if (pMark->m_label.intersects(m_timeRulerPositionLabel) || pMark->m_label.intersects(m_timeRulerDistanceLabel)) {
             continue;
         }
 
@@ -1003,14 +987,9 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
 
             QPointF durationBottomLeft(x, fontMetrics.height());
 
-            markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(),
-                    duration, markerFont, m_labelTextColor,
-                    m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
+            markRange.m_durationLabel.prerender(durationBottomLeft, QPixmap(), duration, markerFont, m_labelTextColor, m_labelBackgroundColor, width(), getDevicePixelRatioF(this));
 
-            if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel)
-                      || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel)
-                      || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel)
-                      || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
+            if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
             }
         }
@@ -1046,10 +1025,8 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 
 double WOverview::samplePositionToSeconds(double sample) {
     // TODO: replace with rate_ratio in PR #1765
-    double rateRatio = 1.0 + m_pRateDirControl->get()
-            * m_pRateRangeControl->get() * m_pRateSliderControl->get();
-    return sample / m_trackSampleRateControl->get()
-            / mixxx::kEngineChannelCount / rateRatio;
+    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
+    return sample / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio;
 }
 
 void WOverview::resizeEvent(QResizeEvent * /*unused*/) {

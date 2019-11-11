@@ -11,23 +11,25 @@
 #include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+
+#include "library/autodj/autodjfeature.h"
+#include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/crate/cratefeature.h"
-#include "library/rhythmbox/rhythmboxfeature.h"
-#include "library/banshee/bansheefeature.h"
-#include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/autodj/autodjfeature.h"
 #include "library/playlistfeature.h"
-#include "library/traktor/traktorfeature.h"
-#include "library/librarycontrol.h"
+#include "library/recording/recordingfeature.h"
+#include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/setlogfeature.h"
+#include "library/traktor/traktorfeature.h"
+
 #include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
 #include "util/logger.h"
@@ -135,6 +137,7 @@ Library::Library(
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
+
     BrowseFeature* browseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, pRecordingManager);
     connect(browseFeature,
@@ -149,8 +152,8 @@ Library::Library(
             &LibraryScanner::scanFinished,
             browseFeature,
             &BrowseFeature::slotLibraryScanFinished);
-
     addFeature(browseFeature);
+
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
 
@@ -299,9 +302,14 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &Library::setTrackTableFont,
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
+
+
+    for (const auto& feature : m_features) {
+        feature->bindSidebarWidget(pSidebarWidget);
+    }
 }
 
-void Library::bindWidget(WLibrary* pLibraryWidget,
+void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
                          KeyboardEventFilter* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(
@@ -348,12 +356,10 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
+    m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
-    QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pLibraryWidget, pKeyboard);
+    for (const auto& feature : m_features) {
+        feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were

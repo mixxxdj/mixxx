@@ -189,6 +189,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pClearPlayCountAction;
     delete m_pClearMainCueAction;
     delete m_pClearHotCuesAction;
+    delete m_pClearIntroCueAction;
+    delete m_pClearOutroCueAction;
     delete m_pClearLoopAction;
     delete m_pClearReplayGainAction;
     delete m_pClearWaveformAction;
@@ -525,6 +527,14 @@ void WTrackTableView::createActions(
     m_pClearHotCuesAction = new QAction(tr("Hotcues"), this);
     connect(m_pClearHotCuesAction, SIGNAL(triggered()),
             this, SLOT(slotClearHotCues()));
+
+    m_pClearIntroCueAction = new QAction(tr("Intro"), this);
+    connect(m_pClearIntroCueAction, SIGNAL(triggered()),
+            this, SLOT(slotClearIntroCue()));
+
+    m_pClearOutroCueAction = new QAction(tr("Outro"), this);
+    connect(m_pClearOutroCueAction, SIGNAL(triggered()),
+            this, SLOT(slotClearOutroCue()));
 
     m_pClearLoopAction = new QAction(tr("Loop"), this);
     connect(m_pClearLoopAction, SIGNAL(triggered()),
@@ -990,6 +1000,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         // FIXME: Why is clearing the loop not working?
         m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
+        m_pClearMetadataMenu->addAction(m_pClearIntroCueAction);
+        m_pClearMetadataMenu->addAction(m_pClearOutroCueAction);
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
@@ -1729,11 +1741,14 @@ void WTrackTableView::slotPopulateCrateMenu() {
         // with the mouse, but not with the keyboard. :focus works for the
         // keyboard but with the mouse, the last clicked item keeps the style
         // after the mouse cursor is moved to hover over another item.
-        pCheckBox->setStyleSheet(
-            QString("QCheckBox {color: %1;}").arg(
-                    pCheckBox->palette().text().color().name()) + "\n" +
-            QString("QCheckBox:hover {background-color: %1;}").arg(
-                    pCheckBox->palette().highlight().color().name()));
+
+        // ronso0 Disabling this stylesheet allows to override the OS style
+        // of the :hover and :focus state.
+//        pCheckBox->setStyleSheet(
+//            QString("QCheckBox {color: %1;}").arg(
+//                    pCheckBox->palette().text().color().name()) + "\n" +
+//            QString("QCheckBox:hover {background-color: %1;}").arg(
+//                    pCheckBox->palette().highlight().color().name()));
         pAction->setEnabled(!crate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
 
@@ -1964,7 +1979,7 @@ void WTrackTableView::slotClearMainCue() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::LOAD);
+            pTrack->removeCuesOfType(Cue::Type::MainCue);
         }
     }
 }
@@ -1980,7 +1995,39 @@ void WTrackTableView::slotClearHotCues() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::CUE);
+            pTrack->removeCuesOfType(Cue::Type::HotCue);
+        }
+    }
+}
+
+void WTrackTableView::slotClearIntroCue() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->removeCuesOfType(Cue::Type::Intro);
+        }
+    }
+}
+
+void WTrackTableView::slotClearOutroCue() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->removeCuesOfType(Cue::Type::Outro);
         }
     }
 }
@@ -1996,7 +2043,7 @@ void WTrackTableView::slotClearLoop() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::LOOP);
+            pTrack->removeCuesOfType(Cue::Type::Loop);
         }
     }
 }
@@ -2056,6 +2103,8 @@ void WTrackTableView::slotClearAllMetadata() {
     slotClearBeats();
     slotClearMainCue();
     slotClearHotCues();
+    slotClearIntroCue();
+    slotClearOutroCue();
     slotClearLoop();
     slotClearKey();
     slotClearReplayGain();

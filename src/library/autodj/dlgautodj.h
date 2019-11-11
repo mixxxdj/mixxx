@@ -19,10 +19,13 @@ class WTrackTableView;
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary,
-              AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+    DlgAutoDJ(QWidget* parent,
+            UserSettingsPointer pConfig,
+            Library* pLibrary,
+            AutoDJProcessor* pProcessor,
+            TrackCollection* pTrackCollection,
+            KeyboardEventFilter* pKeyboard,
+            bool showButtonText);
     ~DlgAutoDJ() override;
 
     void onShow() override;
@@ -41,6 +44,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
+    void slotTransitionModeChanged(int comboboxIndex);
+    void slotRepeatPlaylistChanged(int checkedState);
 
   signals:
     void addRandomButton(bool buttonChecked);
@@ -49,9 +54,15 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void trackSelected(TrackPointer pTrack);
 
   private:
+    void setupActionButton(QPushButton* pButton,
+            void (DlgAutoDJ::*pSlot)(bool),
+            QString fallbackText);
+
     AutoDJProcessor* m_pAutoDJProcessor;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
+    UserSettingsPointer m_pConfig;
+    bool m_bShowButtonText;
 };
 
 #endif //DLGAUTODJ_H

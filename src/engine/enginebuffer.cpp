@@ -1,5 +1,7 @@
 #include "engine/enginebuffer.h"
 
+#include <cfloat>
+
 #include <QtDebug>
 
 #include "engine/cachingreader/cachingreader.h"
@@ -50,8 +52,10 @@ const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 } // anonymous namespace
 
-EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                           EngineChannel* pChannel, EngineMaster* pMixingEngine)
+EngineBuffer::EngineBuffer(const QString& group,
+        UserSettingsPointer pConfig,
+        EngineChannel* pChannel,
+        EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
@@ -62,7 +66,7 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
           m_pKeyControl(nullptr),
           m_pReadAheadManager(nullptr),
           m_pReader(nullptr),
-          m_filepos_play(0.),
+          m_filepos_play(DBL_MIN),
           m_speed_old(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
@@ -502,6 +506,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     m_pause.lock();
     m_visualPlayPos->setInvalid();
+    m_filepos_play = DBL_MIN; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
@@ -552,7 +557,7 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
-    doSeekFractional(0.0, SEEK_EXACT);
+    doSeekPlayPos(0.0, SEEK_EXACT);
     m_pause.unlock();
 
     // Close open file handles by unloading the current track
@@ -1324,24 +1329,6 @@ double EngineBuffer::getVisualPlayPos() {
 double EngineBuffer::getTrackSamples() {
     return m_pTrackSamples->get();
 }
-
-/*
-void EngineBuffer::setReader(CachingReader* pReader) {
-    disconnect(m_pReader, 0, this, 0);
-    delete m_pReader;
-    m_pReader = pReader;
-    m_pReadAheadManager->setReader(pReader);
-    connect(m_pReader, &CachingReader::trackLoading,
-            this, &EngineBuffer::slotTrackLoading,
-            Qt::DirectConnection);
-    connect(m_pReader, &CachingReader::trackLoaded,
-            this, &EngineBuffer::slotTrackLoaded,
-            Qt::DirectConnection);
-    connect(m_pReader, &CachingReader::trackLoadFailed,
-            this, &EngineBuffer::slotTrackLoadFailed,
-            Qt::DirectConnection);
-}
-*/
 
 void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
                                     EngineBufferScale* pScaleKeylock) {
