@@ -34,7 +34,7 @@ class SidebarModel : public QAbstractItemModel {
                   int role = Qt::DisplayRole) const override;
     bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
-    virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
+    bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
 
   public slots:

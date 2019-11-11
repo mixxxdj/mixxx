@@ -41,7 +41,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
+    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
     static QString getiTunesMusicPath();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();

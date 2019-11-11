@@ -62,11 +62,11 @@ class ShoutConnection
     bool isConnected();
     void applySettings();
 
-    virtual void outputAvailable() override;
-    virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo) override;
+    void outputAvailable() override;
+    void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo) override;
     QSharedPointer<FIFO<CSAMPLE>> getOutputFifo() override;
-    virtual bool threadWaiting() override;
-    virtual void run() override;
+    bool threadWaiting() override;
+    void run() override;
 
     BroadcastProfilePtr profile() {
         return m_pProfile;

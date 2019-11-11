@@ -60,7 +60,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     // calls readWriteFlags() by default, reimplement this if the child calls
     // should be readOnly
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from TrackModel

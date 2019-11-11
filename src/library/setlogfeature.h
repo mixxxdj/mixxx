@@ -27,7 +27,7 @@ public:
 
     virtual void bindLibraryWidget(WLibrary* libraryWidget,
                             KeyboardEventFilter* keyboard) override;
-    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;

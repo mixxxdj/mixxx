@@ -37,39 +37,39 @@ class BeatGrid final : public Beats {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
     }
 
-    virtual QByteArray toByteArray() const override;
-    virtual BeatsPointer clone() const override;
-    virtual QString getVersion() const override;
-    virtual QString getSubVersion() const override;
+    QByteArray toByteArray() const override;
+    BeatsPointer clone() const override;
+    QString getVersion() const override;
+    QString getSubVersion() const override;
     virtual void setSubVersion(QString subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual double findNextBeat(double dSamples) const override;
-    virtual double findPrevBeat(double dSamples) const override;
+    double findNextBeat(double dSamples) const override;
+    double findPrevBeat(double dSamples) const override;
     virtual bool findPrevNextBeats(double dSamples,
                                    double* dpPrevBeatSamples,
                                    double* dpNextBeatSamples) const override;
-    virtual double findClosestBeat(double dSamples) const override;
-    virtual double findNthBeat(double dSamples, int n) const override;
-    virtual std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
-    virtual bool hasBeatInRange(double startSample, double stopSample) const override;
-    virtual double getBpm() const override;
-    virtual double getBpmRange(double startSample, double stopSample) const override;
-    virtual double getBpmAroundPosition(double curSample, int n) const override;
+    double findClosestBeat(double dSamples) const override;
+    double findNthBeat(double dSamples, int n) const override;
+    std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
+    bool hasBeatInRange(double startSample, double stopSample) const override;
+    double getBpm() const override;
+    double getBpmRange(double startSample, double stopSample) const override;
+    double getBpmAroundPosition(double curSample, int n) const override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual void addBeat(double dBeatSample) override;
-    virtual void removeBeat(double dBeatSample) override;
+    void addBeat(double dBeatSample) override;
+    void removeBeat(double dBeatSample) override;
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
-    virtual void translate(double dNumSamples) override;
-    virtual void scale(enum BPMScale scale) override;
-    virtual void setBpm(double dBpm) override;
+    void translate(double dNumSamples) override;
+    void scale(enum BPMScale scale) override;
+    void setBpm(double dBpm) override;
 
   private:
     BeatGrid(const BeatGrid& other);
