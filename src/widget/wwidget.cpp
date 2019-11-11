@@ -46,19 +46,15 @@ double WWidget::getBackgroundColorRgba() const {
 
 void WWidget::setBackgroundColorRgba(double rgba) {
     QColor backgroundColor = QColor::fromRgba(rgba);
-    QColor textColor = Color::chooseColorByBrightness(
-            backgroundColor, Qt::white, Qt::black);
-
-    QString style =
-            "background-color: %1;"
-            "color: %2;";
+    QString style = "background-color: %1;";
 
     if (rgba >= 0) {
-        setStyleSheet(style.arg(backgroundColor.name()).arg(textColor.name()));
+        setStyleSheet(style.arg(backgroundColor.name()));
     } else {
         setStyleSheet("");
     }
     m_backgroundColorRgba = rgba;
+    m_bBackgroundIsDark = Color::isDimmColor(backgroundColor);
 }
 
 bool WWidget::touchIsRightButton() {
