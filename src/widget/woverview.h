@@ -148,7 +148,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     // True if slider is dragged. Only used when m_bEventWhileDrag is false
     int m_iPosSeconds;
-    bool m_bDrag;
+    bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
     int m_iPos;
 

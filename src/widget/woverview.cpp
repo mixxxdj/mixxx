@@ -57,7 +57,7 @@ WOverview::WOverview(
           m_pCueMenu(std::make_unique<CueMenu>(this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
-          m_bDrag(false),
+          m_bLeftClickDragging(false),
           m_iPos(0),
           m_pHoveredMark(nullptr),
           m_bHotcueMenuShowing(false),
@@ -203,7 +203,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
-    if (m_bDrag) {
+    if (m_bLeftClickDragging) {
         // don't move slider under the mouse
         return;
     }
@@ -384,7 +384,7 @@ void WOverview::receiveCuesUpdated() {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    if (m_bDrag) {
+    if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
             m_iPos = math_clamp(e->x(), 0, width() - 1);
         } else {
@@ -439,10 +439,10 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
-        if (m_bDrag) {
+        if (m_bLeftClickDragging) {
             double dValue = positionToValue(m_iPos);
             setControlParameterUp(dValue);
-            m_bDrag = false;
+            m_bLeftClickDragging = false;
         }
         m_bTimeRulerActive = false;
     } else if (e->button() == Qt::RightButton) {
@@ -470,15 +470,15 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPos = valueToPosition(dValue);
             setControlParameterUp(dValue);
-            m_bDrag = false;
+            m_bLeftClickDragging = false;
         } else {
-            m_bDrag = true;
+            m_bLeftClickDragging = true;
             m_bTimeRulerActive = true;
         }
     } else if (e->button() == Qt::RightButton) {
-        if (m_bDrag) {
+        if (m_bLeftClickDragging) {
             m_iPos = valueToPosition(m_playpositionControl->get());
-            m_bDrag = false;
+            m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
         } else if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
@@ -518,7 +518,7 @@ void WOverview::leaveEvent(QEvent* e) {
     if (!m_bHotcueMenuShowing) {
         m_pHoveredMark.clear();
     }
-    m_bDrag = false;
+    m_bLeftClickDragging = false;
     m_bTimeRulerActive = false;
     update();
 }
@@ -909,7 +909,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
     if (m_bTimeRulerActive) {
-        if (!m_bDrag) {
+        if (!m_bLeftClickDragging) {
             QLineF line;
             if (m_orientation == Qt::Horizontal) {
                 line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
