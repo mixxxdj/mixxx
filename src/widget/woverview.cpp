@@ -475,13 +475,14 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             m_bDrag = false;
         } else {
             m_bDrag = true;
+            m_bTimeRulerActive = true;
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bDrag) {
             m_iPos = valueToPosition(m_playpositionControl->get());
             m_bDrag = false;
-        }
-        if (m_pHoveredMark == nullptr) {
+            m_bTimeRulerActive = false;
+        } else if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
         } else if (m_pHoveredMark->getHotCue() != Cue::kNoHotCue) {
