@@ -23,6 +23,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
+#include "util/color/color.h"
 #include "widget/wbasewidget.h"
 
 class ControlProxy;
@@ -44,6 +45,11 @@ class WWidget : public QWidget, public WBaseWidget {
     ~WWidget() override;
 
     Q_PROPERTY(double value READ getControlParameterDisplay);
+    Q_PROPERTY(double backgroundColorRgba READ getBackgroundColorRgba WRITE
+                    setBackgroundColorRgba);
+
+    double getBackgroundColorRgba() const;
+    void setBackgroundColorRgba(double rgba);
 
   protected:
     bool touchIsRightButton();
@@ -60,6 +66,7 @@ class WWidget : public QWidget, public WBaseWidget {
   private:
     ControlProxy* m_pTouchShift;
     double m_scaleFactor;
+    double m_backgroundColorRgba;
 };
 
 #endif

@@ -38,7 +38,7 @@
         </Connection>
         <Connection>
           <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color</ConfigKey>
-          <BindProperty>highlight</BindProperty>
+          <BindProperty>backgroundColorRgba</BindProperty>
         </Connection>
       </PushButton>
     </Children>
