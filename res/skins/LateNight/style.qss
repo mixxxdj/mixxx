@@ -704,7 +704,7 @@ WSearchLineEdit QToolButton:!focus {
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
 #SettingsButton[displayValue="1"] {
-  color: #080808;
+  color: #000;
 }
 
 #EQKillButton[displayValue="0"] {
