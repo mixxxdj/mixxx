@@ -28,6 +28,7 @@
 #include <QGuiApplication>
 #include <QInputMethod>
 #include <QGLFormat>
+#include <QScreen>
 
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -73,6 +74,7 @@
 #include "skin/launchimage.h"
 #include "preferences/settingsmanager.h"
 #include "widget/wmainmenubar.h"
+#include "util/compatibility.h"
 #include "util/screensaver.h"
 #include "util/logger.h"
 #include "util/db/dbconnectionpooled.h"
@@ -1411,9 +1413,15 @@ void MixxxMainWindow::rebootMixxxView() {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
-        newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width() - m_pWidgetParent->width()));
-        newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_pWidgetParent->height()));
-        move(newX,newY);
+
+        const QScreen* primaryScreen = getPrimaryScreen();
+        if (primaryScreen) {
+            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pWidgetParent->width()));
+            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
+            move(newX,newY);
+        } else {
+            qWarning() << "Unable to move window inside screen borders.";
+        }
     }
 
     qDebug() << "rebootMixxxView DONE";
