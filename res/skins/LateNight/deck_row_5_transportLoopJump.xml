@@ -41,7 +41,7 @@
 
                   <BeatSpinBox>
                     <TooltipId>beatloop_size</TooltipId>
-                    <Size>58f,26f</Size>
+                    <Size>60f,26f</Size>
                     <Value><Variable name="group"/>,beatloop_size</Value>
                   </BeatSpinBox>
                 </Children>
@@ -100,7 +100,7 @@
                   <WidgetGroup><Size>0f,26f</Size></WidgetGroup> -->
                   <BeatSpinBox>
                     <TooltipId>beatjump_size</TooltipId>
-                    <Size>58f,26f</Size>
+                    <Size>60f,26f</Size>
                     <Value><Variable name="group"/>,beatjump_size</Value>
                   </BeatSpinBox>
                 </Children>
