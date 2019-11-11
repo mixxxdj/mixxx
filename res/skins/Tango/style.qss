@@ -984,6 +984,14 @@ WLabel#TrackComment {
     border: 1px solid #eeeeee;
     }
 
+#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
+    color: #eeeeee;
+}
+
+#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
+    color: #0f0f0f;
+}
+
 #CueButton {
 /* is styled like #HotcueButton, lights up if play position
   is at main Cue point	*/
