@@ -68,7 +68,6 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
     return QString::fromLatin1((char*)buf);
 }
 
-
 BulkController::BulkController(UserSettingsPointer pConfig,
         libusb_context* context,
         libusb_device_handle* handle,
@@ -77,8 +76,7 @@ BulkController::BulkController(UserSettingsPointer pConfig,
           m_context(context),
           m_phandle(handle),
           in_epaddr(0),
-          out_epaddr(0)
-{
+          out_epaddr(0) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
