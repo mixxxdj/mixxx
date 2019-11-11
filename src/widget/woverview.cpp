@@ -206,19 +206,19 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
-    if (m_bLeftClickDragging) {
-        // don't move slider under the mouse
-        return;
-    }
+
     // Calculate handle position. Clamp the value within 0-1 because that's
     // all we represent with this widget.
     dParameter = math_clamp(dParameter, 0.0, 1.0);
 
     bool redraw = false;
-    int oldPos = m_iPos;
-    m_iPos = valueToPosition(dParameter);
-    if (oldPos != m_iPos) {
-        redraw = true;
+    if (!m_bLeftClickDragging) {
+        // don't move slider under the mouse
+        int oldPos = m_iPos;
+        m_iPos = valueToPosition(dParameter);
+        if (oldPos != m_iPos) {
+            redraw = true;
+        }
     }
 
     // In case the user is hovering a cue point or holding right click, the
@@ -477,6 +477,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         } else {
             m_bLeftClickDragging = true;
             m_bTimeRulerActive = true;
+            m_timeRulerPos = e->pos();
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
