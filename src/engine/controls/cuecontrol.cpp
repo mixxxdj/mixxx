@@ -597,16 +597,18 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
     pCue->setType(Cue::Type::HotCue);
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
 
+    auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
     ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
     if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto hotcueColorPalette =
-                m_colorPaletteSettings.getHotcueColorPalette();
         auto colors = hotcueColorPalette.m_colorList;
         pCue->setColor(colors.at((hotcue % (colors.count() - 1)) + 1));
+    } else {
+        pCue->setColor(hotcueColorPalette.m_colorList.first());
     };
+
+    // TODO(XXX) deal with spurious signals
+    attachCue(pCue, pControl);
 
     // If quantize is enabled and we are not playing, jump to the cue point
     // since it's not necessarily where we currently are. TODO(XXX) is this
@@ -1761,7 +1763,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
 
-    // The id of the predefined color assigned to this color.
+    // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
