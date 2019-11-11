@@ -546,16 +546,16 @@ QPushButton#pushButtonAutoDJ:checked,
     #FxAssignButton_FX2 WPushButton[value="1"] {
       image: url(skin:/buttons/btn__fx_FX2_active.svg) no-repeat center center;
     }
-  #FxAssignButton_F3 WPushButton[value="0"] {
+  #FxAssignButton_FX3 WPushButton[value="0"] {
     image: url(skin:/buttons/btn__fx_FX3.svg) no-repeat center center;
     }
-    #FxAssignButton_F3 WPushButton[value="1"] {
+    #FxAssignButton_FX3 WPushButton[value="1"] {
       image: url(skin:/buttons/btn__fx_FX3_active.svg) no-repeat center center;
     }
-  #FxAssignButton_F4 WPushButton[value="0"] {
+  #FxAssignButton_FX4 WPushButton[value="0"] {
     image: url(skin:/buttons/btn__fx_FX4.svg) no-repeat center center;
     }
-    #FxAssignButton_F4 WPushButton[value="1"] {
+    #FxAssignButton_FX4 WPushButton[value="1"] {
       image: url(skin:/buttons/btn__fx_FX4_active.svg) no-repeat center center;
     }
   #FxAssignButton_2 WPushButton[value="0"] {

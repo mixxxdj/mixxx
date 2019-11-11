@@ -2,6 +2,105 @@
   <SetVariable name="btn_type">elevated</SetVariable>
   <SetVariable name="group">[Master]</SetVariable>
   <SetVariable name="Type">master</SetVariable>
+
+  <!-- Regular Master Fx buttons 2x2 layout for
+      * 2 decks + 2 Fx, no Booth
+      * 4 decks, any configuration
+        Gain | Balance
+         [ Booth ]
+         Fx1 | Fx2
+       [ Fx3 | Fx4 ] -->
+  <SingletonDefinition>
+    <ObjectName>MasterFxbuttons2x2</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup><!-- FX buttons 1/2 -->
+            <ObjectName>AlignHCenter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /FX buttons 1/2 -->
+          <WidgetGroup><!-- FX buttons 3/4 -->
+            <ObjectName>AlignHCenter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">3</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">4</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /FX buttons 3/4 -->
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition><!-- MasterFxbuttons2x2 -->
+
+
+  <!-- Compact Master controls layout for
+      * 2 decks + 4 Fx + Booth
+        Gain  | Balance
+              | Fx1
+        Booth | Fx2
+              | Fx3
+              | Fx4 -->
+  <SingletonDefinition>
+    <ObjectName>MasterFxbuttons4x1</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">28</SetVariable>
+            <SetVariable name="MaxWidth">28</SetVariable>
+            <SetVariable name="Text">FX</SetVariable>
+            <SetVariable name="FxUnit">1</SetVariable>
+          </Template>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">20</SetVariable>
+            <SetVariable name="MaxWidth">20</SetVariable>
+            <SetVariable name="FxUnit">2</SetVariable>
+          </Template>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">20</SetVariable>
+            <SetVariable name="MaxWidth">20</SetVariable>
+            <SetVariable name="FxUnit">3</SetVariable>
+          </Template>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">20</SetVariable>
+            <SetVariable name="MaxWidth">20</SetVariable>
+            <SetVariable name="FxUnit">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition><!-- MasterFxbuttons4x1 -->
+
   <WidgetGroup>
     <ObjectName>MasterHeadphoneMixerContainer</ObjectName>
     <SizePolicy>max,min</SizePolicy>
@@ -108,83 +207,89 @@
               </WidgetGroup>
 
               <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
-
-              <WidgetGroup><!-- FX buttons 1/2 -->
-                <ObjectName>AlignHCenter</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+              <!-- MasterFxButtons 2 decks -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MaxWidth">35</SetVariable>
-                    <SetVariable name="Text">FX</SetVariable>
-                    <SetVariable name="FxUnit">1</SetVariable>
-                  </Template>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MaxWidth">35</SetVariable>
-                    <SetVariable name="Text">FX</SetVariable>
-                    <SetVariable name="FxUnit">2</SetVariable>
-                  </Template>
+                  <!-- 2 decks, no Booth, 2/4 Fx -->
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>MasterFxbuttons2x2</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],booth_enabled</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <!-- 2 decks + Booth -->
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <!-- 2 decks + Booth + 2 Fx -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>MasterFxbuttons2x2</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                      <!-- 2 decks + Booth + 4 Fx -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>MasterFxbuttons4x1</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],booth_enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /FX buttons 1/2 -->
+              </WidgetGroup><!-- MasterFxButtons 2 decks -->
 
-              <WidgetGroup><!-- FX buttons 1-4 -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+              <!-- MasterFxButtons 4 decks -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MinWidth">28</SetVariable>
-                    <SetVariable name="MaxWidth">32</SetVariable>
-                    <SetVariable name="Text">FX</SetVariable>
-                    <SetVariable name="FxUnit">1</SetVariable>
-                  </Template>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MinWidth">22</SetVariable>
-                    <SetVariable name="MaxWidth">22</SetVariable>
-                    <SetVariable name="FxUnit">2</SetVariable>
-                  </Template>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MinWidth">22</SetVariable>
-                    <SetVariable name="MaxWidth">22</SetVariable>
-                    <SetVariable name="FxUnit">3</SetVariable>
-                  </Template>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MinWidth">22</SetVariable>
-                    <SetVariable name="MaxWidth">22</SetVariable>
-                    <SetVariable name="FxUnit">4</SetVariable>
-                  </Template>
+                  <SingletonContainer>
+                    <ObjectName>MasterFxbuttons2x2</ObjectName>
+                  </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /FX buttons 1-4 -->
-
-              <!-- FX buttons 3/4<WidgetGroup>
-                <ObjectName>AlignHCenter</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MaxWidth">35</SetVariable>
-                    <SetVariable name="Text">FX&#8202;</SetVariable>
-                    <SetVariable name="FxUnit">3</SetVariable>
-                  </Template>
-                  <Template src="skin:fx_assign_button.xml">
-                    <SetVariable name="MaxWidth">35</SetVariable>
-                    <SetVariable name="Text">FX&#8202;</SetVariable>
-                    <SetVariable name="FxUnit">4</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup> -->
+              </WidgetGroup><!-- MasterFxButtons 4 decks -->
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
