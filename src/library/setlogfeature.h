@@ -25,8 +25,8 @@ public:
     QVariant title() override;
     QIcon getIcon() override;
 
-    virtual void bindLibraryWidget(WLibrary* libraryWidget,
-                            KeyboardEventFilter* keyboard) override;
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                           KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
   public slots:

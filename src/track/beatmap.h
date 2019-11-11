@@ -40,7 +40,7 @@ class BeatMap final : public Beats {
 
     // See method comments in beats.h
 
-    virtual Beats::CapabilitiesFlags getCapabilities() const override {
+    Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
                 BEATSCAP_MOVEBEAT;
     }
@@ -57,9 +57,9 @@ class BeatMap final : public Beats {
 
     double findNextBeat(double dSamples) const override;
     double findPrevBeat(double dSamples) const override;
-    virtual bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
-                                   double* dpNextBeatSamples) const override;
+    bool findPrevNextBeats(double dSamples,
+                           double* dpPrevBeatSamples,
+                           double* dpNextBeatSamples) const override;
     double findClosestBeat(double dSamples) const override;
     double findNthBeat(double dSamples, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
