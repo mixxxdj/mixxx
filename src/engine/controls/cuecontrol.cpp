@@ -1742,7 +1742,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
 
-    // The rgba value  of the color assigned to this color.
+    // The rgba value of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
     m_hotcueColor->set(-1);
     connect(m_hotcueColor,

@@ -27,14 +27,17 @@ void ColorMenu::useColorPalette(const ColorPalette& colorPalette) {
     createPaletteColorsActions(colorPalette);
     createOtherColorAction();
 }
+
 void ColorMenu::setCurrentColor(QColor currentColor) {
     m_currentColor = currentColor;
     selectCurrentColorAction(currentColor);
 }
+
 void ColorMenu::openColorDialog() {
     m_pColorDialog->setCurrentColor(m_currentColor);
     m_pColorDialog->open();
 }
+
 void ColorMenu::createPaletteColorsActions(const ColorPalette& colorPalette) {
     for (const auto& color : colorPalette.m_colorList) {
         QAction* pColorAction = new QAction(m_pActionGroup);
