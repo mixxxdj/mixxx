@@ -46,10 +46,14 @@ double WWidget::getBackgroundColorRgba() const {
 
 void WWidget::setBackgroundColorRgba(double rgba) {
     QColor backgroundColor = QColor::fromRgba(rgba);
-    QString style = "background-color: %1;";
+    QColor highlightedBackgroundColor = backgroundColor.lighter();
+    QString style =
+            QString("WWidget { background-color: %1; }"
+                    "WWidget:hover { background-color: %2; }");
 
     if (rgba >= 0) {
-        setStyleSheet(style.arg(backgroundColor.name()));
+        setStyleSheet(style.arg(backgroundColor.name())
+                              .arg(highlightedBackgroundColor.name()));
     } else {
         setStyleSheet("");
     }
