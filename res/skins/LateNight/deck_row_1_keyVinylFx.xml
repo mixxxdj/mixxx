@@ -53,14 +53,14 @@
 
       <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>5,0</MinimumSize>
+        <MinimumSize>3,0</MinimumSize>
       </WidgetGroup>
 
       <Template src="skin:deck_vinyl_controls.xml"/>
 
       <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>5,0</MinimumSize>
+        <MinimumSize>3,0</MinimumSize>
       </WidgetGroup>
 
       <!-- FX buttons -->
