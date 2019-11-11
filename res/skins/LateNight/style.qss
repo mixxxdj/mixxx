@@ -180,7 +180,12 @@ QHeaderView::down-arrow {
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"] {
+#SettingsButton[displayValue="0"],
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
   border-width: 2px;
   border-image: url(skin:buttons/btn_embedded_library.svg) 2 2 2 2;
   }
@@ -191,7 +196,11 @@ QHeaderView::down-arrow {
   #RecFeedback[displayValue="1"], #RecFeedback[displayValue="2"],
   #BroadcastButton[displayValue="1"], #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
-  #SettingsButton[displayValue="1"] {
+  #SettingsButton[displayValue="1"],
+  QPushButton#pushButtonAutoDJ:checked,
+  QPushButton#pushButtonRepeatPlaylist:checked,
+  #DlgAnalysis > QPushButton:checked,
+  QPushButton#pushButtonRecording:checked {
     border-width: 2px;
     border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -207,9 +216,26 @@ QHeaderView::down-arrow {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  border-width: 2px;
-  border-image: url(skin:buttons/btn_embedded_library.svg) 2 2 2 2;
   color: #bbb;
+  }
+  #DlgMissing > QPushButton:focus,
+  #DlgHidden > QPushButton:focus,
+  #DlgAutoDJ > QPushButton:focus,
+  #DlgRecording > QPushButton:focus,
+  #DlgAnalysis > QPushButton:focus {
+    border-width: 2px 2px 2px 2px;
+    border-image: url(skin:buttons/btn_embedded_library.svg) 2 2 2 2;
+    outline: none;
+  }
+  #DlgAnalysis > QPushButton:checked:focus,
+  #DlgMissing > QPushButton:checked:focus,
+  #DlgHidden > QPushButton:checked:focus,
+  #DlgAutoDJ > QPushButton:checked:focus,
+  #DlgRecording > QPushButton:checked:focus,
+  #DlgAnalysis > QPushButton:checked:focus {
+    border-width: 2px 2px 2px 2px;
+    border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 2 2 2;
+    outline: none;
   }
   #DlgMissing > QPushButton:pressed,
   #DlgHidden > QPushButton:pressed,
@@ -227,16 +253,20 @@ QHeaderView::down-arrow {
     color: #666;
   }
   QPushButton#pushButtonAutoDJ:checked,
+  QPushButton#pushButtonRepeatPlaylist:checked,
   #DlgAnalysis > QPushButton:checked,
   QPushButton#pushButtonRecording:checked {
-    border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 2 2 2;
     color: #000;
   }
 
 WEffectSelector {
   border-width: 1px 2px 2px 1px;
   border-image: url(skin:buttons/btn_elevated_fx_selector.svg) 1 2 2 1;
-  background-color: #0f0f0f;
+}
+
+#fadeModeCombobox {
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:buttons/btn_embedded_library.svg) 2 2 2 2;
 }
 
 #HotcueButton {
@@ -319,7 +349,8 @@ QPushButton#pushButtonAutoDJ:enabled,
 #BroadcastButton[displayValue="2"] {
   background-color: #659f08;
   }
-  /* Greay fo active Fx parameters */
+  /* Grey fo active Fx parameters */
+  QPushButton#pushButtonRepeatPlaylist:checked,
   #FxParameterButton[displayValue="1"] {
     background-color: #888;
   }
@@ -725,7 +756,8 @@ QToolTip,
 WStarRating,
 WBeatSpinBox, #DlgAutoDJ QSpinBox,
 QTableView::indicator,
-WEffectSelector, WEffectSelector QAbstractItemView
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 #CategoryLabel, #SkinSettingsLabelButton,
 WSearchLineEdit:focus,
 #LatencyLabel, WTime {
@@ -1055,9 +1087,9 @@ WBeatSpinBox,
     border-width: 3px 19px 2px 3px;
     border-image: url(skin:buttons/spinbox_embedded_border.svg) 3 19 2 3;
     width: 24px;
-    height: 20px;
+    height: 19px;
     padding: 0px -15px 0px 0px;
-    margin: 1px 2px 2px 10px;
+    margin: 0px 2px 3px 5px;
     }
     #DlgAutoDJ QSpinBox:hover {
       border-image: url(skin:buttons/spinbox_embedded_border_hover.svg) 3 19 2 3;
@@ -1099,7 +1131,7 @@ WBeatSpinBox,
         margin: 0px 0px -2px 0px;
         }
       #DlgAutoDJ QSpinBox::down-button {
-        margin: 0px -2px 0px 0px;
+        margin: 0px -2px -1px 0px;
         }
 
 /********************** Loop Controls **********************/
@@ -1694,21 +1726,35 @@ WBeatSpinBox,
   padding: 3px;
 }
 
-WEffectSelector {
+WEffectSelector,
+#fadeModeCombobox {
   font-weight: bold;
   font-size: 12px/13px;
   text-transform: uppercase;
   background-color: #0f0f0f;
+  }
+WEffectSelector {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   min-height: 13px;
   margin: 1px 0px 0px 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
-  padding: 4px 0px 4px 5px;
+  padding: 4px 0px 4px 2px;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
-  WEffectSelector::drop-down {
+#fadeModeCombobox {
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  height: 18px;
+  margin: 0px 0px 3px 1px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+      names start getting cut off. Adding explicit padding improves this. */
+  padding: 1px 0px 1px 4px;
+  /* The 3D frame on the combo box becomes flat when you give it a border
+  border-radius: 3px; */
+  }
+  WEffectSelector::drop-down,
+  #fadeModeCombobox::drop-down {
     border: 0;
   }
   WEffectSelector::down-arrow {
@@ -1721,7 +1767,8 @@ WEffectSelector {
       image: url(skin:/buttons/btn__fx_selector_down_pressed.svg);
     }
 
-  WEffectSelector QAbstractItemView {
+  WEffectSelector QAbstractItemView,
+  #fadeModeCombobox QAbstractItemView {
     width: 142px;
     background-color: #0f0f0f;
     /* padding-left: 6px; */
@@ -1735,7 +1782,8 @@ WEffectSelector {
     margin: 0px;
   }
   /* selected item */
-  WEffectSelector::checked {
+  WEffectSelector::checked,
+  #fadeModeCombobox::checked {
     /* not applied
     padding-left: 5px;
     font-weight: bold;	*/
@@ -1745,7 +1793,8 @@ WEffectSelector {
     background-color: #1e1e1e;
   }
   /* hovered items */
-  WEffectSelector::item:selected {
+  WEffectSelector::item:selected,
+  #fadeModeCombobox::item:selected {
     background-color: #333;
   /* Already of those two destroys font config and puts tick mark behind text:
     margin: 0px;
@@ -1754,7 +1803,8 @@ WEffectSelector {
     text sits at left border now
     border: 0; */
   }
-  WEffectSelector::indicator {
+  WEffectSelector::indicator,
+  #fadeModeCombobox::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark
     background-color: transparent;*/
@@ -2181,7 +2231,7 @@ WLibrary QRadioButton {
 
 /* Additional space for QLabels */
 WLibrary QLabel {
-  margin: 2px 3px 7px 3px;
+  margin: 2px 5px 5px 1px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -2201,25 +2251,75 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  margin: 1px 4px 3px 2px;
-  padding: 3px 8px;
-  min-width: 65px;
-  height: 15px;
+  margin: 0px 4px 3px 2px;
+  padding: 0px;
+  height: 20px;
   }
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  padding: 0px 5px;
+  }
+  /* Focus highlight is set via border-image at the top */
   /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {
     margin-left: 0px;
+    min-width: 40px;
+  }
+  #DlgAutoDJ > #horizontalSpacer {
+    width: 100px;
   }
   /* Space in between 'All' radio button and 'Select All' button */
   QPushButton#pushButtonSelectAll {
     margin-left: 12px;
   }
 
-/* triangle for closed/opened branches in treeview */
+
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ:!checked {
+  image: url(skin:/buttons/btn__autodj_enable_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonAutoDJ:checked {
+    image: url(skin:/buttons/btn__autodj_enable_on.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonFadeNow:!enabled {
+  image: url(skin:/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    image: url(skin:/buttons/btn__autodj_fade.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonSkipNext:!enabled {
+  image: url(skin:/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    image: url(skin:/buttons/btn__autodj_skip.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonShuffle:enabled {
+  image: url(skin:/buttons/btn__autodj_shuffle.svg) no-repeat center center;
+}
+
+QPushButton#pushButtonAddRandom:enabled {
+  image: url(skin:/buttons/btn__autodj_addrandom.svg) no-repeat center center;
+}
+
+QPushButton#pushButtonRepeatPlaylist:!checked {
+  image: url(skin:/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    image: url(skin:/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
+  }
+/* AutoDJ button icons */
+
+
 QTreeView {
   show-decoration-selected: 0;
-  background-color: #151515;
+  background-color: #0f0f0f;
 }
+  /* triangle for closed/opened branches in treeview */
   /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   QTreeView::branch:has-children:!has-siblings:closed,
   QTreeView::branch:closed:has-children:has-siblings {

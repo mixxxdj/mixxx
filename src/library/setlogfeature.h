@@ -6,12 +6,14 @@
 #include <QLinkedList>
 #include <QSqlTableModel>
 #include <QAction>
+#include <QPointer>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
 class TreeItem;
+class WLibrarySidebar;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -23,8 +25,9 @@ public:
     QVariant title();
     QIcon getIcon();
 
-    virtual void bindWidget(WLibrary* libraryWidget,
+    virtual void bindLibraryWidget(WLibrary* libraryWidget,
                             KeyboardEventFilter* keyboard);
+    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
   public slots:
     void onRightClick(const QPoint& globalPos);
@@ -51,6 +54,7 @@ public:
     QAction* m_pGetNewPlaylist;
     int m_playlistId;
     WLibrary* m_libraryWidget;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
     QIcon m_icon;
 };
 
