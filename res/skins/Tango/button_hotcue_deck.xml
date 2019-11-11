@@ -39,7 +39,7 @@ Variables:
     </Connection>
     <Connection>
       <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_color</ConfigKey>
-      <BindProperty>highlight</BindProperty>
+      <BindProperty>backgroundColorRgba</BindProperty>
     </Connection>
   </PushButton>
 </Template>
