@@ -25,7 +25,7 @@ void ColorMenu::useColorPalette(const ColorPalette& colorPalette) {
     m_pActionGroup->setExclusive(true);
 
     createPaletteColorsActions(colorPalette);
-    createOtherColorAction();
+    createColorPickerAction();
 }
 
 void ColorMenu::setCurrentColor(QColor currentColor) {
@@ -54,12 +54,12 @@ void ColorMenu::createPaletteColorsActions(const ColorPalette& colorPalette) {
     }
 }
 
-void ColorMenu::createOtherColorAction() {
-    m_pOtherColorAction = new QAction(m_pActionGroup);
-    m_pOtherColorAction->setText("...");
-    m_pOtherColorAction->setCheckable(true);
-    addAction(m_pOtherColorAction);
-    connect(m_pOtherColorAction,
+void ColorMenu::createColorPickerAction() {
+    m_pColorPickerAction = new QAction(m_pActionGroup);
+    m_pColorPickerAction->setText("...");
+    m_pColorPickerAction->setCheckable(true);
+    addAction(m_pColorPickerAction);
+    connect(m_pColorPickerAction,
             &QAction::triggered,
             this,
             &ColorMenu::openColorDialog);
@@ -70,7 +70,7 @@ void ColorMenu::selectCurrentColorAction(const QColor& currentColor) const {
         QColor color = pAction->data().value<QColor>();
         // Other color action is the last one, if we find it, we didn't
         // matched to any color action.
-        if (color == currentColor || pAction == m_pOtherColorAction) {
+        if (color == currentColor || pAction == m_pColorPickerAction) {
             pAction->setChecked(true);
             return;
         }

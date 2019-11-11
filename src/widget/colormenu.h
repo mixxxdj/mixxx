@@ -21,11 +21,11 @@ class ColorMenu : public QMenu {
 
   private:
     void createPaletteColorsActions(const ColorPalette& colorPalette);
-    void createOtherColorAction();
+    void createColorPickerAction();
     void selectCurrentColorAction(const QColor& currentColor) const;
 
     QColor m_currentColor;
-    QAction* m_pOtherColorAction;
+    QAction* m_pColorPickerAction;
     QActionGroup* m_pActionGroup;
     QColorDialog* m_pColorDialog;
 };
