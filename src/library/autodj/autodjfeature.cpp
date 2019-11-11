@@ -21,6 +21,7 @@
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -115,14 +116,15 @@ QIcon AutoDJFeature::getIcon() {
     return m_icon;
 }
 
-void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
+void AutoDJFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                  m_pConfig,
-                                  m_pLibrary,
-                                  m_pAutoDJProcessor,
-                                  m_pTrackCollection,
-                                  keyboard);
+            m_pConfig,
+            m_pLibrary,
+            m_pAutoDJProcessor,
+            m_pTrackCollection,
+            keyboard,
+            libraryWidget->getShowButtonText());
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
@@ -149,6 +151,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             &AutoDJFeature::slotAddRandomTrack);
 }
 
+void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 TreeItemModel* AutoDJFeature::getChildModel() {
     return &m_childModel;
 }
@@ -161,26 +168,18 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    // If a track is dropped onto a playlist's name, but the track isn't in the
+    // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
-    // playlist.
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<TrackId> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->unhideTracks(trackIds);
-    } else {
-        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    // Auto DJ playlist.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+            !pSource);
+    if (trackIds.isEmpty()) {
+        return false;
     }
 
-    // remove tracks that could not be added
-    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); trackIdIndex++) {
-        if (!trackIds.at(trackIdIndex).isValid()) {
-            trackIds.removeAt(trackIdIndex--);
-        }
-    }
-
-    // Return whether the tracks were appended.
+    // Return whether appendTracksToPlaylist succeeded.
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
@@ -208,7 +207,7 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         for (int i = 0; i < m_crateList.length(); ++i) {
             if (m_crateList[i].getId() == crateId) {
                 QModelIndex parentIndex = m_childModel.index(0, 0);
-                QModelIndex childIndex = parentIndex.child(i, 0);
+                QModelIndex childIndex = m_childModel.index(i, 0, parentIndex);
                 m_childModel.setData(childIndex, crate.getName(), Qt::DisplayRole);
                 m_crateList[i] = crate;
                 return; // early exit
@@ -263,8 +262,8 @@ void AutoDJFeature::slotAddRandomTrack() {
                 }
                 if (!pRandomTrack->checkFileExists()) {
                     qWarning() << "Track does not exist:"
-                            << pRandomTrack->getInfo()
-                            << pRandomTrack->getFileInfo();
+                               << pRandomTrack->getInfo()
+                               << pRandomTrack->getFileInfo();
                     pRandomTrack.reset();
                 }
             }
@@ -293,10 +292,11 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
+    QMenu menu(m_pSidebarWidget);
     if (m_pCratesTreeItem == pClickedItem) {
         // The "Crates" parent item was right-clicked.
         // Bring up the context menu.
-        QMenu crateMenu;
+        QMenu crateMenu(m_pSidebarWidget);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
         CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;
@@ -309,16 +309,14 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
             crateMenu.addAction(pAction.get());
             pAction.release();
         }
-        QMenu contextMenu;
-        contextMenu.addMenu(&crateMenu);
-        contextMenu.exec(globalPos);
+        menu.addMenu(&crateMenu);
+        menu.exec(globalPos);
     } else {
         // A crate child item was right-clicked.
         // Bring up the context menu.
         m_pRemoveCrateFromAutoDj->setData(pClickedItem->getData()); // the selected CrateId
-        QMenu contextMenu;
-        contextMenu.addAction(m_pRemoveCrateFromAutoDj);
-        contextMenu.exec(globalPos);
+        menu.addAction(m_pRemoveCrateFromAutoDj);
+        menu.exec(globalPos);
     }
 }
 

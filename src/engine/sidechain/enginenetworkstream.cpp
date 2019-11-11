@@ -44,8 +44,7 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
       m_inputStreamStartTimeUs(-1),
       m_inputStreamFramesWritten(0),
       m_inputStreamFramesRead(0),
-      m_outputWorkers(BROADCAST_MAX_CONNECTIONS),
-      m_pInputWorker(nullptr) {
+      m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }
@@ -137,7 +136,6 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
     // will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;
-    qint64 t;
     // no GetSystemTimePreciseAsFileTime available, fall
     // back to GetSystemTimeAsFileTime. This happens before
     // Windows 8 and Windows Server 2012
@@ -156,11 +154,9 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
             // timer was not incremented since last call (< 15 ms)
             // Add time since last function call after last increment
             // This reduces the jitter < one call cycle which is sufficient
-            LARGE_INTEGER li;
             now += timerSinceInc.elapsed().toIntegerMicros();
         } else {
             // timer was incremented
-            LARGE_INTEGER li;
             timerSinceInc.start();
             oldNow = now;
         }

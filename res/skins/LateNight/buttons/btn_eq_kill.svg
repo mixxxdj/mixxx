@@ -1,1 +1,58 @@
-<svg id="svg3249" width="18" height="18" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs id="defs3251"><linearGradient id="linearGradient3807-3" x1="13" x2="13" y1="1027.4" y2="1049.4" gradientTransform="matrix(.56522 0 0 .56522 2.2174 456.46)" gradientUnits="userSpaceOnUse"><stop id="stop3803-7" stop-color="#242424" offset="0"/><stop id="stop3805-5" stop-color="#101010" offset="1"/></linearGradient></defs><g id="layer1" transform="translate(0 -1034.4)"><rect id="rect3029-6" x="4" y="1038.4" width="14" height="14" rx="1" ry="1" color="#000000" fill="#060606" opacity=".62085"/><rect id="rect3029-6-6" x="3" y="1037.4" width="14" height="14" color="#000000" opacity=".72"/><rect id="rect3029" x="2.5" y="1036.9" width="13" height="13" color="#000000" fill="url(#linearGradient3807-3)" stroke="#585858"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   height="18"
+   width="18"
+   id="svg3249">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3251">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.56522,0,0,0.56522,2.2174,-577.94)"
+       y2="1049.4"
+       y1="1027.4"
+       x2="13"
+       x1="13"
+       id="linearGradient3807-3">
+      <stop
+         offset="0"
+         stop-color="#242424"
+         id="stop3803-7" />
+      <stop
+         offset="1"
+         stop-color="#101010"
+         id="stop3805-5" />
+    </linearGradient>
+  </defs>
+  <rect
+     id="rect3029-6-6"
+     x="2.5"
+     y="3.0000243"
+     width="14"
+     height="14"
+     style="color:#000000;opacity:0.72000002" />
+  <rect
+     id="rect3029"
+     x="2.5"
+     y="2.5000243"
+     width="13"
+     height="13"
+     style="color:#000000;fill:url(#linearGradient3807-3);stroke:#444444" />
+</svg>

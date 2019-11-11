@@ -17,13 +17,13 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer);
 
-    virtual void setup(const QDomNode& node, const SkinContext& context);
-    virtual void draw(QPainter* painter, QPaintEvent* event);
+    void setup(const QDomNode& node, const SkinContext& context) override;
+    void draw(QPainter* painter, QPaintEvent* event) override;
 
-    virtual void onResize() override;
+    void onResize() override;
 
     // Called when a new track is loaded.
-    virtual void onSetTrack();
+    void onSetTrack() override;
 
   public slots:
     // Called when the loaded track's cues are added, deleted or modified and
@@ -33,7 +33,7 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     void slotCuesUpdated();
 
   private:
-    void generateMarkImage(WaveformMark* pMark);
+    void generateMarkImage(WaveformMarkPointer pMark);
 
     PredefinedColorsRepresentation m_predefinedColorsRepresentation;
 

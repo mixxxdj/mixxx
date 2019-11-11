@@ -72,7 +72,8 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
                     mixxx::WritableSampleFrames(
                             sourceFrameIndexRange,
                             mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
-    DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange() <= sourceFrameIndexRange);
+    DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange().empty() ||
+            m_bufferedSampleFrames.frameIndexRange() <= sourceFrameIndexRange);
     return m_bufferedSampleFrames.frameIndexRange();
 }
 
