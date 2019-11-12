@@ -1234,6 +1234,16 @@ target_compile_definitions(Kaitai PRIVATE KS_STR_ENCODING_NONE)
 target_include_directories(mixxx-lib PUBLIC lib/kaitai)
 target_link_libraries(mixxx-lib PUBLIC Kaitai)
 
+# For determining MP3 timing offset cases in Rekordbox library feature
+add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
+  lib/mp3guessenc-0.27.4/mp3guessenc.c
+  lib/mp3guessenc-0.27.4/tags.c
+  lib/mp3guessenc-0.27.4/decode.c
+  lib/mp3guessenc-0.27.4/bit_utils.c
+)
+target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
+target_link_libraries(mixxx-lib PUBLIC MP3GuessEnc)
+
 # OpenGL
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
