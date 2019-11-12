@@ -688,6 +688,18 @@ if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
 
+# Disable warnings in generated source files
+set_property(
+  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+  APPEND_STRING
+  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
+)
+set_property(
+  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+  APPEND_STRING
+  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
+)
+
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
 if(MSVC)
   if(WARNINGS_PEDANTIC)
