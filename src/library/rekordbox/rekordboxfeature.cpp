@@ -663,7 +663,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double position, int id, QString label, int colorCode, int colorRed, int colorGreen, int colorBlue) {
+void setHotCue(TrackPointer track, double position, int id, QString label, int /*colorCode*/, int /*colorRed*/, int /*colorGreen*/, int /*colorBlue*/) {
     CuePointer pCue;
     bool hotCueFound = false;
 

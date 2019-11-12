@@ -61,8 +61,8 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     RekordboxFeature(QObject* parent, TrackCollection*);
     ~RekordboxFeature() override;
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
     static bool isSupported();
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
