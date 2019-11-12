@@ -63,6 +63,7 @@
             </Children>
           </WidgetGroup>
           <Library>
+            <ShowButtonText>false</ShowButtonText>
           </Library>
         </Children>
         <Connection>

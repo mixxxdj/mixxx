@@ -1056,7 +1056,7 @@ bool setTrackSampleRate(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(CuePosition(record.value(column).toDouble(), Cue::MANUAL));
+    pTrack->setCuePoint(CuePosition(record.value(column).toDouble()));
     return false;
 }
 

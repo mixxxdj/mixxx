@@ -1,5 +1,6 @@
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
+#include <algorithm>
 #include <QtDebug>
 #include <QUrl>
 
@@ -372,7 +373,7 @@ void BaseSqlTableModel::select() {
     // end so we can easily slice off rows that are no longer present. Stable
     // sort is necessary because the tracks may be in pre-sorted order so we
     // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfos.begin(), rowInfos.end());
+    std::stable_sort(rowInfos.begin(), rowInfos.end());
 
     TrackId2Rows trackIdToRows;
     // We expect almost all rows to be valid and that only a few tracks

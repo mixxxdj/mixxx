@@ -144,6 +144,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
+    checkBox_show_rekordbox->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
     checkBoxEditMetadataSelectedClicked->setChecked(PREF_LIBRARY_EDIT_METADATA_DEFAULT);
     radioButton_dbclick_top->setChecked(false);
@@ -168,6 +169,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"), true));
     checkBox_show_traktor->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
+    checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]","ShowRekordboxLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
@@ -306,6 +309,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
+                ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
             dbclick_status = ADD_TO_AUTODJ_BOTTOM;
