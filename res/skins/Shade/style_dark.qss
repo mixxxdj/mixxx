@@ -117,7 +117,7 @@ QHeaderView::section {
 }
 QHeaderView::up-arrow,
 QHeaderView::down-arrow {
-  background-color: rgba(63,48,65,160);
+  background-color: rgba(63,48,65,200);
   }
   QHeaderView::up-arrow {
     image: url(skin:/btn/btn_lib_sort_up_green.png)

@@ -466,13 +466,13 @@ QHeaderView {
   font-size: 10pt;	*/
   font-size: 13px/13px;
   font-weight: bold;
-  color: #0f0f0f;
+  color: #000;
   border-radius: 0px;
   border-bottom: 1px solid #0f0f0f;
 }
 /*	Library header 'buttons'	*/
 QHeaderView::section {
-  padding: 2px;
+  padding: 2px 1px 2px 2px;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;
@@ -485,13 +485,13 @@ QHeaderView::down-arrow {
   width: 12px;
   padding-right: 2px;
   margin-right: 1px;
-  background-color: rgba(98,111,135,160);
+  background-color: rgba(98,111,135,255);
   }
   QHeaderView::up-arrow {
-    image: url(skin:/btn/btn_lib_sort_up.png)
+    image: url(skin:/btn/btn_lib_sort_up_black.png)
   }
   QHeaderView::down-arrow {
-    image: url(skin:/btn/btn_lib_sort_down.png)
+    image: url(skin:/btn/btn_lib_sort_down_black.png)
   }
 
 /* Scroll bars */
