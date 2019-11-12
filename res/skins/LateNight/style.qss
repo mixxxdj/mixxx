@@ -318,6 +318,7 @@ WEffectSelector {
 #PflButton[value="0"],
 #EQKillButton[displayValue="0"],
 #QuickEffectButton[displayValue="0"],
+#FxUnitControls WPushButton, #FxExpandCollapseButton,
 #PlayButtonSampler[displayValue="0"], #PlayButtonDeckSmall[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"],
