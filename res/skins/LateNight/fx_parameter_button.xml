@@ -21,7 +21,7 @@
       <WidgetGroup>
         <ObjectName>FxButtonBox</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>40me,25f</Size>
+        <Size>40me,18f</Size>
         <Children>
           <EffectPushButton>
             <ObjectName>FxParameterButton</ObjectName>

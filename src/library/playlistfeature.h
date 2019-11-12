@@ -26,22 +26,22 @@ class PlaylistFeature : public BasePlaylistFeature {
                     UserSettingsPointer pConfig);
     virtual ~PlaylistFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
 
   public slots:
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   private slots:
-    void slotPlaylistTableChanged(int playlistId);
-    void slotPlaylistContentChanged(int playlistId);
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
+    void slotPlaylistTableChanged(int playlistId) override;
+    void slotPlaylistContentChanged(int playlistId) override;
+    void slotPlaylistTableRenamed(int playlistId, QString a_strName) override;
 
  protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
@@ -49,7 +49,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void decorateChild(TreeItem *pChild, int playlist_id) override;
 
   private:
-    QString getRootViewHtml() const;
+    QString getRootViewHtml() const override;
     QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

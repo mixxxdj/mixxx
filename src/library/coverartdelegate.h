@@ -19,7 +19,7 @@ class CoverArtDelegate : public TableItemDelegate {
 
     void paintItem(QPainter* painter,
                const QStyleOptionViewItem& option,
-               const QModelIndex& index) const;
+               const QModelIndex& index) const override;
 
   signals:
     void coverReadyForCell(int row, int column);

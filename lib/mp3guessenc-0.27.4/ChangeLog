@@ -1,0 +1,364 @@
+
+mp3guessenc changelog
+======================
+
+version 0.27.4 (2018/07/15 "It's happened before it'll happen again")
+ - fixed detection of metadata tags at the file head which wrongly aborted when
+   a large padding area was found at the tail of the search buffer
+
+
+version 0.27.3 (2018/02/11 "I Still Do")
+ - more efficient detection of metadata tags at the file head, now using a fast
+   memory buffer for seeking tag signatures. This allows detection even in
+   troubled files where tags are stored among bytes of junk.
+ - the program now returns a useful exit code after successful encoder
+   detection. It is a positive non zero value and it is internally used as an
+   index into an encoder_table, so it brings out the same information. The
+   exit code will be zero when no detection is performed or layerI/II streams
+   are analysed. It will be less than zero in case of errors.
+ - fixed wrong calculation in id3v2 footer detection
+ - forced message "Music CRC verification" when `-r' is used. When a valid lame
+   tag is found, a crc verification is performed, otherwise the message will
+   simply report "not performed".
+ - re-arranged "length of original audio" field into its own tag. When it comes
+   from the lame tag, then it'll be showed with the lame tag, when it comes
+   from ofl block, then it'll appear into the ofl block (created on purpose).
+ - lame music verification. A crc16 calculated over the whole audio bitstream
+   is also stored into the tag, so this is now used to validate the audio data.
+   Due to byte reflection, the computation is quite slow, so this is disabled
+   by default. You can force it with command line switch `-r'.
+ - lame tag verification. lame stores several useful information into its own
+   tag, such as a crc16 sum for valitading the tag itself. The issue is this
+   crc IS NOT the same involved into audio frame validation, but it's a similar
+   algorithm using byte reflection. This means every byte feeded into the
+   algorithm has to be reflected first, and the stored crc has to be reflected
+   before final comparison. (WTH!!!)
+ - compute "Length of original audio" using the number of frames reported by
+   Lame tag, not the detected frame amount (this may vary and leads to wrong
+   results).
+   NOTE: around 2003/2004, some development versions of lame created tags
+   reporting a wrong frame amount, that is the real number of frames created,
+   increased by 1 (the tag itself). Reading those tags leads to wrong sample
+   count estimation, because the number of frames stored is misleading. There
+   is no way of telling how many lame alpha/beta versions affected by that bug
+   got used at that time, so discrepancies may appear. When facing some
+   unmatched sample amount, use your common sense.
+   The bug was finally fixed into the stable 3.94 release (early 2004).
+ - fixed install command into Makefile
+ - fix for some wrong xing tags reporting a disabled 'original' flag while the
+   whole bitstream shows it enabled
+
+
+version 0.27.2 (2017/08/25 "Roundabout")
+ - small changes into I/O header mp3g_io_config and now mp3guessenc can also
+   be built on AmigaOS and OS/2 (and it works, of course!)
+ - detection for mpeg multi channel streams!
+   ISO MPEG-2 provides specifications for a new bitstream for center,
+   surround channels, low frequency enhancement channel and multi lingual
+   audio, described into ancillary data of mpeg1 layerII streams (usually,
+   but it may also fit into other layers).
+   Poor free documentation available (and the standard itself has not been
+   widly adopted), nevertheless stream recognition works in almost any cases.
+ - fixes into tags.c for every integer field found into tags. Now any integer
+   field is read in an endian indipendent way, so the routines will work on
+   big-endian machines too
+ - fixes into crc16 calculation routine (never used till now)
+ - support for "reduced" lame tag written by Lavc when encoding layerIII
+   files. The encoding engine is lame indeed, nevertheless the tool fills some
+   tag fields with unreliable infos
+ - fix for some wrong lame tags reporting a disabled 'original' flag while the
+   whole bitstream shows it enabled
+
+
+version 0.27.1 (2017/05/03 "Italian Espresso")
+ - read whole audio data from layerII streams and report ancillary amount
+ - read whole audio data from layerI streams and report ancillary amount
+ - retrieve bitrate from freeformat stream frames and reject those causing
+   bitrates > 640 kbps
+ - new fix for crc-protected vbr streams created by fhg encoders. Their VBRI
+   tag has a disabled CRC flag in contrast with the one stored into the real
+   audio stream, and this caused mp3guessenc to reject valid audio frames
+ - re-arranged the search for the very first frame. The two code blocks, one
+   seeking a corrupted freeframe index (written by ancient lame encoders) and
+   the other seeking for a vbr tag (both into the first frame) are now
+   merged together. This makes seeking valid frames among the junk even more
+   robust
+ - set every floating point variable as single precision (no need for double)
+ - fix off-by-one bug into memsrch which failed searches in some particular
+   cases
+
+
+version 0.27 (2016/12/15, "Ancient Melodies Enchanting Lightnings Into Art")
+ - convert any bit read operations to memory (byte arrays) accesses, instead of
+   file stream access (UP TO 24% FASTER ANALYSIS!!!)
+ - shorten analysis of a last broken layerIII frame when even side information
+   is incomplete
+ - check validity of bit allocation area in layerI frames
+ - take apart side information analysis (for layerIII) and error check
+ - check crc16 validity in all layers
+ - better macro bounds around "seek option"
+ - restored warning message from broken frames also for non-layerIII
+ - changed most of the variable signed-ness: if something needs to have a sign,
+   then it will have, everything else won't
+
+
+version 0.26.2 (2016/12/14, "Dark Black")
+ - fixes into mp3g_io_config.h for recent mingw compliancy
+ - fixed a misplaced (and very dangerous) buffer pointer
+
+
+version 0.26.1 (2016/02/26, "Black")
+ - limited the most cpu-demanding computations to few challenging bitstreams,
+   so in most cases the analysis will run faster
+ - detect wave riff header for mpeg audio bitstreams wrapped into wav files.
+ - avoid warning message about uncomplete frame when non-layerIII
+ - fixed ape tag detection for 64 bit builds
+ - replaced some old forgotten off_t casts
+ - check for id3v2 at the end of the file (may be found for revisions >=4)
+ - detect broken/corrupted musicmatch tag, with extraction of minimal information
+
+
+version 0.26 (2016/01/17, "Hotel Torino")
+ - the search for metadata tags is now a loop (so, more useless tags appeared, both
+   at the head and at the tail of several files)
+ - check for ape tags at the head of the file also
+ - print offset (hex) for any metadata tags found
+ - stop using `off_t' for bit pointers, created a new data type `bitoffs_t' which is
+   in fact a `long long'. This allows mp3guessenc to be cleaner and run smooth under
+   Android also, where the `stat' struct doesn't use `off_t' for file size (st_size)
+   but `long long', since `off_t' type is 32 bit long only.
+ - fix: check file size before beginning analysis, the file may be too large even when
+   its size doesn't make the `st_size' field (stat) overflow. (Check updated with
+   respect to the new data type, as above)
+
+
+version 0.26preview (2015/02/19, "Let It Snow")
+(this had to be 0.25.3 but the amount of new features
+and changes in source code made me decide for the jump)
+ - Small fixes into Makefile
+ - Do not scan empty files
+ - Added detection for the ancient (yet free and open source) Blade Encoder.
+ - Added support for MusicMatch tag used (only) in early versions of MM Jukebox software.
+ - Added support for Lyrics3v2 tag
+ - Added support for Lyrics3v1 tag
+ - Enhanced robustness of mpeg frame detection - now after a freeformat frame mp3guessenc
+   seeks for more freeformat ones, and vice versa.
+ - Replaced `strstr' with the new, more reliable `memsrch' (I like it more than the GNU
+   extension `memmem')
+ - Added comfortable `-S' (skip) option you can use if you suspect the junk at the head of a
+   file can make difficult its recognition by mp3guessenc. When a long scanning can bring only
+   a meaningless bunch of frames and a ton of sync errors, well, try it!
+   While I'm on it, I want to say more about this feature. I always thought the ability to skip
+   a given amount of bytes could be useful, yet I never wanted to have it into mp3guessenc. In
+   a "perfect final" release, mp3guessenc should be able to recognize each and every kind of
+   tag/data/junk any mad encoding software added at the head of an mpeg stream, but truth is,
+   we're still not there. I can't even tell if it will remain available forever as other command
+   line options will, but now I really need it, and now it's there.
+ - Added a full set of command line options, offering flexible control about what mp3guessenc
+   goes to report after analysis. Old behaviour is still kept as long as you set no options
+   on the command line (or just type `-e' to show everything). For quiet detection, use `-g'
+   (show only the guessing) or even `-n' for absolutely silent operation - only the encoder
+   name will be printed.
+
+
+version 0.25.2 (2014/07/16, "25 Days A Stranger")
+ - Same consistency enhancements of `skip_p23b' went into `skipback_p23b'
+ - More accuracy in `skip_p23b' which returned meaningless values when the subsequent block was
+   missing. This is now fixed and when the block is not present, the skip operation stops,
+   returning proper results
+ - Fixed behaviour with odd frames reporting they have part2+part3 data block with 0 bit
+ - Fixed calls to part2+part3 handling routines in order not to move the bit pointer toward
+   bits that are not yet loaded
+ - Replaced cryptic `A!' and `B!' alerts with intelligible warning messages.
+ - Fixed pointer handling into `skip_p23b', now p23b_pos can only have allowed values and
+   function calls got slighly modified
+ - Logical fixes into `skipback_p23b' which was always assuming p23b_pos was at the last bit of
+   the block
+ - Renamed `bitstreamcpy' to more friendly `p23b_cpy'
+ - Optimized search into `seek_p23b', now performing up to 2 cycles (the same function used to
+   cycle up to NP23B-1 times!) most of the times - BREEZING SPEED!
+ - Removed redundant seek code into `load_into_p23b'
+ - Added consistency check for endOfLastPart3 pointer (avoids resetting by mistake the enhanced
+   feature bytes)
+ - New handling for endOfLastPart3 pointer, bringing a few more ancillary data blocks detected
+ - Removed useless and redundant (and even harmful) seek before scan for ancillary data
+ - Print large file support status (yes/no). Yeah, I added this to 0.25.1 but forgot to mention
+
+
+version 0.25.1 (2014/04/28, "Fuori Dal Tempo")
+ - Fixed a very old (and critical) bug in `load_into_p23b'
+ - Replaced the old `readOneByte_p23b' function with the shiny new `bitstreamcpy', useful
+   when collecting bytes from ancillary data. This new function is born with speed, efficiency
+   and reliability in mind. The old function returned one byte at a time, it was error-prone
+   and the whole process was slow. (for more detail, see comments to the functions themselves)
+ - Various fixes into `bit_utils' module in order to decrease complexity and increase speed.
+ - Fixed analysis of the very last frame for files having it shorter than expected
+   (see http://sourceforge.net/p/mp3guessenc/news/2014/04/unexpected-hassle-behind-a-simple-idea/).
+   Be aware that some subtle changes in your results may appear due to this enhanced
+   precision in mp3guessenc. In fact, now a new valid shorter frame may (or may not) slightly
+   decrease the overall data rate (this is always calculated as amount_of_data/duration);
+   further, the detected amount of ancillary data is likely to decrease because some data
+   once taken as useless padding, are now a compliant frame. (btw, I was wrong)
+ - Faster, more robust, more flexible `strencode' utility
+
+
+version 0.25 final (2013/09/22, "Farewell")
+ - increased number of frames stored in memory due to most demanding streams (lsf)
+ - source cleanup
+
+
+version 0.25 beta 2 (2013/05/24, "List Games")
+ - minor fixes
+ - print min/max global gain values
+ - small updates to the guessing engine
+ - new unique function for analyzing ancillary data
+ - decoded original length and encoder delay into OFL (original file length) block, hence
+   mp3guessenc is now able to show both these infos (this block may be found into streams
+   produced by fraunhofer encoders, such as mp3pro and mp3surround ones but also in recent
+   `plain' mp3 streams. Please note that in those cases VBRI tag often reports a wrong value
+   for encoder delay, thus a bug lies into the encoder, not mp3guessenc -- the program just
+   prints out what it reads). In case of mp3pro streams, both encoder delay and original
+   file length values (in sample units) refer to the original full-quality wave file.
+
+
+version 0.25 beta 1 (2013/03/24, "Please Please Please Let Me Release What I Want")
+ - added a version check on the lame string found in xing vbr tag in order to
+   avoid reading a lame tag where there isn't one (first lame tag appeared in v3.90,
+   previous versions just added a signature string to the xing vbr tag)
+ - detection of Ape tag v1/v2 - actually read main data, then skip it
+ - increased buffer size due to the maximum length freeformat frames can have (5760 bytes
+   when encoding 8 kHz content into a 640 kbps stream -- quite strange, yet still feasible)
+ - fixed detection of mp3Surround streams encoded with OFL (original file length) feature
+ - added detection of mp3Surround streams too!
+   (mp3Surround is another extension of mp3 which brings multi channel audio out of a
+   regular mp3 stream. Almost an un-flexible (only encodes 5.1 channels - 44.1 kHz and
+   48 kHz, and that's all) and unknown one, though)
+ - mp3guessenc is now able to detect mp3PRO streams!
+   (Well, the detection method is somewhat trivial but it works with any sample stream I
+   could test. Actually, I'm not aware of any other utility able to tell `normal'
+   mp3 streams from mp3PRO ones without the need of external closed libraries.)
+ - many integer variables are now declared as off_t (which can become 64 bit integers
+   on systems supporting them) for correct handling of large files (> 256MB)
+   Now mp3guessenc can scan files up to 2^60 bytes long. Thanks to Matthias Andree for
+   pointing me to a portable solution for large files support.
+ - show ancillary data infos (for layerIII only)
+ - fixed encoder delay info for both fhg and lame encodings
+
+
+version 0.25 alpha 24 (2013/02/21, the "Owner Of A Lonely Release" release)
+ - added workaround for buggy lame vbr tag in freeformat streams
+ - enhanced detection of frame size in layerIII free format streams
+ - sync error counter now gets updated
+ - update GUESSING ENGINE! Added support for gogo, helix and updated detection for known
+   encoders (xing/lame/fhg)
+ - refined memory requirements: less buffers, better managed
+ - more comments in bit-handling routines (now everything is clear to me, eh eh)
+ - fixed out-of-bound write in `extract_lame_string'
+ - enhanced modularity: source was splitted into modules (so mp3guessenc.c is lighter now!)
+ - refined detection of lame string into the first frame (xing/lame tag)
+ - fixed regression in lame string detection into the very last frame
+ - added missing structure initialization
+ - added tag offset value (for xing/lame/vbri tags)
+ - replaced old `for' cycles with more efficient memset/memcpy routines
+ - replaced `stat' with `stat64' in order to avoid crashes when managing large files
+ - fixed detection of long/mixed/switch blocks in compliance with lame results (short blocks
+   were already correctly detected)
+ - mp3guessenc is now lame-preset aware
+ - fixed nice coherent alignment
+
+
+version 0.25 alpha 23 (2012/04/22, the "Sparrow's Nightmare" Haiku Powered Re-release)
+ - minor modifications applied so now you can build and run mp3guessenc on Haiku R1 alpha3 also!
+
+
+version 0.25 alpha 23 (2012/04/21, the "Sparrow's Nightmare" release)
+ - added a check so now the very last frame won't be read if broken (it will be reported as garbage)
+ - enlarged buffers in order to accomodate big free format frames (I see this as a workaround and I
+   will have to fix the whole memory allocation issue when I'm into the layer III decoding details)
+ - fixed framesize detection for the very first frame
+ - fixed accurate info tag detection
+ - offset of the first frame is now printed in hex base too
+ - updated to a comfortable time print
+ - redefined some macros, optimized integer variables
+
+
+version 0.25 alpha 22 (2012/01/16, the "70 Years Are Not Enough" release)
+ - Reduced printed details if the file is not layerIII (part of the scan is not performed)
+ - Fixed details about JStereo encodings in layer I/II, now simple stereo frames are clearly printed.
+ - Updated frame histogram in order to also show custom frames generated in free format encodings
+ - Free format bitstreams are now supported!
+ - Changed the framesize handling: framesize values are now calculated before any scanning and so
+   the process is *very* fast! Before this modification, in a N-frame stream we had N calls to
+   get_framesize, now this routine is called just 14 times, regardless of the stream size!
+ - Optimized the size for bitrate arrays and histogram, since it can go up to 14, not 15
+   (bitrate index 15 is invalid!)
+ - Added a check about file type, so now special files (directory/block/char dev) are no more scanned
+
+
+version 0.25 alpha 21 (2011/12/26, the "Smells Like Release Spirit" release)
+ - `print_version()' has now two operation modes: brief and verbose.
+ - Detection (and warning about) of garbage/unrecognizable stuff at the head and tail of the mpeg file.
+ - Updated `scan' routine! Stripped off many fat statements, redundant checks, and several unused
+   variables, so now the code is light, fast and readable!
+ - A makefile appeared! Sooo comfortable :-)
+ - fixed a buffer overflow into extract_lame_string (sorry, my fault...)
+ - renamed `VbrTag.h' into `mp3guessenc.h' (I really thought I already did this before)
+ - fixed information about Mode Extension field (it changes its meaning depending upon actual layer)
+ - fixed compilation warnings even when running `gcc -Wextra ...'
+
+
+version 0.25 alpha 20 (2011/11/30, the "A Release With No Name" release)
+ - fixed the `get_framesize' routine so it now does return the right value for ANY layer and ANY mpeg
+   version.
+ - slightly reworked the `scan' routine, now calling a `scan_layerIII' sub-routine from within itself
+   just when investigating layerIII streams. Now I can check layerI, layerII and layerIII streams, even
+   if layerI is not actually giving reliable results (now fixed).
+ - fixed the check for LAME tag into the very first mpeg frame (lame 3.99alpha up to 3.99.1 compliancy)
+ - stop checks if we already are at the end of bitstream
+   [This fix allowed several alerts to disappear, uhm...]
+ - more flexible resync_mp3(): we can now skip the fseek at the beginning just calling
+   resync_mp3(fp, &h, RESYNC_POS_CURRENT), which makes the function start searching from current
+   position
+ - modified checkid3v1 and checkid3v2 in order to perform (if needed) silent detection
+ - finally fixed *ALL* compilation warnings (I usually run `gcc -Wall ...')
+ - slightly changed summary output about L/R frames, M/S frames and average bitrate so now it's
+   similar to lame cli executable messages.
+ - enriched frame histogram! Now it takes into account for different frame sizes due to
+   padding (when it's used). Output example:
+    160 kbps : 3693 (100.0%), size distr: [2035x522 bytes, 1658x523 bytes]
+   Here you can see a cbr 160 kbps encoded mp3 (44.1 kHz audio source). It uses 2035 frames without
+   padding (522 bites) and 1658 ones with padding (523 bytes). Of course, in VBR encoded files you
+   won't find any padding.
+
+
+version 0.25 alpha 19 (2011/05/03)
+ - added workaround for a random-appearing stack smashing error also causing data corruption (fixing it is another story...)
+ - finally moved all segments of the code into their own subroutines, so now main() is light and (most important!) readable
+
+
+version 0.25 alpha 18 (somewhere in the middle)
+ - fixed an insidious bug into ExtractI4 and ExtractI2 due to signedness of char
+ - completely rewritten extract_lame_string (thanks to Robert - lame-dev list on sourceforge.net)
+
+
+version 0.25 alpha (until 2011/03/04)
+ - clarify software license
+ - extended support to all layers (I/II/III) (TO BE FINISHED, eventually make guessing optional)
+ - fixed detection of xing/lame vbr/cbr tag
+ - added details about lame tag
+ - added checks to head_check2 (now just `head_check') in order to perform the full range of integrity checks on mpeg header
+ - added an on-purpose routine to compute the frame size (get_framesize)
+ - faster resync_mp3 (less in/out calls)
+ - removed gotos in extract_lame_string (oh, yeah!)
+ - added check for not-allowed modes in LayerII streams
+ - added version information
+ - added basic support for command line options (to be extended)
+ - added accurate handling of ID3tag-1.0 and ID3tag-1.1
+ - fixed detection for ID3tagV2 up to 2.3.0 (although it is still skipped at all)
+ - added nice alignment for output strings
+ - added comments to many parts of the code
+ - commented out several unused identifiers
+ - fixed most of the compilation warnings
+ - added detection of VBRI tag (added to vbr files by Fraunhofer encoders)
+
+

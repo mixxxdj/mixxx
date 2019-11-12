@@ -363,6 +363,17 @@
               </Connection>
             </EffectPushButton>
 
+            <Battery>
+              <ObjectName>Battery</ObjectName>
+              <Size>16f,16f</Size>
+              <Pos>119,7</Pos>
+              <SizePolicy>f,f</SizePolicy>
+              <PixmapCharged scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charged.svg</PixmapCharged>
+              <NumberStates>8</NumberStates>
+              <PixmapsCharging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+              <PixmapsDischarging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+            </Battery>
+
             <!--
             **********************************************
             Text- Clock display

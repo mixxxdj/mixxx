@@ -12,7 +12,7 @@ class LibraryHashDAO : public DAO {
   public:
     ~LibraryHashDAO() override {}
 
-    void initialize(const QSqlDatabase& database) {
+    void initialize(const QSqlDatabase& database) override {
         m_database = database;
     };
 

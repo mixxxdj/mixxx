@@ -44,7 +44,7 @@ class CrateFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* getChildModel() override;
 
