@@ -3,7 +3,7 @@
   <SetVariable name="btn_type_format">elevated_square</SetVariable>
   <WidgetGroup>
     <ObjectName>Hotcue<Variable name="number"/></ObjectName>
-    <MinimumSize>22,26</MinimumSize>
+    <MinimumSize>26,26</MinimumSize>
     <MaximumSize>26,26</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <Layout>horizontal</Layout>
@@ -11,7 +11,7 @@
       <PushButton>
         <TooltipId>hotcue</TooltipId>
         <ObjectName>HotcueButton</ObjectName>
-        <MinimumSize>22,26</MinimumSize>
+        <MinimumSize>26,26</MinimumSize>
         <MaximumSize>26,26</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
         <NumberStates>2</NumberStates>
