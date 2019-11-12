@@ -1595,6 +1595,10 @@ WPushButton[value="2"]:hover {
     border: 0px solid #0080BE;
 }
 
+#HotcueButton {
+    qproperty-shouldHighlightBackgroundOnHover: true;
+}
+
 #HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
     color: #FDFDFD;
 }
