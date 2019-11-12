@@ -679,8 +679,8 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
         pCue = CuePointer(track->createAndAddCue());
     }
 
-    pCue->setType(Cue::CUE);
-    pCue->setPosition(position);
+    pCue->setType(Cue::Type::HotCue);
+    pCue->setStartPosition(position);
     pCue->setHotCue(id);
 
     if (!label.isNull()) {
@@ -688,10 +688,12 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
     }
 
     /*
-TODO(ehendrikd):
-Update setting hotcue colors once proposed PR is merged
-allowing custom hotcue colors/palette
-See: https://github.com/mixxxdj/mixxx/pull/2119
+    TODO(ehendrikd):
+    Update setting hotcue colors once proposed PR is merged
+    allowing custom hotcue colors/palette
+    See:
+       https://github.com/mixxxdj/mixxx/pull/2119
+       https://github.com/mixxxdj/mixxx/pull/2345
 
     // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
     switch (colorCode) {
@@ -749,8 +751,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
     double cueLoadPosition = kLongestPosition;
     QString cueLoadComment;
-    double cueLoopPosition = kLongestPosition;
-    double loopLength = -1.0;
+    double cueLoopStartPosition = kLongestPosition;
+    double cueLoopEndPosition = kLongestPosition;
 
     for (std::vector<rekordbox_anlz_t::tagged_section_t*>::iterator section = anlz.sections()->begin(); section != anlz.sections()->end(); ++section) {
         switch ((*section)->fourcc()) {
@@ -805,9 +807,14 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
                         // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
-                        if (position < cueLoopPosition) {
-                            cueLoopPosition = position;
-                            loopLength = sampleRateFrames * static_cast<double>((*cueEntry)->loop_time() - (*cueEntry)->time());
+                        if (position < cueLoopStartPosition) {
+                            cueLoopStartPosition = position;
+                            int endTime = static_cast<int>((*cueEntry)->loop_time()) - timingOffset;
+                            // Ensure no offset times are less than 1
+                            if (endTime < 1) {
+                                endTime = 1;
+                            }
+                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -841,9 +848,14 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
                         // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
-                        if (position < cueLoopPosition) {
-                            cueLoopPosition = position;
-                            loopLength = sampleRateFrames * static_cast<double>((*cueExtendedEntry)->loop_time() - (*cueExtendedEntry)->time());
+                        if (position < cueLoopStartPosition) {
+                            cueLoopStartPosition = position;
+                            int endTime = static_cast<int>((*cueExtendedEntry)->loop_time()) - timingOffset;
+                            // Ensure no offset times are less than 1
+                            if (endTime < 1) {
+                                endTime = 1;
+                            }
+                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -860,18 +872,17 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
     }
 
     if (cueLoadPosition < kLongestPosition) {
-        track->setCuePoint(CuePosition(cueLoadPosition, Cue::MANUAL));
-        CuePointer pLoadCue = track->findCueByType(Cue::LOAD);
+        track->setCuePoint(CuePosition(cueLoadPosition));
+        CuePointer pLoadCue = track->findCueByType(Cue::Type::MainCue);
         if (!cueLoadComment.isNull()) {
             pLoadCue->setLabel(cueLoadComment);
         }
     }
-    if (cueLoopPosition < kLongestPosition) {
+    if (cueLoopStartPosition < kLongestPosition) {
         CuePointer pCue(track->createAndAddCue());
-        pCue->setPosition(cueLoopPosition);
-        pCue->setLength(loopLength);
-        pCue->setSource(Cue::MANUAL);
-        pCue->setType(Cue::LOOP);
+        pCue->setStartPosition(cueLoopStartPosition);
+        pCue->setEndPosition(cueLoopEndPosition);
+        pCue->setType(Cue::Type::Loop);
     }
 }
 
@@ -1056,7 +1067,7 @@ RekordboxFeature::~RekordboxFeature() {
     delete m_pRekordboxPlaylistModel;
 }
 
-void RekordboxFeature::bindWidget(WLibrary* libraryWidget,
+void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
         KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);

@@ -64,7 +64,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QVariant title();
     QIcon getIcon();
     static bool isSupported();
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
     TreeItemModel* getChildModel();
