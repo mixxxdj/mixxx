@@ -2180,8 +2180,9 @@ QMenuBar,
     color: #555;
     }
   QCheckBox::indicator:indeterminate {
-    image: url(skin:/buttons/btn_lib_checkmark_dark_grey.svg);
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
     border: 1px solid #1e1e1e;
+    background-color: #000;
     }
   QCheckBox::indicator:indeterminate:!enabled {
     image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
