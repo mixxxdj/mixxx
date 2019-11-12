@@ -22,7 +22,6 @@ class FIFO {
             return;
         }
         m_data = new DataType[size];
-        memset(m_data, 0, sizeof(DataType) * size);
         PaUtil_InitializeRingBuffer(
                 &m_ringBuffer, sizeof(DataType), size, m_data);
     }

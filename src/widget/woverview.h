@@ -47,8 +47,8 @@ class WOverview : public WWidget, public TrackDropTarget {
             AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     WOverview(

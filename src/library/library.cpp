@@ -29,6 +29,7 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 
 #include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
@@ -191,7 +192,15 @@ Library::Library(
         pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
-
+              
+    // TODO(XXX) Rekordbox feature added persistently as the only way to enable it to
+    // dynamically appear/disappear when correctly prepared removable devices
+    // are mounted/unmounted would be to have some form of timed thread to check
+    // periodically. Not ideal perfomance wise.
+    if (pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
+        addFeature(new RekordboxFeature(this, m_pTrackCollection));
+    }
+              
     for (const auto& externalTrackCollection : m_externalTrackCollections) {
         auto feature = externalTrackCollection->newLibraryFeature(this);
         if (feature) {

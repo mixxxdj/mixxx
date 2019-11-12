@@ -30,22 +30,22 @@ class AnalysisFeature : public LibraryFeature {
 
     void stop();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+                    KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
     void refreshLibraryModels();
 
   signals:
     void analysisActive(bool bActive);
 
   public slots:
-    void activate();
+    void activate() override;
     void analyzeTracks(QList<TrackId> trackIds);
 
     void suspendAnalysis();
