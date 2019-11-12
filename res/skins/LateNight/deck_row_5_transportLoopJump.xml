@@ -231,14 +231,14 @@
                       <Text><Variable name="state_0_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
                       <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_pressed.svg</Pressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Text><Variable name="state_1_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
                       <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_set.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_pressed.svg</Pressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>

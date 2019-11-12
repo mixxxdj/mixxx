@@ -23,7 +23,7 @@ Variables:
       <Text><Variable name="state_0_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_pressed.svg</Pressed>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
