@@ -47,6 +47,8 @@ class WWidget : public QWidget, public WBaseWidget {
     Q_PROPERTY(double value READ getControlParameterDisplay);
     Q_PROPERTY(double backgroundColorRgba READ getBackgroundColorRgba WRITE
                     setBackgroundColorRgba);
+    Q_PROPERTY(bool shouldHighlightBackgroundOnHover MEMBER
+                    m_bShouldHighlightBackgroundOnHover);
     Q_PROPERTY(bool hasBackgroundColor READ hasBackgroundColor);
     Q_PROPERTY(bool backgroundIsDark READ backgroundIsDark);
 
@@ -76,6 +78,7 @@ class WWidget : public QWidget, public WBaseWidget {
     double m_scaleFactor;
     double m_backgroundColorRgba;
     bool m_bBackgroundIsDark;
+    bool m_bShouldHighlightBackgroundOnHover;
 };
 
 #endif
