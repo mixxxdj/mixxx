@@ -543,3 +543,7 @@ QPushButton#pushButtonRepeatPlaylist {
   image: url(skin:/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;
 }
 /* AutoDJ button icons */
+
+#HotcueButton {
+    background-color: #aab2b7;
+}
