@@ -59,6 +59,7 @@ WOverview::WOverview(
           m_iPosSeconds(0),
           m_bLeftClickDragging(false),
           m_iPos(0),
+          m_iPlayPos(0),
           m_pHoveredMark(nullptr),
           m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
@@ -210,13 +211,15 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     dParameter = math_clamp(dParameter, 0.0, 1.0);
 
     bool redraw = false;
+    int oldPos = m_iPlayPos;
+    m_iPlayPos = valueToPosition(dParameter);
+    if (oldPos != m_iPlayPos) {
+        redraw = true;
+    }
+
     if (!m_bLeftClickDragging) {
         // don't move slider under the mouse
-        int oldPos = m_iPos;
-        m_iPos = valueToPosition(dParameter);
-        if (oldPos != m_iPos) {
-            redraw = true;
-        }
+        m_iPos = m_iPlayPos;
     }
 
     // In case the user is hovering a cue point or holding right click, the
@@ -441,6 +444,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
     if (e->button() == Qt::LeftButton) {
         if (m_bLeftClickDragging) {
+            m_iPlayPos = m_iPos;
             double dValue = positionToValue(m_iPos);
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
@@ -479,7 +483,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
-            m_iPos = valueToPosition(m_playpositionControl->get());
+            m_iPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
         } else if (m_pHoveredMark == nullptr) {
@@ -551,7 +555,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
-            drawCurrentPosition(&painter);
+            drawSliderPosition(&painter);
             drawTimeRuler(&painter);
             drawMarkLabels(&painter, offset, gain);
         }
@@ -608,11 +612,22 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
         if (playedOverlayColor.alpha() > 0) {
             if (m_orientation == Qt::Vertical) {
-                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPos, playedOverlayColor);
+                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, playedOverlayColor);
             } else {
-                pPainter->fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
+                pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), playedOverlayColor);
             }
         }
+    }
+    if (m_bLeftClickDragging) {
+        QLineF line;
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(m_iPlayPos, 0.0, m_iPlayPos, height());
+        } else {
+            line.setLine(0.0, m_iPlayPos, width(), m_iPlayPos);
+        }
+        pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+        pPainter->setOpacity(0.5);
+        pPainter->drawLine(line);
     }
 }
 
@@ -875,7 +890,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     }
 }
 
-void WOverview::drawCurrentPosition(QPainter* pPainter) {
+void WOverview::drawSliderPosition(QPainter* pPainter) {
     PainterScope painterScope(pPainter);
 
     if (m_orientation == Qt::Vertical) {

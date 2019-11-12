@@ -114,7 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
-    void drawCurrentPosition(QPainter* pPainter);
+    void drawSliderPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
     void paintText(const QString& text, QPainter* pPainter);
@@ -151,6 +151,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
     int m_iPos;
+    // position of the overlay shaddow
+    int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;
     bool m_bHotcueMenuShowing;
