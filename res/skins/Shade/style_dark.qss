@@ -113,7 +113,7 @@ QScrollBar::handle:horizontal,
 QHeaderView,
 QHeaderView::section {
   background: #3f3041;
-  color: #000;
+  color: #999;
 }
 QHeaderView::up-arrow,
 QHeaderView::down-arrow {
