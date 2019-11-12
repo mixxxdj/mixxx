@@ -1232,9 +1232,8 @@ target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
   lib/kaitai/kaitaistream.cpp
 )
-target_include_directories(Kaitai SYSTEM PRIVATE lib/kaitai)
+target_include_directories(Kaitai SYSTEM PUBLIC lib/kaitai)
 target_compile_definitions(Kaitai PRIVATE KS_STR_ENCODING_NONE)
-target_include_directories(mixxx-lib PUBLIC lib/kaitai)
 target_link_libraries(mixxx-lib PUBLIC Kaitai)
 
 # For determining MP3 timing offset cases in Rekordbox library feature
