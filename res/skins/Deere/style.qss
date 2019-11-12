@@ -1749,8 +1749,11 @@ do not highlight either state. */
   standard button definitions.
   Note: EQ Gain effects cannot be used in split mode (= can be 0 or 1 only)
 */
-#EffectSlotParameterLinkTypeButton {
-    margin: 0 4px 0 4px;
+#EffectSlotParameterLinkButtonsContainer {
+    margin: 1px 4px;
+    qproperty-layoutSpacing: 1;
+    border-radius: 2px;
+    background-color: #282828;
 }
 
 #EffectSlotParameterLinkTypeButton[value="2"] {
@@ -1831,10 +1834,6 @@ do not highlight either state. */
                                       stop: 1 #0080BE);
 
     border: 0px solid #0080BE;
-}
-
-#EffectSlotParameterLinkInversionButton {
-    margin: 0px 4px 0px 4px;
 }
 
 #EffectSlotParameterLinkInversionButton[value="1"] {

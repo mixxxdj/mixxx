@@ -1451,7 +1451,6 @@ WBeatSpinBox,
 
 #FxButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-top: 4px;
 }
 
 #FxUnitKnob {
@@ -1562,10 +1561,10 @@ WEffectSelector,
   border-radius: 1px;
   }
   #FxSuperLinkButton {
-    margin: 0px 5px 0px 5px;
-  }
+    margin: 0px 2px 0px 2px;
+    }
   #FxSuperLinkInvertButton {
-    margin: 0px 5px 2px 5px;
+    margin: 0px;
   }
 
 #FxSuperLinkButton[value="0"],
@@ -1584,7 +1583,7 @@ WEffectSelector,
   }
 
 #FxSuperLinkButton[value="1"] {
-  background-color: #A5A5A5;
+  background-color: #5b9601;
   }
   #FxSuperLinkButton[value="1"]:hover {
     background-color: #CDCDCD;
@@ -1592,8 +1591,8 @@ WEffectSelector,
 #FxSuperLinkButton[value="2"] {	/*
   a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #A5A5A5,
-    stop: 0.33 #A5A5A5,
+    stop: 0 #5b9601,
+    stop: 0.33 #5b9601,
     stop: 0.34 #4b4b4b,
     stop: 1 #4b4b4b);
   }
@@ -1608,8 +1607,8 @@ WEffectSelector,
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #4b4b4b,
     stop: 0.66 #4b4b4b,
-    stop: 0.67 #A5A5A5,
-    stop: 1 #A5A5A5);
+    stop: 0.67 #5b9601,
+    stop: 1 #5b9601);
   }
   #FxSuperLinkButton[value="3"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
@@ -1620,12 +1619,12 @@ WEffectSelector,
     }
 #FxSuperLinkButton[value="4"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #A5A5A5,
-    stop: 0.330000 #A5A5A5,
+    stop: 0 #5b9601,
+    stop: 0.330000 #5b9601,
     stop: 0.340000 #4b4b4b,
     stop: 0.660000 #4b4b4b,
-    stop: 0.670000 #A5A5A5,
-    stop: 1 #A5A5A5);
+    stop: 0.670000 #5b9601,
+    stop: 1 #5b9601);
   }
   #FxSuperLinkButton[value="4"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,

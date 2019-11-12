@@ -207,7 +207,7 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         for (int i = 0; i < m_crateList.length(); ++i) {
             if (m_crateList[i].getId() == crateId) {
                 QModelIndex parentIndex = m_childModel.index(0, 0);
-                QModelIndex childIndex = parentIndex.child(i, 0);
+                QModelIndex childIndex = m_childModel.index(i, 0, parentIndex);
                 m_childModel.setData(childIndex, crate.getName(), Qt::DisplayRole);
                 m_crateList[i] = crate;
                 return; // early exit
