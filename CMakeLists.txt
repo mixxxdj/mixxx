@@ -1225,6 +1225,15 @@ endif()
 find_package(LAME REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
 
+# Kaitai for reading Rekordbox libraries
+add_library(Kaitai STATIC EXCLUDE_FROM_ALL
+  lib/kaitai/kaitaistream.cpp
+)
+target_include_directories(Kaitai SYSTEM PRIVATE lib/kaitai)
+target_compile_definitions(Kaitai PRIVATE KS_STR_ENCODING_NONE)
+target_include_directories(mixxx-lib PUBLIC lib/kaitai)
+target_link_libraries(mixxx-lib PUBLIC Kaitai)
+
 # OpenGL
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
