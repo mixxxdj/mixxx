@@ -117,6 +117,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
+              <WidgetGroup><Size>1f,0me</Size></WidgetGroup>
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
