@@ -41,14 +41,14 @@ Variables:
           <!--Text><Variable name="Text"/><Variable name="FxUnit"/></Text-->
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_pressed.svg</Pressed>
+          <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
           <!--Text><Variable name="Text"/><Variable name="FxUnit"/></Text-->
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_active.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_pressed.svg</Pressed>
+          <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_fx_active.svg</Pressed>
         </State>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
