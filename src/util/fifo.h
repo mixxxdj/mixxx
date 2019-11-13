@@ -2,7 +2,6 @@
 #define FIFO_H
 
 #include <QtDebug>
-#include <QMutex>
 #include <QScopedPointer>
 #include <QSharedPointer>
 
@@ -77,19 +76,16 @@ class FIFO {
 
 // MessagePipe represents one side of a TwoWayMessagePipe. The direction of the
 // pipe is with respect to the owner so sender and receiver are
-// perspective-dependent. If serializeWrites is true then calls to writeMessages
-// will be serialized with a mutex.
+// perspective-dependent.
 template <class SenderMessageType, class ReceiverMessageType>
 class MessagePipe {
   public:
     MessagePipe(FIFO<SenderMessageType>& receiver_messages,
                 FIFO<ReceiverMessageType>& sender_messages,
-                BaseReferenceHolder* pTwoWayMessagePipeReference,
-                bool serialize_writes)
+                BaseReferenceHolder* pTwoWayMessagePipeReference)
             : m_receiver_messages(receiver_messages),
               m_sender_messages(sender_messages),
-              m_pTwoWayMessagePipeReference(pTwoWayMessagePipeReference),
-              m_bSerializeWrites(serialize_writes) {
+              m_pTwoWayMessagePipeReference(pTwoWayMessagePipeReference) {
     }
 
     // Returns the number of ReceiverMessageType messages waiting to be read by
@@ -108,22 +104,14 @@ class MessagePipe {
     // and returns the number of successfully written messages. If
     // serializeWrites is active, this method is blocking.
     inline int writeMessages(const SenderMessageType* messages, int count) {
-        if (m_bSerializeWrites) {
-            m_serializationMutex.lock();
-        }
         int result = m_receiver_messages.write(messages, count);
-        if (m_bSerializeWrites) {
-            m_serializationMutex.unlock();
-        }
         return result;
     }
 
   private:
-    QMutex m_serializationMutex;
     FIFO<SenderMessageType>& m_receiver_messages;
     FIFO<ReceiverMessageType>& m_sender_messages;
     QScopedPointer<BaseReferenceHolder> m_pTwoWayMessagePipeReference;
-    bool m_bSerializeWrites;
 
 #define COMMA ,
     DISALLOW_COPY_AND_ASSIGN(MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
@@ -134,10 +122,9 @@ class MessagePipe {
 // facilitates non-blocking two-way communication. To keep terminology clear,
 // there are two sides to the message pipe, the sender side and the receiver
 // side. The non-blocking aspect of the underlying FIFO class requires that the
-// sender methods and target methods each only be called from a single thread,
-// or alternatively guarded with a mutex. The most common use-case of this class
-// is sending and receiving messages with the callback thread without the
-// callback thread blocking.
+// sender methods and target methods each only be called from a single thread
+// The most common use-case of this class is sending and receiving messages
+// with the callback thread without the callback thread blocking.
 //
 // This class is an implementation detail and cannot be instantiated
 // directly. Use makeTwoWayMessagePipe(...) to create a two-way pipe.
@@ -152,9 +139,7 @@ class TwoWayMessagePipe {
     static QPair<MessagePipe<SenderMessageType, ReceiverMessageType>*,
                  MessagePipe<ReceiverMessageType, SenderMessageType>*> makeTwoWayMessagePipe(
                      int sender_fifo_size,
-                     int receiver_fifo_size,
-                     bool serialize_sender_writes,
-                     bool serialize_receiver_writes) {
+                     int receiver_fifo_size) {
         QSharedPointer<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> > pipe(
             new TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>(
                 sender_fifo_size, receiver_fifo_size));
@@ -163,12 +148,10 @@ class TwoWayMessagePipe {
                      MessagePipe<ReceiverMessageType, SenderMessageType>*>(
                          new MessagePipe<SenderMessageType, ReceiverMessageType>(
                              pipe->m_receiver_messages, pipe->m_sender_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe),
-                             serialize_sender_writes),
+                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe)),
                          new MessagePipe<ReceiverMessageType, SenderMessageType>(
                              pipe->m_sender_messages, pipe->m_receiver_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe),
-                             serialize_receiver_writes));
+                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe)));
     }
 
   private:
