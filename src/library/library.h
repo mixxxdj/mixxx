@@ -2,7 +2,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 // A Library class is a container for all the model-side aspects of the library.
-// A library widget can be attached to the Library object by calling bindWidget.
+// A library widget can be attached to the Library object by calling bindLibraryWidget.
 
 #ifndef LIBRARY_H
 #define LIBRARY_H
@@ -15,9 +15,8 @@
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
-#include "analysisfeature.h"
+#include "library/analysisfeature.h"
 #include "library/coverartcache.h"
-#include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 #include "util/db/dbconnectionpool.h"
 
@@ -64,7 +63,7 @@ class Library: public QObject,
         return *m_pTrackCollection;
     }
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 

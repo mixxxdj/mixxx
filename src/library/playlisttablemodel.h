@@ -18,7 +18,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
 
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex,
-                   const QModelIndex& destIndex);
+                   const QModelIndex& destIndex) override;
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
 

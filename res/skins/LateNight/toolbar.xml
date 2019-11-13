@@ -20,7 +20,7 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
+            <ObjectName>ToolBarDivider</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>
 
@@ -150,7 +150,7 @@
       </PushButton>
 
       <WidgetGroup>
-        <ObjectName>ToolbarDivider</ObjectName>
+        <ObjectName>ToolBarDivider</ObjectName>
         <Size>13f,9min</Size>
       </WidgetGroup>
 
@@ -229,6 +229,16 @@
           </VuMeter>
 
           <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapUnknown scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_unknown.svg</PixmapUnknown>
+            <PixmapCharged scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
         </Children>
       </WidgetGroup>
 

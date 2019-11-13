@@ -51,7 +51,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     PlaylistDAO();
     ~PlaylistDAO() override {}
 
-    void initialize(const QSqlDatabase& database);
+    void initialize(const QSqlDatabase& database) override;
 
     // Create a playlist, fails with -1 if already exists
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);

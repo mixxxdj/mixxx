@@ -2,7 +2,6 @@
   <WidgetGroup>
     <Size>0e,0min</Size>
     <Layout>horizontal</Layout>
-    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckLeftBorder</ObjectName>
@@ -13,31 +12,26 @@
         <ObjectName>DeckLeft</ObjectName>
         <Size>0e,100min</Size>
         <Layout>vertical</Layout>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
         <Children>
           <WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->
             <ObjectName>DeckLeft</ObjectName>
             <Size>0e,165f</Size>
             <Layout>horizontal</Layout>
-            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
             <Children>
               <WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->
                 <ObjectName>DeckLeft</ObjectName>
                 <Size>0e,165f</Size>
                 <Layout>vertical</Layout>
-                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                 <Children>
                   <WidgetGroup><!-- Cover art / Artist/title / Playposition -->
                     <ObjectName>DeckTopLeftMidPart</ObjectName>
                     <Size>0e,45f</Size>
                     <Layout>horizontal</Layout>
-                    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                     <Children>
                       <WidgetGroup>
                         <ObjectName>DeckTopLeftPart</ObjectName>
                         <Size>40f,45f</Size>
                         <BackPath>style/style_bg_deck_top_left.png</BackPath>
-                        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                         <Children>
                           <CoverArt>
                             <Pos>2,7</Pos>
@@ -53,7 +47,6 @@
                         <Size>i,45f</Size>
                         <Layout>vertical</Layout>
                         <BackPath>style/style_bg_deck_top_mid.png</BackPath>
-                        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                         <Children>
                           <TrackProperty>
                             <TooltipId>track_title</TooltipId>
@@ -120,21 +113,18 @@
                     <ObjectName>DeckUpperLeftMidPart</ObjectName>
                     <Size>0e,81f</Size>
                     <Layout>horizontal</Layout>
-                    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                     <Children>
                       <WidgetGroup>
                         <ObjectName>DeckUpperMidPart</ObjectName>
                         <Size>0e,81f</Size>
                         <BackPath>style/style_bg_deck_pane.png</BackPath>
                         <Layout>horizontal</Layout>
-                        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                         <Children>
                           <!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
                           <WidgetGroup>
                             <ObjectName>DeckWaveformVinylControlSpinny</ObjectName>
                             <Size>0e,81f</Size>
                             <Layout>horizontal</Layout>
-                            <Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
                             <Children>
                               <!--If you want the waveforms center to adjust when resizing in a collapsing widget
                               (e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
@@ -200,14 +190,12 @@
                     <ObjectName>DeckLowerLeftMidPart</ObjectName>
                     <Size>0e,39f</Size>
                     <Layout>horizontal</Layout>
-                    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                     <Children>
                       <WidgetGroup>
                         <ObjectName>DeckLowerMidPart</ObjectName>
                         <Size>0e,39f</Size>
                         <Layout>horizontal</Layout>
                         <BackPath>style/style_bg_deck_woverview.png</BackPath>
-                        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                         <Children>
                           <SingletonContainer>
                             <ObjectName>Overview<Variable name="channum"/></ObjectName>
@@ -218,11 +206,9 @@
                         <ObjectName>DeckLowerLeftPart</ObjectName>
                         <Size>63f,39f</Size>
                         <BackPath>style/style_bg_deck_woverview_buttons.png</BackPath>
-                        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                         <Children>
                           <PushButton>
                             <TooltipId>show_spinny</TooltipId>
-                            <Style></Style>
                             <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -243,7 +229,6 @@
                           </PushButton>
                           <PushButton>
                             <TooltipId>repeat</TooltipId>
-                            <Style></Style>
                             <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -262,7 +247,6 @@
                           </PushButton>
                           <PushButton>
                             <TooltipId>eject</TooltipId>
-                            <Style></Style>
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -279,7 +263,6 @@
                           </PushButton>
                           <PushButton>
                             <TooltipId>beats_translate_curpos</TooltipId>
-                            <Style></Style>
                             <NumberStates>1</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -301,7 +284,6 @@
 
                           <PushButton>
                             <TooltipId>quantize</TooltipId>
-                            <Style></Style>
                             <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -322,7 +304,6 @@
                           </PushButton>
                           <PushButton>
                             <TooltipId>keylock</TooltipId>
-                            <Style></Style>
                             <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -350,11 +331,9 @@
                 <ObjectName>DeckRightPart</ObjectName>
                 <Size>52f,165f</Size>
                 <BackPath>style/style_bg_deck_right.png</BackPath>
-                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
                 <Children>
                   <PushButton>
                     <TooltipId>sync_enabled</TooltipId>
-                    <Style></Style>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -379,7 +358,6 @@
 
                   <PushButton>
                     <TooltipId>sync_reset_key</TooltipId>
-                    <Style></Style>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -406,8 +384,7 @@
                   <WidgetGroup>
                     <Pos>3,30</Pos>
                     <Size>47f,26f</Size>
-                    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }
-                      QLabel {
+                    <Style>QLabel {
                         font: bold 9px sans-serif;
                         font-family: "Open Sans";
                         background-color: transparent;
@@ -439,7 +416,6 @@
                     </Children>
                   </WidgetGroup>
                   <SliderComposed>
-                    <Style></Style>
                     <Handle>knob_visual_key.png</Handle>
                     <Slider>slider_visual_key.png</Slider>
                     <Pos>18,55</Pos>
@@ -453,7 +429,6 @@
                   <PushButton>
                     <TooltipId>pitch_down</TooltipId>
                     <Size>10f,10f</Size>
-                    <Style></Style>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -473,7 +448,6 @@
                   <PushButton>
                     <TooltipId>pitch_up</TooltipId>
                     <Size>10f,10f</Size>
-                    <Style></Style>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -492,7 +466,6 @@
 
                   <SliderComposed>
                     <TooltipId>pitch</TooltipId>
-                    <Style></Style>
                     <Handle>knob_visual_key.png</Handle>
                     <Slider>slider_visual_key.png</Slider>
                     <Pos>18,58</Pos>
@@ -505,7 +478,6 @@
 
                   <SliderComposed>
                     <TooltipId>rate</TooltipId>
-                    <Style></Style>
                     <Handle>knob_pitch.png</Handle>
                     <Slider>slider_pitch.png</Slider>
                     <Pos>20,62</Pos>

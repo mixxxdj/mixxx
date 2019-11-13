@@ -3,11 +3,13 @@
 
 #include <QAction>
 #include <QModelIndex>
+#include <QPointer>
 
 #include "library/libraryfeature.h"
 
 class BaseSqlTableModel;
 class TrackCollection;
+class WLibrarySidebar;
 
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
@@ -16,6 +18,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     virtual ~BaseExternalLibraryFeature();
 
   public slots:
+    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
     virtual void onRightClick(const QPoint& globalPos);
     virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
@@ -43,6 +46,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;
+
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 #endif // BASEEXTERNALLIBRARYFEATURE_H
