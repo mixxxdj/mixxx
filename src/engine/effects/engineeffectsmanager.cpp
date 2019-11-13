@@ -114,7 +114,7 @@ void EngineEffectsManager::onCallbackStart() {
         }
 
         if (!processed) {
-            m_pResponsePipe->writeMessage(&response);
+            m_pResponsePipe->writeMessage(response);
         }
     }
 }
@@ -275,6 +275,6 @@ bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessage(&response);
+    pResponsePipe->writeMessage(response);
     return true;
 }

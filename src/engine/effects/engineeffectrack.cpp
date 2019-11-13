@@ -40,7 +40,7 @@ bool EngineEffectRack::processEffectsRequest(EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessage(&response);
+    pResponsePipe->writeMessage(response);
     return true;
 }
 

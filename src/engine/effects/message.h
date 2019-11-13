@@ -5,8 +5,8 @@
 #include <QString>
 #include <QtGlobal>
 
-#include "util/fifo.h"
 #include "util/memory.h"
+#include "util/messagepipe.h"
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
 

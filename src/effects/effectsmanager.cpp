@@ -427,7 +427,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessage(&request)) {
+    if (m_pRequestPipe->writeMessage(request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
