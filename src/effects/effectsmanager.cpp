@@ -427,7 +427,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
+    if (m_pRequestPipe->writeMessage(&request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
@@ -441,7 +441,7 @@ void EffectsManager::processEffectsResponses() {
     }
 
     EffectsResponse response;
-    while (m_pRequestPipe->readMessages(&response, 1) == 1) {
+    while (m_pRequestPipe->readMessage(&response)) {
         QHash<qint64, EffectsRequest*>::iterator it =
                 m_activeRequests.find(response.request_id);
 
