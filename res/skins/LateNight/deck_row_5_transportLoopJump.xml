@@ -13,18 +13,20 @@
         <Children>
 
           <WidgetGroup>
-            <Size>0min,0min</Size>
+            <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup>
             <MaximumSize>80,</MaximumSize>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
             <ObjectName>LoopControls</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,max</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>78,52</MinimumSize>
+            <MaximumSize>86,52</MaximumSize>
             <Children>
               <WidgetGroup><!-- loop enable + beatloop size -->
                 <ObjectName>AlignLeftTop</ObjectName>
@@ -41,7 +43,9 @@
 
                   <BeatSpinBox>
                     <TooltipId>beatloop_size</TooltipId>
-                    <Size>60f,26f</Size>
+                    <SizePolicy>me,min</SizePolicy>
+                    <MinimumSize>52,26</MinimumSize>
+                    <MaximumSize>60,26</MaximumSize>
                     <Value><Variable name="group"/>,beatloop_size</Value>
                   </BeatSpinBox>
                 </Children>
@@ -82,14 +86,17 @@
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
           <WidgetGroup>
+            <MinimumSize>2,</MinimumSize>
             <MaximumSize>80,</MaximumSize>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
             <ObjectName>BeatjumpControls</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>f,min</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>52,52</MinimumSize>
+            <MaximumSize>60,52</MaximumSize>
             <Children>
               <WidgetGroup><!-- beatjump size -->
                 <ObjectName>AlignLeftTop</ObjectName>
@@ -100,7 +107,9 @@
                   <WidgetGroup><Size>0f,26f</Size></WidgetGroup> -->
                   <BeatSpinBox>
                     <TooltipId>beatjump_size</TooltipId>
-                    <Size>60f,26f</Size>
+                    <SizePolicy>me,min</SizePolicy>
+                    <MinimumSize>52,26</MinimumSize>
+                    <MaximumSize>60,26</MaximumSize>
                     <Value><Variable name="group"/>,beatjump_size</Value>
                   </BeatSpinBox>
                 </Children>
@@ -132,8 +141,9 @@
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
           <WidgetGroup>
+            <MinimumSize>2,</MinimumSize>
             <MaximumSize>80,</MaximumSize>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup><!-- Intro + Outro -->
@@ -143,7 +153,7 @@
             <Children>
               <WidgetGroup><!-- Intro -->
                 <ObjectName>AlignLeftTop</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:button_special_cue.xml">
@@ -157,7 +167,7 @@
               </WidgetGroup>
               <WidgetGroup><!-- Outro -->
                 <ObjectName>AlignLeftTop</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:button_special_cue.xml">
@@ -177,8 +187,9 @@
           </WidgetGroup><!-- / Intro + Outro -->
 
           <WidgetGroup>
+            <MinimumSize>2,</MinimumSize>
             <MaximumSize>10,</MaximumSize>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup><!-- HotCues, Play, Cue, Reverse -->
