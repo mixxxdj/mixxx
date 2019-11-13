@@ -321,7 +321,7 @@
             <Children>
               <SliderComposed>
                 <TooltipId>rate</TooltipId>
-                <Size>26f,65f</Size>
+                <Size>30f,65f</Size>
                 <Handle scalemode="STRETCH_ASPECT">skin:knobs_sliders/knob_pitch_sampler.svg</Handle>
                 <Slider scalemode="STRETCH_ASPECT">skin:knobs_sliders/slider_pitch_sampler.svg</Slider>
                 <Horizontal>false</Horizontal>

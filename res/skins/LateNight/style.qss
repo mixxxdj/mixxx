@@ -1516,7 +1516,7 @@ WBeatSpinBox,
 }
 
 #SamplerDeck {
-  padding: 1px 1px 2px 2px;
+  padding: 1px 0px 2px 2px;
 }
 
 #SamplerDeckSmall {
@@ -1628,11 +1628,11 @@ WBeatSpinBox,
 }
 
 #SamplerRateControls {
-  padding: 0px 0px 1px 0px;
+  padding: 0px 1px 1px 0px;
 }
 
 #SamplerPitch {
-  padding: 0px 2px 1px 2px;
+  padding: 0px 0px 1px 0px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 

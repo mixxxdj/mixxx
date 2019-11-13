@@ -168,15 +168,9 @@
                     <ObjectName>KnobLabel</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
                     <Alignment>left</Alignment>
-                    <Text> master</Text>
+                    <Text> master&#8194;&#8194;l / r </Text>
                   </Label>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>l / r</Text>
-                  </Label>
+                  <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
 
@@ -405,12 +399,12 @@
                     <State>
                       <Number>0</Number>
                       <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue.svg</Unpressed>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_pressed.svg</Pressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_pressed.svg</Pressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_elevated_splitcue_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>

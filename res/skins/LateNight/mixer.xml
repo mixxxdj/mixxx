@@ -195,6 +195,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
+                      <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
                         <SetVariable name="group">[Channel1]</SetVariable>
                         <SetVariable name="xfaderLeft">default</SetVariable>
