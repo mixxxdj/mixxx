@@ -1,14 +1,5 @@
 /* LateNight 2.1 */
 
-#debugbg {
-    background-color: #fff;
-}
-
-#SkinContainer {
-  background-color: #0f0f0f;
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
 /************** font settings ************************/
 #Mixxx, WWidget,
 WLabel, QLabel,
@@ -47,7 +38,6 @@ QToolTip {
   font-family: Ubuntu;
   text-transform: none;
   font-weight: normal;
-  background-color: #0f0f0f;
   padding: 3px;
   border: 1px solid #333;
   border-radius: 2px;
@@ -62,25 +52,56 @@ WPushButton, QPushButton,
 
 
 
-/************** 3D borders & margin     **************
- ************** of major GUI containers **************/
-#Deck1, #DeckSmall1,
-#Deck2, #DeckSmall2,
-#Deck3, #DeckSmall3,
-#Deck4, #DeckSmall4,
+/************** Backgrounds, 3D borders & margins *****************************
+************** of major GUI containers **************************************/
+
+#debugbg {
+    background-color: #fff;
+}
+
+#SkinContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#SkinContainer,
+QToolTip,
+#CrossfaderButtonContainerDeck, #CrossfaderButtonContainerAux,
+#CrossfaderButton[value="0"],
+WBeatSpinBox, #DlgAutoDJ QSpinBox, #LibraryBPMSpinBox,
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
+QTableView, QTextBrowser, QTreeView {
+  background-color: #0f0f0f;
+}
+
+#Deck1, #DeckSmall1, #Deck2, #DeckSmall2,
+  #Deck3, #DeckSmall3, #Deck4, #DeckSmall4,
+  #DeckRow_1_KeyVinylFx,
+  #DeckRow_2_3_ArtistTitleTime,
+  #DeckRow_4_OverviewSpinny,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
-#MixerChannelControls,
-#MasterHeadphoneMixerContainer,
-#MicRack, #AuxRack,
-#SamplerDeck,
-#SamplerDeckSmall,
-#SamplerExpand,
-#PreviewDeck,
-WLibrary,
-#SidebarBox,
-#SearchLineBox,
-#MicAuxMainControls {
+  #FxRows, #FxUnitControls, #FxSlotContainer,
+#MixerChannelControls, #MasterHeadphoneMixerContainer,
+  #MasterHeadphoneDivider,
+#MicRack, #AuxRack, #MicAuxMainControls,
+  #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
+#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
+  #SamplerDeckSmall, #SamplerText, #SamplerRowTwo, #SamplerPfl,
+WEffectSelector::checked, #fadeModeCombobox::checked,
+#ToolBar, #WaveformsContainer,
+WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
+QAbstractScrollArea::corner {
   background-color: #1e1e1e;
+}
+
+/* borders of elevated containers */
+#Deck1, #DeckSmall1, #Deck2, #DeckSmall2,
+#Deck3, #DeckSmall3, #Deck4, #DeckSmall4,
+#FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
+#MixerChannelControls, #MasterHeadphoneMixerContainer,
+#MicRack, #AuxRack, #MicAuxMainControls,
+#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
+WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
   border-bottom: 1px solid #0a0a0a;
@@ -112,10 +133,22 @@ WSearchLineEdit,
 
 #WaveformsContainer {
   border-bottom: 1px solid #000;
-  background-color: #1e1e1e;
   padding-bottom: 1px;
 }
 
+/************ separator lines within decks, samplers etc. *********************/
+#DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls,
+#SpinnyContainer, #SpinnyContainer[highlight="0"],
+#CoverArtContainer[highlight="0"],
+#BpmTextSmall, #KeyTextSmall,
+#PreviewLabel, #PreviewPlayBox,
+#SamplerText, #SamplerPlay, #SamplerButtonGrid,
+#SamplerGain, #SamplerVU, #SamplerPfl {
+  border-style: solid;
+  border-color: #0c0c0c;
+}
+
+/*********** layout margins & paddings ****************************************/
 #Deck1, #Deck2,
 #Deck3, #Deck4,
 #DeckSmall1, #DeckSmall2,
@@ -156,16 +189,13 @@ WSearchLineEdit,
   margin-left: 3px;
   margin-right: 3px;
 }
-/************** 3D borders & margin     **************
- ************** of major GUI containers **************/
+/************** Backgrounds, 3D borders & margins *****************************
+************** of major GUI containers **************************************/
 
 
 
-/************** Button styles ************************/
-/************** Button borders **************/
-
-
-/************** Button backgrounds **************/
+/************** Button styles *************************************************
+*************** Button borders & backgrounds *********************************/
 QHeaderView,
 QHeaderView::section,
 QHeaderView::up-arrow,
@@ -273,7 +303,7 @@ WEffectSelector {
   /* ronso0
   TEST pixel fonts instead of icons
   FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
-  
+
   font-size: tried a lot of integers as well as .5 values
   didn't find the magic number.. it's some unintuitive floating point value
   that aligns font pixels to screen pixels so the fonts look sharp.
@@ -312,7 +342,7 @@ WEffectSelector {
   border-radius: 1px;
 }
 
-/* button background colors */ 
+/* button background colors */
 /* embedded buttons */
 #RateControls WPushButton[value="0"], #SyncButton[value="0"],
 #PflButton[value="0"],
@@ -357,13 +387,13 @@ QPushButton#pushButtonAutoDJ:enabled,
   }
 
 /* Red
-   this is also the default hotcue color if
-   Auto-Color in Preferences > Decks is Off */
+  this is also the default hotcue color if
+  Auto-Color in Preferences > Decks is Off */
 #RateControls WPushButton[value="1"], #SyncButton[value="1"],
 /* define red buttons in DeckRow_5_LoopCuesTransport indivually,
-because somehow bg color for #SpecialCueButton can't be overwritten */ 
+because somehow bg color for #SpecialCueButton can't be overwritten */
 #LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
-#CueDeck[value="1"], #PlayDeck[value="1"], #Reverse[value="1"], 
+#CueDeck[value="1"], #PlayDeck[value="1"], #Reverse[value="1"],
 #PflButton[value="1"],
 #PlayButtonSampler[displayValue="1"], #PlayButtonDeckSmall[displayValue="1"],
 #SamplerSyncButton[displayValue="1"],
@@ -437,11 +467,11 @@ QPushButton#pushButtonAutoDJ:checked,
 #HotcueButton[displayValue="2"][highlight="8"] {
   background-color: #f2f2ff;
 }
-/************** Button styles ************************/
+/************** Button borders & backgrounds **********************************/
 
 
 
-/************** Button icons **************/
+/************** Button icons **************************************************/
 #SyncButton {
   image: url(skin:/buttons/btn__sync_deck.svg) no-repeat center center;
   }
@@ -676,10 +706,11 @@ WSearchLineEdit QToolButton:!focus {
   WSearchLineEdit QToolButton:focus {
     image: url(skin:/buttons/btn__lib_clear_search_focus.svg);
   }
-/************** Button icons **************/
+/************** Button icons **************************************************/
 
 
-/*************** Button text colors ***************/
+
+/************** Button text colors ********************************************/
 #KeyButton[displayValue="0"],
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
@@ -715,12 +746,12 @@ WSearchLineEdit QToolButton:!focus {
 #EQKillButton[displayValue="1"] {
   color: #d2d2d2;
 }
-/*************** Button text colors ******************/
-/************** Button styles ************************/
+/************** Button text colors ********************************************/
+/************** Button styles *************************************************/
 
 
 
-/************** Label styles ************************/
+/************** Label styles **************************************************/
 #KeyText,
 #PlayPositionText,
 #PlayPositionTextSmall,
@@ -775,13 +806,34 @@ WSearchLineEdit:focus,
 WTime {
   font-weight: bold;
 }
-/************** Label styles ************************/
+
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  font: bold 10px/10px;
+  color: #666;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
+  padding-top: -1px;
+  text-transform: uppercase;
+}
+
+#MasterHeadphoneMixer WLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  padding: 0px;
+  background-color: #101010;
+  }
+  #FxKnobLabel,
+  #FxButtonLabel {
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    }
+/************** Label styles **************************************************/
 
 
 
-
+/************** ToolBar *******************************************************/
 #ToolBar {
-  background-color: #1e1e1e;
   padding: 1px 0px 2px 2px;
   }
   #ToolBar, #ToolBarSection {
@@ -810,17 +862,18 @@ WTime {
     padding-bottom: 2px;
     font-size: 10px/10px;
   }
+/************** ToolBar *******************************************************/
 
 
-/********************** Decks **********************/
+
+/************** Decks *********************************************************/
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   /* parent WidgetGroups already set the bg color,
   but without it the top border of #DeckRow_2_3_ArtistTitleTime
   wouldn't show up.... :? */
-  background-color: #1e1e1e;
   padding: 1px 0px 2px 0px;
-  border-bottom: 1px solid #0c0c0c;
+  border-width: 0px 0px 1px 0px;
   }
   #KeyButtons, #VinylButtons, #FxAssingButtonsDeck {
     qproperty-layoutSpacing: 2;
@@ -830,7 +883,6 @@ WTime {
 }
 
 #DeckRow_2_3_ArtistTitleTime {
-  background-color: #1e1e1e;
   padding-left: 1px;
   margin: 2px 0px 2px 0xp;
   }
@@ -848,12 +900,11 @@ WTime {
     padding: 2px;
   }
   #ArtistRow {
-    border-top: 1px solid #0c0c0c;
-    
+    border-width: 1px 0px 0px 0px;
+
   }
 
 #DeckRow_4_OverviewSpinny {
-  background-color: #1e1e1e;
   padding: 0px 0px 1px 0px;
 }
 
@@ -880,7 +931,6 @@ WTime {
 }
 
 #DecksAndMixer {
-  background-color: #1e1e1e;
 }
 
 #SpinnyContainer,
@@ -889,15 +939,15 @@ WTime {
   padding: 2px 1px 2px 0px;
   }
   #SpinnyContainer {
-    border-left: 1px solid #0c0c0c;
+    border-width: 0px 0px 0px 1px;
   }
   #SpinnyContainer[highlight="0"],
   #CoverArtContainer[highlight="0"] {
-    border-top: 1px solid #0c0c0c;
+    border-width: 1px 0px 0px 0px;
   }
   #SpinnyContainer[highlight="1"],
   #CoverArtContainer[highlight="1"] {
-    border-top: none;
+    border-width: 0px;
   }
 
 WSpinny {/*
@@ -918,7 +968,7 @@ WCoverArt {
 
 #DeckControls {
   qproperty-layoutAlignment: 'AlignCenter';
-  border-top: 1px solid #0c0c0c;
+  border-width: 1px 0px 0px 0px;
   padding: 2px 1px 1px 2px;
 }
 
@@ -970,15 +1020,12 @@ WCoverArt {
   #PlayPositionTextSmall {
     padding: 0px 1px 2px 2px;
   }
-  
-  #BpmTextSmall,
+
   #KeyTextSmall {
-    border-left: 1px solid #0c0c0c;
-    border-top: 1px solid #0c0c0c;
+    border-width: 1px 0px 0px 1px;
   }
   #BpmTextSmall {
-    border-right: 1px solid #0c0c0c;
-    margin-top
+    border-width: 0px 1px 0px 0px;
   }
   #KeyTextSmall {
     font-size: 13px/13px;
@@ -1054,12 +1101,11 @@ WCoverArt {
   margin: 2px 1px 1px 0px;
 }
 
+
 /***************** Loop Controls *****************/
-
-
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox {
-  background-color: #0f0f0f;
+#DlgAutoDJ QSpinBox,
+#LibraryBPMSpinBox  {
   selection-color: #000;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
@@ -1136,21 +1182,21 @@ WBeatSpinBox,
         }
 
 /********************** Loop Controls **********************/
+/************** Decks  ********************************************************/
 
 
-/********************** Mixer **********************/
+
+/************** Mixer  ********************************************************/
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignTop';
 }
 
 #Mixer {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  background-color: #1e1e1e;
   padding-top: 3px;
 }
 
 #MasterHeadphoneMixerContainer {
-  background-color: #1e1e1e;
   padding: 2px;
   border-left: none;
   border-bottom-left-radius: 0px;
@@ -1161,7 +1207,6 @@ WBeatSpinBox,
     padding: 2px 2px 2px 2px;
   }
   #MasterHeadphoneDivider {
-    background-color: #1e1e1e;
   }
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
@@ -1174,7 +1219,6 @@ WBeatSpinBox,
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  background-color: #1e1e1e;
   }
   #MixerChannel_2Decks {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
@@ -1262,7 +1306,6 @@ WBeatSpinBox,
 
 #CrossfaderButtonContainerDeck {
   padding: 1px;
-  background-color: #0f0f0f;
   border-bottom: 1px solid #333;
   border-right: 1px solid #333;
   border-bottom-right-radius: 1px;
@@ -1270,48 +1313,18 @@ WBeatSpinBox,
 #CrossfaderButtonContainerAux {
   padding: 1px 1px 0px 1px;
   margin-left: 5px;
-  background-color: #0f0f0f;
   border-right: 1px solid #333;
   }
   #CrossfaderButton[value="0"] {
-    background-color: #0f0f0f;
   }
   #CrossfaderButton[value="1"] {
     background-color: #262626;
   }
-/********************** Mixer **********************/
+/************** Mixer  ********************************************************/
 
 
 
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  font: bold 10px/10px;
-  color: #666;
-  text-align: center;
-  qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: -1px;
-  text-transform: uppercase;
-}
-
-#MasterHeadphoneMixer WLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  padding: 0px;
-  background-color: #101010;
-  }
-  #FxKnobLabel,
-  #FxButtonLabel {
-    qproperty-alignment: 'AlignLeft | AlignVCenter';
-    }
-
-#FxKnobContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-
-
-/********************** PreviewDeck **********************/
+/************** PreviewDeck ***************************************************/
 #PreviewDeck {
   qproperty-layoutAlignment: 'AlignTop';
   padding: 1px 1px 0x 1px;
@@ -1327,7 +1340,7 @@ WBeatSpinBox,
   }
   #PreviewLabel {
     qproperty-alignment: 'AlignVCenter | AlignHCenter';
-    border-right: 1px solid #0c0c0c;
+    border-width: 0px 1px 0px 0px;
     text-align: center;
     padding: 1px 3px 1px 2px;
     margin-bottom: 1px;
@@ -1352,17 +1365,17 @@ WBeatSpinBox,
 #PreviewPlayBox {
   padding: 2px;
   margin-right: 1px;
-  border-top: 1px solid #0c0c0c;
+  border-width: 1px 0px 0px 0px;
 }
 
 #PreviewVuMeter {
   margin: 0px 0px 0px 2px;
 }
-/********************** PreviewDeck **********************/
+/************** PreviewDeck ***************************************************/
 
 
 
-/********************** SkinSettings **********************/
+/************** SkinSettings **************************************************/
 #SkinSettingsContainer {
 }
 
@@ -1412,16 +1425,15 @@ WBeatSpinBox,
 #SubmenuCover {
   background-color: rgba(15, 15, 15, 180);
 }
-/********************** SkinSettings **********************/
+/************** SkinSettings **************************************************/
 
 
 
-/********************** Mic Aux **********************/
+/************** Mic Aux *******************************************************/
 #MicAuxRack {
 }
 
 #MicRack, #AuxRack {
-  background-color: #1e1e1e;
   padding: 2px 3px 1px 4px;
   qproperty-layoutSpacing: 2;
   }
@@ -1441,13 +1453,11 @@ WBeatSpinBox,
     background-color: transparent;
     }
     #MicAuxInteriorBorderTop {
-      background-color: #1e1e1e;
       border-right: 1px solid #0a0a0a;
       border-bottom: 1px solid #0a0a0a;
       border-bottom-right-radius: 2px;
     }
     #MicAuxInteriorBorderBottom {
-      background-color: #1e1e1e;
       border-top: 1px solid #333;
       border-top-right-radius: 1px;
     }
@@ -1457,11 +1467,6 @@ WBeatSpinBox,
     border-top-left-radius: 0px;
   }
   #MicAuxMainControls {
-    background-color: #1e1e1e;
-    border-top: 1px solid #333;
-    border-left: 1px solid #333;
-    border-bottom: 1px solid #000;
-    border-right: 1px solid #000;
     border-radius: 1px;
     padding: 0px 1px 0px 1px;
   }
@@ -1505,10 +1510,11 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 1px 1px 1px 1px;
 }
-/******************** /Mic Aux ********************/
+/************** Mic Aux *******************************************************/
 
 
-/******************** Samplers ********************/
+
+/************** Samplers ******************************************************/
 #SamplerRow {
   qproperty-layoutAlignment: 'AlignTop';
   margin: 0px 3px 5px 3px;
@@ -1520,7 +1526,6 @@ WBeatSpinBox,
 }
 
 #SamplerDeckSmall {
-  background-color: #1e1e1e;
   padding: 1px;
 }
 
@@ -1533,8 +1538,6 @@ WBeatSpinBox,
 #SamplerText {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 1px 3px 1px 4px;
-  background-color: #1e1e1e;
-  border: 1px solid #0c0c0c;
   border-width: 0px 1px 0px 0px;
 }
 
@@ -1557,7 +1560,6 @@ WBeatSpinBox,
 }
 
 #SamplerRowTwo {
-  background-color: #1e1e1e;
 }
 
 #SamplerMainControls {
@@ -1565,7 +1567,7 @@ WBeatSpinBox,
 
 #SamplerPlay {
   padding: 1px 2px 1px 0px;
-  border-top: 1px solid #0c0c0c;
+  border-width: 1px 0px 0px 0px;
   border-right: 0px;
   border-bottom: 0px;
   border-left: 0px;
@@ -1589,7 +1591,6 @@ WBeatSpinBox,
 }
 
 #SamplerButtonGrid {
-  border: 1px solid #0c0c0c;
   border-width: 1px 1px 0px 0px;
   padding: 1px 0px;
 }
@@ -1606,25 +1607,19 @@ WBeatSpinBox,
 
 #SamplerGain {
   padding: 0px 0px 0px 2px;
-  border: 1px solid #0c0c0c;
   border-width: 1px 0px 0px 0px;
 }
 
 #SamplerPfl {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  border: 1px solid #0c0c0c;
   border-width: 1px 1px 0px 0px;
-  background-color: #1e1e1e;
   padding: 0px 4px 1px 5px;
 }
 
 #SamplerVU {
   padding: 1px 3px 0px 3px;
   qproperty-layoutAlignment: 'AlignCenter';
-  border: 1px solid #0c0c0c;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
+  border-width: 0px 1px 0px 0px;
 }
 
 #SamplerRateControls {
@@ -1640,28 +1635,26 @@ WBeatSpinBox,
   font-size: 16px/19px;
   text-align: left;
 }
+/************** Samplers *****************************************************/
 
 
-/********************** Effects **********************/
+
+/************** Effects ******************************************************/
 #FxRack {
   qproperty-layoutAlignment: 'AlignCenter | AlignTop';
-  background-color: #0e0e0e;
 }
 
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4 {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding: 2px;
-  background-color: #1e1e1e;
 }
 
 #FxRows {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  background-color: #1e1e1e;
 }
 
 #FxUnitControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  background-color: #1e1e1e;
   padding: 0px 0px 0px 3px;
 }
 
@@ -1686,7 +1679,6 @@ WBeatSpinBox,
 
 #FxSlotContainer {
   margin: 1px;
-  background-color: #1e1e1e;
 }
 
 #FxSlot1,
@@ -1712,6 +1704,10 @@ WBeatSpinBox,
   padding: 1px 2px 2px 4px;
 }
 
+#FxKnobContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #FxKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-left: 1px;
@@ -1731,7 +1727,6 @@ WEffectSelector,
   font-weight: bold;
   font-size: 12px/13px;
   text-transform: uppercase;
-  background-color: #0f0f0f;
   }
 WEffectSelector {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
@@ -1739,19 +1734,14 @@ WEffectSelector {
   margin: 1px 0px 0px 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
-  padding: 4px 0px 4px 2px;
+  padding: 4px 0px 4px 4px;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
 #fadeModeCombobox {
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   height: 18px;
   margin: 0px 0px 3px 1px;
-  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-      names start getting cut off. Adding explicit padding improves this. */
   padding: 1px 0px 1px 4px;
-  /* The 3D frame on the combo box becomes flat when you give it a border
-  border-radius: 3px; */
   }
   WEffectSelector::drop-down,
   #fadeModeCombobox::drop-down {
@@ -1772,7 +1762,6 @@ WEffectSelector {
   WEffectSelector QAbstractItemView,
   #fadeModeCombobox QAbstractItemView {
     width: 142px;
-    background-color: #0f0f0f;
     /* padding-left: 6px; */
     font-size: 12px/13px;
     /* On Linux, this is not applied but font color from WEffectSelector
@@ -1792,7 +1781,6 @@ WEffectSelector {
     padding: 0px;
     margin: 0px;
     color: #eee;
-    background-color: #1e1e1e;
   }
   /* hovered items */
   WEffectSelector::item:selected,
@@ -1894,12 +1882,11 @@ WEffectSelector {
       stop: 0.670000 #CDCDCD,
       stop: 1 #CDCDCD);
   }
-/********************** Effects **********************/
+/************** Effects *******************************************************/
 
 
 
-
-/********************** Library **********************/
+/************** Library *******************************************************/
 #LibrarySingleton {
   /* This doesn't work as expected:
   it appears LibrarySingleton is displayed twice, so
@@ -1929,7 +1916,6 @@ WLibrary,
     stop:1 #1e1e1e);
   border-bottom-right-radius: 0px;
   border-bottom-left-radius: 0px;
-  background-color: #1e1e1e;
 }
 
 QTableView, QTextBrowser, QTreeView {
@@ -1939,7 +1925,6 @@ QTableView, QTextBrowser, QTreeView {
     stop:1 #444);
   border-bottom: 1px solid #444;
   border-left: 1px solid #0a0a0a;
-  background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
   selection-background-color: #5e4507;
 }
@@ -2019,9 +2004,6 @@ QTableView::indicator {/*
     background-color: #5e4507;
     }
 #LibraryBPMSpinBox {
-  background-color: #0f0f0f;
-  selection-color: #0f0f0f;
-  selection-background-color: #d2d2d2;
   /* This combination of negative top/bottom padding & margin
     creates a 1px border around the spinbox' text area.
     Increased left/right padding/margin removes the overlap of
@@ -2156,7 +2138,6 @@ QScrollBar {
 
   /* Corner in between two scrollbars */
   QAbstractScrollArea::corner {
-    background-color: #1e1e1e;
   }
 
 /* library search bar */
@@ -2176,16 +2157,16 @@ WSearchLineEdit {
   /* Clear button */
   WSearchLineEdit QToolButton {
     /* C++ code adds 3px in each dimension.
-       height of search box inside the border: 22px
-       make the button use the available height */
+      height of search box inside the border: 22px
+      make the button use the available height */
     height: 19px;
     width: 19px;
     margin-right: -1px;
     }
 
 /* HorizontalSplitter
-   (the splitter itself is horizontal)
-   Used to split
+  (the splitter itself is horizontal)
+  Used to split
   - Waveforms & Decks/FX/etc
   - Library feature & Coverart */
 #HorizontalSplitter {
@@ -2206,8 +2187,8 @@ WSearchLineEdit {
 }
 
 /* VerticalSplitter
-   (the splitter itself is vertical)
-   Used to split Library sidebar & Tracks table */
+  (the splitter itself is vertical)
+  Used to split Library sidebar & Tracks table */
 #VerticalSplitter::handle {
   image: url(skin:/style/splitter_handle_unchecked.png);
 }
@@ -2319,7 +2300,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 
 QTreeView {
   show-decoration-selected: 0;
-  background-color: #0f0f0f;
 }
   /* triangle for closed/opened branches in treeview */
   /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
@@ -2355,11 +2335,11 @@ QTreeView {
       border-image: none;
       background-color: #151515;
     }
-/********************** Library **********************/
+/************** Library *******************************************************/
 
 
 
-/********************** little helpers **********************/
+/************** little helpers ************************************************/
 #AlignLeft {
   qproperty-layoutAlignment: 'AlignLeft';
 }
