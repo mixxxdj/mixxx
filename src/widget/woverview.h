@@ -18,11 +18,11 @@
 #include <QColor>
 #include <QList>
 
+#include "analyzer/analyzerprogress.h"
 #include "track/track.h"
 #include "widget/cuemenu.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
-#include "analyzer/analyzerprogress.h"
 
 #include "util/color/color.h"
 
@@ -47,8 +47,8 @@ class WOverview : public WWidget, public TrackDropTarget {
             AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     WOverview(
@@ -102,7 +102,6 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void slotWaveformSummaryUpdated();
     void slotCueMenuAboutToHide();
-
 
   private:
     // Append the waveform overview pixmap according to available data

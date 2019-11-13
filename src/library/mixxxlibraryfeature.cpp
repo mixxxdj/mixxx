@@ -133,7 +133,7 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
 }
 
-void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
+void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                      KeyboardEventFilter* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
                                   m_pTrackCollection, pKeyboard);

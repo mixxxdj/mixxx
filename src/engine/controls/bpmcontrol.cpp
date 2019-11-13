@@ -37,7 +37,7 @@ constexpr SINT kSamplesPerFrame = 2;
 }
 
 BpmControl::BpmControl(QString group,
-                       UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
@@ -96,8 +96,10 @@ BpmControl::BpmControl(QString group,
     // bpm_up_small / bpm_down_small steps by kBpmRangeSmallStep
     m_pEngineBpm = new ControlLinPotmeter(
             ConfigKey(group, "bpm"),
-            kBpmRangeMin, kBpmRangeMax,
-            kBpmRangeStep, kBpmRangeSmallStep,
+            kBpmRangeMin,
+            kBpmRangeMax,
+            kBpmRangeStep,
+            kBpmRangeSmallStep,
             true);
     connect(m_pEngineBpm, &ControlObject::valueChanged,
             this, &BpmControl::slotUpdateRateSlider,

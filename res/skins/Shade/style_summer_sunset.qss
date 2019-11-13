@@ -10,7 +10,9 @@ QMenu::item,
 QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition,
+#fadeModeCombobox,
 WLibrary QPushButton:enabled {
+	color: #101307;
   background-color: #ad9e4f;
   }
   /* hovered items */
@@ -47,7 +49,6 @@ QMenu::separator {
     border-color: #ad9e4f;
     background-color: #998a3c;
     }
-
 
 #EffectSelectorGroup[highlight="1"]{ 
 	border: 1px solid #f8ba54;  

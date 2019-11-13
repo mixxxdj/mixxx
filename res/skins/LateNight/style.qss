@@ -7,7 +7,7 @@
 #Mixxx, WWidget,
 WLabel, QLabel,
 WPushButton, QPushButton,
-WEffect, WEffectSelector,
+WEffect, WEffectSelector, #fadeModeCombobox,
 WBeatSpinBox,
 QSpinBox {
   font-family: Ubuntu;
@@ -159,6 +159,25 @@ WSearchLineEdit,
   border-image: url(skin:buttons/btn_border_image_qpushbutton.svg) 2 3 3 2;
   color: #bbb;
   }
+  #DlgMissing > QPushButton:focus,
+  #DlgHidden > QPushButton:focus,
+  #DlgAutoDJ > QPushButton:focus,
+  #DlgRecording > QPushButton:focus,
+  #DlgAnalysis > QPushButton:focus {
+    border-width: 2px 3px 3px 2px;
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_focus.svg) 2 3 3 2;
+    outline: none;
+  }
+  #DlgAnalysis > QPushButton:checked:focus,
+  #DlgMissing > QPushButton:checked:focus,
+  #DlgHidden > QPushButton:checked:focus,
+  #DlgAutoDJ > QPushButton:checked:focus,
+  #DlgRecording > QPushButton:checked:focus,
+  #DlgAnalysis > QPushButton:checked:focus {
+    border-width: 2px 3px 3px 2px;
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_checked_focus.svg) 2 3 3 2;
+    outline: none;
+  }
   #DlgMissing > QPushButton:pressed,
   #DlgHidden > QPushButton:pressed,
   #DlgAutoDJ > QPushButton:pressed,
@@ -184,6 +203,10 @@ WSearchLineEdit,
     border-image: url(skin:buttons/btn_border_image_qpushbutton_active_red.svg) 2 3 3 2;
     color: #000;
   }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    border-image: url(skin:buttons/btn_border_image_qpushbutton_active_grey.svg) 2 3 3 2;
+    color: #000;
+  }
 
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox {
@@ -199,10 +222,15 @@ WBeatSpinBox,
     border-image: url(skin:buttons/btn_border_image_spinbox_focus.svg) 1 2 2 1;
   }
 
-WEffectSelector {
+WEffectSelector,
+#fadeModeCombobox {
   border-width: 2px 3px 3px 2px;
-  border-image: url(skin:buttons/btn_border_image_weffectselector.svg) 2 3 3 2;
-}
+  border-image: url(skin:buttons/btn_border_image_qcombobox.svg) 2 3 3 2;
+  }
+  #fadeModeCombobox:focus {
+    border-width: 2px 3px 3px 2px;
+    border-image: url(skin:buttons/btn_border_image_qcombobox_focus.svg) 2 3 3 2;
+  }
   
 #RecBox,
 #GuiToggleButton,
@@ -458,6 +486,7 @@ WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
 WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 WSearchLineEdit,
 QTableView, QTextBrowser, QTreeView,
 #LibraryBPMButton::item {
@@ -827,8 +856,9 @@ WBeatSpinBox,
   }
   #DlgAutoDJ QSpinBox {
     height: 22px;
+    width: 30px;
     padding: 0px 2px 0px 0px;
-    margin: 0px 0px 1px 19px;
+    margin: 0px 1px 1px 1px;
   }
 
   WBeatSpinBox::up-button,
@@ -1400,7 +1430,6 @@ WBeatSpinBox,
 
 #FxButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-top: 4px;
 }
 
 #FxUnitKnob {
@@ -1413,10 +1442,10 @@ WBeatSpinBox,
   border-radius: 1px;
   }
   #FxSuperLinkButton {
-    margin: 0px 5px 0px 5px;
-  }
+    margin: 0px 2px 0px 2px;
+    }
   #FxSuperLinkInvertButton {
-    margin: 0px 5px 2px 5px;
+    margin: 0px;
   }
 
 #FxSuperLinkButton[value="0"],
@@ -1435,7 +1464,7 @@ WBeatSpinBox,
   }
 
 #FxSuperLinkButton[value="1"] {
-  background-color: #A5A5A5;
+  background-color: #5b9601;
   }
   #FxSuperLinkButton[value="1"]:hover {
     background-color: #CDCDCD;
@@ -1443,8 +1472,8 @@ WBeatSpinBox,
 #FxSuperLinkButton[value="2"] {	/*
   a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #A5A5A5,
-    stop: 0.33 #A5A5A5,
+    stop: 0 #5b9601,
+    stop: 0.33 #5b9601,
     stop: 0.34 #4b4b4b,
     stop: 1 #4b4b4b);
   }
@@ -1459,8 +1488,8 @@ WBeatSpinBox,
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #4b4b4b,
     stop: 0.66 #4b4b4b,
-    stop: 0.67 #A5A5A5,
-    stop: 1 #A5A5A5);
+    stop: 0.67 #5b9601,
+    stop: 1 #5b9601);
   }
   #FxSuperLinkButton[value="3"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
@@ -1471,12 +1500,12 @@ WBeatSpinBox,
     }
 #FxSuperLinkButton[value="4"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #A5A5A5,
-    stop: 0.330000 #A5A5A5,
+    stop: 0 #5b9601,
+    stop: 0.330000 #5b9601,
     stop: 0.340000 #4b4b4b,
     stop: 0.660000 #4b4b4b,
-    stop: 0.670000 #A5A5A5,
-    stop: 1 #A5A5A5);
+    stop: 0.670000 #5b9601,
+    stop: 1 #5b9601);
   }
   #FxSuperLinkButton[value="4"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
@@ -1848,7 +1877,7 @@ WLibrary QRadioButton {
 
 /* Additional space for QLabels */
 WLibrary QLabel {
-  margin: 2px 3px 7px 3px;
+  margin: 2px 5px 5px 1px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -1868,24 +1897,70 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  margin: 2px 4px 3px 2px;
-  padding: 3px 8px;
-  min-width: 65px;
+  margin: 1px 1px 3px 1px;
+  padding: 0px 3px;
+  min-width: 32px;
+  height: 20px;
   }
+  /* Focus highlight is set via border-image at the top */
   /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {
-    margin-left: 1px;
+    min-width: 40px;
+  }
+  #DlgAutoDJ > #horizontalSpacer {
+    width: 100px;
+    background-color: green;
   }
   /* Space in between 'All' radio button and 'Select All' button */
   QPushButton#pushButtonSelectAll {
     margin-left: 12px;
   }
 
-/* triangle for closed/opened branches in treeview */
+
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ:!checked {
+  image: url(skin:/buttons/btn_autodj_enable_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonAutoDJ:checked {
+    image: url(skin:/buttons/btn_autodj_enable_on.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonFadeNow:!enabled {
+  image: url(skin:/buttons/btn_autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    image: url(skin:/buttons/btn_autodj_fade.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonSkipNext:!enabled {
+  image: url(skin:/buttons/btn_autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    image: url(skin:/buttons/btn_autodj_skip.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonShuffle:enabled {
+  image: url(skin:/buttons/btn_autodj_shuffle.svg) no-repeat center center;
+}
+
+QPushButton#pushButtonAddRandom:enabled {
+  image: url(skin:/buttons/btn_autodj_addrandom.svg) no-repeat center center;
+}
+
+QPushButton#pushButtonRepeatPlaylist:!checked {
+  image: url(skin:/buttons/btn_autodj_repeat_playlist_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    image: url(skin:/buttons/btn_autodj_repeat_playlist_on.svg) no-repeat center center;
+  }
+/* AutoDJ button icons */
+
+
 QTreeView {
   show-decoration-selected: 0;
-  background-color: #151515;
+  background-color: #0f0f0f;
 }
+  /* triangle for closed/opened branches in treeview */
   /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   QTreeView::branch:has-children:!has-siblings:closed,
   QTreeView::branch:closed:has-children:has-siblings {
@@ -1991,6 +2066,7 @@ QTreeView {
 
 
 WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 QMenu,
 #SkinSettings {
@@ -2007,13 +2083,14 @@ WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
 WSearchLineEdit,
-WEffectSelector,
-WEffectSelector QAbstractItemView {
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
   background-color: #0f0f0f;
   font-size: 13px/13px;
 }
   /* hovered items */
   WEffectSelector::item:selected,
+  #fadeModeCombobox::item:selected,
   QMenu::item:selected,
   QMenu QCheckBox:selected,
   QMenu QCheckBox:focus,  /* selected by keyboard */
@@ -2026,33 +2103,47 @@ WEffectSelector QAbstractItemView {
     outline: none;
   }
   /* hover over checked effect */
-  WEffectSelector::item:checked:selected {
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
     background-color: #2a1e03;
     }
 
 
-WEffectSelector {
+WEffectSelector,
+#fadeModeCombobox {
   font-weight: bold;
   text-transform: uppercase;
-  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-      names start getting cut off. Adding explicit padding improves this. */
-  padding: 0px 0px 0px 5px;
-  margin: 0px;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
-  WEffectSelector::item {
-    height: 22px;
+  WEffectSelector {
+    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+        names start getting cut off. Adding explicit padding improves this. */
+    padding: 0px 0px 2px 5px;
+    margin: 0px;
   }
-  WEffectSelector::down-arrow {
+  #fadeModeCombobox {
+    height: 19px;
+    padding: 0px 0px 1px 5px;
+    margin: 0px 1px 1px 0px; 
+  }
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
     image: url(skin:/buttons/btn_fx_selector.svg);
+    border: 0;
+    padding: 0;
+    margin: 0;
     }
-    WEffectSelector::down-arrow:hover {
+    WEffectSelector::down-arrow:hover,
+    #fadeModeCombobox::down-arrow:hover {
       image: url(skin:/buttons/btn_fx_selector_pressed.svg);
     }
 
   WEffectSelector QAbstractItemView {
     min-width: 160px;
+  }
+  #fadeModeCombobox QAbstractItemView {
+    min-width: 185px;
   }
   WEffectSelector::indicator {
   /* This is sufficient to completely hide the tick mark, but
@@ -2062,7 +2153,8 @@ WEffectSelector {
     margin: 0px;
     padding: 0px; */
   }
-  WEffectSelector::indicator:checked {
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
       use margin + border to create a square checkbox sized like kill buttons */ 
     margin: 2px;
@@ -2072,6 +2164,10 @@ WEffectSelector {
   WEffectSelector::indicator /* checkbox, tick mark */,
   WEffectSelector::drop-down,
   WEffectSelector::indicator:!checked,
+  #fadeModeCombobox::checked /* selected mode */,
+  #fadeModeCombobox::indicator /* checkbox, tick mark */,
+  #fadeModeCombobox::drop-down,
+  #fadeModeCombobox::indicator:!checked,
   QMenu::item,
   QMenu QCheckBox {
     padding: 0px;
@@ -2084,16 +2180,24 @@ WEffectSelector {
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #222;
-  }
-  QMenu::separator{
-    height: 0px;
-    margin: 4px;
-  }
-  #SkinSettingsSeparator {
-    margin: 0px 4px 4px 4px;
-  }
+    }
+    QMenu::separator{
+      height: 0px;
+      margin: 4px;
+    }
+    #SkinSettingsSeparator {
+      margin: 0px 4px 4px 4px;
+    }
   QMenu::item {
-    padding: 5px 13px 5px 20px;
+    /* right padding creates a margin to the menu expand arrow,
+      left padding should be bigger than menu icon width + menu icon
+      margin */
+    padding: 5px 12px 5px 26px;
+  }
+  /* icons in editline menu (searchbox, editable track properties)
+    and color squares in cue color menu */ 
+  QMenu::icon {
+    margin: 0px 4px 0px 2px;
   }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
@@ -2101,12 +2205,13 @@ WEffectSelector {
   QMenu QCheckBox::indicator {
     width: 13px;
     height: 13px;
+    border: 1px solid #333;
     border-radius: 1px;
+    background-color: #000;
     /* remove OS focus indicator */
     outline: none;
     }
   QMenu QCheckBox::indicator:checked {
-    border: 1px solid #333;
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
   /* disabled menu item and checkbox */

@@ -20,7 +20,7 @@
 }
 
 WOverview {
-	font-family: "Ubuntu";
+  font-family: "Ubuntu";
 }
 
 WBeatSpinBox,
@@ -30,16 +30,18 @@ that's why we do it in another way here */
 #spinBoxTransition {
   font: 13px;
   padding: 0px;
-}
-WBeatSpinBox {
-  border: 1px solid #060613;
-}
-#spinBoxTransition {
-/* omitting the border definition miraculously makes the spinbox grow */
-/* 0px border OTOH makes the spinbox shrink disproportionately
-  border: 0px; */
-  margin: 0px 0px 2px 1px;
-}
+  selection-color: #eee;
+  selection-background-color: #060613;
+  }
+  WBeatSpinBox {
+    border: 1px solid #060613;
+  }
+  #spinBoxTransition {
+  /* omitting the border definition miraculously makes the spinbox grow */
+  /* 0px border OTOH makes the spinbox shrink disproportionately
+    border: 0px; */
+    margin: 0px 0px 2px 1px;
+  }
 #spinBoxTransition,
 WLibrary QPushButton {
   border: 1px solid #99A0A4;
@@ -65,47 +67,107 @@ WBeatSpinBox::down-button,
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
-
-
-
+/* common colors for WEffectSelector, QMenu, QToolTip */
 WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 QMenu {
   padding: 2px;
   font: 13px;
+  }
+QColorMenu {
+  padding-left: 10px;
 }
-WEffectSelector QAbstractItemView {
-  min-width: 140px;
-}
-/* common colors for WEffectSelector, QMenu, QToolTip */
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea {
+  min-width: 160px;
+  }
 WEffectSelector,
 WEffectSelector QAbstractItemView,
 WEffectSelector::down-arrow,
 WEffectSelector::indicator:!checked,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractItemView,
+#fadeModeCombobox::down-arrow,
+#fadeModeCombobox::indicator:!checked,
 QToolTip,
 QMenu,
 QMenu::item,
 QMenu QCheckBox,
 WBeatSpinBox,
-#spinBoxTransition,
-WLibrary QPushButton:enabled {
+#spinBoxTransition {
   font: 13px;
   color: #060613;
   background-color: #aab2b7;
   }
-WLibrary QPushButton:!enabled {
-  font: 13px;}
+WLibrary QPushButton:enabled {
+  font: 13px;
+  }
 WEffectSelector,
 WEffectSelector QAbstractItemView,
 WEffectSelector::down-arrow,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox::down-arrow,
 QToolTip,
 QMenu {
   border-width: 1px;
   border-style: solid;
   border-color: #060613;
   }
+  WEffectSelector,
+  #fadeModeCombobox {
+    padding-left: 3px;
+    }
+    WEffectSelector {
+      margin-top: 0px;
+      margin-bottom: 0px;
+      }
+    #fadeModeCombobox {
+      margin: 0px 0px 2px 1px;
+      height: 20px;
+    }
+  WEffectSelector::drop-down,
+  #fadeModeCombobox::drop-down {
+    border: 0px;
+    }
+    WEffectSelector::drop-down,
+    WEffectSelector::down-arrow {
+      height: 18px;
+    }
+    #fadeModeCombobox::drop-down,
+    #fadeModeCombobox::down-arrow {
+      height: 20px;
+    }
+    WEffectSelector::down-arrow,
+    #fadeModeCombobox::down-arrow {
+      border-width: 0px 0px 0px 1px;
+      margin: 0px;
+      image: url(skin:/btn/btn_spin_down.png) no-repeat;
+    }
+  WEffectSelector::checked /* selected item */,
+  WEffectSelector::indicator /* checkbox, tick mark */,
+  WEffectSelector::drop-down,
+  WEffectSelector::indicator:!checked,
+  QMenu::item,
+  QMenu QCheckBox {
+    padding: 0px;
+    margin: 0px;
+    image: none;
+    outline: none;
+    border: 0px solid transparent;
+    }
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    border-width: 1px;
+    border-style: solid;
+    /* checkbox container is 28 x 22px;
+      use margin + border to create a square checkbox sized like kill buttons */ 
+    margin: 3px 5px 2px 5px;
+  }
   /* hovered items */
   WEffectSelector::item:selected,
+  #fadeModeCombobox::item:selected,
   QMenu::item:selected,
   QMenu QCheckBox:selected,
   QMenu QCheckBox:focus,  /* selected by keyboard */
@@ -116,14 +178,16 @@ QMenu {
     outline: none;
   }
   /* hover over checked effect */
-  WEffectSelector::item:checked:selected {
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
     background-color: #8699b8;
     }
   /* checked effect and menu checkbox */
   WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked,
   QMenu QCheckBox::indicator:checked {
     border-color: #1a2025;
-    background-color: #cf0a57;
+    background-color: #f90562;
     image: url(skin:/btn/btn_lib_checkmark_black.svg);
     }
   /* unchecked menu checkbox */
@@ -155,48 +219,17 @@ QMenu {
 /* common colors for WEffectSelector, QMenu, QToolTip */
 
 
-WEffectSelector {
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-left: 3px;
-  }
-  WEffectSelector::item {
-    height: 22px;
-  }
-  WEffectSelector::drop-down {
-    height: 18px;
-    border: 0px;
-  }
-  WEffectSelector::down-arrow {
-    height: 18px;
-    border-width: 0px 0px 0px 1px;
-    margin: 0px;
-    image: url(skin:/btn/btn_spin_down.png) no-repeat;
-    }
-  WEffectSelector::indicator:checked {
-    border-width: 1px;
-    border-style: solid;
-    /* checkbox container is 28 x 22px;
-      use margin + border to create a square checkbox sized like kill buttons */ 
-    margin: 3px 5px 2px 5px;
-  }
-  WEffectSelector::checked /* selected item */,
-  WEffectSelector::indicator /* checkbox, tick mark */,
-  WEffectSelector::drop-down,
-  WEffectSelector::indicator:!checked,
-  QMenu::item,
-  QMenu QCheckBox {
-    padding: 0px;
-    margin: 0px;
-    image: none;
-    outline: none;
-    border: 0px solid transparent;
-    }
-
 
 QMenu::item {
-  padding: 4px 13px 4px 20px;
+/* right padding creates a margin to the menu expand arrow,
+  left padding should be bigger than menu icon width + menu icon
+  margin */
+  padding: 4px 13px 4px 24px;
+  }
+  /* icons in editline menu (searchbox, editable track properties)
+    and color squares in cue color menu */ 
+  QMenu::icon {
+    margin: 0px 4px 0px 2px;
   }
   QMenu::separator {
     height: 0px;
@@ -210,7 +243,7 @@ QMenu::item {
     width: 13px;
     height: 13px;
     border-width: 1px;
-    border-style: solid;    
+    border-style: solid;
   }
   QMenu::right-arrow {
     width: 10px;
@@ -228,9 +261,6 @@ QMenu::item {
     QHeaderView QMenu::indicator:checked {
       image: url(skin:/btn/btn_lib_checkmark_black.svg);
     }
-
-
-
 
 #EffectSelectorGroup[highlight="1"] {
   border: 1px solid #52f864;
@@ -553,7 +583,12 @@ The general rule when it comes to stylesheets is always to remember that if you 
 /* transition time in Auto DJ tab*/
 QSpinBox:editable,
 /* or addressed directly */
-#spinBoxTransition {}
+#spinBoxTransition {
+  height: 18px;
+  border: 1px solid #99A0A4;
+  background-color: #99a0a4;
+  margin-left: 3px;
+}
 
 /* Cover Art*/
 WCoverArt {
@@ -612,6 +647,15 @@ WLibrary QPushButton {
   background-position: center;
   border: 1px solid #99A0A4;
   }
+  #DlgAutoDJ > QPushButton {
+    padding: 0px;
+    width: 32px;
+    height: 18px;
+    }
+    QPushButton#pushButtonAutoDJ {
+      width: 40px;
+    } 
+  
   WLibrary QPushButton:!enabled {
     background-color: #72777A;
     border: 1px solid #72777A;
@@ -624,28 +668,52 @@ WLibrary QPushButton {
     color: #000;
     background-color: #F90562;
     }
+  WLibrary QPushButton:focus,
+  #fadeModeCombobox:focus,
+  #spinBoxTransition:focus {
+    outline: none;
+    border-color: #fff; 
+  }
   /* Hover highlight for action buttons	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonRecording:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #F90562;
   }
-  /* Space in between 'Enable AutoDJ' button and transition time spinbox	*/
-  QPushButton#pushButtonAutoDJ {
-    margin: 1px 12px 3px 1px;
-  }
   /* Space in between 'Recording'	button and recording label */
   QPushButton#pushButtonRecording {
     margin: 1px 6px 3px 1px;
-  }
-  /* Space in between AutoDJ 'Fade'/'Skip' and 'Shuffle'/'Add Random' */
-  QPushButton#pushButtonSkipNext {
-    margin: 1px 12px 3px 1px;
   }
   /* Push 'Select All' button and away from radio buttons	*/
   QPushButton#pushButtonSelectAll {
     margin: 1px 2px 3px 10px;
   }
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ {
+  image: url(skin:/btn/btn_autodj_enable.svg) no-repeat center center;
+}
+QPushButton#pushButtonFadeNow:!enabled {
+  image: url(skin:/btn/btn_autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    image: url(skin:/btn/btn_autodj_fade.svg) no-repeat center center;
+  }
+QPushButton#pushButtonSkipNext:!enabled {
+  image: url(skin:/btn/btn_autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    image: url(skin:/btn/btn_autodj_skip.svg) no-repeat center center;
+  }
+QPushButton#pushButtonShuffle {
+  image: url(skin:/btn/btn_autodj_shuffle.svg) no-repeat center center;
+}
+QPushButton#pushButtonAddRandom {
+  image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
+}
+QPushButton#pushButtonRepeatPlaylist {
+  image: url(skin:/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;
+}
+/* AutoDJ button icons */
 
 /* Hotcue Color: No Color */
 #HotcueButton[highlight="0"] {
@@ -691,8 +759,3 @@ WLibrary QPushButton {
 #HotcueButton[highlight="8"] {
     background-color: #f2f2ff;
 }
-
-
-
-
-

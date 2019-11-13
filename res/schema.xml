@@ -440,11 +440,45 @@ METADATA
   </revision>
   <revision version="29" min_compatible="3">
     <description>
-      Add source to cue. Default is MANUAL.
-      <!-- See track/cue.h. -->
+      This was used in the development of 2.3 to track whether cues were placed
+      manually or automatically. However, this turned out to be unnecessary.
+      This version is left as a placeholder so users who were using the master
+      branch will have their database updated correctly for the subsequent
+      schema change.
+    </description>
+    <sql/>
+  </revision>
+  <revision version="30" min_compatible="3">
+    <description>
+      Tables for Rekordbox library feature
     </description>
     <sql>
-      ALTER TABLE cues ADD COLUMN source INTEGER DEFAULT 2 NOT NULL;
+     CREATE TABLE IF NOT EXISTS rekordbox_library (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rb_id INTEGER,
+        artist TEXT, title TEXT,
+        album TEXT, year TEXT,
+        genre TEXT, tracknumber TEXT,
+        location TEXT UNIQUE,
+        comment TEXT,
+        duration INTEGER,
+        bitrate INTEGER,
+        bpm FLOAT,
+        key TEXT,
+        rating INTEGER,
+        analyze_path TEXT UNIQUE,
+        device TEXT
+        );
+      CREATE TABLE IF NOT EXISTS rekordbox_playlists (
+        id INTEGER PRIMARY KEY,
+        name TEXT UNIQUE
+        );
+      CREATE TABLE IF NOT EXISTS rekordbox_playlist_tracks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        playlist_id INTEGER REFERENCES rekordbox_playlists(id),
+        track_id INTEGER REFERENCES rekordbox_library(id),
+        position INTEGER
+        );
     </sql>
-  </revision>
+  </revision>  
 </schema>
