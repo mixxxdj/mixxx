@@ -1382,7 +1382,7 @@ WStarRating {
   margin            : 5px 5px 0px 0px;
   border            : 0px solid #ffffff;
   padding           : 2px;
-  color             : #888888;
+  color             : #d2d2d2;
   background-color  : none;
 }
 
@@ -1992,7 +1992,7 @@ QMenu {
   QMenu QCheckBox:focus,  /* selected by keyboard */
   QMenu QCheckBox:hover  /* mouse hover */ {
     background-color: #565353;
-    color: #000;
+    color: #fff;
     /* remove OS focus indicator */
     outline: none;
   }
@@ -2082,14 +2082,16 @@ WEffectSelector,
     }
     /* icons in editline menu (searchbox, editable track properties)
       and color squares in cue color menu */ 
-    QMenu::icon {
+    QMenu::icon,
+    QMenu::indicator {
       margin: 0px 4px 0px 2px;
       padding: 1px;
     }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
   }
-  QMenu QCheckBox::indicator {
+  QMenu QCheckBox::indicator,
+  QMenu::indicator {
     width: 13px;
     height: 13px;
     border: 1px solid #555;
@@ -2101,7 +2103,8 @@ WEffectSelector,
     QMenu QCheckBox::indicator:selected {
       border: 1px solid #999;
     }
-  QMenu QCheckBox::indicator:checked {
+  QMenu QCheckBox::indicator:checked,
+  QMenu::indicator:checked {
     image: url(skin:/icon/ic_library_checkmark.svg);
     }
   /* disabled menu item and checkbox */

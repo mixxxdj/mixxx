@@ -273,6 +273,7 @@ Description:
           </Template>
 
           <WidgetGroup><!-- Rate/Key submenu -->
+            <ObjectName>SkinSettingsSubMenu</ObjectName>
             <Layout>stacked</Layout>
             <MinimumSize>182,26</MinimumSize>
             <MaximumSize>-1,40</MaximumSize>

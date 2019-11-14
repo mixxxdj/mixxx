@@ -204,8 +204,9 @@ WWidgetGroup {
   border-radius: 1px;
   }
 
-#SubmenuCover {
-  background-color: rgba(30,30,30,127);
+#SubmenuCover,
+#CoverSpinnyHint {
+  background-color: rgba(26,26,26,135);
 }
 #SkinSettingsLabel,
 #SubmenuHint {
@@ -222,7 +223,6 @@ WWidgetGroup {
   font-size: 14px;
   font-weight: bold;
   color: #f56200;
-  background-color: rgba(30,30,30,127);
   margin: 2px 0px;
 }
 
@@ -1681,36 +1681,39 @@ decks, samplers, mic, aux, fx */
   #fadeModeCombobox {
     font-size: 13px/13px;
     /* On Linux this is applied to both effect name and effect list. */
-    color: #ccc;
-  }
-  WEffectSelector {
-    /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-    margin: 0px;
-    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-        names start getting cut off. Adding explicit padding improves this. */
-    padding: 0px 28px 0px 0px;
-    /* The 3D frame on the combo box becomes flat when you give it a border */
-    border: 0px solid transparent;
-    border-radius: 3px;
-    background-color: #1e1e1e;
-  }
-  #fadeModeCombobox {
-    background-color: #333;
-    border: 1px solid #333;
-    margin: 0px 0px 2px 1px;
-    padding: 1px 3px;
-    border-radius: 2px;
-    height: 20px;
-  }
+    }
+    WEffectSelector {
+      /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+      margin: 0px;
+      /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+          names start getting cut off. Adding explicit padding improves this. */
+      padding: 0px 28px 0px 0px;
+      /* The 3D frame on the combo box becomes flat when you give it a border */
+      border: 0px solid transparent;
+      border-radius: 3px;
+    }
+    #fadeModeCombobox {
+      border: 1px solid #666;
+      margin: 0px 0px 2px 1px;
+      padding: 1px 3px;
+      border-radius: 2px;
+      height: 20px;
+    }
   WEffectSelector:hover {
     background-color: #0f0f0f;
     }
     WEffectSelector::drop-down,
     #fadeModeCombobox::drop-down {
       border: 0px;
-      margin: 0px -2px 0px 0px;
       padding: 0px;
-    }
+      }
+      WEffectSelector::drop-down {
+        margin: 0px -2px 0px 0px;
+      }
+      WEffectSelector::drop-down,
+      #fadeModeCombobox::drop-down {
+        margin: 0px 0px 0px 0px;
+      }
     WEffectSelector::down-arrow,
     #fadeModeCombobox::down-arrow {
       /* When the skin is scaled, bg-color would be applied
@@ -1727,27 +1730,14 @@ decks, samplers, mic, aux, fx */
 
     WEffectSelector QAbstractItemView,
     #fadeModeCombobox QAbstractItemView {
-      background-color: #202020;
-      selection-background-color: #0f0f0f;
-      /* On Linux, this is not applied but font color from WEffectSelector
-      is inherited. On Windows, it must be defined here explicitly: */
-      color: #ccc;
-      border: 1px solid #333;
       border-radius: 2px;
       margin: 0px;
     }
-    /* items */
-    WEffectSelector::item:!selected,
-    #fadeModeCombobox::item:!selected {
-      background-color: #202020;
+    WEffectSelector QAbstractItemView{
+      min-width: 140px;
     }
-    /* hovered items */
-    WEffectSelector::item:selected,
-    #fadeModeCombobox:item:selected {
-      background-color: #0f0f0f;
-    /* This moves the tick mark behind item text, text sits at left border now.
-      Drawback: font size is not scaled with skin anymore. magic!
-      border: 0; */
+    #fadeModeCombobox QAbstractItemView {
+      min-width: 165px;
     }
     /* selected item */
     WEffectSelector::checked,
@@ -1756,14 +1746,14 @@ decks, samplers, mic, aux, fx */
       padding-left: 5px;
       font-weight: bold;
       background-color: #000;	*/
-      color: #0081B7;
+      color: #fff;
+      background-color: #555;
     }
     /* tick mark frame */
     WEffectSelector::indicator:checked,
     #fadeModeCombobox::indicator:checked {
     /* This is sufficient to completely hide the tick mark,
       but this alone would show an empty, shadowed box instead of tick mark:  */
-      background-color: transparent;
       /* This should decrease the tick mark's left & right margin but is not respected
       margin: 0px -4px 0px -4px; */
       /* This draws a border. And eliminates the tick mark...
@@ -1775,12 +1765,12 @@ decks, samplers, mic, aux, fx */
       won't change. Also, only with this option the hover bg color defined
       above will be applied... it's qt magic
       background: #0081B7; */
-      image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center center;
+      margin: 3px;
+      image: url(skin:/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
     }
     WEffectSelector::indicator:!checked,
     #fadeModeCombobox::indicator:!checked {
       image: url(skin:/buttons/btn_.svg) no-repeat center center;
-      background-color: #202020;
     }
 
 #FxParametersLeft {
@@ -2122,24 +2112,25 @@ WTrackProperty#SamplerTitle_mini {
  ######  Misc  ##################################################
 ##############################################################*/
 
-QMenuBar,
-QMenuBar::item {
-  color: red;
-  spacing: 50px;
-}
-QMenuBar::item:pressed {
-  margin: 0px 40px;
-}
-
 QToolTip,
 QMenu,
-QMenuBar,
-#SkinSettings {
-  background-color: #1e1e1e;
+QMenu::item,
+QMenu QCheckBox,
+#SkinSettings,
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea::item {
+  background-color: #1a1a1a;
   color: #ccc;
+  }
+QToolTip,
+QMenu,
+#SkinSettings,
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   border: 1px solid #888;
-  border-radius: 0px;
+  border-radius: 2px;
   }
   #SkinSettings {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -2149,7 +2140,7 @@ QMenuBar,
   }
   QMenu::separator {
     height: 0px;
-    border-top: 1px solid #0f0f0f;
+    border-top: 1px solid #000;
     margin: 1px 4px 1px 4px;
   }
   /* actually this only needs to be set for QCheckBox */
@@ -2169,26 +2160,30 @@ QMenuBar,
       margin */
     padding: 5px 12px 5px 25px;
   }
-  /* icons in editline menu (searchbox, editable track properties)
-    and color squares in cue color menu */ 
-  QMenu::icon {
-    margin: 0px 4px 0px 2px;
-  }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
+  }
+  /* icons in editline menu (searchbox, editable track properties)
+    and color squares in cue color menu */ 
+  QMenu::icon, 
+  QMenu::indicator {
+    margin: 0px 4px 0px 2px;
   }
   QMenu::item:selected,
   QMenu QCheckBox:selected,
   QMenu QCheckBox:focus,  /* selected by keyboard */
   QMenu QCheckBox:hover,  /* mouse hover */
   #SkinSettingsButton:hover,
-  #SkinSettingsCategoryButton:hover {
+  #SkinSettingsCategoryButton:hover,
+  WEffectSelector::item:selected,
+  #fadeModeCombobox:item:selected {
     background-color: #555;
-    color: white;
+    color: #fff;
     /* remove OS focus indicator */
     outline: none;
   }
-  QMenu QCheckBox::indicator {
+  QMenu QCheckBox::indicator,
+  QMenu::indicator {
     width: 13px;
     height: 13px;
     background-color: #0f0f0f;
@@ -2197,7 +2192,8 @@ QMenuBar,
     /* remove OS focus indicator */
     outline: none;
     }
-  QMenu QCheckBox::indicator:checked {
+  QMenu QCheckBox::indicator:checked,
+  QMenu::indicator:checked {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #1e1e1e;
     }

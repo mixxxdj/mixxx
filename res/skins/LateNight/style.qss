@@ -2145,14 +2145,6 @@ WEffectSelector,
   #fadeModeCombobox QAbstractItemView {
     min-width: 185px;
   }
-  WEffectSelector::indicator {
-  /* This is sufficient to completely hide the tick mark, but
-    this alone would show an empty, shadowed box instead of tick mark
-    background-color: transparent;*/
-  /* This should decrease the tick mark's left & right margin but is not respected
-    margin: 0px;
-    padding: 0px; */
-  }
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
@@ -2196,13 +2188,15 @@ WEffectSelector,
   }
   /* icons in editline menu (searchbox, editable track properties)
     and color squares in cue color menu */ 
-  QMenu::icon {
+  QMenu::icon,
+  QMenu::indicator {
     margin: 0px 4px 0px 2px;
   }
   QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
   }
-  QMenu QCheckBox::indicator {
+  QMenu QCheckBox::indicator,
+  QMenu::indicator {
     width: 13px;
     height: 13px;
     border: 1px solid #333;
@@ -2211,7 +2205,8 @@ WEffectSelector,
     /* remove OS focus indicator */
     outline: none;
     }
-  QMenu QCheckBox::indicator:checked {
+  QMenu QCheckBox::indicator:checked,
+  QMenu::indicator:checked {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
   /* disabled menu item and checkbox */
