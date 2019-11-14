@@ -25,6 +25,7 @@
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/compatibility.h"
@@ -134,12 +135,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
-    WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
-    QColor defaultColor = defaultMark
-            ? defaultMark->fillColor()
-            : m_signalColors.getAxesColor();
-    m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
-    m_pCueMenu->useColorSet(&m_predefinedColorsRepresentation);
+    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
+    m_pCueMenu->useColorSet(colorPalette);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -348,7 +346,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
         if (pMark != nullptr && pMark->isValid() && pMark->isVisible() && pMark->getSamplePosition() != Cue::kNoPosition) {
-            QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
+            QColor newColor = currentCue->getColor();
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor);
             }
@@ -1058,7 +1056,19 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     pPainter->setPen(lowColorPen);
     QFont font = pPainter->font();
     QFontMetrics fm(font);
+
+    // TODO: The following use of QFontMetrics::width(const QString&, int) const
+    // is deprecated and should be replaced with
+    // QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
+    // proposed alternative has just been introduced in Qt 5.11.
+    // Until the minimum required Qt version of Mixx is increased, we need a
+    // version check here.
+    #if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
     int textWidth = fm.width(text);
+    #else
+    int textWidth = fm.horizontalAdvance(text);
+    #endif
+
     if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();
         pointSize = pointSize * (length() - 5 * m_scaleFactor) / textWidth;

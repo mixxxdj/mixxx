@@ -277,7 +277,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     if (getTrackModel() == trackModel) {
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
-        doSortByColumn(horizontalHeader()->sortIndicatorSection());
+        doSortByColumn(horizontalHeader()->sortIndicatorSection(), horizontalHeader()->sortIndicatorOrder());
         return;
     }else{
         newModel = trackModel;
@@ -764,7 +764,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     if (m_pTrackInfo.isNull()) {
         // Give a NULL parent because otherwise it inherits our style which can
         // make it unreadable. Bug #673411
-        m_pTrackInfo.reset(new DlgTrackInfo(nullptr));
+        m_pTrackInfo.reset(new DlgTrackInfo(nullptr, m_pConfig));
 
         connect(m_pTrackInfo.data(), SIGNAL(next()),
                 this, SLOT(slotNextTrackInfo()));
@@ -1828,7 +1828,7 @@ void WTrackTableView::addSelectionToNewCrate() {
 
 }
 
-void WTrackTableView::doSortByColumn(int headerSection) {
+void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();
 
@@ -1840,7 +1840,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
     int savedHScrollBarPos = horizontalScrollBar()->value();
 
-    sortByColumn(headerSection);
+    sortByColumn(headerSection, sortOrder);
 
     QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
@@ -1907,7 +1907,7 @@ void WTrackTableView::applySorting() {
     horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
 
     // in Qt5, we need to call it manually, which triggers finally the select()
-    doSortByColumn(sortColumn);
+    doSortByColumn(sortColumn, sortOrder);
 }
 
 void WTrackTableView::slotLockBpm() {

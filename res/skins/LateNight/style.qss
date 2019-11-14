@@ -356,50 +356,6 @@ QHeaderView::down-arrow {
 #SpecialCueButton[displayValue="1"] {
   background-color: #0000D4;
 }
-/* Hotcue Color: Red
-   this is also the default color if Auto-Color
-   in Preferences > Decks is Off */
-#HotcueButton[displayValue="1"][highlight="0"],
-#HotcueButton[displayValue="2"][highlight="0"],
-#HotcueButton[displayValue="1"][highlight="1"],
-#HotcueButton[displayValue="2"][highlight="1"] {
-  background-color: #db0000;
-}
-/* Hotcue Color: Green */
-#HotcueButton[displayValue="1"][highlight="2"],
-#HotcueButton[displayValue="2"][highlight="2"] {
-  background-color: #32be44;
-}
-/* Hotcue Color: Blue */
-#HotcueButton[displayValue="1"][highlight="3"],
-#HotcueButton[displayValue="2"][highlight="3"] {
-  background-color: #0044ff;
-}
-/* Hotcue Color: Yellow */
-#HotcueButton[displayValue="1"][highlight="4"],
-#HotcueButton[displayValue="2"][highlight="4"] {
-  background-color: #f8d200;
-}
-/* Hotcue Color: Celeste */
-#HotcueButton[displayValue="1"][highlight="5"],
-#HotcueButton[displayValue="2"][highlight="5"] {
-  background-color: #42d4f4;
-}
-/* Hotcue Color: Purple */
-#HotcueButton[displayValue="1"][highlight="6"],
-#HotcueButton[displayValue="2"][highlight="6"] {
-  background-color: #af00cc;
-}
-/* Hotcue Color: Pink */
-#HotcueButton[displayValue="1"][highlight="7"],
-#HotcueButton[displayValue="2"][highlight="7"] {
-  background-color: #fca6d7;
-}
-/* Hotcue Color: White */
-#HotcueButton[displayValue="1"][highlight="8"],
-#HotcueButton[displayValue="2"][highlight="8"] {
-  background-color: #f2f2ff;
-}
 
 #BeatgridButtonsToggle {
   image: url(skin:/buttons/btn_beatgrid_buttons_toggle.svg) no-repeat center center;
@@ -1495,7 +1451,6 @@ WBeatSpinBox,
 
 #FxButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-top: 4px;
 }
 
 #FxUnitKnob {
@@ -1606,10 +1561,10 @@ WEffectSelector,
   border-radius: 1px;
   }
   #FxSuperLinkButton {
-    margin: 0px 5px 0px 5px;
-  }
+    margin: 0px 2px 0px 2px;
+    }
   #FxSuperLinkInvertButton {
-    margin: 0px 5px 2px 5px;
+    margin: 0px;
   }
 
 #FxSuperLinkButton[value="0"],
@@ -1628,7 +1583,7 @@ WEffectSelector,
   }
 
 #FxSuperLinkButton[value="1"] {
-  background-color: #A5A5A5;
+  background-color: #5b9601;
   }
   #FxSuperLinkButton[value="1"]:hover {
     background-color: #CDCDCD;
@@ -1636,8 +1591,8 @@ WEffectSelector,
 #FxSuperLinkButton[value="2"] {	/*
   a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #A5A5A5,
-    stop: 0.33 #A5A5A5,
+    stop: 0 #5b9601,
+    stop: 0.33 #5b9601,
     stop: 0.34 #4b4b4b,
     stop: 1 #4b4b4b);
   }
@@ -1652,8 +1607,8 @@ WEffectSelector,
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #4b4b4b,
     stop: 0.66 #4b4b4b,
-    stop: 0.67 #A5A5A5,
-    stop: 1 #A5A5A5);
+    stop: 0.67 #5b9601,
+    stop: 1 #5b9601);
   }
   #FxSuperLinkButton[value="3"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
@@ -1664,12 +1619,12 @@ WEffectSelector,
     }
 #FxSuperLinkButton[value="4"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #A5A5A5,
-    stop: 0.330000 #A5A5A5,
+    stop: 0 #5b9601,
+    stop: 0.330000 #5b9601,
     stop: 0.340000 #4b4b4b,
     stop: 0.660000 #4b4b4b,
-    stop: 0.670000 #A5A5A5,
-    stop: 1 #A5A5A5);
+    stop: 0.670000 #5b9601,
+    stop: 1 #5b9601);
   }
   #FxSuperLinkButton[value="4"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,

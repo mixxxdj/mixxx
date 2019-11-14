@@ -27,11 +27,6 @@ WaveformRenderMark::WaveformRenderMark(
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
     WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
     m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
-    WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
-    QColor defaultColor = defaultMark
-            ? defaultMark->fillColor()
-            : signalColors.getAxesColor();
-    m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
 }
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -128,7 +123,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         }
 
         QString newLabel = pCue->getLabel();
-        QColor newColor = m_predefinedColorsRepresentation.representationFor(pCue->getColor());
+        QColor newColor = pCue->getColor();
         if (pMark->m_text.isNull() || newLabel != pMark->m_text ||
                 !pMark->fillColor().isValid() || newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;
