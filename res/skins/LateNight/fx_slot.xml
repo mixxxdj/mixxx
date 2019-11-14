@@ -13,12 +13,16 @@
   <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
 
+  <!-- wrapper to create the padding within the Fx unit so the Fx unit controls
+      can sit closer to the Fx unit edges -->
   <WidgetGroup>
     <ObjectName>FxSlotContainer</ObjectName>
     <SizePolicy>me,me</SizePolicy>
     <Layout>stacked</Layout>
     <Children>
 
+      <!-- transparent bg. Background tile and Regular 3D border or focus highlight border
+           shines through from underlying FxSlotBorder* widgets -->
       <WidgetGroup>
         <ObjectName>FxSlot<Variable name="FxNum"/></ObjectName>
         <Layout>horizontal</Layout>
@@ -111,19 +115,38 @@
           <Template src="skin:fx_focus_button.xml"/>
 
         </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>FxSlotBorder</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
         <Connection>
-          <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
           <BindProperty>highlight</BindProperty>
         </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
+        <Layout>stacked</Layout>
         <Children>
+          <!-- Fx focus highligh border -->
           <WidgetGroup>
-            <Layout>horizontal</Layout>
+            <ObjectName>FxSlotBorder</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- Dark focus background tile. Inhibits border of parent widget... -->
+          <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
             <BackPath>style/background_tile_fx_focus.png</BackPath>
             <Connection>
@@ -134,13 +157,12 @@
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- Regular background tile -->
         <SizePolicy>me,me</SizePolicy>
         <BackPath>style/background_tile.png</BackPath>
       </WidgetGroup>

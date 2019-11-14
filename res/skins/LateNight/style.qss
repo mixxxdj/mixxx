@@ -113,9 +113,7 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
 #DeckRow_5_LoopCuesTransport,
 #MasterControls,
 #HeadphoneControls,
-#FxSlot1[highlight="0"],
-#FxSlot2[highlight="0"],
-#FxSlot3[highlight="0"],
+#FxSlotBorder[highlight="0"],
 #SamplerHotcues,
 #MicAuxFrame,
 WSearchLineEdit,
@@ -331,9 +329,8 @@ WEffectSelector {
 #PlayButtonSampler, #PlayButtonDeckSmall,
 #SamplerButtons WPushButton,
 #SamplerSyncButton,
-#FxUnitControls WPushButton,
-#FxExpandCollapseButton,
-#FxAssignButton, #FxToggleButton, #FxParameterButton,
+#FxUnitControls WPushButton, #FxExpandCollapseButton,
+#FxAssignButton, #FxToggleButton, #FxParameterButton, #FxFocusButton,
 #SplitCueButton,
 #PlayButtonPreview,
 #BeatgridButtons WPushButton,
@@ -373,7 +370,7 @@ QPushButton#pushButtonAutoDJ:enabled,
       and with small size respectively */
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
 #HotcueButton[displayValue="0"],
-#FxAssignButton[displayValue="0"],
+#FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
@@ -424,6 +421,7 @@ QPushButton#pushButtonRecording:checked,
 
 /* Orange/yellow */
 #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
+#FxFocusButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
 #RecFeedback[displayValue="1"], /* initialize recording */
@@ -649,6 +647,13 @@ QPushButton#pushButtonAutoDJ:checked,
   }
   #FxToggleButton[value="1"] {
     image: url(skin:/buttons/btn__fx_toggle_active.svg) no-repeat center center;
+  }
+
+#FxFocusButton[value="0"] {
+  image: url(skin:/buttons/btn__fx_focus.svg) no-repeat center center;
+  }
+  #FxFocusButton[value="1"] {
+    image: url(skin:/buttons/btn__fx_focus_active.svg) no-repeat center center;
   }
 
 #BeatgridButtonsToggle {
@@ -1697,15 +1702,9 @@ WBeatSpinBox,
   padding: 2px 5px 1px 5px;
 }
 
-#FxSlot1[highlight="1"],
-#FxSlot2[highlight="1"],
-#FxSlot3[highlight="1"] {
-  border: 1px solid #248301;
-}
-
 #FxFocusButtonBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 2px 0px 0px 4px;
+  padding: 0px 0px 0px 4px;
 }
 
 #MetaKnob {
