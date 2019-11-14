@@ -139,11 +139,12 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
               </SingletonContainer>
 
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
+
               <WidgetGroup><!-- Super knob, optional -->
                 <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>,1f</Size></WidgetGroup>
                   <SingletonContainer>
                     <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
                   </SingletonContainer>
