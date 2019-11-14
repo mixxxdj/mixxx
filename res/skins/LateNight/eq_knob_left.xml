@@ -26,7 +26,6 @@
             </State>
             <State>
               <Number>1</Number>
-              <Text><Variable name="Text"/></Text>
               <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Unpressed>
               <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
             </State>

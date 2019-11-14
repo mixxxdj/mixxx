@@ -26,13 +26,12 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text><Variable name="Text"/></Text>
+                  <Text>&#9733;</Text>
                   <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill.svg</Unpressed>
                   <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Text><Variable name="Text"/></Text>
                   <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Unpressed>
                   <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
                 </State>

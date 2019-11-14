@@ -745,12 +745,15 @@ WSearchLineEdit QToolButton:!focus {
   color: #000;
 }
 
-#EQKillButton[displayValue="0"] {
+#EQKillButton[displayValue="0"],
+#QuickEffectButton[displayValue="0"] {
   color: #666;
 }
-#KeyButton[displayValue="1"],
-#EQKillButton[displayValue="1"] {
+#KeyButton[displayValue="1"] {
   color: #d2d2d2;
+}
+#QuickEffectButton {
+  font-size: 16px;
 }
 /************** Button text colors ********************************************/
 /************** Button styles *************************************************/
@@ -1707,7 +1710,7 @@ WBeatSpinBox,
 
 #MetaKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 1px 2px 2px 4px;
+  padding: 1px 4px 2px 4px;
 }
 
 #FxKnobContainer {
