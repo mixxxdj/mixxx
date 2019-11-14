@@ -330,20 +330,17 @@
                 this.send(outval);
             }
         },
-        outputColor: function (id) {
-            var color = this.colors[id];
-            if (color instanceof Array) {
-                if (color.length !== 3) {
-                    print("ERROR: invalid color array for id: " + id);
-                    return;
-                }
+        outputColor: function (colorCode) {
+            if (this.colors !== undefined) {
+                var nearestColor = color.nearestColorMidiCode(colorCode, this.colors);
+                print("COLOR = "+nearestColor);
+                this.send(nearestColor);
+            } else {
                 if (this.sendRGB === undefined) {
                     print("ERROR: no function defined for sending RGB colors");
                     return;
                 }
-                this.sendRGB(color);
-            } else if (typeof color === 'number') {
-                this.send(color);
+                this.sendRGB(color.colorFromHexCode(colorCode));
             }
         },
         connect: function() {
