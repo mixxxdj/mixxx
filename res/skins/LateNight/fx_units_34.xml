@@ -8,7 +8,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="Color">green</SetVariable>
             <SetVariable name="type">regular</SetVariable>
@@ -29,7 +29,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="Color">green</SetVariable>
             <SetVariable name="type">regular</SetVariable>
@@ -50,7 +50,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="Color">red</SetVariable>
             <SetVariable name="type">regular</SetVariable>
@@ -71,7 +71,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
             <SetVariable name="Color">red</SetVariable>
             <SetVariable name="type">regular</SetVariable>
