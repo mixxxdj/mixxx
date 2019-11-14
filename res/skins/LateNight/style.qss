@@ -805,7 +805,7 @@ QTableView::indicator,
 WEffectSelector, WEffectSelector QAbstractItemView,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 #CategoryLabel, #SkinSettingsLabelButton,
-WSearchLineEdit:focus,
+WSearchLineEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
 }
@@ -815,7 +815,7 @@ WSearchLineEdit:focus,
 #SamplerTitleSmall,
 #Deck1 WLabel, #Deck2 WLabel,
 #Deck3 #KeyText, #Deck4 #KeyText,
-WSearchLineEdit:focus,
+WSearchLineEdit,
 #LatencyLabel,
 WTime {
   font-weight: bold;
