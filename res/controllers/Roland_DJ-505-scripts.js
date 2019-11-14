@@ -941,17 +941,24 @@ DJ505.PadColor = {
     DIM_MODIFIER: 0x10,
 };
 
-DJ505.PadColorMap = [
-    DJ505.PadColor.OFF,
-    DJ505.PadColor.RED,
-    DJ505.PadColor.GREEN,
-    DJ505.PadColor.BLUE,
-    DJ505.PadColor.YELLOW,
-    DJ505.PadColor.CELESTE,
-    DJ505.PadColor.PURPLE,
-    DJ505.PadColor.APRICOT,
-    DJ505.PadColor.WHITE,
-];
+DJ505.PadColorMap = {
+    '#FFCC0000': DJ505.PadColor.RED,
+    '#FFCC4400': DJ505.PadColor.CORAL,
+    '#FFCC8800': DJ505.PadColor.ORANGE,
+    '#FFCCCC00': DJ505.PadColor.YELLOW,
+    '#FF88CC00': DJ505.PadColor.GREEN,
+    '#FF00CC00': DJ505.PadColor.APPLEGREEN,
+    '#FF00CC88': DJ505.PadColor.AQUAMARINE,
+    '#FF00CCCC': DJ505.PadColor.TURQUOISE,
+    '#FF0088CC': DJ505.PadColor.CELESTE,
+    '#FF0000CC': DJ505.PadColor.BLUE,
+    '#FF4400CC': DJ505.PadColor.AZURE,
+    '#FF8800CC': DJ505.PadColor.PURPLE,
+    '#FFCC00CC': DJ505.PadColor.MAGENTA,
+    '#FFCC0044': DJ505.PadColor.RED,
+    '#FFFFCCCC': DJ505.PadColor.APRICOT,
+    '#FFFFFFFF': DJ505.PadColor.WHITE,
+};
 
 DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, slicer, slicerloop)
@@ -1190,7 +1197,7 @@ DJ505.HotcueMode = function (deck, offset) {
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.WHITE;
 
-    var hotcueColors = [this.color].concat(DJ505.PadColorMap.slice(1));
+    var hotcueColors = DJ505.PadColorMap;
     this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -1226,7 +1233,7 @@ DJ505.CueLoopMode = function (deck, offset) {
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.BLUE;
 
-    var cueloopColors = [this.color].concat(DJ505.PadColorMap.slice(1));
+    var cueloopColors = DJ505.PadColorMap;
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 1;
@@ -1492,7 +1499,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
     this.color = DJ505.PadColor.GREEN;
     this.cuepoint = 1;
     this.range = PitchPlayRange.MID;
-    var pitchplayColors = [this.color].concat(DJ505.PadColorMap.slice(1));
+    var pitchplayColors = DJ505.PadColorMap;
 
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x14 + n];
@@ -1510,10 +1517,10 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         outConnect: false,
         off: DJ505.PadColor.OFF,
-        outputColor: function(id) {
+        outputColor: function(colorCode) {
             // For colored hotcues (shifted only)
-            var color = this.colors[id];
-            this.send((this.mode.cuepoint === this.number) ? color : (color + DJ505.PadColor.DIM_MODIFIER));
+            var midiColor = color.nearestColorMidiCode(colorCode, this.colors)
+            this.send((this.mode.cuepoint === this.number) ? midiColor : (midiColor + DJ505.PadColor.DIM_MODIFIER));
         },
         unshift: function() {
             this.outKey = "pitch_adjust";
