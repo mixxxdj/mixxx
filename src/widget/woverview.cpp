@@ -621,6 +621,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
     }
     if (m_bLeftClickDragging) {
+        PainterScope painterScope(pPainter);
         QLineF line;
         if (m_orientation == Qt::Horizontal) {
             line.setLine(m_iPlayPos, 0.0, m_iPlayPos, height());
