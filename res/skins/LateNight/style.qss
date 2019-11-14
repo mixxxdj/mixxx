@@ -135,9 +135,15 @@ WSearchLineEdit,
   border-bottom: 1px solid #000;
   padding-bottom: 1px;
 }
+#FxSlotBorder[highlight="1"] {
+  border: 1px solid #d09300;
+}
+#Margin1px {
+  margin: 1px;
+}
 
 /************ separator lines within decks, samplers etc. *********************/
-#DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls,
+#DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls, #DeckRateSeparator,
 #SpinnyContainer, #SpinnyContainer[highlight="0"],
 #CoverArtContainer[highlight="0"],
 #BpmTextSmall, #KeyTextSmall,
@@ -195,7 +201,7 @@ WSearchLineEdit,
 
 
 /************** Button styles *************************************************
-*************** Button borders & backgrounds *********************************/
+*************** Button borders ************************************************/
 QHeaderView,
 QHeaderView::section,
 QHeaderView::up-arrow,
@@ -342,7 +348,7 @@ WEffectSelector {
   border-radius: 1px;
 }
 
-/* button background colors */
+/************** button background colors **************************************/
 /* embedded buttons */
 #RateControls WPushButton[value="0"], #SyncButton[value="0"],
 #PflButton[value="0"],
@@ -889,7 +895,7 @@ WTime {
 
   /* see deck_rate_artist_separator.xml for visibilty conditions */
   #DeckRateSeparator {
-    background-color: #0c0c0c;
+    border-width: 0px 1px 0px 0px;
   }
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
@@ -980,7 +986,7 @@ WCoverArt {
 
 #ArtistGutter,
 #TitleGutter {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   padding: 2px 2px 1px 2px;
 }
 

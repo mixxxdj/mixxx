@@ -28,7 +28,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>AlignRightTop</ObjectName>
+            <ObjectName>AlignRightCenter</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,min</SizePolicy>
             <MinimumSize>80,</MinimumSize>
