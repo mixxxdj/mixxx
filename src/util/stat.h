@@ -1,5 +1,4 @@
-#ifndef STAT_H
-#define STAT_H
+#pragma once
 
 #include <QMap>
 #include <QVector>
@@ -118,7 +117,7 @@ class Stat {
     double m_variance_sk;
     QMap<double, double> m_histogram;
 
-    static bool track(const QString& tag,
+    static bool track(QString tag,
                       Stat::StatType type,
                       Stat::ComputeFlags compute,
                       double value);
@@ -127,11 +126,9 @@ class Stat {
 QDebug operator<<(QDebug dbg, const Stat &stat);
 
 struct StatReport {
-    char* tag;
+    QString tag;
     qint64 time;
     Stat::StatType type;
     Stat::ComputeFlags compute;
     double value;
 };
-
-#endif /* STAT_H */
