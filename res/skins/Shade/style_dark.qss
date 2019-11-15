@@ -1,59 +1,15 @@
 /* Dark */
-WEffectSelector,
-WEffectSelector QAbstractItemView,
-WEffectSelector::down-arrow,
-WEffectSelector::indicator:!checked,
-WEffectSelector::item:checked:selected,
-QToolTip,
-QMenu,
-QMenu::item,
-QMenu QCheckBox,
-WBeatSpinBox,
-#spinBoxTransition,
-#fadeModeCombobox,
-WLibrary QPushButton:enabled {
-  background-color: #717171;
+WBeatSpinBox {
 	color: #000000;
-  }
-  /* hovered items */
-  WEffectSelector::item:selected,
-  QMenu::item:selected,
-  QMenu QCheckBox:selected,
-  QMenu QCheckBox:focus,  /* selected by keyboard */
-  QMenu QCheckBox:hover  /* mouse hover */ {
-    background-color: #999;
-  }
+	background-color: #717171;
+}
 
-/* hover over checked effect */
-WEffectSelector::item:checked:selected {
-  background-color: #555;
-  }
-
-QMenu::separator {
-  border-top: 1px solid #3F3041;
-  }
-  /* checked effect and menu checkbox */
-  WEffectSelector::indicator:checked,
-  QMenu QCheckBox::indicator:checked,
-  QMenu QCheckBox::indicator:!checked:pressed {
-    border-color: #111;
-    background-color: #897300;
-    }
-  /* unchecked menu checkbox */
-  QMenu QCheckBox::indicator:!checked,
-  QMenu QCheckBox::indicator:checked:pressed {
-    border-color: #1a2025;
-    background-color: #666;
-    }
-  /* disabled menu checkbox */
-  QMenu QCheckBox::indicator:!enabled {
-    border-color: #444;
-    background-color: #666;
-    }
-  QMenu::item:!enabled,
-  QMenu QCheckBox:!enabled {
-    color: #444;
-    }
+#fadeModeCombobox,
+#spinBoxTransition,
+WEffectSelector {
+	color: #000000;
+	background-color: #717171;
+}
 
 #EffectSelectorGroup[highlight="1"]{ 
 	border: 1px solid #3c8bb2;  
@@ -73,35 +29,27 @@ WSearchLineEdit QToolButton:focus {
   image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
 }
 
-QTreeView::item:selected,
-QTableView::item:selected,
-QTreeView::branch:selected,
-#LibraryBPMButton::item:selected {
-  border-image: none;
-  background-image: none;
+
+QHeaderView {
   color: #000;
-  background-color: #666;
-  }
-
-  /* Table cell in edit mode */
-  WLibrary QLineEdit,
-  #LibraryBPMSpinBox {
-    color: #ddd;
-    background-color: #0f0f0f;
-    selection-color: #000;
-    selection-background-color: #aaa;
-  }
-
-  WLibrary QLineEdit {
-    border: 1px solid #666;
-  }
-
-/* checkbox in library "Played" column */
-QTableView::indicator:unchecked:selected {
-  background: none;
-  color: #cfcfcf;
-  border: 1px solid #000;
-  }
+  background-color: #5C5B5D;
+}
+/*	Library header 'buttons'	*/
+QHeaderView::section {
+  border-right: 1px solid #3F3041;
+  background-color: #5C5B5D;
+  border-radius: 0px;
+}
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(92,91,93,160);
+}
+QHeaderView::up-arrow {
+  image: url(skin:/btn/btn_lib_sort_up_dark.png)
+}
+QHeaderView::down-arrow {
+  image: url(skin:/btn/btn_lib_sort_down_dark.png)
+}
 
 /* Scroll bars */
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -110,26 +58,17 @@ QScrollBar::sub-page {
   background-color: #000;
 }
 QScrollBar::handle:vertical,
-QScrollBar::handle:horizontal,
-QHeaderView,
-QHeaderView::section {
-  background: #3f3041;
-  color: #999;
+QScrollBar::handle:horizontal {
+  background: #5C5B5D;
+  border: 1px solid #3F3041;
 }
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
-  background-color: rgba(63,48,65,200);
-  }
-  QHeaderView::up-arrow {
-    image: url(skin:/btn/btn_lib_sort_up_green.png)
-  }
-  QHeaderView::down-arrow {
-    image: url(skin:/btn/btn_lib_sort_down_green.png)
-  }
 
-WLibrary QPushButton:!enabled {
-  background-color: #4C4B4D;
+WLibrary QPushButton {
+  background-color: #717171;
   }
+  WLibrary QPushButton:!enabled {
+    background-color: #4C4B4D;
+    }
   WLibrary QPushButton:checked {
     color: #000;
     background-color: #B79E00;
@@ -142,7 +81,7 @@ WLibrary QPushButton:!enabled {
   }
 
 WLibrary QRadioButton::indicator:checked {
- image: url(skin:/btn/btn_lib_radio_button_on_green.svg) center center;
+ background: url(skin:/btn/btn_lib_radio_button_on_dark.svg) center center;
 }
 
 /* Hotcue Color: No Color */

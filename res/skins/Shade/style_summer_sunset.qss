@@ -1,54 +1,15 @@
 /* Summer Sunset */
-WEffectSelector,
-WEffectSelector QAbstractItemView,
-WEffectSelector::down-arrow,
-WEffectSelector::indicator:!checked,
-WEffectSelector::item:checked:selected,
-QToolTip,
-QMenu,
-QMenu::item,
-QMenu QCheckBox,
-WBeatSpinBox,
-#spinBoxTransition,
-#fadeModeCombobox,
-WLibrary QPushButton:enabled {
+WBeatSpinBox {
 	color: #101307;
-  background-color: #ad9e4f;
-  }
-  /* hovered items */
-  WEffectSelector::item:selected,
-  QMenu::item:selected,
-  QMenu QCheckBox:selected,
-  QMenu QCheckBox:focus,  /* selected by keyboard */
-  QMenu QCheckBox:hover  /* mouse hover */ {
-    background-color: #d9c663;
-  }
+	background-color: #ad9e4f;
+}
 
-/* hover over checked effect */
-WEffectSelector::item:checked:selected {
-  background-color: #887a35;
-  }
-
-QMenu::separator {
-  }
-  /* checked effect and menu checkbox */
-  WEffectSelector::indicator:checked,
-  QMenu QCheckBox::indicator:checked,
-  QMenu QCheckBox::indicator:!checked:pressed {
-    border-color: #222;
-    background-color: #4bcf09;
-    }
-  /* unchecked menu checkbox */
-  QMenu QCheckBox::indicator:!checked,
-  QMenu QCheckBox::indicator:checked:pressed {
-    border-color: #222;
-    background-color: #998a3c;
-    }
-  /* disabled menu checkbox */
-  QMenu QCheckBox::indicator:!enabled {
-    border-color: #ad9e4f;
-    background-color: #998a3c;
-    }
+#fadeModeCombobox,
+#spinBoxTransition,
+WEffectSelector {
+	color: #101307;
+	background-color: #ad9e4f;
+}
 
 #EffectSelectorGroup[highlight="1"]{ 
 	border: 1px solid #f8ba54;  
@@ -57,9 +18,45 @@ QMenu::separator {
 	border: 0px solid #f8ba54;  
 }
 
-WLibrary QPushButton:!enabled {
-  background-color: #706633;
+QHeaderView {
+  color: #0f0f0f;
+  background-color: #998A3D;
+}
+/*	Library header 'buttons'	*/
+QHeaderView::section {
+  border-right: 1px solid #0f0f0f;
+  background-color: #998A3D;
+  border-radius: 0px;
+}
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(153,138,60,160);
+}
+QHeaderView::up-arrow {
+  image: url(skin:/btn/btn_lib_sort_up.png)
+}
+QHeaderView::down-arrow {
+  image: url(skin:/btn/btn_lib_sort_down.png)
+}
+
+/* Scroll bars */
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  background-color: #000;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: #998A3C;
+  border: 1px solid #524A20;
+}
+
+WLibrary QPushButton {
+  background-color: #9E9048;
   }
+  WLibrary QPushButton:!enabled {
+    background-color: #706633;
+    }
   WLibrary QPushButton:unchecked {
     color: #888;
     background-color: #444;

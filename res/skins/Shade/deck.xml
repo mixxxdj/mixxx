@@ -385,7 +385,7 @@
                     <Pos>3,30</Pos>
                     <Size>47f,26f</Size>
                     <Style>QLabel {
-                        font: bold 12px sans-serif;
+                        font: bold 9px sans-serif;
                         font-family: "Open Sans";
                         background-color: transparent;
                         color: #191F24;

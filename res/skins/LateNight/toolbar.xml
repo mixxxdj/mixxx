@@ -8,7 +8,7 @@
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">maximize_library</SetVariable>
         <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-        <SetVariable name="Size">88f,24f</SetVariable>
+        <SetVariable name="Size">84f,24f</SetVariable>
         <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
         <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
         <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
@@ -27,7 +27,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">52f,24f</SetVariable>
+            <SetVariable name="Size">48f,24f</SetVariable>
             <SetVariable name="state_0_text">MIXER</SetVariable>
             <SetVariable name="state_1_text">MIXER</SetVariable>
             <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
@@ -36,7 +36,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_effects</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">64f,24f</SetVariable>
+            <SetVariable name="Size">59f,24f</SetVariable>
             <SetVariable name="state_0_text">EFFECTS</SetVariable>
             <SetVariable name="state_1_text">EFFECTS</SetVariable>
             <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
@@ -45,7 +45,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">77f,24f</SetVariable>
+            <SetVariable name="Size">71f,24f</SetVariable>
             <SetVariable name="state_0_text">SAMPLERS</SetVariable>
             <SetVariable name="state_1_text">SAMPLERS</SetVariable>
             <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
@@ -54,7 +54,7 @@
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">67f,24f</SetVariable>
+            <SetVariable name="Size">61f,24f</SetVariable>
             <SetVariable name="state_0_text">MIC/AUX</SetVariable>
             <SetVariable name="state_1_text">MIC/AUX</SetVariable>
             <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
@@ -120,7 +120,7 @@
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
       <PushButton>
-        <Size>88f,24f</Size>
+        <Size>82f,24f</Size>
         <TooltipId>skin_settings</TooltipId>
         <ObjectName>BroadcastButton</ObjectName>
         <NumberStates>4</NumberStates>
@@ -155,17 +155,17 @@
       </WidgetGroup>
 
       <PushButton>
-        <Size>88f,24f</Size>
+        <Size>80f,24f</Size>
         <TooltipId>skin_settings</TooltipId>
         <ObjectName>SettingsButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text>      SETTINGS</Text>
+          <Text>     SETTINGS</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>      SETTINGS</Text>
+          <Text>     SETTINGS</Text>
         </State>
         <Connection>
           <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
