@@ -10,6 +10,7 @@
 class ControlObject;
 class ControlPushButton;
 class Library;
+class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
 class KeyboardEventFilter;
@@ -17,7 +18,7 @@ class KeyboardEventFilter;
 class LoadToGroupController : public QObject {
     Q_OBJECT
   public:
-    LoadToGroupController(QObject* pParent, const QString& group);
+    LoadToGroupController(LibraryControl* pParent, const QString& group);
     virtual ~LoadToGroupController();
 
   signals:
@@ -39,8 +40,12 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
+    void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+
+  public slots:
+    // Deprecated navigation slots
+    void slotLoadSelectedTrackToGroup(QString group, bool play);
 
   private slots:
     void libraryWidgetDeleted();
@@ -61,7 +66,6 @@ class LibraryControl : public QObject {
     void slotGoToItem(double v);
 
     // Deprecated navigation slots
-    void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
     void slotSelectTrack(double v);

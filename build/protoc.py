@@ -14,7 +14,7 @@ import SCons.Defaults
 import SCons.Node.FS
 import SCons.Util
 
-from SCons.Script import File, Dir
+from SCons.Script import Dir
  
 import os.path
 protocs = 'protoc'

@@ -161,7 +161,8 @@ void Track::setTrackMetadata(
         setBpm(actualBpm.getValue());
     }
 
-    if (!newKey.isEmpty()) {
+    if (!newKey.isEmpty()
+            && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
         setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
     }
 }
@@ -652,21 +653,19 @@ void Track::setCuePoint(CuePosition cue) {
     }
 
     // Store the cue point in a load cue
-    CuePointer pLoadCue = findCueByType(Cue::LOAD);
-    Cue::CueSource source = cue.getSource();
+    CuePointer pLoadCue = findCueByType(Cue::Type::MainCue);
     double position = cue.getPosition();
-    if (position != 0.0 && position != -1.0) {
+    if (position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
-            pLoadCue->setType(Cue::LOAD);
+            pLoadCue->setType(Cue::Type::MainCue);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
-        pLoadCue->setPosition(position);
-        pLoadCue->setSource(source);
+        pLoadCue->setStartPosition(position);
     } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
@@ -696,10 +695,10 @@ CuePointer Track::createAndAddCue() {
     return pCue;
 }
 
-CuePointer Track::findCueByType(Cue::CueType type) const {
+CuePointer Track::findCueByType(Cue::Type type) const {
     // This method cannot be used for hotcues because there can be
     // multiple hotcues and this function returns only a single CuePointer.
-    DEBUG_ASSERT(type != Cue::CUE);
+    DEBUG_ASSERT(type != Cue::Type::HotCue);
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
@@ -717,20 +716,20 @@ void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
-    if (pCue->getType() == Cue::LOAD) {
+    if (pCue->getType() == Cue::Type::MainCue) {
         m_record.setCuePoint(CuePosition());
     }
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
 }
 
-void Track::removeCuesOfType(Cue::CueType type) {
+void Track::removeCuesOfType(Cue::Type type) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = false;
     QMutableListIterator<CuePointer> it(m_cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        // FIXME: Why does this only work for the CUE CueType?
+        // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
             disconnect(pCue.get(), 0, this, 0);
             it.remove();
@@ -763,8 +762,8 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
-        if (pCue->getType() == Cue::LOAD) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
+        if (pCue->getType() == Cue::Type::MainCue) {
+            m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
     markDirtyAndUnlock(&lock);

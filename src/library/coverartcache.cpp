@@ -99,7 +99,10 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
             desiredWidth, signalWhenDone);
-    connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
+    connect(watcher,
+            &QFutureWatcher<FutureResult>::finished,
+            this,
+            &CoverArtCache::coverLoaded);
     watcher->setFuture(future);
     return QPixmap();
 }

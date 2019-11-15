@@ -17,6 +17,7 @@
 #include "library/queryutil.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
+#include "widget/wlibrarysidebar.h"
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
@@ -105,7 +106,10 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     if (!m_database.open()) {
         qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &ITunesFeature::onTrackCollectionLoaded);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -141,6 +145,13 @@ QVariant ITunesFeature::title() {
 
 QIcon ITunesFeature::getIcon() {
     return m_icon;
+}
+
+void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClick()
+    m_pSidebarWidget = pSidebarWidget;
+    // send it to BaseExternalLibraryFeature for onRightClickChild()
+    BaseExternalLibraryFeature::bindSidebarWidget(pSidebarWidget);
 }
 
 void ITunesFeature::activate() {
@@ -196,15 +207,6 @@ void ITunesFeature::activate(bool forceReload) {
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
-        // Usually the maximum number of threads
-        // is > 2 depending on the CPU cores
-        // Unfortunately, within VirtualBox
-        // the maximum number of allowed threads
-        // is 1 at all times We'll need to increase
-        // the number to > 1, otherwise importing the music collection
-        // takes place when the GUI threads terminates, i.e., on
-        // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
@@ -232,7 +234,7 @@ TreeItemModel* ITunesFeature::getChildModel() {
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    QMenu menu;
+    QMenu menu(m_pSidebarWidget);
     QAction useDefault(tr("Use Default Library"), &menu);
     QAction chooseNew(tr("Choose Library..."), &menu);
     menu.addAction(&useDefault);
@@ -735,7 +737,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                        if (query_insert_to_playlists.lastError().nativeErrorCode() == QString::number(SQLITE_CONSTRAINT)) {
                             // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
                             query_insert_to_playlists.bindValue(":name", playlistname );

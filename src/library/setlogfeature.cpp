@@ -12,6 +12,7 @@
 #include "mixer/playermanager.h"
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              UserSettingsPointer pConfig,
@@ -30,11 +31,16 @@ SetlogFeature::SetlogFeature(QObject* parent,
     constructChildModel(-1);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
-    connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
-            this, SLOT(slotJoinWithPrevious()));
+    connect(m_pJoinWithPreviousAction,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotJoinWithPrevious);
 
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
-    connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
+    connect(m_pGetNewPlaylist,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotGetNewPlaylist);
 
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
@@ -58,14 +64,21 @@ QIcon SetlogFeature::getIcon() {
     return m_icon;
 }
 
-void SetlogFeature::bindWidget(WLibrary* libraryWidget,
+void SetlogFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindWidget(libraryWidget,
+    BasePlaylistFeature::bindLibraryWidget(libraryWidget,
                                     keyboard);
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            this, SLOT(slotPlayingTrackChanged(TrackPointer)));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingTrackChanged,
+            this,
+            &SetlogFeature::slotPlayingTrackChanged);
     m_libraryWidget = libraryWidget;
 
+}
+
+void SetlogFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -82,9 +95,9 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
+
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
@@ -93,13 +106,12 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-
-    //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     //menu.addAction(m_pCreatePlaylistAction);
     //menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
+    menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     if (playlistId != m_playlistId) {
         // Todays playlist should not be locked or deleted

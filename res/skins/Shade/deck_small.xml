@@ -1,22 +1,22 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
-    <Size>0e,40f</Size>
+    <Size>0e,48f</Size>
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
-        <Size>5f,40f</Size>
+        <Size>5f,48f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>DeckSmall</ObjectName>
-        <Size>i,40f</Size>
-        <BackPath>style/style_bg_looping.png</BackPath>
+        <Size>i,48f</Size>
+        <BackPath>style/style_bg_deck_small.png</BackPath>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <Size>488min,30f</Size>
+            <Size>488min,38f</Size>
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>
@@ -24,18 +24,18 @@
               </SingletonContainer>
 
               <WidgetGroup>
-                <Size>1f,30f</Size>
+                <Size>1f,38f</Size>
                 <BackPath>style/style_component_border.png</BackPath>
               </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>DeckSmall_TitleTimeKeyBPM</ObjectName>
-                <Size>220me,30f</Size>
+                <Size>220me,38f</Size>
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
                     <ObjectName>DeckSmall_TitleTime</ObjectName>
-                    <Size>10me,15f</Size>
+                    <Size>10me,19f</Size>
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
@@ -61,25 +61,25 @@
                         <Property>title</Property>
                         <Channel><Variable name="channum"/></Channel>
                         <SizePolicy>me,f</SizePolicy>
-                        <MinimumSize>50,15</MinimumSize>
+                        <MinimumSize>50,19</MinimumSize>
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
                       </TrackProperty>
 
                       <WidgetGroup>
-                        <Size>1f,15f</Size>
+                        <Size>1f,19f</Size>
                         <BackPath>style/style_component_border.png</BackPath>
                       </WidgetGroup>
 
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
-                        <Size>55min,15f</Size>
+                        <Size>55min,19f</Size>
                         <Style>QLabel {
                           font: bold 13px sans-serif;
                           font-family: Open Sans;
                           color: #191F24;
                           text-align: right;
-                          padding: 1px 0px 0px 0px;
+                          padding: 3px 0px 2px 0px;
                           margin: 0px 0px 0px 10px;
                         }
                         </Style>
@@ -96,10 +96,9 @@
 
                   <!-- Artist / Key /BPM -->
                   <WidgetGroup>
-                    <Size>100me,14f</Size>
+                    <Size>100me,18f</Size>
                     <Layout>horizontal</Layout>
                     <Style>
-                      QWidget { margin: 0px; padding: 0; }
                       QLabel {
                         font: bold 9px sans-serif;
                         font-family: "Open Sans";
@@ -118,29 +117,31 @@
                           background-color: transparent;
                           color: #191F24;
                           text-align: left;
-                          padding: 0px 2px;
+                          padding: 2px 2px;
                         }
                         </Style>
                         <Property>artist</Property>
                         <Channel><Variable name="channum"/></Channel>
                         <SizePolicy>me,f</SizePolicy>
-                        <MinimumSize>50,14</MinimumSize>
-                        <MaximumSize>,14</MaximumSize>
+                        <MinimumSize>50,18</MinimumSize>
+                        <MaximumSize>,18</MaximumSize>
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
                       </TrackProperty>
 
                       <WidgetGroup>
-                        <Size>1f,14f</Size>
+                        <Size>1f,18f</Size>
                         <BackPath>style/style_component_border.png</BackPath>
                       </WidgetGroup>
 
                       <Key>
                         <TooltipId>visual_key</TooltipId>
-                        <Size>30min,14f</Size>
+                        <Size>30min,18f</Size>
                         <Style>QLabel {
+                          font: bold 13px sans-serif;
+                          font-family: "Open Sans";
                           text-align: left;
-                          padding: 2px 1px 0px 0px;
+                          padding: 3px 1px 3px 0px;
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>
@@ -153,15 +154,17 @@
                       </Key>
 
                       <WidgetGroup>
-                        <Size>1f,14f</Size>
+                        <Size>1f,18f</Size>
                         <BackPath>style/style_component_border.png</BackPath>
                       </WidgetGroup>
 
                       <NumberBpm>
                         <TooltipId>visual_bpm</TooltipId>
-                        <Size>36f,14f</Size>
+                        <Size>42f,18f</Size>
                         <Style>QLabel {
-                          padding: 2px 1px 0px 0px;
+                          font: bold 13px sans-serif;
+                          font-family: "Open Sans";
+                          padding: 3px 1px 3px 0px;
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>
@@ -178,18 +181,17 @@
               </WidgetGroup><!-- Title / Time // Artist / Key /BPM -->
 
               <WidgetGroup>
-                <Size>1f,30f</Size>
+                <Size>1f,38f</Size>
                 <BackPath>style/style_component_border.png</BackPath>
               </WidgetGroup>
               
               <!-- Play -->
               <WidgetGroup>
-                <Size>41f,30f</Size>
+                <Size>41f,38f</Size>
                 <Children>
                   <PushButton>
                     <TooltipId>play_cue_set</TooltipId>
-                    <Pos>5,5</Pos>
-                    <Style></Style>
+                    <Pos>5,8</Pos>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -223,7 +225,7 @@
 
       <WidgetGroup>
         <ObjectName>EffectRightBorder</ObjectName>
-        <Size>5f,40f</Size>
+        <Size>5f,48f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
 

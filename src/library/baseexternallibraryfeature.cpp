@@ -3,28 +3,40 @@
 #include <QMenu>
 
 #include "library/basesqltablemodel.h"
+#include "widget/wlibrarysidebar.h"
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
                                                        TrackCollection* pCollection)
         : LibraryFeature(pParent),
           m_pTrackCollection(pCollection) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJ()));
+    connect(m_pAddToAutoDJAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotAddToAutoDJ);
 
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-    connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJTop()));
+    connect(m_pAddToAutoDJTopAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotAddToAutoDJTop);
 
     m_pImportAsMixxxPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pImportAsMixxxPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotImportAsMixxxPlaylist()));
+    connect(m_pImportAsMixxxPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotImportAsMixxxPlaylist);
 }
 
 BaseExternalLibraryFeature::~BaseExternalLibraryFeature() {
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
     delete m_pImportAsMixxxPlaylistAction;
+}
+
+void BaseExternalLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
@@ -35,9 +47,7 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
 void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
-
-    //Create the right-click menu
-    QMenu menu;
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addSeparator();

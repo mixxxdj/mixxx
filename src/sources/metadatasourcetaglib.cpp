@@ -78,12 +78,9 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
+inline
 QDateTime getMetadataSynchronized(QFileInfo fileInfo) {
-    const QDateTime metadataSynchronized = fileInfo.lastModified();
-    VERIFY_OR_DEBUG_ASSERT(!metadataSynchronized.isNull()) {
-        return QDateTime::currentDateTimeUtc();
-    }
-    return metadataSynchronized;
+    return fileInfo.lastModified();
 }
 
 } // anonymous namespace

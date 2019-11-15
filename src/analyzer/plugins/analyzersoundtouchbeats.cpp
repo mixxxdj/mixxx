@@ -8,7 +8,7 @@
 namespace mixxx {
 
 AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats()
-        : m_downmixBuffer(kAnalysisFramesPerBlock),
+        : m_downmixBuffer(kAnalysisFramesPerChunk), // mono, i.e. 1 sample per frame
           m_fResultBpm(0.0f) {
 }
 

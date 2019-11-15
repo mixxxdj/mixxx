@@ -1,0 +1,81 @@
+/* Summer Sunset */
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:!checked,
+WEffectSelector::item:checked:selected,
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox,
+WBeatSpinBox,
+#spinBoxTransition,
+#fadeModeCombobox,
+WLibrary QPushButton:enabled {
+	color: #101307;
+  background-color: #ad9e4f;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected,
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover  /* mouse hover */ {
+    background-color: #d9c663;
+  }
+
+/* hover over checked effect */
+WEffectSelector::item:checked:selected {
+  background-color: #887a35;
+  }
+
+QMenu::separator {
+  }
+  /* checked effect and menu checkbox */
+  WEffectSelector::indicator:checked,
+  QMenu QCheckBox::indicator:checked,
+  QMenu QCheckBox::indicator:!checked:pressed {
+    border-color: #222;
+    background-color: #4bcf09;
+    }
+  /* unchecked menu checkbox */
+  QMenu QCheckBox::indicator:!checked,
+  QMenu QCheckBox::indicator:checked:pressed {
+    border-color: #222;
+    background-color: #998a3c;
+    }
+  /* disabled menu checkbox */
+  QMenu QCheckBox::indicator:!enabled {
+    border-color: #ad9e4f;
+    background-color: #998a3c;
+    }
+
+#EffectSelectorGroup[highlight="1"]{ 
+	border: 1px solid #f8ba54;  
+} 
+#EffectSelectorGroup[highlight="0"]{ 
+	border: 0px solid #f8ba54;  
+}
+
+WLibrary QPushButton:!enabled {
+  background-color: #706633;
+  }
+  WLibrary QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  WLibrary QPushButton:checked {
+    color: #000;
+    background-color: #52F904;
+    }
+  /* 'Enable AutoDJ' button	*/
+  QPushButton#pushButtonAutoDJ:hover,
+  QPushButton#pushButtonRecording:hover,
+  QPushButton#pushButtonAnalyze:hover {
+    border: 1px solid #52F904;
+  }
+
+/* Hotcue Color: No Color */
+#HotcueButton[highlight="0"] {
+    background-color: #52f904;
+}
