@@ -6,6 +6,13 @@
 namespace {
     double colorDistance(QColor a, QColor b)
     {
+        // This algorithm calculates the distance between two colors. In
+        // contrast to the L2 norm, this also tries take the human perception
+        // of colors into account. More accurate algorithms like the CIELAB2000
+        // Delta-E rely on sophisticated color space conversions and need a lot
+        // of costly computations. In contrast, this is a low-cost
+        // approximation and should be sufficently accurate.
+        // More details: https://www.compuphase.com/cmetric.htm
         long mean_red = ((long)a.red() + (long)b.red()) / 2;
         long delta_red = (long)a.red() - (long)b.red();
         long delta_green = (long)a.green() - (long)b.green();
