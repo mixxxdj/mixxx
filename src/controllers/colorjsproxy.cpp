@@ -6,15 +6,15 @@
 namespace {
     double colorDistance(QColor a, QColor b)
     {
-      long mean_red = ((long)a.red() + (long)b.red()) / 2;
-      long delta_red = (long)a.red() - (long)b.red();
-      long delta_green = (long)a.green() - (long)b.green();
-      long delta_blue = (long)a.blue() - (long)b.blue();
-      return sqrt(
-          (((512 + mean_red) * delta_red * delta_red) >> 8) +
-          (4 * delta_green * delta_green) +
-          (((767 - mean_red) * delta_blue * delta_blue) >> 8)
-      );
+        long mean_red = ((long)a.red() + (long)b.red()) / 2;
+        long delta_red = (long)a.red() - (long)b.red();
+        long delta_green = (long)a.green() - (long)b.green();
+        long delta_blue = (long)a.blue() - (long)b.blue();
+        return sqrt(
+            (((512 + mean_red) * delta_red * delta_red) >> 8) +
+            (4 * delta_green * delta_green) +
+            (((767 - mean_red) * delta_blue * delta_blue) >> 8)
+        );
     }
 }
 
