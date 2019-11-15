@@ -223,7 +223,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    this->setFocusPolicy(Qt::NoFocus);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WPushButton::setStates(int iStates) {

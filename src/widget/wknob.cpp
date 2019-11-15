@@ -28,7 +28,7 @@ WKnob::WKnob(QWidget* pParent)
                         mixxx::Duration::fromSeconds(1)) {
     connect(&m_renderTimer, SIGNAL(update()),
             this, SLOT(update()));
-    this->setFocusPolicy(Qt::NoFocus);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WKnob::mouseMoveEvent(QMouseEvent* e) {

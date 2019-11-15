@@ -90,7 +90,7 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    this->setFocusPolicy(Qt::NoFocus);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
