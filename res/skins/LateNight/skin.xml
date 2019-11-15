@@ -146,10 +146,14 @@
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
 
+    <SetVariable name="SignalBgColor_12">#0f0f0f</SetVariable>
+    <SetVariable name="SignalBgColor_34">#012322</SetVariable>
     <SetVariable name="SignalColor_12">#E7C413</SetVariable>
-    <!-- <SetVariable name="SignalBgColor_12">#2f290a</SetVariable> -->
     <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
-    <!-- <SetVariable name="SignalBgColor_34">#2f290a</SetVariable> -->
+    <SetVariable name="BeatColor">#ffffff</SetVariable>
+    <SetVariable name="AxesColor">#ffffff</SetVariable>
+    <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
+
     <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
     <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
     <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
@@ -211,6 +215,7 @@
         <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">1</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -221,6 +226,7 @@
         <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">2</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -231,6 +237,7 @@
         <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">3</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -241,6 +248,7 @@
         <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">4</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
