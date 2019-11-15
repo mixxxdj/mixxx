@@ -22,7 +22,7 @@
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
-          <Align>top|right</Align>
+          <Align>bottom|right</Align>
           <Color>#FF0000</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
@@ -37,14 +37,14 @@
         <Mark>
           <Control>loop_start_position</Control>
           <Text>IN</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
         <Mark>
           <Control>loop_end_position</Control>
           <Text>OUT</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
@@ -63,7 +63,7 @@
         <Mark>
           <Control>intro_start_position</Control>
           <Text>|&#9698;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -71,7 +71,7 @@
         <Mark>
           <Control>intro_end_position</Control>
           <Text>&#9698;|</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -79,7 +79,7 @@
         <Mark>
           <Control>outro_start_position</Control>
           <Text>|&#9699;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -87,7 +87,7 @@
         <Mark>
           <Control>outro_end_position</Control>
           <Text>&#9699;|</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -100,7 +100,7 @@
         <Mark>
           <Control>cue_point</Control>
           <Text>CUE</Text>
-          <Align>top</Align>
+          <Align>top|right</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
