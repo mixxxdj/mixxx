@@ -1,8 +1,11 @@
 <Template>
-  <SetVariable name="btn_type">elevated</SetVariable>
+  <!--SetVariable name="btn_type">embedded</SetVariable-->
+  <!--SetVariable name="btn_type">elevated</SetVariable-->
+  <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
   <SetVariable name="btn_format">square</SetVariable>
+
   <WidgetGroup>
-    <BackPath>style/background_tile.png</BackPath>
+    <BackPath><Variable name="BgTile"/></BackPath>
     <SizePolicy>min,min</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
@@ -43,6 +46,7 @@
 
                   <BeatSpinBox>
                     <TooltipId>beatloop_size</TooltipId>
+                    <ObjectName>Spinbox_<Variable name="btn_type"/></ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <MinimumSize>52,26</MinimumSize>
                     <MaximumSize>60,26</MaximumSize>
@@ -107,6 +111,7 @@
                   <WidgetGroup><Size>0f,26f</Size></WidgetGroup> -->
                   <BeatSpinBox>
                     <TooltipId>beatjump_size</TooltipId>
+                    <ObjectName>Spinbox_<Variable name="btn_type"/></ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <MinimumSize>52,26</MinimumSize>
                     <MaximumSize>60,26</MaximumSize>
@@ -241,15 +246,15 @@
                       <Number>0</Number>
                       <Text><Variable name="state_0_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Text><Variable name="state_1_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_set.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_elevated_wide_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_set.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>

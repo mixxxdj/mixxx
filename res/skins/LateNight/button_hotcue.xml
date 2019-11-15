@@ -1,6 +1,5 @@
 <!-- A hotcue button. The only variable that needs to be specified is "number" -->
 <Template>
-  <SetVariable name="btn_type_format">elevated_square</SetVariable>
   <WidgetGroup>
     <ObjectName>Hotcue<Variable name="number"/></ObjectName>
     <MinimumSize>26,26</MinimumSize>
@@ -17,13 +16,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type_format"/>.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type_format"/>_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
-          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type_format"/>_set.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type_format"/>_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_set.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_activate</ConfigKey>

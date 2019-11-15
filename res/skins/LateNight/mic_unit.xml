@@ -1,7 +1,8 @@
 <Template>
-  <SetVariable name="btn_type">elevated</SetVariable>
+  <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
   <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
   <SetVariable name="Type">microphone</SetVariable>
+
   <WidgetGroup>
     <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
@@ -9,7 +10,7 @@
     <MaximumSize>160,</MaximumSize>
     <Children>
       <WidgetGroup>
-        <BackPath>style/background_tile.png</BackPath>
+        <BackPath><Variable name="BgTile"/></BackPath>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
@@ -61,6 +62,7 @@
                       </WidgetGroup><!-- /Gain, Pfl -->
 
                       <WidgetGroup><!-- FX buttons 1+2 / 1-4 -->
+                        <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
                         <ObjectName>MicAuxFxButtons</ObjectName>
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>

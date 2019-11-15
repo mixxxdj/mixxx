@@ -9,6 +9,7 @@
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit">[EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
+  <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
 
   <WidgetGroup>
     <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>

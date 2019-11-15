@@ -138,8 +138,13 @@
                 - mixer Pfl buttons
                 - Fx unit control buttons
         -->
-    <SetVariable name="btn_type">embedded</SetVariable>
+    <!-- Buttons in mixer, rate controls, collpased units etc. -->
+    <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
+    <!-- Button in transport row, mic / aux unit, sampler hotcues etc. -->
+    <SetVariable name="SubRegion_btn_type">elevated</SetVariable>
     <!--SetVariable name="btn_type">elevated</SetVariable-->
+    <!-- Background tile used in transport row, Fx slots etc. -->
+    <SetVariable name="BgTile">style/background_tile.png</SetVariable>
 
     <SetVariable name="Align">center</SetVariable>
     

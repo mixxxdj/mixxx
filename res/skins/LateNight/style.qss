@@ -1219,16 +1219,28 @@ WBeatSpinBox,
   #DlgAutoDJ QSpinBox:focus {
     background-color: #000;
   }
-  WBeatSpinBox {
+  WBeatSpinBox#Spinbox_embedded {
+    border-width: 2px 19px 2px 2px;
+    border-image: url(skin:buttons/spinbox_embedded_border.svg) 2 19 2 2;
+    margin: 1px 0px 0px 1px;
+    padding: 0px -17px 2px 1px;
+    }
+    WBeatSpinBox#Spinbox_embedded:hover {
+      border-image: url(skin:buttons/spinbox_embedded_border_hover.svg) 2 19 2 2;
+    }
+    WBeatSpinBox#Spinbox_embedded:focus {
+      border-image: url(skin:buttons/spinbox_embedded_border_focus.svg) 2 19 2 2;
+    }
+  WBeatSpinBox#Spinbox_elevated {
     border-width: 2px 19px 2px 2px;
     border-image: url(skin:buttons/spinbox_elevated_border.svg) 2 19 2 2;
     margin: 1px 0px 0px 1px;
     padding: 0px -17px 2px 1px;
     }
-    WBeatSpinBox:hover {
+    WBeatSpinBox#Spinbox_elevated:hover {
       border-image: url(skin:buttons/spinbox_elevated_border_hover.svg) 2 19 2 2;
     }
-    WBeatSpinBox:focus {
+    WBeatSpinBox#Spinbox_elevated:focus {
       border-image: url(skin:buttons/spinbox_elevated_border_focus.svg) 2 19 2 2;
     }
   #DlgAutoDJ QSpinBox {

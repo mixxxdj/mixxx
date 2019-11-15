@@ -1,7 +1,8 @@
 <Template>
-  <SetVariable name="btn_type">elevated</SetVariable>
+  <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
   <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
   <SetVariable name="Type">auxiliary</SetVariable>
+
   <WidgetGroup>
     <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
@@ -9,7 +10,7 @@
     <MaximumSize>160,</MaximumSize>
     <Children>
       <WidgetGroup>
-        <BackPath>style/background_tile.png</BackPath>
+        <BackPath><Variable name="BgTile"/></BackPath>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>

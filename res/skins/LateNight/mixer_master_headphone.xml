@@ -110,7 +110,7 @@
             a continuous background image -->
       <WidgetGroup>
         <ObjectName>MasterHeadphoneMixer</ObjectName>
-        <BackPath>style/background_tile.png</BackPath>
+        <BackPath><Variable name="BgTile"/></BackPath>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>

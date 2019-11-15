@@ -1,5 +1,6 @@
 <Template>
   <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+
   <WidgetGroup>
     <ObjectName>SamplerDeck</ObjectName>
     <Layout>horizontal</Layout>
@@ -8,7 +9,7 @@
       <!-- SamplerMainControls -->
       <WidgetGroup>
         <ObjectName>SamplerMainControls</ObjectName>
-        <BackPath>style/background_tile.png</BackPath>
+        <BackPath><Variable name="BgTile"/></BackPath>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
@@ -59,6 +60,7 @@
                     <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
                     <SetVariable name="ObjectName">PlayButtonSampler</SetVariable>
                     <SetVariable name="Size">34f,34f</SetVariable>
+                    <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
                     <SetVariable name="btn_format">square_big</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
@@ -192,6 +194,7 @@
 
           <!-- Third Row: SamplerButtons -->
           <WidgetGroup>
+            <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
             <ObjectName>SamplerButtons</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -258,7 +261,7 @@
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
-                    <SetVariable name="btn_type">embedded</SetVariable>
+                    <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
                     <SetVariable name="btn_format">square</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
