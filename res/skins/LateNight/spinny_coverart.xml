@@ -52,7 +52,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey>[Skin],show_big_spinny_coverart</ConfigKey>
+              <ConfigKey>[Skin],show_rate_controls</ConfigKey>
               <BindProperty>highlight</BindProperty>
             </Connection>
           </WidgetGroup>

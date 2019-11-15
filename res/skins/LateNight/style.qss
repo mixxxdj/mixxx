@@ -952,16 +952,13 @@ WTime {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 2px 1px 2px 0px;
   }
-  #SpinnyContainer {
-    border-width: 0px 0px 0px 1px;
-  }
   #SpinnyContainer[highlight="0"],
   #CoverArtContainer[highlight="0"] {
     border-width: 1px 0px 0px 0px;
   }
   #SpinnyContainer[highlight="1"],
   #CoverArtContainer[highlight="1"] {
-    border-width: 0px;
+    border-width: 1px 0px 0px 1px;
   }
 
 WSpinny {/*

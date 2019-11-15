@@ -28,6 +28,11 @@
                     <SizePolicy>min,min</SizePolicy>
                     <MaximumSize>107,</MaximumSize>
                     <Layout>horizontal</Layout>
+                    <Style>
+                      #SpinnyContainer {
+                        border-top: 0px;
+                      }
+                    </Style>
                     <Children>
                       <Template src="skin:spinny_coverart.xml">
                         <SetVariable name="MaxSize">105,105</SetVariable>
