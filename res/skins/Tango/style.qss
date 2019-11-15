@@ -29,10 +29,21 @@ WSearchLineEdit {
 }
 
 WPushButton {
-  font-family: Ubuntu;
   font-weight: normal;
-  font-size: 12px/12px;
   border-radius: 3px;
+}
+
+WPushButton,
+WSearchLineEdit,
+WLibrary QPushButton,
+WLibrary QLabel,
+WLibrary QRadioButton,
+QMenu,
+QMenu QCheckBox,
+QToolTip,
+QHeaderView {
+  font-family: Ubuntu;
+  font-size: 12px/12px;
 }
 
 WWidgetGroup {
@@ -111,69 +122,77 @@ WWidgetGroup {
  #######  Skin Settings  ########################################
 ##############################################################*/
 
-#SkinSettingsContainer{
-}
-
-#SkinSettings {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px 0px 0px 0px;
-  text-align: left;
-  background-color: #333;
-}
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 2px;
+  margin: 0px;
+  padding: 0px;
   }
   #SkinSettingsClose {
     border-radius:2px;
-    margin-bottom: 4px;
     background-color: transparent;
     image: url(skin:../Tango/buttons/btn_skinsettings_close.svg) no-repeat center top;
     }
     #SkinSettingsClose:hover {
       border-radius:2px;
-      margin-bottom: 4px;
       background-color: #0f0f0f;
       image: url(skin:../Tango/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
     }
 
-#SkinSettingsCategory {
-  padding: 2px 8px 1px 8px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    border: 1px solid #1e1e1e;
-    border-width: 0px 0px 3px 0px;
-  }
-  #CategoryLabel {
-    font-size: 16px/16px;
-    text-align: left;
-    padding: 5px 0px 0px 3px;
-    color: #eeeeee;
-    background-color: none;
-  }
+#SkinSettingsSeparator {
+}
+
+#CategoryLabel,
+#SkinSettingsCategoryButton {
+  font-size: 16px/20px;
+  text-align: left;
+  color: #eeeeee;
+  background-color: none;
+}
+#CategoryLabel {
+  padding: 2px 0px 0px 15px;
+  border-top: 1px solid #000;
+}
+#SkinSettingsCategoryButton {
+  padding: 2px 0px 0px 0px;
+}
+#SkinSettingsHeader > #CategoryLabel,
+#SkinSettingsCategoryButton {
+  border: 0px;
+  border-radius: 0px;
+}
+#SkinSettingsSubMenu {
+  padding-left: 10px;
+}
 
 #SkinSettingsButton,
 #SkinSettingsButtonMulti  {
   font-size: 12px/12px;
   }
+  #SkinSettingsButton {
+    border-radius: 0px;
+  }
   #SkinSettingsButtonMulti {
     text-align: center;
+    border-radius: 1px;
   }
-  #SkinSettingsButton:hover,
   #SkinSettingsButtonMulti:hover {
-    background-color: #0f0f0f;
+    background-color: #1e1e1e;
   }
-  #SkinSettingsButton[displayValue="0"],
   #SkinSettingsButtonMulti[displayValue="0"],
-  #SkinSettingsLabel {
-    color: #d2d2d2;
-  }
-  #SkinSettingsButton[displayValue="1"],
-  #SkinSettingsButton[displayValue="2"],
-  #SkinSettingsButtonMulti[displayValue="1"] {
-    color: #eeeeee;
-  }
-  #SkinSettingsButtonMulti[displayValue="1"] {
+  #DeckButtonVisibility[displayValue="0"] {
     background-color: #0f0f0f;
+    color: #888;
+    }
+    #SkinSettingsButtonMulti[displayValue="0"]:hover,
+    #DeckButtonVisibility[displayValue="0"]:hover,
+    #DeckButtonVisibility[displayValue="1"]:hover {
+    background-color: #000;
+      border: 1px solid #666;
+    }
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #0f0f0f;
   }
 
 #DeckIndicatorSettings {
@@ -182,20 +201,12 @@ WWidgetGroup {
 #DeckButtonVisibility {
   margin-right: 1px;
   font-weight: bold;
+  border-radius: 1px;
   }
-  #DeckButtonVisibility[displayValue="0"] {
-    color: #888;
-  }
-  #DeckButtonVisibility[displayValue="0"]:hover,
-  #DeckButtonVisibility[displayValue="1"] {
-    background-color: #151515;
-    color: #d2d2d2;
-  }
-  #DeckButtonVisibility[displayValue="1"]:hover {
-    border: 1px solid #d2d2d2;
-  }
-#SubmenuCover {
-  background-color: rgba(51, 51, 51, 127);
+
+#SubmenuCover,
+#CoverSpinnyHint {
+  background-color: rgba(26,26,26,135);
 }
 #SkinSettingsLabel,
 #SubmenuHint {
@@ -205,13 +216,14 @@ WWidgetGroup {
     padding-bottom: 2px;
   }
   #SubmenuHint {
-    color: #666666;
-    background-color: #333;
+    color: #777;
+    margin-bottom: 2px;
   }
 #CoverSpinnyHint {
-  font-size: 13px/13px;
+  font-size: 14px;
   font-weight: bold;
   color: #f56200;
+  margin: 2px 0px;
 }
 
 
@@ -1001,6 +1013,7 @@ WLabel#TrackComment {
 #HotcueButton[displayValue="1"][highlight="2"],
 #HotcueButton[displayValue="2"][highlight="2"] {
     background-color: #32be44;
+    color: #111;
 }
 
 /* Hotcue Color: Blue */
@@ -1012,14 +1025,14 @@ WLabel#TrackComment {
 /* Hotcue Color: Yellow */
 #HotcueButton[displayValue="1"][highlight="4"],
 #HotcueButton[displayValue="2"][highlight="4"] {
-    color: #333;
+    color: #222;
     background-color: #f8d200;
 }
 
 /* Hotcue Color: Celeste */
 #HotcueButton[displayValue="1"][highlight="5"],
 #HotcueButton[displayValue="2"][highlight="5"] {
-    color: #333;
+    color: #111;
     background-color: #42d4f4;
 }
 
@@ -1039,7 +1052,7 @@ WLabel#TrackComment {
 /* Hotcue Color: White */
 #HotcueButton[displayValue="1"][highlight="8"],
 #HotcueButton[displayValue="2"][highlight="8"] {
-    color: #333;
+    color: #222;
     background-color: #f2f2ff;
 }
 
@@ -1389,10 +1402,10 @@ WBeatSpinBox,
 
 /* Kill indicators underneath EQ knobs */
 #EQKilledUnderlay[displayValue="1"] {
-  background: url(skin:/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
+  image: url(skin:/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
 }
 #QuickFxDisabledUnderlay[displayValue="0"] {
-  background: url(skin:/knobs_sliders/knob_quickFX_disabled.svg) no-repeat center center;
+  image: url(skin:/knobs_sliders/knob_quickFX_disabled.svg) no-repeat center center;
 }
 
 #QuickFXSide {
@@ -1668,36 +1681,39 @@ decks, samplers, mic, aux, fx */
   #fadeModeCombobox {
     font-size: 13px/13px;
     /* On Linux this is applied to both effect name and effect list. */
-    color: #ccc;
-  }
-  WEffectSelector {
-    /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-    margin: 0px;
-    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-        names start getting cut off. Adding explicit padding improves this. */
-    padding: 0px 28px 0px 0px;
-    /* The 3D frame on the combo box becomes flat when you give it a border */
-    border: 0px solid transparent;
-    border-radius: 3px;
-    background-color: #1e1e1e;
-  }
-  #fadeModeCombobox {
-    background-color: #333;
-    border: 1px solid #333;
-    margin: 0px 0px 2px 1px;
-    padding: 1px 3px;
-    border-radius: 2px;
-    height: 20px;
-  }
+    }
+    WEffectSelector {
+      /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+      margin: 0px;
+      /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+          names start getting cut off. Adding explicit padding improves this. */
+      padding: 0px 28px 0px 0px;
+      /* The 3D frame on the combo box becomes flat when you give it a border */
+      border: 0px solid transparent;
+      border-radius: 3px;
+    }
+    #fadeModeCombobox {
+      border: 1px solid #666;
+      margin: 0px 0px 2px 1px;
+      padding: 1px 3px;
+      border-radius: 2px;
+      height: 20px;
+    }
   WEffectSelector:hover {
     background-color: #0f0f0f;
     }
     WEffectSelector::drop-down,
     #fadeModeCombobox::drop-down {
       border: 0px;
-      margin: 0px -2px 0px 0px;
       padding: 0px;
-    }
+      }
+      WEffectSelector::drop-down {
+        margin: 0px -2px 0px 0px;
+      }
+      WEffectSelector::drop-down,
+      #fadeModeCombobox::drop-down {
+        margin: 0px 0px 0px 0px;
+      }
     WEffectSelector::down-arrow,
     #fadeModeCombobox::down-arrow {
       /* When the skin is scaled, bg-color would be applied
@@ -1714,27 +1730,14 @@ decks, samplers, mic, aux, fx */
 
     WEffectSelector QAbstractItemView,
     #fadeModeCombobox QAbstractItemView {
-      background-color: #202020;
-      selection-background-color: #0f0f0f;
-      /* On Linux, this is not applied but font color from WEffectSelector
-      is inherited. On Windows, it must be defined here explicitly: */
-      color: #ccc;
-      border: 1px solid #333;
       border-radius: 2px;
       margin: 0px;
     }
-    /* items */
-    WEffectSelector::item:!selected,
-    #fadeModeCombobox::item:!selected {
-      background-color: #202020;
+    WEffectSelector QAbstractItemView{
+      min-width: 140px;
     }
-    /* hovered items */
-    WEffectSelector::item:selected,
-    #fadeModeCombobox:item:selected {
-      background-color: #0f0f0f;
-    /* This moves the tick mark behind item text, text sits at left border now.
-      Drawback: font size is not scaled with skin anymore. magic!
-      border: 0; */
+    #fadeModeCombobox QAbstractItemView {
+      min-width: 165px;
     }
     /* selected item */
     WEffectSelector::checked,
@@ -1743,14 +1746,14 @@ decks, samplers, mic, aux, fx */
       padding-left: 5px;
       font-weight: bold;
       background-color: #000;	*/
-      color: #0081B7;
+      color: #fff;
+      background-color: #555;
     }
     /* tick mark frame */
     WEffectSelector::indicator:checked,
     #fadeModeCombobox::indicator:checked {
     /* This is sufficient to completely hide the tick mark,
       but this alone would show an empty, shadowed box instead of tick mark:  */
-      background-color: transparent;
       /* This should decrease the tick mark's left & right margin but is not respected
       margin: 0px -4px 0px -4px; */
       /* This draws a border. And eliminates the tick mark...
@@ -1762,12 +1765,12 @@ decks, samplers, mic, aux, fx */
       won't change. Also, only with this option the hover bg color defined
       above will be applied... it's qt magic
       background: #0081B7; */
-      image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center center;
+      margin: 3px;
+      image: url(skin:/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
     }
     WEffectSelector::indicator:!checked,
     #fadeModeCombobox::indicator:!checked {
       image: url(skin:/buttons/btn_.svg) no-repeat center center;
-      background-color: #202020;
     }
 
 #FxParametersLeft {
@@ -2109,11 +2112,131 @@ WTrackProperty#SamplerTitle_mini {
  ######  Misc  ##################################################
 ##############################################################*/
 
-QToolTip {
-  background-color: #1e1e1e;
+QToolTip,
+QMenu,
+QMenu::item,
+QMenu QCheckBox,
+#SkinSettings,
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea::item {
+  background-color: #1a1a1a;
   color: #ccc;
-  border: 1px solid #333;
-}
+  }
+QToolTip,
+QMenu,
+#SkinSettings,
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea {
+  padding: 2px;
+  border: 1px solid #888;
+  border-radius: 2px;
+  }
+  #SkinSettings {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    margin: 1px 0px 1px 1px;
+    padding-left: 5px;
+    border-right: 0px;
+  }
+  QMenu::separator {
+    height: 0px;
+    border-top: 1px solid #000;
+    margin: 1px 4px 1px 4px;
+  }
+  /* actually this only needs to be set for QCheckBox */
+  QMenu::item,
+  QMenu QCheckBox,
+  #SkinSettingsLabel,
+  #SkinSettingsButton,
+  #SkinSettingsButtonMulti {
+    color: #ccc;
+    border: none;
+    background: none;
+    margin: 0px;
+  }
+  QMenu::item {
+    /* right padding creates a margin to the menu expand arrow,
+      left padding should be bigger than menu icon width + menu icon
+      margin */
+    padding: 5px 12px 5px 25px;
+  }
+  QMenu QCheckBox {
+    padding: 2px 10px 2px 3px;
+  }
+  /* icons in editline menu (searchbox, editable track properties)
+    and color squares in cue color menu */ 
+  QMenu::icon, 
+  QMenu::indicator {
+    margin: 0px 4px 0px 2px;
+  }
+  QMenu::item:selected,
+  QMenu QCheckBox:selected,
+  QMenu QCheckBox:focus,  /* selected by keyboard */
+  QMenu QCheckBox:hover,  /* mouse hover */
+  #SkinSettingsButton:hover,
+  #SkinSettingsCategoryButton:hover,
+  WEffectSelector::item:selected,
+  #fadeModeCombobox:item:selected {
+    background-color: #555;
+    color: #fff;
+    /* remove OS focus indicator */
+    outline: none;
+  }
+  QMenu QCheckBox::indicator,
+  QMenu::indicator {
+    width: 13px;
+    height: 13px;
+    background-color: #0f0f0f;
+    border: 1px solid #333;
+    border-radius: 1px;
+    /* remove OS focus indicator */
+    outline: none;
+    }
+  QMenu QCheckBox::indicator:checked,
+  QMenu::indicator:checked {
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
+    border: 1px solid #1e1e1e;
+    }
+  /* disabled menu checkbox */
+  QMenu QCheckBox::indicator:!enabled {
+    background-color: #333;
+    border: 1px solid #222;
+    }
+  QMenu QCheckBox::indicator:!enabled:checked {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
+    }
+  QMenu::item:!enabled,
+  QMenu QCheckBox:!enabled {
+    color: #555;
+    }
+  QCheckBox::indicator:indeterminate {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
+    border: 1px solid #1e1e1e;
+    background-color: #000;
+    }
+  QCheckBox::indicator:indeterminate:!enabled {
+    image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
+    }
+  QMenu::right-arrow {
+    width: 8px;
+    height: 16px;
+    margin-right: 4px;
+    image: url(skin:/buttons/btn_arrow_right.svg);
+    }
+    QMenu::right-arrow {
+      image: url(skin:/buttons/btn_arrow_right_hover.svg);
+    }
+
+  QHeaderView QMenu::indicator {
+    width: 10px;
+    height: 10px;
+    margin-left: 2px;
+    border: none;
+    background: none;
+    }
+    QHeaderView QMenu::indicator:checked {
+      image: url(skin:/buttons/btn_lib_checkmark_white.svg);
+    }
 
 #TEST {
   background-color: #451278;
@@ -2230,7 +2353,8 @@ QTreeView {
 }
 
 /* selected table row */
-QTableView::item:selected {
+QTableView::item:selected,
+#LibraryBPMButton::item:selected {
   color: #fff;
   background-color: #555;
   /* overrides color:
@@ -2239,7 +2363,7 @@ QTableView::item:selected {
   selection-background-color: #125454; */
   }
   /* focused cell */
-  QTableView::item:focus {/*
+  QTableView::item:focus {/* 
     background-color: #666; */
     /* overrides font color:
     selection-color: #ff5411; */
@@ -2248,6 +2372,17 @@ QTableView::item:selected {
     /* this outer border is drawn in addition to inner (dotted)
       focus border defined by OS theme
     border: 1px solid #ccc; */
+  }
+  /* Table cell in edit mode */
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    color: #ddd;
+    background-color: #0f0f0f;
+    selection-color: #000;
+    selection-background-color: #ccc;
+  }
+  WLibrary QLineEdit {
+    border: 1px solid #555;
   }
 
 QTreeView {
@@ -2342,23 +2477,23 @@ QHeaderView {
     width: 12px;
     padding-right: 2px;
     border-right: 1px solid #585858;
-    background-color: #333;
+    background-color: rgba(51,51,51,200);
     }
     QHeaderView::up-arrow:hover,
     QHeaderView::down-arrow:hover {
-      background-color: #585858;
+    background-color: rgba(88,88,88,200);
     }
     QHeaderView::up-arrow {
-      image: url(skin:/graphics/library_sort_up.svg)
+      image: url(skin:/graphics/library_sort_up.svg);
       }
       QHeaderView::up-arrow:hover {
-        image: url(skin:/graphics/library_sort_down.svg)
+        image: url(skin:/graphics/library_sort_down.svg);
       }
     QHeaderView::down-arrow {
-      image: url(skin:/graphics/library_sort_down.svg)
+      image: url(skin:/graphics/library_sort_down.svg);
       }
       QHeaderView::down-arrow:hover {
-        image: url(skin:/graphics/library_sort_up.svg)
+        image: url(skin:/graphics/library_sort_up.svg);
       }
 
 /* Scroll bars */
@@ -2603,17 +2738,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   #LibraryBPMButton::item {
     color: #cfcfcf;
     }
-    /* BPM value in selected row. Should match 'selection-color' &
-    'selection-background-color' of QTableView */
-    #LibraryBPMButton::item:selected {
-      color: #ededed;
-      background-color: #555;
-      }
   #LibraryBPMSpinBox {
-    color: #fff;
-    background-color: #0f0f0f;
-    selection-color: #0f0f0f;
-    selection-background-color: #888;
     /* This combination of negative top/bottom padding & margin
       creates a 1px border around the spinbox' text area.
       Increased left/right padding/margin removes the overlap of
@@ -2625,6 +2750,10 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
       lose their style & icons
     border: 0px;
     border-radius: 2px; */
+    }
+    /* remove OS focus indicator from BPM cell */
+    WLibrary QCheckBox {
+      outline: none;
     }
 
   /* Button in library "Preview" column */
@@ -2675,7 +2804,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
       border: 1px solid #888;
     }
   QTableView::indicator:checked {
-    background: transparent url(skin:/buttons/btn_lib_checkmark.svg);
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
   QTableView::indicator:unchecked {
     background: none;
@@ -2739,11 +2868,11 @@ WLibrary QRadioButton#radioButtonRecentlyAdded {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: transparent url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
+  image: url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: transparent url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
+  image: url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
 }
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
 WOverview {
