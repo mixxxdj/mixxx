@@ -235,19 +235,6 @@ QTreeView::branch:selected,
   background-color: #006596;
 }
 
-/* Table cell in edit mode */
-WLibrary QLineEdit,
-#LibraryBPMSpinBox {
-  color: #ddd;
-  background-color: #0f0f0f;
-  selection-color: #000;
-  selection-background-color: #ccc;
-}
-WLibrary QLineEdit {
-  border: 1px solid #006596;
-}
-
-
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 10px;
@@ -259,7 +246,7 @@ QTableView::indicator {
 
 QTableView::indicator:checked,
 QTableView::indicator:checked:selected {
-  image: url(skin:/icon/ic_library_checkmark.svg);
+  background: url(skin:/icon/ic_library_checkmark.svg);
   border: 1px solid #ff6600;
 }
 
@@ -268,11 +255,7 @@ QTableView::indicator:unchecked {
   border: 1px solid rgba(151,151,151,128);
 }
 
-/* focused BPM cell in the library "BPM" column */
-#LibraryBPMButton:focus {
-  outline: none;
-}
-/* BPM lock icon */
+/* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked {
   image: url(skin:/icon/ic_library_bpm_locked.svg);
 }
@@ -282,6 +265,10 @@ QTableView::indicator:unchecked {
 }
 
 #LibraryBPMSpinBox {
+  color: #fff;
+  selection-color: #0f0f0f;
+  background-color: #0f0f0f;
+  selection-background-color: #888;
   /* This combination of negative top/bottom padding & margin
     creates a 1px border around the spinbox' text area.
     Increased left/right padding/margin removes the overlap of
@@ -336,9 +323,9 @@ QHeaderView::section {
   padding: 2px;
   background: #1A1A1A;
   border-top: none;
-  border-left: none;
   border-bottom: 1px solid #141414;
-  border-right: 1px solid #141414;
+  border-left: 1px solid #141414;
+  border-right: none;
 }
 
 QHeaderView::section:selected {
@@ -348,15 +335,10 @@ QHeaderView::section:selected {
   background: #1A1A1A;
   border-top: none;
   border-bottom: 1px solid #141414;
+  border-left: 1px solid #141414;
   border-right: none;
 }
 
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
-  background-color: rgba(26,26,26,220);
-  margin: 0px -1px 0px 0xp;
-  padding: 0px;
-}
 QHeaderView::up-arrow {
   image: url(skin:/image/style_sort_up.svg)
 }
@@ -372,7 +354,6 @@ WSearchLineEdit {
   border: 1px solid #4B4B4B;
   background-color: #1e1e1e;
   color: #d2d2d2;
-  font-size: 13px;
 }
 
 WSearchLineEdit:focus {
@@ -541,11 +522,11 @@ WLibrary QRadioButton::indicator {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  image: url(skin:/icon/ic_radio_button_on_18px.svg);
+  background: url(skin:/icon/ic_radio_button_on_18px.svg);
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  image: url(skin:/icon/ic_radio_button_off_18px.svg);
+  background: url(skin:/icon/ic_radio_button_off_18px.svg);
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
@@ -808,9 +789,7 @@ QAbstractScrollArea::corner {
   background-color: #222;
 }
 
-WWidget,
-QLabel,
-QPushButton {
+WWidget, QLabel {
   font-family: "Open Sans";
   font-size: 12px;
   text-transform: uppercase;
@@ -897,9 +876,7 @@ WBeatSpinBox,
     margin: 3px 0px 0px 2px;
   }
   WBeatSpinBox:hover,
-  #DlgAutoDJ QSpinBox:hover,
-  WBeatSpinBox:focus,
-  #DlgAutoDJ QSpinBox:focus {
+  #DlgAutoDJ QSpinBox:hover {
     border: 1px ridge #015d8d;
   }
   WBeatSpinBox::down-button,
@@ -1199,6 +1176,69 @@ WBeatSpinBox,
   image: url(skin:/icon/ic_power_48px.svg) no-repeat center center;
 }
 
+WEffectSelector,
+#fadeModeCombobox {
+  color: #c1cabe;
+  background-color: #444342;
+  /* TODO: use a linear gradient for the background color */
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+   * names start getting cut off. Adding explicit padding improves this. */
+  padding: 0px 6px;
+  /* The 3D frame on the combo box becomes flat when you give it a border */
+  border: 1px solid #444342;
+  border-radius: 3px;
+  font: 15px;
+}
+#fadeModeCombobox {
+  /* 1px is added in each dimension. 20+1+1 = 22 = button height */
+  height: 20px;
+  margin: 9px 3px 6px 3px;
+}
+
+  WEffectSelector:hover,
+  #fadeModeCombobox:hover {
+    border: 1px ridge #015d8d;
+  }
+
+  WEffectSelector::drop-down,
+  #fadeModeCombobox::drop-down {
+    /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+    border: 0;
+  }
+
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
+    width: 20px;
+    height: 20px;
+    image: url(skin:/icon/ic_chevron_down_48px.svg);
+  }
+
+  WEffectSelector QAbstractItemView,
+  #fadeModeCombobox QAbstractItemView {
+    color: #c1cabe;
+    background-color: #201f1f;
+  }
+
+  WEffectSelector::item:!selected,
+  #fadeModeCombobox::item:!selected {
+    background-color: #201f1f;
+  }
+
+  WEffectSelector::item:selected,
+  #fadeModeCombobox::item:selected {
+    background-color: #080808;
+  }
+
+  /* currently loaded effect */
+  WEffectSelector::checked,
+  #fadeModeCombobox::checked {
+    color: #4495F4;
+    font-weight: bold;
+  }
+
 #EffectKnob {
 }
 
@@ -1382,7 +1422,7 @@ WStarRating {
   margin            : 5px 5px 0px 0px;
   border            : 0px solid #ffffff;
   padding           : 2px;
-  color             : #d2d2d2;
+  color             : #888888;
   background-color  : none;
 }
 
@@ -1851,6 +1891,7 @@ do not highlight either state. */
                                       stop: 0.66 #5F5F5F,
                                       stop: 0.67 #5F5F5F,
                                       stop: 1 #5F5F5F);
+
     border: 0px solid #0080BE;
 }
 
@@ -1863,6 +1904,7 @@ do not highlight either state. */
                                       stop: 0.66 #4B4B4B,
                                       stop: 0.67 #006596,
                                       stop: 1 #006596);
+
     border: 0px solid #006596;
 }
 
@@ -1876,6 +1918,7 @@ do not highlight either state. */
                                       stop: 0.66 #5F5F5F,
                                       stop: 0.67 #0080BE,
                                       stop: 1 #0080BE);
+
     border: 0px solid #0080BE;
 }
 
@@ -1888,6 +1931,7 @@ do not highlight either state. */
                                       stop: 0.660000 #4B4B4B,
                                       stop: 0.670000 #006596,
                                       stop: 1 #006596);
+
     border: 0px solid #006596;
 }
 
@@ -1901,6 +1945,7 @@ do not highlight either state. */
                                       stop: 0.660000 #5F5F5F,
                                       stop: 0.670000 #0080BE,
                                       stop: 1 #0080BE);
+
     border: 0px solid #0080BE;
 }
 
@@ -1950,203 +1995,11 @@ do not highlight either state. */
  ** End Buttons  ***************************************************************
  *******************************************************************************/
 
-
-WEffectSelector QAbstractItemView,
-#fadeModeCombobox QAbstractScrollArea,
-QToolTip,
-QMenu,
-QMenu QCheckBox {
-  padding: 2px;
-  font: 13px;
+QToolTip {
+    background-color: #222222;
+    color: #CCCCCC;
+    border: 1px solid #CCCCCC;
 }
-WEffectSelector QAbstractItemView,
-#fadeModeCombobox QAbstractScrollArea {
-  min-width: 180px;
-}
-/* common colors for WEffectSelector, QMenu, QToolTip */
-WEffectSelector QAbstractItemView,
-WEffectSelector::indicator:!checked,
-#fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::indicator:!checked,
-QToolTip,
-QMenu,
-QMenu::item,
-QMenu QCheckBox {
-  color: #c1cabe;
-  background-color: #201f1f;
-  }
-WEffectSelector QAbstractItemView,
-#fadeModeCombobox QAbstractScrollArea,
-QToolTip,
-QMenu {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #aaa;
-  border-radius: 1px;
-  }
-  /* hovered items */
-  WEffectSelector::item:selected,
-  #fadeModeCombobox::item:selected,
-  QMenu::item:selected,
-  QMenu QCheckBox:selected,
-  QMenu QCheckBox:focus,  /* selected by keyboard */
-  QMenu QCheckBox:hover  /* mouse hover */ {
-    background-color: #565353;
-    color: #fff;
-    /* remove OS focus indicator */
-    outline: none;
-  }
-
-
-
-WEffectSelector,
-#fadeModeCombobox {
-  color: #c1cabe;
-  /* TODO: use a linear gradient for the background color */
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin-top: 0px;
-  margin-bottom: 0px;
-  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-   * names start getting cut off. Adding explicit padding improves this. */
-  padding: 0px 6px;
-  /* The 3D frame on the combo box becomes flat when you give it a border */
-  border: 1px solid #444342;
-  border-radius: 3px;
-  font: 15px;
-}
-#fadeModeCombobox {
-  /* 1px is added in each dimension. 20+1+1 = 22 = button height */
-  height: 20px;
-  margin: 9px 3px 6px 3px;
-}
-
-  WEffectSelector:hover,
-  #fadeModeCombobox:hover {
-    border: 1px ridge #015d8d;
-  }
-  WEffectSelector::drop-down,
-  #fadeModeCombobox::drop-down {
-    /* This causes the Qt theme's widget style to magically not apply. Go figure. */
-    border: 0;
-  }
-  WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow {
-    width: 20px;
-    height: 20px;
-    image: url(skin:/icon/ic_chevron_down_48px.svg);
-  }
-  WEffectSelector::item:!selected,
-  #fadeModeCombobox::item:!selected {
-    background-color: #201f1f;
-  }
-  /* currently loaded effect */
-  WEffectSelector::checked,
-  #fadeModeCombobox::checked {
-    color: #4495F4;
-    font-weight: bold;
-  }
-  WEffectSelector::indicator:checked,
-  #fadeModeCombobox::indicator:checked {
-    /* checkbox container is 28 x 22px;
-      use margin + border to create a square checkbox sized like kill buttons */ 
-    margin: 2px;
-    image: url(skin:/icon/ic_library_checkmark_blue.svg);
-  }
-
-  WEffectSelector::checked /* selected item */,
-  WEffectSelector::indicator /* checkbox, tick mark */,
-  WEffectSelector::drop-down,
-  WEffectSelector::indicator:!checked,
-  #fadeModeCombobox::checked /* selected mode */,
-  #fadeModeCombobox::indicator /* checkbox, tick mark */,
-  #fadeModeCombobox::drop-down,
-  #fadeModeCombobox::indicator:!checked,
-  QMenu::item,
-  QMenu QCheckBox {
-    padding: 0px;
-    margin: 0px;
-    image: none;
-    outline: none;
-    border: 0px solid transparent;
-    }
-  QMenu::separator {
-    height: 0px;
-    border-top: 1px solid #0a0a0a;
-    margin: 4px;
-  }
-  QMenu::item {
-    /* right padding creates a margin to the menu expand arrow,
-      left padding should be bigger than menu icon width + menu icon
-      margin */
-    padding: 5px 13px 5px 26px;
-    }
-    /* icons in editline menu (searchbox, editable track properties)
-      and color squares in cue color menu */ 
-    QMenu::icon,
-    QMenu::indicator {
-      margin: 0px 4px 0px 2px;
-      padding: 1px;
-    }
-  QMenu QCheckBox {
-    padding: 2px 10px 2px 3px;
-  }
-  QMenu QCheckBox::indicator,
-  QMenu::indicator {
-    width: 13px;
-    height: 13px;
-    border: 1px solid #555;
-    border-radius: 1px;
-    background-color: #0f0f0f;
-    /* remove OS focus indicator */
-    outline: none;
-    }
-    QMenu QCheckBox::indicator:selected {
-      border: 1px solid #999;
-    }
-  QMenu QCheckBox::indicator:checked,
-  QMenu::indicator:checked {
-    image: url(skin:/icon/ic_library_checkmark.svg);
-    }
-  /* disabled menu item and checkbox */
-  QMenu QCheckBox:!enabled,
-  QMenu::item:!enabled,
-  QMenu QCheckBox::indicator:!enabled {
-    color: #555;
-    }
-  QMenu QCheckBox::indicator:!enabled {
-    border: 1px solid #333;
-    background-color: #222;
-    }
-  QMenu QCheckBox::indicator:!enabled:checked {
-    image: url(skin:/icon/ic_library_checkmark_grey.svg);
-    }
-  QCheckBox::indicator:indeterminate {
-    image: url(skin:/icon/ic_library_checkmark_grey.svg);
-    }
-
-  QMenu::right-arrow {
-    width: 16px;
-    height: 16px;
-    image: url(skin:/icon/ic_chevron_right_48px.svg);
-    }
-    QMenu::right-arrow:selected {
-    }
-
-  QHeaderView QMenu::indicator {
-    width: 12px;
-    height: 10px;
-    margin-left: 2px;
-    border: none;
-    background: none;
-    }
-    QHeaderView QMenu::indicator:checked {
-    image: url(skin:/icon/ic_library_checkmark_blue.svg);
-    }
-
-
-
-
-
 /*
 
 #Deck1 {
