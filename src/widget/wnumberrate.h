@@ -25,10 +25,7 @@ class WNumberRate final : public WNumber {
     void setValue(double dValue) override;
 
   private:
-    // Pointer to control objects for rate.
-    ControlProxy* m_pRateControl;
-    ControlProxy* m_pRateRangeControl;
-    ControlProxy* m_pRateDirControl;
+    ControlProxy* m_pRateRatio;
 };
 
 #endif
