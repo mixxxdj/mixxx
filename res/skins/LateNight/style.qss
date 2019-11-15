@@ -128,6 +128,10 @@ WSearchLineEdit,
   any color would cover the background texture
   background-color: #131313;  */
 }
+#KeyText {
+  border-left: 0px;
+}
+
 #WaveformsBottomBorder, #WaveformsRightBorder {
   background-color: #333;
 }
@@ -212,8 +216,9 @@ QHeaderView::down-arrow {
     stop:1 #111);
 }
 
-#DeckRow_1_KeyVinylFx WPushButton[displayValue="0"],
-#VinylTristateButton[displayValue="1"], #VinylTristateButton[displayValue="2"],
+#KeyMatchButton[displayValue="0"], #KeyDownButton[displayValue="0"],
+#VinylButton[displayValue="0"], #VinylTristateButton,
+#FxAssignButtonDeck[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -226,7 +231,11 @@ QHeaderView::down-arrow {
   border-width: 2px;
   border-image: url(skin:buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-  #KeyButton[displayValue="1"],
+  #KeyUpButton[displayValue="0"] {
+    border-width: 2px 0px 2px 2px;
+    border-image: url(skin:buttons/btn_embedded_library.svg) 2 1 2 2;
+  }
+  #KeyMatchButton[displayValue="1"], #KeyDownButton[displayValue="1"],
   #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
   #FxAssignButtonDeck[displayValue="1"],
   #GuiToggleButton[displayValue="1"],
@@ -240,6 +249,10 @@ QHeaderView::down-arrow {
   QPushButton#pushButtonRecording:checked {
     border-width: 2px;
     border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 2 2 2;
+  }
+  #KeyUpButton[displayValue="1"] {
+    border-width: 2px 0px 2px 2px;
+    border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 1 2 2;
   }
 
 #BeatgridButtonsToggle {
@@ -410,7 +423,8 @@ because somehow bg color for #SpecialCueButton can't be overwritten */
 QPushButton#pushButtonRecording:checked,
 #RecFeedback[displayValue="2"],
 #BeatgridButtons WPushButton[value="1"],
-#KeyButton[displayValue="1"],
+#KeyMatchButton[displayValue="1"],
+#KeyUpButton[displayValue="1"], #KeyDownButton[displayValue="1"],
 #HotcueButton[displayValue="1"][highlight="0"],
 #HotcueButton[displayValue="2"][highlight="0"],
 #HotcueButton[displayValue="1"][highlight="1"],
@@ -657,6 +671,13 @@ QPushButton#pushButtonAutoDJ:checked,
   }
   #FxFocusButton[value="1"] {
     image: url(skin:/buttons/btn__fx_focus_active.svg) no-repeat center center;
+  }
+
+#KeyUpButton {
+  image: url(skin:/buttons/btn__key_up.svg) no-repeat center center;
+  }
+#KeyDownButton {
+  image: url(skin:/buttons/btn__key_down.svg) no-repeat center center;
   }
 
 /* deck controls for decks 1-4 and samplers */
@@ -958,7 +979,7 @@ WTime {
   padding: 1px 0px 2px 0px;
   border-width: 0px 0px 1px 0px;
   }
-  #KeyButtons, #VinylButtons, #FxAssingButtonsDeck {
+  #VinylButtons, #FxAssingButtonsDeck {
     qproperty-layoutSpacing: 2;
   }
 
