@@ -71,21 +71,21 @@
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
-                <SetVariable name="btn_format">slip</SetVariable>
+                <SetVariable name="ObjectName">SlipmodeButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">quantize</SetVariable>
-                <SetVariable name="btn_format">quantize</SetVariable>
+                <SetVariable name="ObjectName">QuantizeButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="btn_format">beat_curpos</SetVariable>
+                <SetVariable name="ObjectName">CurposButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
@@ -101,21 +101,21 @@
             <Children>
               <Template src="skin:button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="btn_format">eject</SetVariable>
+                <SetVariable name="ObjectName">EjectButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">repeat</SetVariable>
-                <SetVariable name="btn_format">repeat</SetVariable>
+                <SetVariable name="ObjectName">RepeatButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="btn_format">keylock</SetVariable>
+                <SetVariable name="ObjectName">KeylockButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>

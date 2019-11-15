@@ -659,6 +659,67 @@ QPushButton#pushButtonAutoDJ:checked,
     image: url(skin:/buttons/btn__fx_focus_active.svg) no-repeat center center;
   }
 
+/* deck controls for decks 1-4 and samplers */
+#CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
+  image: url(skin:/buttons/btn__beat_curpos.svg) no-repeat center center;
+  }
+  #CurposButton12[value="1"] {
+    image: url(skin:/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
+  }
+  #CurposButton34[value="1"] {
+    image: url(skin:/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
+  }
+
+  #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
+    image: url(skin:/buttons/btn__eject.svg) no-repeat center center;
+    }
+    #EjectButton12[value="1"] {
+      image: url(skin:/buttons/btn__eject_active_12.svg) no-repeat center center;
+    }
+    #EjectButton34[value="1"] {
+      image: url(skin:/buttons/btn__eject_active_34.svg) no-repeat center center;
+    }
+
+  #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
+    image: url(skin:/buttons/btn__repeat.svg) no-repeat center center;
+    }
+    #RepeatButton12[displayValue="1"] {
+      image: url(skin:/buttons/btn__repeat_active_12.svg) no-repeat center center;
+    }
+    #RepeatButton34[displayValue="1"] {
+      image: url(skin:/buttons/btn__repeat_active_34.svg) no-repeat center center;
+    }
+
+  #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
+    image: url(skin:/buttons/btn__quantize.svg) no-repeat center center;
+    }
+    #QuantizeButton12[displayValue="1"] {
+      image: url(skin:/buttons/btn__quantize_active_12.svg) no-repeat center center;
+    }
+    #QuantizeButton34[displayValue="1"] {
+      image: url(skin:/buttons/btn__quantize_active_34.svg) no-repeat center center;
+    }
+
+  #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
+    image: url(skin:/buttons/btn__slip.svg) no-repeat center center;
+    }
+    #SlipmodeButton12[displayValue="1"] {
+      image: url(skin:/buttons/btn__slip_active_12.svg) no-repeat center center;
+    }
+    #SlipmodeButton34[displayValue="1"] {
+      image: url(skin:/buttons/btn__slip_active_34.svg) no-repeat center center;
+    }
+
+  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
+    image: url(skin:/buttons/btn__keylock.svg) no-repeat center center;
+    }
+    #KeylockButton12[displayValue="1"] {
+      image: url(skin:/buttons/btn__keylock_active_12.svg) no-repeat center center;
+    }
+    #KeylockButton34[displayValue="1"] {
+      image: url(skin:/buttons/btn__keylock_active_34.svg) no-repeat center center;
+    }
+
 #BeatgridButtonsToggle {
   border-width: 3px;
   border-image: url(skin:buttons/btn_embedded_square.svg) 3 3 3 3;
@@ -782,12 +843,6 @@ WOverview {
   font-family: "Open Sans";
 }
 
-#Deck3 WLabel, #Deck4 WLabel,
-#DeckSmall3 WLabel, #DeckSmall4 WLabel,
-#Deck3 WStarRating, #Deck4 WStarRating {
-  color: #0bd9d1;
-}
-
 QLabel, QRadioButton,
 WSearchLineEdit,
 #LibraryBPMSpinBox,
@@ -797,6 +852,7 @@ QTableView, QTextBrowser, QTreeView {
   selection-color: #eece33;
 }
 
+/* gold */
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckSmall1 WLabel, #DeckSmall2 WLabel,
 #PreviewLabel, #PreviewDeckText, #PreviewTitle,
@@ -804,7 +860,7 @@ QTableView, QTextBrowser, QTreeView {
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
 QToolTip,
 #Deck1 WStarRating, #Deck2 WStarRating,
-WBeatSpinBox, #DlgAutoDJ QSpinBox,
+#Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
 QTableView::indicator,
 WEffectSelector, WEffectSelector QAbstractItemView,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
@@ -813,6 +869,15 @@ WSearchLineEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
 }
+
+/* light blue / cyan */
+#Deck3 WLabel, #Deck4 WLabel,
+#DeckSmall3 WLabel, #DeckSmall4 WLabel,
+#Deck3 WStarRating, #Deck4 WStarRating,
+#Deck3 WBeatSpinBox, #Deck4 WBeatSpinBox {
+  color: #0bd9d1;
+}
+
 #PreviewLabel,
 #FxUnitLabel,
 #MicAuxSubTitle,
