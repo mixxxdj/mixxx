@@ -78,6 +78,13 @@
             </Connection>
           </WidgetGroup><!-- Waveform 4 -->
 
+          <!-- 3D border like in all embedded containers.
+               Right border is a similar widget in each instance of waveform.xml -->
+          <WidgetGroup>
+            <ObjectName>WaveformsBottomBorder</ObjectName>
+            <Size>0me,1f</Size>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup><!-- /Waveforms -->
 

@@ -106,7 +106,14 @@
         </Mark>
       </Visual>
 
-      <WidgetGroup><!-- Transparent container for beatgrid buttons -->
+      <!-- 3D border like in all embedded containers.
+            Bottom border is created in waveforms_container.xml -->
+      <WidgetGroup>
+        <ObjectName>WaveformsRightBorder</ObjectName>
+        <Size>1f,0min</Size>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>BeatgridButtons</ObjectName>
         <Layout>vertical</Layout>
         <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
@@ -119,7 +126,6 @@
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
-              <WidgetGroup><Size>1f,0me</Size></WidgetGroup>
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
