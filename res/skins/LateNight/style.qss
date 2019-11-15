@@ -783,7 +783,8 @@ WOverview {
 }
 
 #Deck3 WLabel, #Deck4 WLabel,
-#DeckSmall3 WLabel, #DeckSmall4 WLabel {
+#DeckSmall3 WLabel, #DeckSmall4 WLabel,
+#Deck3 WStarRating, #Deck4 WStarRating {
   color: #0bd9d1;
 }
 
@@ -802,7 +803,7 @@ QTableView, QTextBrowser, QTreeView {
 #FxUnitLabel, #MicAuxSubTitle,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
 QToolTip,
-WStarRating,
+#Deck1 WStarRating, #Deck2 WStarRating,
 WBeatSpinBox, #DlgAutoDJ QSpinBox,
 QTableView::indicator,
 WEffectSelector, WEffectSelector QAbstractItemView,
