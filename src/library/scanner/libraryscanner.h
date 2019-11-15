@@ -57,7 +57,7 @@ class LibraryScanner : public QThread {
     void startScan();
 
   protected:
-    void run();
+    void run() override;
 
   public slots:
     void queueTask(ScannerTask* pTask);

@@ -30,7 +30,7 @@ Description:
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>
                 <Text>Decks / General</Text>
-                <Size>190f,21f</Size>
+                <Size>180min,21f</Size>
               </Label>
 
               <!-- push Close button to far right -->
@@ -83,14 +83,14 @@ Description:
               <!-- Rate Control buttons toggle -->
               <WidgetGroup>
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
                       <Transform><Not/></Transform>
@@ -135,6 +135,11 @@ Description:
             </Children>
           </WidgetGroup><!-- /Deck / General -->
 
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,6f</Size>
+          </WidgetGroup>
+
           <!--  Mixer -->
           <Template src="skin:skin_settings_labelbutton_2state.xml">
             <SetVariable name="text">Mixer</SetVariable>
@@ -150,7 +155,7 @@ Description:
 
               <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -158,7 +163,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -176,7 +181,7 @@ Description:
 
               <WidgetGroup><!-- EQ Kill -->
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -184,7 +189,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -202,7 +207,7 @@ Description:
 
               <WidgetGroup><!-- crossfader -->
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -210,7 +215,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -229,6 +234,11 @@ Description:
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,6f</Size>
+          </WidgetGroup>
+
           <!-- Effects -->
           <Template src="skin:skin_settings_labelbutton_2state.xml">
             <SetVariable name="text">Effects </SetVariable>
@@ -243,7 +253,7 @@ Description:
             <Children>
               <WidgetGroup><!-- 4 Effect Units -->
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -251,7 +261,7 @@ Description:
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                       <Transform><Not/></Transform>
@@ -268,7 +278,7 @@ Description:
 
               <WidgetGroup><!-- Super knobs -->
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -276,7 +286,7 @@ Description:
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                       <Transform><Not/></Transform>
@@ -294,6 +304,11 @@ Description:
             </Children>
           </WidgetGroup><!-- /Effects -->
 
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,6f</Size>
+          </WidgetGroup>
+
           <!-- Samplers -->
           <Template src="skin:skin_settings_labelbutton_2state.xml">
             <SetVariable name="TooltipId">show_samplers</SetVariable>
@@ -309,14 +324,14 @@ Description:
 
               <WidgetGroup><!-- 8 Samplers -->
                 <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <Size>180min,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
-                    <Size>190f,17f</Size>
+                    <Size>180min,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
                       <Transform><Not/></Transform>
@@ -330,45 +345,57 @@ Description:
                 </Children>
               </WidgetGroup><!-- / 8 Samplers -->
 
-              <PushButton>
-                <TooltipId>LoadSamplerBank</TooltipId>
-                <ObjectName>SkinSettingsButton</ObjectName>
-                <Size>190f,17f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>      Load Sampler Bank</Text>
-                  <Alignment>left</Alignment>
-                </State>
-                <Connection>
-                  <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <WidgetGroup>
+                <ObjectName>SamplerLoadSaveBox</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>180min,1min</Size>
+                <Children>
+                  <PushButton>
+                    <TooltipId>LoadSamplerBank</TooltipId>
+                    <ObjectName>SkinSettingsButton</ObjectName>
+                    <Size>160min,18f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text> Load Sampler Bank</Text>
+                      <Alignment>left</Alignment>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 
-              <PushButton>
-                <TooltipId>SaveSamplerBank</TooltipId>
-                <ObjectName>SkinSettingsButton</ObjectName>
-                <Size>190f,17f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>      Save Sampler Bank</Text>
-                  <Alignment>left</Alignment>
-                </State>
-                <Connection>
-                  <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+                  <PushButton>
+                    <TooltipId>SaveSamplerBank</TooltipId>
+                    <ObjectName>SkinSettingsButton</ObjectName>
+                    <Size>160min,18f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text> Save Sampler Bank</Text>
+                      <Alignment>left</Alignment>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- /Samplers -->
 
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,6f</Size>
+          </WidgetGroup>
+
           <Label>
             <ObjectName>CategoryLabel</ObjectName>
             <Text>Library</Text>
-            <Size>190f,21f</Size>
+            <Size>180min,21f</Size>
           </Label>
 
           <WidgetGroup>
