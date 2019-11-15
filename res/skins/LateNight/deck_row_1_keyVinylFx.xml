@@ -10,7 +10,7 @@
         <ObjectName>KeyButtons</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <MaximumSize>125,</MaximumSize>
+        <MaximumSize>118,</MaximumSize>
         <Children>
           <Template src="skin:button_2state_right.xml">
             <SetVariable name="TooltipId">sync_reset_key</SetVariable>
