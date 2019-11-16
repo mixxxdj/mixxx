@@ -633,7 +633,7 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_loadedTrack);
         } else if (!m_pDlgCoverArt->isVisible()) {
-            m_pCoverMenu->popup(e->pos());
+            m_pCoverMenu->popup(e->globalPos());
         }
     }
 }
