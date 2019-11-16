@@ -941,7 +941,7 @@ DJ505.PadColor = {
     DIM_MODIFIER: 0x10,
 };
 
-DJ505.PadColorMap = {
+DJ505.PadColorMap = new ColorMapper({
     '#FFCC0000': DJ505.PadColor.RED,
     '#FFCC4400': DJ505.PadColor.CORAL,
     '#FFCC8800': DJ505.PadColor.ORANGE,
@@ -958,7 +958,7 @@ DJ505.PadColorMap = {
     '#FFCC0044': DJ505.PadColor.RED,
     '#FFFFCCCC': DJ505.PadColor.APRICOT,
     '#FFFFFFFF': DJ505.PadColor.WHITE,
-};
+});
 
 DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, slicer, slicerloop)
@@ -1519,7 +1519,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         off: DJ505.PadColor.OFF,
         outputColor: function(colorCode) {
             // For colored hotcues (shifted only)
-            var midiColor = color.nearestColorMidiCode(colorCode, this.colors)
+            var midiColor = this.colors.getNearestColor(colorCode);
             this.send((this.mode.cuepoint === this.number) ? midiColor : (midiColor + DJ505.PadColor.DIM_MODIFIER));
         },
         unshift: function() {
