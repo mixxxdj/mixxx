@@ -56,7 +56,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>AlignHCenter</ObjectName>
@@ -68,7 +68,7 @@
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
-            <SetVariable name="Size">9f,5f</SetVariable>
+            <SetVariable name="Size">9f,8f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
           </Template>
 
@@ -76,14 +76,12 @@
           <Template src="skin:button_5state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
-            <SetVariable name="Size">33,5f</SetVariable>
+            <SetVariable name="Size">33,8f</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_type</SetVariable>
           </Template>
           <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
-
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
     </Children>
     <Connection>

@@ -109,6 +109,7 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-radius: 2px;
 }
 
+
 /* borders of embedded regions like deck buttons & Master mixer */
 #DeckRow_5_LoopCuesTransport,
 #MasterControls,
@@ -254,6 +255,26 @@ QHeaderView::down-arrow {
     border-width: 2px 0px 2px 2px;
     border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 1 2 2;
   }
+
+#FxSuperLinkButton[value="0"],
+#FxSuperLinkInvertButton[value="0"] {
+  border-top: 1px solid #666;
+  border-left: 1px solid #555;
+  border-bottom: 1px solid #111;
+  border-right: 1px solid #222;
+  border-radius: 3px;
+} /* */
+#FxSuperLinkInvertButton[value="1"],
+#FxSuperLinkButton[value="1"],
+#FxSuperLinkButton[value="2"],
+#FxSuperLinkButton[value="3"],
+#FxSuperLinkButton[value="4"] {
+  border-top: 1px solid #888;
+  border-left: 1px solid #444;
+  border-bottom: 1px solid #0f0f0f;
+  border-right: 1px solid #111;
+  border-radius: 3px;
+}
 
 #BeatgridButtonsToggle {
   border-width: 3px;
@@ -1915,7 +1936,7 @@ WEffectSelector {
   border-radius: 1px;
   }
   #FxSuperLinkButton {
-    margin: 0px 2px 0px 2px;
+    margin: 0px 1px 0px 1px;
     }
   #FxSuperLinkInvertButton {
     margin: 0px;
