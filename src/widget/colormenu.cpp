@@ -1,31 +1,54 @@
 #include "widget/colormenu.h"
+
+#include <QGridLayout>
+#include <QMapIterator>
+#include <QPushButton>
+
 #include "util/color/color.h"
 
-ColorMenu::ColorMenu(QWidget *parent)
-        : QMenu(parent) {
+namespace {
+const int kNumColumns = 4;
+}
+
+ColorMenu::ColorMenu(QWidget* parent)
+        : QWidget(parent) {
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
-    setTitle(tr("Set color"));
+    QGridLayout* pLayout = new QGridLayout();
+    pLayout->setMargin(0);
+    pLayout->setContentsMargins(0,0,0,0);
+    int row = 0;
+    int column = 0;
     for (const auto& pColor : Color::kPredefinedColorsSet.allColors) {
         if (*pColor == *Color::kPredefinedColorsSet.noColor) {
             continue;
         }
 
-        QAction* pColorAction = new QAction(pColor->m_sDisplayName, this);
-        QPixmap pixmap(80, 80);
+        QPushButton* pColorButton = new QPushButton("", this);
+        QPixmap pixmap(35, 20);
         pixmap.fill(pColor->m_defaultRgba);
-        pColorAction->setIcon(QIcon(pixmap));
+        pColorButton->setIcon(QIcon(pixmap));
+        pColorButton->setIconSize(pixmap.rect().size());
+        pColorButton->setFixedSize(pixmap.rect().size());
+        pColorButton->setFlat(true);
+        pColorButton->setToolTip(pColor->m_sDisplayName);
 
-        m_pColorActions.insert(pColor, pColorAction);
-        addAction(pColorAction);
-        connect(pColorAction, &QAction::triggered, this, [pColor, this]() {
+        pLayout->addWidget(pColorButton, row, column);
+        column++;
+        if (column == kNumColumns) {
+            column = 0;
+            row++;
+        }
+
+        connect(pColorButton, &QPushButton::clicked, this, [pColor, this]() {
             emit(colorPicked(pColor));
         });
     }
+    setLayout(pLayout);
 }
 
 void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
-    QMapIterator<PredefinedColorPointer, QAction*> i(m_pColorActions);
+    QMapIterator<PredefinedColorPointer, QPushButton*> i(m_pColorButtons);
     while (i.hasNext()) {
         i.next();
         QPixmap pixmap(80, 80);

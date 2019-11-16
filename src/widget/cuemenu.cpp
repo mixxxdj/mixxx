@@ -1,21 +1,34 @@
-#include <QInputDialog>
-
 #include "widget/cuemenu.h"
+
+#include <QHBoxLayout>
+#include <QInputDialog>
+#include <QVBoxLayout>
+
 #include "util/color/color.h"
 
-CueMenu::CueMenu(QWidget *parent)
-        : QMenu(parent) {
-    m_pEditLabel = new QAction(tr("Edit label"), this);
-    addAction(m_pEditLabel);
-    connect(m_pEditLabel, &QAction::triggered, this, &CueMenu::slotEditLabel);
+CueMenu::CueMenu(QWidget* parent)
+        : QWidget(parent) {
+    QWidget::hide();
+    setWindowFlags(Qt::Popup);
+
+    m_pEditLabel = new QLineEdit(this);
+    m_pEditLabel->setToolTip(tr("Edit cue label"));
+    connect(m_pEditLabel, &QLineEdit::textEdited, this, &CueMenu::slotEditLabel);
 
     m_pColorMenu = new ColorMenu(this);
     connect(m_pColorMenu, &ColorMenu::colorPicked, this, &CueMenu::slotChangeCueColor);
-    addMenu(m_pColorMenu);
 
-    m_pRemoveCue = new QAction(tr("Remove"), this);
-    addAction(m_pRemoveCue);
-    connect(m_pRemoveCue, &QAction::triggered, this, &CueMenu::slotRemoveCue);
+    m_pRemoveCue = new QPushButton(tr("Remove"), this);
+    m_pRemoveCue->setToolTip(tr("Remove this cue point"));
+    connect(m_pRemoveCue, &QPushButton::clicked, this, &CueMenu::slotRemoveCue);
+
+    QVBoxLayout* pMainLayout = new QVBoxLayout();
+    QHBoxLayout* pTopLayout = new QHBoxLayout();
+    pTopLayout->addWidget(m_pEditLabel);
+    pTopLayout->addWidget(m_pRemoveCue);
+    pMainLayout->addLayout(pTopLayout);
+    pMainLayout->addWidget(m_pColorMenu);
+    setLayout(pMainLayout);
 }
 
 CueMenu::~CueMenu() {
@@ -28,13 +41,7 @@ void CueMenu::slotEditLabel() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
-    bool okay = false;
-    QString newLabel = QInputDialog::getText(this, tr("Edit cue label"),
-                                             tr("New cue label"), QLineEdit::Normal,
-                                             m_pCue->getLabel(), &okay);
-    if (okay) {
-        m_pCue->setLabel(newLabel);
-    }
+    m_pCue->setLabel(m_pEditLabel->text());
 }
 
 void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
@@ -45,6 +52,7 @@ void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
         return;
     }
     m_pCue->setColor(pColor);
+    hide();
 }
 
 void CueMenu::slotRemoveCue() {
@@ -55,4 +63,5 @@ void CueMenu::slotRemoveCue() {
         return;
     }
     m_pTrack->removeCue(m_pCue);
+    hide();
 }

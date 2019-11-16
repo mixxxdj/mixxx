@@ -87,7 +87,7 @@ WOverview::WOverview(
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
 
-    connect(m_pCueMenu.get(), &QMenu::aboutToHide, this, &WOverview::slotCueMenuAboutToHide);
+    connect(m_pCueMenu.get(), &CueMenu::aboutToHide, this, &WOverview::slotCueMenuAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {

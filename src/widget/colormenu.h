@@ -1,13 +1,15 @@
 #pragma once
 
-#include <QMenu>
+#include <QPushButton>
+#include <QMap>
+#include <QWidget>
 
 #include "util/color/color.h"
 
-class ColorMenu : public QMenu {
+class ColorMenu : public QWidget {
     Q_OBJECT
   public:
-    ColorMenu(QWidget *parent = nullptr);
+    ColorMenu(QWidget* parent = nullptr);
 
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
 
@@ -15,5 +17,5 @@ class ColorMenu : public QMenu {
     void colorPicked(PredefinedColorPointer pColor);
 
   private:
-    QMap<PredefinedColorPointer, QAction*> m_pColorActions;
+    QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
 };
