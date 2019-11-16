@@ -1459,7 +1459,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     // first test without quantisation
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
-    ASSERT_DOUBLE_EQ(0.025155996658969195, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    ASSERT_DOUBLE_EQ(0.025154950869236584, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     pButtonSyncEnabled1->set(0.0);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
@@ -1468,7 +1468,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
-    ASSERT_DOUBLE_EQ(0.077604743399185772, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    ASSERT_DOUBLE_EQ(0.07760393046107332, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     pButtonSyncEnabled1->set(0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 0.0);
     ProcessBuffer();
@@ -1477,7 +1477,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ProcessBuffer();
 
     // 0.11632139450713055 in case "beatsync_phase" fails
-    ASSERT_DOUBLE_EQ(0.11610813658949772, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    ASSERT_DOUBLE_EQ(0.11610733182161753, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
 
     ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
@@ -1488,7 +1488,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
     // these values were determined experimentally
     // 0.15480806100370784 in case quantize is enabled
-    ASSERT_DOUBLE_EQ(0.16263690384739582, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    ASSERT_DOUBLE_EQ(0.16263416477702192, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
     ProcessBuffer();
 
@@ -1498,7 +1498,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
     // these values were determined experimentally
     // 0.19933910991038406 in case quantize is disabled
-    ASSERT_DOUBLE_EQ(0.19350798541791794, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    ASSERT_DOUBLE_EQ(0.1935071806500378, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
 }
 
@@ -1517,7 +1517,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
     ProcessBuffer();
 
-    ASSERT_DOUBLE_EQ(0.20464410501585786, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+    ASSERT_DOUBLE_EQ(0.20464399092970517, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
 }
 
 TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
@@ -1582,7 +1582,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     ProcessBuffer();
 
     // the value was determined experimentally
-    ASSERT_DOUBLE_EQ(0.11997394884298185, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+    ASSERT_DOUBLE_EQ(0.1199697656840514, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
     pHotCueActivate->set(0.0);
     ProcessBuffer();

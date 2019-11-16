@@ -26,6 +26,8 @@ Variables:
     <PlayPosColor>#FF4300</PlayPosColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <LabelTextColor>#ffffff</LabelTextColor>
+    <LabelBackgroundColor>#85000000</LabelBackgroundColor>
     <DefaultMark>
       <Align>bottom|right</Align>
       <Color>#666666</Color>
