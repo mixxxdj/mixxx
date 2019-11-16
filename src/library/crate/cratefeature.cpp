@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 #include "util/dnd.h"
@@ -267,7 +268,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
+void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -278,6 +279,11 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView("CRATEHOME", edit);
+}
+
+void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -336,7 +342,7 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
@@ -363,7 +369,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction.get());

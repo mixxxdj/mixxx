@@ -78,7 +78,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
-    void doSortByColumn(int headerSection);
+    void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
     void applySortingIfVisible();
     void applySorting();
     void slotLockBpm();
@@ -89,6 +89,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotClearPlayCount();
     void slotClearMainCue();
     void slotClearHotCues();
+    void slotClearIntroCue();
+    void slotClearOutroCue();
     void slotClearLoop();
     void slotClearKey();
     void slotClearReplayGain();
@@ -205,6 +207,8 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearPlayCountAction;
     QAction* m_pClearMainCueAction;
     QAction* m_pClearHotCuesAction;
+    QAction* m_pClearIntroCueAction;
+    QAction* m_pClearOutroCueAction;
     QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
     QAction* m_pClearKeyAction;

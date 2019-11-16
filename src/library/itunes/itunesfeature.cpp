@@ -17,6 +17,7 @@
 #include "library/queryutil.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
+#include "widget/wlibrarysidebar.h"
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
@@ -146,6 +147,13 @@ QIcon ITunesFeature::getIcon() {
     return m_icon;
 }
 
+void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClick()
+    m_pSidebarWidget = pSidebarWidget;
+    // send it to BaseExternalLibraryFeature for onRightClickChild()
+    BaseExternalLibraryFeature::bindSidebarWidget(pSidebarWidget);
+}
+
 void ITunesFeature::activate() {
     activate(false);
     emit(enableCoverArtDisplay(false));
@@ -228,7 +236,7 @@ TreeItemModel* ITunesFeature::getChildModel() {
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    QMenu menu;
+    QMenu menu(m_pSidebarWidget);
     QAction useDefault(tr("Use Default Library"), &menu);
     QAction chooseNew(tr("Choose Library..."), &menu);
     menu.addAction(&useDefault);
@@ -731,7 +739,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                        if (query_insert_to_playlists.lastError().nativeErrorCode() == QString::number(SQLITE_CONSTRAINT)) {
                             // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
                             query_insert_to_playlists.bindValue(":name", playlistname );

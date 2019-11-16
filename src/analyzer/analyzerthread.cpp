@@ -83,7 +83,7 @@ AnalyzerThread::AnalyzerThread(
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_modeFlags(modeFlags),
-          m_nextTrack(MpscFifoConcurrency::SingleProducer),
+          m_nextTrack(2), // minimum capacity
           m_sampleBuffer(mixxx::kAnalysisSamplesPerChunk),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
@@ -192,7 +192,7 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     kLogger.debug()
             << "Enqueueing next track"
             << nextTrack->getId();
-    if (m_nextTrack.enqueue(std::move(nextTrack))) {
+    if (m_nextTrack.try_emplace(std::move(nextTrack))) {
         // Ensure that the submitted track gets processed eventually
         // by waking the worker thread up after adding a new task to
         // its back queue! Otherwise the thread might not notice if
@@ -205,8 +205,10 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
 
 WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
-    if (m_nextTrack.dequeue(&m_currentTrack)) {
-        DEBUG_ASSERT(m_currentTrack);
+    TrackPointer* pFront = m_nextTrack.front();
+    if (pFront) {
+        m_currentTrack = *pFront;
+        m_nextTrack.pop();
         kLogger.debug()
                 << "Dequeued next track"
                 << m_currentTrack->getId();
