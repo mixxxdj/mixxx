@@ -332,7 +332,7 @@
         },
         outputColor: function (colorCode) {
             if (this.colors !== undefined) {
-                var nearestColor = color.nearestColorMidiCode(colorCode, this.colors);
+                var nearestColor = this.colors.getNearestColor(colorCode);
                 print("COLOR = "+nearestColor);
                 this.send(nearestColor);
             } else {
