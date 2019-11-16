@@ -12,7 +12,12 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
-          m_mutex(QMutex::Recursive) {
+          m_mutex(QMutex::Recursive),
+          m_bShowButtonText(true) {
+}
+
+void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
+    m_bShowButtonText = context.selectBool(node, "ShowButtonText", true);
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {

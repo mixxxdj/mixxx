@@ -52,7 +52,7 @@ WaveformMark::WaveformMark(const QString& group,
                            int hotCue)
         : m_iHotCue(hotCue) {
     QString control;
-    if (hotCue != kNoHotCue) {
+    if (hotCue != Cue::kNoHotCue) {
         control = "hotcue_" + QString::number(hotCue + 1) + "_position";
     } else {
         control = context.selectString(node, "Control");
@@ -88,7 +88,7 @@ WaveformMark::WaveformMark(const QString& group,
     m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
 
     // Hotcue text is set by the cue's label in the database, not by the skin.
-    if (hotCue == WaveformMark::kNoHotCue) {
+    if (hotCue == Cue::kNoHotCue) {
         m_text = context.selectString(node, "Text");
     }
 
