@@ -21,7 +21,6 @@ class ColorJSProxy final : public QObject {
     // of a color. The parameter is the hexadecimal representation of the color
     // i.e. 0xAARRGGBB
     Q_INVOKABLE QScriptValue colorFromHexCode(uint colorCode);
-    Q_INVOKABLE QScriptValue nearestColorMidiCode(uint colorCode, QVariantMap availableColorCodes);
 
   private:
     QScriptValue makeHotcueColorPalette(QScriptEngine* pScriptEngine,
