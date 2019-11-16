@@ -913,6 +913,8 @@ class MixxxCore(Feature):
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
                    "src/controllers/colorjsproxy.cpp",
+                   "src/controllers/colormapper.cpp",
+                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",

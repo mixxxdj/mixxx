@@ -6,8 +6,8 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
+#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -218,6 +218,10 @@ void ControllerEngine::initializeScriptEngine() {
     m_pColorJSProxy = std::make_unique<ColorJSProxy>(
             m_pEngine, HotcueColorPaletteSettings(m_pConfig));
     engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
+
+    QScriptValue constructor = m_pEngine->newFunction(ColorMapperJSProxyConstructor);
+    QScriptValue metaObject = m_pEngine->newQMetaObject(&ColorMapperJSProxy::staticMetaObject, constructor);
+    engineGlobalObject.setProperty("ColorMapper", metaObject);
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
