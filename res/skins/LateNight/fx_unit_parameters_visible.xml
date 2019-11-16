@@ -14,7 +14,7 @@
   <WidgetGroup>
     <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <Size>635me,170min</Size>
+    <Size>635me,0min</Size>
     <Children>
 
       <WidgetGroup><!-- Fx Parameters -->
@@ -131,7 +131,7 @@
               </WidgetGroup><!-- Fx label + expand | mix mode + Pfl -->
 
               <WidgetGroup>
-                <MinimumSize>,0</MinimumSize>
+                <MinimumSize>,1</MinimumSize>
                 <MaximumSize>,15</MaximumSize>
                 <SizePolicy>min,me</SizePolicy>
               </WidgetGroup>
@@ -156,7 +156,7 @@
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><Size>,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Expand/Collapse + Mix/Super + Pfl -->
         </Children>

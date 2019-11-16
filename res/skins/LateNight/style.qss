@@ -256,24 +256,10 @@ QHeaderView::down-arrow {
     border-image: url(skin:buttons/btn_embedded_library_active.svg) 2 1 2 2;
   }
 
-#FxSuperLinkButton[value="0"],
-#FxSuperLinkInvertButton[value="0"] {
-  border-top: 1px solid #666;
-  border-left: 1px solid #555;
-  border-bottom: 1px solid #111;
-  border-right: 1px solid #222;
-  border-radius: 3px;
-} /* */
-#FxSuperLinkInvertButton[value="1"],
-#FxSuperLinkButton[value="1"],
-#FxSuperLinkButton[value="2"],
-#FxSuperLinkButton[value="3"],
-#FxSuperLinkButton[value="4"] {
-  border-top: 1px solid #888;
-  border-left: 1px solid #444;
-  border-bottom: 1px solid #0f0f0f;
-  border-right: 1px solid #111;
-  border-radius: 3px;
+#FxSuperLinkButton,
+#FxSuperLinkInvertButton {
+  border: 1px solid #0a0a0a;
+  border-radius: 2px;
 }
 
 #BeatgridButtonsToggle {
@@ -1933,10 +1919,9 @@ WEffectSelector {
 
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
-  border-radius: 1px;
   }
   #FxSuperLinkButton {
-    margin: 0px 1px 0px 1px;
+    margin: 0px 1px 0px 0px;
     }
   #FxSuperLinkInvertButton {
     margin: 0px;
@@ -1945,10 +1930,6 @@ WEffectSelector {
 #FxSuperLinkButton[value="0"],
 #FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #4b4b4b;
-}
-#FxSuperLinkButton[value="0"]:hover,
-#FxSuperLinkInvertButton[displayValue="0"]:hover {
-  background-color: #888;
 }
 #FxSuperLinkInvertButton[displayValue="1"] {
   background-color: #9C0900;
@@ -1960,55 +1941,29 @@ WEffectSelector {
 #FxSuperLinkButton[value="1"] {
   background-color: #5b9601;
   }
-  #FxSuperLinkButton[value="1"]:hover {
-    background-color: #CDCDCD;
-  }
 #FxSuperLinkButton[value="2"] {	/*
   a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #5b9601,
     stop: 0.33 #5b9601,
-    stop: 0.34 #4b4b4b,
-    stop: 1 #4b4b4b);
+    stop: 0.34 #333,
+    stop: 1 #333);
   }
-  #FxSuperLinkButton[value="2"]:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-      stop: 0 #CDCDCD,
-      stop: 0.33 #CDCDCD,
-      stop: 0.34 #4b4b4b,
-      stop: 1 #4b4b4b);
-    }
 #FxSuperLinkButton[value="3"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #4b4b4b,
-    stop: 0.66 #4b4b4b,
+    stop: 0 #333,
+    stop: 0.66 #333,
     stop: 0.67 #5b9601,
     stop: 1 #5b9601);
   }
-  #FxSuperLinkButton[value="3"]:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-      stop: 0 #4b4b4b,
-      stop: 0.66 #4b4b4b,
-      stop: 0.67 #CDCDCD,
-      stop: 1 #CDCDCD);
-    }
 #FxSuperLinkButton[value="4"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #5b9601,
     stop: 0.330000 #5b9601,
-    stop: 0.340000 #4b4b4b,
-    stop: 0.660000 #4b4b4b,
+    stop: 0.340000 #333,
+    stop: 0.660000 #333,
     stop: 0.670000 #5b9601,
     stop: 1 #5b9601);
-  }
-  #FxSuperLinkButton[value="4"]:hover {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-      stop: 0 #CDCDCD,
-      stop: 0.330000 #CDCDCD,
-      stop: 0.340000 #4b4b4b,
-      stop: 0.660000 #4b4b4b,
-      stop: 0.670000 #CDCDCD,
-      stop: 1 #CDCDCD);
   }
 /************** Effects *******************************************************/
 

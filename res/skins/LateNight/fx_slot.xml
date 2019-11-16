@@ -18,7 +18,7 @@
       can sit closer to the Fx unit edges -->
   <WidgetGroup>
     <ObjectName>FxSlotContainer</ObjectName>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Layout>stacked</Layout>
     <Children>
 
@@ -27,7 +27,7 @@
       <WidgetGroup>
         <ObjectName>FxSlot<Variable name="FxNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -119,7 +119,7 @@
 
       <WidgetGroup>
         <ObjectName>FxSlotBorder</ObjectName>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Connection>
           <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
           <Transform><Not/></Transform>
@@ -132,7 +132,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Layout>stacked</Layout>
         <Children>
           <!-- Fx focus highligh border -->
@@ -164,7 +164,7 @@
       </WidgetGroup>
 
       <WidgetGroup><!-- Regular background tile -->
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <BackPath><Variable name="BgTile"/></BackPath>
       </WidgetGroup>
 
