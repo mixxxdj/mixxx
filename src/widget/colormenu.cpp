@@ -25,11 +25,9 @@ ColorMenu::ColorMenu(QWidget* parent)
         }
 
         QPushButton* pColorButton = new QPushButton("", this);
-        QPixmap pixmap(35, 20);
-        pixmap.fill(pColor->m_defaultRgba);
-        pColorButton->setIcon(QIcon(pixmap));
-        pColorButton->setIconSize(pixmap.rect().size());
-        pColorButton->setFixedSize(pixmap.rect().size());
+        QPalette p(pColorButton->palette());
+        p.setColor(QPalette::Button, pColor->m_defaultRgba);
+        pColorButton->setPalette(p);
         pColorButton->setFlat(true);
         pColorButton->setToolTip(pColor->m_sDisplayName);
 
