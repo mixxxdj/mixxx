@@ -16,8 +16,9 @@
             <SetVariable name="TooltipId">sync_reset_key</SetVariable>
             <SetVariable name="ObjectName">KeyMatchButton</SetVariable>
             <SetVariable name="Size">26f,20f</SetVariable>
-            <SetVariable name="state_0_text">KEY&#8202;</SetVariable>
-            <SetVariable name="state_1_text">KEY&#8202;</SetVariable>
+            <!--Musical note 1/8th icon: &#9834; -->
+            <!--SetVariable name="state_0_text">&#8202;&#9834;&#8202;</SetVariable>
+            <SetVariable name="state_1_text">&#8202;&#9834;&#8202;</SetVariable-->
             <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
           </Template>
@@ -30,10 +31,14 @@
             <MaximumSize>65,20</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Elide>right</Elide>
-            <!-- has no effect, only 'qproperty-alignment' in style.qss works
-            <Alignment>left</Alignment-->
             <Connection>
               <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+            </Connection>
+            <!-- unfortunately this doesn't indicate a not-original key -->
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+              <Transform><Not><Variable name="group"/>,file_key</Not></Transform>
+              <BindProperty>highlight</BindProperty>
             </Connection>
           </Key>
 

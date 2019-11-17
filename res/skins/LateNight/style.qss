@@ -132,6 +132,15 @@ WSearchLineEdit,
 #KeyText {
   border-left: 0px;
 }
+/* In conjunction with
+    <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+    <Transform><Not><Variable name="group"/>,file_key</Not></Transform>
+    <BindProperty>highlight</BindProperty>
+  this is uspposed to highlight a not-original key, but it doesn't work.
+#KeyText[highlight="1"] {
+  margin-top: 1px;
+  border: 1px solid #F856E7;
+} */
 
 #WaveformsBottomBorder, #WaveformsRightBorder {
   background-color: #333;
@@ -680,6 +689,9 @@ QPushButton#pushButtonAutoDJ:checked,
     image: url(skin:/buttons/btn__fx_focus_active.svg) no-repeat center center;
   }
 
+#KeyMatchButton {
+  image: url(skin:/buttons/btn__key_match.svg) no-repeat center center;
+  }
 #KeyUpButton {
   image: url(skin:/buttons/btn__key_up.svg) no-repeat center center;
   }
@@ -814,7 +826,7 @@ WSearchLineEdit QToolButton:!focus {
 
 
 /************** Button text colors ********************************************/
-#KeyButton[displayValue="0"],
+#KeyMatchButton,
 #VinylButton[displayValue="0"],
 #VinylTristateButton,
 #FxAssignButton WPushButton[displayValue="0"],
@@ -986,6 +998,10 @@ WTime {
   padding: 1px 0px 2px 0px;
   border-width: 0px 0px 1px 0px;
   }
+  /* needs larger font for note icon
+  #KeyMatchButton {
+    font-size: 18px;
+  } */
   #VinylButtons, #FxAssingButtonsDeck {
     qproperty-layoutSpacing: 2;
   }
