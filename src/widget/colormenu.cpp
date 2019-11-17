@@ -28,7 +28,6 @@ ColorMenu::ColorMenu(QWidget* parent)
         QPalette p(pColorButton->palette());
         p.setColor(QPalette::Button, pColor->m_defaultRgba);
         pColorButton->setPalette(p);
-        pColorButton->setFlat(true);
         pColorButton->setToolTip(pColor->m_sDisplayName);
 
         pLayout->addWidget(pColorButton, row, column);
