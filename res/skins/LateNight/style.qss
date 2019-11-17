@@ -415,9 +415,10 @@ QPushButton#pushButtonAutoDJ:enabled,
 #BroadcastButton[displayValue="2"] {
   background-color: #659f08;
   }
-  /* Grey fo active Fx parameters */
+  /* Grey for active Fx parameters and SplitCue */
   QPushButton#pushButtonRepeatPlaylist:checked,
-  #FxParameterButton[displayValue="1"] {
+  #FxParameterButton[displayValue="1"],
+  #SplitCueButton[value="1"] {
     background-color: #888;
   }
 
@@ -462,8 +463,7 @@ QPushButton#pushButtonRecording:checked,
 QPushButton#pushButtonAutoDJ:checked,
 #DlgAnalysis > QPushButton:checked,
 #MicDuckingButton[value="1"],
-#MicDuckingButton[value="2"],
-#SplitCueButton[value="1"] {
+#MicDuckingButton[value="2"] {
   background-color: #d09300;
 }
 /* ToDo
