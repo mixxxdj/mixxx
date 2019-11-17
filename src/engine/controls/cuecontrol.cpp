@@ -602,7 +602,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
     if (getConfig()->getValue(autoHotcueColorsKey, false)) {
         auto colors = hotcueColorPalette.m_colorList;
-        pCue->setColor(colors.at((hotcue % (colors.count() - 1)) + 1));
+        pCue->setColor(colors.at(hotcue % colors.count()));
     } else {
         pCue->setColor(hotcueColorPalette.m_colorList.first());
     };
