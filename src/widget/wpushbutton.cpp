@@ -222,6 +222,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WPushButton::setStates(int iStates) {
