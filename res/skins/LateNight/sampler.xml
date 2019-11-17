@@ -163,8 +163,8 @@
                       </PushButton>
                       <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">keylock</SetVariable>
+                        <SetVariable name="ObjectName">KeylockButton12</SetVariable>
                         <SetVariable name="btn_type"></SetVariable>
-                        <SetVariable name="btn_format">keylock_12</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                         <SetVariable name="Size">21f,18f</SetVariable>
                       </Template>
