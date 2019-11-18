@@ -18,8 +18,10 @@ CueMenu::CueMenu(QWidget* parent)
     m_pColorMenu = new ColorMenu(this);
     connect(m_pColorMenu, &ColorMenu::colorPicked, this, &CueMenu::slotChangeCueColor);
 
-    m_pRemoveCue = new QPushButton(tr("Remove"), this);
+    QIcon icon(":/images/library/ic_library_cross.svg");
+    m_pRemoveCue = new QPushButton(icon, "", this);
     m_pRemoveCue->setToolTip(tr("Remove this cue point"));
+    m_pRemoveCue->setFixedHeight(m_pEditLabel->sizeHint().height());
     connect(m_pRemoveCue, &QPushButton::clicked, this, &CueMenu::slotRemoveCue);
 
     QVBoxLayout* pMainLayout = new QVBoxLayout();
