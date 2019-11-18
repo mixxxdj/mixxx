@@ -2002,17 +2002,19 @@ QMenu {
 WEffectSelector,
 #fadeModeCombobox {
   color: #c1cabe;
-  /* TODO: use a linear gradient for the background color */
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin-top: 0px;
-  margin-bottom: 0px;
-  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-   * names start getting cut off. Adding explicit padding improves this. */
-  padding: 0px 6px;
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
   border-radius: 3px;
   font: 15px;
+}
+WEffectSelector {
+  /* TODO: use a linear gradient for the background color */
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin: 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+   * names start getting cut off. Adding explicit padding improves this. */
+  padding: 0px 6px;
+  background-color: #404040;
 }
 #fadeModeCombobox {
   /* 1px is added in each dimension. 20+1+1 = 22 = button height */
