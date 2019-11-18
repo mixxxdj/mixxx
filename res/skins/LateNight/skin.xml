@@ -339,6 +339,7 @@
         </WidgetGroup>
 
         <Template src="skin:toolbar.xml"/>
+        <Template src="skin:screen_h-size_detection.xml"/>
       </Children>
     </WidgetGroup>
   </Children>
