@@ -1,4 +1,4 @@
-/* hack to hide the checkmark, otherwise text gets cut off
+/* Previously necessary hack to hide the checkmark, otherwise text gets cut off
 on the right on Retina screens. This can only be done for macOS
 because it cuts off text on the left on KDE
 WEffectSelector QAbstractItemView {
