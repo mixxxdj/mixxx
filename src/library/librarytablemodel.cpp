@@ -61,11 +61,8 @@ void LibraryTableModel::setTableModel(int id) {
 int LibraryTableModel::addTracks(const QModelIndex& index,
                                  const QList<QString>& locations) {
     Q_UNUSED(index);
-    QList<QFileInfo> fileInfoList;
-    foreach (QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
-    }
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromLocations(
+            locations);
     select();
     return trackIds.size();
 }
@@ -101,12 +98,10 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOPLAYLIST
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_IMPORTMETADATA
+            | TRACKMODELCAPS_EDITMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_HIDE
-            | TRACKMODELCAPS_MANIPULATEBEATS
-            | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 }

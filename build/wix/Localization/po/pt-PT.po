@@ -2,13 +2,14 @@
 # Translators:
 # Diogo Oliveira <diogodesigns@gmail.com>, 2016
 # Joaquim Carvalho <j.carvalho59@gmail.com>, 2016
+# Rui <xymarior@yandex.com>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:06+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2018-11-20 19:17+0000\n"
+"Last-Translator: Rui <xymarior@yandex.com>\n"
 "Language-Team: Portuguese (Portugal) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/pt_PT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,35 +41,35 @@ msgstr "Instala o Mixxx"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "Este produto requer o Windows XP ou superior."
+msgid "This product requires Windows 7 or above."
+msgstr "Este produto necessita do Windows 7 ou superior."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
-msgstr "A mesma ou uma versão mais recente deste produto já está instalada."
+msgstr "Já está instalada esta versão ou uma mais recente deste programa."
 
 msgctxt "x64VersionRequired"
 msgid ""
 "You need to install the 64-bit version of this product on 64-bit Windows."
-msgstr "Precisa de instalar a versão 64-bit deste produto no Windows de 64-bit."
+msgstr "Tem de instalar a versão 64-bit deste produto no Windows de 64-bit."
 
 msgctxt "x86VersionRequired"
 msgid ""
 "You need to install the 32-bit version of this product on 32-bit Windows."
-msgstr "Precisa de instalar a versão 32-bit deste produto no Windows de 32-bit."
+msgstr "Tem de instalar a versão 32-bit deste produto no Windows de 32-bit."
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Está prestes a instalar a versão 32-bit num sistema operativo de 64-bit.\nNós recomendamos que use a versão 64-bit para obter um melhor desempenho.\nPode transferir o pacote de instalação de 64-bit a partir de http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Está prestes a instalar a versão 32-bit num sistema operativo de 64-bit. Recomendamos a utilização da versão de 64-bit para um melhor desempenho. Pode descarregar o pacote de instalação de 64-bit em http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
 "You are installing Mixxx on an outdated operating system. Some functions may"
 " not work well or at all. We recommend upgrading your operating system."
-msgstr "Está a instalar o Mixxx num sistema operativo desatualizado. Algumas funcionalidade poderão não funcionar corretamente. Nós recomendamos que atualize o seu sistema operativo."
+msgstr "Está a instalar o Mixxx num sistema operativo desatualizado. Algumas funcionalidade poderão não funcionar corretamente. É recomendável atualizar o seu sistema operativo."
 
 msgctxt "bitWidthMismatch32"
 msgid ""
@@ -91,14 +92,14 @@ msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr "Foi detetada uma versão anterior do Mixxx. Como nós mudámos o instalador, não podemos facilmente proceder à atualização. Por favor desinstale a versão antiga antes de instalar esta."
+msgstr "Foi detetada uma versão anterior do Mixxx. Como o instalador foi alterado, não podemos fazer a atualização facilmente. Por favor desinstale a versão antiga antes de instalar esta."
 
 msgctxt "VCredistNotFound"
 msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr ""
+msgstr "O instalador não conseguiu encontrar o Microsoft Visual C++ 2015 Redistributable neste sistema. Provavelmente isto deve-se a um erro do instalador que deve ser reportado aos programadores do Mixxx."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -121,17 +122,17 @@ msgstr "Aplicação principal"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
-msgstr "A Mixxx core application inclui presets de controladores."
+msgstr "A aplicação principal Mixxx inclui predefinições de controladores."
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr "Ficheiros PDB de depuração"
+msgstr "Ficheiros PDB de depuração de erros"
 
 msgctxt "FeaturePDBDescription"
 msgid ""
 "Install Mixxx PDB files to use with a debugger. This is useful to debug "
 "Mixxx and provide readable backtraces to the development team."
-msgstr "Instala ficheiros PDB do Mixxx para usar com um depurador. Isto é bastante útil para permitir o retorno de indícios legíveis à equipa de desenvolvimento e depurar o Mixxx."
+msgstr "Instala ficheiros PDB do Mixxx para usar com um depurador de erros. Isto é bastante útil para permitir o retorno de indícios legíveis à equipa de desenvolvimento e depurar o Mixxx."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
@@ -159,28 +160,28 @@ msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr "Ficheiros de recurso que permitem ao Mixxx apresentar outras linguagens, diferentes do inglês - EUA"
+msgstr "Ficheiros de recurso que permitem ao Mixxx mostrar outros idiomas, diferentes do inglês - EUA"
 
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "Instalação do [WixBundleName]"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
-msgstr ""
+msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "Tem a certeza que quer cancelar?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Versão anterior"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "Ajuda do Instalador"
 
 msgctxt "HelpText"
 msgid ""
@@ -194,178 +195,178 @@ msgid ""
 " /norestart - suppress any attempts to restart. By default user interface will prompt before restart.\n"
 "\n"
 " /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
-msgstr ""
+msgstr "/install | /repair | /uninstall | /layout [directory] - instala, repara, desinstala ou\n    cria uma cópia local do pacote no diretório.\n    A instalação é o padrão.\n\n /passive | /quiet - mostra uma interface mínima sem perguntas ou não mostra nenhuma interface\n    nem perguntas. Por padrão, a interface e as perguntas são mostradas.\n\n /norestart - suprime qualquer tentativa de reiniciar. Por padrão, a interface irá perguntar antes de reiniciar.\n\n /log log.txt - faz o registo para um ficheiro específico. Por defeito, é criado um registo em %TEMP%."
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Bem-vindo(a)"
 
 msgctxt "InstallMessage"
 msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
 "Click Install to continue or Close to exit."
-msgstr ""
+msgstr "O instalador irá instalar o Mixxx ne sou computador\nPrimeiro irá instalar bibliotecas externas necessárias e só depois o Mixxx.\nClique Instalar para continuar ou Fechar para sair."
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "Versão [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&Opções"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Instalar"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
-msgstr ""
+msgstr "Opções de Instalação"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"
-msgstr ""
+msgstr "Local de instalação:"
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Navegar"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancelar"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
-msgstr ""
+msgstr "Ficheiro a Serem Utilizados"
 
 msgctxt "FilesInUseLabel"
 msgid "The following applications are using files that need to be updated:"
-msgstr ""
+msgstr "Os seguintes programas estão a usar ficheiros que têm de ser atualizados:"
 
 msgctxt "FilesInUseCloseRadioButton"
 msgid "Close the &applications and attempt to restart them."
-msgstr ""
+msgstr "Feche os _programas e tente reiniciá-los."
 
 msgctxt "FilesInUseDontCloseRadioButton"
 msgid "&Do not close applications. A reboot will be required."
-msgstr ""
+msgstr "&Não feche os programas. É necessário reiniciar o computador."
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancelar"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
-msgstr ""
+msgstr "Progresso da Instalação"
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "A processar:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
-msgstr ""
+msgstr "A inicializar..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancelar"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
-msgstr ""
+msgstr "Alterar Instalador"
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Reparar"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&Desinstalar"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
-msgstr ""
+msgstr "Instalação Bem Sucedida"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr ""
+msgstr "O Mixxx foi instalado com sucesso"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
-msgstr ""
+msgstr "O Mixxx foi reparado com sucesso"
 
 msgctxt "SuccessUninstallHeader"
 msgid "Mixxx uninstall has been successful"
-msgstr ""
+msgstr "O Mixxx foi desinstalado com sucesso"
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&Lançar"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
-msgstr ""
+msgstr "Tem de reiniciar o computador antes de poder utilizar o programa."
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Reiniciar"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
-msgstr ""
+msgstr "Falhou a Instalação"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr ""
+msgstr "A instalação do Mixxx falhou"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
-msgstr ""
+msgstr "A reparação do Mixxx falhou"
 
 msgctxt "FailureUninstallHeader"
 msgid "Mixxx uninstall failed"
-msgstr ""
+msgstr "A desinstalação do Mixxx falhou"
 
 msgctxt "FailureHyperlinkLogText"
 msgid ""
 "One or more issues caused the setup to fail. Please fix the issues and then "
 "retry setup. For more information see the <a href=\"#\">log file</a>."
-msgstr ""
+msgstr "Um ou mais problemas impediram a instalação correta. Por favor corrija os problemas e tente novamente. Para mais informações veja o <a href=\"#\">ficheiro de registos</a>."
 
 msgctxt "FailureRestartText"
 msgid ""
 "You must restart your computer to complete the rollback of the software."
-msgstr ""
+msgstr "Tem de reiniciar o computador para terminar a desinstalação do programa"
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Reiniciar"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"

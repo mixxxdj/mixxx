@@ -5,7 +5,11 @@
 
 class WOverviewHSV : public WOverview {
   public:
-    WOverviewHSV(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
+    WOverviewHSV(
+            const char* group,
+            PlayerManager* pPlayerManager,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
 
   private:
     bool drawNextPixmapPart() override;

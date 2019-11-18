@@ -17,7 +17,7 @@
 
 namespace mixxx {
 
-class SoundSourceMp3: public SoundSource {
+class SoundSourceMp3 final : public SoundSource {
   public:
     explicit SoundSourceMp3(const QUrl& url);
     ~SoundSourceMp3() override;
@@ -50,7 +50,7 @@ class SoundSourceMp3: public SoundSource {
      */
     typedef std::vector<SeekFrameType> SeekFrameList;
     SeekFrameList m_seekFrameList; // ordered-by frameIndex
-    SINT m_avgSeekFrameCount; // avg. sample frames per MP3 frame
+    SINT m_avgSeekFrameCount;      // avg. sample frames per MP3 frame
 
     void addSeekFrame(SINT frameIndex, const unsigned char* pInputData);
 
@@ -75,7 +75,7 @@ class SoundSourceMp3: public SoundSource {
     std::vector<unsigned char> m_leftoverBuffer;
 };
 
-class SoundSourceProviderMp3: public SoundSourceProvider {
+class SoundSourceProviderMp3 : public SoundSourceProvider {
   public:
     QString getName() const override;
 

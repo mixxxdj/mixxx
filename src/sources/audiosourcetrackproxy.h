@@ -1,11 +1,9 @@
 #ifndef MIXXX_AUDIOSOURCETRACKPROXY_H
 #define MIXXX_AUDIOSOURCETRACKPROXY_H
 
-
 #include "sources/audiosource.h"
 
 #include "track/track.h"
-
 
 namespace mixxx {
 
@@ -14,7 +12,7 @@ namespace mixxx {
 // accessing the corresponding file to avoid file
 // corruption when writing metadata while the file
 // is still in use.
-class AudioSourceTrackProxy: public AudioSource {
+class AudioSourceTrackProxy : public AudioSource {
   public:
     static AudioSourcePointer create(
             TrackPointer pTrack,
@@ -27,9 +25,9 @@ class AudioSourceTrackProxy: public AudioSource {
     AudioSourceTrackProxy(
             TrackPointer pTrack,
             AudioSourcePointer pAudioSource)
-        : AudioSource(*pAudioSource),
-          m_pTrack(std::move(pTrack)),
-          m_pAudioSource(std::move(pAudioSource)) {
+            : AudioSource(*pAudioSource),
+              m_pTrack(std::move(pTrack)),
+              m_pAudioSource(std::move(pAudioSource)) {
     }
 
     void close() override {
@@ -48,6 +46,13 @@ class AudioSourceTrackProxy: public AudioSource {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }
 
+    void adjustFrameIndexRange(
+            IndexRange frameIndexRange) override {
+        // Ugly hack to keep both sources (inherited base + delegate) in sync!
+        AudioSource::adjustFrameIndexRange(frameIndexRange);
+        adjustFrameIndexRangeOn(*m_pAudioSource, frameIndexRange);
+    }
+
   private:
     TrackPointer m_pTrack;
     // The audio source must be closed before releasing the track
@@ -58,6 +63,5 @@ class AudioSourceTrackProxy: public AudioSource {
 };
 
 } // namespace mixxx
-
 
 #endif // MIXXX_AUDIOSOURCETRACKPROXY_H

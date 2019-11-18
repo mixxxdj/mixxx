@@ -18,6 +18,7 @@
 #include "track/track.h"
 #include "util/class.h"
 #include "util/memory.h"
+#include "util/string.h"
 
 class SearchQueryParser;
 class QueryNode;
@@ -78,7 +79,7 @@ class BaseTrackCache : public QObject {
   signals:
     void tracksChanged(QSet<TrackId> trackIds);
 
-  private slots:
+  public slots:
     void slotTracksAdded(QSet<TrackId> trackId);
     void slotTracksRemoved(QSet<TrackId> trackId);
     void slotTrackDirty(TrackId trackId);
@@ -121,6 +122,8 @@ class BaseTrackCache : public QObject {
     const QString m_columnsJoined;
 
     const ColumnCache m_columnCache;
+
+    const StringCollator m_collator;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;

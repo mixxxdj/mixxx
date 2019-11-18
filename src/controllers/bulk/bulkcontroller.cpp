@@ -11,7 +11,6 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
-#include "util/compatibility.h"
 #include "util/trace.h"
 #include "util/time.h"
 
@@ -33,7 +32,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (load_atomic(m_stop) == 0) {
+    while (m_stop.load() == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -66,7 +65,7 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
         libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
     }
 
-    return QString::fromAscii((char*)buf);
+    return QString::fromLatin1((char*)buf);
 }
 
 

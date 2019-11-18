@@ -30,10 +30,13 @@ class ControllerDebug {
 // We prefix every log message with Logging::kControllerDebugPrefix so that we
 // can bypass the --logLevel commandline argument when --controllerDebug is
 // specified.
+//
+// In order of Bug #1797746, since transition to qt5 it is needed unquote the
+// output for mixxx.log with .noquote(), because in qt5 QDebug() is quoted by default.
 #define controllerDebug(stream)       \
 {                                     \
     if (ControllerDebug::enabled()) { \
-        QDebug(QtDebugMsg) << ControllerDebug::kLogMessagePrefix << stream; \
+        QDebug(QtDebugMsg).noquote() << ControllerDebug::kLogMessagePrefix << stream; \
     }                                 \
 }                                     \
 

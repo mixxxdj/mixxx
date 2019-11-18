@@ -11,12 +11,6 @@ class MixxxApplication : public QApplication {
     MixxxApplication(int& argc, char** argv);
     ~MixxxApplication() override;
 
-#ifndef Q_OS_MAC
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    virtual bool notify(QObject*, QEvent*);
-#endif
-#endif
-
   private:
     bool touchIsRightButton();
     void registerMetaTypes();

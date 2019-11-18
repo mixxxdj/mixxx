@@ -2,7 +2,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 // A Library class is a container for all the model-side aspects of the library.
-// A library widget can be attached to the Library object by calling bindWidget.
+// A library widget can be attached to the Library object by calling bindLibraryWidget.
 
 #ifndef LIBRARY_H
 #define LIBRARY_H
@@ -15,9 +15,8 @@
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
-#include "analysisfeature.h"
+#include "library/analysisfeature.h"
 #include "library/coverartcache.h"
-#include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 #include "util/db/dbconnectionpool.h"
 
@@ -28,13 +27,14 @@ class LibraryFeature;
 class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
-class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class KeyboardEventFilter;
-class PlayerManagerInterface;
+class PlayerManager;
+
+class ExternalTrackCollection;
 
 class Library: public QObject,
     public virtual /*implements*/ GlobalTrackCacheSaver {
@@ -48,15 +48,22 @@ class Library: public QObject,
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            PlayerManagerInterface* pPlayerManager,
+            PlayerManager* pPlayerManager,
             RecordingManager* pRecordingManager);
     ~Library() override;
+
+    void stopFeatures();
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_pDbConnectionPool;
     }
 
-    void bindWidget(WLibrary* libraryWidget,
+    TrackCollection& trackCollection() {
+        DEBUG_ASSERT(m_pTrackCollection);
+        return *m_pTrackCollection;
+    }
+
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
@@ -85,6 +92,11 @@ class Library: public QObject,
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
+    void relocateDirectory(QString oldDir, QString newDir);
+
+    void purgeTracks(const QList<TrackId>& trackIds);
+    void purgeAllTracks(const QDir& rootDir);
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -92,6 +104,7 @@ class Library: public QObject,
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
     void slotRestoreSearch(const QString& text);
+    void slotDisableSearch();
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
@@ -103,6 +116,9 @@ class Library: public QObject,
     void scan() {
         m_scanner.scan();
     }
+    void slotScanTrackAdded(TrackPointer pTrack);
+    void slotScanTracksUpdated(QSet<TrackId> updatedTrackIds);
+    void slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -111,8 +127,7 @@ class Library: public QObject,
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
-    void searchCleared();
-    void searchStarting();
+    void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
@@ -125,9 +140,13 @@ class Library: public QObject,
     void scanStarted();
     void scanFinished();
 
+  private slots:
+      void onPlayerManagerTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+      void onPlayerManagerTrackAnalyzerIdle();
+
   private:
     // Callback for GlobalTrackCache
-    void saveCachedTrack(Track* pTrack) noexcept override;
+    void saveEvictedTrack(Track* pTrack) noexcept override;
 
     const UserSettingsPointer m_pConfig;
 
@@ -136,6 +155,9 @@ class Library: public QObject,
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
+
+    QList<ExternalTrackCollection*> m_externalTrackCollections;
+
     LibraryControl* m_pLibraryControl;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;

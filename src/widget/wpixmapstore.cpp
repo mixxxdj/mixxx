@@ -41,12 +41,8 @@ QPixmap* WPixmapStore::getPixmapNoCache(
         double scaleFactor) {
     QPixmap* pPixmap = nullptr;
     QImage* img = m_loader->getImage(fileName, scaleFactor);
-#if QT_VERSION >= 0x040700
     pPixmap = new QPixmap();
     pPixmap->convertFromImage(*img);
-#else
-    pPixmap = new QPixmap(QPixmap::fromImage(*img));
-#endif
     delete img;
     return pPixmap;
 }

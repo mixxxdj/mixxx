@@ -29,7 +29,7 @@ class RecordingFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();
@@ -49,6 +49,7 @@ class RecordingFeature : public LibraryFeature {
     FolderTreeModel m_childModel;
     const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
+    QIcon m_icon;
 };
 
 #endif

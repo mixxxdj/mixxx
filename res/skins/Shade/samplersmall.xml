@@ -4,70 +4,59 @@
 		<Layout>horizontal</Layout>
 		<Children>
 			<WidgetGroup>
-		        <ObjectName>EffectLeftBorder</ObjectName>
+        <ObjectName>EffectLeftBorder</ObjectName>
 				<Size>5f,40f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 			<WidgetGroup>
 				<Size>0e,40f</Size>
-				<Style>QGroupBox { 
-					border: 0px solid green;  
-					margin: 0px 0px 0px 0px;
-				} 
-				</Style>
 				<BackPath>style/style_bg_looping.png</BackPath>
-                <Layout>horizontal</Layout>
+        <Layout>horizontal</Layout>
 				<Children>
 					<WidgetGroup>
 						<Size>4f,28f</Size>
 					</WidgetGroup>
 					<PushButton>
-						<TooltipId>play_start</TooltipId>
-						<Style></Style>
+						<TooltipId>cue_gotoandplay_cue_default</TooltipId>
 						<NumberStates>2</NumberStates>
-						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_play_sampler_down.png</Pressed>
-							<Unpressed>btn_play_sampler.png</Unpressed>
+							<Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+							<Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_play_sampler_overdown.png</Pressed>
-							<Unpressed>btn_play_sampler_over.png</Unpressed>
+							<Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
+							<Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
 						</State>
 						<Connection>
-			                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
-			                <ButtonState>LeftButton</ButtonState>
-			            </Connection>
-			            <Connection>
-			                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
-			                <ButtonState>RightButton</ButtonState>
-			            </Connection>
-			            <Connection>
-			                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
-			            </Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+            </Connection>
 					</PushButton>
-
 
 					<WidgetGroup>
 						<Size>0e,40f</Size>
 						<SizePolicy>me,max</SizePolicy>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 						<Layout>horizontal</Layout>
 						<Children>
 							<WidgetGroup>
 							 	<Size>0e,40f</Size>
 								<Pos>0,2</Pos>
-								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>						
 								<Children>
 								<Text>
 									<Size>0e,40f</Size>
 									<TooltipId>text</TooltipId>
 									<Style>QLabel { 
-                                            font: bold 13px sans-serif;
+                      font: bold 13px sans-serif;
 											font-family: "Open Sans";
 											background-color: transparent;
 											color: #191F24;
@@ -76,7 +65,7 @@
 											padding-top: 2px;}
 									</Style>
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
-																<Elide>right</Elide>
+                  <Elide>right</Elide>
 								</Text>
 								<!-- Alternative "TITLE ONLY" display
 								<TrackProperty>
@@ -98,7 +87,6 @@
 							</WidgetGroup>
 							<WidgetGroup>
 							 	<Size>35f,40f</Size>
-								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>									
 								<Children>
 									<Number>
@@ -123,16 +111,15 @@
 							<WidgetGroup>
 								<ObjectName>SamplerButtonGrid</ObjectName>
 								<Size>20f,30f</Size>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+								
 								<Children>	
 									<PushButton>
 										<TooltipId>eject</TooltipId>
-										<Style></Style>
 										<NumberStates>1</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_eject_sampler_over.png</Pressed>
-											<Unpressed>btn_eject_sampler.png</Unpressed>
+											<Pressed>skin:/btn/btn_eject_sampler_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_eject_sampler.png</Unpressed>
 										</State>
 										<Pos>0,0</Pos>
 										<Connection>
@@ -144,22 +131,21 @@
 									</PushButton>
 									<PushButton>
 										<TooltipId>orientation</TooltipId>
-										<Style></Style>
 										<NumberStates>3</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_orientation_sampler_left_over.png</Pressed>
-											<Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+											<Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_orientation_sampler_master.png</Pressed>
-											<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+											<Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
+											<Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
 										</State>
 										<State>
 											<Number>2</Number>
-											<Pressed>btn_orientation_sampler_right_over.png</Pressed>
-											<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+											<Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
 										</State>
 										<Pos>0,13</Pos>
 										<Connection>
@@ -175,15 +161,13 @@
 			    </Children>
 			</WidgetGroup>
 			<WidgetGroup>
-		        <ObjectName>EffectRightBorder</ObjectName>
+        <ObjectName>EffectRightBorder</ObjectName>
 				<Size>5f,40f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 			<WidgetGroup>
 				<ObjectName>EffectRightBorder</ObjectName>
 				<Size>3f,40f</Size>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 		</Children>		
 	</WidgetGroup>	

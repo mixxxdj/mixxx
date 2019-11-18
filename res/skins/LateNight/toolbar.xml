@@ -5,27 +5,14 @@
     <SizePolicy>e,min</SizePolicy>
     <Children>
 
-      <PushButton>
-        <Size>84f,24f</Size>
-        <TooltipId>maximize_library</TooltipId>
-        <ObjectName>GuiToggleButton</ObjectName>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>BIG LIBRARY</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>BIG LIBRARY</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">maximize_library</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">84f,24f</SetVariable>
+        <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
+        <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
+        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>
@@ -33,96 +20,45 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
+            <ObjectName>ToolBarDivider</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>
 
-          <PushButton>
-            <Size>46f,24f</Size>
-            <TooltipId>show_mixer</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>MIXER</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>MIXER</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_mixer</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">48f,24f</SetVariable>
+            <SetVariable name="state_0_text">MIXER</SetVariable>
+            <SetVariable name="state_1_text">MIXER</SetVariable>
+            <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_effects</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">59f,24f</SetVariable>
+            <SetVariable name="state_0_text">EFFECTS</SetVariable>
+            <SetVariable name="state_1_text">EFFECTS</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>59f,24f</Size>
-            <TooltipId>show_effects</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>EFFECTS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>EFFECTS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_samplers</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">71f,24f</SetVariable>
+            <SetVariable name="state_0_text">SAMPLERS</SetVariable>
+            <SetVariable name="state_1_text">SAMPLERS</SetVariable>
+            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
-          <PushButton>
-            <Size>59f,24f</Size>
-            <TooltipId>show_microphone</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>MIC/AUX</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>MIC/AUX</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
-          <PushButton>
-            <Size>69f,24f</Size>
-            <TooltipId>show_samplers</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>SAMPLERS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>SAMPLERS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_microphone</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">61f,24f</SetVariable>
+            <SetVariable name="state_0_text">MIC/AUX</SetVariable>
+            <SetVariable name="state_1_text">MIC/AUX</SetVariable>
+            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+          </Template>
 
         </Children>
         <Connection>
@@ -176,35 +112,65 @@
           <Template src="skin:button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">66f,18f</SetVariable>
+            <SetVariable name="Size">65f,18f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
+      <PushButton>
+        <Size>82f,24f</Size>
+        <TooltipId>skin_settings</TooltipId>
+        <ObjectName>BroadcastButton</ObjectName>
+        <NumberStates>4</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>3</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Shoutcast],enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Shoutcast],status</ConfigKey>
+        </Connection>
+      </PushButton>
+
       <WidgetGroup>
-        <ObjectName>ToolbarDivider</ObjectName>
-        <Size>15f,9min</Size>
+        <ObjectName>ToolBarDivider</ObjectName>
+        <Size>13f,9min</Size>
       </WidgetGroup>
 
-          <PushButton>
-            <Size>69f,24f</Size>
-            <TooltipId>skin_settings</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>SETTINGS</Text>
-           </State>
-           <State>
-              <Number>1</Number>
-              <Text>SETTINGS</Text>
-          </State>
-          <Connection>
-            <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
-          </Connection>
-         </PushButton>
+      <PushButton>
+        <Size>80f,24f</Size>
+        <TooltipId>skin_settings</TooltipId>
+        <ObjectName>SettingsButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>     SETTINGS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>     SETTINGS</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
+        </Connection>
+      </PushButton>
 
       <WidgetGroup> <!-- Spacer -->
         <Layout>horizontal</Layout>
@@ -214,12 +180,12 @@
 
       <Label>
         <ObjectName>ToolbarLogo</ObjectName>
-        <Size>78f,24f</Size>
+        <Size>72f,24f</Size>
       </Label>
 
       <WidgetGroup> <!-- Spacer -->
         <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
+        <Size>7f,min</Size>
         <Children/>
       </WidgetGroup>
 
@@ -230,15 +196,12 @@
         <Children>
           <Time>
             <TooltipId>time</TooltipId>
-            <ShowSeconds>false</ShowSeconds>
+            <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>ToolbarDivider</ObjectName>
-        <Size>13f,9min</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>9f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -248,8 +211,6 @@
             <ObjectName>LatencyLabel</ObjectName>
             <Text>CPU</Text>
           </Label>
-
-          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
           <VuMeter>
             <TooltipId>audio_latency_usage</TooltipId>
@@ -268,6 +229,16 @@
           </VuMeter>
 
           <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapUnknown scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_unknown.svg</PixmapUnknown>
+            <PixmapCharged scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
         </Children>
       </WidgetGroup>
 

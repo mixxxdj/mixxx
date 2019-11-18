@@ -19,9 +19,11 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
         return;
     }
 
-    beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
-    endRemoveRows();
-    m_profiles.clear();
+    if (!m_profiles.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
+        endRemoveRows();
+        m_profiles.clear();
+    }
 
     for(BroadcastProfilePtr profile : pSettings->profiles()) {
         BroadcastProfilePtr copy = profile->valuesCopy();
@@ -60,10 +62,13 @@ void BroadcastSettingsModel::deleteProfileFromModel(BroadcastProfilePtr profile)
     if (!profile)
         return;
 
-    int position = m_profiles.keys().indexOf(profile->getProfileName());
-    if (position > -1) {
-        beginRemoveRows(QModelIndex(), position, position);
-        endRemoveRows();
+    QString name = profile->getProfileName();
+    int position = 0;
+    for (auto it = m_profiles.constBegin(); it != m_profiles.constEnd(); ++it, ++position) {
+        if (it.key() == name) {
+            beginRemoveRows(QModelIndex(), position, position);
+            endRemoveRows();
+        }
     }
     m_profiles.remove(profile->getProfileName());
 }
@@ -88,8 +93,9 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
     if (!index.isValid() || rowIndex >= m_profiles.size())
         return QVariant();
 
-    BroadcastProfilePtr profile = m_profiles.values().at(rowIndex);
-    if (profile) {
+    auto it = m_profiles.constBegin() + rowIndex;
+    if (it != m_profiles.constEnd()) {
+        BroadcastProfilePtr profile = it.value();
         int column = index.column();
         if (column == kColumnEnabled) {
             if (role == Qt::CheckStateRole) {
@@ -146,8 +152,9 @@ Qt::ItemFlags BroadcastSettingsModel::flags(const QModelIndex& index) const {
 
 bool BroadcastSettingsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     if (index.isValid()) {
-        BroadcastProfilePtr profile = m_profiles.values().at(index.row());
-        if (profile) {
+        auto it = m_profiles.constBegin() + index.row();
+        if (it != m_profiles.constEnd()) {
+            BroadcastProfilePtr profile = it.value();
             if (index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
                 profile->setEnabled(value.toBool());
             }
@@ -227,4 +234,3 @@ void BroadcastSettingsModel::onConnectionStatusChanged(int newStatus) {
     QModelIndex end = this->index(this->rowCount()-1, kColumnStatus);
     emit(dataChanged(start, end));
 }
-

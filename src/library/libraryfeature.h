@@ -62,8 +62,9 @@ class LibraryFeature : public QObject {
     }
 
     // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrary* /* libraryWidget */,
+    virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
+    virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
     virtual TreeItemModel* getChildModel() = 0;
 
     virtual bool hasTrackTable() {
@@ -111,6 +112,7 @@ class LibraryFeature : public QObject {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
+    void disableSearch();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);

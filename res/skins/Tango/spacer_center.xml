@@ -10,7 +10,7 @@ Description:
 
       <WidgetGroup><!-- with mixer and Master VU -->
         <Layout>vertical</Layout>
-        <Size>18f,0f</Size>
+        <Size>16f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -23,7 +23,7 @@ Description:
         <Children>
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>18f,0f</Size>
+            <Size>16f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>

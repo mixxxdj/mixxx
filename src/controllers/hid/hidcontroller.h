@@ -38,7 +38,7 @@ class HidReader : public QThread {
     QAtomicInt m_stop;
 };
 
-class HidController : public Controller {
+class HidController final : public Controller {
     Q_OBJECT
   public:
     HidController(const hid_device_info deviceInfo);

@@ -1,5 +1,3 @@
-#include <qgl.h>
-
 #include "glwaveformrendererrgb.h"
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -10,8 +8,8 @@
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
-
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererRGB::~GLWaveformRendererRGB() {
@@ -62,8 +60,6 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float kHeightScaleFactor = 255.0 / sqrtf(255 * 255 * 3);
-
-#ifndef __OPENGLES__
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
@@ -193,8 +189,6 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
-
-#endif
 
     painter->endNativePainting();
 }

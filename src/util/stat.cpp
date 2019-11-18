@@ -124,8 +124,8 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 
     if (stat.m_compute & Stat::HISTOGRAM) {
         QStringList histogram;
-        for (QMap<double, double>::const_iterator it = stat.m_histogram.begin();
-             it != stat.m_histogram.end(); ++it) {
+        for (auto it = stat.m_histogram.constBegin();
+             it != stat.m_histogram.constEnd(); ++it) {
             histogram << QString::number(it.key()) + stat.valueUnits() + ":" +
                     QString::number(it.value());
         }
@@ -137,7 +137,7 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 }
 
 // static
-bool Stat::track(const QString& tag,
+bool Stat::track(QString tag,
                  Stat::StatType type,
                  Stat::ComputeFlags compute,
                  double value) {
@@ -145,11 +145,11 @@ bool Stat::track(const QString& tag,
         return false;
     }
     StatReport report;
-    report.tag = strdup(tag.toAscii().constData());
+    report.tag = std::move(tag);
     report.type = type;
     report.compute = compute;
     report.time = mixxx::Time::elapsed().toIntegerNanos();
     report.value = value;
     StatsManager* pManager = StatsManager::instance();
-    return pManager && pManager->maybeWriteReport(report);
+    return pManager && pManager->maybeWriteReport(std::move(report));
 }

@@ -8,7 +8,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><Size>4f,-1min</Size></WidgetGroup>
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -32,7 +32,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -46,8 +46,8 @@
             <Children>
               <EffectParameterKnobComposed>
                 <Size>40f,34f</Size>
-                <Knob>skin:knob_indicator.svg</Knob>
-                <BackPath>skin:knob_bg.svg</BackPath>
+                <Knob>skin:knobs_sliders/knob_indicator_red.svg</Knob>
+                <BackPath>skin:knobs_sliders/knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>1.598</KnobCenterYOffset>
@@ -67,7 +67,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_eqs</ConfigKey>
+      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

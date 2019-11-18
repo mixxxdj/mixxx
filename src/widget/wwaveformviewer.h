@@ -9,6 +9,7 @@
 #include <QMutex>
 
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
 
@@ -16,7 +17,7 @@ class ControlProxy;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
-class WWaveformViewer : public WWidget {
+class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget *parent=nullptr);
@@ -33,7 +34,8 @@ class WWaveformViewer : public WWidget {
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
 
 signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
 public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -55,7 +57,7 @@ private:
         return m_waveformWidget;
     }
     //direct access to let factory sync/set default zoom
-    void setZoom(int zoom);
+    void setZoom(double zoom);
     void setDisplayBeatGridAlpha(int alpha);
     void setPlayMarkerPosition(double position);
 
