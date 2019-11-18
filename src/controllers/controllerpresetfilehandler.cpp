@@ -11,6 +11,7 @@
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "controllers/keyboard/keyboardcontrollerpresetfilehandler.h"
 
 // static
 ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
@@ -44,6 +45,8 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
     } else if (scriptPath.endsWith(HID_PRESET_EXTENSION, Qt::CaseInsensitive) ||
                scriptPath.endsWith(BULK_PRESET_EXTENSION, Qt::CaseInsensitive)) {
         pHandler = new HidControllerPresetFileHandler();
+    } else if (scriptPath.endsWith(KEYBOARD_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+        pHandler = new KeyboardControllerPresetFileHandler();
     }
 
     if (pHandler == NULL) {
@@ -104,11 +107,14 @@ QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& ro
     // TODO(XXX): Controllers can have multiple <controller> blocks. We should
     // expose this to the user and let them pick them as alternate "versions" of
     // a preset.
+
+    // TODO(Tomasito): We could use multiple <controller> blocks for different
+    //                 keyboard layouts.
     return root.firstChildElement("controller");
 }
 
 void ControllerPresetFileHandler::addScriptFilesToPreset(
-    const QDomElement& controller, ControllerPreset* preset) const {
+        const QDomElement& controller, ControllerPreset* preset) const {
     if (controller.isNull())
         return;
 

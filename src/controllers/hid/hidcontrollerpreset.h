@@ -11,13 +11,13 @@ class HidControllerPreset : public ControllerPreset {
 
     virtual void accept(ControllerPresetVisitor* visitor) {
         if (visitor) {
-            visitor->visit(this);
+            visitor->visitHid(this);
         }
     }
 
     virtual void accept(ConstControllerPresetVisitor* visitor) const {
         if (visitor) {
-            visitor->visit(this);
+            visitor->visitHid(this);
         }
     }
 

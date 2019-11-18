@@ -5,8 +5,9 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMultiHash>
+#include <QGuiApplication>
 
-#include "preferences/configobject.h"
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 
 class ControlObject;
 
@@ -14,16 +15,25 @@ class ControlObject;
 class KeyboardEventFilter : public QObject {
     Q_OBJECT
   public:
-    KeyboardEventFilter(ConfigObject<ConfigValueKbd> *pKbdConfigObject,
-                        QObject *parent = nullptr, const char* name = nullptr);
+    explicit KeyboardEventFilter(QObject* parent = nullptr, const char* name = nullptr);
     virtual ~KeyboardEventFilter();
-
     bool eventFilter(QObject* obj, QEvent* e);
+    static QLocale inputLocale() {
+        // Use the default config for local keyboard
+        QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+        return pInputMethod ? pInputMethod->locale() :
+                QLocale(QLocale::English);
+    }
 
-    // Set the keyboard config object. KeyboardEventFilter does NOT take
-    // ownership of pKbdConfigObject.
-    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
-    ConfigObject<ConfigValueKbd>* getKeyboardConfig();
+  public slots:
+    void slotSetKeyboardMapping(KeyboardControllerPresetPointer presetPointer) {
+        m_kbdPreset = presetPointer;
+    };
+
+  signals:
+    void keyseqPressed(QKeySequence keyseq);
+    void controlKeySeqPressed(ConfigKey configKey);
+    void keyboardLayoutChanged(QString layout);
 
   private:
     struct KeyDownInformation {
@@ -39,13 +49,15 @@ class KeyboardEventFilter : public QObject {
     };
 
     // Returns a valid QString with modifier keys from a QKeyEvent
-    QKeySequence getKeySeq(QKeyEvent *e);
+    QString getKeySeq(QKeyEvent* e) const;
+
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
-    // Pointer to keyboard config object
-    ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
-    // Multi-hash of key sequence to
-    QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
+
+    // Clone of keyboard controller preset, containing keyboard mapping info
+    QSharedPointer<KeyboardControllerPreset> m_kbdPreset;
+
+    QString m_previousLayoutName;
 };
 
 #endif  // CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H

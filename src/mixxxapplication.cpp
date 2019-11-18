@@ -67,6 +67,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<ConfigKey>("ConfigKey");
     qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
     QMetaType::registerComparators<SoundDeviceId>();
 }

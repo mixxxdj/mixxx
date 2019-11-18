@@ -30,6 +30,7 @@ inline QString userPresetsPath(UserSettingsPointer pConfig) {
     return dir.absolutePath().append("/");
 }
 
+#define KEYBOARD_PRESET_EXTENSION ".kbd.xml"
 #define HID_PRESET_EXTENSION ".hid.xml"
 #define MIDI_PRESET_EXTENSION ".midi.xml"
 #define BULK_PRESET_EXTENSION ".bulk.xml"

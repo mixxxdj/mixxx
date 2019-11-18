@@ -16,7 +16,7 @@ class Hss1394Enumerator : public MidiEnumerator {
     Hss1394Enumerator();
     virtual ~Hss1394Enumerator();
 
-    QList<Controller*> queryDevices();
+    QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;

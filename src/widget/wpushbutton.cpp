@@ -237,6 +237,10 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
+WidgetTooltipWatcher* WPushButton::createTooltipWatcher(QList<ConfigKey> configKeys) {
+    return new PushButtonTooltipWatcher(this, configKeys, nullptr);
+}
+
 void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
                             Paintable::DrawMode mode, double scaleFactor) {
     QVector<PaintablePointer>& pixmaps = bPressed ?

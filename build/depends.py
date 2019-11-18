@@ -916,6 +916,12 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
+                   "src/controllers/keyboard/keyboardcontroller.cpp",
+                   "src/controllers/keyboard/keyboardcontrollerpreset.cpp",
+                   "src/controllers/keyboard/keyboardcontrollerpresetfilehandler.cpp",
+                   "src/controllers/keyboard/keyboardshortcutsupdater.cpp",
+                   "src/controllers/keyboard/layoututils.cpp",
+                   "src/controllers/keyboard/layouts.cpp",
                    "src/controllers/colorjsproxy.cpp",
 
                    "src/main.cpp",
@@ -1180,6 +1186,7 @@ class MixxxCore(Feature):
                    "src/skin/svgparser.cpp",
                    "src/skin/pixmapsource.cpp",
                    "src/skin/launchimage.cpp",
+                   "src/skin/tooltipupdater.cpp",
 
                    "src/track/beatfactory.cpp",
                    "src/track/beatgrid.cpp",

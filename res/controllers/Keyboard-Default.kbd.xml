@@ -1,0 +1,399 @@
+<?xml version="1.0" ?>
+<MixxxKeyboardPreset mixxxVersion="2.0.1+" schemaVersion="1">
+  <info>
+    <name>Default Mapping</name>
+    <author>Mixxx</author>
+    <description>Default mapping for Mixxx.</description>
+  </info>
+  <controller>
+    <group name="[AutoDJ]">
+      <control action="enabled">
+        <keyseq>Shift+F12</keyseq>
+      </control>
+      <control action="fade_now">
+        <keyseq>Shift+F11</keyseq>
+      </control>
+      <control action="shuffle_playlist">
+        <keyseq>Shift+F9</keyseq>
+      </control>
+      <control action="skip_next">
+        <keyseq>Shift+F10</keyseq>
+      </control>
+    </group>
+    <group name="[Channel1]">
+      <control action="LoadSelectedTrack">
+        <keyseq>Shift+Left</keyseq>
+      </control>
+      <control action="back">
+        <keyseq byPositionOf="en_US">a</keyseq>
+      </control>
+      <control action="beatloop_4_toggle">
+        <keyseq byPositionOf="en_US">q</keyseq>
+      </control>
+      <control action="beatsync">
+        <keyseq byPositionOf="en_US">1</keyseq>
+      </control>
+      <control action="bpm_tap">
+        <keyseq byPositionOf="en_US">Shift+!</keyseq>
+      </control>
+      <control action="cue_default">
+        <keyseq byPositionOf="en_US">f</keyseq>
+      </control>
+      <control action="cue_gotoandstop">
+        <keyseq byPositionOf="en_US">Shift+F</keyseq>
+      </control>
+      <control action="cue_set">
+        <keyseq byPositionOf="en_US">Shift+D</keyseq>
+      </control>
+      <control action="eject">
+        <keyseq>Alt+Shift+Left</keyseq>
+      </control>
+      <control action="filterLowKill">
+        <keyseq byPositionOf="en_US">b</keyseq>
+      </control>
+      <control action="flanger">
+        <keyseq byPositionOf="en_US">5</keyseq>
+      </control>
+      <control action="fwd">
+        <keyseq byPositionOf="en_US">s</keyseq>
+      </control>
+      <control action="hotcue_1_activate">
+        <keyseq byPositionOf="en_US">z</keyseq>
+      </control>
+      <control action="hotcue_1_clear">
+        <keyseq byPositionOf="en_US">Shift+Z</keyseq>
+      </control>
+      <control action="hotcue_2_activate">
+        <keyseq byPositionOf="en_US">x</keyseq>
+      </control>
+      <control action="hotcue_2_clear">
+        <keyseq byPositionOf="en_US">Shift+X</keyseq>
+      </control>
+      <control action="hotcue_3_activate">
+        <keyseq byPositionOf="en_US">c</keyseq>
+      </control>
+      <control action="hotcue_3_clear">
+        <keyseq byPositionOf="en_US">Shift+C</keyseq>
+      </control>
+      <control action="hotcue_4_activate">
+        <keyseq byPositionOf="en_US">v</keyseq>
+      </control>
+      <control action="hotcue_4_clear">
+        <keyseq byPositionOf="en_US">Shift+V</keyseq>
+      </control>
+      <control action="loop_double">
+        <keyseq byPositionOf="en_US">e</keyseq>
+      </control>
+      <control action="loop_halve">
+        <keyseq byPositionOf="en_US">w</keyseq>
+      </control>
+      <control action="loop_in">
+        <keyseq byPositionOf="en_US">2</keyseq>
+      </control>
+      <control action="loop_out">
+        <keyseq byPositionOf="en_US">3</keyseq>
+      </control>
+      <control action="passthrough">
+        <keyseq byPositionOf="en_US">Ctrl+j</keyseq>
+      </control>
+      <control action="pfl">
+        <keyseq byPositionOf="en_US">t</keyseq>
+      </control>
+      <control action="play">
+        <keyseq byPositionOf="en_US">d</keyseq>
+      </control>
+      <control action="rate_perm_down">
+        <keyseq>F1</keyseq>
+      </control>
+      <control action="rate_perm_down_small">
+        <keyseq>Shift+F1</keyseq>
+      </control>
+      <control action="rate_perm_up">
+        <keyseq>F2</keyseq>
+      </control>
+      <control action="rate_perm_up_small">
+        <keyseq>Shift+F2</keyseq>
+      </control>
+      <control action="rate_temp_down">
+        <keyseq>F3</keyseq>
+      </control>
+      <control action="rate_temp_down_small">
+        <keyseq>Shift+F3</keyseq>
+      </control>
+      <control action="rate_temp_up">
+        <keyseq>F4</keyseq>
+      </control>
+      <control action="rate_temp_up_small">
+        <keyseq>Shift+F4</keyseq>
+      </control>
+      <control action="reloop_exit">
+        <keyseq byPositionOf="en_US">4</keyseq>
+      </control>
+      <control action="reverse">
+        <keyseq byPositionOf="en_US">Shift+A</keyseq>
+      </control>
+      <control action="vinylcontrol_cueing">
+        <keyseq byPositionOf="en_US">Ctrl+Alt+Y</keyseq>
+      </control>
+      <control action="vinylcontrol_mode">
+        <keyseq byPositionOf="en_US">Ctrl+Shift+Y</keyseq>
+      </control>
+    </group>
+    <group name="[Channel2]">
+      <control action="LoadSelectedTrack">
+        <keyseq>Shift+Right</keyseq>
+      </control>
+      <control action="back">
+        <keyseq byPositionOf="en_US">j</keyseq>
+      </control>
+      <control action="beatloop_4_toggle">
+        <keyseq byPositionOf="en_US">u</keyseq>
+      </control>
+      <control action="beatsync">
+        <keyseq byPositionOf="en_US">6</keyseq>
+      </control>
+      <control action="bpm_tap">
+        <keyseq byPositionOf="en_US">Shift+^</keyseq>
+        <keyseq lang="ru_RU">Shift+,</keyseq>
+        <keyseq lang="es_ES">Shift+/</keyseq>
+      </control>
+      <control action="cue_default">
+        <keyseq byPositionOf="en_US">;</keyseq>
+
+        <!-- Scancode: TODO: No scancode found in el_GR for character: '&#180;'-->
+        <keyseq lang="el_GR">´</keyseq>
+      </control>
+      <control action="cue_gotoandstop">
+        <keyseq byPositionOf="en_US">Shift+:</keyseq>
+        <keyseq lang="el_GR">Shift+&quot;</keyseq>
+      </control>
+      <control action="cue_set">
+        <keyseq byPositionOf="en_US">Shift+L</keyseq>
+        <keyseq lang="da_DK">Shift+!</keyseq>
+      </control>
+      <control action="eject">
+        <keyseq>Alt+Shift+Right</keyseq>
+      </control>
+      <control action="filterLowKill">
+        <keyseq byPositionOf="en_US">n</keyseq>
+      </control>
+      <control action="flanger">
+        <keyseq byPositionOf="en_US">0</keyseq>
+
+        <!-- Scancode: TODO: No scancode found in cs_CZ for character: '0'-->
+        <keyseq lang="cs_CZ">0</keyseq>
+      </control>
+      <control action="fwd">
+        <keyseq byPositionOf="en_US">k</keyseq>
+      </control>
+      <control action="hotcue_1_activate">
+        <keyseq byPositionOf="en_US">m</keyseq>
+      </control>
+      <control action="hotcue_1_clear">
+        <keyseq byPositionOf="en_US">Shift+M</keyseq>
+      </control>
+      <control action="hotcue_2_activate">
+        <keyseq byPositionOf="en_US">,</keyseq>
+      </control>
+      <control action="hotcue_2_clear">
+        <keyseq byPositionOf="en_US">Shift+&lt;</keyseq>
+        <keyseq lang="es_ES">Shift+¿</keyseq>
+      </control>
+      <control action="hotcue_3_activate">
+        <keyseq byPositionOf="en_US">.</keyseq>
+      </control>
+      <control action="hotcue_3_clear">
+
+        <!-- Basing position on "de_DE" instead of "en_US" because the key that we want to map this action on
+        has a keysym shared by another key in the "us_US" layout. Both keys <AB09> and <LSGT>, respectively
+        scancode 43 and 94, hold the "<" character when pressing shift and thus Mixxx can't tell the scancode
+        for this key for the American-English layout.
+
+        NOTE: When translating "Shift+:" from "de_DE" to "en_US", the action will be triggered by both keys. -->
+        <keyseq byPositionOf="de_DE">Shift+:</keyseq>
+
+        <!-- TODO(Tomasito) The Spanish keyboard does have this '?' character on scancode 12 with the shift modifier.
+             ...            Find out which bug in kbdcfg_to_kbdxml is causing it to not find the scancode -->
+        <!-- Scancode: TODO: No scancode found in es_ES for character: '?'-->
+        <keyseq lang="es_ES">Shift+?</keyseq>
+      </control>
+      <control action="hotcue_4_activate">
+        <keyseq byPositionOf="en_US">/</keyseq>
+        <keyseq lang="ru_RU">/</keyseq>
+        <keyseq lang="fr_FR">=</keyseq>
+        <keyseq lang="es_ES">ç</keyseq>
+      </control>
+      <control action="hotcue_4_clear">
+        <keyseq byPositionOf="en_US">Shift+?</keyseq>
+        <keyseq lang="ru_RU">Shift+?</keyseq>
+        <keyseq lang="fr_FR">Shift++</keyseq>
+        <keyseq lang="es_ES">Shift+Ç</keyseq>
+      </control>
+      <control action="loop_double">
+        <keyseq byPositionOf="en_US">o</keyseq>
+      </control>
+      <control action="loop_halve">
+        <keyseq byPositionOf="en_US">i</keyseq>
+      </control>
+      <control action="loop_in">
+        <keyseq byPositionOf="en_US">7</keyseq>
+      </control>
+      <control action="loop_out">
+        <keyseq byPositionOf="en_US">8</keyseq>
+      </control>
+      <control action="passthrough">
+        <keyseq byPositionOf="en_US">Ctrl+k</keyseq>
+      </control>
+      <control action="pfl">
+        <keyseq byPositionOf="en_US">y</keyseq>
+      </control>
+      <control action="play">
+        <keyseq byPositionOf="en_US">l</keyseq>
+      </control>
+      <control action="rate_perm_down">
+        <keyseq>F5</keyseq>
+      </control>
+      <control action="rate_perm_down_small">
+        <keyseq>Shift+F5</keyseq>
+      </control>
+      <control action="rate_perm_up">
+        <keyseq>F6</keyseq>
+      </control>
+      <control action="rate_perm_up_small">
+        <keyseq>Shift+F6</keyseq>
+      </control>
+      <control action="rate_temp_down">
+        <keyseq>F7</keyseq>
+      </control>
+      <control action="rate_temp_down_small">
+        <keyseq>Shift+F7</keyseq>
+      </control>
+      <control action="rate_temp_up">
+        <keyseq>F8</keyseq>
+      </control>
+      <control action="rate_temp_up_small">
+        <keyseq>Shift+F8</keyseq>
+      </control>
+      <control action="reloop_exit">
+        <keyseq byPositionOf="en_US">9</keyseq>
+      </control>
+      <control action="reverse">
+        <keyseq byPositionOf="en_US">Shift+J</keyseq>
+      </control>
+      <control action="vinylcontrol_cueing">
+        <keyseq byPositionOf="en_US">Ctrl+Alt+U</keyseq>
+      </control>
+      <control action="vinylcontrol_mode">
+        <keyseq byPositionOf="en_US">Ctrl+Shift+U</keyseq>
+      </control>
+    </group>
+    <group name="[KeyboardShortcuts]">
+      <control action="FileMenu_LoadDeck1">
+        <keyseq>Ctrl+o</keyseq>
+      </control>
+      <control action="FileMenu_LoadDeck2">
+        <keyseq>Ctrl+Shift+O</keyseq>
+      </control>
+      <control action="FileMenu_Quit">
+        <keyseq>Ctrl+q</keyseq>
+      </control>
+      <control action="LibraryMenu_NewCrate">
+        <keyseq>Ctrl+Shift+N</keyseq>
+      </control>
+      <control action="LibraryMenu_NewPlaylist">
+        <keyseq>Ctrl+n</keyseq>
+      </control>
+      <control action="OptionsMenu_EnableLiveBroadcasting">
+        <keyseq>Ctrl+l</keyseq>
+      </control>
+      <control action="OptionsMenu_EnableVinyl1">
+        <keyseq>Ctrl+t</keyseq>
+      </control>
+      <control action="OptionsMenu_EnableVinyl2">
+        <keyseq>Ctrl+y</keyseq>
+      </control>
+      <control action="OptionsMenu_EnableVinyl3">
+        <keyseq>Ctrl+u</keyseq>
+      </control>
+      <control action="OptionsMenu_EnableVinyl4">
+        <keyseq>Ctrl+i</keyseq>
+      </control>
+      <control action="OptionsMenu_RecordMix">
+        <keyseq>Ctrl+r</keyseq>
+      </control>
+      <control action="OptionsMenu_ReloadSkin">
+        <keyseq>Ctrl+Shift+R</keyseq>
+      </control>
+      <control action="ViewMenu_MaximizeLibrary">
+        <keyseq>Space</keyseq>
+      </control>
+      <control action="ViewMenu_ShowCoverArt">
+        <keyseq>Ctrl+6</keyseq>
+      </control>
+      <control action="ViewMenu_ShowEffects">
+        <keyseq>Ctrl+5</keyseq>
+      </control>
+      <control action="ViewMenu_ShowMicrophone">
+        <keyseq>Ctrl+2</keyseq>
+      </control>
+      <control action="ViewMenu_ShowPreviewDeck">
+        <keyseq>Ctrl+4</keyseq>
+      </control>
+      <control action="ViewMenu_ShowSamplers">
+        <keyseq>Ctrl+1</keyseq>
+      </control>
+      <control action="ViewMenu_ShowVinylControl">
+        <keyseq>Ctrl+3</keyseq>
+      </control>
+    </group>
+    <group name="[Master]">
+      <control action="crossfader_down">
+        <keyseq byPositionOf="en_US">g</keyseq>
+      </control>
+      <control action="crossfader_down_small">
+        <keyseq byPositionOf="en_US">Shift+G</keyseq>
+      </control>
+      <control action="crossfader_up">
+        <keyseq byPositionOf="en_US">h</keyseq>
+      </control>
+      <control action="crossfader_up_small">
+        <keyseq byPositionOf="en_US">Shift+H</keyseq>
+      </control>
+    </group>
+    <group name="[Microphone]">
+      <control action="talkover">
+
+        <!-- We map on "de_DE" instead of "en_US" because in this case, the key for "en_US" is the exception. For
+        most of the other layouts, this action is mapped to key <LSGT> (scancode 94), a key that is not native to
+        US keyboards. -->
+        <keyseq byPositionOf="de_DE">&lt;</keyseq>
+        <keyseq lang="en_US">`</keyseq>
+        <keyseq lang="el_GR">`</keyseq>
+
+        <!-- Scancode: TODO: No scancode found in ru_RU for character: ']'-->
+        <keyseq lang="ru_RU">]</keyseq>
+      </control>
+    </group>
+    <group name="[PreviewDeck1]">
+      <control action="LoadSelectedTrackAndPlay">
+        <keyseq>Alt+Return</keyseq>
+      </control>
+      <control action="back">
+        <keyseq>Alt+Left</keyseq>
+      </control>
+      <control action="fwd">
+        <keyseq>Alt+Right</keyseq>
+      </control>
+      <control action="start_stop">
+        <keyseq>Return</keyseq>
+      </control>
+    </group>
+    <group name="[VinylControl]">
+      <control action="Toggle">
+        <!-- TODO(XXX) Ctrl+t is also assigned to [KeyboardShortcuts], OptionsMenu_EnableVinyl1. Find a new shortcuts
+             ...       for this action and uncomment it -->
+        <!--<keyseq byPositionOf="de_DE">Ctrl+t</keyseq>-->
+      </control>
+    </group>
+  </controller>
+</MixxxKeyboardPreset>

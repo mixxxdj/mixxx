@@ -20,7 +20,7 @@ class MidiEnumerator : public ControllerEnumerator {
     MidiEnumerator();
     virtual ~MidiEnumerator();
 
-    virtual QList<Controller*> queryDevices() = 0;
+    virtual QList<Controller*> queryDevices() override = 0;
 };
 
 #endif

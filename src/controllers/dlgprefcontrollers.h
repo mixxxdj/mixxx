@@ -7,6 +7,7 @@
 #include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "dlgprefcontroller.h"
 
 class DlgPreferences;
 class DlgPrefController;
@@ -27,6 +28,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     void slotUpdate();
     void slotApply();
     void slotCancel();
+    void slotKeyboardEnabled(bool enabled);
 
   private slots:
     void rescanControllers();
@@ -44,6 +46,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
     QSignalMapper m_buttonMapper;
+    DlgPrefController* m_pKbdPrefController;
 };
 
 #endif /* DLGPREFCONTROLLERS_H */

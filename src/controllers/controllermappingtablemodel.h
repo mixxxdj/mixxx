@@ -10,6 +10,7 @@
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 
@@ -21,8 +22,9 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     ~ControllerMappingTableModel() override;
 
     void setPreset(ControllerPresetPointer pPreset);
-    void visit(HidControllerPreset* pHidPreset) override;
-    void visit(MidiControllerPreset* pMidiPreset) override;
+    void visitKeyboard(KeyboardControllerPreset* pKbdPreset);
+    void visitHid(HidControllerPreset* pHidPreset);
+    void visitMidi(MidiControllerPreset* pMidiPreset);
 
     // Revert changes made since the last apply.
     virtual void cancel();
@@ -44,6 +46,7 @@ class ControllerMappingTableModel : public QAbstractTableModel,
 
     QVector<QHash<int, QVariant> > m_headerInfo;
     ControllerPresetPointer m_pPreset;
+    KeyboardControllerPreset* m_pKbdPreset;
     MidiControllerPreset* m_pMidiPreset;
     HidControllerPreset* m_pHidPreset;
 };

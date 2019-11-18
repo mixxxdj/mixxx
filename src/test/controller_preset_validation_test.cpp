@@ -10,6 +10,7 @@
 #include "controllers/controllerpresetinfoenumerator.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/defs_controllers.h"
 #include "test/mixxxtest.h"
 
@@ -28,7 +29,12 @@ class FakeController : public Controller {
             HidControllerPreset* pClone = new HidControllerPreset();
             *pClone = m_hidPreset;
             return ControllerPresetPointer(pClone);
+        } else if (m_bKbdPreset) {
+            KeyboardControllerPreset* pClone = new KeyboardControllerPreset();
+            *pClone = m_kbdPreset;
+            return ControllerPresetPointer(pClone);
         } else {
+            // Default to Midi
             MidiControllerPreset* pClone = new MidiControllerPreset();
             *pClone = m_midiPreset;
             return ControllerPresetPointer(pClone);
@@ -40,17 +46,31 @@ class FakeController : public Controller {
         return true;
     }
 
-    void visit(const MidiControllerPreset* preset) override {
+    void visitMidi(const MidiControllerPreset* preset) override {
         m_bMidiPreset = true;
         m_bHidPreset = false;
+        m_bKbdPreset = false;
         m_midiPreset = *preset;
         m_hidPreset = HidControllerPreset();
+        m_kbdPreset = KeyboardControllerPreset();
     }
-    void visit(const HidControllerPreset* preset) override {
+
+    void visitHid(const HidControllerPreset* preset) override {
         m_bMidiPreset = false;
         m_bHidPreset = true;
+        m_bKbdPreset = false;
         m_midiPreset = MidiControllerPreset();
         m_hidPreset = *preset;
+        m_kbdPreset = KeyboardControllerPreset();
+    }
+
+    void visitKeyboard(const KeyboardControllerPreset *preset) override {
+        m_bMidiPreset = false;
+        m_bHidPreset = false;
+        m_bKbdPreset = true;
+        m_midiPreset = MidiControllerPreset();
+        m_hidPreset = HidControllerPreset();
+        m_kbdPreset = *preset;
     }
 
     void accept(ControllerVisitor* visitor) override {
@@ -63,6 +83,8 @@ class FakeController : public Controller {
             return m_midiPreset.isMappable();
         } else if (m_bHidPreset) {
             return m_hidPreset.isMappable();
+        } else if (m_bKbdPreset) {
+            return m_kbdPreset.isMappable();
         }
         return false;
     }
@@ -92,7 +114,7 @@ class FakeController : public Controller {
     void send(QByteArray data) override {
         Q_UNUSED(data);
     }
-    virtual void send(QByteArray data, unsigned int reportID) {
+    void send(QByteArray data, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(reportID);
     }
@@ -100,6 +122,8 @@ class FakeController : public Controller {
     ControllerPreset* preset() override {
         if (m_bHidPreset) {
             return &m_hidPreset;
+        } else if (m_bKbdPreset) {
+            return &m_kbdPreset;
         } else {
             // Default to MIDI.
             return &m_midiPreset;
@@ -108,13 +132,16 @@ class FakeController : public Controller {
 
     bool m_bMidiPreset;
     bool m_bHidPreset;
+    bool m_bKbdPreset;
     MidiControllerPreset m_midiPreset;
     HidControllerPreset m_hidPreset;
+    KeyboardControllerPreset m_kbdPreset;
 };
 
 FakeController::FakeController()
         : m_bMidiPreset(false),
-          m_bHidPreset(false) {
+          m_bHidPreset(false),
+          m_bKbdPreset(false) {
 }
 
 FakeController::~FakeController() {
@@ -208,6 +235,16 @@ TEST_F(ControllerPresetValidationTest, HidPresetsValid) {
 TEST_F(ControllerPresetValidationTest, BulkPresetsValid) {
     foreach (const PresetInfo& preset,
              m_pEnumerator->getPresetsByExtension(BULK_PRESET_EXTENSION)) {
+        qDebug() << "Validating" << preset.getPath();
+        EXPECT_TRUE(preset.isValid());
+        EXPECT_TRUE(lintPresetInfo(preset));
+        EXPECT_TRUE(testLoadPreset(preset));
+    }
+}
+
+TEST_F(ControllerPresetValidationTest, KbdPresetsValid) {
+    for (const PresetInfo &preset:
+            m_pEnumerator->getPresetsByExtension(KEYBOARD_PRESET_EXTENSION)) {
         qDebug() << "Validating" << preset.getPath();
         EXPECT_TRUE(preset.isValid());
         EXPECT_TRUE(lintPresetInfo(preset));

@@ -471,6 +471,10 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     }
 }
 
+void DlgPreferences::slotKeyboardEnabled(bool enabled) {
+    m_controllersPage->slotKeyboardEnabled(enabled);
+}
+
 void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
     connect(this, SIGNAL(showDlg()),
             pWidget, SLOT(slotShow()));

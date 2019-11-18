@@ -25,13 +25,13 @@ class MidiControllerPreset : public ControllerPreset {
 
     virtual void accept(ControllerPresetVisitor* visitor) {
         if (visitor) {
-            visitor->visit(this);
+            visitor->visitMidi(this);
         }
     }
 
     virtual void accept(ConstControllerPresetVisitor* visitor) const {
         if (visitor) {
-            visitor->visit(this);
+            visitor->visitMidi(this);
         }
     }
 

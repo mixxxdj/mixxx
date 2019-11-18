@@ -14,6 +14,8 @@
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetinfoenumerator.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/keyboard/keyboardcontroller.h"
 #include "preferences/usersettings.h"
 
 //Forward declaration(s)
@@ -27,11 +29,14 @@ bool controllerCompare(Controller *a, Controller *b);
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
-    ControllerManager(UserSettingsPointer pConfig);
+    ControllerManager(UserSettingsPointer pConfig, KeyboardEventFilter* pKeyboard);
     virtual ~ControllerManager();
 
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
+
+    KeyboardControllerPointer getKeyboardController();
+
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
     QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
         return m_pMainThreadPresetEnumerator;
@@ -58,6 +63,8 @@ class ControllerManager : public QObject {
     void requestShutdown();
     void requestSave(bool onlyActive);
     void requestInitialize();
+    void keyboardPresetChanged(KeyboardControllerPresetPointer pKbdPreset);
+    void keyboardEnabled(bool enabled);
 
   public slots:
     void updateControllerList();
@@ -96,9 +103,11 @@ class ControllerManager : public QObject {
     mutable QMutex m_mutex;
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
+    KeyboardControllerPointer m_pKeyboardController;
     QThread* m_pThread;
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
     bool m_skipPoll;
+    KeyboardEventFilter* m_pKeyboard;
 };
 
 #endif  // CONTROLLERMANAGER_H

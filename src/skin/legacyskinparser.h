@@ -12,11 +12,13 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
+#include "tooltipupdater.h"
 #include "util/memory.h"
 
 class WBaseWidget;
 class Library;
 class KeyboardEventFilter;
+class TooltipShortcutUpdater;
 class PlayerManager;
 class EffectsManager;
 class RecordingManager;
@@ -31,12 +33,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
     LegacySkinParser(UserSettingsPointer pConfig);
-    LegacySkinParser(UserSettingsPointer pConfig,
-                     KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
-                     ControllerManager* pControllerManager,
-                     Library* pLibrary, VinylControlManager* pVCMan,
-                     EffectsManager* pEffectsManager,
-                     RecordingManager* pRecordingManager);
+    LegacySkinParser(UserSettingsPointer pConfig, KeyboardEventFilter *pKeyboard, TooltipShortcutUpdater *pTooltipUpdater,
+                         PlayerManager *pPlayerManager, ControllerManager *pControllerManager, Library *pLibrary,
+                         VinylControlManager *pVCMan, EffectsManager *pEffectsManager,
+                         RecordingManager* pRecordingManager);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -125,7 +125,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupWidget(const QDomNode& node, QWidget* pWidget,
                      bool setupPosition=true);
     void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
-    void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(const QDomNode& node);
 
     QString lookupNodeGroup(const QDomElement& node);
@@ -139,6 +138,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     UserSettingsPointer m_pConfig;
     KeyboardEventFilter* m_pKeyboard;
+    TooltipShortcutUpdater* m_pTooltipUpdater;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;

@@ -24,6 +24,7 @@
 
 class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     Q_OBJECT
+
   public:
     DeviceChannelListener(QObject* pParent, QString name);
     virtual ~DeviceChannelListener();
@@ -42,6 +43,7 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
 
 class Hss1394Controller : public MidiController {
     Q_OBJECT
+
   public:
     Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
     ~Hss1394Controller() override;

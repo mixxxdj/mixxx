@@ -31,7 +31,7 @@ class BulkReader : public QThread {
     void incomingData(QByteArray data, mixxx::Duration timestamp);
 
   protected:
-    void run();
+    void run() override;
 
   private:
     libusb_device_handle* m_phandle;
@@ -56,8 +56,9 @@ class BulkController : public Controller {
 
     bool savePreset(const QString fileName) const override;
 
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
+    void visitKeyboard(const KeyboardControllerPreset* preset) override;
+    void visitMidi(const MidiControllerPreset* preset) override;
+    void visitHid(const HidControllerPreset* preset) override;
 
     void accept(ControllerVisitor* visitor) override {
         if (visitor) {

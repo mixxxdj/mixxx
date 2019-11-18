@@ -30,6 +30,7 @@ class PresetInfoEnumerator {
     QList<PresetInfo> m_hidPresets;
     QList<PresetInfo> m_midiPresets;
     QList<PresetInfo> m_bulkPresets;
+    QList<PresetInfo> m_kbdPresets;
 };
 
 #endif

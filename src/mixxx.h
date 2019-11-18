@@ -43,6 +43,7 @@ class VisualsManager;
 class LaunchImage;
 class Library;
 class KeyboardEventFilter;
+class KeyboardShortcutsUpdater;
 class PlayerManager;
 class RecordingManager;
 class SettingsManager;
@@ -83,7 +84,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void slotFileLoadSongPlayer(int deck);
     // toggle keyboard on-off
-    void slotOptionsKeyboard(bool toggle);
+    void slotToggleKeyboard(bool toggle);
     // Preference dialog
     void slotOptionsPreferences();
     // shows an about dlg
@@ -123,7 +124,6 @@ class MixxxMainWindow : public QMainWindow {
     void launchProgress(int progress);
 
     void initializeWindow();
-    void initializeKeyboard();
     void checkDirectRendering();
 
     bool initializeDatabase();
@@ -172,6 +172,11 @@ class MixxxMainWindow : public QMainWindow {
     VinylControlManager* m_pVCManager;
 
     KeyboardEventFilter* m_pKeyboard;
+
+    // TODO(Tomasito) Maybe it's not necessary for this to be a member variable. As a matter of fact, we could
+    // ...            probably just throw the KeyboardShortcutsUpdater class away and let WMainMenuBar be in charge and
+    // ...            connect ControllerManager, SIGNAL(keyboardPresetLoaded()) directly to WMainMenuBar
+    KeyboardShortcutsUpdater* m_pKbdShortcutsUpdater;
 
     // The Mixxx database connection pool
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
