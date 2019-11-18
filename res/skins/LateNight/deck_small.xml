@@ -124,16 +124,39 @@
             <ObjectName>PlayContainerSmall</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:button_2state_right_display.xml">
-                <SetVariable name="TooltipId">play_cue_set</SetVariable>
-                <SetVariable name="ObjectName">PlayButtonDeckSmall</SetVariable>
-                <SetVariable name="Size">34f,34f</SetVariable>
-                <SetVariable name="btn_type">embedded</SetVariable>
-                <SetVariable name="btn_format">square_big</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>play_cue_set</TooltipId>
+                <ObjectName>PlayButtonDeckSmall</ObjectName>
+                <Size>34f,34f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="TopRegion_btn_type"/>_square_big.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup><!-- PlayContainerSmall -->
 

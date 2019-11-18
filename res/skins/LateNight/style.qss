@@ -430,9 +430,11 @@ QPushButton#pushButtonAutoDJ:enabled,
 /* define red buttons in DeckRow_5_LoopCuesTransport indivually,
 because somehow bg color for #SpecialCueButton can't be overwritten */
 #LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
-#CueDeck[value="1"], #PlayDeck[value="1"], #Reverse[value="1"],
+#CueDeck[value="1"], #Reverse[value="1"],
+#PlayDeck[value="1"][highlight="0"], #PlayDeck[value="1"][highlight="1"],
+#PlayButtonDeckSmall[value="1"][highlight="0"], #PlayButtonDeckSmall[value="1"][highlight="1"],
+#PlayButtonSampler[value="1"][highlight="0"], #PlayButtonSampler[value="1"][highlight="1"],
 #PflButton[value="1"],
-#PlayButtonSampler[displayValue="1"], #PlayButtonDeckSmall[displayValue="1"],
 #SamplerSyncButton[displayValue="1"],
 #EQKillButton[displayValue="1"],
 #MicTalkButton[value="1"], #AuxPlayButton[value="1"],
@@ -455,6 +457,10 @@ QPushButton#pushButtonRecording:checked,
   }
 
 /* Orange/yellow */
+/* Play bg when playing from Cue / hotcue */
+#PlayDeck[value="0"][highlight="1"],
+#PlayButtonDeckSmall[value="0"][highlight="1"],
+#PlayButtonSampler[value="0"][highlight="1"],
 #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
 #FxFocusButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"],
