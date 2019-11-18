@@ -928,7 +928,6 @@ add_executable(mixxx-test
   src/test/midicontrollertest.cpp
   src/test/mixxxtest.cpp
   src/test/movinginterquartilemean_test.cpp
-  src/test/mpscfifotest.cpp
   src/test/nativeeffects_test.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
@@ -1294,6 +1293,10 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 if(WIN32 AND NOT STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC PROTOBUF_USE_DLLS)
 endif()
+
+# Rigtorp SPSC Queue
+# https://github.com/rigtorp/SPSCQueue
+target_include_directories(mixxx-lib PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
 find_package(Qt5
