@@ -89,8 +89,9 @@
             </Children>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
           <WidgetGroup>
-            <MinimumSize>2,</MinimumSize>
             <MaximumSize>80,</MaximumSize>
             <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
@@ -145,8 +146,9 @@
             </Children>
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
           <WidgetGroup>
-            <MinimumSize>2,</MinimumSize>
             <MaximumSize>80,</MaximumSize>
             <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
@@ -192,7 +194,6 @@
           </WidgetGroup><!-- / Intro + Outro -->
 
           <WidgetGroup>
-            <MinimumSize>2,</MinimumSize>
             <MaximumSize>10,</MaximumSize>
             <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
@@ -201,31 +202,26 @@
             <Layout>vertical</Layout>
             <SizePolicy>f,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- HotCues 1-4(5), Cue -->
+              <WidgetGroup><!-- HotCues (1-2 / 1-4) | Reverse | Cue -->
                 <ObjectName>PlayCueRevHotCues</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
+
                   <Template src="skin:button_hotcue.xml">
                     <SetVariable name="number">1</SetVariable>
                   </Template>
-
                   <Template src="skin:button_hotcue.xml">
                     <SetVariable name="number">2</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_hotcue.xml">
-                    <SetVariable name="number">3</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_hotcue.xml">
-                    <SetVariable name="number">4</SetVariable>
                   </Template>
 
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">5</SetVariable>
+                        <SetVariable name="number">3</SetVariable>
+                      </Template>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">4</SetVariable>
                       </Template>
                     </Children>
                     <Connection>
@@ -234,27 +230,36 @@
                     </Connection>
                   </WidgetGroup>
 
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">reverse</SetVariable>
+                    <SetVariable name="ObjectName">Reverse</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="btn_format">square</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,reverse</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reverseroll</SetVariable>
+                  </Template>
 
                   <PushButton>
                     <TooltipId>cue_default_cue_gotoandstop</TooltipId>
                     <ObjectName>CueDeck</ObjectName>
-                    <Size>51f,26f</Size>
+                    <Size>42f,26f</Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
                       <Text><Variable name="state_0_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Text><Variable name="state_1_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_set.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_set.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
@@ -271,9 +276,9 @@
                   </PushButton>
 
                 </Children>
-              </WidgetGroup><!-- /HotCues 1-4(5), Cue -->
+              </WidgetGroup><!-- HotCues (1-2 / 1-4) | Reverse | Cue -->
 
-              <WidgetGroup><!-- (HotCues 6-8) Reverse, Play -->
+              <WidgetGroup><!-- HotCues (3-4 / 5-8) | Play -->
                 <ObjectName>PlayCueRevHotCues</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
@@ -282,13 +287,31 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">3</SetVariable>
+                      </Template>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">4</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">5</SetVariable>
+                      </Template>
+                      <Template src="skin:button_hotcue.xml">
                         <SetVariable name="number">6</SetVariable>
                       </Template>
-
                       <Template src="skin:button_hotcue.xml">
                         <SetVariable name="number">7</SetVariable>
                       </Template>
-
                       <Template src="skin:button_hotcue.xml">
                         <SetVariable name="number">8</SetVariable>
                       </Template>
@@ -299,39 +322,23 @@
                     </Connection>
                   </WidgetGroup>
 
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-
-                  <WidgetGroup>
-                    <Size>51f,26f</Size>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
-                      <Template src="skin:button_1state_right.xml">
-                        <SetVariable name="TooltipId">reverse</SetVariable>
-                        <SetVariable name="ObjectName">Reverse</SetVariable>
-                        <SetVariable name="Size">51f,25f</SetVariable>
-                        <SetVariable name="btn_format">wide</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,reverse</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reverseroll</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
+                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
                   <PushButton>
                     <TooltipId>play_cue_set</TooltipId>
                     <ObjectName>PlayDeck</ObjectName>
-                    <Size>52f,26f</Size>
+                    <Size>68f,26f</Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_wide_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play</ConfigKey>
@@ -351,11 +358,11 @@
                     </Connection>
                   </PushButton>
                 </Children>
-              </WidgetGroup><!-- /(HotCues 6-8) Reverse, Play -->
+              </WidgetGroup><!-- HotCues (3-4 / 5-8) | Play -->
             </Children>
           </WidgetGroup><!-- /HotCues, Play, Cue, Reverse -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- DeckRow_5_LoopCuesTransport -->
     </Children>
   </WidgetGroup>
 </Template>

@@ -9,7 +9,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>SpecialCueButton_<Variable name="cue_type"/></ObjectName>
-    <MinimumSize>20,26</MinimumSize>
+    <MinimumSize>22,26</MinimumSize>
     <MaximumSize>26,26</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <Layout>horizontal</Layout>
@@ -17,7 +17,7 @@ Variables:
       <PushButton>
         <TooltipId><Variable name="cue_type"/></TooltipId>
         <ObjectName>SpecialCueButton</ObjectName>
-        <MinimumSize>20,26</MinimumSize>
+        <MinimumSize>22,26</MinimumSize>
         <MaximumSize>26,26</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
         <NumberStates>2</NumberStates>
