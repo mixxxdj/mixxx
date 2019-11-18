@@ -161,7 +161,8 @@ WSearchLineEdit,
 #DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls, #DeckRateSeparator,
 #SpinnyContainer, #SpinnyContainer[highlight="0"],
 #CoverArtContainer[highlight="0"],
-#BpmTextSmall, #KeyTextSmall,
+#BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
+#PlayContainerSmall,
 #PreviewLabel, #PreviewPlayBox,
 #SamplerText, #SamplerPlay, #SamplerButtonGrid,
 #SamplerGain, #SamplerVU, #SamplerPfl {
@@ -1054,7 +1055,9 @@ WTime {
 }
 
 #PlayContainerSmall {
-  padding: 2px 1px 0px 3px;
+  margin: 1px 0px;
+  padding: 0px 1px 0px 2px;
+  border-width: 0px 0px 0px 1px;
 }
 
 #DecksAndMixer {
@@ -1138,18 +1141,20 @@ WCoverArt {
     padding: 1px 3px 1px 1px;
   }
   #ArtistTextSmall {
-    margin: 0px 1px 0px 1px;
-    padding: 0px 2px 0px 0px;
+    margin: 0px 2px 0px 1px;
+    padding: 0px 1px 0px 0px;
+    border-width: 1px 0px 0px 0px;
   }
   #PlayPositionTextSmall {
-    padding: 0px 1px 2px 2px;
+    padding: 0px 3px 2px 2px; /*
+    border-width: 0px 1px 0px 0px;  */
   }
 
   #KeyTextSmall {
     border-width: 1px 0px 0px 1px;
   }
   #BpmTextSmall {
-    border-width: 0px 1px 0px 0px;
+    border-width: 1px 0px 0px 1px;
   }
   #KeyTextSmall {
     font-size: 13px/13px;
