@@ -37,6 +37,7 @@ CueMenu::CueMenu(QWidget* parent)
 
     QHBoxLayout* pMainLayout = new QHBoxLayout();
     pMainLayout->addLayout(pLeftLayout);
+    pMainLayout->addSpacing(5);
     pMainLayout->addLayout(pRightLayout);
     setLayout(pMainLayout);
 }
