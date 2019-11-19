@@ -16,7 +16,7 @@ ColorMenu::ColorMenu(QWidget* parent)
     // can be called again after construction.
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
-    pLayout->setContentsMargins(0,0,0,0);
+    pLayout->setContentsMargins(0, 0, 0, 0);
     int row = 0;
     int column = 0;
     for (const auto& pColor : Color::kPredefinedColorsSet.allColors) {
