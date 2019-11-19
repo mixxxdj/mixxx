@@ -5,6 +5,7 @@
 #include <QPushButton>
 
 #include "util/color/color.h"
+#include "util/parented_ptr.h"
 
 namespace {
 const int kNumColumns = 4;
@@ -24,7 +25,7 @@ ColorMenu::ColorMenu(QWidget* parent)
             continue;
         }
 
-        QPushButton* pColorButton = new QPushButton("", this);
+        parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
         QPalette palette = pColorButton->palette();
         palette.setColor(QPalette::Button, pColor->m_defaultRgba);
         pColorButton->setPalette(palette);
