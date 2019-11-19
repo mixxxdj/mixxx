@@ -16,13 +16,7 @@
         <Children>
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-          <WidgetGroup>
-            <!-- SizePolicy 'i' stands for ignore.
-                MinimumSize is useless, 
-                MaximumSize is applied though -->
-            <MaximumSize>80,</MaximumSize>
-            <SizePolicy>i,min</SizePolicy>
-          </WidgetGroup>
+          <WidgetGroup><SizePolicy>i,min</SizePolicy></WidgetGroup>
 
           <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
             <ObjectName>LoopControls</ObjectName>
@@ -89,8 +83,8 @@
             </Children>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
-          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-80px wide -->
+          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>80,</MaximumSize></WidgetGroup>
 
           <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
             <ObjectName>BeatjumpControls</ObjectName>
@@ -142,8 +136,8 @@
             </Children>
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
-          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-80px wide -->
+          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>80,</MaximumSize></WidgetGroup>
 
           <WidgetGroup><!-- Intro + Outro -->
             <Layout>vertical</Layout>
@@ -190,7 +184,7 @@
 
           <WidgetGroup><!-- HotCues -->
             <Layout>vertical</Layout>
-            <SizePolicy>f,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- HotCues 1-2 / 1-4 -->
                 <ObjectName>PlayCueRevHotCues</ObjectName>
@@ -269,7 +263,7 @@
 
           <WidgetGroup><!-- Play, Cue, Reverse -->
             <Layout>vertical</Layout>
-            <SizePolicy>f,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- Reverse | Cue -->
                 <ObjectName>PlayCueRevHotCues</ObjectName>
