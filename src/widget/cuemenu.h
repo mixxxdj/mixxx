@@ -13,19 +13,7 @@ class CueMenu : public QWidget {
     CueMenu(QWidget* parent = nullptr);
     ~CueMenu() override;
 
-    void setCue(CuePointer pCue) {
-        m_pCue = pCue;
-        if (m_pCue) {
-            m_pEditLabel->setText(m_pCue->getLabel());
-            m_pColorMenu->setSelectedColor(m_pCue->getColor());
-        } else {
-            m_pColorMenu->setSelectedColor();
-        }
-    }
-
-    void setTrack(TrackPointer pTrack) {
-        m_pTrack = pTrack;
-    }
+    void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
         if (m_pColorMenu != nullptr) {

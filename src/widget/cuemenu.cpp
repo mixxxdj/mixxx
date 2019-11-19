@@ -48,6 +48,20 @@ CueMenu::~CueMenu() {
     delete m_pRemoveCue;
 }
 
+void CueMenu::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
+    if (pTrack && pCue) {
+        m_pTrack = pTrack;
+        m_pCue = pCue;
+        m_pEditLabel->setText(m_pCue->getLabel());
+        m_pColorMenu->setSelectedColor(m_pCue->getColor());
+    } else {
+        m_pTrack.reset();
+        m_pCue.reset();
+        m_pEditLabel->setText(QString(""));
+        m_pColorMenu->setSelectedColor();
+    }
+}
+
 void CueMenu::slotEditLabel() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
