@@ -81,7 +81,7 @@ QTableView, QTextBrowser, QTreeView {
   #DeckRow_4_OverviewSpinny,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
   #FxRows, #FxUnitControls, #FxSlotContainer,
-#MixerChannelControls, #MasterHeadphoneMixerContainer,
+#MixerContainer,
   #MasterHeadphoneDivider,
 #MicRack, #AuxRack, #MicAuxMainControls,
   #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
@@ -98,7 +98,7 @@ QAbstractScrollArea::corner {
 #Deck1, #DeckSmall1, #Deck2, #DeckSmall2,
 #Deck3, #DeckSmall3, #Deck4, #DeckSmall4,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
-#MixerChannelControls, #MasterHeadphoneMixerContainer,
+#MixerContainer,
 #MicRack, #AuxRack, #MicAuxMainControls,
 #SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
@@ -180,8 +180,7 @@ WSearchLineEdit,
 #MicRack, #AuxRack {
   margin-bottom: 5px;
 }
-#MixerChannelControls,
-#MasterHeadphoneMixerContainer {
+#MixerContainer {
   margin-bottom: 3px;
 }
 
@@ -1344,28 +1343,20 @@ WBeatSpinBox,
 }
 
 #MasterHeadphoneMixerContainer {
-  padding: 2px;
-  border-left: none;
-  border-bottom-left-radius: 0px;
-  border-top-left-radius: 0px;
+  padding: 2px 2px 2px 0px;
   }
   #MasterControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-    padding: 2px 2px 2px 2px;
-  }
-  #MasterHeadphoneDivider {
+    padding: 2px;
   }
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
     padding: 2px;
   }
 
-#MixerChannelControls {
+#MixerDecks {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 0px 5px 2px 5px;
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
   }
   #MixerChannel_2Decks {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';

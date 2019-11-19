@@ -165,6 +165,11 @@ Description:
             <Layout>vertical</Layout>
             <Children>
 
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">Master / Headphone Mixer</SetVariable>
+                <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+              </Template>
+
               <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
                 <Size>190f,17f</Size>
