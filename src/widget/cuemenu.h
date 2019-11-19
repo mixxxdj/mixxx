@@ -30,7 +30,7 @@ class CueMenu : public QWidget {
         }
     }
 
-    void popup(const QPoint &p, QAction *atAction = nullptr) {
+    void popup(const QPoint& p, QAction* atAction = nullptr) {
         Q_UNUSED(atAction);
         qDebug() << "Showing menu at" << p;
         move(p);
