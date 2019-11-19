@@ -25,9 +25,9 @@ ColorMenu::ColorMenu(QWidget* parent)
         }
 
         QPushButton* pColorButton = new QPushButton("", this);
-        QPalette p(pColorButton->palette());
-        p.setColor(QPalette::Button, pColor->m_defaultRgba);
-        pColorButton->setPalette(p);
+        QPalette palette = pColorButton->palette();
+        palette.setColor(QPalette::Button, pColor->m_defaultRgba);
+        pColorButton->setPalette(palette);
         pColorButton->setToolTip(pColor->m_sDisplayName);
 
         pLayout->addWidget(pColorButton, row, column);
