@@ -294,7 +294,7 @@
             print('ERROR: No hotcue number specified for new HotcueButton.');
             return;
         }
-        if (options.colors !== undefined || options.sendRGB !== undefined) {
+        if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
             this.colorKey = 'hotcue_' + options.number + '_color';
         }
         this.number = options.number;
@@ -328,8 +328,8 @@
             }
         },
         outputColor: function (colorCode) {
-            if (this.colors !== undefined) {
-                var nearestColorValue = this.colors.getNearestValue(colorCode);
+            if (this.colorMapper !== undefined) {
+                var nearestColorValue = this.colorMapper.getNearestValue(colorCode);
                 print("COLOR = "+nearestColorValue);
                 this.send(nearestColorValue);
             } else {
