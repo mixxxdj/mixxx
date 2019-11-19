@@ -332,8 +332,8 @@
         },
         outputColor: function (colorCode) {
             if (this.colors !== undefined) {
-                var nearestColor = this.colors.getNearestColor(colorCode);
-                this.send(nearestColor);
+                var nearestColorValue = this.colors.getNearestValue(colorCode);
+                this.send(nearestColorValue);
             } else {
                 if (this.sendRGB === undefined) {
                     print("ERROR: no function defined for sending RGB colors");
