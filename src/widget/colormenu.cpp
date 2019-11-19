@@ -48,12 +48,15 @@ void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation
     QMapIterator<PredefinedColorPointer, QPushButton*> i(m_pColorButtons);
     while (i.hasNext()) {
         i.next();
-        QPixmap pixmap(80, 80);
+        PredefinedColorPointer pColor = i.key();
+        QPushButton* pColorButton = i.value();
+        QPalette palette = pColorButton->palette();
         if (pColorRepresentation == nullptr) {
-            pixmap.fill(i.key()->m_defaultRgba);
+            palette.setColor(QPalette::Button, pColor->m_defaultRgba);
         } else {
-            pixmap.fill(pColorRepresentation->representationFor(i.key()));
+            palette.setColor(QPalette::Button, pColorRepresentation->representationFor(pColor));
         }
-        i.value()->setIcon(QIcon(pixmap));
+        pColorButton->setToolTip(pColor->m_sDisplayName);
+        pColorButton->setPalette(palette);
     }
 }
