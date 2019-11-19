@@ -31,29 +31,13 @@ class Event {
         return event(tag, Stat::EVENT_END);
     }
 
-  private:
-    static bool event(const char*, Event::EventType) {
-        // this should not be uses to avoid unicode encoding and
-        // mamory alloc at every call. Use:
-        // static const QString tag(const char*);
-        return false;
-    }
-
-    static bool start(const char*) {
-        // this should not be uses to avoid unicode encoding and
-        // mamory alloc at every call. Use:
-        // static const QString tag(const char*);
-        return false;
-    }
-
-    static bool end(const char*) {
-        // this should not be uses to avoid unicode encoding and
-        // mamory alloc at every call. Use:
-        // static const QString tag(const char*);
-        return false;
-    }
-
-
+    // Disallow to use this class with implicit converted char strings.
+    // This should not be uses to avoid unicode encoding and mmory
+    // allocation at every call. Use a static tag like this:
+    // static const QString tag("TAG TEXT");
+    static bool event(const char*, Event::EventType) = delete;
+    static bool start(const char*) = delete;
+    static bool end(const char*) = delete;
 };
 
 #endif /* EVENT_H */
