@@ -597,12 +597,14 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     double cuePosition;
     double cueLength;
     if (m_pLoopEnabled->get()) {
+        // If a loop is enabled, the hotcue will be saved loop
         cuePosition = m_pLoopStartPosition->get();
         cueLength = m_pLoopEndPosition->get() - cuePosition;
-        if (cuePosition < 0 || cueLength <= 0) {
+        if (cuePosition == -1 || cueLength == -1) {
             return;
         }
     } else {
+        // If no loop is enabled, just store regular jump cue
         double closestBeat = m_pClosestBeat->get();
         cuePosition =
                 (m_pQuantizeEnabled->toBool() && closestBeat != -1) ?
@@ -689,8 +691,9 @@ void CueControl::hotcueSetCue(HotcueControl* pControl, double v) {
 void CueControl::hotcueSetLoop(HotcueControl* pControl, double v) {
     //qDebug() << "CueControl::hotcueSetLoop" << v;
 
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack)
@@ -853,7 +856,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    CuePointer pCue(pControl->getCue());
+    CuePointer pCue = pControl->getCue();
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
