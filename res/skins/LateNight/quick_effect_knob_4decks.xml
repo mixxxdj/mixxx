@@ -27,13 +27,13 @@
                 <State>
                   <Number>0</Number>
                   <Text>&#9733;</Text>
-                  <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_eqkill.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>

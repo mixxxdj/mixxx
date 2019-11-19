@@ -23,9 +23,9 @@ Variables:
     per-button icons in qss, but unfortunately variables aren't recognised.
     <Style>
       WPushButton[value="0"] {
-        image: url(skin:/buttons/btn__fx_<Variable name="Text"/><Variable name="FxUnit"/>.svg) no-repeat center center;}
+        image: url(skin:/buttons_<Variable name="scheme"/>/btn__fx_<Variable name="Text"/><Variable name="FxUnit"/>.svg) no-repeat center center;}
       WPushButton[value="1"] {
-        image: url(skin:/buttons/btn__fx_<Variable name="Text"/><Variable name="FxUnit"/>_active.svg) no-repeat center center;}
+        image: url(skin:/buttons_<Variable name="scheme"/>/btn__fx_<Variable name="Text"/><Variable name="FxUnit"/>_active.svg) no-repeat center center;}
     </Style> -->
     <Children>
       <PushButton>
@@ -40,15 +40,15 @@ Variables:
           <Number>0</Number>
           <!--Text><Variable name="Text"/><Variable name="FxUnit"/></Text-->
           <Alignment>center</Alignment>
-          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="SubRegion_btn_type"/>_fx.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
           <!--Text><Variable name="Text"/><Variable name="FxUnit"/></Text-->
           <Alignment>center</Alignment>
-          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Pressed>
         </State>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>

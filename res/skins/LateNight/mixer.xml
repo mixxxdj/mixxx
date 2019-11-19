@@ -7,8 +7,8 @@
       <SliderComposed>
         <TooltipId>crossfader</TooltipId>
         <Size>141f,46f</Size>
-        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
+        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -232,8 +232,8 @@
                       <SliderComposed>
                         <TooltipId>crossfader</TooltipId>
                         <Size>141f,46f</Size>
-                        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-                        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader.svg</Slider>
+                        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader.svg</Slider>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -249,8 +249,8 @@
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
                             <Size>141f,46f</Size>
-                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader.svg</Slider>
+                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>
@@ -263,8 +263,8 @@
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
                             <Size>102f,46f</Size>
-                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders/knob_crossfader.svg</Handle>
-                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders/slider_crossfader_small.svg</Slider>
+                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader_small.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>

@@ -72,13 +72,13 @@
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
-                          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
-                          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
@@ -111,13 +111,13 @@
                         <RightClickIsPushButton>false</RightClickIsPushButton>
                         <State>
                           <Number>0</Number>
-                          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
-                          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
-                          <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="FxRack_FxUnit"/>,mix_mode</ConfigKey>

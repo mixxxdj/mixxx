@@ -21,10 +21,10 @@
                 <MinimumSize>40,40</MinimumSize>
                 <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                 <Group><Variable name="group"/></Group>
-                <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
-                <PathForeground>style/spinny_indicator.svg</PathForeground>
-                <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
+                <PathBackground scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/spinny<Variable name="channum"/>_mask.svg</PathMask>
+                <PathForeground>skin:/style_<Variable name="scheme"/>/spinny_indicator.svg</PathForeground>
+                <PathGhost>skin:/style_<Variable name="scheme"/>/spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>false</ShowCover>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
@@ -39,10 +39,10 @@
                 <MinimumSize>40,40</MinimumSize>
                 <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                 <Group><Variable name="group"/></Group>
-                <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
-                <PathForeground>style/spinny_indicator.svg</PathForeground>
-                <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
+                <PathBackground scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/spinny<Variable name="channum"/>_mask.svg</PathMask>
+                <PathForeground>skin:/style_<Variable name="scheme"/>/spinny_indicator.svg</PathForeground>
+                <PathGhost>skin:/style_<Variable name="scheme"/>/spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>true</ShowCover>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
@@ -83,7 +83,7 @@
                     <MinimumSize>40,40</MinimumSize>
                     <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                     <Group><Variable name="group"/></Group>
-                    <DefaultCover>style/cover_default.svg</DefaultCover>
+                    <DefaultCover>skin:/style_<Variable name="scheme"/>/cover_default.svg</DefaultCover>
                   </CoverArt>
                 </Children>
                 <Connection>
