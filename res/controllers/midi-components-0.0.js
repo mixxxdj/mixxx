@@ -296,9 +296,6 @@
         }
         if (options.colors !== undefined || options.sendRGB !== undefined) {
             this.colorKey = 'hotcue_' + options.number + '_color';
-            if (options.colors === undefined) {
-                options.colors = color.hotcueColorPalette();
-            }
         }
         this.number = options.number;
         this.outKey = 'hotcue_' + this.number + '_enabled';
