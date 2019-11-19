@@ -17,6 +17,9 @@ class CueMenu : public QWidget {
         m_pCue = pCue;
         if (m_pCue) {
             m_pEditLabel->setText(m_pCue->getLabel());
+            m_pColorMenu->setSelectedColor(m_pCue->getColor());
+        } else {
+            m_pColorMenu->setSelectedColor();
         }
     }
 

@@ -30,6 +30,7 @@ ColorMenu::ColorMenu(QWidget* parent)
         palette.setColor(QPalette::Button, pColor->m_defaultRgba);
         pColorButton->setPalette(palette);
         pColorButton->setToolTip(pColor->m_sDisplayName);
+        m_pColorButtons.insert(pColor, pColorButton);
 
         pLayout->addWidget(pColorButton, row, column);
         column++;
@@ -43,6 +44,29 @@ ColorMenu::ColorMenu(QWidget* parent)
         });
     }
     setLayout(pLayout);
+}
+
+void ColorMenu::setSelectedColor(PredefinedColorPointer pColor) {
+    qDebug() << "setSelectedColor";
+    if (m_pSelectedColor) {
+        qDebug() << "m_pSelectedColor";
+        QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(m_pSelectedColor);
+        if (it != m_pColorButtons.constEnd()) {
+            qDebug() << it.value() << "setDown(false)";
+            it.value()->setDown(false);
+        }
+    }
+
+    if (pColor) {
+        qDebug() << "m_pColor";
+        QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(pColor);
+        if (it != m_pColorButtons.constEnd()) {
+            qDebug() << it.value() << "setDown(true)";
+            it.value()->setDown(true);
+        }
+    }
+
+    m_pSelectedColor = pColor;
 }
 
 void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {

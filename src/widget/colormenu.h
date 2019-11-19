@@ -11,6 +11,7 @@ class ColorMenu : public QWidget {
   public:
     ColorMenu(QWidget* parent = nullptr);
 
+    void setSelectedColor(PredefinedColorPointer pColor = nullptr);
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
 
   signals:
@@ -18,4 +19,5 @@ class ColorMenu : public QWidget {
 
   private:
     QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
+    PredefinedColorPointer m_pSelectedColor;
 };

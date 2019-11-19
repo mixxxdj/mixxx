@@ -57,6 +57,7 @@ void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
         return;
     }
     m_pCue->setColor(pColor);
+    m_pColorMenu->setSelectedColor(pColor);
     hide();
 }
 
