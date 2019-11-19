@@ -169,7 +169,7 @@ Variables:
             <MaximumSize>50,136</MaximumSize>
             <SizePolicy>f,me</SizePolicy>
             <TooltipId>rate</TooltipId>
-            <Handle>knobs_sliders/pitch_handle.svg</Handle>
+            <Handle scalemode="STRETCH_ASPECT">knobs_sliders/pitch_handle.svg</Handle>
             <Slider scalemode="STRETCH">knobs_sliders/pitch_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>

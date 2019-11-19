@@ -13,6 +13,7 @@
 #ifndef PARSERM3U_H
 #define PARSERM3U_H
 
+#include <QDir>
 #include <QTextStream>
 #include <QList>
 #include <QString>
@@ -34,7 +35,7 @@ public:
 
 private:
     /**Reads a line from the file and returns filepath if a valid file**/
-    QString getFilepath(QTextStream *, QString);
+    QString getFilePath(QTextStream* stream, const QString& basePath);
 
 
 };

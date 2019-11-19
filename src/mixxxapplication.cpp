@@ -1,10 +1,15 @@
 #include <QtDebug>
 #include <QTouchEvent>
+#include <QThreadPool>
+
 #include "mixxxapplication.h"
 
-#include "library/crate/crateid.h"
 #include "control/controlproxy.h"
-#include "mixxx.h"
+#include "library/crate/crateid.h"
+#include "soundio/soundmanagerutil.h"
+#include "track/track.h"
+#include "track/trackref.h"
+#include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
@@ -36,6 +41,12 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_activeTouchButton(Qt::NoButton),
           m_pTouchShift(NULL) {
     registerMetaTypes();
+
+    // Increase the size of the global thread pool to at least
+    // 4 threads, even if less cores are available. These threads
+    // will be used for loading external libraries and other tasks.
+    QThreadPool::globalInstance()->setMaxThreadCount(
+            math_max(4, QThreadPool::globalInstance()->maxThreadCount()));
 }
 
 MixxxApplication::~MixxxApplication() {
@@ -43,16 +54,21 @@ MixxxApplication::~MixxxApplication() {
 
 void MixxxApplication::registerMetaTypes() {
     // Register custom data types for signal processing
-    qRegisterMetaType<TrackId>("TrackId");
-    qRegisterMetaType<QList<TrackId>>("QList<TrackId>");
-    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
-    qRegisterMetaType<CrateId>("CrateId");
-    qRegisterMetaType<QList<CrateId>>("QList<CrateId>");
-    qRegisterMetaType<QSet<CrateId>>("QSet<CrateId>");
-    qRegisterMetaType<TrackPointer>("TrackPointer");
+    qRegisterMetaType<TrackId>();
+    qRegisterMetaType<QSet<TrackId>>();
+    qRegisterMetaType<QList<TrackId>>();
+    qRegisterMetaType<TrackRef>();
+    qRegisterMetaType<QList<TrackRef>>();
+    qRegisterMetaType<QList<QPair<TrackRef, TrackRef>>>();
+    qRegisterMetaType<CrateId>();
+    qRegisterMetaType<QSet<CrateId>>();
+    qRegisterMetaType<QList<CrateId>>();
+    qRegisterMetaType<TrackPointer>();
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
+    QMetaType::registerComparators<SoundDeviceId>();
 }
 
 bool MixxxApplication::touchIsRightButton() {

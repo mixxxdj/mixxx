@@ -209,6 +209,10 @@
         outValueScale: function (value) {
             return (value > 0) ? this.on : this.off;
         },
+
+        shutdown: function () {
+            this.send(this.off);
+        },
     });
 
     var PlayButton = function (options) {
@@ -290,6 +294,12 @@
             print('ERROR: No hotcue number specified for new HotcueButton.');
             return;
         }
+        if (options.colors !== undefined || options.sendRGB !== undefined) {
+            this.colorIdKey = 'hotcue_' + options.number + '_color_id';
+            if (options.colors === undefined) {
+                options.colors = color.predefinedColorsList();
+            }
+        }
         this.number = options.number;
         this.outKey = 'hotcue_' + this.number + '_enabled';
         Button.call(this, options);
@@ -301,8 +311,52 @@
         shift: function () {
             this.inKey = 'hotcue_' + this.number + '_clear';
         },
+        getColor: function() {
+            if (this.colorIdKey !== undefined) {
+                return color.predefinedColorFromId(engine.getValue(this.group,this.colorIdKey));
+            } else {
+                return null;
+            }
+        },
+        output: function(value) {
+            var outval = this.outValueScale(value);
+            // WARNING: outputColor only handles hotcueColors
+            // and there is no hotcueColor for turning the LED
+            // off. So the `send()` function is responsible for turning the 
+            // actual LED off.
+            if (this.colorIdKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorIdKey));
+            } else {
+                this.send(outval);
+            }
+        },
+        outputColor: function (id) {
+            var color = this.colors[id];
+            if (color instanceof Array) {
+                if (color.length !== 3) {
+                    print("ERROR: invalid color array for id: " + id);
+                    return;
+                }
+                if (this.sendRGB === undefined) {
+                    print("ERROR: no function defined for sending RGB colors");
+                    return;
+                }
+                this.sendRGB(color);
+            } else if (typeof color === 'number') {
+                this.send(color);
+            }
+        },
+        connect: function() {
+            Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorIdKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                    if (engine.getValue(this.group,this.outKey)) {
+                        this.outputColor(id);
+                    }
+                });
+            }
+        },
     });
-
     var SamplerButton = function (options) {
         if (options.number === undefined) {
             print('ERROR: No sampler number specified for new SamplerButton.');
@@ -479,6 +533,34 @@
                 }
             }
         },
+        forEachComponentContainer: function (operation, recursive) {
+            if (typeof operation !== 'function') {
+                print('ERROR: ComponentContainer.forEachComponentContainer requires a function argument');
+                return;
+            }
+            if (recursive === undefined) { recursive = true; }
+
+            var that = this;
+            var applyOperationTo = function (obj) {
+                if (obj instanceof ComponentContainer) {
+                    operation.call(that, obj);
+
+                    if (recursive) {
+                        obj.forEachComponentContainer(operation);
+                    }
+                } else if (Array.isArray(obj)) {
+                    obj.forEach(function (element) {
+                        applyOperationTo(element);
+                    });
+                }
+            };
+
+            for (var memberName in this) {
+                if (this.hasOwnProperty(memberName)) {
+                    applyOperationTo(this[memberName]);
+                }
+            }
+        },
         reconnectComponents: function (operation, recursive) {
             this.forEachComponent(function (component) {
                 component.disconnect();
@@ -491,6 +573,7 @@
         },
         isShifted: false,
         shift: function () {
+            // Shift direct child Components
             this.forEachComponent(function (component) {
                 // Controls for push type Buttons depend on getting reset to 0 when the
                 // Button is released for correct behavior. If there is a skin button
@@ -514,11 +597,18 @@
                     }
                     component.shift();
                 }
-                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-                this.isShifted = true;
-            });
+            }, false);
+
+            // Shift child ComponentContainers
+            this.forEachComponentContainer(function (container) {
+                container.shift();
+            }, false);
+
+            // Set isShifted for each ComponentContainer recursively
+            this.isShifted = true;
         },
         unshift: function () {
+            // Unshift direct child Components
             this.forEachComponent(function (component) {
                 // Refer to comment in ComponentContainer.shift() above for explanation
                 if (typeof component.unshift === 'function') {
@@ -534,9 +624,15 @@
                     }
                     component.unshift();
                 }
-                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-                this.isShifted = false;
-            });
+            }, false);
+
+            // Unshift child ComponentContainers
+            this.forEachComponentContainer(function (container) {
+                container.unshift();
+            }, false);
+
+            // Unset isShifted for each ComponentContainer recursively
+            this.isShifted = false;
         },
         applyLayer: function (newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
@@ -556,6 +652,14 @@
                     component.trigger();
                 });
             }
+        },
+        shutdown: function () {
+            this.forEachComponent(function (component) {
+                if (component.shutdown !== undefined
+                    && typeof component.shutdown === 'function') {
+                    component.shutdown();
+                }
+            })
         },
     };
 
@@ -592,7 +696,7 @@
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
                 if (component instanceof EffectAssignmentButton) {
-                    // The ControlObjects for assinging decks to effect units
+                    // The ControlObjects for assigning decks to effect units
                     // indicate the effect unit with the group and the deck with the key,
                     // so change the key here instead of the group.
                     component.inKey = 'group_' + newGroup + '_enable';

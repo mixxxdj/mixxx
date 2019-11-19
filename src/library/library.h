@@ -2,7 +2,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 // A Library class is a container for all the model-side aspects of the library.
-// A library widget can be attached to the Library object by calling bindWidget.
+// A library widget can be attached to the Library object by calling bindLibraryWidget.
 
 #ifndef LIBRARY_H
 #define LIBRARY_H
@@ -15,9 +15,8 @@
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
-#include "analysisfeature.h"
+#include "library/analysisfeature.h"
 #include "library/coverartcache.h"
-#include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
 #include "util/db/dbconnectionpool.h"
 
@@ -34,6 +33,8 @@ class CrateFeature;
 class LibraryControl;
 class KeyboardEventFilter;
 class PlayerManager;
+
+class ExternalTrackCollection;
 
 class Library: public QObject,
     public virtual /*implements*/ GlobalTrackCacheSaver {
@@ -62,7 +63,7 @@ class Library: public QObject,
         return *m_pTrackCollection;
     }
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
@@ -91,6 +92,11 @@ class Library: public QObject,
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
+    void relocateDirectory(QString oldDir, QString newDir);
+
+    void purgeTracks(const QList<TrackId>& trackIds);
+    void purgeAllTracks(const QDir& rootDir);
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -110,6 +116,9 @@ class Library: public QObject,
     void scan() {
         m_scanner.scan();
     }
+    void slotScanTrackAdded(TrackPointer pTrack);
+    void slotScanTracksUpdated(QSet<TrackId> updatedTrackIds);
+    void slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -137,7 +146,7 @@ class Library: public QObject,
 
   private:
     // Callback for GlobalTrackCache
-    void saveCachedTrack(Track* pTrack) noexcept override;
+    void saveEvictedTrack(Track* pTrack) noexcept override;
 
     const UserSettingsPointer m_pConfig;
 
@@ -146,6 +155,9 @@ class Library: public QObject,
 
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
+
+    QList<ExternalTrackCollection*> m_externalTrackCollections;
+
     LibraryControl* m_pLibraryControl;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;

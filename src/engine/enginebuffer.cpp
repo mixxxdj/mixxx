@@ -1,5 +1,7 @@
 #include "engine/enginebuffer.h"
 
+#include <cfloat>
+
 #include <QtDebug>
 
 #include "engine/cachingreader/cachingreader.h"
@@ -50,8 +52,10 @@ const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 } // anonymous namespace
 
-EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                           EngineChannel* pChannel, EngineMaster* pMixingEngine)
+EngineBuffer::EngineBuffer(const QString& group,
+        UserSettingsPointer pConfig,
+        EngineChannel* pChannel,
+        EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
@@ -62,7 +66,7 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
           m_pKeyControl(nullptr),
           m_pReadAheadManager(nullptr),
           m_pReader(nullptr),
-          m_filepos_play(0.),
+          m_filepos_play(DBL_MIN),
           m_speed_old(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
@@ -180,13 +184,12 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
     QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
+    addControl(quantize_control);
+    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
-
-    addControl(quantize_control);
-    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
@@ -198,9 +201,12 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     addControl(m_pVinylControlControl);
 #endif
 
+    // Create the Rate Controller
     m_pRateControl = new RateControl(group, pConfig);
     // Add the Rate Controller
     addControl(m_pRateControl);
+    // Looping Control needs Rate Control for Reverse Button
+    m_pLoopingControl->setRateControl(m_pRateControl);
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(group, pConfig);
@@ -430,7 +436,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
+void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
@@ -449,7 +455,7 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
 
     // Must hold the engineLock while using m_engineControls
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_filepos_play, adjustingPhase);
+        pControl->notifySeek(m_filepos_play);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -500,6 +506,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     m_pause.lock();
     m_visualPlayPos->setInvalid();
+    m_filepos_play = DBL_MIN; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
@@ -532,6 +539,10 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
     return m_pCurrentTrack;
 }
 
+bool EngineBuffer::isReverse() {
+    return m_reverse_old;
+}
+
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
     //qDebug() << "EngineBuffer::ejectTrack()";
@@ -546,7 +557,7 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
-    doSeekFractional(0.0, SEEK_EXACT);
+    doSeekPlayPos(0.0, SEEK_EXACT);
     m_pause.unlock();
 
     // Close open file handles by unloading the current track
@@ -1125,7 +1136,8 @@ void EngineBuffer::processSeek(bool paused) {
     // call anyway again.
 
     SeekRequests seekType = static_cast<SeekRequest>(
-            m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
+            m_iSeekQueued.loadAcquire());
+
     double position = m_queuedSeekPosition.getValue();
 
     // Don't allow the playposition to go past the end.
@@ -1138,14 +1150,12 @@ void EngineBuffer::processSeek(bool paused) {
         seekType |= SEEK_PHASE;
     }
 
-    bool adjustingPhase = false;
     switch (seekType) {
         case SEEK_NONE:
             return;
         case SEEK_PHASE:
             // only adjust phase
             position = m_filepos_play;
-            adjustingPhase = true;
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1164,11 +1174,14 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        position = m_pBpmControl->getBeatMatchPosition(position, true, true);
+        double requestedPosition = position;
+        double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
+        position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
-        setNewPlaypos(position, adjustingPhase);
+        setNewPlaypos(position);
     }
+    m_iSeekQueued.storeRelease(SEEK_NONE);
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
@@ -1284,6 +1297,16 @@ bool EngineBuffer::isTrackLoaded() {
     return false;
 }
 
+bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) {
+    bool isSeekQueued = m_iSeekQueued.loadAcquire() != SEEK_NONE;
+    if (isSeekQueued) {
+        *pSeekPosition = m_queuedSeekPosition.getValue();
+    } else {
+        *pSeekPosition = -1;
+    }
+    return isSeekQueued;
+}
+
 void EngineBuffer::slotEjectTrack(double v) {
     if (v > 0) {
         // Don't allow rejections while playing a track. We don't need to lock to
@@ -1307,24 +1330,6 @@ double EngineBuffer::getTrackSamples() {
     return m_pTrackSamples->get();
 }
 
-/*
-void EngineBuffer::setReader(CachingReader* pReader) {
-    disconnect(m_pReader, 0, this, 0);
-    delete m_pReader;
-    m_pReader = pReader;
-    m_pReadAheadManager->setReader(pReader);
-    connect(m_pReader, &CachingReader::trackLoading,
-            this, &EngineBuffer::slotTrackLoading,
-            Qt::DirectConnection);
-    connect(m_pReader, &CachingReader::trackLoaded,
-            this, &EngineBuffer::slotTrackLoaded,
-            Qt::DirectConnection);
-    connect(m_pReader, &CachingReader::trackLoadFailed,
-            this, &EngineBuffer::slotTrackLoadFailed,
-            Qt::DirectConnection);
-}
-*/
-
 void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
                                     EngineBufferScale* pScaleKeylock) {
     m_pScaleVinyl = pScaleVinyl;
@@ -1342,9 +1347,9 @@ void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     }
 }
 
-double  EngineBuffer::calcRateRatio() const {
+double  EngineBuffer::getRateRatio() const {
     if (m_pBpmControl != NULL) {
-        return m_pBpmControl->calcRateRatio();
+        return m_pBpmControl->getRateRatio();
     }
     return 1.0;
 }

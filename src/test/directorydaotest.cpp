@@ -7,7 +7,6 @@
 #include <QStringBuilder>
 #include <QDir>
 #include <QFileInfo>
-#include <QtAlgorithms>
 
 #include "sources/soundsourceproxy.h"
 #include "preferences/usersettings.h"
@@ -146,12 +145,12 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(test2, "d" + m_supportedFileExt)), false);
     trackDAO.addTracksFinish(false);
 
-    QSet<TrackId> ids = directoryDao.relocateDirectory(testdir, testnew);
-    EXPECT_EQ(2, ids.size());
+    QList<TrackRef> refs = directoryDao.relocateDirectory(testdir, testnew);
+    EXPECT_EQ(2, refs.size());
 
     QStringList dirs = directoryDao.getDirs();
     EXPECT_EQ(2, dirs.size());
-    qSort(dirs);
+    std::sort(dirs.begin(), dirs.end());
     EXPECT_THAT(dirs, ElementsAre(test2, testnew));
 }
 

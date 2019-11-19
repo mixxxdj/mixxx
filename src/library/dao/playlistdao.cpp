@@ -452,7 +452,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
 
 void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
     // get positions in reversed order
-    qSort(positions.begin(), positions.end(), qGreater<int>());
+    std::sort(positions.begin(), positions.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
@@ -974,8 +974,20 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         //qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
         trackPositionIds.insert(trackAPosition, trackBId);
         trackPositionIds.insert(trackBPosition, trackAId);
+
+        // TODO: The following use of QList<T>::swap(int, int) is deprecated
+        // and should be replaced with QList<T>::swapItemsAt(int, int)
+        // However, the proposed alternative has just been introduced in Qt
+        // 5.13. Until the minimum required Qt version of Mixx is increased,
+        // we need a version check here.
+        #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
         newPositions.swap(newPositions.indexOf(trackAPosition),
                           newPositions.indexOf(trackBPosition));
+        #else
+        newPositions.swapItemsAt(newPositions.indexOf(trackAPosition),
+                                 newPositions.indexOf(trackBPosition));
+        #endif
+
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
                 "WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(QString::number(-1),

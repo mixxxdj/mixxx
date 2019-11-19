@@ -49,7 +49,7 @@ class BeatMap final : public Beats {
     BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    void setSubVersion(QString subVersion);
+    virtual void setSubVersion(QString subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -58,14 +58,14 @@ class BeatMap final : public Beats {
     double findNextBeat(double dSamples) const override;
     double findPrevBeat(double dSamples) const override;
     bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
-                                   double* dpNextBeatSamples) const override;
+                           double* dpPrevBeatSamples,
+                           double* dpNextBeatSamples) const override;
     double findClosestBeat(double dSamples) const override;
     double findNthBeat(double dSamples, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
     bool hasBeatInRange(double startSample, double stopSample) const override;
 
-    double getBpm() const;
+    double getBpm() const override;
     double getBpmRange(double startSample, double stopSample) const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 

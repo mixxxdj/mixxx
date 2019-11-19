@@ -5,14 +5,9 @@
 #include <QtDebug>
 #include <QDebug>
 #include <QMessageBox>
-#include <climits>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
 #include <QStorageInfo>
-#elif not __WINDOWS__
-#include <sys/statvfs.h>
-#endif
 
+#include <climits>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
@@ -100,18 +95,10 @@ qint64 RecordingManager::getFreeSpace() {
     // returns the free space on the recording location in bytes
     // return -1 if the free space could not be determined
     qint64 rv = -1;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     QStorageInfo storage(getRecordingDir());
     if (storage.isValid()) {
         rv = storage.bytesAvailable();
     }
-#elif not __WINDOWS__
-    struct statvfs stats;
-    QByteArray bpath = getRecordingDir().toUtf8();
-    const char *path = bpath.data();
-    statvfs(path, &stats);
-    rv = stats.f_bsize * stats.f_bavail;
-#endif
     return rv;
 }
 

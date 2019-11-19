@@ -141,7 +141,12 @@ class EngineBuffer : public EngineObject {
 
     QString getGroup();
     bool isTrackLoaded();
+    // return true if a seek is currently cueued but not yet processed, false otherwise
+    // if no seek was queued, the seek position is set to -1
+    bool getQueuedSeekPosition(double* pSeekPosition);
     TrackPointer getLoadedTrack() const;
+
+    bool isReverse();
 
     double getExactPlayPos();
     double getVisualPlayPos();
@@ -149,7 +154,7 @@ class EngineBuffer : public EngineObject {
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
-    double calcRateRatio() const;
+    double getRateRatio() const;
 
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
@@ -232,7 +237,7 @@ class EngineBuffer : public EngineObject {
     void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos, bool adjustingPhase);
+    void setNewPlaypos(double playpos);
 
     void processSyncRequests();
     void processSeek(bool paused);

@@ -8,21 +8,14 @@
         <ObjectName>EffectLeftBorder</ObjectName>
         <Size>5f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup><!-- beatjump controls -->
-        <Size>102f,40f</Size>
-        <Style>QGroupBox {
-          border: 0px solid green;
-          margin: 0px;
-        }
-        </Style>
+        <Size>149f,40f</Size>
         <BackPath>style/style_bg_looping.png</BackPath>
         <Children>
           <PushButton>
             <TooltipId>beatjump_backward</TooltipId>
-            <Style></Style>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -44,7 +37,6 @@
           <WidgetGroup>
             <Size>50f,20f</Size>
             <Pos>26,10</Pos>
-            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
             <Layout>horizontal</Layout>
             <Children>
               <BeatSpinBox>
@@ -58,7 +50,6 @@
 
           <PushButton>
             <TooltipId>beatjump_forward</TooltipId>
-            <Style></Style>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -76,6 +67,48 @@
             </Connection>
           </PushButton>
 
+          <PushButton>
+            <TooltipId>back_start</TooltipId>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_rewind_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_rewind.png</Unpressed>
+            </State>
+            <Pos>102,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],back</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],start</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>fwd_end</TooltipId>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_forward_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_forward.png</Unpressed>
+            </State>
+            <Pos>124,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],fwd</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],end</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
         </Children>
       </WidgetGroup><!-- beatjump controls -->
 
@@ -83,7 +116,6 @@
         <ObjectName>EffectLeftBorder</ObjectName>
         <Size>1f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -95,22 +127,15 @@
         <ObjectName>EffectLeftBorder</ObjectName>
         <Size>1f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup><!-- loop controls -->
         <Size>332f,40f</Size>
-        <Style>QGroupBox {
-          border: 0px solid green;
-          margin: 0px 0px 0px 0px;
-        }
-        </Style>
         <BackPath>style/style_bg_looping.png</BackPath>
         <Children>
           <PushButton>
             <Pos>5,10</Pos>
             <TooltipId>reloop_toggle</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <State>
@@ -144,7 +169,6 @@
           <PushButton>
             <Pos>32,10</Pos>
             <TooltipId>loop_in</TooltipId>
-            <Style></Style>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -161,7 +185,6 @@
           <PushButton>
             <Pos>53,10</Pos>
             <TooltipId>loop_out</TooltipId>
-            <Style></Style>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -178,7 +201,6 @@
           <PushButton>
             <Pos>80,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
@@ -198,7 +220,6 @@
           <WidgetGroup>
             <Pos>101,10</Pos>
             <Size>50f,20f</Size>
-            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
             <Layout>horizontal</Layout>
             <Children>
               <BeatSpinBox>
@@ -220,7 +241,6 @@
           <PushButton>
             <Pos>160,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -253,7 +273,6 @@
           <PushButton>
             <Pos>181,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -286,7 +305,6 @@
           <PushButton>
             <Pos>202,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -317,7 +335,6 @@
           </PushButton>
           <PushButton>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -349,7 +366,6 @@
           </PushButton>
           <PushButton>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -381,7 +397,6 @@
           </PushButton>
           <PushButton>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -413,7 +428,6 @@
           </PushButton>
           <PushButton>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -445,7 +459,6 @@
           </PushButton>
           <PushButton>
             <TooltipId>beatloop_activate</TooltipId>
-            <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -482,12 +495,10 @@
         <ObjectName>EffectRightBorder</ObjectName>
         <Size>5f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
         <Size>3f,40f</Size>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
     </Children>

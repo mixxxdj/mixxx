@@ -9,6 +9,8 @@
 
 class WaveformWidgetRenderer;
 
+// This class helps share code between the WaveformRenderMark and WOverview
+// constructors.
 class WaveformMarkSet {
   public:
     WaveformMarkSet();

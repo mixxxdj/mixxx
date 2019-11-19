@@ -178,14 +178,12 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     const double kEpsilon = .01;
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
-        beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeat
         // needs to be re-calculated. Since it is floor(beatFraction), that's
         // the same as nextBeat.  We only use prevBeat so no need to increment
         // nextBeat.
         prevBeat = nextBeat;
     } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
-        beatFraction = prevBeat;
         // If we are going to pretend we were actually on prevBeat then nextBeat
         // needs to be re-calculated. Since it is ceil(beatFraction), that's
         // the same as prevBeat.  We will only use nextBeat so no need to
@@ -206,10 +204,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         n = n + 1;
     }
 
-    double dResult = floor(dClosestBeat + n * m_dBeatLength);
-    if (!even(static_cast<int>(dResult))) {
-        dResult--;
-    }
+    double dResult = dClosestBeat + n * m_dBeatLength;
     return dResult;
 }
 
@@ -246,14 +241,8 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
         // And nextBeat needs to be incremented.
         ++nextBeat;
     }
-    *dpPrevBeatSamples = floor(prevBeat * dBeatLength + dFirstBeatSample);
-    *dpNextBeatSamples = floor(nextBeat * dBeatLength + dFirstBeatSample);
-    if (!even(static_cast<int>(*dpPrevBeatSamples))) {
-        --*dpPrevBeatSamples;
-    }
-    if (!even(static_cast<int>(*dpNextBeatSamples))) {
-        --*dpNextBeatSamples;
-    }
+    *dpPrevBeatSamples = prevBeat * dBeatLength + dFirstBeatSample;
+    *dpNextBeatSamples = nextBeat * dBeatLength + dFirstBeatSample;
     return true;
 }
 

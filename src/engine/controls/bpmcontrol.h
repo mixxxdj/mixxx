@@ -71,7 +71,7 @@ class BpmControl : public EngineControl {
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
-    double calcRateRatio() const;
+    double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
@@ -107,10 +107,8 @@ class BpmControl : public EngineControl {
     ControlProxy* m_pPlayButton;
     QAtomicInt m_oldPlayButton;
     ControlProxy* m_pReverseButton;
-    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pRateRatio;
     ControlObject* m_pQuantize;
-    ControlProxy* m_pRateRange;
-    ControlProxy* m_pRateDir;
 
     // ControlObjects that come from QuantizeControl
     QScopedPointer<ControlProxy> m_pNextBeat;

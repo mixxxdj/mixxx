@@ -1,9 +1,8 @@
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
-#include <QtAlgorithms>
+#include <algorithm>
 #include <QtDebug>
 #include <QUrl>
-#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
@@ -22,6 +21,7 @@
 #include "util/duration.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "widget/wlibrarytableview.h"
 
 static const bool sDebug = false;
 
@@ -45,10 +45,14 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_bInitialized(false),
           m_currentSearch("") {
     DEBUG_ASSERT(m_pTrackCollection);
-    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
-            this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
-            this, SLOT(select()));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackLoaded,
+            this,
+            &BaseSqlTableModel::trackLoaded);
+    connect(&m_pTrackCollection->getTrackDAO(),
+            &TrackDAO::forceModelUpdate,
+            this,
+            &BaseSqlTableModel::select);
     // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
@@ -369,7 +373,7 @@ void BaseSqlTableModel::select() {
     // end so we can easily slice off rows that are no longer present. Stable
     // sort is necessary because the tracks may be in pre-sorted order so we
     // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfos.begin(), rowInfos.end());
+    std::stable_sort(rowInfos.begin(), rowInfos.end());
 
     TrackId2Rows trackIdToRows;
     // We expect almost all rows to be valid and that only a few tracks
@@ -413,8 +417,10 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableColumns = tableColumns;
 
     if (m_trackSource) {
-        disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                   this, SLOT(tracksChanged(QSet<TrackId>)));
+        disconnect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged);
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
@@ -425,8 +431,11 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
-        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                this, SLOT(tracksChanged(QSet<TrackId>)), Qt::QueuedConnection);
+        connect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged,
+                Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
@@ -1105,7 +1114,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
-    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    auto* pTableView = qobject_cast<WLibraryTableView*>(pParent);
     DEBUG_ASSERT(pTableView);
 
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
@@ -1118,11 +1127,13 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new LocationDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
-        connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
-                this, SLOT(refreshCell(int, int)));
+        connect(pCoverDelegate,
+                &CoverArtDelegate::coverReadyForCell,
+                this,
+                &BaseSqlTableModel::refreshCell);
         return pCoverDelegate;
     }
-    return NULL;
+    return nullptr;
 }
 
 void BaseSqlTableModel::refreshCell(int row, int column) {
