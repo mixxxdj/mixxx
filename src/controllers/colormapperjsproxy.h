@@ -18,6 +18,7 @@ class ColorMapperJSProxy final : public QObject {
 
   public slots:
     QScriptValue getNearestColor(uint ColorCode);
+    QScriptValue getNearestValue(uint ColorCode);
 
   private:
     QScriptEngine* m_pScriptEngine;
