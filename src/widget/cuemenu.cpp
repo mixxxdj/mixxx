@@ -27,12 +27,17 @@ CueMenu::CueMenu(QWidget* parent)
     m_pRemoveCue->setObjectName("CueRemoveButton");
     connect(m_pRemoveCue, &QPushButton::clicked, this, &CueMenu::slotRemoveCue);
 
-    QVBoxLayout* pMainLayout = new QVBoxLayout();
-    QHBoxLayout* pTopLayout = new QHBoxLayout();
-    pTopLayout->addWidget(m_pEditLabel);
-    pTopLayout->addWidget(m_pRemoveCue);
-    pMainLayout->addLayout(pTopLayout);
-    pMainLayout->addWidget(m_pColorMenu);
+    QVBoxLayout* pLeftLayout = new QVBoxLayout();
+    pLeftLayout->addWidget(m_pEditLabel);
+    pLeftLayout->addWidget(m_pColorMenu);
+
+    QVBoxLayout* pRightLayout = new QVBoxLayout();
+    pRightLayout->addWidget(m_pRemoveCue);
+    pRightLayout->addStretch(1);
+
+    QHBoxLayout* pMainLayout = new QHBoxLayout();
+    pMainLayout->addLayout(pLeftLayout);
+    pMainLayout->addLayout(pRightLayout);
     setLayout(pMainLayout);
 }
 
