@@ -25,7 +25,7 @@ CueMenu::CueMenu(QWidget* parent)
     m_pRemoveCue = new QPushButton(icon, "", this);
     m_pRemoveCue->setToolTip(tr("Remove this cue point"));
     m_pRemoveCue->setFixedHeight(m_pEditLabel->sizeHint().height());
-    m_pRemoveCue->setObjectName("RemoveCueButton");
+    m_pRemoveCue->setObjectName("CueRemoveButton");
     connect(m_pRemoveCue, &QPushButton::clicked, this, &CueMenu::slotRemoveCue);
 
     QVBoxLayout* pMainLayout = new QVBoxLayout();
