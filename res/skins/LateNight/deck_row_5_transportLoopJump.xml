@@ -15,11 +15,11 @@
         <Layout>horizontal</Layout>
         <Children>
 
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
           <WidgetGroup>
-            <SizePolicy>i,min</SizePolicy>
-          </WidgetGroup>
-
-          <WidgetGroup>
+            <!-- SizePolicy 'i' stands for ignore.
+                MinimumSize is useless, 
+                MaximumSize is applied though -->
             <MaximumSize>80,</MaximumSize>
             <SizePolicy>i,min</SizePolicy>
           </WidgetGroup>
@@ -89,12 +89,8 @@
             </Children>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <MaximumSize>80,</MaximumSize>
-            <SizePolicy>i,min</SizePolicy>
-          </WidgetGroup>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
+          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
 
           <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
             <ObjectName>BeatjumpControls</ObjectName>
@@ -146,12 +142,8 @@
             </Children>
           </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-
-          <WidgetGroup>
-            <MaximumSize>80,</MaximumSize>
-            <SizePolicy>i,min</SizePolicy>
-          </WidgetGroup>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
+          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
 
           <WidgetGroup><!-- Intro + Outro -->
             <Layout>vertical</Layout>
@@ -193,16 +185,14 @@
             </Connection>
           </WidgetGroup><!-- / Intro + Outro -->
 
-          <WidgetGroup>
-            <MaximumSize>10,</MaximumSize>
-            <SizePolicy>i,min</SizePolicy>
-          </WidgetGroup>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
+          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
 
-          <WidgetGroup><!-- HotCues, Play, Cue, Reverse -->
+          <WidgetGroup><!-- HotCues -->
             <Layout>vertical</Layout>
             <SizePolicy>f,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- HotCues (1-2 / 1-4) | Reverse | Cue -->
+              <WidgetGroup><!-- HotCues 1-2 / 1-4 -->
                 <ObjectName>PlayCueRevHotCues</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
@@ -229,8 +219,62 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- HotCues 1-2 / 1-4 -->
 
-                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+              <!-- HotCues (3-4 / 5-8) -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">3</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">4</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">5</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">6</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">7</SetVariable>
+                  </Template>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">8</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- HotCues (3-4 / 5-8) -->
+            </Children>
+          </WidgetGroup><!-- HotCues -->
+
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
+          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
+
+          <WidgetGroup><!-- Play, Cue, Reverse -->
+            <Layout>vertical</Layout>
+            <SizePolicy>f,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- Reverse | Cue -->
+                <ObjectName>PlayCueRevHotCues</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">reverse</SetVariable>
@@ -276,89 +320,41 @@
                   </PushButton>
 
                 </Children>
-              </WidgetGroup><!-- HotCues (1-2 / 1-4) | Reverse | Cue -->
+              </WidgetGroup><!-- Reverse | Cue -->
 
-              <WidgetGroup><!-- HotCues (3-4 / 5-8) | Play -->
-                <ObjectName>PlayCueRevHotCues</ObjectName>
-                <Layout>horizontal</Layout>
-                <Children>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">3</SetVariable>
-                      </Template>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">4</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">5</SetVariable>
-                      </Template>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">6</SetVariable>
-                      </Template>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">7</SetVariable>
-                      </Template>
-                      <Template src="skin:button_hotcue.xml">
-                        <SetVariable name="number">8</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-
-                  <PushButton>
-                    <TooltipId>play_cue_set</TooltipId>
-                    <ObjectName>PlayDeck</ObjectName>
-                    <Size>68f,26f</Size>
-                    <NumberStates>2</NumberStates>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
-                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection>
-                  </PushButton>
-                </Children>
-              </WidgetGroup><!-- HotCues (3-4 / 5-8) | Play -->
+              <PushButton>
+                <TooltipId>play_cue_set</TooltipId>
+                <ObjectName>PlayDeck</ObjectName>
+                <Size>68f,26f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup><!-- /HotCues, Play, Cue, Reverse -->
         </Children>

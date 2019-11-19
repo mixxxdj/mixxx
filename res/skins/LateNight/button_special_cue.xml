@@ -17,7 +17,7 @@ Variables:
       <PushButton>
         <TooltipId><Variable name="cue_type"/></TooltipId>
         <ObjectName>SpecialCueButton</ObjectName>
-        <MinimumSize>22,26</MinimumSize>
+        <MinimumSize>20,26</MinimumSize>
         <MaximumSize>26,26</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
         <NumberStates>2</NumberStates>
