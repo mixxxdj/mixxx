@@ -28,10 +28,30 @@ WOverview QLabel,
 WOverview QPushButton {
   font-family: "Open Sans";
   text-transform: none;
-}
-WOverview QLabel,
-WOverview QPushButton {
   font-weight: normal;
+}/**/
+WOverview {
+  font-weight: bold;
+  font-size: 12px;
+  color: green;
+  background-color: blue;
+}
+/* has no effect, use
+  <LabelFontSize>
+  <LabelTextColor>
+  <LabelBackgroundColor>
+  in deck_overview.xml instead.
+  See https://github.com/mixxxdj/mixxx/pull/2238/files#diff-63372b146329ec67669d336bc0decfdaR100 */
+WOverview QLabel {
+  font-weight: bold;
+  font-size: 12px;
+  color: green;
+  background-color: blue;
+}
+WOverview QLabel:hover {
+  font-size: 12px;
+  color: green;
+  background-color: blue;
 }
 
 QToolTip {
