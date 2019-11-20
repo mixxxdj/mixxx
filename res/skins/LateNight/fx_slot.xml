@@ -20,6 +20,10 @@
     <ObjectName>FxSlotContainer</ObjectName>
     <SizePolicy>me,min</SizePolicy>
     <Layout>stacked</Layout>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
     <Children>
 
       <!-- transparent bg. Background tile and Regular 3D border or focus highlight border
@@ -118,7 +122,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>FxSlotBorder</ObjectName>
+        <ObjectName>FxSlotBorder<Variable name="FxNum"/></ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Connection>
           <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
@@ -137,7 +141,7 @@
         <Children>
           <!-- Fx focus highligh border -->
           <WidgetGroup>
-            <ObjectName>FxSlotBorder</ObjectName>
+            <ObjectName>FxSlotBorder<Variable name="FxNum"/></ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <Connection>
               <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>

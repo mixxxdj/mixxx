@@ -1,5 +1,5 @@
 <Template>
-  <SetVariable name="btn_type">elevated</SetVariable>
+  <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
   <SetVariable name="group">[Master]</SetVariable>
   <SetVariable name="Type">master</SetVariable>
 
@@ -315,8 +315,11 @@
               </WidgetGroup><!-- MasterControls -->
 
               <WidgetGroup>
-                <ObjectName>MasterHeadphoneDivider</ObjectName>
-                <Size>,2f</Size>
+                <ObjectName>MasterHeadphoneSeparator</ObjectName>
+                <Size>0me,0min</Size>
+                <!-- Layout + Children let's us apply qss padding -->
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
 
               <WidgetGroup>
@@ -398,18 +401,18 @@
                       <PushButton>
                         <TooltipId>headSplit</TooltipId>
                         <ObjectName>SplitCueButton</ObjectName>
-                        <Size>76f,24f</Size>
+                        <Size>72f,26f</Size>
                         <NumberStates>2</NumberStates>
                         <RightClickIsPushButton>false</RightClickIsPushButton>
                         <State>
                           <Number>0</Number>
-                          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_elevated_splitcue.svg</Unpressed>
-                          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_elevated_splitcue_active.svg</Pressed>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_play.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_elevated_splitcue_active.svg</Unpressed>
-                          <Pressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_elevated_splitcue_active.svg</Pressed>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
                         </State>
                         <Connection>
                           <ConfigKey>[Master],headSplit</ConfigKey>

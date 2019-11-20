@@ -16,20 +16,19 @@
  -->
 <Template>
   <WidgetGroup>
-    <Size>1f,0me</Size>
+    <Size>0min,0me</Size>
     <Layout>horizontal</Layout>
     <Children>
       <!-- rate controls -->
       <WidgetGroup>
-        <Size>1f,0me</Size>
+        <Size>0min,0me</Size>
         <Layout>horizontal</Layout>
         <Children>
 
           <!-- rate controls + small spinny/cover -->
           <WidgetGroup>
             <ObjectName>DeckRateSeparator</ObjectName>
-            <Size>1f,0me</Size>
-            <Layout>horizontal</Layout>
+            <Size><Variable name="SeparatorWidth"/>f,0me</Size>
             <Connection>
               <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <Transform><Not/></Transform>
@@ -39,13 +38,13 @@
 
           <!-- rate controls + BIG spinny/cover -->
           <WidgetGroup>
-            <Size>1f,0me</Size>
+            <Size>0min,0me</Size>
             <Layout>horizontal</Layout>
             <Children>
               <!-- rate controls + spinny + BIG spinny/cover -->
               <WidgetGroup>
                 <ObjectName>DeckRateSeparator</ObjectName>
-                <Size>1f,0me</Size>
+                <Size><Variable name="SeparatorWidth"/>f,0me</Size>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -55,7 +54,7 @@
               <!-- rate controls + no spinny/cover + BIG spinny/cover -->
               <WidgetGroup>
                 <ObjectName>DeckRateSeparator</ObjectName>
-                <Size>1f,0me</Size>
+                <Size><Variable name="SeparatorWidth"/>f,0me</Size>
                 <Connection>
                   <ConfigKey persist="true">[LateNight],no_spinny_no_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -78,16 +77,16 @@
       
       <!--no rate controls + spinny + BIG spinny/cover -->
       <WidgetGroup>
-        <Size>1f,0me</Size>
+        <Size>0min,0me</Size>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <Size>1f,0me</Size>
+            <Size>0min,0me</Size>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
                 <ObjectName>DeckRateSeparator</ObjectName>
-                <Size>1f,0me</Size>
+                <Size><Variable name="SeparatorWidth"/>f,0me</Size>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
                   <BindProperty>visible</BindProperty>

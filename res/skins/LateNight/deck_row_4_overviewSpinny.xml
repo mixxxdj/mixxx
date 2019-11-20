@@ -7,12 +7,12 @@
     <Children>
       <WidgetGroup>
         <SizePolicy>min,me</SizePolicy>
-        <MaximumSize>54,</MaximumSize>
+        <MaximumSize><Variable name="SpinnySmallMaxWidth"/>,</MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <SizePolicy>min,me</SizePolicy>
-            <MaximumSize>54,</MaximumSize>
+            <MaximumSize><Variable name="SpinnySmallMaxWidth"/>,</MaximumSize>
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>

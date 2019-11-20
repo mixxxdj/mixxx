@@ -12,7 +12,7 @@
         <ObjectName>SamplerMainControls</ObjectName>
         <BackPath><Variable name="BgTile"/></BackPath>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>SamplerText</ObjectName>
@@ -335,7 +335,6 @@
         </Children>
       </WidgetGroup><!-- /VU Meter -->
 
-      <!-- Pitch Control -->
       <WidgetGroup>
         <ObjectName>SamplerRateControls</ObjectName>
         <Layout>vertical</Layout>
@@ -376,7 +375,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- SamplerRateControls -->
 
     </Children>
   </WidgetGroup>

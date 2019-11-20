@@ -19,7 +19,7 @@
 
       <!-- Effect slots -->
       <WidgetGroup>
-        <ObjectName>FxRows</ObjectName>
+        <ObjectName>FxSlotsCollapsed</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>

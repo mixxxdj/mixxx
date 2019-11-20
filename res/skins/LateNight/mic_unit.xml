@@ -22,119 +22,128 @@
 
               <WidgetGroup>
                 <ObjectName>MicAuxInteriorBorderTop</ObjectName>
-                <Size>0me,3f</Size>
+                <Size>0me,2min</Size>
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
 
               <WidgetGroup><!-- Gain, Pfl, FX buttons, VU -->
-                <ObjectName>MicAuxInterior</ObjectName>
+                <ObjectName>MicAuxInteriorBorderLeft</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><!-- Gain, Pfl, FX buttons -->
-                    <Layout>vertical</Layout>
+                  <WidgetGroup>
+                    <ObjectName>MicAuxInterior</ObjectName>
+                    <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-
-                      <WidgetGroup><!-- Gain, Pfl -->
-                        <ObjectName>MicAuxGainPFlContainer</ObjectName>
-                        <Layout>horizontal</Layout>
+                      <WidgetGroup><!-- Gain, Pfl, FX buttons -->
+                        <Layout>vertical</Layout>
                         <SizePolicy>min,me</SizePolicy>
                         <Children>
-                          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
-                          <Template src="skin:button_2state.xml">
-                            <SetVariable name="TooltipId">pfl</SetVariable>
-                            <SetVariable name="ObjectName">PflButton</SetVariable>
-                            <SetVariable name="btn_format">square</SetVariable>
-                            <SetVariable name="Size">26f,26f</SetVariable>
-                            <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-                          </Template>
-                          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
-                          <Template src="skin:knob_textless.xml">
-                            <SetVariable name="TooltipId">pregain</SetVariable>
-                            <SetVariable name="Size">35f,30f</SetVariable>
-                            <SetVariable name="Color">orange</SetVariable>
-                            <SetVariable name="type">small</SetVariable>
-                            <SetVariable name="group"><Variable name="group"/></SetVariable>
-                            <SetVariable name="control">pregain</SetVariable>
-                          </Template>
-                          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
-                        </Children>
-                      </WidgetGroup><!-- /Gain, Pfl -->
 
-                      <WidgetGroup><!-- FX buttons 1+2 / 1-4 -->
-                        <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
-                        <ObjectName>MicAuxFxButtons</ObjectName>
-                        <Layout>horizontal</Layout>
+                          <WidgetGroup><!-- Gain, Pfl -->
+                            <ObjectName>MicAuxGainPFlContainer</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,me</SizePolicy>
+                            <Children>
+                              <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                              <Template src="skin:button_2state.xml">
+                                <SetVariable name="TooltipId">pfl</SetVariable>
+                                <SetVariable name="ObjectName">PflButton</SetVariable>
+                                <SetVariable name="btn_format">square</SetVariable>
+                                <SetVariable name="Size">26f,26f</SetVariable>
+                                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                              </Template>
+                              <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                              <Template src="skin:knob_textless.xml">
+                                <SetVariable name="TooltipId">pregain</SetVariable>
+                                <SetVariable name="Size">35f,30f</SetVariable>
+                                <SetVariable name="Color">orange</SetVariable>
+                                <SetVariable name="type">small</SetVariable>
+                                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                                <SetVariable name="control">pregain</SetVariable>
+                              </Template>
+                              <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                            </Children>
+                          </WidgetGroup><!-- /Gain, Pfl -->
+
+                          <WidgetGroup><!-- FX buttons 1+2 / 1-4 -->
+                            <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
+                            <ObjectName>MicAuxFxButtons</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                              <WidgetGroup><!-- FX buttons 1+2 -->
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,min</SizePolicy>
+                                <Children>
+                                  <Template src="skin:fx_assign_button.xml">
+                                    <SetVariable name="MinWidth">35</SetVariable>
+                                    <SetVariable name="MaxWidth">35</SetVariable>
+                                    <SetVariable name="Text">FX</SetVariable>
+                                    <SetVariable name="FxUnit">1</SetVariable>
+                                  </Template>
+                                  <Template src="skin:fx_assign_button.xml">
+                                    <SetVariable name="MinWidth">35</SetVariable>
+                                    <SetVariable name="MaxWidth">35</SetVariable>
+                                    <SetVariable name="Text">FX</SetVariable>
+                                    <SetVariable name="FxUnit">2</SetVariable>
+                                  </Template>
+                                </Children>
+                                <Connection>
+                                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                                  <Transform><Not/></Transform>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                              </WidgetGroup><!-- /FX buttons 1+2 -->
+
+                              <WidgetGroup><!-- FX buttons 1-4 -->
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,min</SizePolicy>
+                                <Children>
+                                  <Template src="skin:fx_assign_button.xml">
+                                    <SetVariable name="MinWidth">25</SetVariable>
+                                    <SetVariable name="MaxWidth">32</SetVariable>
+                                    <SetVariable name="Text">FX</SetVariable>
+                                    <SetVariable name="FxUnit">1</SetVariable>
+                                  </Template>
+                                  <Template src="skin:fx_assign_button.xml">
+                                    <SetVariable name="MinWidth">12</SetVariable>
+                                    <SetVariable name="MaxWidth">22</SetVariable>
+                                    <SetVariable name="FxUnit">2</SetVariable>
+                                  </Template>
+                                  <Template src="skin:fx_assign_button.xml">
+                                    <SetVariable name="MinWidth">12</SetVariable>
+                                    <SetVariable name="MaxWidth">22</SetVariable>
+                                    <SetVariable name="FxUnit">3</SetVariable>
+                                  </Template>
+                                  <Template src="skin:fx_assign_button.xml">
+                                    <SetVariable name="MinWidth">12</SetVariable>
+                                    <SetVariable name="MaxWidth">22</SetVariable>
+                                    <SetVariable name="FxUnit">4</SetVariable>
+                                  </Template>
+                                </Children>
+                                <Connection>
+                                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                              </WidgetGroup><!-- /FX buttons 1-4 -->
+                            </Children>
+                          </WidgetGroup><!-- /FX buttons 1+2 / 1-4 -->
+                        </Children>
+                      </WidgetGroup><!-- /Gain, Pfl, FX buttons -->
+
+                      <WidgetGroup>
+                        <ObjectName>MicAuxVUMeter</ObjectName>
+                        <Layout>vertical</Layout>
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
-                          <WidgetGroup><!-- FX buttons 1+2 -->
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>min,min</SizePolicy>
-                            <Children>
-                              <Template src="skin:fx_assign_button.xml">
-                                <SetVariable name="MinWidth">35</SetVariable>
-                                <SetVariable name="MaxWidth">35</SetVariable>
-                                <SetVariable name="Text">FX</SetVariable>
-                                <SetVariable name="FxUnit">1</SetVariable>
-                              </Template>
-                              <Template src="skin:fx_assign_button.xml">
-                                <SetVariable name="MinWidth">35</SetVariable>
-                                <SetVariable name="MaxWidth">35</SetVariable>
-                                <SetVariable name="Text">FX</SetVariable>
-                                <SetVariable name="FxUnit">2</SetVariable>
-                              </Template>
-                            </Children>
-                            <Connection>
-                              <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup><!-- /FX buttons 1+2 -->
-
-                          <WidgetGroup><!-- FX buttons 1-4 -->
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>min,min</SizePolicy>
-                            <Children>
-                              <Template src="skin:fx_assign_button.xml">
-                                <SetVariable name="MinWidth">25</SetVariable>
-                                <SetVariable name="MaxWidth">32</SetVariable>
-                                <SetVariable name="Text">FX</SetVariable>
-                                <SetVariable name="FxUnit">1</SetVariable>
-                              </Template>
-                              <Template src="skin:fx_assign_button.xml">
-                                <SetVariable name="MinWidth">12</SetVariable>
-                                <SetVariable name="MaxWidth">22</SetVariable>
-                                <SetVariable name="FxUnit">2</SetVariable>
-                              </Template>
-                              <Template src="skin:fx_assign_button.xml">
-                                <SetVariable name="MinWidth">12</SetVariable>
-                                <SetVariable name="MaxWidth">22</SetVariable>
-                                <SetVariable name="FxUnit">3</SetVariable>
-                              </Template>
-                              <Template src="skin:fx_assign_button.xml">
-                                <SetVariable name="MinWidth">12</SetVariable>
-                                <SetVariable name="MaxWidth">22</SetVariable>
-                                <SetVariable name="FxUnit">4</SetVariable>
-                              </Template>
-                            </Children>
-                            <Connection>
-                              <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup><!-- /FX buttons 1-4 -->
+                          <Template src="skin:vumeter_small.xml">
+                            <SetVariable name="GroupType">microphone</SetVariable>
+                          </Template>
                         </Children>
-                      </WidgetGroup><!-- /FX buttons 1+2 / 1-4 -->
-                    </Children>
-                  </WidgetGroup><!-- /Gain, Pfl, FX buttons -->
-
-                  <WidgetGroup>
-                    <ObjectName>MicAuxVUMeter</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:vumeter_small.xml">
-                        <SetVariable name="GroupType">microphone</SetVariable>
-                      </Template>
+                      </WidgetGroup>
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -142,7 +151,9 @@
 
               <WidgetGroup>
                 <ObjectName>MicAuxInteriorBorderBottom</ObjectName>
-                <Size>0me,2f</Size>
+                <Size>0me,2min</Size>
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
 
             </Children>
@@ -175,9 +186,9 @@
                       <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">microphone_talkover</SetVariable>
                         <SetVariable name="ObjectName">MicTalkButton</SetVariable>
-                        <SetVariable name="Size">42f,24f</SetVariable>
+                        <SetVariable name="Size">42f,26f</SetVariable>
                         <SetVariable name="btn_type">embedded</SetVariable>
-                        <SetVariable name="btn_format">talk</SetVariable>
+                        <SetVariable name="btn_format">medium</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,talkover</SetVariable>
                       </Template>
                     </Children>

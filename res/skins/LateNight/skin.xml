@@ -99,6 +99,9 @@
       <Name>Classic</Name>
       <Filters/>
       <SetVariable name="scheme">classic</SetVariable>
+      <SetVariable name="bg_tile">classic</SetVariable>
+      <SetVariable name="SpinnySmallMaxWidth">54</SetVariable>
+      <SetVariable name="SeparatorWidth">1</SetVariable>
       <!-- Set the '3D button mode'
           * elevated (like before): buttons are elevated and have a drop shadow and light borders
           * embedded: buttons are embedded and surrounding groove (black)
@@ -160,7 +163,7 @@
   </LaunchImageStyle>
 
   <Children>
-    <SetVariable name="BgTile">skin:/style_<Variable name="scheme"/>/background_tile.png</SetVariable>
+    <SetVariable name="BgTile">skin:/style_<Variable name="bg_tile"/>/background_tile.png</SetVariable>
 
     <SetVariable name="Align">center</SetVariable>
     

@@ -22,7 +22,9 @@
 
               <WidgetGroup>
                 <ObjectName>MicAuxInteriorBorderTop</ObjectName>
-                <Size>0me,3f</Size>
+                <Size>0me,2min</Size>
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
 
               <WidgetGroup><!-- Gain, Pfl, FX buttons, VU -->
@@ -141,7 +143,9 @@
 
               <WidgetGroup>
                 <ObjectName>MicAuxInteriorBorderBottom</ObjectName>
-                <Size>0me,2f</Size>
+                <Size>0me,2min</Size>
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
 
             </Children>
@@ -174,9 +178,9 @@
                       <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">mute</SetVariable>
                         <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
-                        <SetVariable name="Size">42f,24f</SetVariable>
+                        <SetVariable name="Size">42f,26f</SetVariable>
                         <SetVariable name="btn_type">embedded</SetVariable>
-                        <SetVariable name="btn_format">talk</SetVariable>
+                        <SetVariable name="btn_format">medium</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
                       </Template>
                     </Children>

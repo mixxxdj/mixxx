@@ -22,7 +22,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <ObjectName>FxRows</ObjectName>
+            <ObjectName>FxSlotsExpanded</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -106,7 +106,7 @@
                       <PushButton>
                         <TooltipId>EffectUnit_mix_mode</TooltipId>
                         <ObjectName>MixModeButton</ObjectName>
-                        <Size>39f,24f</Size>
+                        <Size>42f,26f</Size>
                         <NumberStates>2</NumberStates>
                         <RightClickIsPushButton>false</RightClickIsPushButton>
                         <State>

@@ -82,7 +82,7 @@
                Right border is a similar widget in each instance of waveform.xml -->
           <WidgetGroup>
             <ObjectName>WaveformsBottomBorder</ObjectName>
-            <Size>0me,1f</Size>
+            <Size>0me,0min</Size>
           </WidgetGroup>
 
         </Children>

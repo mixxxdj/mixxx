@@ -13,6 +13,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:deck_row_1_keyVinylFx.xml"/>
+
           <WidgetGroup>
             <ObjectName>DeckRows234</ObjectName>
             <SizePolicy>me,min</SizePolicy>
@@ -20,16 +21,16 @@
             <Children>
               <WidgetGroup><!-- Big spinny -->
                 <SizePolicy>i,min</SizePolicy>
-                <MaximumSize>108,108</MaximumSize>
+                <MaximumSize>108,110</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
-                    <ObjectName>AlignLeft</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
+                    <ObjectName>AlignLeftBottom</ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
                     <MaximumSize>108,</MaximumSize>
                     <Layout>horizontal</Layout>
                     <Style>
-                      #SpinnyContainer {
+                      #SpinnyContainer, #CoverArtContainer {
                         border-top: 0px;
                       }
                     </Style>
@@ -49,20 +50,13 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <WidgetGroup>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <!-- draws a black line to separate Title/Artist from rate controls -->
-                      <Template src="skin:deck_rate_artist_separator.xml" />
-                      <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
-                    </Children>
-                  </WidgetGroup>
+                  <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
                   <Template src="skin:deck_row_4_overviewSpinny.xml" />
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- DeckRows234 -->
+
           <Template src="skin:deck_row_5_transportLoopJump.xml" />
         </Children>
       </WidgetGroup> <!-- /Deck Channel1 -->

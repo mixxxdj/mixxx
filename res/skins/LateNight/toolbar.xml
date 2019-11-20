@@ -21,7 +21,7 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>ToolBarDivider</ObjectName>
+            <ObjectName>ToolBarSeparator</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>
 
@@ -155,7 +155,7 @@
       </PushButton>
 
       <WidgetGroup>
-        <ObjectName>ToolBarDivider</ObjectName>
+        <ObjectName>ToolBarSeparator</ObjectName>
         <Size>13f,9min</Size>
       </WidgetGroup>
 

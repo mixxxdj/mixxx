@@ -100,8 +100,8 @@ QTableView, QTextBrowser, QTreeView {
   #DeckRow_2_3_ArtistTitleTime,
   #DeckRow_4_OverviewSpinny,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
-  #FxRows, #FxUnitControls, #FxSlotContainer,
-#MixerContainer, #MasterHeadphoneDivider,
+  #FxSlotsExpanded, #FxSlotsCollapsed, #FxUnitControls, #FxSlotContainer,
+#MixerContainer, #MasterHeadphoneSeparator,
 #MicRack, #AuxRack, #MicAuxMainControls,
   #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
 #SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
@@ -119,6 +119,7 @@ QAbstractScrollArea::corner {
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MixerContainer,
 #MicRack, #AuxRack, #MicAuxMainControls,
+#MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
 #SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-top: 1px solid #333;
@@ -127,15 +128,26 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-right: 1px solid #0a0a0a;
   border-radius: 2px;
 }
+#WaveformsBottomBorder, #WaveformsRightBorder {
+  background-color: #333;
+}
+#WaveformsBottomBorder {
+  padding-top: 1px;
+}
+#WaveformsContainer {
+  border-bottom: 1px solid #000;
+  padding-bottom: 1px;
+}
 
 
 /* borders of embedded regions like deck buttons & Master mixer */
 #DeckRow_5_LoopCuesTransport,
-#MasterControls,
-#HeadphoneControls,
-#FxSlotBorder[highlight="0"],
+#MasterControls, #HeadphoneControls,
+#FxSlotBorder1[highlight="0"],
+#FxSlotBorder2[highlight="0"],
+#FxSlotBorder3[highlight="0"],
 #SamplerHotcues,
-#MicAuxFrame,
+#MicAuxFrame, #MicAuxInterior, #MicAuxInteriorBorderLeft,
 WSearchLineEdit,
 #OverviewBox,
 #KeyText {
@@ -148,6 +160,7 @@ WSearchLineEdit,
   any color would cover the background texture
   background-color: #131313;  */
 }
+
 #KeyText {
   border-left: 0px;
 }
@@ -161,19 +174,14 @@ WSearchLineEdit,
   border: 1px solid #F856E7;
 } */
 
-#WaveformsBottomBorder, #WaveformsRightBorder {
-  background-color: #333;
+#BeatgridButtonsToggle {
+  margin: 1px;
 }
 
-#WaveformsContainer {
-  border-bottom: 1px solid #000;
-  padding-bottom: 1px;
-}
-#FxSlotBorder[highlight="1"] {
+#FxSlotBorder1[highlight="1"],
+#FxSlotBorder2[highlight="1"],
+#FxSlotBorder3[highlight="1"] {
   border: 1px solid #d09300;
-}
-#Margin1px {
-  margin: 1px;
 }
 
 /************ separator lines within decks, samplers etc. *********************/
@@ -393,7 +401,7 @@ WEffectSelector {
     border-width:  1px 3px 3px 1px;*/
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
   margin: 1px;
-  border-radius: 1px;
+  border-radius: 3px;
 }
 
 /************** button background colors **************************************/
@@ -988,9 +996,9 @@ WTime {
     qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
     qproperty-layoutSpacing: 2;
   }
-  #ToolBarDivider {
+  #ToolBarSeparator {
     background: transparent;
-    image: url(skin:/style_classic/toolbar_divider.png) no-repeat center center;
+    image: url(skin:/style_classic/toolbar_separator.png) no-repeat center center;
     margin: 0px 3px;
   }
 
@@ -1041,7 +1049,7 @@ WTime {
 
   /* see deck_rate_artist_separator.xml for visibilty conditions */
   #DeckRateSeparator {
-    border-width: 0px 1px 0px 0px;
+    background-color: #0c0c0c;
   }
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
@@ -1091,7 +1099,7 @@ WTime {
 #CoverArtContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 1px 1px 1px 0px;
-  }
+  }/* */
   #SpinnyContainer[highlight="0"],
   #CoverArtContainer[highlight="0"] {
     border-width: 1px 0px 0px 0px;
@@ -1101,7 +1109,7 @@ WTime {
     border-width: 1px 0px 0px 1px;
   }
 
-WSpinny {/*
+WSpinny { /*
   This produces artifacts in spinny bg
   background-color: rgba(1, 1, 1, 10);
   This makes no difference, the spinny loads some default grey bg
@@ -1372,6 +1380,10 @@ WBeatSpinBox,
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
     padding: 2px;
   }
+  #MasterHeadphoneSeparator {
+    /* defines the height of the separator gap */
+    padding-top: 2px;
+  }
 
 #MixerDecks {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -1605,18 +1617,25 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
   #MicAuxInterior {
+    border-width: 0px;
     padding: 0px 1px 0px 1px;
-    border-left: 1px solid #0a0a0a;
     background-color: transparent;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
     }
     #MicAuxInteriorBorderTop {
-      border-right: 1px solid #0a0a0a;
-      border-bottom: 1px solid #0a0a0a;
+      border-width: 0px 1px 1px 0px;
+      border-top-left-radius: 3px;
       border-bottom-right-radius: 2px;
+      padding-top: 2px;
     }
     #MicAuxInteriorBorderBottom {
-      border-top: 1px solid #333;
+      border-width: 1px 0px 0px 0px;
       border-top-right-radius: 1px;
+      padding-bottom: 2px;
+    }
+    #MicAuxInteriorBorderLeft {
+      border-width: 0px 0px 0px 1px;
     }
   #MicAuxFrame {
     border-left: 0px;
@@ -1743,13 +1762,12 @@ WBeatSpinBox,
 }
 
 #SamplerHotcues {
-  qproperty-layoutAlignment: 'AlignVCenter';
   padding: 1px 1px 2px 1px;
 }
 
 #SamplerButtonGrid {
   border-width: 1px 1px 0px 0px;
-  padding: 1px 0px;
+  padding: 1px 0px 1px 0px;
 }
 
 #SmallSamplerButtonGrid {
@@ -1806,7 +1824,8 @@ WBeatSpinBox,
   padding: 2px;
 }
 
-#FxRows {
+#FxSlotsCollapsed,
+#FxSlotsExpanded {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
@@ -1819,10 +1838,10 @@ WBeatSpinBox,
 #FxUnit2_ExpandCollapseButton,
 #FxUnit3_ExpandCollapseButton,
 #FxUnit4_ExpandCollapseButton {
-}
-#ExpandCollapseButton {
-  border: 1px solid #000;
-}
+  }
+  #ExpandCollapseButton {
+    border: 1px solid #000;
+  }
 
 #FxUnit1_ExpandCollapseButton WPushButton,
 #FxUnit2_ExpandCollapseButton WPushButton,
@@ -2469,7 +2488,7 @@ QTreeView {
 }
 
 #AlignLeftBottom {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
 #AlignRight {

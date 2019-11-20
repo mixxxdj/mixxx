@@ -51,7 +51,7 @@
                 <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
                 <SetVariable name="Size">42f,24f</SetVariable>
                 <SetVariable name="btn_type">embedded</SetVariable>
-                <SetVariable name="btn_format">talk</SetVariable>
+                <SetVariable name="btn_format">medium</SetVariable>
                 <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
               </Template>
               <WidgetGroup>
