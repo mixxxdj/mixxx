@@ -58,7 +58,7 @@ WOverview::WOverview(
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
           m_bLeftClickDragging(false),
-          m_iPos(0),
+          m_iPickupPos(0),
           m_iPlayPos(0),
           m_pHoveredMark(nullptr),
           m_bHotcueMenuShowing(false),
@@ -220,8 +220,8 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     }
 
     if (!m_bLeftClickDragging) {
-        // don't move slider under the mouse
-        m_iPos = m_iPlayPos;
+        // if not dragged the pick-up moves with the play position
+        m_iPickupPos = m_iPlayPos;
     }
 
     // In case the user is hovering a cue point or holding right click, the
@@ -392,9 +392,9 @@ void WOverview::receiveCuesUpdated() {
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
-            m_iPos = math_clamp(e->x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
         } else {
-            m_iPos = math_clamp(e->y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
         }
     }
 
@@ -446,8 +446,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
     if (e->button() == Qt::LeftButton) {
         if (m_bLeftClickDragging) {
-            m_iPlayPos = m_iPos;
-            double dValue = positionToValue(m_iPos);
+            m_iPlayPos = m_iPickupPos;
+            double dValue = positionToValue(m_iPickupPos);
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
         }
@@ -467,15 +467,15 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
-            m_iPos = math_clamp(e->x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
         } else {
-            m_iPos = math_clamp(e->y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
         }
 
-        double dValue = positionToValue(m_iPos);
+        double dValue = positionToValue(m_iPickupPos);
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
-            m_iPos = valueToPosition(dValue);
+            m_iPickupPos = valueToPosition(dValue);
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
         } else {
@@ -485,7 +485,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
     } else if (e->button() == Qt::RightButton) {
         if (m_bLeftClickDragging) {
-            m_iPos = m_iPlayPos;
+            m_iPickupPos = m_iPlayPos;
             m_bLeftClickDragging = false;
             m_bTimeRulerActive = false;
         } else if (m_pHoveredMark == nullptr) {
@@ -557,7 +557,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
-            drawSliderPosition(&painter);
+            drawPickupPosition(&painter);
             drawTimeRuler(&painter);
             drawMarkLabels(&painter, offset, gain);
         }
@@ -893,7 +893,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     }
 }
 
-void WOverview::drawSliderPosition(QPainter* pPainter) {
+void WOverview::drawPickupPosition(QPainter* pPainter) {
     PainterScope painterScope(pPainter);
 
     if (m_orientation == Qt::Vertical) {
@@ -902,20 +902,20 @@ void WOverview::drawSliderPosition(QPainter* pPainter) {
 
     pPainter->setPen(QPen(QBrush(m_qColorBackground), 1 * m_scaleFactor));
     pPainter->setOpacity(0.5);
-    pPainter->drawLine(m_iPos + 1, 0, m_iPos + 1, breadth());
-    pPainter->drawLine(m_iPos - 1, 0, m_iPos - 1, breadth());
+    pPainter->drawLine(m_iPickupPos + 1, 0, m_iPickupPos + 1, breadth());
+    pPainter->drawLine(m_iPickupPos - 1, 0, m_iPickupPos - 1, breadth());
 
     pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
     pPainter->setOpacity(1.0);
-    pPainter->drawLine(m_iPos, 0, m_iPos, breadth());
+    pPainter->drawLine(m_iPickupPos, 0, m_iPickupPos, breadth());
 
-    pPainter->drawLine(m_iPos - 2, 0, m_iPos, 2);
-    pPainter->drawLine(m_iPos, 2, m_iPos + 2, 0);
-    pPainter->drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
+    pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos, 2);
+    pPainter->drawLine(m_iPickupPos, 2, m_iPickupPos + 2, 0);
+    pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos + 2, 0);
 
-    pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos, breadth() - 3);
-    pPainter->drawLine(m_iPos, breadth() - 3, m_iPos + 2, breadth() - 1);
-    pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
+    pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos, breadth() - 3);
+    pPainter->drawLine(m_iPickupPos, breadth() - 3, m_iPickupPos + 2, breadth() - 1);
+    pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos + 2, breadth() - 1);
 }
 
 void WOverview::drawTimeRuler(QPainter* pPainter) {
