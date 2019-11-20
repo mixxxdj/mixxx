@@ -935,7 +935,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             pPainter->setPen(shadowPen);
             pPainter->drawLine(line);
 
-            pPainter->setPen(Qt::green);
+            pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
             pPainter->drawLine(line);
         }
 
