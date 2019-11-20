@@ -370,8 +370,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 // Avoid resetting speed if master sync is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
-                    if (m_pRateSlider != NULL) {
-                        m_pRateSlider->set(0.0);
+                    if (m_pRateRatio != NULL) {
+                        m_pRateRatio->set(1.0);
                     }
                 }
             }
@@ -384,8 +384,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             // perform a clone of the given channel
 
             // copy rate
-            if (m_pRateSlider != nullptr) {
-                m_pRateSlider->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "rate")));
+            if (m_pRateRatio != nullptr) {
+                m_pRateRatio->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
             }
 
             // copy pitch
@@ -495,7 +495,7 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pLowFilterKill = std::make_unique<ControlProxy>(group, "filterLowKill", this);
     m_pMidFilterKill = std::make_unique<ControlProxy>(group, "filterMidKill", this);
     m_pHighFilterKill = std::make_unique<ControlProxy>(group, "filterHighKill", this);
-    m_pRateSlider = std::make_unique<ControlProxy>(group, "rate", this);
+    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
     m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
 }
 
