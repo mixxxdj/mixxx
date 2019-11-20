@@ -32,7 +32,7 @@ class Event {
     }
 
     // Disallow to use this class with implicit converted char strings.
-    // This should not be uses to avoid unicode encoding and mmory
+    // This should not be uses to avoid unicode encoding and memory
     // allocation at every call. Use a static tag like this:
     // static const QString tag("TAG TEXT");
     static bool event(const char*, Event::EventType) = delete;

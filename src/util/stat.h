@@ -122,16 +122,14 @@ class Stat {
                       Stat::ComputeFlags compute,
                       double value);
 
-  private:
+    // Disallow to use this class with implicit converted char strings.
+    // This should not be uses to avoid unicode encoding and memory
+    // allocation at every call. Use a static tag like this:
+    // static const QString tag("TAG TEXT");
     static bool track(const char *,
                       Stat::StatType,
                       Stat::ComputeFlags,
-                      double) {
-        // this should not be uses to avoid unicode encoding and
-        // mamory alloc at every call. Use:
-        // static const QString tag(const char*);
-        return false;
-    }
+                      double) = delete;
 };
 
 QDebug operator<<(QDebug dbg, const Stat &stat);
