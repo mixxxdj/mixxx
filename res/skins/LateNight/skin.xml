@@ -137,7 +137,7 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg);
+      image: url(skin:/style_classic/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
@@ -147,7 +147,7 @@
       max-height: 40px;
     }
     QProgressBar {
-      background: url(skin:/style_<Variable name="scheme"/>/progressbar_bg.svg);
+      background: url(skin:/style_classic/progressbar_bg.svg);
       border: none;
       min-width: 164px;
       min-height: 5px;
@@ -155,7 +155,7 @@
       max-height: 5px;
     }
     QProgressBar::chunk {
-      background: url(skin:/style_<Variable name="scheme"/>/progressbar.svg);
+      background: url(skin:/style_classic/progressbar.svg);
     }
   </LaunchImageStyle>
 
