@@ -1,71 +1,64 @@
 // Pioneer-DDJ-400-script.js
 //
-// ****************************************************************************
 // * Mixxx mapping script file for the Pioneer DDJ-400.
 // * Author: Warker
 // * Version 0.1 (April 25 2019)
 // * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
 // * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
-
-/*
-            Working:
-                * Mixer Section (Faders, EQ, Filter, Gain, Cue)
-                * Browsing and loading + Waveform zoom (shift)
-                * Jogwheels, Scratching, Bending
-                * cycle Temporange
-                * Beat Sync
-                * Beat Loop Mode
-                * Sampler Mode
-
-            Testing:
-                * Keyboard Mode (check pitch value)
-                * Keyshift Mode (check pitch value)
-                * Beatjump mode
-                * Hot Cue Mode (including loops)
-                * Loop Section: Loop in / Out + Adjust, Call, Double, Half
-                * Effect Section (Beat FX left + Right - select the Effect Slot (not Effect BPM))
-
-            Partially:
-                * PAD FX (only slots A-H, Q-P)
-                * Effect Section (without Beat FX left + Right - no equivalent function found)
-                * Output (lights)
-
-            Not working/implemented:
-                * Channel & Crossfader Start
-
-
-            Changelog:
-
-            Version 0.1 - 13.05.2019:
-                * added Keyboard mode (temporary shifting key by halftones - implemnted by pitch)
-                * changed function Shift + PAD in Sampler Mode
-                    - while playing Sample stops play and jump to start
-                    - while not playing load selected track into PAD
-                * added Keyshift Mode (Sampler +Shift)
-                * added BROWSE +Shift - Waveform zoom +/-
-
-            Version 0.2 - 15.05.2019:
-                * added Beatjump Beatcount manipulation increase (pad 8 + shift), decrease (pad 7 +shift)
-                * fixed a bug in beatloop with 1/4 and 1/2 Beat loops
-                * fixed a bug in BEAT SYNC + Shift (cycle tempo range)
-                * added support for saving and playing loops on Hot Cue Pads
-                * added support for loop in + out adjust (while looping press and hold in or out + jog wheel to adjust the loop poit position)
-                * fixed a bug in Tempo Range switch (Beat Sync + shift)
-
-            Version 0.3 - 18.05.2019:
-                * added Effect Section funtions
-                    - Beat FX left and right selects the Effect Slot in FX3
-                    - Shift + Beat FX On/Off disables all Effect Slots
-
-            version 0.4:
-                * added Cue/Loop left and richt to navigate thru Loop / hotcue points
-                * initial support for some LEDs (VuMeter, Play, Cue, Loop in/out, sync)
-
-*/
-
-//TODO: Functions that could be implemented to the script:
-// ****************************************************************************
-
+//
+// Working:
+//     * Mixer Section (Faders, EQ, Filter, Gain, Cue)
+//     * Browsing and loading + Waveform zoom (shift)
+//     * Jogwheels, Scratching, Bending
+//     * cycle Temporange
+//     * Beat Sync
+//     * Beat Loop Mode
+//     * Sampler Mode
+//
+// Testing:
+//     * Keyboard Mode (check pitch value)
+//     * Keyshift Mode (check pitch value)
+//     * Beatjump mode
+//     * Hot Cue Mode (including loops)
+//     * Loop Section: Loop in / Out + Adjust, Call, Double, Half
+//     * Effect Section (Beat FX left + Right - select the Effect Slot (not Effect BPM))
+//
+// Partially:
+//     * PAD FX (only slots A-H, Q-P)
+//     * Effect Section (without Beat FX left + Right - no equivalent function found)
+//     * Output (lights)
+//
+// Not working/implemented:
+//     * Channel & Crossfader Start
+//
+//
+// Changelog:
+//
+// Version 0.1 - 13.05.2019:
+//     * added Keyboard mode (temporary shifting key by halftones - implemnted by pitch)
+//     * changed function Shift + PAD in Sampler Mode
+//         - while playing Sample stops play and jump to start
+//         - while not playing load selected track into PAD
+//     * added Keyshift Mode (Sampler +Shift)
+//     * added BROWSE +Shift - Waveform zoom +/-
+//
+// Version 0.2 - 15.05.2019:
+//     * added Beatjump Beatcount manipulation increase (pad 8 + shift), decrease (pad 7 +shift)
+//     * fixed a bug in beatloop with 1/4 and 1/2 Beat loops
+//     * fixed a bug in BEAT SYNC + Shift (cycle tempo range)
+//     * added support for saving and playing loops on Hot Cue Pads
+//     * added support for loop in + out adjust (while looping press and hold in or out + jog wheel to adjust the loop poit position)
+//     * fixed a bug in Tempo Range switch (Beat Sync + shift)
+//
+// Version 0.3 - 18.05.2019:
+//     * added Effect Section funtions
+//         - Beat FX left and right selects the Effect Slot in FX3
+//         - Shift + Beat FX On/Off disables all Effect Slots
+//
+// version 0.4:
+//     * added Cue/Loop left and richt to navigate thru Loop / hotcue points
+//     * initial support for some LEDs (VuMeter, Play, Cue, Loop in/out, sync)
+//
 var PioneerDDJ400 = {};
 
 var LightsPioneerDDJ400 = {
