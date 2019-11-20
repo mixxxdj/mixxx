@@ -796,13 +796,6 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     return pTrack;
 }
 
-TrackPointer TrackDAO::addSingleTrack(const TrackFile& trackFile, bool unremove) {
-    addTracksPrepare();
-    TrackPointer pTrack = addTracksAddFile(trackFile, unremove);
-    addTracksFinish(!pTrack);
-    return pTrack;
-}
-
 bool TrackDAO::hideTracks(
         const QList<TrackId>& trackIds) {
     QStringList idList;
@@ -1987,7 +1980,9 @@ TrackPointer TrackDAO::getOrAddTrackByLocation(
         }
     } else {
         // Add Track to library -- unremove if it was previously removed.
-        pTrack = addSingleTrack(trackLocation, true);
+        addTracksPrepare();
+        pTrack = addTracksAddFile(trackLocation, true);
+        addTracksFinish(!pTrack);
         if (!pTrack) {
             qWarning() << "Failed to add track"
                     << trackLocation;

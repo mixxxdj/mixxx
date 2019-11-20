@@ -57,13 +57,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QString getTrackLocation(TrackId trackId);
     QStringList getTrackLocations(const QList<TrackId>& trackIds);
 
-    TrackPointer addSingleTrack(const TrackFile& fileInfo, bool unremove);
-
-    void addTracksPrepare();
-    TrackPointer addTracksAddFile(const TrackFile& trackFile, bool unremove);
-    TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
-    void addTracksFinish(bool rollback = false);
-
     // Only used by friend class LibraryScanner, but public for testing!
     bool detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTracks,
                           const QStringList& addedTracks,
@@ -106,8 +99,17 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // pAlreadyInLibrary is non-NULL, sets it to whether trackLocation was
     // already in the database.
     TrackPointer getOrAddTrackByLocation(
-                const QString& trackLocation,
-                bool* pAlreadyInLibrary = nullptr);
+            const QString& trackLocation,
+            bool* pAlreadyInLibrary = nullptr);
+
+    void addTracksPrepare();
+    TrackId addTracksAddTrack(
+            const TrackPointer& pTrack,
+            bool unremove);
+    TrackPointer addTracksAddFile(
+            const TrackFile& trackFile,
+            bool unremove);
+    void addTracksFinish(bool rollback = false);
 
     bool updateTrack(Track* pTrack);
 

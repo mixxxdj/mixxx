@@ -27,11 +27,9 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     pNewTrack->setDuration(135.7);
     pOtherTrack->setDuration(135.7);
 
-    trackDAO.addTracksPrepare();
-    TrackId oldId = trackDAO.addTracksAddTrack(pOldTrack, false);
-    TrackId newId = trackDAO.addTracksAddTrack(pNewTrack, false);
-    trackDAO.addTracksAddTrack(pOtherTrack, false);
-    trackDAO.addTracksFinish(false);
+    TrackId oldId = internalCollection()->addTrack(pOldTrack, false);
+    TrackId newId = internalCollection()->addTrack(pNewTrack, false);
+    internalCollection()->addTrack(pOtherTrack, false);
 
     // Mark as missing
     QSqlQuery query(dbConnection());

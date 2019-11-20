@@ -136,14 +136,11 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     directoryDao.addDirectory(testdir);
     directoryDao.addDirectory(test2);
 
-    TrackDAO &trackDAO = internalCollection()->getTrackDAO();
     // ok now lets create some tracks here
-    trackDAO.addTracksPrepare();
-    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(testdir, "a" + m_supportedFileExt)), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(testdir, "b" + m_supportedFileExt)), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(test2, "c" + m_supportedFileExt)), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(TrackFile(test2, "d" + m_supportedFileExt)), false);
-    trackDAO.addTracksFinish(false);
+    internalCollection()->addTrack(Track::newTemporary(TrackFile(testdir, "a" + m_supportedFileExt)), false);
+    internalCollection()->addTrack(Track::newTemporary(TrackFile(testdir, "b" + m_supportedFileExt)), false);
+    internalCollection()->addTrack(Track::newTemporary(TrackFile(test2, "c" + m_supportedFileExt)), false);
+    internalCollection()->addTrack(Track::newTemporary(TrackFile(test2, "d" + m_supportedFileExt)), false);
 
     QList<TrackRef> refs = directoryDao.relocateDirectory(testdir, testnew);
     EXPECT_EQ(2, refs.size());

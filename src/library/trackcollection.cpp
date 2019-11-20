@@ -482,3 +482,12 @@ TrackPointer TrackCollection::getOrAddTrack(
     }
     return pTrack;
 }
+
+TrackId TrackCollection::addTrack(
+        const TrackPointer& pTrack,
+        bool unremove) {
+    m_trackDao.addTracksPrepare();
+    const auto trackId = m_trackDao.addTracksAddTrack(pTrack, unremove);
+    m_trackDao.addTracksFinish(!trackId.isValid());
+    return trackId;
+}

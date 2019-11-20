@@ -83,7 +83,13 @@ class TrackCollection : public QObject,
     TrackPointer getTrackById(
             const TrackId& trackId) const;
 
-    void saveTrack(Track* pTrack);
+    // Only public for tests
+    TrackPointer getOrAddTrack(
+            const TrackRef& trackRef,
+            bool* pAlreadyInLibrary = nullptr);
+    TrackId addTrack(
+            const TrackPointer& pTrack,
+            bool unremove);
 
   signals:
     void crateInserted(CrateId id);
@@ -117,9 +123,7 @@ class TrackCollection : public QObject,
     bool removeDirectory(const QString& dir);
     void relocateDirectory(QString oldDir, QString newDir);
 
-    TrackPointer getOrAddTrack(
-            const TrackRef& trackRef,
-            bool* pAlreadyInLibrary = nullptr);
+    void saveTrack(Track* pTrack);
 
     QSqlDatabase m_database;
 

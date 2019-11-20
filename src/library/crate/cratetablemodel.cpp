@@ -71,13 +71,13 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
         return false;
     }
 
-    TrackDAO& trackDao = m_pTrackCollectionManager->internalCollection()->getTrackDAO();
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
     // If the track is already contained in the library it will not insert
     // a duplicate. It also handles unremoving logic if the track has been
     // removed from the library recently and re-adds it.
-    const TrackPointer pTrack = trackDao.addSingleTrack(fileInfo, true);
+    const TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFileInfo(fileInfo));
     if (!pTrack) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "Failed to add track"

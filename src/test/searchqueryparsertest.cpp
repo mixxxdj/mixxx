@@ -17,7 +17,8 @@ class SearchQueryParserTest : public LibraryTest {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack(internalCollection()->getTrackDAO().addSingleTrack(trackLocation, false));
+        TrackPointer pTrack = internalCollection()->getOrAddTrack(
+                TrackRef::fromFileInfo(trackLocation));
         return pTrack ? pTrack->getId() : TrackId();
     }
 
