@@ -12,7 +12,14 @@ class CueMenu : public QWidget {
     Q_OBJECT
   public:
     CueMenu(QWidget* parent = nullptr);
-    ~CueMenu() override;
+
+    ~CueMenu() {
+        delete m_pCueNumber;
+        delete m_pCuePosition;
+        delete m_pEditLabel;
+        delete m_pColorMenu;
+        delete m_pRemoveCue;
+    }
 
     void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 

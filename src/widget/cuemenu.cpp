@@ -59,14 +59,6 @@ CueMenu::CueMenu(QWidget* parent)
     setLayout(pMainLayout);
 }
 
-CueMenu::~CueMenu() {
-    delete m_pCueNumber;
-    delete m_pCuePosition;
-    delete m_pEditLabel;
-    delete m_pColorMenu;
-    delete m_pRemoveCue;
-}
-
 void CueMenu::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
     if (pTrack && pCue) {
         m_pTrack = pTrack;
