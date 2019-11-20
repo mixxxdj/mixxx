@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 
@@ -51,6 +52,8 @@ class CueMenu : public QWidget {
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
+    QLabel* m_pCueNumber;
+    QLabel* m_pCuePosition;
     QLineEdit* m_pEditLabel;
     ColorMenu* m_pColorMenu;
     QPushButton* m_pRemoveCue;
