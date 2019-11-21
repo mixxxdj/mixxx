@@ -492,8 +492,10 @@ QTreeView::branch:open:has-children:has-siblings {
 
 QHeaderView,
 QHeaderView::section,
-QScrollBar:horizontal,
-QScrollBar:vertical {
+WLibrary QScrollBar:horizontal,
+QTreeView QScrollBar:horizontal,
+WLibrary QScrollBar:vertical,
+QTreeView QScrollBar:vertical {
   background-color: #626f87;
 }
 QHeaderView {
@@ -533,49 +535,62 @@ QHeaderView::down-arrow {
   }
 
 /* Scroll bars */
-QScrollBar:horizontal {
+WLibrary QScrollBar:horizontal,
+WLibrary QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
   padding: 0px;
 }
-QScrollBar:vertical {
+WLibrary QScrollBar:vertical,
+WLibrary QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
   padding: 0px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
-QScrollBar::add-page,
-QScrollBar::sub-page {
+WLibrary QScrollBar::add-page,
+WLibrary QScrollBar::sub-page,
+WLibrary QScrollBar::add-page,
+WLibrary QScrollBar::sub-page {
   min-width: 14px;
   min-height: 14px;
   background-color: #191919;
 }
-QScrollBar::handle:vertical,
-QScrollBar::handle:horizontal {
+WLibrary QScrollBar::handle:vertical,
+WLibrary QScrollBar::handle:horizontal ,
+WLibrary QScrollBar::handle:vertical,
+WLibrary QScrollBar::handle:horizontal {
   background: #626f87;
   border: 1px solid #1e1e1e;
   border-radius: 1px;
 }
-QScrollBar::handle:horizontal {
+WLibrary QScrollBar::handle:horizontal,
+WLibrary QScrollBar::handle:horizontal {
   min-width: 40px;
 }
-QScrollBar::handle:vertical {
+WLibrary QScrollBar::handle:vertical,
+WLibrary QScrollBar::handle:vertical {
   min-height: 40px;
 }
 /* Turn off scroll buttons */
-QScrollBar::add-line:horizontal,
-QScrollBar::add-line:vertical {
+WLibrary QScrollBar::add-line:horizontal,
+WLibrary QScrollBar::add-line:vertical,
+WLibrary QScrollBar::add-line:horizontal,
+WLibrary QScrollBar::add-line:vertical {
   width: 0px;
   height: 0px;
 }
-QScrollBar::sub-line:horizontal,
-QScrollBar::sub-line:vertical {
+WLibrary QScrollBar::sub-line:horizontal,
+WLibrary QScrollBar::sub-line:vertical,
+WLibrary QScrollBar::sub-line:horizontal,
+WLibrary QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
 }
 
 /* Corner in between two scrollbars */
-QAbstractScrollArea::corner {
+WLibrary QAbstractScrollArea::corner,
+WLibrary QAbstractScrollArea::corner {
   background-color: #0f0f0f;
   border-top: 1px solid #585858;
   border-left: 1px solid #585858;

@@ -1738,7 +1738,8 @@ QHeaderView {
 
 
 /* QScrollBar styling is even harder */
-QScrollBar {
+Wlibrary QScrollBar,
+QTreeView QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
@@ -1746,14 +1747,16 @@ QScrollBar {
   color: #999999;
   font-size: 8pt;
   }
-  QScrollBar:horizontal {
+  Wlibrary QScrollBar:horizontal,
+  QTreeView QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     background-color: #000;
   }
-  QScrollBar:vertical {
+  Wlibrary QScrollBar:vertical,
+  QTreeView QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -1766,20 +1769,23 @@ QScrollBar {
   }*/
 
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
-  QScrollBar::add-page, QScrollBar::sub-page {
+  WLibrary QScrollBar::add-page, WLibrary QScrollBar::sub-page,
+  QTreeView QScrollBar::add-page, QTreeView QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
     background-color: #000;
     border-radius: 2px;
   }
-  QScrollBar::handle:horizontal {
+  WLibrary QScrollBar::handle:horizontal,
+  QTreeView QScrollBar::handle:horizontal {
     min-width: 25px;
     border-radius: 2px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #725309,
       stop:1 #412f05);
   }
-  QScrollBar::handle:vertical {
+  WLibrary QScrollBar::handle:vertical,
+  QTreeView QScrollBar::handle:vertical {
     min-height: 25px;
     border-radius: 2px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -1787,14 +1793,16 @@ QScrollBar {
       stop:1 #412f05);
   }
   /* Turn off buttons */
-  QScrollBar::add-line, QScrollBar::sub-line {
+  WLibrary QScrollBar::add-line, WLibrary QScrollBar::sub-line,
+  QTreeView QScrollBar::add-line, QTreeView QScrollBar::sub-line {
     width: 0px;
     height: 0px;
     border: 0px;
   }
 
   /* Corner in between two scrollbars */
-  QAbstractScrollArea::corner {
+  WLibrary QAbstractScrollArea::corner,
+  QTreeView QAbstractScrollArea::corner {
     background-color: #1e1e1e;
   }
 
