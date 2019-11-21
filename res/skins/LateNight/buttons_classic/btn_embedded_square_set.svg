@@ -9,5 +9,5 @@
 	<rect transform="rotate(90)" x="2" y="-24" width="22" height="22" color="#000000" fill-opacity=".09019608"/>
 	<rect transform="rotate(90)" x="2" y="-24" width="22" height="22" color="#000000" fill="url(#a)"/>
 	<rect x="1.5" y="1.50003" width="23" height="23" rx=".30000001" ry=".30000001" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
-	<rect x="1.5" y="1.50003" width="23" height="23" rx="1.5" ry="1.5" fill="none" stroke="#030303" stroke-linecap="square" style="paint-order:fill markers stroke"/>
+	<rect x="1.5" y="1.50003" width="23" height="23" rx="1.5" ry="1.5" fill="none" stroke="#020201" stroke-linecap="square" style="paint-order:fill markers stroke"/>
 </svg>

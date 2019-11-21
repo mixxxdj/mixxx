@@ -86,8 +86,8 @@ WPushButton, QPushButton,
 #SkinContainer,
 QToolTip,
 #CrossfaderButtonContainerDeck, #CrossfaderButtonContainerAux,
-#CrossfaderButton[value="0"],
-WBeatSpinBox, #DlgAutoDJ QSpinBox, #LibraryBPMSpinBox,
+#CrossfaderButton[value="0"], /*
+WBeatSpinBox, #DlgAutoDJ QSpinBox, #LibraryBPMSpinBox,  */
 WEffectSelector, WEffectSelector QAbstractItemView,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 QTableView, QTextBrowser, QTreeView {
@@ -795,7 +795,7 @@ QPushButton#pushButtonAutoDJ:checked,
 
 #BeatgridButtonsToggle {
   border-width: 3px;
-  border-image: url(skin:buttons_classic/btn_embedded_square.svg) 3 3 3 3;
+  border-image: url(skin:buttons_classic/btn_embedded_library.svg) 3 3 3 3;
   image: url(skin:/buttons_classic/btn__beatgrid_buttons_toggle.svg) no-repeat center center;
   }
   #BeatCurposLarge {
@@ -1280,22 +1280,26 @@ WBeatSpinBox,
     background-color: #000;
   }
   WBeatSpinBox#Spinbox_embedded {
-    border-width: 2px 19px 2px 2px;
-    border-image: url(skin:buttons_classic/spinbox_embedded_border.svg) 2 19 2 2;
+    border-width: 3px 19px 2px 3px;
+    border-image: url(skin:buttons_classic/spinbox_embedded_border.svg) 3 19 2 3;
     margin: 1px 0px 0px 1px;
     padding: 0px -17px 2px 1px;
+    background-color: #0a0a0a;
     }
     WBeatSpinBox#Spinbox_embedded:hover {
-      border-image: url(skin:buttons_classic/spinbox_embedded_border_hover.svg) 2 19 2 2;
+      border-image: url(skin:buttons_classic/spinbox_embedded_border_hover.svg) 3 19 2 3;
+      background-color: #000;
     }
     WBeatSpinBox#Spinbox_embedded:focus {
-      border-image: url(skin:buttons_classic/spinbox_embedded_border_focus.svg) 2 19 2 2;
+      border-image: url(skin:buttons_classic/spinbox_embedded_border_focus.svg) 3 19 2 3;
+      background-color: #000;
     }
   WBeatSpinBox#Spinbox_elevated {
     border-width: 2px 19px 2px 2px;
     border-image: url(skin:buttons_classic/spinbox_elevated_border.svg) 2 19 2 2;
     margin: 1px 0px 0px 1px;
     padding: 0px -17px 2px 1px;
+    background-color: #0f0f0f;
     }
     WBeatSpinBox#Spinbox_elevated:hover {
       border-image: url(skin:buttons_classic/spinbox_elevated_border_hover.svg) 2 19 2 2;

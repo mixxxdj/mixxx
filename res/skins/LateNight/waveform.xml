@@ -110,7 +110,7 @@
             Bottom border is created in waveforms_container.xml -->
       <WidgetGroup>
         <ObjectName>WaveformsRightBorder</ObjectName>
-        <Size>1f,0min</Size>
+        <Size><Variable name="SeparatorWidth"/>f,0min</Size>
       </WidgetGroup>
 
       <WidgetGroup>

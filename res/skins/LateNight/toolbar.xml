@@ -221,8 +221,8 @@
             <TooltipId>audio_latency_usage</TooltipId>
             <ObjectName>LatencyMeter</ObjectName>
             <Size>63f,7f</Size>
-            <PathBack>skin:/style_<Variable name="scheme"/>/latency_bg.svg</PathBack>
-            <PathVu>skin:/style_<Variable name="scheme"/>/latency_over.svg</PathVu>
+            <PathBack>skin:/style_<Variable name="style_scheme"/>/latency_bg.svg</PathBack>
+            <PathVu>skin:/style_<Variable name="style_scheme"/>/latency_over.svg</PathVu>
             <Horizontal>true</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>1000</PeakHoldTime>
@@ -238,11 +238,11 @@
             <ObjectName>Battery</ObjectName>
             <Size>24,24</Size>
             <SizePolicy>f,f</SizePolicy>
-            <PixmapUnknown scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/batt/ic_battery_unknown.svg</PixmapUnknown>
-            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/batt/ic_battery_charged.svg</PixmapCharged>
+            <PixmapUnknown scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_unknown.svg</PixmapUnknown>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_charged.svg</PixmapCharged>
             <NumberStates>8</NumberStates>
-            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/batt/ic_battery_charging_%1.svg</PixmapsCharging>
-            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="scheme"/>/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
           </Battery>
         </Children>
       </WidgetGroup>

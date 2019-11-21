@@ -99,6 +99,7 @@
       <Name>Classic</Name>
       <Filters/>
       <SetVariable name="scheme">classic</SetVariable>
+      <SetVariable name="style_scheme">classic</SetVariable>
       <SetVariable name="bg_tile">classic</SetVariable>
       <SetVariable name="SpinnySmallMaxWidth">54</SetVariable>
       <SetVariable name="SeparatorWidth">1</SetVariable>

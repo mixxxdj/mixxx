@@ -8,7 +8,7 @@
 	</defs>
 	<g>
 		<rect transform="matrix(0,-1,-1,0,0,0)" x="-23.500004" y="-39.5" width="21" height="37" color="#000000" fill="url(#a)"/>
-		<rect x="1.4999999" y="1.50003" width="39" height="23" fill="none" stroke="#030303" stroke-linecap="square" style="paint-order:fill markers stroke"/>
-		<rect x="1.4999999" y="1.50003" width="39" height="23" rx="1.5" ry="1.5" fill="none" stroke="#030303" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
+		<rect x="1.4999999" y="1.50003" width="39" height="23" fill="none" stroke="#020201" stroke-linecap="square" style="paint-order:fill markers stroke"/>
+		<rect x="1.4999999" y="1.50003" width="39" height="23" rx="1.5" ry="1.5" fill="none" stroke="#020201" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
 	</g>
 </svg>

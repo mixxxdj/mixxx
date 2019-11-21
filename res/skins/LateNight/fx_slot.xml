@@ -152,7 +152,7 @@
           <!-- Dark focus background tile. Inhibits border of parent widget... -->
           <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
-            <!--BackPath>skin:/style_<Variable name="scheme"/>/background_tile_fx_focus.png</BackPath-->
+            <!--BackPath>skin:/style_<Variable name="style_scheme"/>/background_tile_fx_focus.png</BackPath-->
             <BackPath><Variable name="BgTile"/></BackPath>
             <Connection>
               <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
