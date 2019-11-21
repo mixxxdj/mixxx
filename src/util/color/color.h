@@ -1,10 +1,8 @@
 #pragma once
 
-#include "util/color/predefinedcolorsset.h"
+#include <QColor>
 
 namespace Color {
-
-extern const PredefinedColorsSet kPredefinedColorsSet;
 
 int brightness(int red, int green, int blue);
 

@@ -1583,7 +1583,6 @@ WPushButton:hover {
 /*"Pressed" state*/
 WPushButton[value="1"],
 WPushButton[value="2"] {
-    /*color: #FDFDFD;*/
     color: #FDFDFD;
     background-color: #006596;
     border: 0px solid #006596;
@@ -1596,129 +1595,17 @@ WPushButton[value="2"]:hover {
     border: 0px solid #0080BE;
 }
 
-/* Hotcue Color: No Color */
-#HotcueButton[value="1"][highlight="0"],
-#HotcueButton[value="2"][highlight="0"] {
-    background-color: #006596;
+#HotcueButton {
+    qproperty-shouldHighlightBackgroundOnHover: true;
 }
 
-#HotcueButton[value="1"][highlight="0"]:hover,
-#HotcueButton[value="2"][highlight="0"]:hover {
-    background-color: #0080BE;
-}
-
-/* Hotcue Color: Red */
-#HotcueButton[value="1"][highlight="1"],
-#HotcueButton[value="2"][highlight="1"] {
-    background-color: #c50a08;
-}
-
-#HotcueButton[value="1"][highlight="1"]:hover,
-#HotcueButton[value="2"][highlight="1"]:hover {
-    background-color: #e50c08;
-}
-
-/* Hotcue Color: Green */
-#HotcueButton[value="1"][highlight="2"],
-#HotcueButton[value="2"][highlight="2"] {
-    background-color: #32be44;
-}
-
-#HotcueButton[value="1"][highlight="2"]:hover,
-#HotcueButton[value="2"][highlight="2"]:hover {
-    background-color: #52de64;
-}
-
-/* Hotcue Color: Blue */
-#HotcueButton[value="1"][highlight="3"],
-#HotcueButton[value="2"][highlight="3"] {
-    background-color: #0044ff;
-}
-
-#HotcueButton[value="1"][highlight="3"]:hover,
-#HotcueButton[value="2"][highlight="3"]:hover {
-    background-color: #0064ff;
-}
-
-/* Hotcue Color: Yellow */
-#HotcueButton[value="1"][highlight="4"],
-#HotcueButton[value="2"][highlight="4"] {
-    color: #4B4B4B;
-    background-color: #f8d200;
-}
-
-#HotcueButton[value="1"][highlight="4"]:hover,
-#HotcueButton[value="2"][highlight="4"]:hover {
-    color: #4B4B4B;
-    background-color: #f8f200;
-}
-
-/* Hotcue Color: Celeste */
-#HotcueButton[value="1"][highlight="5"],
-#HotcueButton[value="2"][highlight="5"] {
-    color: #4B4B4B;
-    background-color: #42d4f4;
-}
-
-#HotcueButton[value="1"][highlight="5"]:hover,
-#HotcueButton[value="2"][highlight="5"]:hover {
-    color: #4B4B4B;
-    background-color: #62f4f4;
-}
-
-/* Hotcue Color: Purple */
-#HotcueButton[value="1"][highlight="6"],
-#HotcueButton[value="2"][highlight="6"] {
-    background-color: #af00cc;
-}
-
-#HotcueButton[value="1"][highlight="6"]:hover,
-#HotcueButton[value="2"][highlight="6"]:hover {
-    background-color: #cf00ec;
-}
-
-/* Hotcue Color: Pink */
-#HotcueButton[value="1"][highlight="7"],
-#HotcueButton[value="2"][highlight="7"] {
-    color: #4B4B4B;
-    background-color: #fca6d7;
-}
-
-#HotcueButton[value="1"][highlight="7"]:hover,
-#HotcueButton[value="2"][highlight="7"]:hover {
-    color: #4B4B4B;
-    background-color: #fcc6f7;
-}
-
-/* Hotcue Color: White */
-#HotcueButton[value="1"][highlight="8"],
-#HotcueButton[value="2"][highlight="8"] {
-    color: #4B4B4B;
-    background-color: #f2f2ff;
-}
-
-#HotcueButton[value="1"][highlight="8"]:hover,
-#HotcueButton[value="2"][highlight="8"]:hover {
-    color: #4B4B4B;
-    background-color: #ffffff;
-}
-
-/*"Enabled" state, e.g. for recording status
-  0 -- disconnected / off
-  1 -- connecting / enabling
-  2 -- connected / enabled
-WPushButton[value="2"] {
+#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
     color: #FDFDFD;
-    background-color: #4B4B4B;
-    border: 0px solid #006596;
 }
 
-WPushButton[value="2"]:hover {
-    color: #FDFDFD;
-    background-color: #4B4B4B;
-    border: 0px solid #0080BE;
+#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
+    color: #1f1e1e;
 }
-*/
 
 #PlayToggle[value="0"] {
   image: url(skin:/icon/ic_play_48px.svg) no-repeat center center;

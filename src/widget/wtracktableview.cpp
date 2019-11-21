@@ -764,7 +764,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     if (m_pTrackInfo.isNull()) {
         // Give a NULL parent because otherwise it inherits our style which can
         // make it unreadable. Bug #673411
-        m_pTrackInfo.reset(new DlgTrackInfo(nullptr));
+        m_pTrackInfo.reset(new DlgTrackInfo(nullptr, m_pConfig));
 
         connect(m_pTrackInfo.data(), SIGNAL(next()),
                 this, SLOT(slotNextTrackInfo()));

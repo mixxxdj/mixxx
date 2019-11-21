@@ -11,8 +11,6 @@
 #include "library/queryutil.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
-#include "util/color/color.h"
-#include "util/color/predefinedcolor.h"
 
 int CueDAO::cueCount() {
     qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
@@ -53,9 +51,16 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
-    int iColorId = record.value(record.indexOf("color")).toInt();
-    PredefinedColorPointer color = Color::kPredefinedColorsSet.predefinedColorFromId(iColorId);
-    CuePointer pCue(new Cue(id, trackId, (Cue::Type)type, position, length, hotcue, label, color));
+    uint colorValue = record.value(record.indexOf("color")).toUInt();
+    QColor color = QColor::fromRgba(colorValue);
+    CuePointer pCue(new Cue(id,
+            trackId,
+            (Cue::Type)type,
+            position,
+            length,
+            hotcue,
+            label,
+            color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -147,7 +152,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor()->m_iId);
+        query.bindValue(":color", cue->getColor().rgba());
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -175,7 +180,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor()->m_iId);
+        query.bindValue(":color", cue->getColor().rgba());
 
         if (query.exec()) {
             cue->setDirty(false);

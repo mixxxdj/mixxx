@@ -7,9 +7,10 @@
 #include <QList>
 #include <QMutex>
 
-#include "engine/controls/enginecontrol.h"
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+#include "engine/controls/enginecontrol.h"
+#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 
 #define NUM_HOT_CUES 37
@@ -51,8 +52,8 @@ class HotcueControl : public QObject {
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
-    void setColor(PredefinedColorPointer newColor);
-    PredefinedColorPointer getColor() const;
+    void setColor(const QColor& newColor);
+    QColor getColor() const;
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() {
@@ -77,7 +78,7 @@ class HotcueControl : public QObject {
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
     void slotHotcuePositionChanged(double newPosition);
-    void slotHotcueColorChanged(double newColorId);
+    void slotHotcueColorChanged(double newColor);
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v);
@@ -88,7 +89,7 @@ class HotcueControl : public QObject {
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
-    void hotcueColorChanged(HotcueControl* pHotcue, double newColorId);
+    void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
   private:
@@ -197,6 +198,7 @@ class CueControl : public EngineControl {
     double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 
+    HotcueColorPaletteSettings m_colorPaletteSettings;
     bool m_bPreviewing;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;

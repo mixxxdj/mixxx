@@ -26,7 +26,8 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           WBaseWidget(this),
           m_activeTouchButton(Qt::NoButton),
-          m_scaleFactor(1.0) {
+          m_scaleFactor(1.0),
+          m_bShouldHighlightBackgroundOnHover(false) {
     m_pTouchShift = new ControlProxy("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
     setAttribute(Qt::WA_AcceptTouchEvents);
@@ -35,6 +36,31 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
 
 WWidget::~WWidget() {
     delete m_pTouchShift;
+}
+
+double WWidget::getBackgroundColorRgba() const {
+    if (m_backgroundColorRgba >= 0) {
+        return m_backgroundColorRgba;
+    }
+    return -1;
+}
+
+void WWidget::setBackgroundColorRgba(double rgba) {
+    QColor backgroundColor = QColor::fromRgba(rgba);
+    QColor highlightedBackgroundColor = backgroundColor.lighter();
+    QString style = QString("WWidget { background-color: %1; }");
+    if (m_bShouldHighlightBackgroundOnHover) {
+        style += "WWidget:hover { background-color: %2; }";
+    }
+
+    if (rgba >= 0) {
+        setStyleSheet(style.arg(backgroundColor.name())
+                              .arg(highlightedBackgroundColor.name()));
+    } else {
+        setStyleSheet("");
+    }
+    m_backgroundColorRgba = rgba;
+    m_bBackgroundIsDark = Color::isDimmColor(backgroundColor);
 }
 
 bool WWidget::touchIsRightButton() {

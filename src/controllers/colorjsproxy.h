@@ -5,23 +5,29 @@
 #include <QScriptEngine>
 #include <QScriptValue>
 
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "util/color/color.h"
 
-class ColorJSProxy: public QObject {
+class ColorJSProxy final : public QObject {
     Q_OBJECT
   public:
-    ColorJSProxy(QScriptEngine* pScriptEngine);
+    ColorJSProxy(QScriptEngine* pScriptEngine,
+            HotcueColorPaletteSettings colorPaletteSettings);
 
-    virtual ~ColorJSProxy();
+    ~ColorJSProxy() override;
 
-    Q_INVOKABLE QScriptValue predefinedColorFromId(int iId);
-    Q_INVOKABLE QScriptValue predefinedColorsList();
+    Q_INVOKABLE QScriptValue hotcueColorPalette();
+    // Return a JS object with the red, green, blue and alpha components
+    // of a color. The parameter is the hexadecimal representation of the color
+    // i.e. 0xAARRGGBB
+    Q_INVOKABLE QScriptValue colorFromHexCode(uint colorCode);
 
   private:
-    QScriptValue jsColorFrom(PredefinedColorPointer predefinedColor);
-    QScriptValue makePredefinedColorsList(QScriptEngine* pScriptEngine);
+    QScriptValue makeHotcueColorPalette(QScriptEngine* pScriptEngine,
+            HotcueColorPaletteSettings colorPaletteSettings);
     QScriptEngine* m_pScriptEngine;
-    QScriptValue m_predefinedColorsList;
+    QScriptValue m_JsHotcueColorPalette;
+    HotcueColorPaletteSettings m_colorPaletteSettings;
 };
 
 #endif /* COLORJSPROXY_H */

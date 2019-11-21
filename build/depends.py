@@ -781,6 +781,7 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/hotcuecolorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
                    "src/effects/effectmanifest.cpp",
@@ -1259,6 +1260,7 @@ class MixxxCore(Feature):
                    "src/util/movinginterquartilemean.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
+                   "src/util/color/colorpalette.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",
@@ -1285,8 +1287,7 @@ class MixxxCore(Feature):
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
-                   "src/util/workerthreadscheduler.cpp",
-                   "src/util/color/predefinedcolor.cpp"
+                   "src/util/workerthreadscheduler.cpp"
                    ]
 
         proto_args = {
