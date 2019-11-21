@@ -131,8 +131,8 @@ TreeItemModel* BansheeFeature::getChildModel() {
 }
 
 void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
-    if (m_lastRightClickedIndex.isValid()) {
-        TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    if (lastRightClickedIndex().isValid()) {
+        TreeItem *item = static_cast<TreeItem*>(lastRightClickedIndex().internalPointer());
         *pPlaylist = item->getLabel();
         int playlistID = item->getData().toInt();
         qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistID;

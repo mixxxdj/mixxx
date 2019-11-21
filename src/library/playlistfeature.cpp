@@ -37,13 +37,15 @@ QString createPlaylistLabel(
 PlaylistFeature::PlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : BasePlaylistFeature(pLibrary, pConfig, "PLAYLISTHOME"),
+        : BasePlaylistFeature(
+                pLibrary,
+                pConfig,
+                "PLAYLISTHOME",
+                new PlaylistTableModel(
+                        this,
+                        pLibrary->trackCollections(),
+                        "mixxx.db.model.playlist")),
           m_icon(":/images/library/ic_library_playlist.svg") {
-    m_pPlaylistTableModel = new PlaylistTableModel(
-            this,
-            pLibrary->trackCollections(),
-            "mixxx.db.model.playlist");
-
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_childModel.setRootItem(std::move(pRootItem));

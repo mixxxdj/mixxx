@@ -26,8 +26,9 @@ class BasePlaylistFeature : public LibraryFeature {
   public:
     BasePlaylistFeature(Library* pLibrary,
                         UserSettingsPointer pConfig,
-                        QString rootViewName);
-    virtual ~BasePlaylistFeature();
+                        QString rootViewName,
+                        PlaylistTableModel* const pPlaylistTableModel = nullptr);
+    ~BasePlaylistFeature() override = default;
 
     TreeItemModel* getChildModel();
 
@@ -65,12 +66,10 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotAnalyzePlaylist();
 
   protected:
-
     struct IdAndLabel {
         int id;
         QString label;
     };
-
 
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
@@ -85,25 +84,24 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    TrackCollectionManager* const m_pTrackCollectionManager;
-
+    PlaylistTableModel* const m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
-    PlaylistTableModel* m_pPlaylistTableModel;
-    QAction *m_pCreatePlaylistAction;
-    QAction *m_pDeletePlaylistAction;
-    QAction *m_pAddToAutoDJAction;
-    QAction *m_pAddToAutoDJTopAction;
-    QAction *m_pRenamePlaylistAction;
-    QAction *m_pLockPlaylistAction;
-    QAction *m_pImportPlaylistAction;
-    QAction *m_pCreateImportPlaylistAction;
-    QAction *m_pExportPlaylistAction;
-    QAction *m_pExportTrackFilesAction;
-    QAction *m_pDuplicatePlaylistAction;
-    QAction *m_pAnalyzePlaylistAction;
-    QModelIndex m_lastRightClickedIndex;
+
     TreeItemModel m_childModel;
-    TrackPointer m_pSelectedTrack;
+    QModelIndex m_lastRightClickedIndex;
+
+    QAction* m_pCreatePlaylistAction;
+    QAction* m_pDeletePlaylistAction;
+    QAction* m_pAddToAutoDJAction;
+    QAction* m_pAddToAutoDJTopAction;
+    QAction* m_pRenamePlaylistAction;
+    QAction* m_pLockPlaylistAction;
+    QAction* m_pImportPlaylistAction;
+    QAction* m_pCreateImportPlaylistAction;
+    QAction* m_pExportPlaylistAction;
+    QAction* m_pExportTrackFilesAction;
+    QAction* m_pDuplicatePlaylistAction;
+    QAction* m_pAnalyzePlaylistAction;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
@@ -112,8 +110,11 @@ class BasePlaylistFeature : public LibraryFeature {
   private:
     virtual QString getRootViewHtml() const = 0;
 
+    const QString m_rootViewName;
+
+    TrackPointer m_pSelectedTrack;
+
     QSet<int> m_playlistsSelectedTrackIsIn;
-    QString m_rootViewName;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

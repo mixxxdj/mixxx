@@ -51,7 +51,7 @@ public:
     int m_playlistId;
     WLibrary* m_libraryWidget;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
-    QIcon m_icon;
+    const QIcon m_icon;
 };
 
 #endif // SETLOGFEATURE_H

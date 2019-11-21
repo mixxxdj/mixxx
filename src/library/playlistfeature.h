@@ -51,7 +51,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private:
     QString getRootViewHtml() const override;
-    QIcon m_icon;
+    const QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 

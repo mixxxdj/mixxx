@@ -21,13 +21,14 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
-BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
-                                         UserSettingsPointer pConfig,
-                                         QString rootViewName)
+BasePlaylistFeature::BasePlaylistFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig,
+        QString rootViewName,
+        PlaylistTableModel* const pPlaylistTableModel)
         : LibraryFeature(pLibrary, std::move(pConfig)),
-          m_pTrackCollectionManager(pLibrary->trackCollections()),
-          m_playlistDao(m_pTrackCollectionManager->internalCollection()->getPlaylistDAO()),
-          m_pPlaylistTableModel(nullptr),
+          m_pPlaylistTableModel(pPlaylistTableModel),
+          m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction,
@@ -134,22 +135,6 @@ BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
             &Library::switchToView,
             this,
             &BasePlaylistFeature::slotResetSelectedTrack);
-}
-
-BasePlaylistFeature::~BasePlaylistFeature() {
-    delete m_pPlaylistTableModel;
-    delete m_pCreatePlaylistAction;
-    delete m_pDeletePlaylistAction;
-    delete m_pImportPlaylistAction;
-    delete m_pCreateImportPlaylistAction;
-    delete m_pExportPlaylistAction;
-    delete m_pExportTrackFilesAction;
-    delete m_pDuplicatePlaylistAction;
-    delete m_pAddToAutoDJAction;
-    delete m_pAddToAutoDJTopAction;
-    delete m_pRenamePlaylistAction;
-    delete m_pLockPlaylistAction;
-    delete m_pAnalyzePlaylistAction;
 }
 
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
@@ -528,7 +513,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollectionManager,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -576,7 +561,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollectionManager,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
