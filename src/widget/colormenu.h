@@ -1,31 +1,19 @@
 #pragma once
 
-#include <QColorDialog>
 #include <QMenu>
 
-#include "util/color/colorpalette.h"
+#include "util/color/color.h"
 
 class ColorMenu : public QMenu {
     Q_OBJECT
   public:
     ColorMenu(QWidget *parent = nullptr);
 
-    void useColorPalette(const ColorPalette& colorPalette);
-    void setCurrentColor(QColor currentColor);
+    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
 
   signals:
-    void colorPicked(QColor pColor);
-
-  private slots:
-    void openColorDialog();
+    void colorPicked(PredefinedColorPointer pColor);
 
   private:
-    void createPaletteColorsActions(const ColorPalette& colorPalette);
-    void createColorPickerAction();
-    void selectCurrentColorAction(const QColor& currentColor) const;
-
-    QColor m_currentColor;
-    QAction* m_pColorPickerAction;
-    QActionGroup* m_pActionGroup;
-    QColorDialog* m_pColorDialog;
+    QMap<PredefinedColorPointer, QAction*> m_pColorActions;
 };

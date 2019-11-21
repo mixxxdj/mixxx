@@ -18,7 +18,7 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(QWidget* parent, UserSettingsPointer pConfig);
+    DlgTrackInfo(QWidget* parent);
     virtual ~DlgTrackInfo();
 
   public slots:
@@ -38,6 +38,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void apply();
     void cancel();
     void trackUpdated();
+
+    void cueActivate();
+    void cueDelete();
 
     void slotBpmDouble();
     void slotBpmHalve();
@@ -66,10 +69,12 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private:
     void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
+    void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
     void clear();
     void init();
+    QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
     BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
@@ -80,7 +85,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     CoverInfo m_loadedCoverInfo;
     WCoverArtLabel* m_pWCoverArtLabel;
-    UserSettingsPointer m_pConfig;
 };
 
 #endif /* DLGTRACKINFO_H */

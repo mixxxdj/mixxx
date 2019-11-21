@@ -14,23 +14,22 @@ class CueMenu : public QMenu {
 
     void setCue(CuePointer pCue) {
         m_pCue = pCue;
-        m_pColorMenu->setCurrentColor(m_pCue->getColor());
     }
 
     void setTrack(TrackPointer pTrack) {
         m_pTrack = pTrack;
     }
 
-    void useColorSet(const ColorPalette& colorPalette) {
+    void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
         if (m_pColorMenu != nullptr) {
-            m_pColorMenu->useColorPalette(colorPalette);
+            m_pColorMenu->useColorSet(pColorRepresentation);
         }
     }
 
   private slots:
     void slotEditLabel();
     void slotRemoveCue();
-    void slotChangeCueColor(QColor color);
+    void slotChangeCueColor(PredefinedColorPointer pColor);
 
   private:
     CuePointer m_pCue;

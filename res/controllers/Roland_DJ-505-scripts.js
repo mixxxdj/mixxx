@@ -1499,7 +1499,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         this.number = n + 1;
         this.on = this.color + DJ505.PadColor.DIM_MODIFIER;
         this.colors = pitchplayColors;
-        this.colorKey = 'hotcue_' + this.number + '_color';
+        this.colorIdKey = 'hotcue_' + this.number + '_color_id';
         components.Button.call(this);
     };
     this.PerformancePad.prototype = new components.Button({
@@ -1561,8 +1561,8 @@ DJ505.PitchPlayMode = function (deck, offset) {
             this.outKey = "hotcue_" + this.number + "_enabled";
             this.output = function (value, group, control) {
                 var outval = this.outValueScale(value);
-                if (this.colorKey !== undefined && outval !== this.off) {
-                    this.outputColor(engine.getValue(this.group, this.colorKey));
+                if (this.colorIdKey !== undefined && outval !== this.off) {
+                    this.outputColor(engine.getValue(this.group, this.colorIdKey));
                 } else {
                     this.send(DJ505.PadColor.OFF);
                 }
@@ -1572,13 +1572,13 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     var previous_cuepoint = this.mode.cuepoint;
                     this.mode.cuepoint = this.number;
                     this.mode.pads[previous_cuepoint - 1].trigger();
-                    this.outputColor(engine.getValue(this.group, this.colorKey));
+                    this.outputColor(engine.getValue(this.group, this.colorIdKey));
                 }
             };
             this.connect = function() {
                 components.Button.prototype.connect.call(this); // call parent connect
-                if (undefined !== this.group && this.colorKey !== undefined) {
-                    this.connections[1] = engine.makeConnection(this.group, this.colorKey, function (id) {
+                if (undefined !== this.group && this.colorIdKey !== undefined) {
+                    this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
                         if (engine.getValue(this.group, this.outKey)) {
                             this.outputColor(id);
                         }

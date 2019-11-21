@@ -20,8 +20,7 @@
 class HidController final : public Controller {
     Q_OBJECT
   public:
-    HidController(
-            const hid_device_info deviceInfo, UserSettingsPointer pConfig);
+    HidController(const hid_device_info deviceInfo);
     ~HidController() override;
 
     QString presetExtension() override;

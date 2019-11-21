@@ -1,40 +1,36 @@
 #include "controllers/colorjsproxy.h"
-#include "preferences/hotcuecolorpalettesettings.h"
 
-ColorJSProxy::ColorJSProxy(QScriptEngine* pScriptEngine,
-        HotcueColorPaletteSettings colorPaletteSettings)
-        : m_pScriptEngine(pScriptEngine),
-          m_JsHotcueColorPalette(
-                  makeHotcueColorPalette(pScriptEngine, colorPaletteSettings)),
-          m_colorPaletteSettings(colorPaletteSettings) {
+ColorJSProxy::ColorJSProxy(QScriptEngine* pScriptEngine)
+    : m_pScriptEngine(pScriptEngine),
+      m_predefinedColorsList(makePredefinedColorsList(pScriptEngine)){};
+
+ColorJSProxy::~ColorJSProxy() {};
+
+QScriptValue ColorJSProxy::predefinedColorFromId(int iId) {
+    PredefinedColorPointer color(Color::kPredefinedColorsSet.predefinedColorFromId(iId));
+    return jsColorFrom(color);
+};
+
+Q_INVOKABLE QScriptValue ColorJSProxy::predefinedColorsList() {
+    return m_predefinedColorsList;
 }
 
-ColorJSProxy::~ColorJSProxy() = default;
-
-Q_INVOKABLE QScriptValue ColorJSProxy::hotcueColorPalette() {
-    return m_JsHotcueColorPalette;
-}
-
-QScriptValue ColorJSProxy::colorFromHexCode(uint colorCode) {
-    QColor color = QColor::fromRgba(colorCode);
+QScriptValue ColorJSProxy::jsColorFrom(PredefinedColorPointer predefinedColor) {
     QScriptValue jsColor = m_pScriptEngine->newObject();
-    jsColor.setProperty("red", color.red());
-    jsColor.setProperty("green", color.green());
-    jsColor.setProperty("blue", color.blue());
-    jsColor.setProperty("alpha", color.alpha());
+    jsColor.setProperty("red", predefinedColor->m_defaultRgba.red());
+    jsColor.setProperty("green", predefinedColor->m_defaultRgba.green());
+    jsColor.setProperty("blue", predefinedColor->m_defaultRgba.blue());
+    jsColor.setProperty("alpha", predefinedColor->m_defaultRgba.alpha());
+    jsColor.setProperty("id", predefinedColor->m_iId);
     return jsColor;
 }
 
-QScriptValue ColorJSProxy::makeHotcueColorPalette(QScriptEngine* pScriptEngine,
-        HotcueColorPaletteSettings colorPaletteSettings) {
-    // TODO: make sure we get notified when the palette changes
-    QList<QColor> colorList =
-            colorPaletteSettings.getHotcueColorPalette().m_colorList;
-    int numColors = colorList.length();
-    QScriptValue jsColorList = pScriptEngine->newArray(numColors);
+QScriptValue ColorJSProxy::makePredefinedColorsList(QScriptEngine* pScriptEngine) {
+    int numColors = Color::kPredefinedColorsSet.allColors.length();
+    QScriptValue colorList = pScriptEngine->newArray(numColors);
     for (int i = 0; i < numColors; ++i) {
-        QColor color = colorList.at(i);
-        jsColorList.setProperty(i, colorFromHexCode(color.rgba()));
+        PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(i);
+        colorList.setProperty(i, jsColorFrom(color));
     }
-    return jsColorList;
+    return colorList;
 }

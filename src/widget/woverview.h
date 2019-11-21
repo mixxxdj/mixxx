@@ -57,12 +57,12 @@ class WOverview : public WWidget, public TrackDropTarget {
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
 
-    void mouseMoveEvent(QMouseEvent* e) override;
-    void mouseReleaseEvent(QMouseEvent* e) override;
-    void mousePressEvent(QMouseEvent* e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
     void leaveEvent(QEvent* event) override;
-    void paintEvent(QPaintEvent* /*unused*/) override;
-    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void paintEvent(QPaintEvent * /*unused*/) override;
+    void resizeEvent(QResizeEvent * /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
@@ -114,7 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
-    void drawPickupPosition(QPainter* pPainter);
+    void drawCurrentPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
     void paintText(const QString& text, QPainter* pPainter);
@@ -147,12 +147,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
-    // True if pick-up is dragged. Only used when m_bEventWhileDrag is false
-    bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
-    int m_iPickupPos;
-    // position of the overlay shaddow
-    int m_iPlayPos;
+    int m_iPos;
 
     WaveformMarkPointer m_pHoveredMark;
     bool m_bHotcueMenuShowing;
@@ -171,6 +167,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
 
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     // All WaveformMarks
     WaveformMarkSet m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track

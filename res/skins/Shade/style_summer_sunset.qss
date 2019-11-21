@@ -71,3 +71,8 @@ WLibrary QPushButton {
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #52F904;
   }
+
+/* Hotcue Color: No Color */
+#HotcueButton[highlight="0"] {
+    background-color: #52f904;
+}

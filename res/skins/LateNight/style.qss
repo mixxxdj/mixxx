@@ -356,6 +356,50 @@ QHeaderView::down-arrow {
 #SpecialCueButton[displayValue="1"] {
   background-color: #0000D4;
 }
+/* Hotcue Color: Red
+   this is also the default color if Auto-Color
+   in Preferences > Decks is Off */
+#HotcueButton[displayValue="1"][highlight="0"],
+#HotcueButton[displayValue="2"][highlight="0"],
+#HotcueButton[displayValue="1"][highlight="1"],
+#HotcueButton[displayValue="2"][highlight="1"] {
+  background-color: #db0000;
+}
+/* Hotcue Color: Green */
+#HotcueButton[displayValue="1"][highlight="2"],
+#HotcueButton[displayValue="2"][highlight="2"] {
+  background-color: #32be44;
+}
+/* Hotcue Color: Blue */
+#HotcueButton[displayValue="1"][highlight="3"],
+#HotcueButton[displayValue="2"][highlight="3"] {
+  background-color: #0044ff;
+}
+/* Hotcue Color: Yellow */
+#HotcueButton[displayValue="1"][highlight="4"],
+#HotcueButton[displayValue="2"][highlight="4"] {
+  background-color: #f8d200;
+}
+/* Hotcue Color: Celeste */
+#HotcueButton[displayValue="1"][highlight="5"],
+#HotcueButton[displayValue="2"][highlight="5"] {
+  background-color: #42d4f4;
+}
+/* Hotcue Color: Purple */
+#HotcueButton[displayValue="1"][highlight="6"],
+#HotcueButton[displayValue="2"][highlight="6"] {
+  background-color: #af00cc;
+}
+/* Hotcue Color: Pink */
+#HotcueButton[displayValue="1"][highlight="7"],
+#HotcueButton[displayValue="2"][highlight="7"] {
+  background-color: #fca6d7;
+}
+/* Hotcue Color: White */
+#HotcueButton[displayValue="1"][highlight="8"],
+#HotcueButton[displayValue="2"][highlight="8"] {
+  background-color: #f2f2ff;
+}
 
 #BeatgridButtonsToggle {
   image: url(skin:/buttons/btn_beatgrid_buttons_toggle.svg) no-repeat center center;

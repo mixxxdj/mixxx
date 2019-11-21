@@ -29,11 +29,9 @@ const int kDecks = 16;
 const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
-ControllerEngine::ControllerEngine(
-        Controller* controller, UserSettingsPointer pConfig)
+ControllerEngine::ControllerEngine(Controller* controller)
         : m_pEngine(nullptr),
           m_pController(controller),
-          m_pConfig(pConfig),
           m_bPopups(false),
           m_pBaClass(nullptr) {
     // Handle error dialog buttons
@@ -215,8 +213,7 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
 
-    m_pColorJSProxy = std::make_unique<ColorJSProxy>(
-            m_pEngine, HotcueColorPaletteSettings(m_pConfig));
+    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
     engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     m_pBaClass = new ByteArrayClass(m_pEngine);

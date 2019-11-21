@@ -295,9 +295,9 @@
             return;
         }
         if (options.colors !== undefined || options.sendRGB !== undefined) {
-            this.colorKey = 'hotcue_' + options.number + '_color';
+            this.colorIdKey = 'hotcue_' + options.number + '_color_id';
             if (options.colors === undefined) {
-                options.colors = color.hotcueColorPalette();
+                options.colors = color.predefinedColorsList();
             }
         }
         this.number = options.number;
@@ -312,8 +312,8 @@
             this.inKey = 'hotcue_' + this.number + '_clear';
         },
         getColor: function() {
-            if (this.colorKey !== undefined) {
-                return color.colorFromHexCode(engine.getValue(this.group,this.colorKey));
+            if (this.colorIdKey !== undefined) {
+                return color.predefinedColorFromId(engine.getValue(this.group,this.colorIdKey));
             } else {
                 return null;
             }
@@ -324,8 +324,8 @@
             // and there is no hotcueColor for turning the LED
             // off. So the `send()` function is responsible for turning the 
             // actual LED off.
-            if (this.colorKey !== undefined && outval !== this.off) {
-                this.outputColor(engine.getValue(this.group, this.colorKey));
+            if (this.colorIdKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorIdKey));
             } else {
                 this.send(outval);
             }
@@ -348,8 +348,8 @@
         },
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
-            if (undefined !== this.group && this.colorKey !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function (id) {
+            if (undefined !== this.group && this.colorIdKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
                     if (engine.getValue(this.group,this.outKey)) {
                         this.outputColor(id);
                     }

@@ -28,8 +28,8 @@
       <ConnectValueFromWidget>false</ConnectValueFromWidget>
     </Connection>
     <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color</ConfigKey>
-      <BindProperty>backgroundColorRgba</BindProperty>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color_id</ConfigKey>
+      <BindProperty>highlight</BindProperty>
     </Connection>
   </PushButton>
 </Template>

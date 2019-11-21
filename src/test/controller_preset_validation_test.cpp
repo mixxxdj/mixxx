@@ -15,7 +15,7 @@
 
 class FakeController : public Controller {
   public:
-    FakeController(UserSettingsPointer pConfig);
+    FakeController();
     ~FakeController() override;
 
     QString presetExtension() override {
@@ -112,8 +112,9 @@ class FakeController : public Controller {
     HidControllerPreset m_hidPreset;
 };
 
-FakeController::FakeController(UserSettingsPointer pConfig)
-        : Controller(pConfig), m_bMidiPreset(false), m_bHidPreset(false) {
+FakeController::FakeController()
+        : m_bMidiPreset(false),
+          m_bHidPreset(false) {
 }
 
 FakeController::~FakeController() {
@@ -134,7 +135,7 @@ class ControllerPresetValidationTest : public MixxxTest {
             return false;
         }
 
-        FakeController controller(config());
+        FakeController controller;
         controller.setDeviceName("Test Controller");
         controller.startEngine();
         controller.setPreset(*pPreset);

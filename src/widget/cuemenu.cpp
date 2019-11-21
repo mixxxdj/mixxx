@@ -37,8 +37,14 @@ void CueMenu::slotEditLabel() {
     }
 }
 
-void CueMenu::slotChangeCueColor(QColor color) {
-    m_pCue->setColor(color);
+void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pColor != nullptr) {
+        return;
+    }
+    m_pCue->setColor(pColor);
 }
 
 void CueMenu::slotRemoveCue() {

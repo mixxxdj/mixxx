@@ -12,8 +12,7 @@
 
 class MockMidiController : public MidiController {
   public:
-    MockMidiController(UserSettingsPointer pConfig) : MidiController(pConfig) {
-    }
+    MockMidiController() { }
     ~MockMidiController() override { }
 
     MOCK_METHOD0(open, int());
@@ -28,7 +27,7 @@ class MockMidiController : public MidiController {
 class MidiControllerTest : public MixxxTest {
   protected:
     void SetUp() override {
-        m_pController.reset(new MockMidiController(config()));
+        m_pController.reset(new MockMidiController());
     }
 
     void addMapping(MidiInputMapping mapping) {
