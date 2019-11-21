@@ -68,20 +68,6 @@ WBeatSpinBox::down-button,
 }
 
 /* common colors for WEffectSelector, QMenu, QToolTip */
-WEffectSelector QAbstractItemView,
-#fadeModeCombobox QAbstractScrollArea,
-QToolTip,
-QMenu {
-  padding: 2px;
-  font: 13px;
-  }
-QColorMenu {
-  padding-left: 10px;
-}
-WEffectSelector QAbstractItemView,
-#fadeModeCombobox QAbstractScrollArea {
-  min-width: 160px;
-  }
 WEffectSelector,
 WEffectSelector QAbstractItemView,
 WEffectSelector::down-arrow,
@@ -96,12 +82,26 @@ QMenu::item,
 QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition {
-  font: 13px;
   color: #060613;
   background-color: #aab2b7;
   }
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:!checked,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractItemView,
+#fadeModeCombobox::down-arrow,
+#fadeModeCombobox::indicator:!checked,
+WBeatSpinBox,
+#spinBoxTransition,
 WLibrary QPushButton:enabled {
   font: 13px;
+  }
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea {
+  padding: 2px;
+  min-width: 160px;
   }
 WEffectSelector,
 WEffectSelector QAbstractItemView,

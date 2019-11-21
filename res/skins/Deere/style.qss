@@ -1957,6 +1957,10 @@ QToolTip,
 QMenu,
 QMenu QCheckBox {
   padding: 2px;
+}
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea {
+  padding: 2px;
   font: 13px;
 }
 WEffectSelector QAbstractItemView,

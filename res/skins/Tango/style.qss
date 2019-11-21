@@ -23,7 +23,16 @@ WNumber,
 WTrackProperty,
 WBeatSpinBox,
 WEffectSelector, WEffectSelector QAbstractItemView,
-WSearchLineEdit {
+WSearchLineEdit,
+WPushButton,
+WSearchLineEdit,
+WLibrary QPushButton,
+WLibrary QLabel,
+WLibrary QRadioButton,
+QMenu,
+QMenu QCheckBox,
+QToolTip,
+QHeaderView {
   font-family: Ubuntu;
   font-weight: normal;
 }
@@ -38,11 +47,7 @@ WSearchLineEdit,
 WLibrary QPushButton,
 WLibrary QLabel,
 WLibrary QRadioButton,
-QMenu,
-QMenu QCheckBox,
-QToolTip,
 QHeaderView {
-  font-family: Ubuntu;
   font-size: 12px/12px;
 }
 

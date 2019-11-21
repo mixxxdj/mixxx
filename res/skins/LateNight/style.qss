@@ -2086,6 +2086,13 @@ WSearchLineEdit,
 WEffectSelector, WEffectSelector QAbstractItemView,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
   background-color: #0f0f0f;
+}
+WBeatSpinBox,
+#spinBoxTransition,
+#SkinSettings,
+WSearchLineEdit,
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
   font-size: 13px/13px;
 }
   /* hovered items */
