@@ -126,6 +126,37 @@
       <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
 
     </Scheme>
+    <Scheme>
+      <Name>Flip</Name>
+      <Filters/>
+      <SetVariable name="scheme">classic</SetVariable>
+      <SetVariable name="style_scheme">flip</SetVariable>
+      <SetVariable name="SpinnySmallMaxWidth">57</SetVariable>
+      <SetVariable name="SeparatorWidth">0</SetVariable>
+      <!-- Set the '3D button mode'
+          * elevated (like before): buttons are elevated and have a drop shadow and light borders
+          * embedded: buttons are embedded and surrounding groove (black)
+          -->
+      <!-- Buttons in mixer, rate controls, collpased units etc. -->
+      <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
+      <!-- Button in transport row, mic / aux units, sampler hotcue row etc. -->
+      <SetVariable name="SubRegion_btn_type">embedded</SetVariable>
+
+      <SetVariable name="SignalBgColor_12">#0f0f0e</SetVariable>
+      <SetVariable name="SignalBgColor_34">#012322</SetVariable>
+      <SetVariable name="SignalColor_12">#E7C413</SetVariable>
+      <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
+      <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+      <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+      <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+      <SetVariable name="BeatColor">#ffffff</SetVariable>
+      <SetVariable name="AxesColor">#ffffff</SetVariable>
+      <SetVariable name="PlayPosColor">#00FF00</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
+      <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
+      <Style src="skin:style_flip.qss"/>
+
+    </Scheme>
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>

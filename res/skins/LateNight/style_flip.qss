@@ -1,0 +1,351 @@
+/* LateNight 2.3 */
+
+/************** Backgrounds, 3D borders & margins *****************************
+************** of major GUI containers **************************************/
+
+#SkinContainer,
+QToolTip,
+#CrossfaderButtonContainerDeck, #CrossfaderButtonContainerAux,
+#CrossfaderButton[value="0"],
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
+QTableView, QTextBrowser, QTreeView {
+  background-color: #1e1e1d;
+}
+
+/* borders of elevated containers */
+#DeckSmall1, #DeckSmall2, #DeckSmall3, #DeckSmall4,
+  #RateContainer,
+  #DeckRow_1_KeyVinylFx, #DeckRow_2_3_ArtistTitleTime,
+  #DeckRow_4_OverviewSpinny #OverviewBox, #DeckControls,
+  #DeckRow_5_LoopCuesTransport,
+  #SpinnyContainer, #CoverArtContainer,
+#MixerDecks, #MasterControls, #HeadphoneControls,
+#FxUnitControls,
+  #FxSlotBorder1[highlight="0"],
+  #FxSlotBorder2[highlight="0"],
+  #FxSlotBorder3[highlight="0"],
+#MicRack, #AuxRack, #MicAuxMainControls,
+  #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
+#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
+WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
+  border-top: 1px solid #333;
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #020201;
+  border-right: 1px solid #020201;
+  border-radius: 2px;
+  background-color: #0f0f0e;
+}
+
+/*
+#MicRack, #AuxRack, #MicAuxMainControls,
+  #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
+#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
+  #SamplerDeckSmall, #SamplerText, #SamplerRowTwo, #SamplerPfl,
+WEffectSelector::checked, #fadeModeCombobox::checked,  */
+
+WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
+QAbstractScrollArea::corner, #ToolBar,
+#WaveformsContainer {
+  background-color: #0f0f0e;
+}
+
+
+#SamplerDeck {
+  padding: 1px 0px 1px 2px;
+}
+
+#SamplerDeckSmall {
+  padding: 1px 0px 0px 1px;
+}
+
+#SamplerExpand {
+  padding: 1px 0px 1px 1px;
+  }
+
+#SamplerText, #SamplerPlay, #SamplerGain,
+#SamplerRowTwo, #SamplerButtonGrid,
+#SamplerVU, #SamplerPfl {
+  background-color: transparent;
+  border: 0px;
+}
+#SamplerButtonGrid {
+  padding: 1px 0px 1px 1px;
+}
+#SamplerHotcues {
+  border: 0px;
+  margin: 0px;
+  padding: 1px 1px 0px 1px;
+}
+
+#WaveformsBottomBorder, #WaveformsRightBorder {
+  background-color: #333;
+}
+#WaveformsBottomBorder {
+  padding-top: 0px;
+}
+#WaveformsContainer {
+  border-bottom: 1px solid #000;
+  padding-bottom: 0px;
+}
+
+#BeatgridButtonsToggle {
+  margin: 1px;
+}
+
+#DeckControls,
+#SpinnyContainer[highlight="0"], #SpinnyContainer[highlight="1"],
+#CoverArtContainer[highlight="0"], #CoverArtContainer[highlight="1"] {
+  border-width: 1px;
+}
+#RateContainer {
+  padding: 4px 1px 1px 2px;
+  margin: 0px 1px 0px 0px;
+  }
+  #RateControls {
+    margin: 0px;
+  }
+
+#DeckRow_1_KeyVinylFx {
+  padding: 1px 0px 0px 1px;
+  margin: 0px 0px 0px 0px;
+  }
+#DeckRow_2_3_ArtistTitleTime {
+  margin: 0px 0px 1px 0px;
+  }
+#DeckRow_4_OverviewSpinny {
+  padding: 0px;
+  margin: 0px 0px 1px 0px;
+  }
+  #DeckRow_4_OverviewSpinny #OverviewBox {
+    margin: 0px 1px 0px 0px;
+  }
+#SpinnyContainer, #CoverArtContainer {
+  padding: 1px;
+  margin: 0px 1px 0px 0px;
+}
+
+#DeckRow_5_LoopCuesTransport {
+  padding: 2px 1px 1px 2px;
+}
+
+/* see deck_rate_artist_separator.xml for visibilty conditions */
+/* Disabled in Flip theme */
+#DeckRateSeparator {
+  padding-left: 0px;
+}
+
+
+#KeyText {
+  border-left: 0px;
+  margin: 0px 0px 1px 0px;
+}
+/* In conjunction with
+    <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+    <Transform><Not><Variable name="group"/>,file_key</Not></Transform>
+    <BindProperty>highlight</BindProperty>
+  this is uspposed to highlight a not-original key, but it doesn't work.
+#KeyText[highlight="1"] {
+  margin-top: 1px;
+  border: 1px solid #F856E7;
+} */
+
+#BeatgridButtonsToggle {
+  margin: 1px 0px;
+}
+#FxUnitControls,
+#FxSlotBorder1[highlight="0"],
+#FxSlotBorder2[highlight="0"] {
+}
+
+#FxSlotBorder1[highlight="1"],
+#FxSlotBorder2[highlight="1"],
+#FxSlotBorder3[highlight="1"] {
+  border: 1px solid #d09300;
+}
+
+#MicAuxInteriorBorderBottom, #MicAuxInteriorBorderTop,
+#MicAuxInteriorBorderLeft, #MicAuxFrame {
+  border: 0px;
+}
+#MicAuxMainControls, #MicAuxInterior {
+  border: 1px solid #333;
+}
+#MicAuxInterior {
+  border-right: 0px;
+}
+
+/************ separator lines within decks, samplers etc. *********************/
+#BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
+#PlayContainerSmall,
+#PreviewLabel, #PreviewPlayBox,
+#SamplerText, #SamplerPlay, #SamplerButtonGrid,
+#SamplerGain, #SamplerVU, #SamplerPfl {
+  border-style: solid;
+  border-color: #0c0c0c;
+}
+
+/*********** layout margins & paddings ****************************************/
+#Deck1, #Deck2,
+#Deck3, #Deck4,
+#DeckSmall1, #DeckSmall2,
+#DeckSmall3, #DeckSmall4,
+#FxUnit1, #FxUnit3,
+#FxUnit2, #FxUnit4,
+#MicRack, #AuxRack {
+  margin-bottom: 5px;
+}
+#MixerContainer {
+  margin-bottom: 3px;
+}
+
+#Deck1, #Deck2, #Deck3, #Deck4,
+#FxUnit2, #FxUnit2, #FxUnit3, #FxUnit4 {
+  padding: 0px;
+  border: 0px;
+  background-color: transparent;
+}
+#DeckSmall1, #DeckSmall2,
+#DeckSmall3, #DeckSmall4 {
+  padding: 1px;
+}
+#DeckSmall1, #DeckSmall2 {
+  margin-top: 5px;
+}
+
+#Deck1, #Deck2,
+#DeckSmall1, #DeckSmall2,
+#FxUnit1, #FxUnit2 {
+  margin-right: 4px;
+  margin-left: 2px;
+}
+#Deck3, #Deck4,
+#DeckSmall3, #DeckSmall4,
+#FxUnit3, #FxUnit4 {
+  margin-right: 1px;
+  margin-left: 15px;
+}
+
+#MicRack, #AuxRack {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+#FxUnit1, #FxUnit2,
+#FxUnit3, #FxUnit4,
+#FxSlotContainer {
+  border: 0px;
+  background-color: transparent;
+  padding: 0px;
+  }
+  #FxUnitControls {
+    padding: 2px 1px 2px 2px;
+  }
+  #FxSlotContainer {
+    margin: 0px;
+  }
+/************** Backgrounds, 3D borders & margins *****************************
+************** of major GUI containers **************************************/
+
+
+
+/************** Button styles *************************************************
+*************** button background colors **************************************/
+/* all buttons are embedded */
+#RateControls WPushButton[value="0"], #SyncButton[value="0"],
+#PflButton[value="0"],
+#EQKillButton[displayValue="0"],
+#QuickEffectButton[displayValue="0"],
+#FxUnitControls WPushButton, #FxExpandCollapseButton,
+#PlayButtonSampler[displayValue="0"], #PlayButtonDeckSmall[displayValue="0"],
+#SamplerSyncButton[displayValue="0"],
+#MicTalkButton[value="0"], #AuxPlayButton[value="0"],
+#MicDuckingButton[value="0"],
+#PlayButtonPreview[displayValue="0"],
+QPushButton#pushButtonAutoDJ:enabled,
+#BeatgridButtonsToggle, #BeatgridButtons WPushButton[displayValue="0"],
+#DeckRow_1_KeyVinylFx WPushButton[displayValue="0"],
+#VinylTristateButton[displayValue="1"], #VinylTristateButton[displayValue="2"],
+#GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
+#BroadcastButton[displayValue="0"], #SettingsButton[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton[value="0"],
+#HotcueButton[displayValue="0"],
+#FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
+#FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
+#SplitCueButton[value="0"],
+#MicAuxGainPFlContainer WPushButton[displayValue="0"] {
+  background-color: #2c2c2c;
+}
+
+
+
+/************** Mixer *********************************************************/
+#MixerContainer {
+  background-color: transparent;
+  border: 0px;
+  margin: 0px 3px 4px 1px;
+  }
+
+#MixerDecks {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px 4px 1px 5px;
+    }
+  #CrossfaderButtonContainerDeck,
+  #CrossfaderButtonContainerAux,
+  #CrossfaderButton[value="0"] {
+    background-color: #020201;
+  } 
+  #CrossfaderButtonContainerDeck {
+    border-bottom: 1px solid #333;
+    border-right: 1px solid #333;
+    }
+  #CrossfaderButtonContainerAux {
+    border-right: 1px solid #333;
+    }
+  #CrossfaderButton[value="1"] {
+    background-color: #151514;
+    }
+  #EQKillButton[displayValue="0"],
+  #QuickEffectButton[displayValue="0"] {
+    color: #aaa;
+  }
+
+#MasterHeadphoneMixerContainer {
+  padding: 0px;
+  margin: 0px 0px 0px 1px;
+  }
+  #MasterHeadphoneSeparator {
+    /* defines the height of the separator gap */
+    padding-top: 1px;
+  }
+/************** Mixer *********************************************************/
+
+
+
+/************** Library *******************************************************/
+#Library {
+  /* make a smooth transition from toolbar at the bottom to
+    darker skin background at the top.
+    Splitter handles should be translucent for this to work. */
+  background-color: qlineargradient(
+    x1:0, y1:0, x2:0, y2:1,
+    stop:0 #1e1e1d,
+    stop:1 #0f0f0e);
+}
+
+WLibrary,
+#SidebarBox {
+  padding: 2px 2px 0px 2px;
+  border-bottom: 0px;
+  border-left: 1px solid qlineargradient(
+    x1:0, y1:0, x2:0, y2:1,
+    stop:0 #333,
+    stop:1 #0f0f0e);
+  border-right: 1px solid qlineargradient(
+    x1:0, y1:0, x2:0, y2:1,
+    stop:0 #0a0a0a,
+    stop:1 #0f0f0e);
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+/************** Library *******************************************************/
