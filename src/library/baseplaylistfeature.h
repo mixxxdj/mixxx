@@ -26,8 +26,7 @@ class BasePlaylistFeature : public LibraryFeature {
   public:
     BasePlaylistFeature(Library* pLibrary,
                         UserSettingsPointer pConfig,
-                        QString rootViewName,
-                        PlaylistTableModel* const pPlaylistTableModel = nullptr);
+                        QString rootViewName);
     ~BasePlaylistFeature() override = default;
 
     TreeItemModel* getChildModel();
@@ -71,6 +70,8 @@ class BasePlaylistFeature : public LibraryFeature {
         QString label;
     };
 
+    void initTableModel(PlaylistTableModel* pPlaylistTableModel);
+
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
@@ -84,7 +85,6 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    PlaylistTableModel* const m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
 
     TreeItemModel m_childModel;
@@ -102,6 +102,8 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction* m_pExportTrackFilesAction;
     QAction* m_pDuplicatePlaylistAction;
     QAction* m_pAnalyzePlaylistAction;
+
+    PlaylistTableModel* m_pPlaylistTableModel;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);

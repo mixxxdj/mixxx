@@ -22,15 +22,16 @@ SetlogFeature::SetlogFeature(
         : BasePlaylistFeature(
                 pLibrary,
                 pConfig,
-                "SETLOGHOME",
-                new PlaylistTableModel(
-                        this,
-                        pLibrary->trackCollections(),
-                        "mixxx.db.model.setlog",
-                        /*show-all-tracks*/ true)),
+                "SETLOGHOME"),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
           m_icon(":/images/library/ic_library_history.svg") {
+    initTableModel(new PlaylistTableModel(
+            this,
+            pLibrary->trackCollections(),
+            "mixxx.db.model.setlog",
+            /*show-all-tracks*/ true));
+
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_childModel.setRootItem(std::move(pRootItem));

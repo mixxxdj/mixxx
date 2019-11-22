@@ -39,13 +39,14 @@ PlaylistFeature::PlaylistFeature(
         UserSettingsPointer pConfig)
         : BasePlaylistFeature(
                 pLibrary,
-                pConfig,
-                "PLAYLISTHOME",
-                new PlaylistTableModel(
-                        this,
-                        pLibrary->trackCollections(),
-                        "mixxx.db.model.playlist")),
+                std::move(pConfig),
+                "PLAYLISTHOME"),
           m_icon(":/images/library/ic_library_playlist.svg") {
+    initTableModel(new PlaylistTableModel(
+            this,
+            pLibrary->trackCollections(),
+            "mixxx.db.model.playlist"));
+
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_childModel.setRootItem(std::move(pRootItem));

@@ -24,13 +24,12 @@
 BasePlaylistFeature::BasePlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
-        QString rootViewName,
-        PlaylistTableModel* const pPlaylistTableModel)
+        QString rootViewName)
         : LibraryFeature(pLibrary, std::move(pConfig)),
-          m_pPlaylistTableModel(pPlaylistTableModel),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
+          m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
             this,
@@ -48,19 +47,19 @@ BasePlaylistFeature::BasePlaylistFeature(
             this,
             &BasePlaylistFeature::slotAddToAutoDJTop);
 
-    m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
+    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
     connect(m_pDeletePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotDeletePlaylist);
 
-    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
+    m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotRenamePlaylist);
 
-    m_pLockPlaylistAction = new QAction(tr("Lock"),this);
+    m_pLockPlaylistAction = new QAction(tr("Lock"), this);
     connect(m_pLockPlaylistAction,
             &QAction::triggered,
             this,
@@ -72,7 +71,7 @@ BasePlaylistFeature::BasePlaylistFeature(
             this,
             &BasePlaylistFeature::slotDuplicatePlaylist);
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pImportPlaylistAction,
             &QAction::triggered,
             this,
@@ -137,6 +136,12 @@ BasePlaylistFeature::BasePlaylistFeature(
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
+void BasePlaylistFeature::initTableModel(
+        PlaylistTableModel* pPlaylistTableModel) {
+    DEBUG_ASSERT(!m_pPlaylistTableModel);
+    m_pPlaylistTableModel = pPlaylistTableModel;
+}
+
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
@@ -160,8 +165,11 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId != -1 && m_pPlaylistTableModel) {
+    if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -170,8 +178,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
