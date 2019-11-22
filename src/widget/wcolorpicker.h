@@ -6,10 +6,10 @@
 
 #include "util/color/color.h"
 
-class ColorMenu : public QWidget {
+class WColorPicker : public QWidget {
     Q_OBJECT
   public:
-    ColorMenu(QWidget* parent = nullptr);
+    WColorPicker(QWidget* parent = nullptr);
 
     void setSelectedColor(PredefinedColorPointer pColor = nullptr);
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);

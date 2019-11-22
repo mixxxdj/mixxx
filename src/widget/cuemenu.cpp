@@ -28,9 +28,9 @@ CueMenu::CueMenu(QWidget* parent)
     m_pEditLabel->setObjectName("CueLabelEdit");
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &CueMenu::slotEditLabel);
 
-    m_pColorMenu = new ColorMenu(this);
-    m_pColorMenu->setObjectName("CueColorPicker");
-    connect(m_pColorMenu, &ColorMenu::colorPicked, this, &CueMenu::slotChangeCueColor);
+    m_pColorPicker = new WColorPicker(this);
+    m_pColorPicker->setObjectName("CueColorPicker");
+    connect(m_pColorPicker, &WColorPicker::colorPicked, this, &CueMenu::slotChangeCueColor);
 
     m_pRemoveCue = new QPushButton("", this);
     m_pRemoveCue->setToolTip(tr("Remove this cue point"));
@@ -46,7 +46,7 @@ CueMenu::CueMenu(QWidget* parent)
     QVBoxLayout* pLeftLayout = new QVBoxLayout();
     pLeftLayout->addLayout(pLabelLayout);
     pLeftLayout->addWidget(m_pEditLabel);
-    pLeftLayout->addWidget(m_pColorMenu);
+    pLeftLayout->addWidget(m_pColorPicker);
 
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pRemoveCue);
@@ -87,14 +87,14 @@ void CueMenu::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
         m_pCuePosition->setText(positionText);
 
         m_pEditLabel->setText(m_pCue->getLabel());
-        m_pColorMenu->setSelectedColor(m_pCue->getColor());
+        m_pColorPicker->setSelectedColor(m_pCue->getColor());
     } else {
         m_pTrack.reset();
         m_pCue.reset();
         m_pCueNumber->setText(QString(""));
         m_pCuePosition->setText(QString(""));
         m_pEditLabel->setText(QString(""));
-        m_pColorMenu->setSelectedColor();
+        m_pColorPicker->setSelectedColor();
     }
 }
 
@@ -113,7 +113,7 @@ void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
         return;
     }
     m_pCue->setColor(pColor);
-    m_pColorMenu->setSelectedColor(pColor);
+    m_pColorPicker->setSelectedColor(pColor);
     hide();
 }
 

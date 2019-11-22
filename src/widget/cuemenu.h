@@ -6,7 +6,7 @@
 
 #include "track/cue.h"
 #include "track/track.h"
-#include "widget/colormenu.h"
+#include "widget/wcolorpicker.h"
 
 class CueMenu : public QWidget {
     Q_OBJECT
@@ -17,15 +17,15 @@ class CueMenu : public QWidget {
         delete m_pCueNumber;
         delete m_pCuePosition;
         delete m_pEditLabel;
-        delete m_pColorMenu;
+        delete m_pColorPicker;
         delete m_pRemoveCue;
     }
 
     void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
-        if (m_pColorMenu != nullptr) {
-            m_pColorMenu->useColorSet(pColorRepresentation);
+        if (m_pColorPicker != nullptr) {
+            m_pColorPicker->useColorSet(pColorRepresentation);
         }
     }
 
@@ -62,6 +62,6 @@ class CueMenu : public QWidget {
     QLabel* m_pCueNumber;
     QLabel* m_pCuePosition;
     QLineEdit* m_pEditLabel;
-    ColorMenu* m_pColorMenu;
+    WColorPicker* m_pColorPicker;
     QPushButton* m_pRemoveCue;
 };

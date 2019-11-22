@@ -1,4 +1,4 @@
-#include "widget/colormenu.h"
+#include "widget/wcolorpicker.h"
 
 #include <QGridLayout>
 #include <QMapIterator>
@@ -11,7 +11,7 @@ namespace {
 const int kNumColumns = 4;
 }
 
-ColorMenu::ColorMenu(QWidget* parent)
+WColorPicker::WColorPicker(QWidget* parent)
         : QWidget(parent) {
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
@@ -47,7 +47,7 @@ ColorMenu::ColorMenu(QWidget* parent)
     setLayout(pLayout);
 }
 
-void ColorMenu::setSelectedColor(PredefinedColorPointer pColor) {
+void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
     qDebug() << "setSelectedColor";
     if (m_pSelectedColor) {
         qDebug() << "m_pSelectedColor";
@@ -70,7 +70,7 @@ void ColorMenu::setSelectedColor(PredefinedColorPointer pColor) {
     m_pSelectedColor = pColor;
 }
 
-void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
+void WColorPicker::useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
     QMapIterator<PredefinedColorPointer, QPushButton*> i(m_pColorButtons);
     while (i.hasNext()) {
         i.next();
