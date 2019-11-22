@@ -26,9 +26,10 @@ ColorMenu::ColorMenu(QWidget* parent)
         }
 
         parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
-        QPalette palette = pColorButton->palette();
-        palette.setColor(QPalette::Button, pColor->m_defaultRgba);
-        pColorButton->setPalette(palette);
+        pColorButton->setStyleSheet(QString("background-color: #%1;").arg(
+            QString::number(pColor->m_defaultRgba.rgb(), 16)
+        ));
+
         pColorButton->setToolTip(pColor->m_sDisplayName);
         m_pColorButtons.insert(pColor, pColorButton);
 
@@ -75,13 +76,11 @@ void ColorMenu::useColorSet(PredefinedColorsRepresentation* pColorRepresentation
         i.next();
         PredefinedColorPointer pColor = i.key();
         QPushButton* pColorButton = i.value();
-        QPalette palette = pColorButton->palette();
-        if (pColorRepresentation == nullptr) {
-            palette.setColor(QPalette::Button, pColor->m_defaultRgba);
-        } else {
-            palette.setColor(QPalette::Button, pColorRepresentation->representationFor(pColor));
-        }
+        QColor color = (pColorRepresentation == nullptr) ? pColor->m_defaultRgba : pColorRepresentation->representationFor(pColor);
+        pColorButton->setStyleSheet(QString("background-color: #%1;").arg(
+            QString::number(color.rgb(), 16)
+        ));
+
         pColorButton->setToolTip(pColor->m_sDisplayName);
-        pColorButton->setPalette(palette);
     }
 }
