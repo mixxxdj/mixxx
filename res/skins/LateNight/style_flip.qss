@@ -14,12 +14,13 @@ QTableView, QTextBrowser, QTreeView {
 }
 
 /* borders of elevated containers */
+#WaveformsContainer,
 #DeckSmall1, #DeckSmall2, #DeckSmall3, #DeckSmall4,
   #RateContainer,
   #DeckRow_1_KeyVinylFx, #DeckRow_2_3_ArtistTitleTime,
   #DeckRow_4_OverviewSpinny #OverviewBox, #DeckControls,
   #DeckRow_5_LoopCuesTransport,
-  #SpinnyContainer, #CoverArtContainer,
+  #SmallSpinnyCoverContainer, #BigSpinnyCoverContainer,
 #MixerDecks, #MasterControls, #HeadphoneControls,
 #FxUnitControls,
   #FxSlotBorder1[highlight="0"],
@@ -37,18 +38,24 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   background-color: #0f0f0e;
 }
 
-/*
-#MicRack, #AuxRack, #MicAuxMainControls,
-  #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
-#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
-  #SamplerDeckSmall, #SamplerText, #SamplerRowTwo, #SamplerPfl,
-WEffectSelector::checked, #fadeModeCombobox::checked,  */
-
-WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
-QAbstractScrollArea::corner, #ToolBar,
-#WaveformsContainer {
-  background-color: #0f0f0e;
+#LibraryContainer {
+  /* make a smooth transition from toolbar at the bottom to
+    darker skin background at the top.
+    Splitter handles should be translucent for this to work. */
+  background-color: qlineargradient(
+    x1:0, y1:0, x2:0, y2:1,
+    stop:0 #1e1e1d,
+    stop:1 #0f0f0e);
 }
+
+QTreeView, QTextBrowser, QTableView,
+WSearchLineEdit, WSearchLineEdit:focus {
+  background-color: #050504;
+  alternate-background-color: #0f0f0e;
+  selection-background-color: #5e4507;
+}
+
+#SamplerDeck #OverviewBox
 
 
 #SamplerDeck {
@@ -85,17 +92,12 @@ QAbstractScrollArea::corner, #ToolBar,
   padding-top: 0px;
 }
 #WaveformsContainer {
-  border-bottom: 1px solid #000;
+  /* the right border is necessary only when the skin settings menu is visible */
+  border-width: 0px 1px 1px 0px;
   padding-bottom: 0px;
 }
 
-#BeatgridButtonsToggle {
-  margin: 1px;
-}
-
-#DeckControls,
-#SpinnyContainer[highlight="0"], #SpinnyContainer[highlight="1"],
-#CoverArtContainer[highlight="0"], #CoverArtContainer[highlight="1"] {
+#DeckControls {
   border-width: 1px;
 }
 #RateContainer {
@@ -125,27 +127,19 @@ QAbstractScrollArea::corner, #ToolBar,
   }
   #DeckControls {
   }
-#SpinnyContainer {
-  padding: 1px;
-  margin: 0px 1px 0px 0px;
-}
-#CoverArtContainer {
-  padding: 0px;
-  margin: 0px 1px 0px 0px;
-}
-#BigSpinnyCoverContainer[highlight="0"],
-#BigSpinnyCoverContainer[highlight="1"] {
-  border-width: 0px;
-}
 
 #DeckRow_5_LoopCuesTransport {
   padding: 2px 1px 1px 2px;
 }
 
-/* see deck_rate_artist_separator.xml for visibilty conditions */
-/* Disabled in Flip theme */
-#DeckRateSeparator {
-  padding-left: 0px;
+#BigSpinnyCoverContainer {
+  margin: 0px 1px 1px 0px;
+}
+#SmallSpinnyCoverContainer {
+  margin: 0px 1px 0px 0px;
+}
+#MiniDeckSpinnyCoverContainer {
+  margin: 0px
 }
 
 
@@ -153,19 +147,7 @@ QAbstractScrollArea::corner, #ToolBar,
   border-left: 0px;
   margin: 0px 0px 1px 0px;
 }
-/* In conjunction with
-    <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-    <Transform><Not><Variable name="group"/>,file_key</Not></Transform>
-    <BindProperty>highlight</BindProperty>
-  this is uspposed to highlight a not-original key, but it doesn't work.
-#KeyText[highlight="1"] {
-  margin-top: 1px;
-  border: 1px solid #F856E7;
-} */
 
-#BeatgridButtonsToggle {
-  margin: 1px 0px;
-}
 #FxUnitControls,
 #FxSlotBorder1[highlight="0"],
 #FxSlotBorder2[highlight="0"] {
@@ -229,18 +211,22 @@ QAbstractScrollArea::corner, #ToolBar,
 #Deck1, #Deck2,
 #DeckSmall1, #DeckSmall2,
 #FxUnit1, #FxUnit2 {
-  margin-right: 4px;
+  margin-right: 5px;
   margin-left: 2px;
 }
 #Deck3, #Deck4,
 #DeckSmall3, #DeckSmall4,
 #FxUnit3, #FxUnit4 {
   margin-right: 1px;
-  margin-left: 15px;
+  margin-left: 5px;
 }
 
-#MicRack, #AuxRack {
+#MicRack {
   margin-left: 3px;
+  margin-right: 4px;
+}
+#AuxRack {
+  margin-left: 4px;
   margin-right: 3px;
 }
 
@@ -289,14 +275,19 @@ QPushButton#pushButtonAutoDJ:enabled,
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
   background-color: #2c2c2c;
 }
-
+/*
+#BeatgridButtonsToggle {
+  border-width: 3px;
+  border-image: url(skin:buttons_classic/btn_embedded_libary.svg) 3 3 3 3;
+  margin: 3px;
+} */
 
 
 /************** Mixer *********************************************************/
 #MixerContainer {
   background-color: transparent;
   border: 0px;
-  margin: 0px 3px 4px 1px;
+  margin: 0px 4px 4px 1px;
   }
 
 #MixerDecks {
@@ -336,15 +327,6 @@ QPushButton#pushButtonAutoDJ:enabled,
 
 
 /************** Library *******************************************************/
-#Library {
-  /* make a smooth transition from toolbar at the bottom to
-    darker skin background at the top.
-    Splitter handles should be translucent for this to work. */
-  background-color: qlineargradient(
-    x1:0, y1:0, x2:0, y2:1,
-    stop:0 #1e1e1d,
-    stop:1 #0f0f0e);
-}
 
 WLibrary,
 #SidebarBox {
