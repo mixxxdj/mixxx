@@ -132,7 +132,8 @@
       <Filters/>
       <SetVariable name="scheme">classic</SetVariable>
       <SetVariable name="style_scheme">flip</SetVariable>
-      <SetVariable name="SpinnySmallMaxWidth">57</SetVariable>
+      <SetVariable name="SmallSpinnyMaxSize">58,57</SetVariable>
+      <SetVariable name="BigSpinnyMaxSize">110,109</SetVariable>
       <SetVariable name="SeparatorWidth">0</SetVariable>
       <!-- Set the '3D button mode'
           * elevated (like before): buttons are elevated and have a drop shadow and light borders

@@ -107,9 +107,12 @@ QAbstractScrollArea::corner, #ToolBar,
   }
 
 #DeckRow_1_KeyVinylFx {
-  padding: 1px 0px 0px 1px;
+  padding: 2px 1px 1px 2px;
   margin: 0px 0px 0px 0px;
   }
+#DeckRows234 {
+  margin: 1px 0px 0px 0px;
+}
 #DeckRow_2_3_ArtistTitleTime {
   margin: 0px 0px 1px 0px;
   }
@@ -120,9 +123,19 @@ QAbstractScrollArea::corner, #ToolBar,
   #DeckRow_4_OverviewSpinny #OverviewBox {
     margin: 0px 1px 0px 0px;
   }
-#SpinnyContainer, #CoverArtContainer {
+  #DeckControls {
+  }
+#SpinnyContainer {
   padding: 1px;
   margin: 0px 1px 0px 0px;
+}
+#CoverArtContainer {
+  padding: 0px;
+  margin: 0px 1px 0px 0px;
+}
+#BigSpinnyCoverContainer[highlight="0"],
+#BigSpinnyCoverContainer[highlight="1"] {
+  border-width: 0px;
 }
 
 #DeckRow_5_LoopCuesTransport {
