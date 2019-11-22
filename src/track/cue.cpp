@@ -28,7 +28,8 @@ Cue::Cue(TrackId trackId)
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(QColor()) {
+          m_color(QColor()),
+          m_colorIsDefault(true) {
     DEBUG_ASSERT(!m_label.isNull());
 }
 
@@ -39,7 +40,8 @@ Cue::Cue(int id,
         double length,
         int hotCue,
         QString label,
-        QColor color)
+        QColor color,
+        bool colorIsDefault)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -47,7 +49,8 @@ Cue::Cue(int id,
           m_sampleStartPosition(position),
           m_iHotCue(hotCue),
           m_label(label),
-          m_color(color) {
+          m_color(color),
+          m_colorIsDefault(colorIsDefault) {
     DEBUG_ASSERT(!m_label.isNull());
     if (length) {
         if (position != Cue::kNoPosition) {
@@ -58,6 +61,8 @@ Cue::Cue(int id,
     } else {
         m_sampleEndPosition = Cue::kNoPosition;
     }
+
+    DEBUG_ASSERT(m_color.isValid() && m_color.rgba() != 0);
 }
 int Cue::getId() const {
     QMutexLocker lock(&m_mutex);
@@ -164,10 +169,36 @@ QColor Cue::getColor() const {
     return m_color;
 }
 
+QRgb Cue::getColorValueForDb() const {
+    QMutexLocker lock(&m_mutex);
+    if (m_colorIsDefault) {
+        // We store black for default color.
+        return kDefaultDbColorValue;
+    }
+    return m_color.rgba();
+}
+
 void Cue::setColor(const QColor& color) {
     QMutexLocker lock(&m_mutex);
+
+    DEBUG_ASSERT(m_color.isValid() && m_color.rgba() != kDefaultDbColorValue);
+
     m_color = color;
     m_bDirty = true;
+    m_colorIsDefault = false;
+    lock.unlock();
+    emit(updated());
+}
+
+void Cue::setDefaultColor(const QColor& color) {
+    QMutexLocker lock(&m_mutex);
+    m_color = color;
+    if (!m_colorIsDefault) {
+        // Default color is not stored in the DB
+        // thats why changing the default color does not dirty the track
+        m_bDirty = true;
+        m_colorIsDefault = true;
+    }
     lock.unlock();
     emit(updated());
 }

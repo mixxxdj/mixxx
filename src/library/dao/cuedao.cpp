@@ -51,8 +51,13 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
-    uint colorValue = record.value(record.indexOf("color")).toUInt();
+    QRgb colorValue = record.value(record.indexOf("color")).toUInt();
     QColor color = QColor::fromRgba(colorValue);
+    bool colorIsDefault = false;
+    if (!color.isValid() || colorValue == Cue::kDefaultDbColorValue) {
+        colorIsDefault = true;
+        color = QColor(0xf3, 0x61, 0x00); // library icons orange
+    }
     CuePointer pCue(new Cue(id,
             trackId,
             (Cue::Type)type,
@@ -60,7 +65,8 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
             length,
             hotcue,
             label,
-            color));
+            color,
+            colorIsDefault));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -152,7 +158,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor().rgba());
+        query.bindValue(":color", cue->getColorValueForDb());
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -180,7 +186,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor().rgba());
+        query.bindValue(":color", cue->getColorValueForDb());
 
         if (query.exec()) {
             cue->setDirty(false);
