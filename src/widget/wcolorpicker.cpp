@@ -26,7 +26,7 @@ WColorPicker::WColorPicker(QWidget* parent)
         }
 
         parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
-        pColorButton->setStyleSheet(QString("background-color: #%1;").arg(
+        pColorButton->setStyleSheet(QString("QPushButton { background-color: #%1; }").arg(
             QString::number(pColor->m_defaultRgba.rgb(), 16)
         ));
 
@@ -77,7 +77,7 @@ void WColorPicker::useColorSet(PredefinedColorsRepresentation* pColorRepresentat
         PredefinedColorPointer pColor = i.key();
         QPushButton* pColorButton = i.value();
         QColor color = (pColorRepresentation == nullptr) ? pColor->m_defaultRgba : pColorRepresentation->representationFor(pColor);
-        pColorButton->setStyleSheet(QString("background-color: #%1;").arg(
+        pColorButton->setStyleSheet(QString("QPushButton { background-color: #%1; }").arg(
             QString::number(color.rgb(), 16)
         ));
 
