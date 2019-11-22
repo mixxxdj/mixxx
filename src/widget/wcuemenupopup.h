@@ -8,12 +8,12 @@
 #include "track/track.h"
 #include "widget/wcolorpicker.h"
 
-class CueMenu : public QWidget {
+class WCueMenuPopup : public QWidget {
     Q_OBJECT
   public:
-    CueMenu(QWidget* parent = nullptr);
+    WCueMenuPopup(QWidget* parent = nullptr);
 
-    ~CueMenu() {
+    ~WCueMenuPopup() {
         delete m_pCueNumber;
         delete m_pCuePosition;
         delete m_pEditLabel;

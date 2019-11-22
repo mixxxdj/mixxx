@@ -1,4 +1,4 @@
-#include "widget/cuemenu.h"
+#include "widget/wcuemenupopup.h"
 
 #include <QHBoxLayout>
 #include <QInputDialog>
@@ -7,11 +7,11 @@
 #include "engine/engine.h"
 #include "util/color/color.h"
 
-CueMenu::CueMenu(QWidget* parent)
+WCueMenuPopup::WCueMenuPopup(QWidget* parent)
         : QWidget(parent) {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
-    setObjectName("CueMenu");
+    setObjectName("WCueMenuPopup");
 
     m_pCueNumber = new QLabel(this);
     m_pCueNumber->setToolTip(tr("cue number"));
@@ -26,17 +26,17 @@ CueMenu::CueMenu(QWidget* parent)
     m_pEditLabel = new QLineEdit(this);
     m_pEditLabel->setToolTip(tr("Edit cue label"));
     m_pEditLabel->setObjectName("CueLabelEdit");
-    connect(m_pEditLabel, &QLineEdit::textEdited, this, &CueMenu::slotEditLabel);
+    connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
 
     m_pColorPicker = new WColorPicker(this);
     m_pColorPicker->setObjectName("CueColorPicker");
-    connect(m_pColorPicker, &WColorPicker::colorPicked, this, &CueMenu::slotChangeCueColor);
+    connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);
 
     m_pRemoveCue = new QPushButton("", this);
     m_pRemoveCue->setToolTip(tr("Remove this cue point"));
     m_pRemoveCue->setFixedHeight(m_pEditLabel->sizeHint().height());
     m_pRemoveCue->setObjectName("CueRemoveButton");
-    connect(m_pRemoveCue, &QPushButton::clicked, this, &CueMenu::slotRemoveCue);
+    connect(m_pRemoveCue, &QPushButton::clicked, this, &WCueMenuPopup::slotRemoveCue);
 
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber);
@@ -59,7 +59,7 @@ CueMenu::CueMenu(QWidget* parent)
     setLayout(pMainLayout);
 }
 
-void CueMenu::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
+void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
     if (pTrack && pCue) {
         m_pTrack = pTrack;
         m_pCue = pCue;
@@ -98,14 +98,14 @@ void CueMenu::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
     }
 }
 
-void CueMenu::slotEditLabel() {
+void WCueMenuPopup::slotEditLabel() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
     m_pCue->setLabel(m_pEditLabel->text());
 }
 
-void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
+void WCueMenuPopup::slotChangeCueColor(PredefinedColorPointer pColor) {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
@@ -117,7 +117,7 @@ void CueMenu::slotChangeCueColor(PredefinedColorPointer pColor) {
     hide();
 }
 
-void CueMenu::slotRemoveCue() {
+void WCueMenuPopup::slotRemoveCue() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
