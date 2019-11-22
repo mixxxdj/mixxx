@@ -577,7 +577,7 @@ WTime {
     font-size: 10px/10px;
   }
 
-CueMenu #CueRemoveButton {
+WCueMenuPopup #CueRemoveButton {
   qproperty-icon: url(:/images/library/ic_library_cross.svg);
 }
 

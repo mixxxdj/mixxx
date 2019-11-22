@@ -598,6 +598,6 @@ QPushButton#pushButtonRepeatPlaylist {
     background-color: #f2f2ff;
 }
 
-CueMenu #CueRemoveButton {
+WCueMenuPopup #CueRemoveButton {
   qproperty-icon: url(:/images/library/ic_library_cross.svg);
 }

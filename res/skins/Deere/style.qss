@@ -1742,7 +1742,7 @@ WPushButton[value="2"]:hover {
     border-radius: 3px;
 }
 
-CueMenu #CueRemoveButton {
+WCueMenuPopup #CueRemoveButton {
   qproperty-icon: url(:/images/library/ic_library_cross.svg);
 }
 
