@@ -19,6 +19,7 @@ namespace {
 TrackCollection::TrackCollection(
         const UserSettingsPointer& pConfig)
         : m_pConfig(pConfig),
+          m_cueDao(pConfig),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {

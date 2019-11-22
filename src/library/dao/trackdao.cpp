@@ -63,7 +63,7 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+                   const UserSettingsPointer& pConfig)
         : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),

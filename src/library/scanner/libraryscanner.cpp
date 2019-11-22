@@ -49,6 +49,7 @@ LibraryScanner::LibraryScanner(
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pTrackCollection(pTrackCollection),
+          m_cueDao(pConfig),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                   m_analysisDao, m_libraryHashDao,

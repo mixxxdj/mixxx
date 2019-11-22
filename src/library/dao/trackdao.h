@@ -39,7 +39,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             PlaylistDAO& playlistDao,
             AnalysisDao& analysisDao,
             LibraryHashDAO& libraryHashDao,
-            UserSettingsPointer pConfig);
+            const UserSettingsPointer& pConfig);
     ~TrackDAO() override;
 
     void initialize(const QSqlDatabase& database) override {

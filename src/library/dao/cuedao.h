@@ -9,6 +9,7 @@
 
 #include "track/track.h"
 #include "library/dao/dao.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 
 #define CUE_TABLE "cues"
 
@@ -16,7 +17,8 @@ class Cue;
 
 class CueDAO : public DAO {
   public:
-    ~CueDAO() override {}
+    explicit CueDAO(const UserSettingsPointer& pConfig);
+    ~CueDAO() override = default;
 
     void initialize(const QSqlDatabase& database) override {
         m_database = database;
@@ -37,6 +39,8 @@ class CueDAO : public DAO {
 
     QSqlDatabase m_database;
     mutable QMap<int, CuePointer> m_cues;
+    UserSettingsPointer m_pConfig;
+    HotcueColorPaletteSettings m_colorPaletteSettings;
 };
 
 #endif /* CUEDAO_H */

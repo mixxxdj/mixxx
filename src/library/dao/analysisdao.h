@@ -33,8 +33,8 @@ class AnalysisDao : public DAO {
         QByteArray data;
     };
 
-    explicit AnalysisDao(UserSettingsPointer pConfig);
-    ~AnalysisDao() override {}
+    explicit AnalysisDao(const UserSettingsPointer& pConfig);
+    ~AnalysisDao() override = default;
 
     // The following functions can be used with a custom database
     // connection and independent of whether the DAO has been
