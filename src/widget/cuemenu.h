@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 
@@ -11,21 +12,16 @@ class CueMenu : public QWidget {
     Q_OBJECT
   public:
     CueMenu(QWidget* parent = nullptr);
-    ~CueMenu() override;
 
-    void setCue(CuePointer pCue) {
-        m_pCue = pCue;
-        if (m_pCue) {
-            m_pEditLabel->setText(m_pCue->getLabel());
-            m_pColorMenu->setSelectedColor(m_pCue->getColor());
-        } else {
-            m_pColorMenu->setSelectedColor();
-        }
+    ~CueMenu() {
+        delete m_pCueNumber;
+        delete m_pCuePosition;
+        delete m_pEditLabel;
+        delete m_pColorMenu;
+        delete m_pRemoveCue;
     }
 
-    void setTrack(TrackPointer pTrack) {
-        m_pTrack = pTrack;
-    }
+    void setTrackAndCue(TrackPointer pTrack, CuePointer pCue);
 
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation) {
         if (m_pColorMenu != nullptr) {
@@ -63,6 +59,8 @@ class CueMenu : public QWidget {
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
+    QLabel* m_pCueNumber;
+    QLabel* m_pCuePosition;
     QLineEdit* m_pEditLabel;
     ColorMenu* m_pColorMenu;
     QPushButton* m_pRemoveCue;

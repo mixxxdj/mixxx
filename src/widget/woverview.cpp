@@ -469,8 +469,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 }
             }
             if (pHoveredCue != nullptr) {
-                m_pCueMenu->setCue(pHoveredCue);
-                m_pCueMenu->setTrack(m_pCurrentTrack);
+                m_pCueMenu->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
                 m_pCueMenu->popup(e->globalPos());
                 m_bHotcueMenuShowing = true;
             }
