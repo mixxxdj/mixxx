@@ -68,7 +68,7 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
         QString hotcueNumberText = "";
         if (hotcueNumber != Cue::kNoHotCue) {
             // Programmers count from 0, but DJs count from 1
-            hotcueNumberText = QString::number(hotcueNumber + 1);
+            hotcueNumberText = QString(tr("Hotcue #%1")).arg(QString::number(hotcueNumber + 1));
         }
         m_pCueNumber->setText(hotcueNumberText);
 
