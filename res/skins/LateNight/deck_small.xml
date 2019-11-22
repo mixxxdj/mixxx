@@ -1,5 +1,6 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+
   <WidgetGroup>
     <ObjectName>DeckSmall<Variable name="channum" /></ObjectName>
     <Layout>vertical</Layout>
@@ -11,18 +12,21 @@
         <SizePolicy>i,min</SizePolicy>
         <Children>
 
+          <!-- Small spinny / cover art -->
           <WidgetGroup>
-            <Size>45f,46f</Size>
+            <Size><Variable name="MiniDeckSpinnySize"/></Size>
             <Layout>horizontal</Layout>
-            <!-- hack/trick: remove the css border (top & left) from SpinnyContainer
-                so we can use the Spinny singleton from regular decks :) -->
-            <Style>QWidget {border: none};</Style>
             <Children>
-              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-              <SingletonContainer>
-                <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
-              </SingletonContainer>
-              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>MiniDeckSpinnyCoverContainer</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>

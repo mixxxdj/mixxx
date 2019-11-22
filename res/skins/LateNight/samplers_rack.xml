@@ -265,7 +265,7 @@
       <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
       <WidgetGroup>
-        <Size>5f,1min</Size>
+        <Size>2f,1min</Size>
         <Connection>
           <ConfigKey>[Master],skin_settings</ConfigKey>
           <BindProperty>visible</BindProperty>

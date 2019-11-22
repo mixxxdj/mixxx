@@ -114,6 +114,7 @@ QAbstractScrollArea::corner {
 }
 
 /* borders of elevated containers */
+#WaveformsContainer,
 #Deck1, #DeckSmall1, #Deck2, #DeckSmall2,
 #Deck3, #DeckSmall3, #Deck4, #DeckSmall4,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
@@ -135,8 +136,17 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   padding-top: 1px;
 }
 #WaveformsContainer {
-  border-bottom: 1px solid #000;
-  padding-bottom: 1px;
+  padding: 0px 0px 1px 0px;
+}
+#WaveformsContainer[highlight="0"] {
+  padding: 0px 0px 1px 0px;
+  border-width: 0px 0px 1px 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+#WaveformsContainer[highlight="1"] {
+  /* the right border is necessary only when the skin settings menu is visible */
+  border-width: 0px 1px 1px 0px;
 }
 
 
@@ -174,10 +184,6 @@ WSearchLineEdit,
   border: 1px solid #F856E7;
 } */
 
-#BeatgridButtonsToggle {
-  margin: 1px;
-}
-
 #FxSlotBorder1[highlight="1"],
 #FxSlotBorder2[highlight="1"],
 #FxSlotBorder3[highlight="1"] {
@@ -186,7 +192,7 @@ WSearchLineEdit,
 
 /************ separator lines within decks, samplers etc. *********************/
 #DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls, #DeckRateSeparator,
-#SpinnyContainer, #CoverArtContainer, #BigSpinnyCoverContainer,
+#BigSpinnyCoverContainer, #SmallSpinnyCoverContainer,
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
 #PlayContainerSmall,
 #PreviewLabel, #PreviewPlayBox,
@@ -194,6 +200,14 @@ WSearchLineEdit,
 #SamplerGain, #SamplerVU, #SamplerPfl {
   border-style: solid;
   border-color: #0c0c0c;
+}
+
+/* see
+  separator_artist_title.xml and
+  separator_spinny_cover
+  for visibilty conditions */
+#SeparatorLine {
+  background-color: #0c0c0c;
 }
 
 /*********** layout margins & paddings ****************************************/
@@ -298,8 +312,9 @@ QHeaderView::down-arrow {
 }
 
 #BeatgridButtonsToggle {
-  border-width: 3px;
-  border-image: url(skin:buttons_classic/btn_embedded_square.svg) 3 3 3 3;
+  border-width: 2px;
+  border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
+  margin: 1px;
 }
 
 /* Library controls in AutoDJ etc. */
@@ -400,7 +415,7 @@ WEffectSelector {
     border-width:  1px 3px 3px 1px;*/
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
   margin: 1px;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 /************** button background colors **************************************/
@@ -1045,11 +1060,6 @@ WTime {
   padding-left: 1px;
   margin: 2px 0px 2px 0xp;
   }
-
-  /* see deck_rate_artist_separator.xml for visibilty conditions */
-  #DeckRateSeparator {
-    background-color: #0c0c0c;
-  }
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
     padding: 0px 3px 2px 0px;
@@ -1094,25 +1104,16 @@ WTime {
 #DecksAndMixer {
 }
 
-#SpinnyContainer,
-#CoverArtContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 1px;
-  }/* */
-  #SpinnyContainer[highlight="0"],
-  #CoverArtContainer[highlight="0"] {
-    border-width: 0px 0px 0px 0px;
-  }
-  #SpinnyContainer[highlight="1"],
-  #CoverArtContainer[highlight="1"] {
-    border-width: 0px 0px 0px 1px;
-  }
-  #BigSpinnyCoverContainer[highlight="0"] {
-    border-width: 1px 0px 0px 0px;
-  }
-  #BigSpinnyCoverContainer[highlight="1"] {
-    border-width: 0px;
-  }
+
+#BigSpinnyCoverContainer {
+  border-width: 0px;
+}
+#SmallSpinnyCoverContainer {
+  border-width: 1px 0px 0px 0px;
+}
+#MiniDeckSpinnyCoverContainer {
+  margin: 1px 2px 1px 1px;
+}
 
 WSpinny { /*
   This produces artifacts in spinny bg
@@ -1287,7 +1288,7 @@ WBeatSpinBox,
   WBeatSpinBox#Spinbox_embedded {
     border-width: 3px 19px 2px 3px;
     border-image: url(skin:buttons_classic/spinbox_embedded_border.svg) 3 19 2 3;
-    margin: 1px 0px 0px 1px;
+    margin: 1px 0px 1px 1px;
     padding: 0px -17px 2px 1px;
     background-color: #0a0a0a;
     }
@@ -2043,7 +2044,7 @@ WEffectSelector {
   padding-top: 5px;*/
 }
 
-#Library {
+#LibraryContainer {
   /* make a smooth transition from toolbar at the bottom to
     darker skin background at the top.
     Splitter handles should be translucent for this to work. */

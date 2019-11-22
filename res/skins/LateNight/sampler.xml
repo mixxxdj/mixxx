@@ -102,7 +102,7 @@
                     <TooltipId>waveform_overview</TooltipId>
                     <SizePolicy>me,me</SizePolicy>
                     <Group><Variable name="group"/></Group>
-                    <BgColor><Variable name="SignalBgColor_12"/></BgColor>
+                    <BgColor><Variable name="SignalBgColor_SamplerPreview"/></BgColor>
                     <SignalColor><Variable name="SignalColor_12"/></SignalColor>
                     <SignalHighColor><Variable name="SignalRGBHighColor"/></SignalHighColor>
                     <SignalMidColor><Variable name="SignalRGBMidColor"/></SignalMidColor>

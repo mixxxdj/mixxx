@@ -9,7 +9,7 @@
       **********************************************
       -->
       <WidgetGroup>
-        <ObjectName>Library</ObjectName>
+        <ObjectName>LibraryContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>

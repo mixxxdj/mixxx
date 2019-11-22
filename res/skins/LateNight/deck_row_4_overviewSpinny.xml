@@ -5,20 +5,33 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
+
+      <!-- Small spinny / cover art -->
       <WidgetGroup>
         <SizePolicy>min,me</SizePolicy>
-        <MaximumSize><Variable name="SmallSpinnyMaxSize"/></MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <SizePolicy>min,me</SizePolicy>
-            <MaximumSize><Variable name="SmallSpinnyMaxSize"/></MaximumSize>
             <Layout>horizontal</Layout>
             <Children>
-              <SingletonContainer>
-                <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
-              </SingletonContainer>
+              <!-- draws a line to separate rate rate controls and spinny/cover -->
+              <Template src="skin:separator_spinny_cover.xml"/>
+              <WidgetGroup>
+                <ObjectName>SmallSpinnyCoverContainer</ObjectName>
+                <Size><Variable name="SmallSpinnySize"/></Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
@@ -27,6 +40,7 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+      <!-- Small spinny / cover art -->
 
       <WidgetGroup>
         <ObjectName>OverviewBox</ObjectName>

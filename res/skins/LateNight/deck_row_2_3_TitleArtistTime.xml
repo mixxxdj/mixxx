@@ -3,8 +3,9 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <!-- draws a line to separate Title/Artist from rate controls -->
-      <Template src="skin:deck_rate_artist_separator.xml"/>
+
+      <!-- draws a line to separate rate controls and artist/title -->
+      <Template src="skin:separator_artist_title.xml"/>
 
       <WidgetGroup>
         <ObjectName>DeckRow_2_3_ArtistTitleTime</ObjectName>

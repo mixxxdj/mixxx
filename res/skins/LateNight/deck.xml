@@ -19,21 +19,32 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup><!-- Big spinny -->
-                <SizePolicy>i,min</SizePolicy>
-                <MaximumSize><Variable name="BigSpinnyMaxSize"/></MaximumSize>
+
+              <WidgetGroup>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
-                    <ObjectName>AlignCenter</ObjectName>
                     <SizePolicy>min,me</SizePolicy>
-                    <MaximumSize><Variable name="BigSpinnyMaxSize"/></MaximumSize>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:spinny_coverart.xml">
-                        <SetVariable name="MaxSize"><Variable name="BigSpinnyMaxDimension"/>,<Variable name="BigSpinnyMaxDimension"/></SetVariable>
-                      </Template>
+                      <!-- draws a line to separate rate rate controls and spinny/cover -->
+                      <Template src="skin:separator_spinny_cover.xml"/>
+                      <WidgetGroup>
+                        <ObjectName>BigSpinnyCoverContainer</ObjectName>
+                        <Size><Variable name="BigSpinnySize"/></Size>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
                     </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </WidgetGroup>
                 </Children>
                 <Connection>
@@ -41,6 +52,7 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- Big spinny -->
+
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>

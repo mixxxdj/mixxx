@@ -100,21 +100,41 @@
       <Filters/>
       <SetVariable name="scheme">classic</SetVariable>
       <SetVariable name="style_scheme">classic</SetVariable>
+      <!--  For no background tile leave empty.
+            To override the <BackPath> tile it's sufficient [in most cases :]
+            to assign the respective containers a background-color in qss.
+            Good to know:
+            <BackPath> suppresses qss borders -->
       <SetVariable name="bg_tile">classic</SetVariable>
-      <SetVariable name="SmallSpinnyMaxSize">57,56</SetVariable>
-      <SetVariable name="BigSpinnyMaxSize">108,107</SetVariable>
-      <SetVariable name="SeparatorWidth">1</SetVariable>
+
+      <!-- Some widget sizes that are scheme specific -->
+        <!-- Here, the goal was to guarantee a 1:1 ratio for both spinniy and
+            cover art widgets in every situation.
+            The small spinnies have a top border included to separate them from
+            artist/title, therefore the containers are 1px taller than 1:1 -->
+      <SetVariable name="SmallSpinnySize">55f,56f</SetVariable>
+      <!-- In small decks there's 2px margin-right before overview -->
+      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
+        <!-- Big spinnies are borderless = 1:1
+            Decks may expand vertically when the mixer is shown, so make sure
+            the spinnies fill the available space (force-expand decks no matter
+            if the mixer is shown) -->
+      <SetVariable name="BigSpinnySize">108f,108f</SetVariable>
+      <SetVariable name="SeparatorSize">1f</SetVariable>
+
       <!-- Set the '3D button mode'
-          * elevated (like before): buttons are elevated and have a drop shadow and light borders
-          * embedded: buttons are embedded and surrounding groove (black)
+          * elevated : buttons stand out, 3D border, drop shadow
+          * embedded: buttons are embedded,  surrounding groove (black)
           -->
-      <!-- Buttons in mixer, rate controls, collpased units etc. -->
+        <!-- Buttons in mixer, rate controls, collapsed Fx / Mic / Aux units etc. -->
       <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
-      <!-- Button in transport row, mic / aux units, sampler hotcue row etc. -->
+        <!-- Buttons in transport row, mic / aux units, sampler hotcue row etc. -->
       <SetVariable name="SubRegion_btn_type">elevated</SetVariable>
 
+      <!-- Waveform & Overview colors -->
       <SetVariable name="SignalBgColor_12">#0f0f0f</SetVariable>
       <SetVariable name="SignalBgColor_34">#012322</SetVariable>
+      <SetVariable name="SignalBgColor_SamplerPreview">#0f0f0f</SetVariable>
       <SetVariable name="SignalColor_12">#E7C413</SetVariable>
       <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
       <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
@@ -125,6 +145,7 @@
       <SetVariable name="PlayPosColor">#00FF00</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
+      <!-- Optional: add stylesheet to complement and/or override style.qss -->
 
     </Scheme>
     <Scheme>
@@ -165,7 +186,8 @@
   <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
-  to be space for the title bar or other chrome at full screen -->
+  to be space for the title bar or other chrome at full screen.
+  https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
   <MinimumSize>1270,550</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
