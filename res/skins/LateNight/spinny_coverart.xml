@@ -5,6 +5,7 @@
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
+        <ObjectName>BigSpinnyCoverContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
@@ -12,14 +13,13 @@
           <WidgetGroup>
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
             <Children>
 
               <Spinny>
                 <TooltipId>spinny</TooltipId>
                 <SizePolicy>me,me</SizePolicy>
                 <MinimumSize>40,40</MinimumSize>
-                <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                 <Group><Variable name="group"/></Group>
                 <PathBackground scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/spinny_bg.svg</PathBackground>
                 <PathMask scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/spinny<Variable name="channum"/>_mask.svg</PathMask>
@@ -37,7 +37,6 @@
                 <TooltipId>spinny</TooltipId>
                 <SizePolicy>me,me</SizePolicy>
                 <MinimumSize>40,40</MinimumSize>
-                <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                 <Group><Variable name="group"/></Group>
                 <PathBackground scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/spinny_bg.svg</PathBackground>
                 <PathMask scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/spinny<Variable name="channum"/>_mask.svg</PathMask>
@@ -61,9 +60,14 @@
           <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>BigSpinnyCoverContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -81,7 +85,6 @@
                     <TooltipId>coverart</TooltipId>
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>40,40</MinimumSize>
-                    <MaximumSize><Variable name="MaxSize"/></MaximumSize>
                     <Group><Variable name="group"/></Group>
                     <DefaultCover>skin:/style_<Variable name="style_scheme"/>/cover_default.svg</DefaultCover>
                   </CoverArt>
@@ -103,6 +106,10 @@
           <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+          <BindProperty>highlight</BindProperty>
         </Connection>
       </WidgetGroup>
 

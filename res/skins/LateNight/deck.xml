@@ -21,22 +21,17 @@
             <Children>
               <WidgetGroup><!-- Big spinny -->
                 <SizePolicy>i,min</SizePolicy>
-                <MaximumSize>108,110</MaximumSize>
+                <MaximumSize><Variable name="BigSpinnyMaxSize"/></MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
-                    <ObjectName>AlignLeftBottom</ObjectName>
+                    <ObjectName>AlignCenter</ObjectName>
                     <SizePolicy>min,me</SizePolicy>
-                    <MaximumSize>108,</MaximumSize>
+                    <MaximumSize><Variable name="BigSpinnyMaxSize"/></MaximumSize>
                     <Layout>horizontal</Layout>
-                    <Style>
-                      #SpinnyContainer, #CoverArtContainer {
-                        border-top: 0px;
-                      }
-                    </Style>
                     <Children>
                       <Template src="skin:spinny_coverart.xml">
-                        <SetVariable name="MaxSize">110,110</SetVariable>
+                        <SetVariable name="MaxSize"><Variable name="BigSpinnyMaxDimension"/>,<Variable name="BigSpinnyMaxDimension"/></SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>

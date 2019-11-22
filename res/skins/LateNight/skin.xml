@@ -101,7 +101,8 @@
       <SetVariable name="scheme">classic</SetVariable>
       <SetVariable name="style_scheme">classic</SetVariable>
       <SetVariable name="bg_tile">classic</SetVariable>
-      <SetVariable name="SpinnySmallMaxWidth">54</SetVariable>
+      <SetVariable name="SmallSpinnyMaxSize">57,56</SetVariable>
+      <SetVariable name="BigSpinnyMaxSize">108,107</SetVariable>
       <SetVariable name="SeparatorWidth">1</SetVariable>
       <!-- Set the '3D button mode'
           * elevated (like before): buttons are elevated and have a drop shadow and light borders
@@ -217,7 +218,6 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">1</SetVariable>
-          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -227,7 +227,6 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">2</SetVariable>
-          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -237,7 +236,6 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">3</SetVariable>
-          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -247,7 +245,6 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">4</SetVariable>
-          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>

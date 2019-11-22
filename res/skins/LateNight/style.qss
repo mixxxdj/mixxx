@@ -186,8 +186,7 @@ WSearchLineEdit,
 
 /************ separator lines within decks, samplers etc. *********************/
 #DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls, #DeckRateSeparator,
-#SpinnyContainer, #SpinnyContainer[highlight="0"],
-#CoverArtContainer[highlight="0"],
+#SpinnyContainer, #CoverArtContainer, #BigSpinnyCoverContainer,
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
 #PlayContainerSmall,
 #PreviewLabel, #PreviewPlayBox,
@@ -1098,15 +1097,21 @@ WTime {
 #SpinnyContainer,
 #CoverArtContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 1px 1px 1px 0px;
+  padding: 1px;
   }/* */
   #SpinnyContainer[highlight="0"],
   #CoverArtContainer[highlight="0"] {
-    border-width: 1px 0px 0px 0px;
+    border-width: 0px 0px 0px 0px;
   }
   #SpinnyContainer[highlight="1"],
   #CoverArtContainer[highlight="1"] {
-    border-width: 1px 0px 0px 1px;
+    border-width: 0px 0px 0px 1px;
+  }
+  #BigSpinnyCoverContainer[highlight="0"] {
+    border-width: 1px 0px 0px 0px;
+  }
+  #BigSpinnyCoverContainer[highlight="1"] {
+    border-width: 0px;
   }
 
 WSpinny { /*
