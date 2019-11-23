@@ -38,6 +38,11 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   background-color: #0f0f0e;
 }
 
+WEffectSelector {
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
+}
+
 #LibraryContainer {
   /* make a smooth transition from toolbar at the bottom to
     darker skin background at the top.
@@ -55,7 +60,17 @@ WSearchLineEdit, WSearchLineEdit:focus {
   selection-background-color: #5e4507;
 }
 
-#SamplerDeck #OverviewBox
+#KeyText,
+#SamplerDeck #OverviewBox,
+#PreviewDeck #OverviewBox,
+WSearchLineEdit {
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-bottom: 1px solid #222;
+  border-right: 1px solid #222;
+  border-bottom-left-radius: 1px;
+  border-top-right-radius: 1px;
+} 
 
 
 #SamplerDeck {
@@ -82,8 +97,18 @@ WSearchLineEdit, WSearchLineEdit:focus {
 #SamplerHotcues {
   border: 0px;
   margin: 0px;
-  padding: 1px 1px 0px 1px;
+  padding: 1px 1px 0px 0px;
 }
+#SamplerPfl {
+  padding: 0px 5px 0px 0px;
+}
+#SamplerRateControls {
+  padding: 0px;
+  }
+  #SamplerPitchSlider {
+    padding: 0px 0px 1px 0px;
+    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  }
 
 #WaveformsBottomBorder, #WaveformsRightBorder {
   background-color: #333;

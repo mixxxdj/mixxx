@@ -156,22 +156,30 @@
       <SetVariable name="PlayPosColor">#00FF00</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
-      <!-- Optional: add stylesheet to complement and/or override style.qss -->
 
     </Scheme>
     <Scheme>
-      <Name>Flip</Name>
-      <Filters/>
+      <Name>Flip [beta]</Name>
+      <Style src="skin:style_flip.qss"/>
       <SetVariable name="scheme">classic</SetVariable>
       <SetVariable name="style_scheme">flip</SetVariable>
-      <SetVariable name="SmallSpinnySize">57f,57f</SetVariable>
-      <!-- In small decks there's 2px margin-right before overview -->
-      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
-        <!-- Big spinnies have an equal border 1px margin-right -->
-      <SetVariable name="BigSpinnySize">114f,113f</SetVariable>
-      <SetVariable name="SeparatorSize">0f</SetVariable>
       <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
       <SetVariable name="SubRegion_btn_type">embedded</SetVariable>
+
+      <!-- Small spinnies in regular decks are square, no margin -->
+      <SetVariable name="SmallSpinnySize">57f,57f</SetVariable>
+      <!-- Big spinnies in decks are square (110 x 110px)
+           + 1px border on all sides
+           + 1px margin-right (overview)
+           + 1px margin-bottom (transport row)
+           If you want pixel-sharp indicators size for the big spinnies, size
+              /style_[scheme]/spinny_indicator.svg according to effective size in
+              skin at 100% and make sure the white indicator's width in px is an integer -->
+      <SetVariable name="BigSpinnySize">113f,113f</SetVariable>
+      <!-- In small decks there's a 2px margin before the overview -->
+      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
+
+      <SetVariable name="SeparatorSize">0f</SetVariable>
 
       <SetVariable name="SignalBgColor_12">#0f0f0e</SetVariable>
       <SetVariable name="SignalBgColor_34">#012322</SetVariable>
@@ -187,14 +195,11 @@
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
 
-      <Style src="skin:style_flip.qss"/>
-
     </Scheme>
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
-
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
