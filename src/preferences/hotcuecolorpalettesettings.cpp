@@ -34,3 +34,15 @@ void HotcueColorPaletteSettings::removePalette() {
         m_pConfig->remove(key);
     }
 }
+
+QColor HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
+    if (hotcue >= 0) {
+        auto hotcueColorPalette = getHotcueColorPalette();
+        ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
+        if (m_pConfig->getValue(autoHotcueColorsKey, false)) {
+            auto colors = hotcueColorPalette.m_colorList;
+            return colors.at(hotcue % colors.count());
+        }
+    }
+    return QColor(0xf3, 0x61, 0x00); // library icons orange
+}

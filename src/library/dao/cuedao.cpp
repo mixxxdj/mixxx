@@ -61,14 +61,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     bool colorIsDefault = false;
     if (!color.isValid() || colorValue == Cue::kDefaultDbColorValue) {
         colorIsDefault = true;
-        auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-        ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-        if (m_pConfig->getValue(autoHotcueColorsKey, false)) {
-            auto colors = hotcueColorPalette.m_colorList;
-            color = colors.at((hotcue % (colors.count() - 1)) + 1);
-        } else {
-            color = QColor(0xf3, 0x61, 0x00); // library icons orange
-        };
+        color = m_colorPaletteSettings.getDefaultColor(hotcue);
     }
     CuePointer pCue(new Cue(id,
             trackId,
