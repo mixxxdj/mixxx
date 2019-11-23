@@ -71,8 +71,8 @@
                 <ObjectName>RateSlider</ObjectName>
                 <Size>40f,113f</Size>
                 <TooltipId>rate</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_pitch_deck.svg</Handle>
-                <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_pitch_deck.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_pitch_deck.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_pitch_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>

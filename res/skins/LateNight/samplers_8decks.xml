@@ -15,19 +15,19 @@
 		        <Children>
 
               <SingletonContainer>
-                <ObjectName>Sampler1Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini1_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler2Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini2_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler3Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini3_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler4Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini4_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
@@ -35,19 +35,19 @@
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler5Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini5_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler6Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini6_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler7Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini7_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>Sampler8Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini8_Singleton</ObjectName>
               </SingletonContainer>
 
             </Children>
@@ -71,7 +71,7 @@
                   </SingletonContainer>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler2Big_Singleton</ObjectName>
+                    <ObjectName>Sampler2_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <SingletonContainer>

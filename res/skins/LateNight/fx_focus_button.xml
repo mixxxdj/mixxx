@@ -26,13 +26,13 @@ Variables:
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_fx_focus.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_fx_focus.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_fx_focus.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_fx_focus.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_fx_focus_active.svg</Pressed>
-              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="btn_type"/>_fx_focus_active.svg</Unpressed>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_fx_focus_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_fx_focus_active.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>

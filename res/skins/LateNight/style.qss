@@ -94,8 +94,8 @@ QTableView, QTextBrowser, QTreeView {
   background-color: #0f0f0f;
 }
 
-#Deck1, #DeckSmall1, #Deck2, #DeckSmall2,
-  #Deck3, #DeckSmall3, #Deck4, #DeckSmall4,
+#Deck1, #DeckMini1, #Deck2, #DeckMini2,
+  #Deck3, #DeckMini3, #Deck4, #DeckMini4,
   #DeckRow_1_KeyVinylFx,
   #DeckRow_2_3_ArtistTitleTime,
   #DeckRow_4_OverviewSpinny,
@@ -104,8 +104,8 @@ QTableView, QTextBrowser, QTreeView {
 #MixerContainer, #MasterHeadphoneSeparator,
 #MicRack, #AuxRack, #MicAuxMainControls,
   #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
-#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
-  #SamplerDeckSmall, #SamplerText, #SamplerRowTwo, #SamplerPfl,
+#SamplerDeck, #SamplerDeckMini, #SamplerExpand,
+  #SamplerDeckMini, #SamplerText, #SamplerRowTwo, #SamplerPfl,
 WEffectSelector::checked, #fadeModeCombobox::checked,
 #ToolBar, #WaveformsContainer,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
@@ -115,13 +115,13 @@ QAbstractScrollArea::corner {
 
 /* borders of elevated containers */
 #WaveformsContainer,
-#Deck1, #DeckSmall1, #Deck2, #DeckSmall2,
-#Deck3, #DeckSmall3, #Deck4, #DeckSmall4,
+#Deck1, #DeckMini1, #Deck2, #DeckMini2,
+#Deck3, #DeckMini3, #Deck4, #DeckMini4,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MixerContainer,
 #MicRack, #AuxRack, #MicAuxMainControls,
 #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
-#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
+#SamplerDeck, #SamplerDeckMini, #SamplerExpand,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
@@ -213,8 +213,8 @@ WSearchLineEdit,
 /*********** layout margins & paddings ****************************************/
 #Deck1, #Deck2,
 #Deck3, #Deck4,
-#DeckSmall1, #DeckSmall2,
-#DeckSmall3, #DeckSmall4,
+#DeckMini1, #DeckMini2,
+#DeckMini3, #DeckMini4,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #MicRack, #AuxRack {
@@ -228,18 +228,18 @@ WSearchLineEdit,
 #Deck3, #Deck4 {
   padding: 2px 3px 3px 2px;
 }
-#DeckSmall1, #DeckSmall2,
-#DeckSmall3, #DeckSmall4 {
+#DeckMini1, #DeckMini2,
+#DeckMini3, #DeckMini4 {
   padding: 1px;
 }
-#DeckSmall1, #DeckSmall2 {
+#DeckMini1, #DeckMini2 {
   margin-top: 5px;
 }
 
-#Deck1, #DeckSmall1,
-#Deck2, #DeckSmall2,
-#Deck3, #DeckSmall3,
-#Deck4, #DeckSmall4,
+#Deck1, #DeckMini1,
+#Deck2, #DeckMini2,
+#Deck3, #DeckMini3,
+#Deck4, #DeckMini4,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4 {
   margin-right: 3px;
@@ -399,7 +399,7 @@ WEffectSelector {
 #RateControls WPushButton, #SyncButton,
 #DeckRow_5_LoopCuesTransport WPushButton,
 #PflButton, #EQKillButton, #QuickEffectButton,
-#PlayButtonSampler, #PlayButtonDeckSmall,
+#PlayButtonSampler, #PlayButtonDeckMini,
 #SamplerButtons WPushButton,
 #SamplerSyncButton,
 #FxUnitControls WPushButton, #FxExpandCollapseButton,
@@ -425,7 +425,7 @@ WEffectSelector {
 #EQKillButton[displayValue="0"],
 #QuickEffectButton[displayValue="0"],
 #FxUnitControls WPushButton, #FxExpandCollapseButton,
-#PlayButtonSampler[displayValue="0"], #PlayButtonDeckSmall[displayValue="0"],
+#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"],
 #MicDuckingButton[value="0"],
@@ -472,7 +472,7 @@ because somehow bg color for #SpecialCueButton can't be overwritten */
 #LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
 #CueDeck[value="1"], #Reverse[value="1"],
 #PlayDeck[value="1"][highlight="0"], #PlayDeck[value="1"][highlight="1"],
-#PlayButtonDeckSmall[value="1"][highlight="0"], #PlayButtonDeckSmall[value="1"][highlight="1"],
+#PlayButtonDeckMini[value="1"][highlight="0"], #PlayButtonDeckMini[value="1"][highlight="1"],
 #PlayButtonSampler[value="1"][highlight="0"], #PlayButtonSampler[value="1"][highlight="1"],
 #PflButton[value="1"],
 #SamplerSyncButton[displayValue="1"],
@@ -499,7 +499,7 @@ QPushButton#pushButtonRecording:checked,
 /* Orange/yellow */
 /* Play bg when playing from Cue / hotcue */
 #PlayDeck[value="0"][highlight="1"],
-#PlayButtonDeckSmall[value="0"][highlight="1"],
+#PlayButtonDeckMini[value="0"][highlight="1"],
 #PlayButtonSampler[value="0"][highlight="1"],
 #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
 #FxFocusButton[displayValue="1"],
@@ -693,11 +693,11 @@ QPushButton#pushButtonAutoDJ:checked,
   }
 
 #PlayButtonSampler[value="0"],
-#PlayButtonDeckSmall[value="0"] {
+#PlayButtonDeckMini[value="0"] {
   image: url(skin:/buttons_classic/btn__play_sampler.svg) no-repeat center center;
   }
   #PlayButtonSampler[value="1"],
-  #PlayButtonDeckSmall[value="1"] {
+  #PlayButtonDeckMini[value="1"] {
     image: url(skin:/buttons_classic/btn__pause_sampler.svg) no-repeat center center;
   }
 
@@ -941,7 +941,7 @@ QTableView, QTextBrowser, QTreeView {
 
 /* gold */
 #Deck1 WLabel, #Deck2 WLabel,
-#DeckSmall1 WLabel, #DeckSmall2 WLabel,
+#DeckMini1 WLabel, #DeckMini2 WLabel,
 #PreviewLabel, #PreviewDeckText, #PreviewTitle,
 #FxUnitLabel, #MicAuxSubTitle,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
@@ -959,7 +959,7 @@ WSearchLineEdit,
 
 /* light blue / cyan */
 #Deck3 WLabel, #Deck4 WLabel,
-#DeckSmall3 WLabel, #DeckSmall4 WLabel,
+#DeckMini3 WLabel, #DeckMini4 WLabel,
 #Deck3 WStarRating, #Deck4 WStarRating,
 #Deck3 WBeatSpinBox, #Deck4 WBeatSpinBox {
   color: #0bd9d1;
@@ -1070,7 +1070,6 @@ WTime {
   }
   #ArtistRow {
     border-width: 1px 0px 0px 0px;
-
   }
 
 #DeckRow_4_OverviewSpinny {
@@ -1172,7 +1171,9 @@ WCoverArt {
     text-transform: none;
   }
   #TitleTextSmall,
-  #ArtistTextSmall {
+  #ArtistTextSmall,
+  #PlayPositionTextSmall,
+  #BpmTextSmall {
     font-weight: bold;
   }
   #TitleTextSmall {
@@ -1711,7 +1712,7 @@ WBeatSpinBox,
   padding: 1px 0px 2px 2px;
 }
 
-#SamplerDeckSmall {
+#SamplerDeckMini {
   padding: 1px;
 }
 

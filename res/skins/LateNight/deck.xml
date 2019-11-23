@@ -21,11 +21,11 @@
             <Children>
 
               <WidgetGroup>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
-                    <SizePolicy>min,me</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- draws a line to separate rate rate controls and spinny/cover -->

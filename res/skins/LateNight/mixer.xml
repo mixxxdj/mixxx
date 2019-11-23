@@ -7,8 +7,8 @@
       <SliderComposed>
         <TooltipId>crossfader</TooltipId>
         <Size>141f,46f</Size>
-        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
-        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_crossfader.svg</Handle>
+        <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_crossfader.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -224,47 +224,54 @@
                     </Connection>
                   </WidgetGroup>
 
+                  <!--  Regular crossfader for
+                        * 2 decks with EQ knobs visible
+                        * 4 decks
+                        Narrow crossfader for
+                        * 2 decks with EQ knobs hidden -->
                   <WidgetGroup>
-                    <ObjectName>Crossfader</ObjectName>
+                    <ObjectName>CrossfaderContainer</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <SliderComposed>
-                        <TooltipId>crossfader</TooltipId>
-                        <Size>141f,46f</Size>
-                        <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
-                        <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],crossfader</ConfigKey>
-                        </Connection>
+                      <!-- 4 decks -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>CrossfaderSingleton</ObjectName>
+                          </SingletonContainer>
+                        </Children>
                         <Connection>
                           <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </SliderComposed>
+                      </WidgetGroup>
+
+                      <!-- 2 decks -->
                       <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <SliderComposed>
-                            <TooltipId>crossfader</TooltipId>
-                            <Size>141f,46f</Size>
-                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
-                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader.svg</Slider>
-                            <Horizontal>true</Horizontal>
-                            <Connection>
-                              <ConfigKey>[Master],crossfader</ConfigKey>
-                            </Connection>
+                          <!-- with EQ knobs -->
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>CrossfaderSingleton</ObjectName>
+                              </SingletonContainer>
+                            </Children>
                             <Connection>
                               <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
-                          </SliderComposed>
+                          </WidgetGroup>
+
+                          <!-- without EQ knobs -->
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
                             <Size>102f,46f</Size>
-                            <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_crossfader.svg</Handle>
-                            <Slider scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/slider_crossfader_small.svg</Slider>
+                            <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_crossfader.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_crossfader_small.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>
@@ -281,9 +288,9 @@
                           <Transform><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- 2 decks -->
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- CrossfaderContainer -->
 
                   <!-- center xfader buttons below EQ knobs -->
                   <WidgetGroup>

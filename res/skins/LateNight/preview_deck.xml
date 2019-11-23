@@ -167,8 +167,8 @@
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">skin:/knobs_sliders_<Variable name="scheme"/>/knob_volume_previewdeck.svg</Handle>
-                <Slider>skin:/knobs_sliders_<Variable name="scheme"/>/slider_volume_previewdeck.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_volume_previewdeck.svg</Handle>
+                <Slider>skin:/sliders_<Variable name="slider_scheme"/>/slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,pregain</ConfigKey>

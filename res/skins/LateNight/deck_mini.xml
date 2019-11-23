@@ -2,7 +2,7 @@
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
 
   <WidgetGroup>
-    <ObjectName>DeckSmall<Variable name="channum" /></ObjectName>
+    <ObjectName>DeckMini<Variable name="channum" /></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -47,7 +47,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- DeckSmall_TitlePlayPosKeyBPM -->
+          <WidgetGroup><!-- DeckMini_TitlePlayPosKeyBPM -->
             <Layout>vertical</Layout>
             <Size>200min,46f</Size>
             <Children>
@@ -122,7 +122,7 @@
               </WidgetGroup><!-- Artist / Key / BPM -->
 
             </Children>
-          </WidgetGroup><!-- DeckSmall_TitlePlayPosKeyBPM -->
+          </WidgetGroup><!-- DeckMini_TitlePlayPosKeyBPM -->
 
           <WidgetGroup>
             <ObjectName>PlayContainerSmall</ObjectName>
@@ -130,19 +130,19 @@
             <Children>
               <PushButton>
                 <TooltipId>play_cue_set</TooltipId>
-                <ObjectName>PlayButtonDeckSmall</ObjectName>
+                <ObjectName>PlayButtonDeckMini</ObjectName>
                 <Size>34f,34f</Size>
                 <NumberStates>2</NumberStates>
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
@@ -167,5 +167,5 @@
         </Children>
       </WidgetGroup>
     </Children>
-  </WidgetGroup><!-- DeckSmall -->
+  </WidgetGroup><!-- DeckMini -->
 </Template>

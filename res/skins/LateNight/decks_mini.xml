@@ -8,7 +8,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_small.xml">
+          <Template src="skin:deck_mini.xml">
             <SetVariable name="channum">1</SetVariable>
             <SetVariable name="signal_color">#E7C413</SetVariable>
             <SetVariable name="SignalBgColor">#2f290a</SetVariable>
@@ -17,7 +17,7 @@
             <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
           </Template>
 
-          <Template src="skin:deck_small.xml">
+          <Template src="skin:deck_mini.xml">
             <SetVariable name="channum">2</SetVariable>
             <SetVariable name="signal_color">#E7C413</SetVariable>
             <SetVariable name="SignalBgColor">#2f290a</SetVariable>
@@ -40,7 +40,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_small.xml">
+          <Template src="skin:deck_mini.xml">
             <SetVariable name="channum">3</SetVariable>
             <SetVariable name="signal_color">#09B2AE</SetVariable>
             <SetVariable name="SignalBgColor">#2f290a</SetVariable>
@@ -49,7 +49,7 @@
             <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
           </Template>
 
-          <Template src="skin:deck_small.xml">
+          <Template src="skin:deck_mini.xml">
             <SetVariable name="channum">4</SetVariable>
             <SetVariable name="signal_color">#09B2AE</SetVariable>
             <SetVariable name="SignalBgColor">#2f290a</SetVariable>

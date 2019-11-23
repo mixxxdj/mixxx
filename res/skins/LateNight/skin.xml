@@ -107,10 +107,14 @@
             style_scheme  icons & backgrounds for library, splitters, spinnies,
                           covers, vinyl control, toolbar
             bg_tile       allows to experiment with the background tile of recessed
-                          areas without having to creat a new style_scheme folder -->
-      <SetVariable name="scheme">classic</SetVariable>
+                          areas without having to creat a new style_scheme folder
+            Note:   button borders and icons are set in style_[SCHEME].qss, too
+                    so do a mass-find-and-replace there, as well. -->
+      <SetVariable name="btn_scheme">classic</SetVariable>
+      <SetVariable name="knob_scheme">classic</SetVariable>
+      <SetVariable name="slider_scheme">classic</SetVariable>
       <SetVariable name="style_scheme">classic</SetVariable>
-      <!--  no background tile leave empty.
+      <!--  For no background tile leave empty.
             To override the <BackPath> tile it's sufficient [in most cases :]
             to assign the respective containers a background-color in qss.
             Good to know:
@@ -135,7 +139,7 @@
             Size spinnies to force-expand decks to match the mixer's max height in order
             to avoid the decks expand vertically when the mixer is shown (would screw up
             the layout) -->
-      <SetVariable name="BigSpinnySize">108f,108f</SetVariable>
+      <SetVariable name="BigSpinnySize">109f,109f</SetVariable>
       <!--  In small decks there's 2px margin-right before overview -->
       <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
 
@@ -211,7 +215,7 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      <!-- ToDo ronso0 :: Unfortunately, variables are not considered here.
+      <!-- ToDo ronso0 :: Unfortunately, variables are not considered here. Yet ;)
       image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
       image: url(skin:/style_classic/mixxx_logo.svg);
       padding: 0;
@@ -398,7 +402,7 @@
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
 
-                    <Template src="skin:decks_small.xml"/>
+                    <Template src="skin:decks_mini.xml"/>
 
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>
