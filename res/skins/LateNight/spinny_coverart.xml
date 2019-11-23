@@ -5,7 +5,6 @@
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
-        <ObjectName>BigSpinnyCoverContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
@@ -67,7 +66,6 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>BigSpinnyCoverContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
