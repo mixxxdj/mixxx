@@ -97,39 +97,50 @@
   <Schemes>
     <Scheme>
       <Name>Classic</Name>
-      <Filters/>
+      <!-- Optional: add stylesheet to complement and/or override the main
+      'Mixxx' widget's stylesheet style.qss -->
+      <!-- Mix any of the existing btn_, knob_, slider_ or style_ schemes.
+            btn_scheme    all borders & icons for pushbuttons, spinboxes,
+                          effect selector, AutoDJ fade mode selector
+            knob_scheme   guess what
+            slider_scheme ...exactly!
+            style_scheme  icons & backgrounds for library, splitters, spinnies,
+                          covers, vinyl control, toolbar
+            bg_tile       allows to experiment with the background tile of recessed
+                          areas without having to creat a new style_scheme folder -->
       <SetVariable name="scheme">classic</SetVariable>
       <SetVariable name="style_scheme">classic</SetVariable>
-      <!--  For no background tile leave empty.
+      <!--  no background tile leave empty.
             To override the <BackPath> tile it's sufficient [in most cases :]
             to assign the respective containers a background-color in qss.
             Good to know:
             <BackPath> suppresses qss borders -->
       <SetVariable name="bg_tile">classic</SetVariable>
 
-      <!-- Some widget sizes that are scheme specific -->
-        <!-- Here, the goal was to guarantee a 1:1 ratio for both spinniy and
-            cover art widgets in every situation.
-            The small spinnies have a top border included to separate them from
+      <!-- Set the '3D button mode'
+          * elevated: buttons stand out, 3D border, drop shadow
+          * embedded: buttons are kind of leveled with surface, surrounding groove -->
+      <!-- Buttons in mixer, rate controls, collapsed Fx / Mic / Aux units etc. -->
+      <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
+      <!-- Buttons in transport row, mic / aux units, sampler hotcue row etc. -->
+      <SetVariable name="SubRegion_btn_type">elevated</SetVariable>
+
+      <!--  Some widget sizes that are scheme specific -->
+      <!--  Here, the goal was to avoid 'spinny eggs'.
+            Just guarantee 1:1 x/y ratio for both spinny and cover art widgets in every situation.
+            The small spinny containers in decks have a top border included to separate them from
             artist/title, therefore the containers are 1px taller than 1:1 -->
       <SetVariable name="SmallSpinnySize">55f,56f</SetVariable>
-      <!-- In small decks there's 2px margin-right before overview -->
-      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
-        <!-- Big spinnies are borderless = 1:1
-            Decks may expand vertically when the mixer is shown, so make sure
-            the spinnies fill the available space (force-expand decks no matter
-            if the mixer is shown) -->
+      <!--  Big spinnies are borderless = 1:1, borders are created by separator_*.xml
+            Size spinnies to force-expand decks to match the mixer's max height in order
+            to avoid the decks expand vertically when the mixer is shown (would screw up
+            the layout) -->
       <SetVariable name="BigSpinnySize">108f,108f</SetVariable>
-      <SetVariable name="SeparatorSize">1f</SetVariable>
+      <!--  In small decks there's 2px margin-right before overview -->
+      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
 
-      <!-- Set the '3D button mode'
-          * elevated : buttons stand out, 3D border, drop shadow
-          * embedded: buttons are embedded,  surrounding groove (black)
-          -->
-        <!-- Buttons in mixer, rate controls, collapsed Fx / Mic / Aux units etc. -->
-      <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
-        <!-- Buttons in transport row, mic / aux units, sampler hotcue row etc. -->
-      <SetVariable name="SubRegion_btn_type">elevated</SetVariable>
+      <!-- Classic scheme uses black lines to separate certain areas; those are 1px wide/tall -->
+      <SetVariable name="SeparatorSize">1f</SetVariable>
 
       <!-- Waveform & Overview colors -->
       <SetVariable name="SignalBgColor_12">#0f0f0f</SetVariable>
@@ -195,7 +206,9 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      image: url(skin:/style_classic/mixxx_logo.svg);
+      <!-- ToDo ronso0 :: Unfortunately, variables are not considered here.
+      image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
+      image: url(skin:/style_/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;

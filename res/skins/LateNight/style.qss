@@ -1809,12 +1809,11 @@ WBeatSpinBox,
 
 #SamplerRateControls {
   padding: 0px 1px 1px 0px;
-}
-
-#SamplerPitch {
-  padding: 0px 0px 1px 0px;
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-}
+  }
+  #SamplerPitchSlider {
+    padding: 0px 0px 1px 0px;
+    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  }
 
 #TitleGutter WLabel {
   font-size: 16px/19px;
