@@ -162,10 +162,13 @@
       <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
 
     </Scheme>
+
     <Scheme>
       <Name>Flip [beta]</Name>
       <Style src="skin:style_flip.qss"/>
-      <SetVariable name="scheme">classic</SetVariable>
+      <SetVariable name="btn_scheme">classic</SetVariable>
+      <SetVariable name="knob_scheme">classic</SetVariable>
+      <SetVariable name="slider_scheme">flip</SetVariable>
       <SetVariable name="style_scheme">flip</SetVariable>
       <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
       <SetVariable name="SubRegion_btn_type">embedded</SetVariable>

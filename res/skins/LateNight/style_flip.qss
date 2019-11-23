@@ -15,7 +15,7 @@ QTableView, QTextBrowser, QTreeView {
 
 /* borders of elevated containers */
 #WaveformsContainer,
-#DeckSmall1, #DeckSmall2, #DeckSmall3, #DeckSmall4,
+#DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
   #RateContainer,
   #DeckRow_1_KeyVinylFx, #DeckRow_2_3_ArtistTitleTime,
   #DeckRow_4_OverviewSpinny #OverviewBox, #DeckControls,
@@ -28,14 +28,22 @@ QTableView, QTextBrowser, QTreeView {
   #FxSlotBorder3[highlight="0"],
 #MicRack, #AuxRack, #MicAuxMainControls,
   #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
-#SamplerDeck, #SamplerDeckSmall, #SamplerExpand,
-WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
+#SamplerDeck, #SamplerDeckMini, #SamplerExpand,
+WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
+#SkinSettings {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
   border-bottom: 1px solid #020201;
   border-right: 1px solid #020201;
   border-radius: 2px;
   background-color: #0f0f0e;
+}
+#ToolBar {
+  background-color: #0f0f0e;
+}
+
+#SkinSettings {
+  border-width: 0px 0px 1px 1px;
 }
 
 WEffectSelector {
@@ -55,12 +63,18 @@ WEffectSelector {
 
 QTreeView, QTextBrowser, QTableView,
 WSearchLineEdit, WSearchLineEdit:focus {
+  border-top: 1px solid #000;
+  border-right: #222;
+  border-bottom: 1px solid #222;
+  border-left: 1px solid #000;
   background-color: #050504;
   alternate-background-color: #0f0f0e;
   selection-background-color: #5e4507;
 }
 
 #KeyText,
+#DeckMini1 #OverviewBox, #DeckMini2 #OverviewBox,
+#DeckMini3 #OverviewBox, #DeckMini4 #OverviewBox,
 #SamplerDeck #OverviewBox,
 #PreviewDeck #OverviewBox,
 WSearchLineEdit {
@@ -77,7 +91,7 @@ WSearchLineEdit {
   padding: 1px 0px 1px 2px;
 }
 
-#SamplerDeckSmall {
+#SamplerDeckMini {
   padding: 1px 0px 0px 1px;
 }
 
@@ -143,6 +157,9 @@ WSearchLineEdit {
 #DeckRow_2_3_ArtistTitleTime {
   margin: 0px 0px 1px 0px;
   }
+  #ArtistRow {
+    border-width: 0px;
+  }
 #DeckRow_4_OverviewSpinny {
   padding: 0px;
   margin: 0px 0px 1px 0px;
@@ -151,6 +168,15 @@ WSearchLineEdit {
     margin: 0px 1px 0px 0px;
   }
   #DeckControls {
+  }
+
+  #TitleTextSmall,
+  #ArtistTextSmall,
+  #PlayPositionTextSmall,
+  #BpmTextSmall,
+  #KeyTextSmall,
+  #PlayContainerSmall {
+    border-width: 0px;
   }
 
 #DeckRow_5_LoopCuesTransport {
@@ -208,8 +234,8 @@ WSearchLineEdit {
 /*********** layout margins & paddings ****************************************/
 #Deck1, #Deck2,
 #Deck3, #Deck4,
-#DeckSmall1, #DeckSmall2,
-#DeckSmall3, #DeckSmall4,
+#DeckMini1, #DeckMini2,
+#DeckMini3, #DeckMini4,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #MicRack, #AuxRack {
@@ -225,22 +251,22 @@ WSearchLineEdit {
   border: 0px;
   background-color: transparent;
 }
-#DeckSmall1, #DeckSmall2,
-#DeckSmall3, #DeckSmall4 {
+#DeckMini1, #DeckMini2,
+#DeckMini3, #DeckMini4 {
   padding: 1px;
 }
-#DeckSmall1, #DeckSmall2 {
+#DeckMini1, #DeckMini2 {
   margin-top: 5px;
 }
 
 #Deck1, #Deck2,
-#DeckSmall1, #DeckSmall2,
+#DeckMini1, #DeckMini2,
 #FxUnit1, #FxUnit2 {
   margin-right: 5px;
   margin-left: 2px;
 }
 #Deck3, #Deck4,
-#DeckSmall3, #DeckSmall4,
+#DeckMini3, #DeckMini4,
 #FxUnit3, #FxUnit4 {
   margin-right: 1px;
   margin-left: 5px;
@@ -281,7 +307,7 @@ WSearchLineEdit {
 #EQKillButton[displayValue="0"],
 #QuickEffectButton[displayValue="0"],
 #FxUnitControls WPushButton, #FxExpandCollapseButton,
-#PlayButtonSampler[displayValue="0"], #PlayButtonDeckSmall[displayValue="0"],
+#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"],
 #MicDuckingButton[value="0"],
@@ -306,6 +332,22 @@ QPushButton#pushButtonAutoDJ:enabled,
   border-image: url(skin:buttons_classic/btn_embedded_libary.svg) 3 3 3 3;
   margin: 3px;
 } */
+
+/* Flat, dark table headers with dimmed text */ 
+QHeaderView,
+QHeaderView::section,
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: #0f0f0e;
+  color: #999;
+}
+
+#SkinSettingsButton {
+  color: #bbb;
+}
+#SkinSettingsCategory {
+  border-width: 0px;
+  }
 
 
 /************** Mixer *********************************************************/
@@ -359,7 +401,7 @@ WLibrary,
   border-bottom: 0px;
   border-left: 1px solid qlineargradient(
     x1:0, y1:0, x2:0, y2:1,
-    stop:0 #333,
+    stop:0 #222,
     stop:1 #0f0f0e);
   border-right: 1px solid qlineargradient(
     x1:0, y1:0, x2:0, y2:1,
