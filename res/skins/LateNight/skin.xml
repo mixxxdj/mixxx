@@ -213,7 +213,7 @@
     QLabel {
       <!-- ToDo ronso0 :: Unfortunately, variables are not considered here.
       image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skin:/style_/mixxx_logo.svg);
+      image: url(skin:/style_classic/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
