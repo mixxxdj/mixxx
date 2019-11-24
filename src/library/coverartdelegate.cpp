@@ -107,7 +107,7 @@ void CoverArtDelegate::paintItem(QPainter *painter,
     info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
-    double scaleFactor = getDevicePixelRatioF(dynamic_cast<QWidget*>(parent()));
+    double scaleFactor = getDevicePixelRatioF(static_cast<QWidget*>(parent()));
     // We listen for updates via slotCoverFound above and signal to
     // BaseSqlTableModel when a row's cover is ready.
     QPixmap pixmap = pCache->requestCover(info, this, option.rect.width() * scaleFactor,
