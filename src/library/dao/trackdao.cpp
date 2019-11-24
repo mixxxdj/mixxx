@@ -1181,7 +1181,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     }
 
     // The GlobalTrackCache is only locked while executing the following line.
-    auto pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
+    TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
     if (pTrack) {
         return pTrack;
     }
