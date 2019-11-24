@@ -349,7 +349,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(30);
 
-    m_pTrackCollectionManager = new TrackCollectionManager(
+    m_pTrackCollectionManager = make_parented<TrackCollectionManager>(
             this,
             pConfig,
             m_pDbConnectionPool);

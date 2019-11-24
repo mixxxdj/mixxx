@@ -27,7 +27,7 @@ TrackCollectionManager::TrackCollectionManager(
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackFn)
     : QObject(parent),
       m_pConfig(pConfig),
-      m_pInternalCollection(new TrackCollection(this, pConfig)),
+      m_pInternalCollection(make_parented<TrackCollection>(this, pConfig)),
       m_scanner(pDbConnectionPool, m_pInternalCollection, pConfig) {
 
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(std::move(pDbConnectionPool));

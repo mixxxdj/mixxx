@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
+#include "util/parented_ptr.h"
 
 class AnalysisFeature;
 class ControlObject;
@@ -130,9 +131,9 @@ class Library: public QObject {
 
     const QPointer<TrackCollectionManager> m_pTrackCollectionManager;
 
-    SidebarModel* m_pSidebarModel;
+    parented_ptr<SidebarModel> m_pSidebarModel;
+    parented_ptr<LibraryControl> m_pLibraryControl;
 
-    LibraryControl* m_pLibraryControl;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;

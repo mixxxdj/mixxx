@@ -29,6 +29,7 @@
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/db/dbconnectionpool.h"
+#include "util/parented_ptr.h"
 #include "soundio/sounddeviceerror.h"
 
 class ChannelHandleFactory;
@@ -177,7 +178,7 @@ class MixxxMainWindow : public QMainWindow {
     // The Mixxx database connection pool
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
-    TrackCollectionManager* m_pTrackCollectionManager;
+    parented_ptr<TrackCollectionManager> m_pTrackCollectionManager;
 
     // The library management object
     Library* m_pLibrary;

@@ -9,6 +9,7 @@
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
+#include "util/parented_ptr.h"
 
 class TrackCollection;
 class ExternalTrackCollection;
@@ -93,7 +94,7 @@ class TrackCollectionManager: public QObject,
 
     const UserSettingsPointer m_pConfig;
 
-    TrackCollection* const m_pInternalCollection;
+    const parented_ptr<TrackCollection> m_pInternalCollection;
 
     QList<ExternalTrackCollection*> m_externalCollections;
 

@@ -77,8 +77,8 @@ Library::Library(
       m_pConfig(std::move(pConfig)),
       m_pDbConnectionPool(std::move(pDbConnectionPool)),
       m_pTrackCollectionManager(pTrackCollectionManager),
-      m_pSidebarModel(new SidebarModel(this)),
-      m_pLibraryControl(new LibraryControl(this)),
+      m_pSidebarModel(make_parented<SidebarModel>(this)),
+      m_pLibraryControl(make_parented<LibraryControl>(this)),
       m_pMixxxLibraryFeature(nullptr),
       m_pPlaylistFeature(nullptr),
       m_pCrateFeature(nullptr),
@@ -101,7 +101,7 @@ Library::Library(
     addFeature(m_pMixxxLibraryFeature);
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pConfig);
+    m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
@@ -123,7 +123,7 @@ Library::Library(
     addFeature(browseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
-    addFeature(new SetlogFeature(this, m_pConfig));
+    addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
     connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
