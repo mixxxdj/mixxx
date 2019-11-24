@@ -21,22 +21,26 @@ class TrackLoader: public QObject {
             QObject* parent = nullptr);
     ~TrackLoader() override = default;
 
-    // Thread-safe, possibly asynchronous invocation for loading
-    // a track.
-    // May invoke the loadTrack() slot and emit the trackLoaded()
-    // signal directly when invoked from the QObject's thread!
-    void invokeLoadTrack(
+    // Explicit, thread-safe invocation of the corresponding slot.
+    void invokeSlotLoadTrack(
             TrackRef trackRef,
             Qt::ConnectionType connectionType = Qt::AutoConnection);
 
   public slots:
-    void loadTrack(
+    // Asynchronously try to load the referenced track from the
+    // internal track collection. If the track is not already
+    // contained in the database it will implicitly be added to
+    // the track collection from the file location if available.
+    // The result of this operation is propagated by the corresponding
+    // signal.
+    void slotLoadTrack(
             TrackRef trackRef);
 
   signals:
-    // A nullptr indicates failure. Receivers need to
-    // filter the tracks they have actually requested
-    // if this object is used by different requesters.
+    // A nullptr indicates failure to load the track. Receivers need to
+    // filter the loaded tracks they have actually requested if the
+    // corresponding slot is invoked by multiple signal senders or
+    // from different clients!
     void trackLoaded(
             TrackRef trackRef,
             TrackPointer trackPtr);

@@ -51,7 +51,7 @@ TrackLoader::TrackLoader(
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypes);
 }
 
-void TrackLoader::invokeLoadTrack(
+void TrackLoader::invokeSlotLoadTrack(
         TrackRef trackRef,
         Qt::ConnectionType connectionType) {
     DEBUG_ASSERT(connectionType == (connectionType & ~Qt::UniqueConnection));
@@ -59,12 +59,12 @@ void TrackLoader::invokeLoadTrack(
             (connectionType != Qt::DirectConnection));
     QMetaObject::invokeMethod(
             this,
-            "loadTrack",
+            "slotLoadTrack",
             connectionType,
             Q_ARG(TrackRef, std::move(trackRef)));
 }
 
-void TrackLoader::loadTrack(
+void TrackLoader::slotLoadTrack(
         TrackRef trackRef) {
     DEBUG_ASSERT(thread() == QThread::currentThread());
     TrackPointer trackPtr;
