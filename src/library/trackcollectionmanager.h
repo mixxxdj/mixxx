@@ -13,7 +13,7 @@
 class TrackCollection;
 class ExternalTrackCollection;
 
-// Manages the internal and a varying number of external track collections.
+// Manages Mixxx's internal database of tracks as well as external track collections.
 //
 // All modifying operations that might affect external collections
 // must be invoked through this class to keep all track collections
