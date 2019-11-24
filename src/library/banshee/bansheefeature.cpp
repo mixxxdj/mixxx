@@ -16,7 +16,7 @@ const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
 BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig)),
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_banshee.svg") {
     Q_UNUSED(pConfig);

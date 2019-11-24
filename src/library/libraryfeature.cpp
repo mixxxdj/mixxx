@@ -16,7 +16,7 @@ LibraryFeature::LibraryFeature(
         UserSettingsPointer pConfig)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pConfig(std::move(pConfig)) {
+          m_pConfig(pConfig) {
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {

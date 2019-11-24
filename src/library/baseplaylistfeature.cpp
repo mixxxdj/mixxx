@@ -25,7 +25,7 @@ BasePlaylistFeature::BasePlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         const QString& rootViewName)
-        : LibraryFeature(pLibrary, std::move(pConfig)),
+        : LibraryFeature(pLibrary, pConfig),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
           m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {

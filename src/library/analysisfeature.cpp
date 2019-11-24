@@ -52,7 +52,7 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, std::move(pConfig)),
+        : LibraryFeature(pLibrary, pConfig),
         m_baseTitle(tr("Analyze")),
         m_icon(":/images/library/ic_library_prepare.svg"),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),

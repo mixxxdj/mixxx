@@ -64,7 +64,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig)),
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_traktor.svg") {
     QString tableName = "traktor_library";

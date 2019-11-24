@@ -11,7 +11,7 @@
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, std::move(pConfig)),
+        : LibraryFeature(pLibrary, pConfig),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,

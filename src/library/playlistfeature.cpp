@@ -39,7 +39,7 @@ PlaylistFeature::PlaylistFeature(
         UserSettingsPointer pConfig)
         : BasePlaylistFeature(
                 pLibrary,
-                std::move(pConfig),
+                pConfig,
                 QStringLiteral("PLAYLISTHOME")),
           m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
     initTableModel(new PlaylistTableModel(

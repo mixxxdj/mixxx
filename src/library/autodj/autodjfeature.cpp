@@ -50,7 +50,7 @@ namespace {
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager)
-        : LibraryFeature(pLibrary, std::move(pConfig)),
+        : LibraryFeature(pLibrary, pConfig),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),

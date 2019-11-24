@@ -14,7 +14,7 @@
 #include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig)),
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";

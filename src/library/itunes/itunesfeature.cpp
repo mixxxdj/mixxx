@@ -62,7 +62,7 @@ QString localhost_token() {
 } // anonymous namespace
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, std::move(pConfig)),
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";

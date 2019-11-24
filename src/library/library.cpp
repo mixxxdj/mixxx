@@ -74,7 +74,7 @@ Library::Library(
         PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
     : QObject(parent),
-      m_pConfig(std::move(pConfig)),
+      m_pConfig(pConfig),
       m_pDbConnectionPool(std::move(pDbConnectionPool)),
       m_pTrackCollectionManager(pTrackCollectionManager),
       m_pSidebarModel(make_parented<SidebarModel>(this)),

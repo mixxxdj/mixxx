@@ -24,7 +24,7 @@
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, std::move(pConfig)),
+        : LibraryFeature(pLibrary, pConfig),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
           m_icon(":/images/library/ic_library_tracks.svg"),
