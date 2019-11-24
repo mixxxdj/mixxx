@@ -211,6 +211,11 @@ Library::~Library() {
     // Empty but required due to forward declarations in header file!
 }
 
+TrackCollectionManager* Library::trackCollections() const {
+    // Cannot be implimented inline due to forward declarations
+    return m_pTrackCollectionManager;
+}
+
 void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->stopAnalysis();

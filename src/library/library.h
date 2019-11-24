@@ -52,9 +52,7 @@ class Library: public QObject {
         return m_pDbConnectionPool;
     }
 
-    const QPointer<TrackCollectionManager>& trackCollections() const {
-        return m_pTrackCollectionManager;
-    }
+    TrackCollectionManager* trackCollections() const;
 
     // Deprecated: Obtain directly from TrackCollectionManager
     TrackCollection& trackCollection();
@@ -130,7 +128,7 @@ class Library: public QObject {
     // The Mixxx database connection pool
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
-    QPointer<TrackCollectionManager> m_pTrackCollectionManager;
+    const QPointer<TrackCollectionManager> m_pTrackCollectionManager;
 
     SidebarModel* m_pSidebarModel;
 
