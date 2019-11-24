@@ -656,35 +656,32 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
                                                         "beat_distance")));
 }
 
-// TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
-//     // If we turn sync on a playing deck, the playing deck initializes the internal clock master.
 
-//     auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
-//     auto pButtonSyncMasterEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
+TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
+    // Enabling sync on a deck causes it to be master, and sets bpm and clock.
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
 
-//     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    // Set the deck to play.
+    pFileBpm1->set(130.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
-//     // Set the deck to play.
-//     pFileBpm1->set(130.0);
-//     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-//     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
-//     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    // Set the deck to follower.
+    m_pEngineSync->requestEnableSync(m_pEngineSync->getSyncableForGroup(m_sGroup1), true);
 
-//     // Set the deck to follower.
-//     m_pEngineSync->requestEnableSync(m_pEngineSync->getSyncableForGroup(m_sGroup1), true);
+    // That first deck is now master
+    assertIsMaster(m_sGroup1);
 
-//     // Internal should still be master.
-//     assertIsMaster(m_sInternalClockGroup);
-
-//     // Internal clock rate should be set and beat distances reset.
-//     EXPECT_FLOAT_EQ(130.0,
-//                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-//     EXPECT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-//     EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
-//     EXPECT_FLOAT_EQ(0.2,
-//                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-//                                                         "beat_distance"))->get());
-// }
+    // Internal clock rate should be set and beat distances reset.
+    EXPECT_FLOAT_EQ(130.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    EXPECT_FLOAT_EQ(0.2,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                        "beat_distance"))->get());
+}
 
 // TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
 //     // If master sync is on when a track gets loaded, the internal clock

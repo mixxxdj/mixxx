@@ -192,7 +192,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-
+    qDebug() << "request enable sync??? " << pSyncable->getGroup() << bEnabled;
     // Sync disable request, hand off to a different function
     if (!bEnabled) {
         // Already disabled?  Do nothing.
@@ -254,7 +254,9 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         qDebug() << "we have a bpm match target" << targetSyncable->getGroup();
         setMasterParams(targetSyncable, targetSyncable->getBeatDistance(),
                         targetSyncable->getBaseBpm(), targetSyncable->getBpm());
-        pSyncable->requestSync();
+        if (targetSyncable != pSyncable) {
+            pSyncable->requestSync();
+        }
     }
 }
 
