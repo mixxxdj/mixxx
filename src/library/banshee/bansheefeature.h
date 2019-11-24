@@ -20,7 +20,7 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(Library*pLibrary, UserSettingsPointer pConfig);
+    BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
