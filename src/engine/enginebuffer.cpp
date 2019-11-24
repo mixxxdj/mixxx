@@ -371,6 +371,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
+    qDebug() << getGroup() << "queueNewPlayPos" << newpos;
     m_queuedSeekPosition.setValue(newpos);
     // set m_queuedPosition valid
     m_iSeekQueued = seekType;
@@ -437,7 +438,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << m_group << "engine new pos " << newpos;
+    qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
 
@@ -1147,6 +1148,7 @@ void EngineBuffer::processSeek(bool paused) {
 
     // Add SEEK_PHASE bit, if any
     if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
+        qDebug() << "~~~~~~~~~~~~~~~~~~seek phase queued" << position;
         seekType |= SEEK_PHASE;
     }
 
@@ -1176,6 +1178,7 @@ void EngineBuffer::processSeek(bool paused) {
     if (!paused && (seekType & SEEK_PHASE)) {
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        qDebug() << "seeking phase!" << position << syncPosition;
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
@@ -1192,6 +1195,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     double beat_distance = m_pBpmControl->updateBeatDistance();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
+        qDebug() << "we are master" << getGroup() << local_bpm << beat_distance;
         m_pSyncControl->setLocalBpm(local_bpm);
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
     } else if (mode == SYNC_FOLLOWER) {

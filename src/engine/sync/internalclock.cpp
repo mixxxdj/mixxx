@@ -86,7 +86,7 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
+    qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -122,6 +122,7 @@ void InternalClock::setInstantaneousBpm(double bpm) {
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
     Q_UNUSED(baseBpm)
+    qDebug() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;
     if (bpm == 0) {
         return;
     }

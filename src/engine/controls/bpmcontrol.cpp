@@ -579,17 +579,20 @@ bool BpmControl::getBeatContextNoLookup(
 double BpmControl::getNearestPositionInPhase(
         double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
+    qDebug() << "getNearestPositionInPhase";
     BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
+        qDebug() << "no beats, returning";
         return dThisPosition;
     }
 
     SyncMode syncMode = getSyncMode();
 
     // Master buffer is always in sync!
-    if (syncMode == SYNC_MASTER) {
-        return dThisPosition;
-    }
+    // if (syncMode == SYNC_MASTER) {
+    //     qDebug() << "we are master";
+    //     return dThisPosition;
+    // }
 
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
@@ -616,20 +619,26 @@ double BpmControl::getNearestPositionInPhase(
     if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
+        qDebug() << "phase seek, we are follower" << dOtherBeatFraction;
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         if (playing) {
-            if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+            if (!pOtherEngineBuffer || pOtherEngineBuffer->getBpm() == 0.0) {
+                if (pOtherEngineBuffer) {
+                    qDebug() << "well it's something, but speed: " << pOtherEngineBuffer->getSpeed();
+                }
                 // "this" track is playing, or just starting
                 // only match phase if the sync target is playing as well
                 // else use the previous phase of "this" track before the seek
                 pOtherEngineBuffer = getEngineBuffer();
+                qDebug() << "other track not playing" << this->getGroup() << pOtherEngineBuffer->getGroup();
             }
         }
 
         if (!pOtherEngineBuffer) {
             // no suitable sync buffer found
+            qDebug() << "could not find other engine buffer to seek";
             return dThisPosition;
         }
 
@@ -732,14 +741,14 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    Q_UNUSED(value);    
+    Q_UNUSED(value);
     // Adjust playback bpm in response to a rate_ration update
     double dRate = m_pRateRatio->get();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
-   Q_UNUSED(value); 
+   Q_UNUSED(value);
    // Adjust rate slider position response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
@@ -827,6 +836,7 @@ double BpmControl::updateLocalBpm() {
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
+    qDebug() << "updating beat distance" << beat_distance;
     m_pThisBeatDistance->set(beat_distance);
     if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
@@ -868,7 +878,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
 	double sotPerSec = kSamplesPerFrame * sot.rate * m_pRateRatio->get();
-	if (sotPerSec != 0.0) { 
+	if (sotPerSec != 0.0) {
             pGroupFeatures->beat_length_sec = dThisBeatLength / sotPerSec;
             pGroupFeatures->has_beat_length_sec = true;
 	} else {

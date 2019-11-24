@@ -196,12 +196,17 @@ TEST_F(EngineSyncTest, SetEnabledBecomesMaster) {
 
 TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     // Channel 1 follower, channel 2 master.
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(130.0);
     auto pButtonSyncMode1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
 
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(130.0);
     auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
     pButtonSyncMaster2->slotSet(1.0);
 
+    qDebug() << "-----------1";
     assertIsFollower(m_sGroup1);
     assertIsMaster(m_sGroup2);
 
@@ -209,6 +214,7 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(0.0);
 
+    qDebug() << "-----------2";
     assertIsMaster(m_sGroup1);
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
@@ -680,61 +686,63 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
 //                                                         "beat_distance"))->get());
 // }
 
-TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
-    // If master sync is on when a track gets loaded, the internal clock
-    // may or may not get synced to the new track depending on the state
-    // of other decks and whether they have tracks loaded as well.
+// TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
+//     // If master sync is on when a track gets loaded, the internal clock
+//     // may or may not get synced to the new track depending on the state
+//     // of other decks and whether they have tracks loaded as well.
 
 
-    // This whole test no longer makes sense because we don't care about stopped decks.
-    // I probably have to rewrite this to think about what happens when we load tracks
-    // when something is playing, etc.
+//     // This whole test no longer makes sense because we don't care about stopped decks.
+//     // I probably have to rewrite this to think about what happens when we load tracks
+//     // when something is playing, etc.
 
-    // First eject the fake tracks that come with the testing framework.
-    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
-    m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
-    m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
+//     // Maybe better to remove this one also and start over with various load/unload situations.
 
-    // If sync is on and we load a track, no master because it's not playing.
-    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
-    pButtonSyncEnabled1->slotSet(1.0);
+//     // First eject the fake tracks that come with the testing framework.
+//     m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+//     m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
+//     m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
 
-    m_pMixerDeck1->loadFakeTrack(false, 140.0);
+//     // If sync is on and we load a track, no master because it's not playing.
+//     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+//     pButtonSyncEnabled1->slotSet(1.0);
 
-    qDebug() << "1";
-    ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-    EXPECT_FLOAT_EQ(140.0,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+//     m_pMixerDeck1->loadFakeTrack(false, 140.0);
+
+//     qDebug() << "1";
+//     ASSERT_EQ(NULL, m_pEngineSync->getMaster());
+//     EXPECT_FLOAT_EQ(140.0,
+//             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
 
-    assertIsMaster(m_sGroup1);
+//     assertIsMaster(m_sGroup1);
 
-    // If sync is on two decks and we load a track in only one of them, that track is master./
-    // T
-    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
-    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
-    pButtonSyncEnabled2->slotSet(1.0);
+//     // If sync is on two decks and we load a track in only one of them, that track is master./
+//     // T
+//     m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+//     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+//     pButtonSyncEnabled2->slotSet(1.0);
 
-    m_pMixerDeck1->loadFakeTrack(false, 128.0);
+//     m_pMixerDeck1->loadFakeTrack(false, 128.0);
 
-    qDebug() << "2";
-    assertIsMaster(m_sGroup1);
-    EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+//     qDebug() << "2";
+//     assertIsMaster(m_sGroup1);
+//     EXPECT_FLOAT_EQ(128.0,
+//                     ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-    // If sync is on two decks and one deck is loaded but not playing, we should
-    // initialize to that deck with internal clock master.
-    m_pMixerDeck2->loadFakeTrack(false, 110.0);
+//     // If sync is on two decks and one deck is loaded but not playing, we should
+//     // initialize to that deck with internal clock master.
+//     m_pMixerDeck2->loadFakeTrack(false, 110.0);
 
-    qDebug() << "3";
-    assertIsMaster(m_sInternalClockGroup);
-    EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-}
+//     qDebug() << "3";
+//     assertIsMaster(m_sInternalClockGroup);
+//     EXPECT_FLOAT_EQ(128.0,
+//                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+//     EXPECT_FLOAT_EQ(128.0,
+//                     ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+//     EXPECT_FLOAT_EQ(128.0,
+//                     ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+// }
 
 TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // Make sure playing decks with master sync enabled do not change tempo when
@@ -855,8 +863,8 @@ TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     pButtonSyncEnabled1->slotSet(1.0);
     ProcessBuffer();
 
-    // Internal should now be master (only one sync deck).
-    assertIsMaster(m_sInternalClockGroup);
+    // Group 1 should now be master (only one sync deck).
+    assertIsMaster(m_sGroup1);
 
     // Internal clock rate should be set.
     EXPECT_FLOAT_EQ(130.0,
@@ -1016,6 +1024,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
 TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     auto pButtonEject1 = std::make_unique<ControlProxy>(m_sGroup1, "eject");
 
     pButtonMasterSyncInternal->set(1.0);
@@ -1025,12 +1034,33 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     pButtonSyncEnabled1->set(1.0);
 
     ProcessBuffer();
+    qDebug() << "eject---------------";
     pButtonEject1->set(1.0);
     // When an eject happens, the bpm gets set to zero.
     pFileBpm1->set(0.0);
     ProcessBuffer();
 
+    // Group1 is still master because there are no other sync decks.
+    assertIsMaster(m_sGroup1);
+
+    // Try again with multiple sync decks
+    pFileBpm1->set(128.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(135.0);
+    pButtonSyncEnabled2->set(1.0);
+    ProcessBuffer();
+
+    assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
+
+    pButtonEject1->set(1.0);
+    pFileBpm1->set(0.0);
+    ProcessBuffer();
+
+    assertIsMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
 }
 
 TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
@@ -1302,23 +1332,29 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 
     // Set the sync deck playing with nothing else active.
     pButtonSyncEnabled1->set(1.0);
+    qDebug() << "setting play";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
-    // Internal clock rate should be set but beat distances not changed.
+    // Internal clock rate should be set and beat distance already updated
     EXPECT_FLOAT_EQ(100.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
-    EXPECT_FLOAT_EQ(0.2,
+    EXPECT_FLOAT_EQ(0.8,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                         "beat_distance"))->get());
+     qDebug() << "--------------------";
 
     // Now make the second deck playing and see if it works.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
+    qDebug() << "both playing now-------------------------";
+
     ProcessBuffer();
+
+    qDebug() << "buffer processed";
 
     // The exact beat distance will be one buffer past .8, but this is good
     // enough to confirm that it worked.
@@ -1475,9 +1511,12 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ProcessBuffer();
 
     // first test without quantisation
+    qDebug() << "---------------- set sync on 1";
     pButtonSyncEnabled1->set(1.0);
+    qDebug() << "------------------- process buffer";
     ProcessBuffer();
-    ASSERT_DOUBLE_EQ(0.025154950869236584, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.050309901738473169, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.038699924414210128, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
     pButtonSyncEnabled1->set(0.0);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
@@ -1486,7 +1525,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
-    ASSERT_DOUBLE_EQ(0.07760393046107332, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.077407407407407411, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     pButtonSyncEnabled1->set(0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 0.0);
     ProcessBuffer();
@@ -1495,8 +1534,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ProcessBuffer();
 
     // 0.11632139450713055 in case "beatsync_phase" fails
-    ASSERT_DOUBLE_EQ(0.11610733182161753, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-
+    EXPECT_DOUBLE_EQ(0.11610733182161753, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 1.0);
@@ -1506,7 +1544,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
     // these values were determined experimentally
     // 0.15480806100370784 in case quantize is enabled
-    ASSERT_DOUBLE_EQ(0.16263416477702192, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.16263416477702192, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
     ProcessBuffer();
 
@@ -1516,8 +1554,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
     // these values were determined experimentally
     // 0.19933910991038406 in case quantize is disabled
-    ASSERT_DOUBLE_EQ(0.1935071806500378, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-
+    EXPECT_DOUBLE_EQ(0.1935071806500378, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 }
 
 TEST_F(EngineSyncTest, SeekStayInPhase) {
