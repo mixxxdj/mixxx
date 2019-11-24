@@ -17,16 +17,15 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <!-- Effect slots -->
       <WidgetGroup>
         <ObjectName>FxSlotsCollapsed</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
 
-          <WidgetGroup>
-            <ObjectName>Spacer1e</ObjectName>
-            <Size>0min,36min</Size>
+          <WidgetGroup><!-- Dummy to fill empty space -->
+            <ObjectName>FxRackFiller</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -62,10 +61,10 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Effect slots -->
+      </WidgetGroup><!-- FxSlotsCollapsed -->
 
-      <WidgetGroup><!-- Mix / Super -->
-        <ObjectName>FxUnitControls</ObjectName>
+      <WidgetGroup>
+        <ObjectName>FxUnitControlsCollapsed</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
@@ -96,25 +95,24 @@
 
           <!-- MixMode + Pfl in a row with Fx label + Expand button -->
           <WidgetGroup>
-            <ObjectName></ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
               <PushButton>
                 <TooltipId>EffectUnit_mix_mode</TooltipId>
                 <ObjectName>MixModeButton</ObjectName>
-                <Size>39f,26f</Size>
+                <Size>32f,26f</Size>
                 <NumberStates>2</NumberStates>
                 <RightClickIsPushButton>false</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="FxRack_FxUnit"/>,mix_mode</ConfigKey>
@@ -128,7 +126,6 @@
                 <SetVariable name="btn_format">square</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit"/>,group_[Headphone]_enable</SetVariable>
               </Template>
-
               <WidgetGroup><Size>4f,</Size></WidgetGroup>
             </Children>
             <Connection>
@@ -142,7 +139,6 @@
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-
               <!-- Fx label + Expand_Collapsed -->
               <WidgetGroup>
                 <ObjectName></ObjectName>
@@ -179,7 +175,6 @@
                   </PushButton>
                 </Children>
               </WidgetGroup>
-
               <!-- MixMode_Collapsed + Pfl -->
               <WidgetGroup>
                 <ObjectName></ObjectName>
@@ -221,11 +216,10 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- MixMode_Collapsed + Pfl -->
-
             </Children>
           </WidgetGroup><!-- Fx label + expand | mix mode + Pfl -->
         </Children>
-      </WidgetGroup><!-- /Mix / Super + control buttons + fx label -->
+      </WidgetGroup><!-- FxUnitControlsCollapsed -->
 
     </Children>
   </WidgetGroup>

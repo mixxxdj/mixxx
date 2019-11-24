@@ -100,10 +100,10 @@ QTableView, QTextBrowser, QTreeView {
   #DeckRow_2_3_ArtistTitleTime,
   #DeckRow_4_OverviewSpinny,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
-  #FxSlotsExpanded, #FxSlotsCollapsed, #FxUnitControls, #FxSlotContainer,
+  #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
+  #FxSlotsExpanded, #FxSlotsCollapsed, #FxSlotContainer,
 #MixerContainer, #MasterHeadphoneSeparator,
 #MicRack, #AuxRack, #MicAuxMainControls,
-  #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
 #SamplerDeck, #SamplerDeckMini, #SamplerExpand,
   #SamplerDeckMini, #SamplerText, #SamplerRowTwo, #SamplerPfl,
 WEffectSelector::checked, #fadeModeCombobox::checked,
@@ -120,7 +120,6 @@ QAbstractScrollArea::corner {
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MixerContainer,
 #MicRack, #AuxRack, #MicAuxMainControls,
-#MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
 #SamplerDeck, #SamplerDeckMini, #SamplerExpand,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-top: 1px solid #333;
@@ -157,7 +156,7 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
 #FxSlotBorder2[highlight="0"],
 #FxSlotBorder3[highlight="0"],
 #SamplerHotcues,
-#MicAuxFrame, #MicAuxInterior, #MicAuxInteriorBorderLeft,
+#MicAuxMainControlsFrame, #MicAuxSubControlsFrame,
 WSearchLineEdit,
 #OverviewBox,
 #KeyText {
@@ -183,12 +182,6 @@ WSearchLineEdit,
   margin-top: 1px;
   border: 1px solid #F856E7;
 } */
-
-#FxSlotBorder1[highlight="1"],
-#FxSlotBorder2[highlight="1"],
-#FxSlotBorder3[highlight="1"] {
-  border: 1px solid #d09300;
-}
 
 /************ separator lines within decks, samplers etc. *********************/
 #DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls, #DeckRateSeparator,
@@ -402,7 +395,8 @@ WEffectSelector {
 #PlayButtonSampler, #PlayButtonDeckMini,
 #SamplerButtons WPushButton,
 #SamplerSyncButton,
-#FxUnitControls WPushButton, #FxExpandCollapseButton,
+#FxUnitControlsExpanded WPushButton, #FxUnitControlsCollapsed  WPushButton,
+#FxExpandCollapseButton,
 #FxAssignButton, #FxToggleButton, #FxParameterButton, #FxFocusButton,
 #SplitCueButton,
 #PlayButtonPreview,
@@ -424,7 +418,8 @@ WEffectSelector {
 #PflButton[value="0"],
 #EQKillButton[displayValue="0"],
 #QuickEffectButton[displayValue="0"],
-#FxUnitControls WPushButton, #FxExpandCollapseButton,
+#FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
+#FxExpandCollapseButton,
 #PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"],
@@ -970,7 +965,7 @@ WSearchLineEdit,
 #MicAuxSubTitle,
 #SamplerTitleSmall,
 #Deck1 WLabel, #Deck2 WLabel,
-#Deck3 #KeyText, #Deck4 #KeyText,
+#Deck3 WLabel, #Deck4 WLabel,
 WSearchLineEdit,
 #LatencyLabel,
 WTime {
@@ -1298,7 +1293,7 @@ WBeatSpinBox,
       background-color: #000;
     }
     WBeatSpinBox#Spinbox_embedded:focus {
-      border-image: url(skin:buttons_classic/spinbox_embedded_border_focus.svg) 3 19 2 3;
+      border-image: url(skin:buttons_classic/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
       background-color: #000;
     }
   WBeatSpinBox#Spinbox_elevated {
@@ -1326,7 +1321,7 @@ WBeatSpinBox,
       border-image: url(skin:buttons_classic/spinbox_embedded_border_hover.svg) 3 19 2 3;
     }
     #DlgAutoDJ QSpinBox:focus {
-      border-image: url(skin:buttons_classic/spinbox_embedded_border_focus.svg) 3 19 2 3;
+      border-image: url(skin:buttons_classic/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
     }
 
   WBeatSpinBox::up-button,
@@ -1614,56 +1609,61 @@ WBeatSpinBox,
 }
 
 #MicRack, #AuxRack {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding: 2px 3px 1px 4px;
   qproperty-layoutSpacing: 2;
-  }
-  #MicRack {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  }
-  #AuxRack {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
 
 #MicAuxUnit {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
-  #MicAuxInterior {
-    border-width: 0px;
-    padding: 0px 1px 0px 1px;
-    background-color: transparent;
+  #MicAuxMainControlsFrame {
+    border-radius: 1px;
+    }
+    #MicAuxMainControls {
+      border-radius: 2px;
+      padding: 0px 1px 0px 1px;
+      border-bottom-left-radius: 1px;
+      border-top-right-radius: 1px;
+      }
+      #MicAuxSubTitle {
+        qproperty-alignment: 'AlignCenter | AlignTop';
+        font-size: 12px/12px;
+        text-align: center;
+        margin: 0px 0px 2px 1px;
+      }
+      #MicAuxPlayButtonBox {
+        margin: 0px 1px 2px 1px;
+      }
+
+  #MicAuxSubControlsFrame {
+    margin: 3px 0px;
+    border-radius: 1px;
+    border-right: 0px;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     }
-    #MicAuxInteriorBorderTop {
-      border-width: 0px 1px 1px 0px;
-      border-top-left-radius: 3px;
-      border-bottom-right-radius: 2px;
-      padding-top: 2px;
-    }
-    #MicAuxInteriorBorderBottom {
-      border-width: 1px 0px 0px 0px;
-      border-top-right-radius: 1px;
-      padding-bottom: 2px;
-    }
-    #MicAuxInteriorBorderLeft {
-      border-width: 0px 0px 0px 1px;
-    }
-  #MicAuxFrame {
-    border-left: 0px;
-    border-top-right-radius: 0px;
-    border-top-left-radius: 0px;
-  }
-  #MicAuxMainControls {
-    border-radius: 1px;
-    padding: 0px 1px 0px 1px;
-  }
-
-#MicAuxSubTitle {
-  qproperty-alignment: 'AlignCenter | AlignTop';
-  font-size: 12px/12px;
-  text-align: center;
-  margin: 0px 0px 2px 1px;
-}
+    #MicAuxSubControls {
+      border-width: 0px;
+      padding: 0px 1px 0px 1px;
+      background-color: transparent;
+      }
+      #MicAuxGainPFlContainer {
+        qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+        padding: 2px 0px 0px 0px;
+        margin: 0px;
+        }
+        #MicAuxGainKnob {
+          qproperty-layoutAlignment: 'AlignCenter';
+        }
+      #MicAuxFxButtons {
+        qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+        padding: 2px 0px;
+      }
+      #MicAuxVUMeter {
+        qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+        padding: 1px 1px 1px 1px;
+      }
 
 #MicDuckingContainer {
   qproperty-layoutAlignment: 'AlignCenter | AlignTop';
@@ -1674,29 +1674,6 @@ WBeatSpinBox,
     margin: 2px 0px 3px 1px;
   }
 
-#MicAuxPlayButtonBox {
-  margin: 0px 1px 2px 1px;
-}
-
-#MicAuxGainPFlContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 2px 0px 0px 0px;
-  margin: 0px;
-}
-
-#MicAuxFxButtons {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 2px 0px;
-}
-
-#MicAuxGainKnob {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
-#MicAuxVUMeter {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 1px 1px 1px 1px;
-}
 /************** Mic Aux *******************************************************/
 
 
@@ -1839,7 +1816,7 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
-#FxUnitControls {
+#FxUnitControlsExpanded, #FxUnitControlsCollapsed {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 0px 0px 0px 3px;
 }
@@ -1871,7 +1848,13 @@ WBeatSpinBox,
 #FxSlot2,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 2px 5px 1px 5px;
+  padding: 2px 4px 1px 4px;
+}
+#FxSlotBorder1[highlight="1"],
+#FxSlotBorder2[highlight="1"],
+#FxSlotBorder3[highlight="1"] {
+  border: 1px solid #d08e00;
+  background-color: rgba(0,0,0,125);
 }
 
 #FxFocusButtonBox {
@@ -2079,7 +2062,7 @@ QTableView, QTextBrowser, QTreeView {
 }
 
 QTableView:focus, QTreeView:focus {
-  border: 1px solid #ff6600;
+  border: 1px solid #d08e00;
 }
 
 /* selected items in Tree and Tracks table */
@@ -2301,7 +2284,7 @@ WSearchLineEdit {
   }
   WSearchLineEdit:focus {
     padding: 2px 0px 2px 2px;
-    border: 2px solid #FF6600;
+    border: 2px solid #d08e00;
   }
   /* Clear button */
   WSearchLineEdit QToolButton {

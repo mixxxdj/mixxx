@@ -27,11 +27,11 @@
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>SamplerMini4_Singleton</ObjectName>
+                <ObjectName>SamplerMini3_Singleton</ObjectName>
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>SamplerMini5_Singleton</ObjectName>
+                <ObjectName>SamplerMini4_Singleton</ObjectName>
               </SingletonContainer>
 
             </Children>

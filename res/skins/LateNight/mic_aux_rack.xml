@@ -10,38 +10,44 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <!-- Dummy to fill empty space -->
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>i,min</SizePolicy>
+          </WidgetGroup>
             <WidgetGroup>
-              <SizePolicy>min,min</SizePolicy>
+              <SizePolicy>i,min</SizePolicy>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">4</SetVariable>
           </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
-              <MinimumSize>1,0</MinimumSize>
-              <MaximumSize>20,</MaximumSize>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">3</SetVariable>
           </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
-              <MinimumSize>1,0</MinimumSize>
-              <MaximumSize>20,</MaximumSize>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">2</SetVariable>
           </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
-              <MinimumSize>1,0</MinimumSize>
-              <MaximumSize>20,</MaximumSize>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="mic1hack">1</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Ducking controls -->
+          <WidgetGroup>
             <ObjectName>MicDuckingContainer</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
@@ -70,47 +76,53 @@
                 </Children>
               </WidgetGroup><!-- MicDuckingStrengthKnob -->
             </Children>
-          </WidgetGroup><!-- /Ducking controls -->
+          </WidgetGroup><!-- MicDuckingContainer -->
         </Children>
-      </WidgetGroup><!-- /Mic -->
+      </WidgetGroup><!-- MicRack -->
       
-      <WidgetGroup><!-- Aux -->
+      <WidgetGroup>
         <ObjectName>AuxRack</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <!-- Dummy to fill empty space -->
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>i,min</SizePolicy>
+          </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>i,min</SizePolicy>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">4</SetVariable>
           </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
-              <MinimumSize>1,0</MinimumSize>
-              <MaximumSize>20,</MaximumSize>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">3</SetVariable>
           </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
-              <MinimumSize>1,0</MinimumSize>
-              <MaximumSize>20,</MaximumSize>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">2</SetVariable>
           </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
-              <MinimumSize>1,0</MinimumSize>
-              <MaximumSize>20,</MaximumSize>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">1</SetVariable>
           </Template>
-            <WidgetGroup>
-              <SizePolicy>min,min</SizePolicy>
-            </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- Aux -->
+      </WidgetGroup><!-- AuxRack -->
 
       <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>

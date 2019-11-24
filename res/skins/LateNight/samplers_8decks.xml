@@ -67,7 +67,7 @@
                 <Children>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler1Big_Singleton</ObjectName>
+                    <ObjectName>Sampler1_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <SingletonContainer>
@@ -97,11 +97,11 @@
                 <Children>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler3Big_Singleton</ObjectName>
+                    <ObjectName>Sampler3_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler4Big_Singleton</ObjectName>
+                    <ObjectName>Sampler4_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <WidgetGroup><Size>21f,1min</Size></WidgetGroup>

@@ -14,20 +14,22 @@
   <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
   <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
 
-  <!-- wrapper to create the padding within the Fx unit so the Fx unit controls
-      can sit closer to the Fx unit edges -->
+<!-- wrapper that allows to set an indirect top/bottom padding within the Fx unit
+    so the Fx unit controls layout is independent. -->
   <WidgetGroup>
     <ObjectName>FxSlotContainer</ObjectName>
     <SizePolicy>me,min</SizePolicy>
     <Layout>stacked</Layout>
+    <!-- This allows additional styles for focused Fx slots via qss selector:
+        #FxSlotContainer[highlight="0/1"] -->
     <Connection>
       <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
       <BindProperty>highlight</BindProperty>
     </Connection>
     <Children>
 
-      <!-- transparent bg. Background tile and Regular 3D border or focus highlight border
-           shines through from underlying FxSlotBorder* widgets -->
+    <!-- transparent container. 3D border (or focus highlight border) as well as
+        background tile are set in FxSlotBorder* widgets underneath -->
       <WidgetGroup>
         <ObjectName>FxSlot<Variable name="FxNum"/></ObjectName>
         <Layout>horizontal</Layout>
@@ -121,6 +123,7 @@
         </Children>
       </WidgetGroup>
 
+      <!-- Those style the Fx slot border, depending on focus state -->
       <WidgetGroup>
         <ObjectName>FxSlotBorder<Variable name="FxNum"/></ObjectName>
         <SizePolicy>me,min</SizePolicy>
@@ -149,9 +152,9 @@
               <BindProperty>highlight</BindProperty>
             </Connection>
           </WidgetGroup>
-          <!-- Dark focus background tile. Inhibits border of parent widget... -->
           <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
+            <!-- Dark focus background tile. Inhibits border of parent widget... -->
             <!--BackPath>skin:/style_<Variable name="style_scheme"/>/background_tile_fx_focus.png</BackPath-->
             <BackPath><Variable name="BgTile"/></BackPath>
             <Connection>
@@ -166,6 +169,7 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+      <!-- /Focus borders -->
 
       <WidgetGroup><!-- Regular background tile -->
         <SizePolicy>me,min</SizePolicy>
@@ -173,5 +177,5 @@
       </WidgetGroup>
 
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- FxSlotContainer -->
 </Template>
