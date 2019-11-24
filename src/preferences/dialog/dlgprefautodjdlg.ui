@@ -75,7 +75,7 @@
         <string>Enable random track addition to queue</string>
        </property>
        <property name="buddy">
-        <cstring>ComboBoxAutoDjRequeue</cstring>
+        <cstring>ComboBoxAutoDjRandomQueue</cstring>
        </property>
       </widget>
      </item>

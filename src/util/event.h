@@ -26,9 +26,18 @@ class Event {
     static bool start(const QString& tag) {
         return event(tag, Stat::EVENT_START);
     }
+
     static bool end(const QString& tag) {
         return event(tag, Stat::EVENT_END);
     }
+
+    // Disallow to use this class with implicit converted char strings.
+    // This should not be uses to avoid unicode encoding and memory
+    // allocation at every call. Use a static tag like this:
+    // static const QString tag("TAG TEXT");
+    static bool event(const char*, Event::EventType) = delete;
+    static bool start(const char*) = delete;
+    static bool end(const char*) = delete;
 };
 
 #endif /* EVENT_H */
