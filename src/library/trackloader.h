@@ -21,9 +21,10 @@ class TrackLoader: public QObject {
             QObject* parent = nullptr);
     ~TrackLoader() override = default;
 
-    // Thread-safe, possibly asynchronous invocation. May emit
-    // the trackLoaded signal directly when invoked from the
-    // same thread!
+    // Thread-safe, possibly asynchronous invocation for loading
+    // a track.
+    // May invoke the loadTrack() slot and emit the trackLoaded()
+    // signal directly when invoked from the QObject's thread!
     void invokeLoadTrack(
             TrackRef trackRef,
             Qt::ConnectionType connectionType = Qt::AutoConnection);
