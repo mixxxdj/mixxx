@@ -164,7 +164,7 @@
     </Scheme>
 
     <Scheme>
-      <Name>Flip [beta]</Name>
+      <Name>Flip</Name>
       <Style src="skin:style_flip.qss"/>
       <SetVariable name="btn_scheme">classic</SetVariable>
       <SetVariable name="knob_scheme">classic</SetVariable>
