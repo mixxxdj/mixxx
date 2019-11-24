@@ -68,7 +68,7 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
         kLogger.warning() << "Track source has already been connected";
         return;
     }
-    m_pTrackSource = std::move(pTrackSource);
+    m_pTrackSource = pTrackSource;
     m_pTrackSource->connectTrackDAO(&m_trackDao);
 }
 
