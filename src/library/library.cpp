@@ -212,7 +212,7 @@ Library::~Library() {
 }
 
 TrackCollectionManager* Library::trackCollections() const {
-    // Cannot be implmented inline due to forward declarations
+    // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
 }
 
