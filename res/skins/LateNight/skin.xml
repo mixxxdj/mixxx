@@ -182,7 +182,7 @@
            If you want pixel-sharp indicators size for the big spinnies, size
               /style_[scheme]/spinny_indicator.svg according to effective size in
               skin at 100% and make sure the white indicator's width in px is an integer -->
-      <SetVariable name="BigSpinnySize">113f,113f</SetVariable>
+      <SetVariable name="BigSpinnySize">116f,116f</SetVariable>
       <!-- In small decks there's a 2px margin before the overview -->
       <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
 
@@ -191,16 +191,16 @@
       <SetVariable name="SignalBgColor_12">#0f0f0e</SetVariable>
       <SetVariable name="SignalBgColor_34">#012322</SetVariable>
       <SetVariable name="SignalBgColor_SamplerPreview">#080807</SetVariable>
-      <SetVariable name="SignalColor_12">#E7C413</SetVariable>
-      <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
+      <SetVariable name="SignalColor_12">#e7c413</SetVariable>
+      <SetVariable name="SignalColor_34">#09b2Ae</SetVariable>
       <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
       <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
       <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
       <SetVariable name="BeatColor">#ffffff</SetVariable>
       <SetVariable name="AxesColor">#ffffff</SetVariable>
-      <SetVariable name="PlayPosColor">#00FF00</SetVariable>
+      <SetVariable name="PlayPosColor">#00ff00</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
-      <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
+      <SetVariable name="EndOfTrackColor">#ff00ff</SetVariable>
 
     </Scheme>
   </Schemes>

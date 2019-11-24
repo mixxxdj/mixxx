@@ -22,13 +22,14 @@ QTableView, QTextBrowser, QTreeView {
   #DeckRow_5_LoopCuesTransport,
   #SmallSpinnyCoverContainer, #BigSpinnyCoverContainer,
 #MixerDecks, #MasterControls, #HeadphoneControls,
-#FxUnitControls,
+#FxUnitControlsExpanded, #FxUnitControlsCollapsed,
   #FxSlotBorder1[highlight="0"],
   #FxSlotBorder2[highlight="0"],
   #FxSlotBorder3[highlight="0"],
-#MicRack, #AuxRack, #MicAuxMainControls,
-  #MicAuxInteriorBorderTop, #MicAuxInteriorBorderBottom,
+  #FxRackFiller,
 #SamplerDeck, #SamplerDeckMini, #SamplerExpand,
+#MicAuxMainControlsFrame, #MicAuxSubControlsFrame,
+#MicDuckingContainer, #MicAuxRackFiller,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
 #SkinSettings {
   border-top: 1px solid #333;
@@ -42,8 +43,10 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
   background-color: #0f0f0e;
 }
 
+
 #SkinSettings {
   border-width: 0px 0px 1px 1px;
+  border-bottom-right-radius: 0px;
 }
 
 WEffectSelector {
@@ -64,7 +67,7 @@ WEffectSelector {
 QTreeView, QTextBrowser, QTableView,
 WSearchLineEdit, WSearchLineEdit:focus {
   border-top: 1px solid #000;
-  border-right: #222;
+  border-right: 1px solid #222;
   border-bottom: 1px solid #222;
   border-left: 1px solid #000;
   background-color: #050504;
@@ -84,8 +87,11 @@ WSearchLineEdit {
   border-right: 1px solid #222;
   border-bottom-left-radius: 1px;
   border-top-right-radius: 1px;
-} 
+}
 
+#SamplerRow {
+  margin: 0px 3px 5px 2px;
+}
 
 #SamplerDeck {
   padding: 1px 0px 1px 2px;
@@ -111,7 +117,7 @@ WSearchLineEdit {
 #SamplerHotcues {
   border: 0px;
   margin: 0px;
-  padding: 1px 1px 0px 0px;
+  padding: 0px;
 }
 #SamplerPfl {
   padding: 0px 5px 0px 0px;
@@ -141,7 +147,7 @@ WSearchLineEdit {
 }
 #RateContainer {
   padding: 4px 1px 1px 2px;
-  margin: 0px 1px 0px 0px;
+  margin: 0px 0px 0px 0px;
   }
   #RateControls {
     margin: 0px;
@@ -151,74 +157,51 @@ WSearchLineEdit {
   padding: 2px 1px 1px 2px;
   margin: 0px 0px 0px 0px;
   }
-#DeckRows234 {
-  margin: 1px 0px 0px 0px;
-}
-#DeckRow_2_3_ArtistTitleTime {
-  margin: 0px 0px 1px 0px;
-  }
-  #ArtistRow {
-    border-width: 0px;
-  }
-#DeckRow_4_OverviewSpinny {
-  padding: 0px;
-  margin: 0px 0px 1px 0px;
-  }
-  #DeckRow_4_OverviewSpinny #OverviewBox {
-    margin: 0px 1px 0px 0px;
-  }
-  #DeckControls {
-  }
 
-  #TitleTextSmall,
-  #ArtistTextSmall,
-  #PlayPositionTextSmall,
-  #BpmTextSmall,
-  #KeyTextSmall,
-  #PlayContainerSmall {
-    border-width: 0px;
+#DeckRows234 {
+  margin: 0px 0px 0px 0px;
   }
+  #DeckRow_2_3_ArtistTitleTime {
+    margin: 0px 0px 0px 0px;
+    }
+    #ArtistRow {
+      border-width: 0px;
+    }
+    #BigSpinnyCoverContainer {
+      margin: 0px 0px 0px 0px;
+    }
+    #TitleTextSmall,
+    #ArtistTextSmall,
+    #PlayPositionTextSmall,
+    #BpmTextSmall,
+    #KeyTextSmall,
+    #PlayContainerSmall {
+      border-width: 0px;
+    }
+  #DeckRow_4_OverviewSpinny {
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    }
+    #DeckRow_4_OverviewSpinny #OverviewBox {
+      margin: 0px 0px 0px 0px;
+    }
+    #DeckControls {
+    }
+    #SmallSpinnyCoverContainer {
+      margin: 0px 0px 0px 0px;
+    }
+    #MiniDeckSpinnyCoverContainer {
+      margin: 0px
+    }
 
 #DeckRow_5_LoopCuesTransport {
   padding: 2px 1px 1px 2px;
-}
-
-#BigSpinnyCoverContainer {
-  margin: 0px 1px 1px 0px;
-}
-#SmallSpinnyCoverContainer {
-  margin: 0px 1px 0px 0px;
-}
-#MiniDeckSpinnyCoverContainer {
-  margin: 0px
 }
 
 
 #KeyText {
   border-left: 0px;
   margin: 0px 0px 1px 0px;
-}
-
-#FxUnitControls,
-#FxSlotBorder1[highlight="0"],
-#FxSlotBorder2[highlight="0"] {
-}
-
-#FxSlotBorder1[highlight="1"],
-#FxSlotBorder2[highlight="1"],
-#FxSlotBorder3[highlight="1"] {
-  border: 1px solid #d09300;
-}
-
-#MicAuxInteriorBorderBottom, #MicAuxInteriorBorderTop,
-#MicAuxInteriorBorderLeft, #MicAuxFrame {
-  border: 0px;
-}
-#MicAuxMainControls, #MicAuxInterior {
-  border: 1px solid #333;
-}
-#MicAuxInterior {
-  border-right: 0px;
 }
 
 /************ separator lines within decks, samplers etc. *********************/
@@ -259,26 +242,17 @@ WSearchLineEdit {
   margin-top: 5px;
 }
 
-#Deck1, #Deck2,
-#DeckMini1, #DeckMini2,
-#FxUnit1, #FxUnit2 {
+#Deck1, #DeckMini1, #FxUnit1,
+#Deck3, #DeckMini3, #FxUnit3,
+#MicRack {
   margin-right: 5px;
   margin-left: 2px;
 }
-#Deck3, #Deck4,
-#DeckMini3, #DeckMini4,
-#FxUnit3, #FxUnit4 {
-  margin-right: 1px;
-  margin-left: 5px;
-}
-
-#MicRack {
-  margin-left: 3px;
-  margin-right: 4px;
-}
+#Deck2, #DeckMini2, #FxUnit2,
+#Deck4, #DeckMini4, #FxUnit4,
 #AuxRack {
-  margin-left: 4px;
   margin-right: 3px;
+  margin-left: 5px;
 }
 
 #FxUnit1, #FxUnit2,
@@ -288,12 +262,45 @@ WSearchLineEdit {
   background-color: transparent;
   padding: 0px;
   }
-  #FxUnitControls {
+  #FxUnitControlsCollapsed {
+    padding: 3px 2px 3px 3px;
+  }
+  #FxUnitControlsExpanded {
     padding: 2px 1px 2px 2px;
   }
-  #FxSlotContainer {
-    margin: 0px;
-  }
+  #FxSlotsCollapsed,
+  #FxSlotsExpanded {
+    padding: 2px 0px;
+    }
+    #FxSlotsCollapsed #FxSlotContainer {
+      margin: 0px;
+      padding: 0px;
+      }
+      #FxSlotsCollapsed #FxSlot1,
+      #FxSlotsCollapsed #FxSlot2,
+      #FxSlotsCollapsed #FxSlot3 {
+        padding: 1px 5px 2px 5px;
+      }
+    #FxSlotsExpanded #FxSlotContainer {
+      margin: 0px;
+      padding: 0px;
+      }
+      #FxSlotsExpanded #FxSlot1,
+      #FxSlotsExpanded #FxSlot2,
+      #FxSlotsExpanded #FxSlot3 {
+        padding: 3px 5px 0px 5px;
+      }
+    #FxSlotBorder1[highlight="1"],
+    #FxSlotBorder2[highlight="1"],
+    #FxSlotBorder3[highlight="1"] {
+      border: 1px solid #00ffff;
+      background-color: rgba(0,0,0,180);
+    }
+
+
+
+
+
 /************** Backgrounds, 3D borders & margins *****************************
 ************** of major GUI containers **************************************/
 
@@ -306,7 +313,8 @@ WSearchLineEdit {
 #PflButton[value="0"],
 #EQKillButton[displayValue="0"],
 #QuickEffectButton[displayValue="0"],
-#FxUnitControls WPushButton, #FxExpandCollapseButton,
+#FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
+#FxExpandCollapseButton,
 #PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"],
@@ -333,7 +341,7 @@ QPushButton#pushButtonAutoDJ:enabled,
   margin: 3px;
 } */
 
-/* Flat, dark table headers with dimmed text */ 
+/* Flat, dark table headers with dimmed text */
 QHeaderView,
 QHeaderView::section,
 QHeaderView::up-arrow,
@@ -349,23 +357,115 @@ QHeaderView::down-arrow {
   border-width: 0px;
   }
 
+WBeatSpinBox#Spinbox_embedded:focus,
+#DlgAutoDJ QSpinBox:focus {
+  border-image: url(skin:buttons_classic/spinbox_embedded_border_focus_cyan.svg) 3 19 2 3;
+  background-color: #000;
+}
+
+
+/************** Label styles **************************************************/
+#KeyText,
+#PlayPositionText,
+#PlayPositionTextSmall,
+#DurationText,
+#BpmText,
+#BpmTextSmall,
+#RateText,
+WBeatSpinBox,
+QSpinBox,
+WOverview {
+  font-family: "Open Sans";
+}
+
+QLabel, QRadioButton,
+WSearchLineEdit,
+#LibraryBPMSpinBox,
+#LibraryBPMButton::item,
+QTableView, QTextBrowser, QTreeView {
+  color: #f0bb2b;
+  selection-color: #f0bb2b;
+}
+
+/* gold */
+#Deck1 WLabel, #Deck2 WLabel,
+#DeckMini1 WLabel, #DeckMini2 WLabel,
+#PreviewLabel, #PreviewDeckText, #PreviewTitle,
+#FxUnitLabel, #MicAuxSubTitle,
+#SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
+QToolTip,
+#Deck1 WStarRating, #Deck2 WStarRating,
+#Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
+QTableView::indicator,
+WEffectSelector, WEffectSelector QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
+#CategoryLabel, #SkinSettingsLabelButton,
+WSearchLineEdit,
+#LatencyLabel, WTime {
+/*  color: #f0bb2b; */
+  color: #ffaa00;
+}
+
+/* light blue / cyan */
+#Deck3 WLabel, #Deck4 WLabel,
+#DeckMini3 WLabel, #DeckMini4 WLabel,
+#Deck3 WStarRating, #Deck4 WStarRating,
+#Deck3 WBeatSpinBox, #Deck4 WBeatSpinBox {
+  color: #0bd9d1;
+}
+
+#PreviewLabel,
+#FxUnitLabel,
+#MicAuxSubTitle,
+#SamplerTitleSmall,
+#Deck1 WLabel, #Deck2 WLabel,
+#Deck3 WLabel, #Deck4 WLabel,
+WSearchLineEdit,
+#LatencyLabel,
+WTime {
+  font-weight: bold;
+}
+
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  font: bold 10px/10px;
+  color: #666;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
+  padding-top: -1px;
+  text-transform: uppercase;
+}
+
+#MasterHeadphoneMixer WLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  padding: 0px;
+  background-color: #101010;
+  }
+  #FxKnobLabel,
+  #FxButtonLabel {
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    }
+/************** Label styles **************************************************/
+
 
 /************** Mixer *********************************************************/
 #MixerContainer {
   background-color: transparent;
   border: 0px;
-  margin: 0px 4px 4px 1px;
+  margin: 0px 2px 4px 2px;
   }
 
 #MixerDecks {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px 4px 1px 5px;
+  padding: 4px 4px 1px 5px;
     }
   #CrossfaderButtonContainerDeck,
   #CrossfaderButtonContainerAux,
   #CrossfaderButton[value="0"] {
     background-color: #020201;
-  } 
+  }
   #CrossfaderButtonContainerDeck {
     border-bottom: 1px solid #333;
     border-right: 1px solid #333;
@@ -383,13 +483,51 @@ QHeaderView::down-arrow {
 
 #MasterHeadphoneMixerContainer {
   padding: 0px;
-  margin: 0px 0px 0px 1px;
+  margin: 0px 0px 0px 0px;
   }
   #MasterHeadphoneSeparator {
     /* defines the height of the separator gap */
-    padding-top: 1px;
+    padding-top: 0px;
   }
 /************** Mixer *********************************************************/
+
+
+
+/************** Mic Aux *******************************************************/
+/* remove 3D styles from those containers */
+#MicAuxRack, #MicRack, #AuxRack,
+#MicAuxMainControls, #MicAuxSubControls {
+  border: 0px;
+  background-color: transparent;
+  }
+#MicAuxRack, #MicRack, #AuxRack {
+  padding: 0px;
+  margin-top: 0px;
+  qproperty-layoutSpacing: 0px;
+}
+
+  #MicAuxPlayButtonBox {
+    margin: 0px 1px 1px 1px;
+  }
+
+  #MicAuxSubControlsFrame {
+    margin: 2px 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    }
+    #MicAuxSubControls {
+      padding: 1px 1px 0px 1px;
+      }
+
+#MicDuckingContainer {
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+  padding: 2px 1px 0px 2px;
+  margin-left: 3px;
+  }
+
+
+
+/************** Mic Aux *******************************************************/
 
 
 
@@ -409,5 +547,12 @@ WLibrary,
     stop:1 #0f0f0e);
   border-bottom-right-radius: 0px;
   border-bottom-left-radius: 0px;
+}
+
+
+QTableView:focus,
+QTreeView:focus,
+WSearchLineEdit:focus {
+  border-color: #00ffff;
 }
 /************** Library *******************************************************/
