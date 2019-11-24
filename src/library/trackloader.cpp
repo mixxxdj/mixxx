@@ -23,24 +23,6 @@ void registerMetaTypes() {
     qRegisterMetaType<TrackPointer>();
 }
 
-inline
-TrackCollectionManager* getTrackCollectionManager(
-        TrackCollectionManager* trackCollectionManager) {
-    if (trackCollectionManager) {
-        // Ensure that the track collection manager is only accessed
-        // from the same thread!
-        VERIFY_OR_DEBUG_ASSERT(QThread::currentThread() == trackCollectionManager->thread()) {
-            kLogger.critical()
-                    << "Execution in different threads is not supported:"
-                    << QThread::currentThread()
-                    << "<>"
-                    << trackCollectionManager->thread();
-            return nullptr;
-        }
-    }
-    return trackCollectionManager;
-}
-
 } // anonymous namespace
 
 TrackLoader::TrackLoader(
@@ -49,6 +31,9 @@ TrackLoader::TrackLoader(
     : QObject(parent),
       m_trackCollectionManager(trackCollectionManager) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypes);
+    // Must be collocated with the TrackCollectionManager
+    DEBUG_ASSERT(m_trackCollectionManager);
+    moveToThread(m_trackCollectionManager->thread());
 }
 
 void TrackLoader::invokeSlotLoadTrack(
@@ -66,16 +51,13 @@ void TrackLoader::invokeSlotLoadTrack(
 
 void TrackLoader::slotLoadTrack(
         TrackRef trackRef) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
-    TrackPointer trackPtr;
-    const auto trackCollectionManager =
-            getTrackCollectionManager(m_trackCollectionManager);
-    if (trackCollectionManager) {
-        trackPtr = trackCollectionManager->getOrAddTrack(trackRef);
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(m_trackCollectionManager) {
         kLogger.warning()
                 << "Track collection manager not accessible";
     }
+    // Verify that still collocated with the TrackCollectionManager
+    DEBUG_ASSERT(thread() == m_trackCollectionManager->thread());
+    TrackPointer trackPtr = m_trackCollectionManager->getOrAddTrack(trackRef);
     emit trackLoaded(std::move(trackRef), std::move(trackPtr));
 }
 
