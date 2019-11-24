@@ -107,7 +107,7 @@ DlgAutoDJ::DlgAutoDJ(
             this,
             &DlgAutoDJ::slotTransitionModeChanged);
     QString fadeModeTooltip = tr(
-            "AutoDJ Fade Modes\n"
+            "Auto DJ Fade Modes\n"
             "\n"
             "Full Intro + Outro:\n"
             "Play the full intro and outro. Use the intro or outro length as the\n"

@@ -4,9 +4,8 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
-
 #include "widget/wlibrarytableview.h"
-
+#include "util/compatibility.h"
 #include "util/math.h"
 
 
@@ -110,17 +109,14 @@ void CoverArtDelegate::paintItem(QPainter *painter,
     info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
+    double scaleFactor = getDevicePixelRatioF(static_cast<QWidget*>(parent()));
     // We listen for updates via slotCoverFound above and signal to
     // BaseSqlTableModel when a row's cover is ready.
-    QPixmap pixmap = pCache->requestCover(info, this, option.rect.width(),
+    QPixmap pixmap = pCache->requestCover(info, this, option.rect.width() * scaleFactor,
                                           m_bOnlyCachedCover, true);
     if (!pixmap.isNull()) {
-        int width = math_min(pixmap.width(), option.rect.width());
-        int height = math_min(pixmap.height(), option.rect.height());
-        QRect target(option.rect.x(), option.rect.y(),
-                     width, height);
-        QRect source(0, 0, target.width(), target.height());
-        painter->drawPixmap(target, pixmap, source);
+        pixmap.setDevicePixelRatio(scaleFactor);
+        painter->drawPixmap(option.rect.topLeft(), pixmap);
     } else if (!m_bOnlyCachedCover) {
         // If we asked for a non-cache image and got a null pixmap, then our
         // request was queued.

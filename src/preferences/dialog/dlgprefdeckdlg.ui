@@ -161,7 +161,7 @@ If this option is disabled, the intro start point is automatically placed at the
       <item row="5" column="0">
        <widget class="QLabel" name="labelAutoHotcueColors">
         <property name="text">
-          <string>Auto hot cue colors</string>
+         <string>Auto hotcue colors</string>
         </property>
         <property name="buddy">
          <cstring>checkBoxAssignHotcueColors</cstring>
@@ -171,10 +171,10 @@ If this option is disabled, the intro start point is automatically placed at the
       <item row="5" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxAssignHotcueColors">
         <property name="toolTip">
-         <string>Automatically assigns a predefined color to a newly created hot cue point, based on its index.</string>
+         <string>Automatically assigns a predefined color to a newly created hotcue point, based on its index.</string>
         </property>
         <property name="text">
-         <string>Assign predefined colors to newly created hot cue points</string>
+         <string>Assign predefined colors to newly created hotcue points</string>
         </property>
        </widget>
       </item>
