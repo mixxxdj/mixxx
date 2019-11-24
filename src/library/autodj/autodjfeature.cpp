@@ -26,7 +26,7 @@
 
 namespace {
 
-const QString kViewName = "Auto DJ";
+const QString kViewName = QStringLiteral("Auto DJ");
 
 }
 

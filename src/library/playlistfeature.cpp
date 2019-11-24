@@ -40,8 +40,8 @@ PlaylistFeature::PlaylistFeature(
         : BasePlaylistFeature(
                 pLibrary,
                 std::move(pConfig),
-                "PLAYLISTHOME"),
-          m_icon(":/images/library/ic_library_playlist.svg") {
+                QStringLiteral("PLAYLISTHOME")),
+          m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
     initTableModel(new PlaylistTableModel(
             this,
             pLibrary->trackCollections(),

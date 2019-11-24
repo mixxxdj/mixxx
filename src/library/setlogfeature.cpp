@@ -22,10 +22,10 @@ SetlogFeature::SetlogFeature(
         : BasePlaylistFeature(
                 pLibrary,
                 pConfig,
-                "SETLOGHOME"),
+                QStringLiteral("SETLOGHOME")),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
-          m_icon(":/images/library/ic_library_history.svg") {
+          m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     initTableModel(new PlaylistTableModel(
             this,
             pLibrary->trackCollections(),

@@ -36,7 +36,7 @@ const int kIdColumn = 0;
 const int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
-const char* COLUMNS_SORTING = "ColumnsSorting";
+const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
 } // anonymous namespace
 
