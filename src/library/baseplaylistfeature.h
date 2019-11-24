@@ -26,7 +26,7 @@ class BasePlaylistFeature : public LibraryFeature {
   public:
     BasePlaylistFeature(Library* pLibrary,
                         UserSettingsPointer pConfig,
-                        QString rootViewName);
+                        const QString& rootViewName);
     ~BasePlaylistFeature() override = default;
 
     TreeItemModel* getChildModel();
