@@ -44,9 +44,10 @@ void TrackLoader::invokeSlotLoadTrack(
             (connectionType != Qt::DirectConnection));
     QMetaObject::invokeMethod(
             this,
-            "slotLoadTrack",
-            connectionType,
-            Q_ARG(TrackRef, std::move(trackRef)));
+            [this, trackRef = std::move(trackRef)]() {
+                this->slotLoadTrack(std::move(trackRef));
+            },
+            connectionType);
 }
 
 void TrackLoader::slotLoadTrack(

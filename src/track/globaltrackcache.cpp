@@ -253,12 +253,13 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
     if (s_pInstance) {
         QMetaObject::invokeMethod(
                 s_pInstance,
-                "evictAndSave",
+                [cacheEntryPtr = std::move(cacheEntryPtr)]() {
+                    s_pInstance->evictAndSave(std::move(cacheEntryPtr));
+                },
                 // Qt will choose either a direct or a queued connection
                 // depending on the thread from which this method has
                 // been invoked!
-                Qt::AutoConnection,
-                Q_ARG(GlobalTrackCacheEntryPointer, std::move(cacheEntryPtr)));
+                Qt::AutoConnection);
     } else {
         // After the singular instance has been destroyed we are
         // not able to save pending changes. The track is deleted
