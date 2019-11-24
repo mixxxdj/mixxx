@@ -589,7 +589,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Determines how cue points are treated in vinyl control Relative mode:")
             << tr("Off - Cue points ignored.")
             << tr("One Cue - If needle is dropped after the cue point, track will seek to that cue point.")
-            << tr("Hot Cue - Track will seek to nearest previous hot cue point.");
+            << tr("Hot Cue - Track will seek to nearest previous hotcue point.");
 
     add("loop_in")
             << tr("Loop-In Marker")

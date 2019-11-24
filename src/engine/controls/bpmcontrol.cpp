@@ -240,7 +240,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     double rateRatio = m_pRateRatio->get();
     if (rateRatio == 0.0) {
-	return;
+        return;
     }
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
