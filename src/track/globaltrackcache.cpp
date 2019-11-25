@@ -1,5 +1,7 @@
 #include "track/globaltrackcache.h"
 
+#include <utility>
+
 #include <QApplication>
 #include <QThread>
 

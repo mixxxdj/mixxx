@@ -1,5 +1,7 @@
 #include "library/trackloader.h"
 
+#include <utility>
+
 #include <QMetaMethod>
 #include <QThread>
 
