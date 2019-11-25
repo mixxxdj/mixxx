@@ -18,6 +18,8 @@ WColorPicker::WColorPicker(QWidget* parent)
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
+
+    m_pStyle = QStyleFactory::create(QString("fusion"));
     int row = 0;
     int column = 0;
     for (const auto& pColor : Color::kPredefinedColorsSet.allColors) {
@@ -26,6 +28,9 @@ WColorPicker::WColorPicker(QWidget* parent)
         }
 
         parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
+        if (m_pStyle) {
+            pColorButton->setStyle(m_pStyle);
+        }
         pColorButton->setStyleSheet(
             QString("QPushButton { background-color: #%1; }").arg(pColor->m_defaultRgba.rgb(), 6, 16, QChar('0'))
         );

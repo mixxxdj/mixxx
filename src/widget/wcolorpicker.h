@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QMap>
 #include <QWidget>
+#include <QStyleFactory>
 
 #include "util/color/color.h"
 
@@ -20,4 +21,5 @@ class WColorPicker : public QWidget {
   private:
     QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
     PredefinedColorPointer m_pSelectedColor;
+    QStyle* m_pStyle;
 };
