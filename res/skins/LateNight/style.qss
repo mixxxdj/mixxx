@@ -938,7 +938,7 @@ QTableView, QTextBrowser, QTreeView {
 /* gold */
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckMini1 WLabel, #DeckMini2 WLabel,
-#PreviewLabel, #PreviewDeckText, #PreviewTitle,
+#PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
 #FxUnitLabel, #MicAuxSubTitle,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
 QToolTip,
