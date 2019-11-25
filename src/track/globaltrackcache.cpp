@@ -345,7 +345,8 @@ void GlobalTrackCache::relocateTracks(
 void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
     DEBUG_ASSERT(pEvictedTrack);
     // Disconnect all receivers and block signals before saving the
-    // track.
+    // track. Accessing an object-under-destruction in signal handlers
+    // could cause undefined behavior!
     // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
     // doesn't seem to work reliably. Emitting the clean() signal from
     // a track that is about to deleted may cause access violations!!
