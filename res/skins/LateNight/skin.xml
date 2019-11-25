@@ -184,7 +184,7 @@
               skin at 100% and make sure the white indicator's width in px is an integer -->
       <SetVariable name="BigSpinnySize">116f,116f</SetVariable>
       <!-- In small decks there's a 2px margin before the overview -->
-      <SetVariable name="MiniDeckSpinnySize">46f,46f</SetVariable>
+      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
 
       <SetVariable name="SeparatorSize">0f</SetVariable>
 

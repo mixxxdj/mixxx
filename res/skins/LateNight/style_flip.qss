@@ -37,6 +37,14 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
   border-bottom: 1px solid #020201;
   border-right: 1px solid #020201;
   border-radius: 2px;
+/*  more realistic drop shadow:
+  border-top: 1px solid #333;
+  border-left: 1px solid #222;
+  border-bottom: 1px solid #020201;
+  border-right: 1px solid #0a0a09;
+  alternative: border image
+  border-width: 2px;
+  border-image: url(skin:style_flip/background_border.svg) 2 2 2 2; */
   background-color: #0f0f0e;
 }
 #ToolBar {
@@ -59,6 +67,11 @@ WSearchLineEdit {
   border-left: 1px solid #000;
   border-bottom: 1px solid #222;
   border-right: 1px solid #222;
+/* more realistic drop shadow:
+  border-top: 1px solid #000;
+  border-left: 1px solid #050504;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #11110a;  */
   border-bottom-left-radius: 1px;
   border-top-right-radius: 1px;
 }
