@@ -470,7 +470,7 @@ WOverview {
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
 WStarRating,
 WBeatSpinBox, #DlgAutoDJ QSpinBox,
-QTableView::indicator,
+#Library QTableView::indicator,
 WLabel#CategoryLabel, #SkinSettingsLabelButton,
 #LatencyLabel, WTime,
 WLibrary QLabel, QRadioButton,
@@ -484,7 +484,7 @@ WBeatSpinBox,
 WEffectSelector, WEffectSelector QAbstractItemView,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 WSearchLineEdit,
-QTableView, QTextBrowser, QTreeView,
+#Library QTableView, #Library QTextBrowser, #Library QTreeView,
 #LibraryBPMButton::item {
   color: #f0bb2b;
 }
@@ -1550,7 +1550,7 @@ WLibrary,
   background-color: #1e1e1e;
 }
 
-QTableView, QTextBrowser, QTreeView {
+#Library QTableView, #Library QTextBrowser, #Library QTreeView {
   border-top: 1px solid #0a0a0a;
   border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #333,
@@ -1562,16 +1562,17 @@ QTableView, QTextBrowser, QTreeView {
   selection-background-color: #5e4507;
 }
 
-QTableView:focus, QTreeView:focus {
+#Library QTableView:focus,
+#Library QTreeView:focus {
   border: 1px solid #ff6600;
 }
 
 /* selected items in Tree and Tracks table */
-QTreeView::item:selected,
-QTableView::item:selected,
+#Library QTreeView::item:selected,
+#Library QTableView::item:selected,
 /* this doesn't style BPM value in selected row */
-QTableView::item:selected #LibraryBPMSpinBox::item:selected,
-QTableView::item:selected > #LibraryBPMSpinBox::item:selected {
+#Library QTableView::item:selected #LibraryBPMSpinBox::item:selected,
+#Library QTableView::item:selected > #LibraryBPMSpinBox::item:selected {
   color: #fff;
   background-color: #5e4507;
 }
@@ -1589,7 +1590,7 @@ WLibrary QLineEdit {
 }
 
 /* checkbox in library "Played" column */
-QTableView::indicator {/*
+#Library QTableView::indicator {/*
   This results in 10x10px + 1px border = 12x12px
   Omitting this definitions makes the checkbox grow to
   12x12px + 1px border = 14x14px
@@ -1604,24 +1605,24 @@ QTableView::indicator {/*
   /* Play count next to checkbox
   color: #xxx; */
   }
-  QTableView::indicator:hover {
+  #Library QTableView::indicator:hover {
     border: 1px solid #888;
   }
-  QTableView::indicator:checked,
-  QTableView::indicator:checked:selected {
+  #Library QTableView::indicator:checked,
+  #Library QTableView::indicator:checked:selected {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #ff6600;
     }
-    QTableView::indicator:checked:hover,
-    QTableView::indicator:selected:hover {
+    #Library QTableView::indicator:checked:hover,
+    #Library QTableView::indicator:selected:hover {
       border: 1px solid #aaa;
     }
-  QTableView::indicator:unchecked {
+  #Library QTableView::indicator:unchecked {
     image: none;
     border: 1px solid rgba(151,151,151,128);
     }
-    QTableView::indicator:unchecked:hover,
-    QTableView::indicator:selected {
+    #Library QTableView::indicator:unchecked:hover,
+    #Library QTableView::indicator:selected {
       border: 1px solid #888;
     }
 
@@ -1734,8 +1735,7 @@ QHeaderView {
 
 
 /* QScrollBar styling is even harder */
-Wlibrary QScrollBar,
-QTreeView QScrollBar {
+#Library  QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
@@ -1743,16 +1743,14 @@ QTreeView QScrollBar {
   color: #999999;
   font-size: 8pt;
   }
-  Wlibrary QScrollBar:horizontal,
-  QTreeView QScrollBar:horizontal {
+  #Library QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     background-color: #000;
   }
-  Wlibrary QScrollBar:vertical,
-  QTreeView QScrollBar:vertical {
+  #Library QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -1761,27 +1759,25 @@ QTreeView QScrollBar {
     background-color: #000;
   }
   /* catch scroll bar of focused treeview like this:
-  QTreeView:focus QScrollBar:vertical {
+  #Library QTreeView:focus QScrollBar:vertical {
   }*/
 
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
-  WLibrary QScrollBar::add-page, WLibrary QScrollBar::sub-page,
-  QTreeView QScrollBar::add-page, QTreeView QScrollBar::sub-page {
+  #Library QScrollBar::add-page,
+  #Library QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
     background-color: #000;
     border-radius: 2px;
   }
-  WLibrary QScrollBar::handle:horizontal,
-  QTreeView QScrollBar::handle:horizontal {
+  #Library QScrollBar::handle:horizontal {
     min-width: 25px;
     border-radius: 2px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #725309,
       stop:1 #412f05);
   }
-  WLibrary QScrollBar::handle:vertical,
-  QTreeView QScrollBar::handle:vertical {
+  #Library QScrollBar::handle:vertical {
     min-height: 25px;
     border-radius: 2px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -1789,16 +1785,15 @@ QTreeView QScrollBar {
       stop:1 #412f05);
   }
   /* Turn off buttons */
-  WLibrary QScrollBar::add-line, WLibrary QScrollBar::sub-line,
-  QTreeView QScrollBar::add-line, QTreeView QScrollBar::sub-line {
+  #Library QScrollBar::add-line,
+  #Library QScrollBar::sub-line {
     width: 0px;
     height: 0px;
     border: 0px;
   }
 
   /* Corner in between two scrollbars */
-  WLibrary QAbstractScrollArea::corner,
-  QTreeView QAbstractScrollArea::corner {
+  #Library QAbstractScrollArea::corner {
     background-color: #1e1e1e;
   }
 
@@ -1960,41 +1955,41 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 
-QTreeView {
+#Library QTreeView {
   show-decoration-selected: 0;
   background-color: #0f0f0f;
 }
   /* triangle for closed/opened branches in treeview */
   /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
-  QTreeView::branch:has-children:!has-siblings:closed,
-  QTreeView::branch:closed:has-children:has-siblings {
+  #Library QTreeView::branch:has-children:!has-siblings:closed,
+  #Library QTreeView::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(skin:/style/library_branch_closed.png);
   }
-  QTreeView::branch:open:has-children:!has-siblings,
-  QTreeView::branch:open:has-children:has-siblings {
+  #Library QTreeView::branch:open:has-children:!has-siblings,
+  #Library QTreeView::branch:open:has-children:has-siblings {
     border-image: none;
     image: url(skin:/style/library_branch_open.png);
   }
   /* closed branch * selected item */
-  QTreeView::branch:has-children:!has-siblings:closed:selected,
-  QTreeView::branch:closed:has-children:has-siblings:selected {
+  #Library QTreeView::branch:has-children:!has-siblings:closed:selected,
+  #Library QTreeView::branch:closed:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/style/library_branch_closed_selected.png);
     background-color: #5e4507;
   }
   /* open branch * selected item */
-  QTreeView::branch:open:has-children:!has-siblings:selected,
-  QTreeView::branch:open:has-children:has-siblings:selected {
+  #Library QTreeView::branch:open:has-children:!has-siblings:selected,
+  #Library QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/style/library_branch_open_selected.png);
     background-color: #5e4507;
     }
     /* space left of selected child item */
-    QTreeView::branch:!has-children:!has-siblings:closed:selected,
-    QTreeView::branch:closed:!has-children:has-siblings:selected,
-    QTreeView::branch:open:!has-children:!has-siblings:selected,
-    QTreeView::branch:open:!has-children:has-siblings:selected {
+    #Library QTreeView::branch:!has-children:!has-siblings:closed:selected,
+    #Library QTreeView::branch:closed:!has-children:has-siblings:selected,
+    #Library QTreeView::branch:open:!has-children:!has-siblings:selected,
+    #Library QTreeView::branch:open:!has-children:has-siblings:selected {
       border-image: none;
       background-color: #151515;
     }
