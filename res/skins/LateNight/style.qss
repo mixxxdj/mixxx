@@ -1588,7 +1588,6 @@ WBeatSpinBox,
 
 #SkinSettingsButton {
   padding-top: 1px;
-  font-size: 12px/14px;
   color: #d2d2d2;
 }
 
