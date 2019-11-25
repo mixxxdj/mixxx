@@ -59,6 +59,9 @@ class parented_ptr final {
         return *this;
     }
 
+    // Prevent unintended invocation of delete on parented_ptr
+    operator void*() const = delete;
+
     operator T*() const noexcept {
         return m_ptr;
     }
