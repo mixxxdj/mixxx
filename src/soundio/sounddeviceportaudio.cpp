@@ -280,17 +280,33 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             // Clear first 1.5 chunks on for the required artificial delaly to
             // a allow jitter and a half, because we can't predict which
             // callback fires first.
-            m_outputFifo->releaseWriteRegions(
-                    m_outputParams.channelCount * m_framesPerBuffer * kFifoSize
-                            / 2);
+            int writeCount = m_outputParams.channelCount * m_framesPerBuffer *
+                    kFifoSize / 2;
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
+                    &size1, &dataPtr2, &size2);
+            memset(dataPtr1, 0, sizeof(CSAMPLE) * size1);
+            memset(dataPtr2, 0, sizeof(CSAMPLE) * size2);
+            m_outputFifo->releaseWriteRegions(writeCount);
         }
         if (m_inputParams.channelCount) {
             m_inputFifo = new FIFO<CSAMPLE>(
                     m_inputParams.channelCount * m_framesPerBuffer * kFifoSize);
-            // Clear first two 1.5 chunks (see above)
-            m_inputFifo->releaseWriteRegions(
-                    m_inputParams.channelCount * m_framesPerBuffer * kFifoSize
-                            / 2);
+            // Clear first 1.5 chunks (see above)
+            int writeCount = m_inputParams.channelCount * m_framesPerBuffer *
+                    kFifoSize / 2;
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            (void)m_inputFifo->aquireWriteRegions(writeCount, &dataPtr1,
+                    &size1, &dataPtr2, &size2);
+            memset(dataPtr1, 0, sizeof(CSAMPLE) * size1);
+            memset(dataPtr2, 0, sizeof(CSAMPLE) * size2);
+            m_inputFifo->releaseWriteRegions(writeCount);
         }
     } else if (m_syncBuffers == 1) { // "Disabled (short delay)"
         // this can be used on a second device when it is driven by the Clock
