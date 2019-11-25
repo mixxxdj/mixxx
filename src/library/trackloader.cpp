@@ -48,7 +48,8 @@ void TrackLoader::invokeSlotLoadTrack(
             "slotLoadTrack"
 #else
             [this, trackRef = std::move(trackRef)] {
-                this->slotLoadTrack(std::move(trackRef));
+                this->slotLoadTrack(
+                        std::forward<decltype(trackRef)>(trackRef));
             }
 #endif
             , connectionType
