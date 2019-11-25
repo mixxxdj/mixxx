@@ -104,7 +104,7 @@
                     <ObjectName>Sampler4_Singleton</ObjectName>
                   </SingletonContainer>
 
-                  <WidgetGroup><Size>21f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
                   <Template src="skin:sampler.xml">
                     <SetVariable name="samplernum">7</SetVariable>
