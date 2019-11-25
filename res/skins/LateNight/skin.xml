@@ -21,8 +21,6 @@
   Share Alike - If you alter, transform, or build upon this work, you may distribute
   the resulting work only under the same or similar license to this one.
 
-  See CHANGELOG.txt for the list of changes.
-
   TODO: Remove "persist" attributes throughout the skin and confirm that declaring
   them in the attributes section instead works.
   -->
@@ -32,7 +30,7 @@
   <manifest>
     <title>LateNight</title>
     <author>owilliams</author>
-    <version>2.1.0.01</version>
+    <version>2.3.0.01</version>
     <description>A nighttime-compatible skin</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>

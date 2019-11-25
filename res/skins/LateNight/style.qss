@@ -1,9 +1,9 @@
-/* LateNight 2.1 */
+/* LateNight 2.3 */
 
 /************** font settings ************************/
 #Mixxx, WWidget,
-WLabel, QLabel,
-WPushButton, QPushButton,
+WLabel, Wlibrary QLabel,
+WPushButton, Wlibrary QPushButton,
 WEffect, WEffectSelector,
 WBeatSpinBox,
 QSpinBox {
@@ -22,10 +22,10 @@ QSpinBox {
 WBeatSpinBox,
 QSpinBox,
 /* Hotcue labels in the overview */
-WOverview,
-/* Edit label and pushbuttons in the hotcue label edit dialog */
+WOverview
+/* Edit label and pushbuttons in the hotcue label edit dialog
 WOverview QLabel,
-WOverview QPushButton {
+WOverview QPushButton */ {
   font-family: "Open Sans";
   text-transform: none;
   font-weight: normal;
@@ -36,12 +36,13 @@ WOverview {
   color: green;
   background-color: blue;
 }
-/* has no effect, use
+/* Those styles affect the labels in the overview cue menu and its child dialogs.
+  To style the overview cue labels use this
   <LabelFontSize>
   <LabelTextColor>
   <LabelBackgroundColor>
   in deck_overview.xml instead.
-  See https://github.com/mixxxdj/mixxx/pull/2238/files#diff-63372b146329ec67669d336bc0decfdaR100 */
+  See https://github.com/mixxxdj/mixxx/pull/2238/files#diff-63372b146329ec67669d336bc0decfdaR100
 WOverview QLabel {
   font-weight: bold;
   font-size: 12px;
@@ -52,7 +53,7 @@ WOverview QLabel:hover {
   font-size: 12px;
   color: green;
   background-color: blue;
-}
+} */
 
 QToolTip {
   font-family: Ubuntu;
@@ -63,7 +64,7 @@ QToolTip {
   border-radius: 2px;
 }
 
-WPushButton, QPushButton,
+WPushButton, Wlibrary QPushButton,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px/12px;
@@ -925,7 +926,7 @@ WOverview {
   font-family: "Open Sans";
 }
 
-QLabel, QRadioButton,
+Wlibrary QLabel, Wlibrary QRadioButton,
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
