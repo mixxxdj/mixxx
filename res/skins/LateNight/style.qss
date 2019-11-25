@@ -1273,6 +1273,7 @@ WBeatSpinBox,
   selection-color: #000;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
+  font-weight: bold;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
