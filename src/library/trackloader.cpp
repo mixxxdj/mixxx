@@ -47,7 +47,7 @@ void TrackLoader::invokeSlotLoadTrack(
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
             "slotLoadTrack"
 #else
-            [this, trackRef] {
+            [this, trackRef = std::move(trackRef)] {
                 this->slotLoadTrack(std::move(trackRef));
             }
 #endif
