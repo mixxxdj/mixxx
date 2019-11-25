@@ -8,7 +8,7 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <ObjectName>MetaKnob</ObjectName>
+    <ObjectName>FxMetaKnob</ObjectName>
     <SizePolicy>f,max</SizePolicy>
     <Children>
       <KnobComposed>

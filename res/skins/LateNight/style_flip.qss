@@ -49,32 +49,6 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
   border-bottom-right-radius: 0px;
 }
 
-WEffectSelector {
-  border-width: 2px 2px 2px 2px;
-  border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
-}
-
-#LibraryContainer {
-  /* make a smooth transition from toolbar at the bottom to
-    darker skin background at the top.
-    Splitter handles should be translucent for this to work. */
-  background-color: qlineargradient(
-    x1:0, y1:0, x2:0, y2:1,
-    stop:0 #1e1e1d,
-    stop:1 #0f0f0e);
-}
-
-QTreeView, QTextBrowser, QTableView,
-WSearchLineEdit, WSearchLineEdit:focus {
-  border-top: 1px solid #000;
-  border-right: 1px solid #222;
-  border-bottom: 1px solid #222;
-  border-left: 1px solid #000;
-  background-color: #050504;
-  alternate-background-color: #0f0f0e;
-  selection-background-color: #5e4507;
-}
-
 #KeyText,
 #DeckMini1 #OverviewBox, #DeckMini2 #OverviewBox,
 #DeckMini3 #OverviewBox, #DeckMini4 #OverviewBox,
@@ -89,46 +63,6 @@ WSearchLineEdit {
   border-top-right-radius: 1px;
 }
 
-#SamplerRow {
-  margin: 0px 3px 5px 2px;
-}
-
-#SamplerDeck {
-  padding: 1px 0px 1px 2px;
-}
-
-#SamplerDeckMini {
-  padding: 1px 0px 0px 1px;
-}
-
-#SamplerExpand {
-  padding: 1px 0px 1px 1px;
-  }
-
-#SamplerText, #SamplerPlay, #SamplerGain,
-#SamplerRowTwo, #SamplerButtonGrid,
-#SamplerVU, #SamplerPfl {
-  background-color: transparent;
-  border: 0px;
-}
-#SamplerButtonGrid {
-  padding: 1px 0px 1px 1px;
-}
-#SamplerHotcues {
-  border: 0px;
-  margin: 0px;
-  padding: 0px;
-}
-#SamplerPfl {
-  padding: 0px 5px 0px 0px;
-}
-#SamplerRateControls {
-  padding: 0px;
-  }
-  #SamplerPitchSlider {
-    padding: 0px 0px 1px 0px;
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  }
 
 #WaveformsBottomBorder, #WaveformsRightBorder {
   background-color: #333;
@@ -142,68 +76,6 @@ WSearchLineEdit {
   padding-bottom: 0px;
 }
 
-#DeckControls {
-  border-width: 1px;
-}
-#RateContainer {
-  padding: 4px 1px 1px 2px;
-  margin: 0px 0px 0px 0px;
-  }
-  #RateControls {
-    margin: 0px;
-  }
-
-#DeckRow_1_KeyVinylFx {
-  padding: 2px 1px 1px 2px;
-  margin: 0px 0px 0px 0px;
-  }
-
-#DeckRows234 {
-  margin: 0px 0px 0px 0px;
-  }
-  #DeckRow_2_3_ArtistTitleTime {
-    margin: 0px 0px 0px 0px;
-    }
-    #ArtistRow {
-      border-width: 0px;
-    }
-    #BigSpinnyCoverContainer {
-      margin: 0px 0px 0px 0px;
-    }
-    #TitleTextSmall,
-    #ArtistTextSmall,
-    #PlayPositionTextSmall,
-    #BpmTextSmall,
-    #KeyTextSmall,
-    #PlayContainerSmall {
-      border-width: 0px;
-    }
-  #DeckRow_4_OverviewSpinny {
-    padding: 0px;
-    margin: 0px 0px 0px 0px;
-    }
-    #DeckRow_4_OverviewSpinny #OverviewBox {
-      margin: 0px 0px 0px 0px;
-    }
-    #DeckControls {
-    }
-    #SmallSpinnyCoverContainer {
-      margin: 0px 0px 0px 0px;
-    }
-    #MiniDeckSpinnyCoverContainer {
-      margin: 0px
-    }
-
-#DeckRow_5_LoopCuesTransport {
-  padding: 2px 1px 1px 2px;
-}
-
-
-#KeyText {
-  border-left: 0px;
-  margin: 0px 0px 1px 0px;
-}
-
 /************ separator lines within decks, samplers etc. *********************/
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
 #PlayContainerSmall,
@@ -214,7 +86,7 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
-/*********** layout margins & paddings ****************************************/
+/*********** common margins & paddings ****************************************/
 #Deck1, #Deck2,
 #Deck3, #Deck4,
 #DeckMini1, #DeckMini2,
@@ -255,59 +127,12 @@ WSearchLineEdit {
   margin-left: 5px;
 }
 
-#FxUnit1, #FxUnit2,
-#FxUnit3, #FxUnit4,
-#FxSlotContainer {
-  border: 0px;
-  background-color: transparent;
-  padding: 0px;
-  }
-  #FxUnitControlsCollapsed {
-    padding: 3px 2px 3px 3px;
-  }
-  #FxUnitControlsExpanded {
-    padding: 2px 1px 2px 2px;
-  }
-  #FxSlotsCollapsed,
-  #FxSlotsExpanded {
-    padding: 2px 0px;
-    }
-    #FxSlotsCollapsed #FxSlotContainer {
-      margin: 0px;
-      padding: 0px;
-      }
-      #FxSlotsCollapsed #FxSlot1,
-      #FxSlotsCollapsed #FxSlot2,
-      #FxSlotsCollapsed #FxSlot3 {
-        padding: 1px 5px 2px 5px;
-      }
-    #FxSlotsExpanded #FxSlotContainer {
-      margin: 0px;
-      padding: 0px;
-      }
-      #FxSlotsExpanded #FxSlot1,
-      #FxSlotsExpanded #FxSlot2,
-      #FxSlotsExpanded #FxSlot3 {
-        padding: 3px 5px 0px 5px;
-      }
-    #FxSlotBorder1[highlight="1"],
-    #FxSlotBorder2[highlight="1"],
-    #FxSlotBorder3[highlight="1"] {
-      border: 1px solid #00ffff;
-      background-color: rgba(0,0,0,180);
-    }
-
-
-
-
-
 /************** Backgrounds, 3D borders & margins *****************************
 ************** of major GUI containers **************************************/
 
 
 
-/************** Button styles *************************************************
-*************** button background colors **************************************/
+/************** Button styles *************************************************/
 /* all buttons are embedded */
 #RateControls WPushButton[value="0"], #SyncButton[value="0"],
 #PflButton[value="0"],
@@ -341,14 +166,6 @@ QPushButton#pushButtonAutoDJ:enabled,
   margin: 3px;
 } */
 
-/* Flat, dark table headers with dimmed text */
-QHeaderView,
-QHeaderView::section,
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
-  background-color: #0f0f0e;
-  color: #999;
-}
 
 #SkinSettingsButton {
   color: #bbb;
@@ -362,6 +179,8 @@ WBeatSpinBox#Spinbox_embedded:focus,
   border-image: url(skin:buttons_classic/spinbox_embedded_border_focus_cyan.svg) 3 19 2 3;
   background-color: #000;
 }
+/*************** button background colors *************************************/
+
 
 
 /************** Label styles **************************************************/
@@ -450,6 +269,73 @@ WTime {
 /************** Label styles **************************************************/
 
 
+
+/************** Decks *********************************************************/
+#RateContainer {
+  padding: 4px 1px 1px 4px;
+  margin: 0px;
+  }
+  #RateControls {
+    margin: 0px;
+  }
+
+#DeckRow_1_KeyVinylFx {
+  padding: 2px 1px 1px 2px;
+  margin: 0px;
+  }
+  #KeyText {
+    border-left: 0px;
+    margin: 0px 0px 1px 0px;
+  }
+#DeckRows234 {
+  margin: 0px;
+  }
+  #DeckRow_2_3_ArtistTitleTime {
+    margin: 0px;
+    }
+    #ArtistRow {
+      border-width: 0px;
+    }
+    #BigSpinnyCoverContainer {
+      margin: 0px;
+    }
+    #TitleTextSmall,
+    #ArtistTextSmall,
+    #PlayPositionTextSmall,
+    #BpmTextSmall,
+    #KeyTextSmall,
+    #PlayContainerSmall {
+      border-width: 0px;
+    }
+  #DeckRow_4_OverviewSpinny {
+    padding: 0px;
+    margin: 0px;
+    }
+    #DeckRow_4_OverviewSpinny #OverviewBox {
+      margin: 0px;
+    }
+    #DeckControls {
+      border-width: 1px;
+    }
+    #SmallSpinnyCoverContainer {
+      margin: 0px;
+    }
+    #MiniDeckSpinnyCoverContainer {
+      margin: 0px 2px 0px 0px;
+    }
+
+#DeckRow_5_LoopCuesTransport {
+  padding: 2px 1px 1px 2px;
+}
+
+#PreviewDeck {
+  margin: 0px 0px 4px 2px;
+}
+
+/************** Decks *********************************************************/
+
+
+
 /************** Mixer *********************************************************/
 #MixerContainer {
   background-color: transparent;
@@ -483,13 +369,126 @@ WTime {
 
 #MasterHeadphoneMixerContainer {
   padding: 0px;
-  margin: 0px 0px 0px 0px;
+  margin: 0px;
   }
   #MasterHeadphoneSeparator {
     /* defines the height of the separator gap */
     padding-top: 0px;
   }
 /************** Mixer *********************************************************/
+
+
+
+/************** Effects ******************************************************/
+#FxUnit1, #FxUnit2,
+#FxUnit3, #FxUnit4,
+#FxSlotContainer {
+  border: 0px;
+  background-color: transparent;
+  padding: 0px;
+  }
+  #FxUnitControlsCollapsed {
+    padding: 3px 2px 3px 3px;
+  }
+  #FxUnitControlsExpanded {
+    padding: 2px 1px 2px 2px;
+  }
+  #FxSlotsCollapsed,
+  #FxSlotsExpanded {
+    padding: 2px 0px;
+    }
+    #FxSlotsCollapsed #FxSlotContainer {
+      margin: 0px;
+      padding: 0px;
+      }
+      #FxSlotsCollapsed #FxSlot1,
+      #FxSlotsCollapsed #FxSlot2,
+      #FxSlotsCollapsed #FxSlot3 {
+        padding: 1px 4px 1px 6px;
+      }
+    #FxSlotsExpanded #FxSlotContainer {
+      margin: 0px;
+      padding: 0px;
+      }
+      #FxSlotsExpanded #FxSlot1,
+      #FxSlotsExpanded #FxSlot2,
+      #FxSlotsExpanded #FxSlot3 {
+        padding: 3px 5px 0px 5px;
+      }
+    #FxSlotsCollapsed #FxSlotBorder3 {
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+    #FxSlotsExpanded #FxSlotBorder1 {
+      border-top-right-radius: 0px;
+    }
+    #FxSlotsExpanded #FxSlotBorder3 {
+      border-bottom-right-radius: 0px;
+    }
+    #FxSlotBorder1[highlight="1"],
+    #FxSlotBorder2[highlight="1"],
+    #FxSlotBorder3[highlight="1"] {
+      border: 1px solid #00ffff;
+      background-color: rgba(0,0,0,180);
+    }
+
+#FxMetaKnob {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 3px 4px 2px 4px;
+}
+
+WEffectSelector {
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
+}
+
+/************** Effects ******************************************************/
+
+
+
+/************** Samplers ******************************************************/
+#SamplerRow {
+  margin: 0px 3px 5px 2px;
+}
+
+#SamplerDeck {
+  padding: 1px 0px 1px 2px;
+}
+
+#SamplerDeckMini {
+  padding: 1px 0px 0px 1px;
+}
+
+#SamplerExpand {
+  padding: 1px 0px 1px 1px;
+  }
+
+#SamplerText, #SamplerPlay, #SamplerGain,
+#SamplerRowTwo, #SamplerButtonGrid,
+#SamplerVU, #SamplerPfl {
+  background-color: transparent;
+  border: 0px;
+}
+#SamplerButtonGrid {
+  padding: 1px 0px 1px 1px;
+}
+#SamplerHotcues {
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+#SamplerPfl {
+  padding: 0px 5px 0px 0px;
+}
+#SamplerRateControls {
+  padding: 0px;
+  }
+  #SamplerPitchSlider {
+    padding: 0px 0px 1px 0px;
+    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  }
+
+/************** Samplers ******************************************************/
 
 
 
@@ -512,6 +511,7 @@ WTime {
 
   #MicAuxSubControlsFrame {
     margin: 2px 0px;
+    border-width: 1px 0px 1px 1px;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     }
@@ -525,13 +525,20 @@ WTime {
   margin-left: 3px;
   }
 
-
-
 /************** Mic Aux *******************************************************/
 
 
 
 /************** Library *******************************************************/
+#LibraryContainer {
+  /* make a smooth transition from toolbar at the bottom to
+    darker skin background at the top.
+    Splitter handles should be translucent for this to work. */
+  background-color: qlineargradient(
+    x1:0, y1:0, x2:0, y2:1,
+    stop:0 #1e1e1d,
+    stop:1 #0f0f0e);
+}
 
 WLibrary,
 #SidebarBox {
@@ -549,10 +556,42 @@ WLibrary,
   border-bottom-left-radius: 0px;
 }
 
+QTreeView, QTextBrowser, QTableView,
+WSearchLineEdit, WSearchLineEdit:focus {
+  border-top: 1px solid #000;
+  border-right: 1px solid #222;
+  border-bottom: 1px solid #222;
+  border-left: 1px solid #000;
+  background-color: #050504;
+  alternate-background-color: #0f0f0e;
+  selection-background-color: #5e4507;
+}
+
+/* Flat, dark table headers with dimmed text */
+QHeaderView,
+QHeaderView::section,
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: #0f0f0e;
+  color: #999;
+}
 
 QTableView:focus,
 QTreeView:focus,
 WSearchLineEdit:focus {
   border-color: #00ffff;
 }
+
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  width: 13px;
+}
+QHeaderView::up-arrow {
+  image: url(skin:/buttons_classic/btn__lib_sort_up.svg);
+  }
+QHeaderView::down-arrow {
+  image: url(skin:/buttons_classic/btn__lib_sort_down.svg);
+}
+
+
 /************** Library *******************************************************/

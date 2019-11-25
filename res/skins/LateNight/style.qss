@@ -1538,9 +1538,9 @@ WBeatSpinBox,
   }
 
 #PreviewPlayBox {
-  padding: 2px;
+  padding: 0px;
   margin-right: 1px;
-  border-width: 1px 0px 0px 0px;
+  border-width: 0px;
 }
 
 #PreviewVuMeter {
@@ -1633,7 +1633,7 @@ WBeatSpinBox,
         margin: 0px 0px 2px 1px;
       }
       #MicAuxPlayButtonBox {
-        margin: 0px 1px 2px 1px;
+        margin: 0px 0px 2px 1px;
       }
 
   #MicAuxSubControlsFrame {
@@ -1862,7 +1862,7 @@ WBeatSpinBox,
   padding: 0px 0px 0px 4px;
 }
 
-#MetaKnob {
+#FxMetaKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 1px 4px 2px 4px;
 }
@@ -2204,10 +2204,10 @@ QHeaderView {
     border-right: 1px solid #000;
     }
     QHeaderView::up-arrow {
-      image: url(skin:/style_classic/btn__lib_sort_up.png);
+      image: url(skin:/buttons_classic/btn__lib_sort_up.png);
       }
     QHeaderView::down-arrow {
-      image: url(skin:/style_classic/btn__lib_sort_down.png);
+      image: url(skin:/buttons_classic/btn__lib_sort_down.png);
     }
 
 
