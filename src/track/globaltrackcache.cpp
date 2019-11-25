@@ -256,7 +256,7 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
                 "evictAndSave"
 #else
-                [cacheEntryPtr = std::move(cacheEntryPtr)]() {
+                [cacheEntryPtr = std::move(cacheEntryPtr)] {
                     s_pInstance->evictAndSave(std::move(cacheEntryPtr));
                 }
 #endif
