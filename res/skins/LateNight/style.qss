@@ -5,8 +5,8 @@
 }
 
 #Mixxx, WWidget,
-WLabel, QLabel,
-WPushButton, QPushButton,
+WLabel, WLibrary QLabel,
+WPushButton, WLibrary QPushButton,
 WEffect, WEffectSelector, #fadeModeCombobox,
 WBeatSpinBox,
 QSpinBox {
@@ -25,20 +25,16 @@ QSpinBox {
 WBeatSpinBox,
 QSpinBox,
 /* Hotcue labels in the overview */
-WOverview,
-/* Edit label and pushbuttons in the hotcue label edit dialog */
+WOverview
+/* Edit label and pushbuttons in the hotcue label edit dialog
 WOverview QLabel,
-WOverview QPushButton {
+WOverview QPushButton */ {
   font-family: "Open Sans";
   text-transform: none;
 }
-WOverview QLabel,
-WOverview QPushButton {
-  font-weight: normal;
-}
 
 WPushButton,
-QPushButton,
+WLibrary QPushButton,
 WLibrary QLabel,
 WSearchLineEdit {
   font-size: 12px/12px;
@@ -477,7 +473,7 @@ WBeatSpinBox, #DlgAutoDJ QSpinBox,
 QTableView::indicator,
 WLabel#CategoryLabel, #SkinSettingsLabelButton,
 #LatencyLabel, WTime,
-QLabel, QRadioButton,
+WLibrary QLabel, QRadioButton,
 QToolTip,
 QMenu,
 QMenu::item,

@@ -809,17 +809,17 @@ QAbstractScrollArea::corner {
 }
 
 WWidget,
-QLabel,
-QPushButton {
+WLibrary QLabel,
+WLibrary QPushButton {
   font-family: "Open Sans";
   font-size: 12px;
   text-transform: uppercase;
 }
 
 /* This affects the labels for cue points. */
-WOverview,
-/* This is for the label in the edit dialog */
-WOverview QLabel {
+WOverview
+/* This is for the label in the edit dialog
+WOverview QLabel */ {
   text-transform: none;
 }
 
