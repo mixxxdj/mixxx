@@ -288,8 +288,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             ring_buffer_size_t size2;
             (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                     &size1, &dataPtr2, &size2);
-            memset(dataPtr1, 0, sizeof(CSAMPLE) * size1);
-            memset(dataPtr2, 0, sizeof(CSAMPLE) * size2);
+            SampleUtil::clear(dataPtr1, size1);
+            SampleUtil::clear(dataPtr2, size2);
             m_outputFifo->releaseWriteRegions(writeCount);
         }
         if (m_inputParams.channelCount) {
@@ -304,8 +304,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             ring_buffer_size_t size2;
             (void)m_inputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                     &size1, &dataPtr2, &size2);
-            memset(dataPtr1, 0, sizeof(CSAMPLE) * size1);
-            memset(dataPtr2, 0, sizeof(CSAMPLE) * size2);
+            SampleUtil::clear(dataPtr1, size1);
+            SampleUtil::clear(dataPtr2, size2);
             m_inputFifo->releaseWriteRegions(writeCount);
         }
     } else if (m_syncBuffers == 1) { // "Disabled (short delay)"
