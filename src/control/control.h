@@ -57,6 +57,7 @@ class ControlDoublePrivate : public QObject {
             bool bTrack = false,
             bool bPersist = false,
             double defaultValue = 0.0);
+    static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
     // Returns a list of all existing instances.
     static QList<QSharedPointer<ControlDoublePrivate>> getAllInstances();
@@ -159,6 +160,7 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
+    ControlDoublePrivate();
     ControlDoublePrivate(
             const ConfigKey& key,
             ControlObject* pCreatorCO,
@@ -220,6 +222,8 @@ class ControlDoublePrivate : public QObject {
     // Hash of aliases between ConfigKeys. Solely used for looking up the first
     // alias associated with a key.
     static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
+    // is used instead of a nullptr, helps to omit null checks everywhere
+    static QWeakPointer<ControlDoublePrivate> s_defaultCO;
 
     // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
     static MMutex s_qCOHashMutex;

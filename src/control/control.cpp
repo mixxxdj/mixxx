@@ -18,6 +18,21 @@ QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
 //static
 MMutex ControlDoublePrivate::s_qCOHashMutex;
 
+//static
+QWeakPointer<ControlDoublePrivate> ControlDoublePrivate::s_defaultCO;
+
+ControlDoublePrivate::ControlDoublePrivate()
+        : m_pCreatorCO(nullptr),
+          m_bPersistInConfiguration(false),
+          m_bIgnoreNops(true),
+          m_bTrack(false),
+          m_trackType(Stat::UNSPECIFIED),
+          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+                  Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          // default CO is read only
+          m_confirmRequired(true) {
+}
+
 ControlDoublePrivate::ControlDoublePrivate(
         const ConfigKey& key,
         ControlObject* pCreatorCO,
@@ -152,6 +167,16 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
     }
     return nullptr;
+}
+
+//static
+QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getDefaultControl() {
+    auto defaultCO = QSharedPointer<ControlDoublePrivate>(s_defaultCO);
+    if (!defaultCO) {
+        defaultCO = QSharedPointer<ControlDoublePrivate>(new ControlDoublePrivate());
+        s_defaultCO = defaultCO;
+    }
+    return defaultCO;
 }
 
 // static
