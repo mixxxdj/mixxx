@@ -354,16 +354,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatjump_1_backward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x20</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>rate</key>
                 <status>0xB0</status>
                 <midino>0x20</midino>
@@ -382,46 +372,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatjump_1_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x21</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_2_backward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x22</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_2_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x23</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_4_backward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x24</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>pregain</key>
                 <status>0xB0</status>
                 <midino>0x24</midino>
@@ -436,36 +386,6 @@
                 <midino>0x24</midino>
                 <options>
                     <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_4_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x25</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_8_backward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x26</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_8_forward</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x27</midino>
-                <options>
-                    <normal/>
                 </options>
             </control>
             <control>
@@ -694,6 +614,80 @@
                 </options>
               </control>
 
+            <!-- beat jump deck 1-->
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_1_backward</key>
+                <status>0x97</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_1_forward</key>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_2_backward</key>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_2_forward</key>
+                <status>0x97</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_4_backward</key>
+                <status>0x97</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_4_forward</key>
+                <status>0x97</status>
+                <midino>0x25</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_8_backward</key>
+                <status>0x97</status>
+                <midino>0x26</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_8_forward</key>
+                <status>0x97</status>
+                <midino>0x27</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
             <!-- hotcue deck 2-->
             <control>
                 <group>[Channel2]</group>
@@ -912,7 +906,82 @@
                 <options>
                     <normal/>
                 </options>
+              </control>
+
+            <!-- beat jump deck 2-->
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_1_backward</key>
+                <status>0x99</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
             </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_1_forward</key>
+                <status>0x99</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_2_backward</key>
+                <status>0x99</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_2_forward</key>
+                <status>0x99</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_4_backward</key>
+                <status>0x99</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_4_forward</key>
+                <status>0x99</status>
+                <midino>0x25</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_8_backward</key>
+                <status>0x99</status>
+                <midino>0x26</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_8_forward</key>
+                <status>0x99</status>
+                <midino>0x27</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
         </controls>
         <outputs>
             <output>
