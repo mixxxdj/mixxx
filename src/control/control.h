@@ -134,7 +134,6 @@ class ControlDoublePrivate : public QObject {
     }
     void deleteCreatorCO();
 
-
     inline const ConfigKey& getKey() {
         return m_key;
     }
