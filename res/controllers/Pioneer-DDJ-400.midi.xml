@@ -290,9 +290,27 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <status>0x91</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>loop_out</key>
                 <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <status>0x91</status>
                 <midino>0x11</midino>
                 <options>
                     <normal/>
@@ -515,6 +533,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>reloop_toggle</key>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>sync_enabled</key>
                 <status>0x90</status>
@@ -536,6 +563,15 @@
                 <group>[Channel1]</group>
                 <key>sync_master</key>
                 <status>0x90</status>
+                <midino>0x5C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_master</key>
+                <status>0x91</status>
                 <midino>0x5C</midino>
                 <options>
                     <normal/>
@@ -980,7 +1016,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control>
+              </control>
 
         </controls>
         <outputs>
@@ -1287,6 +1323,93 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
+
+            <!-- LOOP IN Ch1 9010 Ch2 9110 -->
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <status>0x91</status>
+                <midino>0x10</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+
+            <!-- LOOP OUT 9011 Ch2 9111 -->
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <status>0x91</status>
+                <midino>0x11</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+
+            <!-- RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150 -->
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_start_position</key>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_start_position</key>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <status>0x91</status>
+                <midino>0x50</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+
         </outputs>
     </controller>
 </MixxxControllerPreset>
