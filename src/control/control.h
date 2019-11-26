@@ -37,7 +37,7 @@ class ControlDoublePrivate : public QObject {
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
     // using this UserSettings.
-    static void setUserConfig(UserSettingsPointer pConfig) {
+    static void setUserConfig(const UserSettingsPointer& pConfig) {
         s_pUserConfig = pConfig;
     }
 
