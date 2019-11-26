@@ -14,6 +14,7 @@
 * Pioneer DDJ-SX: fix delayed sending of MIDI messages with low audio buffer sizes #2326
 * Enable modplug support on Linux by default lp:1840537 #2244 #2272
 * Fix keyboard shortcut for View > Skin Preferences lp:1851993 #2358 #2372
+* Reloop Terminal Mix: Fix mapping of sampler buttons 5-8 lp:1846966 #2330
 
 ==== 2.2.2 2019-08-10 ====
 
