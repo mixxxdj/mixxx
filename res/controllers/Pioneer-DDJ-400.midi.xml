@@ -1018,6 +1018,27 @@
                 </options>
               </control>
 
+            <control>
+                <description>CUE Channel - press - toggle Headphone Cue</description>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <description>CUE Channel - press - toggle Headphone Cue</description>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x91</status>
+                <midino>0x54</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
         </controls>
         <outputs>
             <output>
@@ -1406,6 +1427,24 @@
                 <key>loop_enabled</key>
                 <status>0x91</status>
                 <midino>0x50</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+
+            <!-- headphone cue -->
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x91</status>
+                <midino>0x54</midino>
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
