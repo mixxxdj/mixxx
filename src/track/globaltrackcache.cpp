@@ -1,7 +1,5 @@
 #include "track/globaltrackcache.h"
 
-#include <utility>
-
 #include <QApplication>
 #include <QThread>
 
@@ -259,8 +257,7 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
                 "evictAndSave"
 #else
                 [cacheEntryPtr = std::move(cacheEntryPtr)] {
-                    s_pInstance->evictAndSave(
-                            std::forward<decltype(cacheEntryPtr)>(cacheEntryPtr));
+                    s_pInstance->evictAndSave(cacheEntryPtr);
                 }
 #endif
                 // Qt will choose either a direct or a queued connection

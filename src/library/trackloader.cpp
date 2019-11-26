@@ -1,7 +1,5 @@
 #include "library/trackloader.h"
 
-#include <utility>
-
 #include <QMetaMethod>
 #include <QThread>
 
@@ -50,8 +48,7 @@ void TrackLoader::invokeSlotLoadTrack(
             "slotLoadTrack"
 #else
             [this, trackRef = std::move(trackRef)] {
-                this->slotLoadTrack(
-                        std::forward<decltype(trackRef)>(trackRef));
+                this->slotLoadTrack(trackRef);
             }
 #endif
             , connectionType
