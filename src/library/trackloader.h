@@ -11,7 +11,8 @@ class TrackCollectionManager;
 namespace mixxx {
 
 // Loads tracks thread-safe and asynchronously from the local collection.
-// Must be located in the same thread where TrackCollectionManager lives!
+// Is moved into the thread of TrackCollectionManager during construction
+// and must remain there!
 class TrackLoader: public QObject {
     Q_OBJECT
 
