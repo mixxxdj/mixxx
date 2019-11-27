@@ -2,8 +2,8 @@
 
 /************** font settings ************************/
 #Mixxx, WWidget,
-WLabel, Wlibrary QLabel,
-WPushButton, Wlibrary QPushButton,
+WLabel, WLibrary QLabel,
+WPushButton, WLibrary QPushButton,
 WEffect, WEffectSelector,
 WBeatSpinBox,
 QSpinBox {
@@ -64,7 +64,7 @@ QToolTip {
   border-radius: 2px;
 }
 
-WPushButton, Wlibrary QPushButton,
+WPushButton, WLibrary QPushButton,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px/12px;
@@ -426,7 +426,12 @@ WEffectSelector {
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"],
 #MicDuckingButton[value="0"],
 #PlayButtonPreview[displayValue="0"],
-QPushButton#pushButtonAutoDJ:enabled,
+QPushButton#pushButtonAutoDJ:enabled:!checked,
+#DlgMissing > QPushButton:enabled,
+#DlgHidden > QPushButton:enabled,
+#DlgAutoDJ > QPushButton:enabled,
+#DlgRecording > QPushButton:enabled,
+#DlgAnalysis > QPushButton:enabled,
 #BeatgridButtonsToggle, #BeatgridButtons WPushButton[displayValue="0"],
 #DeckRow_1_KeyVinylFx WPushButton[displayValue="0"],
 #VinylTristateButton[displayValue="1"], #VinylTristateButton[displayValue="2"],
@@ -689,19 +694,14 @@ QPushButton#pushButtonAutoDJ:checked,
   }
 
 #PlayButtonSampler[value="0"],
-#PlayButtonDeckMini[value="0"] {
+#PlayButtonDeckMini[value="0"],
+#PlayButtonPreview[displayValue="0"] {
   image: url(skin:/buttons_classic/btn__play_sampler.svg) no-repeat center center;
   }
   #PlayButtonSampler[value="1"],
-  #PlayButtonDeckMini[value="1"] {
-    image: url(skin:/buttons_classic/btn__pause_sampler.svg) no-repeat center center;
-  }
-
-#PlayButtonPreview[displayValue="0"] {
-  image: url(skin:/buttons_classic/btn__play_preview.svg) no-repeat center center;
-  }
+  #PlayButtonDeckMini[value="1"],
   #PlayButtonPreview[displayValue="1"] {
-    image: url(skin:/buttons_classic/btn__pause_preview.svg) no-repeat center center;
+    image: url(skin:/buttons_classic/btn__pause_sampler.svg) no-repeat center center;
   }
 
 #MixModeButton[value="0"] {
@@ -926,11 +926,12 @@ WOverview {
   font-family: "Open Sans";
 }
 
-Wlibrary QLabel, Wlibrary QRadioButton,
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
-QTableView, QTextBrowser, QTreeView {
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView {
   color: #eece33;
   selection-color: #eece33;
 }
@@ -938,17 +939,18 @@ QTableView, QTextBrowser, QTreeView {
 /* gold */
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckMini1 WLabel, #DeckMini2 WLabel,
-#PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
-#FxUnitLabel, #MicAuxSubTitle,
-#SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
-QToolTip,
-#Deck1 WStarRating, #Deck2 WStarRating,
 #Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
-QTableView::indicator,
+#Deck1 WStarRating, #Deck2 WStarRating,
+#SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
+#FxUnitLabel, #MicAuxSubTitle,
 WEffectSelector, WEffectSelector QAbstractItemView,
+#PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 #CategoryLabel, #SkinSettingsLabelButton,
+WLibrary QLabel, WLibrary QRadioButton,
+WLibrary QTableView::indicator,
 WSearchLineEdit,
+QToolTip,
 #LatencyLabel, WTime {
   color: #f0bb2b;
 }
@@ -961,12 +963,12 @@ WSearchLineEdit,
   color: #0bd9d1;
 }
 
-#PreviewLabel,
-#FxUnitLabel,
-#MicAuxSubTitle,
-#SamplerTitleSmall,
 #Deck1 WLabel, #Deck2 WLabel,
 #Deck3 WLabel, #Deck4 WLabel,
+#FxUnitLabel,
+#SamplerTitleSmall,
+#MicAuxSubTitle,
+#PreviewLabel,
 WSearchLineEdit,
 #LatencyLabel,
 WTime {
@@ -2351,7 +2353,7 @@ WLibrary QLabel {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/buttons_classic/btn__lib_radio_button_on.svg) center center;
+  background: url(skin:/buttons_classic/btn__lib_radio_button_on_yellow.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
