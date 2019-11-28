@@ -2073,6 +2073,7 @@ WEffectSelector QAbstractItemView,
 QToolTip,
 #LibraryContainer QMenu,
 WCoverArt QMenu,
+WSpinny QMenu,
 WOverview QMenu,
 #SkinSettings {
   padding: 3px;
@@ -2083,12 +2084,15 @@ WOverview QMenu,
 QToolTip,
 #LibraryContainer QMenu,
 WCoverArt QMenu,
+WSpinny QMenu,
 WOverview QMenu,
 #LibraryContainer QMenu::item,
 WCoverArt QMenu::item,
+WSpinny QMenu::item,
 WOverview QMenu::item,
 #LibraryContainer QMenu QCheckBox,
 WCoverArt QMenu QCheckBox,
+WSpinny QMenu QCheckBox,
 WOverview QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition,
@@ -2111,15 +2115,19 @@ WEffectSelector, WEffectSelector QAbstractItemView,
   #fadeModeCombobox::item:selected,
   #LibraryContainer QMenu::item:selected,
   WCoverArt QMenu::item:selected,
+  WSpinny QMenu::item:selected,
   WOverview QMenu::item:selected,
   #LibraryContainer QMenu QCheckBox:selected,
   WCoverArt QMenu QCheckBox:selected,
+  WSpinny QMenu QCheckBox:selected,
   WOverview QMenu QCheckBox:selected,
   #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
   WCoverArt QMenu QCheckBox:focus,
+  WSpinny QMenu QCheckBox:focus,
   WOverview QMenu QCheckBox:focus,
   #LibraryContainer QMenu QCheckBox:hover, /* mouse hover */
   WCoverArt QMenu QCheckBox:hover,
+  WSpinny QMenu QCheckBox:hover,
   WOverview QMenu QCheckBox:hover,
   #SkinSettingsButton:hover,
   #SkinSettingsLabelButton:hover {
@@ -2188,9 +2196,11 @@ WEffectSelector,
   #fadeModeCombobox::indicator:!checked,
   #LibraryContainer QMenu::item,
   WCoverArt QMenu::item,
+  WSpinny QMenu::item,
   WOverview QMenu::item,
   #LibraryContainer QMenu QCheckBox,
   WCoverArt QMenu QCheckBox,
+  WSpinny QMenu QCheckBox,
   WOverview QMenu QCheckBox {
     padding: 0px;
     margin: 0px;
@@ -2200,6 +2210,7 @@ WEffectSelector,
     }
   #LibraryContainer QMenu::separator,
   WCoverArt QMenu::separator,
+  WSpinny QMenu::separator,
   WOverview QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
@@ -2207,6 +2218,7 @@ WEffectSelector,
     }
     #LibraryContainer QMenu::separator,
     WCoverArt QMenu::separator,
+    WSpinny QMenu::separator,
     WOverview QMenu::separator {
       height: 0px;
       margin: 4px;
@@ -2216,6 +2228,7 @@ WEffectSelector,
     }
   #LibraryContainer QMenu::item,
   WCoverArt QMenu::item,
+  WSpinny QMenu::item,
   WOverview QMenu::item {
     /* right padding creates a margin to the menu expand arrow,
       left padding should be bigger than menu icon width + menu icon
@@ -2226,22 +2239,27 @@ WEffectSelector,
     and color squares in cue color menu */ 
   #LibraryContainer QMenu::icon,
   WCoverArt QMenu::icon,
+  WSpinny QMenu::icon,
   WOverview QMenu::icon,
   #LibraryContainer QMenu::indicator,
   WCoverArt QMenu::indicator,
+  WSpinny QMenu::indicator,
   WOverview QMenu::indicator {
     margin: 0px 4px 0px 2px;
   }
   #LibraryContainer QMenu QCheckBox,
   WCoverArt QMenu QCheckBox,
+  WSpinny QMenu QCheckBox,
   WOverview QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
   }
   #LibraryContainer QMenu QCheckBox::indicator,
   WCoverArt QMenu QCheckBox::indicator,
+  WSpinny QMenu QCheckBox::indicator,
   WOverview QMenu QCheckBox::indicator,
   #LibraryContainer QMenu::indicator,
   WCoverArt QMenu::indicator,
+  WSpinny QMenu::indicator,
   WOverview QMenu::indicator {
     width: 13px;
     height: 13px;
@@ -2253,32 +2271,39 @@ WEffectSelector,
     }
   #LibraryContainer QMenu QCheckBox::indicator:checked,
   WCoverArt QMenu QCheckBox::indicator:checked,
+  WSpinny QMenu QCheckBox::indicator:checked,
   WOverview QMenu QCheckBox::indicator:checked,
   #LibraryContainer QMenu::indicator:checked,
   WCoverArt QMenu::indicator:checked,
+  WSpinny QMenu::indicator:checked,
   WOverview QMenu::indicator:checked {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
   /* disabled menu item and checkbox */
   #LibraryContainer QMenu QCheckBox:!enabled,
   WCoverArt QMenu QCheckBox:!enabled,
+  WSpinny QMenu QCheckBox:!enabled,
   WOverview QMenu QCheckBox:!enabled,
   #LibraryContainer QMenu::item:!enabled,
   WCoverArt QMenu::item:!enabled,
+  WSpinny QMenu::item:!enabled,
   WOverview QMenu::item:!enabled,
   #LibraryContainer QMenu QCheckBox::indicator:!enabled,
   WCoverArt QMenu QCheckBox::indicator:!enabled,
+  WSpinny QMenu QCheckBox::indicator:!enabled,
   WOverview QMenu QCheckBox::indicator:!enabled {
     color: #494949;
     }
   #LibraryContainer QMenu QCheckBox::indicator:!enabled:!checked,
   WCoverArt QMenu QCheckBox::indicator:!enabled:!checked,
+  WSpinny QMenu QCheckBox::indicator:!enabled:!checked,
   WOverview QMenu QCheckBox::indicator:!enabled:!checked {
     border: 1px solid #222;
     background-color: #222;
     }
   #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
   WCoverArt QMenu QCheckBox::indicator:!enabled:checked,
+  WSpinny QMenu QCheckBox::indicator:!enabled:checked,
   WOverview QMenu QCheckBox::indicator:!enabled:checked {
     image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
     border: 1px solid #222;
@@ -2286,15 +2311,18 @@ WEffectSelector,
     }
   #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
   WCoverArt QMenu QCheckBox::indicator:indeterminate,
+  WSpinny QMenu QCheckBox::indicator:indeterminate,
   WOverview QMenu QCheckBox::indicator:indeterminate,
   #LibraryContainer QCheckBox::indicator:indeterminate:!enabled,
   WCoverArt QCheckBox::indicator:indeterminate:!enabled,
+  WSpinny QCheckBox::indicator:indeterminate:!enabled,
   WOverview QCheckBox::indicator:indeterminate:!enabled {
     image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
     }
 
   #LibraryContainer QMenu::right-arrow,
   WCoverArt QMenu::right-arrow,
+  WSpinny QMenu::right-arrow,
   WOverview QMenu::right-arrow {
     width: 10px;
     height: 10px;
@@ -2302,6 +2330,7 @@ WEffectSelector,
     }
   #LibraryContainer QMenu::right-arrow:selected,
   WCoverArt QMenu::right-arrow:selected,
+  WSpinny QMenu::right-arrow:selected,
   WOverview QMenu::right-arrow:selected {
       image: url(skin:/style/menu_arrow_selected.svg);
     }
