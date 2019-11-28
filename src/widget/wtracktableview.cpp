@@ -699,12 +699,11 @@ void WTrackTableView::slotRemoveFromDisk() {
     QAbstractButton* pNO  = (QAbstractButton*)msgBox.addButton(QMessageBox::No);
     QCheckBox alsoHide(QObject::tr("Also hide track in library"), &msgBox);
     alsoHide.blockSignals(true);
+    // Note ronso0 Set checked by default because that is what I usually need
+    alsoHide.setCheckState(Qt::Checked);
     msgBox.addButton(&alsoHide, QMessageBox::ActionRole);
 
-    if (QMessageBox::Yes == msgBox.exec())
-    {
-
-
+    if (QMessageBox::Yes == msgBox.exec()) {
         QModelIndexList indices = selectionModel()->selectedRows();
 
         for (const QModelIndex& index : indices) {
@@ -714,10 +713,7 @@ void WTrackTableView::slotRemoveFromDisk() {
             QString  filenameWithPath = trackModel->getTrackLocation(index);
             QFile file (filenameWithPath);
             file.remove();
-
-        }
-        if( alsoHide.checkState() == Qt::Checked )
-        {
+        } if( alsoHide.checkState() == Qt::Checked ) {
             trackModel->hideTracks(indices);
         }
     }
