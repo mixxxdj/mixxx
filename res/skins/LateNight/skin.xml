@@ -134,10 +134,11 @@
             artist/title, therefore the containers are 1px taller than 1:1 -->
       <SetVariable name="SmallSpinnySize">55f,56f</SetVariable>
       <!--  Big spinnies are borderless = 1:1, borders are created by separator_*.xml
-            Size spinnies to force-expand decks to match the mixer's max height in order
-            to avoid the decks expand vertically when the mixer is shown (would screw up
-            the layout) -->
-      <SetVariable name="BigSpinnySize">109f,109f</SetVariable>
+            Size spinnies so they force-expand the decks to match the mixer's max height
+            in order to avoid the decks expand vertically when the mixer is shown
+            (would screw up the layout).
+            +1px margin-bottom -->
+      <SetVariable name="BigSpinnySize">107f,108f</SetVariable>
       <!--  In small decks there's 2px margin-right before overview -->
       <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
 

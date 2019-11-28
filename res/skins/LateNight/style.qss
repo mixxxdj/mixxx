@@ -87,8 +87,7 @@ WPushButton, WLibrary QPushButton,
 #SkinContainer,
 QToolTip,
 #CrossfaderButtonContainerDeck, #CrossfaderButtonContainerAux,
-#CrossfaderButton[value="0"], /*
-WBeatSpinBox, #DlgAutoDJ QSpinBox, #LibraryBPMSpinBox,  */
+#CrossfaderButton[value="0"],
 WEffectSelector, WEffectSelector QAbstractItemView,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 QTableView, QTextBrowser, QTreeView {
@@ -1104,6 +1103,7 @@ WTime {
 
 #BigSpinnyCoverContainer {
   border-width: 0px;
+  margin-bottom: 1px;
 }
 #SmallSpinnyCoverContainer {
   border-width: 1px 0px 0px 0px;
