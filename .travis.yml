@@ -54,6 +54,10 @@ addons:
       - qtscript5-dev
       - qt5keychain-dev
       - scons
+      - python3
+      - python3-pip
+      - python3-pyqt5
+      - python3-setuptools
   homebrew:
     update: true
     packages:
@@ -81,6 +85,9 @@ addons:
       - sound-touch
       - taglib
       - wavpack
+
+before_install:
+  - pip3 install tinycss
 
 install:
   # Build flags common to OS X and Linux.
@@ -120,6 +127,7 @@ script:
   # lldb doesn't provide an easy way to exit 1 on error:
   # https://bugs.llvm.org/show_bug.cgi?id=27326
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/qsscheck.py . ; fi
 
 notifications:
   webhooks:
