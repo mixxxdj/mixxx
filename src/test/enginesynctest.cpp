@@ -668,6 +668,7 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
     // Set the deck to follower.
+    // As above, use direct call to avoid advancing beat distance.
     m_pEngineSync->requestEnableSync(m_pEngineSync->getSyncableForGroup(m_sGroup1), true);
 
     // That first deck is now master
@@ -1307,27 +1308,42 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
                             ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
+    pFileBpm1->set(130.0);
+    ASSERT_EQ(130.0, m_pEngineSync->getSyncableForGroup(m_sGroup1)->getBaseBpm());
+}
+
 TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // If we press play on a sync deck, we will only sync phase to a non-sync
     // deck if there are no sync decks and the non-sync deck is playing.
 
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
-    ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
-    pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    pFileBpm1->set(120.0);
+
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 120, 0.0);
     m_pTrack1->setBeats(pBeats1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
 
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
-    ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(8820,
+                                                    EngineBuffer::SEEK_EXACT);
+    m_pChannel2->getEngineBuffer()->queueNewPlaypos(42336,
+                                                    EngineBuffer::SEEK_EXACT);
+    // Process a buffer to make the seeks happen. Nothing is playing so no advancement.
+    qDebug() << "~~~~~~~~~~~~~~~~initial buffer";
+    ProcessBuffer();
+
     // Set the sync deck playing with nothing else active.
+    qDebug() << "set sync";
     pButtonSyncEnabled1->set(1.0);
     qDebug() << "setting play";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
@@ -1337,24 +1353,30 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    EXPECT_FLOAT_EQ(0.8, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
     EXPECT_FLOAT_EQ(0.8,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                         "beat_distance"))->get());
-     qDebug() << "--------------------";
+     qDebug() << "--------------------setting play";
 
     // Now make the second deck playing and see if it works.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
-    qDebug() << "both playing now-------------------------";
 
+    qDebug() << "both playing now-------------------------";
+    EXPECT_FLOAT_EQ(0.8, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
+
+    // What seems to be happening is a seek is queued when a track is loaded, so all these tracks
+    // seek to 0, thus resetting the beat distance.
     ProcessBuffer();
 
     qDebug() << "buffer processed";
 
     // The exact beat distance will be one buffer past .8, but this is good
     // enough to confirm that it worked.
+    EXPECT_LT(0.8, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
     EXPECT_LT(0.8, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
     EXPECT_LT(0.8, ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                        "beat_distance"))->get());
@@ -1378,7 +1400,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // This will sync to the first deck here and not the second (lp1784185)
     pButtonSyncEnabled3->set(1.0);
     ProcessBuffer();
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
+    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
     // revert that
     ControlObject::set(ConfigKey(m_sGroup3, "rate_ratio"), 1.0);
     ProcessBuffer();

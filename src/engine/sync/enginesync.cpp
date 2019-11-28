@@ -50,6 +50,11 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
             qDebug() << "it's the enabling syncable" << pSyncable->getGroup();
             continue;
         }
+        // This is a string comparison, but this function is not hot.
+        if (!pSyncable->getGroup().contains("Channel")) {
+            qDebug() << "not a primary deck, skipping" << pSyncable->getGroup();
+            continue;
+        }
         if (!pSyncable->isSynchronized()) {
             qDebug() << "not synced" << pSyncable->getGroup();
             continue;

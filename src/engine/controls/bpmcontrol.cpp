@@ -836,7 +836,7 @@ double BpmControl::updateLocalBpm() {
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
-    qDebug() << "updating beat distance" << beat_distance;
+    qDebug() << this->getGroup() << "updating beat distance" << beat_distance;
     m_pThisBeatDistance->set(beat_distance);
     if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);

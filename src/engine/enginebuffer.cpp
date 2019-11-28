@@ -735,6 +735,7 @@ void EngineBuffer::processTrackLocked(
     processSyncRequests();
 
     // Note: This may effects the m_filepos_play, play, scaler and crossfade buffer
+    qDebug() << "processtrack loaded!";
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1178,10 +1179,11 @@ void EngineBuffer::processSeek(bool paused) {
     if (!paused && (seekType & SEEK_PHASE)) {
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
-        qDebug() << "seeking phase!" << position << syncPosition;
+        qDebug() << this->getGroup() << "seeking phase!" << position << syncPosition;
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
+        qDebug() << getGroup() << "seeking to " << position;
         setNewPlaypos(position);
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
