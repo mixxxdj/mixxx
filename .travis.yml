@@ -47,8 +47,6 @@ matrix:
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
       install:
         - scons $COMMON_FLAGS $EXTRA_FLAGS
-      before_script:
-        - export 
       script:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
