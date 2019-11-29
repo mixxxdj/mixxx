@@ -9,14 +9,16 @@ env: COMMON_FLAGS="-j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtu
 
 matrix:
   include:
-    - os: linux
+    - name: qsscheck
+      os: linux
       dist: xenial
       before_install:
         - pip3 install tinycss
       script:
         - ./scripts/qsscheck.py .
 
-    - os: linux
+    - name: Ubuntu/gcc build
+      os: linux
       dist: xenial
       compiler: gcc
       # Ubuntu Xenial build prerequisites
@@ -29,8 +31,8 @@ matrix:
         # https://bugs.launchpad.net/mixxx/+bug/1699689
         - ./mixxx-test
 
-
-    - os: osx
+    - name: OSX/clang build
+      os: osx
       compiler: clang
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
