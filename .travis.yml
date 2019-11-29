@@ -1,5 +1,6 @@
 language: c++
 
+
 # Build flags common to OS X and Linux.
 # Parallel builds are important for avoiding OSX build timeouts.
 # We turn off verbose output to avoid going over the 4MB output limit.
@@ -35,7 +36,6 @@ jobs:
     - name: OSX/clang build
       os: osx
       compiler: clang
-      python: 3.7
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
       # Virtual X (Xvfb) is needed for analyzer waveform tests
