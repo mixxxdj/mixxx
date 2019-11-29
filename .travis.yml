@@ -45,6 +45,7 @@ matrix:
         DISPLAY=:99.0
       before_install:
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
+      - echo "QTDIR=$QTDIR"
       install:
         - scons $COMMON_FLAGS $EXTRA_FLAGS
       script:
