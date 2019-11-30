@@ -351,8 +351,8 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             m_clickTimer.setSingleShot(true);
             m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
 
-            double value = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
-            setControlParameterLeftDown(value);
+            double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+            setControlParameterLeftDown(emitValue);
             m_bPressed = true;
             restyleAndRepaint();
         }
@@ -418,8 +418,8 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
-                double value = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
-                setControlParameterLeftUp(value);
+                double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+                setControlParameterLeftUp(emitValue);
             }
             m_bPressed = false;
         } else if (rightClick) {
