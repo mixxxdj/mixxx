@@ -1446,12 +1446,21 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
+    // Play some buffers with the wheel at 0 to show the sync works
+    qDebug() << "~~~~~~~~play, no adjust";
+    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0);
+    for (int i = 0; i < 10; ++i) {
+        ProcessBuffer();
+    }
+
     // Spin the wheel, causing the useroffset for group1 to get set.
+    qDebug() << "~~~~~~~~play, wheel spinning";
     ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.4);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
     }
     // Play some more buffers with the wheel at 0.
+    qDebug() << "~~~~~~~~play, wheel spun but not spinning any more";
     ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();

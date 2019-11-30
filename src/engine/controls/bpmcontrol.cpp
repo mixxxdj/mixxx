@@ -381,6 +381,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 }
 
 double BpmControl::calcSyncedRate(double userTweak) {
+    m_dUserRateTweak = userTweak;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
     if (m_pLocalBpm->get() != 0.0) {
@@ -446,19 +447,21 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*qDebug() << m_sGroup << m_dUserOffset;
+    qDebug() << m_sGroup << m_dUserOffset.getValue();
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << "error               :" << (shortest_distance - m_dUserOffset);
-    qDebug() << "user offset         :" << m_dUserOffset;*/
+    qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
+    qDebug() << "user offset         :" << m_dUserOffset.getValue();
 
     double adjustment = 1.0;
 
-    if (userTweakingSync) {
-        // Don't do anything else, leave it
-        adjustment = 1.0;
-        m_dUserOffset.setValue(shortest_distance);
-    } else {
+    if (!userTweakingSync) {
+    //     qDebug() << "user is tweaking sync: " << shortest_distance;
+    //     // Don't do anything else, leave it
+    //     adjustment = 1.0;
+    //     // This doesn't work because we don't know what the tweak distance even is yet.
+    //     m_dUserOffset.setValue(shortest_distance);
+    // } else {
         double error = shortest_distance - m_dUserOffset.getValue();
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
@@ -516,7 +519,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     if (dBeatPercentage < 0) ++dBeatPercentage;
     if (dBeatPercentage > 1) --dBeatPercentage;
 
-    return dBeatPercentage - m_dUserOffset.getValue();
+    return dBeatPercentage;//  -m_dUserOffset.getValue();
 }
 
 // static
@@ -807,6 +810,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
+        qDebug() << "reset user tweak (translate match)";
         m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getSampleOfTrack().current);
@@ -836,9 +840,17 @@ double BpmControl::updateLocalBpm() {
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
-    qDebug() << this->getGroup() << "updating beat distance" << beat_distance;
-    m_pThisBeatDistance->set(beat_distance);
+    if (m_dUserRateTweak != 0.0) {
+        double master_percentage = m_dSyncTargetBeatDistance.getValue();
+        double shortest_distance = shortestPercentageChange(
+            master_percentage, beat_distance);
+        qDebug() << getGroup() << "user was tweaking, maybe we should set user offset to ???" << shortest_distance;
+        m_dUserOffset.setValue(shortest_distance);
+    }
+    qDebug() << this->getGroup() << "updating beat distance" << (beat_distance -  m_dUserOffset.getValue()) <<  "offset: "<< m_dUserOffset.getValue();
+    m_pThisBeatDistance->set(beat_distance - m_dUserOffset.getValue());
     if (!isSynchronized()) {
+        qDebug() << getGroup() << "not synced, reset offset";
         m_dUserOffset.setValue(0.0);
     }
     return beat_distance;
@@ -853,6 +865,7 @@ void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
 }
 
 void BpmControl::resetSyncAdjustment() {
+    qDebug() << getGroup() << "resetSyncAdjustment!";
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     m_pThisBeatDistance->set(new_distance);

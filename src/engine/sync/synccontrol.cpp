@@ -111,7 +111,7 @@ SyncMode SyncControl::getSyncMode() const {
 }
 
 void SyncControl::notifySyncModeChanged(SyncMode mode) {
-    //qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
+    qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_pSyncMode->setAndConfirm(mode);
@@ -135,12 +135,14 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
         slotRateChanged();
         m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
         m_pBpm->set(m_pLocalBpm->get() * m_pRateRatio->get());
+        m_pBpmControl->resetSyncAdjustment();
     }
 }
 
 void SyncControl::notifyOnlyPlayingSyncable() {
     // If we are the only remaining playing sync deck, we can reset the user
     // tweak info.
+    qDebug() << "ONLY PLAYING SYNCABLE";
     m_pBpmControl->resetSyncAdjustment();
 }
 

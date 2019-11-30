@@ -361,6 +361,10 @@ void EngineMaster::processChannels(int iBufferSize) {
         }
     }
 
+    // Do internal master sync post-processing before the other
+    // channels.
+    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
+
     // After all the engines have been processed, trigger post-processing
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
@@ -398,8 +402,6 @@ void EngineMaster::process(const int iBufferSize) {
     m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
     // Prepare each channel for output
     processChannels(m_iBufferSize);
-    // Do internal master sync post-processing
-    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix

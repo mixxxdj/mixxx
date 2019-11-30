@@ -1204,7 +1204,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
         // Report our speed to SyncControl.  If we are master, we already did this.
         m_pSyncControl->setLocalBpm(local_bpm);
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
-        m_pSyncControl->setBeatDistance(beat_distance);
+        // This sets our target beat distance to our own beat distance which is crazy.
+
+        // m_pSyncControl->setBeatDistance(beat_distance);
     }
 
     // Update all the indicators that EngineBuffer publishes to allow

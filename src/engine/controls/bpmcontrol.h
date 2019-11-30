@@ -155,6 +155,7 @@ class BpmControl : public EngineControl {
     // used in the engine thread only
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
+    double m_dUserRateTweak;
 
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;

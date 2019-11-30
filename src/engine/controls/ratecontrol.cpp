@@ -467,6 +467,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                     // Only report user tweak if the user is not scratching.
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
+                qDebug() << getGroup() << "tweaking!" << userTweak;
                 rate = m_pBpmControl->calcSyncedRate(userTweak);
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
