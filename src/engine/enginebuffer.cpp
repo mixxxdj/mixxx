@@ -735,7 +735,7 @@ void EngineBuffer::processTrackLocked(
     processSyncRequests();
 
     // Note: This may effects the m_filepos_play, play, scaler and crossfade buffer
-    qDebug() << "processtrack loaded!";
+    qDebug() << "processtrack locked: process seek!";
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time

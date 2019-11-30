@@ -372,6 +372,7 @@ void EngineMaster::processChannels(int iBufferSize) {
 }
 
 void EngineMaster::process(const int iBufferSize) {
+    qDebug() << "================Process BEGIN================";
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
@@ -727,6 +728,7 @@ void EngineMaster::process(const int iBufferSize) {
     // We're close to the end of the callback. Wake up the engine worker
     // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
+    qDebug() << "================Process END================";
 }
 
 void EngineMaster::applyMasterEffects() {

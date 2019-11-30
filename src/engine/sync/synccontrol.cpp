@@ -209,7 +209,7 @@ void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bp
 }
 
 void SyncControl::updateTargetBeatDistance() {
-    qDebug() << "SyncControl::updateTargetBeatDistance" << m_beatDistance;
+    qDebug() << getGroup() << "SyncControl::updateTargetBeatDistance" << m_beatDistance;
     m_pBpmControl->setTargetBeatDistance(m_beatDistance);
 }
 

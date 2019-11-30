@@ -1465,10 +1465,13 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     ProcessBuffer();
 
     // Ah, floating point.
+    qDebug() << "test computing beat distance diff:" << ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get() << ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get();
     double difference = fabs(ControlObject::getControl(ConfigKey(m_sGroup1,
-                                                        "beat_distance"))->get()
-                             - ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                              "beat_distance"))->get());
+                                                               "beat_distance"))
+                                     ->get() -
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                              "beat_distance"))
+                    ->get());
     EXPECT_LT(difference, .00001);
 
     EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset.getValue());

@@ -190,6 +190,8 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
 void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     updateBeatLength(sampleRate, m_pClockBpm->get());
 
+    qDebug() << "Internal Clock old beat distance" << getBeatDistance();
+
     // stereo samples, so divide by 2
     m_dClockPosition += bufferSize / 2;
 
@@ -206,5 +208,6 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     double beat_distance = getBeatDistance();
     m_pClockBeatDistance->set(beat_distance);
+    qDebug() << "Internal Clock new beat distance" << beat_distance;
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
