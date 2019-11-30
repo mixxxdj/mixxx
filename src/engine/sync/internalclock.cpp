@@ -86,7 +86,7 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    //qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
     m_bClockUpdated.store(true);
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -194,11 +194,11 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     if (m_bClockUpdated.fetchAndStoreRelaxed(false)) {
         // We were updated mid-call, don't increment values
-        qDebug() << "mid-call update, don't increment buffer";
+        //qDebug() << "mid-call update, don't increment buffer";
         return;
     }
 
-    qDebug() << "Internal Clock old beat distance" << getBeatDistance();
+    //qDebug() << "Internal Clock old beat distance" << getBeatDistance();
 
     // stereo samples, so divide by 2
     m_dClockPosition += bufferSize / 2;
@@ -216,6 +216,6 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     double beat_distance = getBeatDistance();
     m_pClockBeatDistance->set(beat_distance);
-    qDebug() << "Internal Clock new beat distance" << beat_distance;
+    //qDebug() << "Internal Clock new beat distance" << beat_distance;
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }

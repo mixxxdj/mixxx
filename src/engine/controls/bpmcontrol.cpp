@@ -447,21 +447,15 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    qDebug() << m_sGroup << m_dUserOffset.getValue();
+    /*qDebug() << m_sGroup << m_dUserOffset.getValue();
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
     qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
-    qDebug() << "user offset         :" << m_dUserOffset.getValue();
+    qDebug() << "user offset         :" << m_dUserOffset.getValue();*/
 
     double adjustment = 1.0;
 
     if (!userTweakingSync) {
-    //     qDebug() << "user is tweaking sync: " << shortest_distance;
-    //     // Don't do anything else, leave it
-    //     adjustment = 1.0;
-    //     // This doesn't work because we don't know what the tweak distance even is yet.
-    //     m_dUserOffset.setValue(shortest_distance);
-    // } else {
         double error = shortest_distance - m_dUserOffset.getValue();
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
@@ -499,11 +493,6 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
 }
 
 double BpmControl::getBeatDistance(double dThisPosition) const {
-    // We have to adjust our reported beat distance by the user offset to
-    // preserve comparisons of beat distances.  Specifically, this beat distance
-    // is used in synccontrol to update the internal clock beat distance, and if
-    // we don't adjust the reported distance the track will try to adjust
-    // sync against itself.
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
 
@@ -519,7 +508,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     if (dBeatPercentage < 0) ++dBeatPercentage;
     if (dBeatPercentage > 1) --dBeatPercentage;
 
-    return dBeatPercentage;//  -m_dUserOffset.getValue();
+    return dBeatPercentage;
 }
 
 // static
@@ -582,20 +571,14 @@ bool BpmControl::getBeatContextNoLookup(
 double BpmControl::getNearestPositionInPhase(
         double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
-    qDebug() << "getNearestPositionInPhase";
+    //qDebug() << "getNearestPositionInPhase";
     BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
-        qDebug() << "no beats, returning";
+        //qDebug() << "no beats, returning";
         return dThisPosition;
     }
 
     SyncMode syncMode = getSyncMode();
-
-    // Master buffer is always in sync!
-    // if (syncMode == SYNC_MASTER) {
-    //     qDebug() << "we are master";
-    //     return dThisPosition;
-    // }
 
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
@@ -622,26 +605,26 @@ double BpmControl::getNearestPositionInPhase(
     if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
-        qDebug() << "phase seek, we are follower" << dOtherBeatFraction;
+        //qDebug() << "phase seek, we are follower" << dOtherBeatFraction;
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         if (playing) {
             if (!pOtherEngineBuffer || pOtherEngineBuffer->getBpm() == 0.0) {
-                if (pOtherEngineBuffer) {
-                    qDebug() << "well it's something, but speed: " << pOtherEngineBuffer->getSpeed();
-                }
+                //if (pOtherEngineBuffer) {
+                //    qDebug() << "well it's something, but speed: " << pOtherEngineBuffer->getSpeed();
+                //}
                 // "this" track is playing, or just starting
                 // only match phase if the sync target is playing as well
                 // else use the previous phase of "this" track before the seek
                 pOtherEngineBuffer = getEngineBuffer();
-                qDebug() << "other track not playing" << this->getGroup() << pOtherEngineBuffer->getGroup();
+                //qDebug() << "other track not playing" << this->getGroup() << pOtherEngineBuffer->getGroup();
             }
         }
 
         if (!pOtherEngineBuffer) {
             // no suitable sync buffer found
-            qDebug() << "could not find other engine buffer to seek";
+            //qDebug() << "could not find other engine buffer to seek";
             return dThisPosition;
         }
 
@@ -810,7 +793,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
-        qDebug() << "reset user tweak (translate match)";
+        //qDebug() << "reset user tweak (translate match)";
         m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getSampleOfTrack().current);
@@ -844,13 +827,19 @@ double BpmControl::updateBeatDistance() {
         double master_percentage = m_dSyncTargetBeatDistance.getValue();
         double shortest_distance = shortestPercentageChange(
             master_percentage, beat_distance);
-        qDebug() << getGroup() << "user was tweaking, maybe we should set user offset to ???" << shortest_distance;
+        //qDebug() << getGroup() << "user was tweaking, maybe we should set user offset to: " << shortest_distance;
         m_dUserOffset.setValue(shortest_distance);
     }
-    qDebug() << this->getGroup() << "updating beat distance" << (beat_distance -  m_dUserOffset.getValue()) <<  "offset: "<< m_dUserOffset.getValue();
+    //qDebug() << this->getGroup() << "updating beat distance" << (beat_distance -  m_dUserOffset.getValue()) <<  "offset: "<< m_dUserOffset.getValue();
+
+    // We have to adjust our reported beat distance by the user offset to
+    // preserve comparisons of beat distances.  Specifically, this beat distance
+    // is used in synccontrol to update the internal clock beat distance, and if
+    // we don't adjust the reported distance the track will try to adjust
+    // sync against itself.
     m_pThisBeatDistance->set(beat_distance - m_dUserOffset.getValue());
     if (!isSynchronized()) {
-        qDebug() << getGroup() << "not synced, reset offset";
+        //qDebug() << getGroup() << "not synced, reset offset";
         m_dUserOffset.setValue(0.0);
     }
     return beat_distance;
@@ -865,7 +854,7 @@ void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
 }
 
 void BpmControl::resetSyncAdjustment() {
-    qDebug() << getGroup() << "resetSyncAdjustment!";
+    //qDebug() << getGroup() << "resetSyncAdjustment!";
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     m_pThisBeatDistance->set(new_distance);

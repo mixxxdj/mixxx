@@ -165,6 +165,11 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
             continue;
         }
+        // Also skip non-primary decks like samplers.
+        // This is a string comparison, but this function is not hot.
+        if (!pOtherSyncable->getGroup().contains("Channel")) {
+            continue;
+        }
         if (pOtherSyncable->getBaseBpm() == 0.0) {
             continue;
         }
@@ -288,34 +293,6 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     }
 
     pSyncable->requestSync();
-    // if (m_pMasterSyncable == m_pInternalClock) {
-    //     // If there is only one deck playing, set internal clock beat distance
-    //     // to match it, unless there is a single other playing deck, in which
-    //     // case we should match that.
-    //     Syncable* uniqueSyncEnabled = NULL;
-    //     const Syncable* uniqueSyncDisabled = NULL;
-    //     int playing_sync_decks = 0;
-    //     int playing_nonsync_decks = 0;
-    //     foreach (Syncable* pOtherSyncable, m_syncables) {
-    //         if (pOtherSyncable->isPlaying()) {
-    //             if (pOtherSyncable->isSynchronized()) {
-    //                 uniqueSyncEnabled = pOtherSyncable;
-    //                 ++playing_sync_decks;
-    //             } else {
-    //                 uniqueSyncDisabled = pOtherSyncable;
-    //                 ++playing_nonsync_decks;
-    //             }
-    //         }
-    //     }
-    //     if (playing_sync_decks == 1) {
-    //         uniqueSyncEnabled->notifyOnlyPlayingSyncable();
-    //         if (playing_nonsync_decks == 1) {
-    //             m_pInternalClock->setMasterBeatDistance(uniqueSyncDisabled->getBeatDistance());
-    //         } else {
-    //             m_pInternalClock->setMasterBeatDistance(uniqueSyncEnabled->getBeatDistance());
-    //         }
-    //     }
-    // }
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
@@ -451,19 +428,6 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     pSyncable->notifySyncModeChanged(SYNC_NONE);
 
     bool bSyncDeckExists = syncDeckExists();
-
-    // if (pSyncable != m_pInternalClock) {
-    //     if (bSyncDeckExists) {
-    //         if (wasMaster) {
-    //             // Hand off to internal clock
-    //             activateMaster(m_pInternalClock);
-    //         }
-    //     } else {
-    //         // Deactivate the internal clock if there are no more sync decks left.
-    //         m_pMasterSyncable = NULL;
-    //         m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
-    //     }
-    // }
 
     if (pSyncable != m_pInternalClock && !bSyncDeckExists) {
         // Deactivate the internal clock if there are no more sync decks left.

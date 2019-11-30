@@ -142,7 +142,6 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
 void SyncControl::notifyOnlyPlayingSyncable() {
     // If we are the only remaining playing sync deck, we can reset the user
     // tweak info.
-    qDebug() << "ONLY PLAYING SYNCABLE";
     m_pBpmControl->resetSyncAdjustment();
 }
 
@@ -176,7 +175,7 @@ void SyncControl::setBeatDistance(double beatDistance) {
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
-    qDebug() << "SyncControl::setMasterBeatDistance" << beatDistance;
+    //qDebug() << "SyncControl::setMasterBeatDistance" << beatDistance;
     m_beatDistance = beatDistance;
     updateTargetBeatDistance();
 }
@@ -186,7 +185,7 @@ void SyncControl::setMasterBaseBpm(double bpm) {
 }
 
 void SyncControl::setMasterBpm(double bpm) {
-    qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
+    //qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
 
     if (!isSynchronized()) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -211,7 +210,7 @@ void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bp
 }
 
 void SyncControl::updateTargetBeatDistance() {
-    qDebug() << getGroup() << "SyncControl::updateTargetBeatDistance" << m_beatDistance;
+    //qDebug() << getGroup() << "SyncControl::updateTargetBeatDistance" << m_beatDistance;
     m_pBpmControl->setTargetBeatDistance(m_beatDistance);
 }
 
