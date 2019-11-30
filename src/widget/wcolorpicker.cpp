@@ -12,7 +12,8 @@ const int kNumColumns = 4;
 }
 
 WColorPicker::WColorPicker(QWidget* parent)
-        : QWidget(parent) {
+        : QWidget(parent),
+        m_pCheckedIcon(":/images/ic_checkmark.svg") {
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
     QGridLayout* pLayout = new QGridLayout();
@@ -58,8 +59,8 @@ void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
         qDebug() << "m_pSelectedColor";
         QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(m_pSelectedColor);
         if (it != m_pColorButtons.constEnd()) {
-            qDebug() << it.value() << "setDown(false)";
-            it.value()->setDown(false);
+            qDebug() << it.value() << "clear icon";
+            it.value()->setIcon(QIcon());
         }
     }
 
@@ -67,8 +68,8 @@ void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
         qDebug() << "m_pColor";
         QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(pColor);
         if (it != m_pColorButtons.constEnd()) {
-            qDebug() << it.value() << "setDown(true)";
-            it.value()->setDown(true);
+            qDebug() << it.value() << "set checkmark icon";
+            it.value()->setIcon(m_pCheckedIcon);
         }
     }
 

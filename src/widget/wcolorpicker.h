@@ -22,4 +22,5 @@ class WColorPicker : public QWidget {
     QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
     PredefinedColorPointer m_pSelectedColor;
     QStyle* m_pStyle;
+    QIcon* m_pCheckedIcon;
 };
