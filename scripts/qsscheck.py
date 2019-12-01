@@ -20,11 +20,11 @@ RE_CLASSNAME = re.compile(r'^[A-Z]\w+$')
 RE_OBJNAME_VARTAG = re.compile(r'<.*>')
 
 
-def get_skins(mixxx_path):
-    skins_path = os.path.join(mixxx_path, 'res', 'skins')
-    for entry in os.scandir(skins_path):
+def get_skins(path):
+    for entry in os.scandir(path):
         if entry.is_dir():
-            yield entry.name
+            yield entry.name, os.path.join(path, entry.name)
+
 
 
 def get_global_names(mixxx_path):
@@ -46,8 +46,7 @@ def get_global_names(mixxx_path):
     return classnames, objectnames
 
 
-def get_skin_objectnames(mixxx_path, skin):
-    skin_path = os.path.join(mixxx_path, 'res', 'skins', skin)
+def get_skin_objectnames(skin_path):
     for root, dirs, fnames in os.walk(skin_path):
         for fname in fnames:
             if os.path.splitext(fname)[1] != '.xml':
@@ -60,9 +59,8 @@ def get_skin_objectnames(mixxx_path, skin):
                     yield from RE_XML_OBJNAME_SETVAR.findall(line)
 
 
-def get_skin_stylesheets(mixxx_path, skin):
+def get_skin_stylesheets(skin_path):
     cssparser = tinycss.css21.CSS21Parser()
-    skin_path = os.path.join(mixxx_path, 'res', 'skins', skin)
     for filename in os.listdir(skin_path):
         if os.path.splitext(filename)[1] != '.qss':
             continue
@@ -98,18 +96,27 @@ def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--skin', help='skin name')
+    parser = argparse.ArgumentParser('qsscheck', description='Check Mixxx QSS stylesheets for non-existing object/class names')
+    parser.add_argument('-p', '--extra-skins-path',
+                        help='Additonal skin path, to check (.e.g. '
+                        '"~/.mixxx/skins")')
+    parser.add_argument('-s', '--skin', help='Only check skin with this name')
     parser.add_argument('-i', '--ignore', default='',
-                        help='glob pattern to ignore')
-    parser.add_argument('mixxx_path', help='Mixxx path')
+                        help='Glob pattern of class/object names to ignore '
+                        '(e.g. "#Test*"), separated by commas')
+    parser.add_argument('mixxx_path', help='Path of Mixxx sources/git repo')
     args = parser.parse_args(argv)
 
     mixxx_path = args.mixxx_path
     ignore_pattern = args.ignore.split(',')
-    skins = set(get_skins(mixxx_path))
+
+    skins_path = os.path.join(mixxx_path, 'res', 'skins')
+    skins = set(get_skins(skins_path))
+    if args.extra_skins_path:
+        skins.update(set(get_skins(args.extra_skins_path)))
+
     if args.skin:
-        skins = set(skin for skin in skins if skin == args.skin)
+        skins = set((name, path) for name, path in skins if name == args.skin)
 
     if not skins:
         print('No skins to check')
@@ -117,19 +124,19 @@ def main(argv=None):
 
     status = 0
     classnames, objectnames = get_global_names(mixxx_path)
-    for skin in sorted(skins):
+    for skin_name, skin_path in sorted(skins):
         # If the skin objectname is something like 'Deck<Variable name="i">',
         # then replace it with 'Deck*' and use glob-like matching
-        skin_objectnames = set(objectnames)
+        skin_objectnames = objectnames.copy()
         skin_objectnames_fuzzy = set()
-        for objname in set(get_skin_objectnames(mixxx_path, skin)):
+        for objname in get_skin_objectnames(skin_path):
             new_objname = RE_OBJNAME_VARTAG.sub('*', objname)
             if '*' in new_objname:
                 skin_objectnames_fuzzy.add(new_objname)
             else:
                 skin_objectnames.add(new_objname)
 
-        for qss_path, stylesheet in get_skin_stylesheets(mixxx_path, skin):
+        for qss_path, stylesheet in get_skin_stylesheets(skin_path):
             for error in stylesheet.errors:
                 status = 2
                 print('%s:%d:%d: %s - %s' % (
