@@ -54,12 +54,14 @@ def get_skin_objectnames(mixxx_path, skin):
     skin_path = os.path.join(mixxx_path, 'res', 'skins', skin)
     for root, dirs, fnames in os.walk(skin_path):
         for fname in fnames:
-            if os.path.splitext(fname)[1] == '.xml':
-                fpath = os.path.join(root, fname)
-                with open(fpath, mode='r') as f:
-                    for line in f:
-                        yield from RE_XML_OBJNAME.findall(line)
-                        yield from RE_XML_OBJNAME_SETVAR.findall(line)
+            if os.path.splitext(fname)[1] != '.xml':
+                continue
+
+            fpath = os.path.join(root, fname)
+            with open(fpath, mode='r') as f:
+                for line in f:
+                    yield from RE_XML_OBJNAME.findall(line)
+                    yield from RE_XML_OBJNAME_SETVAR.findall(line)
 
 
 def get_skin_stylesheets(mixxx_path, skin):
