@@ -127,7 +127,9 @@ def check_skins(mixxx_path, skins, ignore_patterns=()):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser('qsscheck', description='Check Mixxx QSS stylesheets for non-existing object/class names')
+    parser = argparse.ArgumentParser('qsscheck', description='Check Mixxx QSS '
+                                     'stylesheets for non-existing '
+                                     'object/class names')
     parser.add_argument('-p', '--extra-skins-path',
                         help='Additonal skin path, to check (.e.g. '
                         '"~/.mixxx/skins")')
