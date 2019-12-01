@@ -180,6 +180,7 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
 }
 
 void SyncControl::setMasterBaseBpm(double bpm) {
+    Q_UNUSED(bpm);
     updateTargetBeatDistance();
 }
 
@@ -203,6 +204,7 @@ void SyncControl::setMasterBpm(double bpm) {
 }
 
 void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+    Q_UNUSED(baseBpm);
     m_beatDistance = beatDistance;
     setMasterBpm(bpm);
     updateTargetBeatDistance();

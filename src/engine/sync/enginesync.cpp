@@ -300,7 +300,7 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
-    qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
     // Master Base BPM shouldn't be updated for every random deck that twiddles
     // the rate.
@@ -308,13 +308,12 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
 }
 
 void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
-    qDebug() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
+    //qDebug() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
 
     double mbaseBpm = masterBaseBpm();
     double mbpm = masterBpm();
     if (mbaseBpm != 0.0 && mbpm != 0.0) {
         // resync to current master
-        qDebug() << mbaseBpm << mbpm;
         pSyncable->setMasterBaseBpm(mbaseBpm);
         pSyncable->setMasterBpm(mbpm);
     } else {

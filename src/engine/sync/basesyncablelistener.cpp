@@ -93,7 +93,7 @@ double BaseSyncableListener::masterBaseBpm() const {
 }
 
 void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
-    qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
+    //qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBpm(bpm);
     }
