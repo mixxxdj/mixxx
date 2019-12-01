@@ -255,12 +255,8 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 
     // similar to enablesync -- we pick a new master and maybe reinit.
     Syncable* newMaster = pickMaster(playing ? pSyncable : nullptr);
-    // At the very least we should pick ourselves
-    VERIFY_OR_DEBUG_ASSERT(newMaster != nullptr) {
-        return;
-    }
 
-    if (m_pMasterSyncable != newMaster) {
+    if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster);
         setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(),
                         newMaster->getBpm());
