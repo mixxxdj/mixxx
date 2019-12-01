@@ -36,11 +36,6 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     std::vector<Syncable*> stopped_sync_decks;
     std::vector<Syncable*> playing_sync_decks;
 
-    qDebug() << "pickmaster";
-    if (enabling_syncable != nullptr) {
-        qDebug() << "enabling syncable" << enabling_syncable->getGroup() << enabling_syncable->getBaseBpm();
-    }
-
     if (enabling_syncable != nullptr && enabling_syncable->getBaseBpm() != 0.0) {
         if (enabling_syncable->isPlaying()) {
             playing_sync_decks.push_back(enabling_syncable);
@@ -50,22 +45,17 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     }
 
     for (const auto& pSyncable: m_syncables) {
-        qDebug() << "consiudering" << pSyncable->getGroup();
         if (pSyncable == enabling_syncable) {
-            qDebug() << "it's the enabling syncable" << pSyncable->getGroup();
             continue;
         }
         // This is a string comparison, but this function is not hot.
         if (!pSyncable->getGroup().contains("Channel")) {
-            qDebug() << "not a primary deck, skipping" << pSyncable->getGroup();
             continue;
         }
         if (!pSyncable->isSynchronized()) {
-            qDebug() << "not synced" << pSyncable->getGroup();
             continue;
         }
         if (pSyncable->getBaseBpm() == 0.0) {
-            qDebug() << "lol 0 bpm" << pSyncable->getGroup();
             continue;
         }
 
@@ -77,29 +67,24 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     }
 
     if (playing_sync_decks.size() == 1) {
-        qDebug() << "one playing sync deck" << playing_sync_decks.front()->getGroup();
         return playing_sync_decks.front();
     } else if (playing_sync_decks.size() > 1) {
-        qDebug() << "multiple playing sync deck, internal clock";
         return m_pInternalClock;
     }
 
     // No valid playing sync decks
     if (stopped_sync_decks.size() == 1) {
-        qDebug() << "one stopped sync deck" << stopped_sync_decks.front()->getGroup();
         return stopped_sync_decks.front();
     } else if (stopped_sync_decks.size() > 1) {
-        qDebug() << "multiple stopped sync deck, internal clock";
         return m_pInternalClock;
     }
 
     // No valid stopped sync decks
-    qDebug() << "no stopped or playing sync deck, nullptr";
     return nullptr;
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
@@ -166,7 +151,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         if (pOtherSyncable == requester) {
             continue;
         }
-        // skip non-master decks, like preview decks.
+        // Skip non-master decks, like preview decks.
         if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
             continue;
         }
@@ -182,7 +167,6 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         // If the other deck is playing we stop looking immediately. Otherwise continue looking
         // for a playing deck with bpm > 0.0.
         if (pOtherSyncable->isPlaying()) {
-            qDebug() << "found playing other syncable, returning it" << pOtherSyncable->getGroup();
             return pOtherSyncable;
         }
 
@@ -193,21 +177,15 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         }
 
         // Take the first non-playing non-sync deck.
-        qDebug() << "found a non playing non sync deck";
         foundTargetBpm = true;
         stoppedTarget = pOtherSyncable;
     }
 
-    if (stoppedTarget != nullptr) {
-        qDebug() << "returning the stopped target" << stoppedTarget->getGroup();
-    } else {
-        qDebug() << "no bpm target at all";
-    }
     return stoppedTarget;
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    qDebug() << "request enable sync " << pSyncable->getGroup() << bEnabled;
+    //qDebug() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
     // Sync disable request, hand off to a different function
     if (!bEnabled) {
         // Already disabled?  Do nothing.
@@ -218,7 +196,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         return;
     }
 
-    qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     // Already enabled?  Do nothing.
     if (pSyncable->isSynchronized()) {
         return;
@@ -247,7 +224,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     Syncable* newMaster = pickMaster(pSyncable);
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
-        qDebug() << "(sync-enable) master changed, activating it" << newMaster->getGroup();
         activateMaster(newMaster);
         if (targetSyncable == nullptr) {
             setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(),
@@ -256,13 +232,11 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     }
 
     if (newMaster != pSyncable) {
-        qDebug() << "(syncenable) psyncable isn't new master, making follower";
         activateFollower(pSyncable);
         pSyncable->requestSync();
     }
 
     if (targetSyncable != nullptr) {
-        qDebug() << "we have a bpm match target" << targetSyncable->getGroup();
         setMasterParams(targetSyncable, targetSyncable->getBeatDistance(),
                         targetSyncable->getBaseBpm(), targetSyncable->getBpm());
         if (targetSyncable != pSyncable) {
@@ -273,7 +247,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
     if (!pSyncable->isSynchronized()) {
         return;
@@ -287,7 +261,6 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     }
 
     if (m_pMasterSyncable != newMaster) {
-        qDebug() << "(playing) master changed, activating it" << newMaster->getGroup();
         activateMaster(newMaster);
         setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(),
                         newMaster->getBpm());
@@ -297,7 +270,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    qDebug() << "EngineSync::notifyTrackLoaded";
+    //qDebug() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -419,7 +392,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 }
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
-    qDebug() << "deactivate sync" << pSyncable->getGroup();
+    //qDebug() << "EngineSync::deactivateSync" << pSyncable->getGroup();
     bool wasMaster = pSyncable->getSyncMode() == SYNC_MASTER;
     if (wasMaster) {
         m_pMasterSyncable = NULL;
@@ -438,11 +411,9 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 
     // checkUniquePlayingSyncable();
 
-    qDebug() << "picking new master after deactivation";
     Syncable* newMaster = pickMaster(nullptr);
 
     if (newMaster != nullptr && m_pMasterSyncable != newMaster) {
-        qDebug() << "(deactivatesync) master changed, activating it" << newMaster->getGroup();
         activateMaster(newMaster);
     }
 
@@ -463,13 +434,11 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the deck is playing then go with it immediately.
                 if (pBuffer->getSpeed() != 0.0) {
-                    qDebug() << "going with this one!" << pChannel->getGroup();
                     return pChannel;
                 }
                 // Otherwise hold out for a deck that might be playing but
                 // remember the first deck that matched our criteria.
                 if (pFirstNonplayingDeck == NULL) {
-                    qDebug() << "backup option" << pChannel->getGroup();
                     pFirstNonplayingDeck = pChannel;
                 }
             }

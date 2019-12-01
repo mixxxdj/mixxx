@@ -59,11 +59,6 @@ class EngineSync : public BaseSyncableListener {
     // Iterate over decks, and based on sync and play status, pick a new master.
     // if enabling_syncable is not null, we treat it as if it were enabled because we may
     // be in the process of enabling it.
-    // * if no sync decks, returns nullptr
-    // * if 1 stopped sync deck, returns that one
-    // * if >1 stopped sync decks, returns internal clock
-    // * if 1 playing sync deck, returns that one
-    // * if >1 playing sync deck, returns internal clock
     Syncable* pickMaster(Syncable* enabling_syncable);
 
     // Find a deck to match against, used in the case where there is no sync master.

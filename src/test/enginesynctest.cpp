@@ -206,7 +206,6 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
     pButtonSyncMaster2->slotSet(1.0);
 
-    qDebug() << "-----------1";
     assertIsFollower(m_sGroup1);
     assertIsMaster(m_sGroup2);
 
@@ -214,7 +213,6 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(0.0);
 
-    qDebug() << "-----------2";
     assertIsMaster(m_sGroup1);
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
@@ -284,7 +282,6 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     ProcessBuffer();
 
     // Set channel 1 to be enabled
-    qDebug() << "1";
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
@@ -295,7 +292,6 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
 
     // Set channel 2 to be enabled.
     pButtonSyncEnabled2->set(1);
-    qDebug() << "2";
     ProcessBuffer();
 
     // channel 1 still master while 2 is not playing
@@ -311,7 +307,6 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
-    qDebug() << "3";
     // Now internal clock is master
     assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
@@ -321,7 +316,6 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     pButtonSyncEnabled1->set(0);
     ProcessBuffer();
 
-    qDebug() << "4";
     // Master flips to deck 2
     assertIsMaster(m_sGroup2);
     assertIsFollower(m_sInternalClockGroup);
@@ -1022,7 +1016,6 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     pButtonSyncEnabled1->set(1.0);
 
     ProcessBuffer();
-    qDebug() << "eject---------------";
     pButtonEject1->set(1.0);
     // When an eject happens, the bpm gets set to zero.
     pFileBpm1->set(0.0);
@@ -1329,13 +1322,10 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     m_pChannel2->getEngineBuffer()->queueNewPlaypos(42336,
                                                     EngineBuffer::SEEK_EXACT);
     // Process a buffer to make the seeks happen. Nothing is playing so no advancement.
-    qDebug() << "~~~~~~~~~~~~~~~~initial buffer";
     ProcessBuffer();
 
     // Set the sync deck playing with nothing else active.
-    qDebug() << "set sync";
     pButtonSyncEnabled1->set(1.0);
-    qDebug() << "setting play";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
     // Internal clock rate should be set and beat distance already updated
@@ -1347,7 +1337,6 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     EXPECT_FLOAT_EQ(0.8,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                         "beat_distance"))->get());
-     qDebug() << "--------------------setting play";
 
     // Now make the second deck playing and see if it works.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
@@ -1355,14 +1344,11 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
 
-    qDebug() << "both playing now-------------------------";
     EXPECT_FLOAT_EQ(0.8, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
 
     // What seems to be happening is a seek is queued when a track is loaded, so all these tracks
     // seek to 0, thus resetting the beat distance.
     ProcessBuffer();
-
-    qDebug() << "buffer processed";
 
     // The exact beat distance will be one buffer past .8, but this is good
     // enough to confirm that it worked.
@@ -1397,11 +1383,9 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
     // now we have Deck 3 with 140 bpm and sync enabled
 
-    qDebug() << "enable sync on 1";
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
-    qDebug() << "everything play";
     ControlObject::getControl(ConfigKey(m_sGroup3, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
@@ -1439,20 +1423,17 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     // Play some buffers with the wheel at 0 to show the sync works
-    qDebug() << "~~~~~~~~play, no adjust";
     ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
     }
 
     // Spin the wheel, causing the useroffset for group1 to get set.
-    qDebug() << "~~~~~~~~play, wheel spinning";
     ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.4);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
     }
     // Play some more buffers with the wheel at 0.
-    qDebug() << "~~~~~~~~play, wheel spun but not spinning any more";
     ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
@@ -1466,7 +1447,6 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     ProcessBuffer();
 
     // Ah, floating point.
-    qDebug() << "test computing beat distance diff:" << ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get() << ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get();
     double difference = fabs(ControlObject::getControl(ConfigKey(m_sGroup1,
                                                                "beat_distance"))
                                      ->get() -
@@ -1534,9 +1514,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ProcessBuffer();
 
     // first test without quantisation
-    qDebug() << "---------------- set sync on 1";
     pButtonSyncEnabled1->set(1.0);
-    qDebug() << "------------------- process buffer";
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0.050309901738473169, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     EXPECT_DOUBLE_EQ(0.038699924414210128, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
