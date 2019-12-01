@@ -27,10 +27,6 @@ def get_skins(mixxx_path):
             yield entry.name
 
 
-def make_glob(name):
-    return RE_OBJNAME_VARTAG.sub('*', name)
-
-
 def get_global_names(mixxx_path):
     classnames = set()
     objectnames = set()
@@ -75,7 +71,7 @@ def get_skin_stylesheets(mixxx_path, skin):
         yield qss_path, stylesheet
 
 
-def check_stylesheet(stylesheet, classnames, objectnames):
+def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
     for rule in stylesheet.rules:
         if not isinstance(rule, tinycss.css21.RuleSet):
             continue
@@ -94,8 +90,8 @@ def check_stylesheet(stylesheet, classnames, objectnames):
                 if value in objectnames:
                     continue
 
-                if any(fnmatch.fnmatchcase(value, make_glob(objname))
-                        for objname in objectnames if '<' in objname):
+                if any(fnmatch.fnmatchcase(value, objname)
+                       for objname in objectnames_fuzzy):
                     continue
 
                 yield (token, 'Unknown object name "%s"' % token.value)
@@ -122,8 +118,17 @@ def main(argv=None):
     status = 0
     classnames, objectnames = get_global_names(mixxx_path)
     for skin in sorted(skins):
-        skin_objectnames = objectnames.union(set(
-            get_skin_objectnames(mixxx_path, skin)))
+        # If the skin objectname is something like 'Deck<Variable name="i">',
+        # then replace it with 'Deck*' and use glob-like matching
+        skin_objectnames = set(objectnames)
+        skin_objectnames_fuzzy = set()
+        for objname in set(get_skin_objectnames(mixxx_path, skin)):
+            new_objname = RE_OBJNAME_VARTAG.sub('*', objname)
+            if '*' in new_objname:
+                skin_objectnames_fuzzy.add(new_objname)
+            else:
+                skin_objectnames.add(new_objname)
+
         for qss_path, stylesheet in get_skin_stylesheets(mixxx_path, skin):
             for error in stylesheet.errors:
                 status = 2
@@ -132,7 +137,8 @@ def main(argv=None):
                     error.__class__.__name__, error.reason,
                 ))
             for token, message in check_stylesheet(
-                    stylesheet, classnames, skin_objectnames):
+                    stylesheet, classnames,
+                    skin_objectnames, skin_objectnames_fuzzy):
                 if any(fnmatch.fnmatchcase(token.value, pattern)
                        for pattern in ignore_pattern):
                     continue
