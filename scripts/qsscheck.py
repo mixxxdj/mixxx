@@ -95,34 +95,7 @@ def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
                 yield (token, 'Unknown object name "%s"' % token.value)
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser('qsscheck', description='Check Mixxx QSS stylesheets for non-existing object/class names')
-    parser.add_argument('-p', '--extra-skins-path',
-                        help='Additonal skin path, to check (.e.g. '
-                        '"~/.mixxx/skins")')
-    parser.add_argument('-s', '--skin', help='Only check skin with this name')
-    parser.add_argument('-i', '--ignore', default='',
-                        help='Glob pattern of class/object names to ignore '
-                        '(e.g. "#Test*"), separated by commas')
-    parser.add_argument('mixxx_path', help='Path of Mixxx sources/git repo')
-    args = parser.parse_args(argv)
-
-    mixxx_path = args.mixxx_path
-    ignore_pattern = args.ignore.split(',')
-
-    skins_path = os.path.join(mixxx_path, 'res', 'skins')
-    skins = set(get_skins(skins_path))
-    if args.extra_skins_path:
-        skins.update(set(get_skins(args.extra_skins_path)))
-
-    if args.skin:
-        skins = set((name, path) for name, path in skins if name == args.skin)
-
-    if not skins:
-        print('No skins to check')
-        return 1
-
-    status = 0
+def check_skins(mixxx_path, skins, ignore_patterns=()):
     classnames, objectnames = get_global_names(mixxx_path)
     for skin_name, skin_path in sorted(skins):
         # If the skin objectname is something like 'Deck<Variable name="i">',
@@ -138,21 +111,51 @@ def main(argv=None):
 
         for qss_path, stylesheet in get_skin_stylesheets(skin_path):
             for error in stylesheet.errors:
-                status = 2
-                print('%s:%d:%d: %s - %s' % (
+                yield '%s:%d:%d: %s - %s' % (
                     qss_path, error.line, error.column,
                     error.__class__.__name__, error.reason,
-                ))
+                )
             for token, message in check_stylesheet(
                     stylesheet, classnames,
                     skin_objectnames, skin_objectnames_fuzzy):
                 if any(fnmatch.fnmatchcase(token.value, pattern)
-                       for pattern in ignore_pattern):
+                       for pattern in ignore_patterns):
                     continue
-                status = 2
-                print('%s:%d:%d: %s' % (
+                yield '%s:%d:%d: %s' % (
                     qss_path, token.line, token.column, message,
-                ))
+                )
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser('qsscheck', description='Check Mixxx QSS stylesheets for non-existing object/class names')
+    parser.add_argument('-p', '--extra-skins-path',
+                        help='Additonal skin path, to check (.e.g. '
+                        '"~/.mixxx/skins")')
+    parser.add_argument('-s', '--skin', help='Only check skin with this name')
+    parser.add_argument('-i', '--ignore', default='',
+                        help='Glob pattern of class/object names to ignore '
+                        '(e.g. "#Test*"), separated by commas')
+    parser.add_argument('mixxx_path', help='Path of Mixxx sources/git repo')
+    args = parser.parse_args(argv)
+
+    mixxx_path = args.mixxx_path
+
+    skins_path = os.path.join(mixxx_path, 'res', 'skins')
+    skins = set(get_skins(skins_path))
+    if args.extra_skins_path:
+        skins.update(set(get_skins(args.extra_skins_path)))
+
+    if args.skin:
+        skins = set((name, path) for name, path in skins if name == args.skin)
+
+    if not skins:
+        print('No skins to check')
+        return 1
+
+    status = 0
+    for message in check_skins(mixxx_path, skins, args.ignore.split(',')):
+        print(message)
+        status = 2
     return status
 
 
