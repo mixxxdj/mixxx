@@ -10,6 +10,16 @@ import tinycss.css21
 import PyQt5.QtWidgets
 
 
+RE_CPP_CLASSNAME = re.compile(r'^\s*class\s+([\w_]+)')
+RE_CPP_OBJNAME = re.compile(r'setObjectName\(.*"([^"]+)"')
+RE_UI_OBJNAME = re.compile(r'<widget[^>]+name="([^"]+)"')
+RE_XML_OBJNAME = re.compile(r'<ObjectName>(.*)</ObjectName>')
+RE_XML_OBJNAME_SETVAR = re.compile(
+    r'<SetVariable\s+name="ObjectName">(.*)</SetVariable>')
+RE_CLASSNAME = re.compile(r'^[A-Z]\w+$')
+RE_OBJNAME_VARTAG = re.compile(r'<.*>')
+
+
 def get_skins(mixxx_path):
     skins_path = os.path.join(mixxx_path, 'res', 'skins')
     for entry in os.scandir(skins_path):
@@ -18,7 +28,7 @@ def get_skins(mixxx_path):
 
 
 def make_glob(name):
-    return re.sub(r'<.*>', '*', name)
+    return RE_OBJNAME_VARTAG.sub('*', name)
 
 
 def get_global_names(mixxx_path):
@@ -31,15 +41,12 @@ def get_global_names(mixxx_path):
                 fpath = os.path.join(root, fname)
                 with open(fpath, mode='r') as f:
                     for line in f:
-                        classnames.update(set(
-                            re.findall(r'^\s*class\s+([\w_]+)', line)))
-                        objectnames.update(set(
-                            re.findall(r'setObjectName\(.*"([^"]+)"', line)))
+                        classnames.update(set(RE_CPP_CLASSNAME.findall(line)))
+                        objectnames.update(set(RE_CPP_OBJNAME.findall(line)))
             elif ext == '.ui':
                 fpath = os.path.join(root, fname)
                 with open(fpath, mode='r') as f:
-                    objectnames.update(set(
-                        re.findall(r'<widget[^>]+name="([^"]+)"', f.read())))
+                    objectnames.update(set(RE_UI_OBJNAME.findall(f.read())))
     return classnames, objectnames
 
 
@@ -51,11 +58,8 @@ def get_skin_objectnames(mixxx_path, skin):
                 fpath = os.path.join(root, fname)
                 with open(fpath, mode='r') as f:
                     for line in f:
-                        yield from re.findall(
-                            r'<ObjectName>(.*)</ObjectName>', line)
-                        yield from re.findall(
-                            r'<SetVariable\s+name="ObjectName">'
-                            r'(.*)</SetVariable>', line)
+                        yield from RE_XML_OBJNAME.findall(line)
+                        yield from RE_XML_OBJNAME_SETVAR.findall(line)
 
 
 def get_skin_stylesheets(mixxx_path, skin):
@@ -75,7 +79,7 @@ def check_stylesheet(stylesheet, classnames, objectnames):
             continue
         for token in rule.selector:
             if token.type == 'IDENT':
-                if not re.match(r'[A-Z]\w+', token.value):
+                if not RE_CLASSNAME.match(token.value):
                     continue
                 if token.value in classnames:
                     continue
