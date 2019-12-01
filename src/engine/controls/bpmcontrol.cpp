@@ -381,6 +381,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 }
 
 double BpmControl::calcSyncedRate(double userTweak) {
+    qDebug() << getGroup() << "calcsyncedrate";
     m_dUserRateTweak = userTweak;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
@@ -447,11 +448,11 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*qDebug() << m_sGroup << m_dUserOffset.getValue();
+    qDebug() << m_sGroup << m_dUserOffset.getValue();
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
     qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
-    qDebug() << "user offset         :" << m_dUserOffset.getValue();*/
+    qDebug() << "user offset         :" << m_dUserOffset.getValue();
 
     double adjustment = 1.0;
 
@@ -605,15 +606,12 @@ double BpmControl::getNearestPositionInPhase(
     if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
-        //qDebug() << "phase seek, we are follower" << dOtherBeatFraction;
+        qDebug() << "phase seek, we are follower" << dOtherBeatFraction;
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         if (playing) {
             if (!pOtherEngineBuffer || pOtherEngineBuffer->getBpm() == 0.0) {
-                //if (pOtherEngineBuffer) {
-                //    qDebug() << "well it's something, but speed: " << pOtherEngineBuffer->getSpeed();
-                //}
                 // "this" track is playing, or just starting
                 // only match phase if the sync target is playing as well
                 // else use the previous phase of "this" track before the seek
@@ -822,15 +820,16 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
+    qDebug() << getGroup() << "updateBeatDistance";
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
     if (m_dUserRateTweak != 0.0) {
         double master_percentage = m_dSyncTargetBeatDistance.getValue();
         double shortest_distance = shortestPercentageChange(
             master_percentage, beat_distance);
-        //qDebug() << getGroup() << "user was tweaking, maybe we should set user offset to: " << shortest_distance;
+        qDebug() << getGroup() << "user was tweaking, maybe we should set user offset to: " << shortest_distance;
         m_dUserOffset.setValue(shortest_distance);
     }
-    //qDebug() << this->getGroup() << "updating beat distance" << (beat_distance -  m_dUserOffset.getValue()) <<  "offset: "<< m_dUserOffset.getValue();
+    qDebug() << this->getGroup() << "updating beat distance" << (beat_distance -  m_dUserOffset.getValue()) <<  "offset: "<< m_dUserOffset.getValue();
 
     // We have to adjust our reported beat distance by the user offset to
     // preserve comparisons of beat distances.  Specifically, this beat distance
@@ -839,7 +838,7 @@ double BpmControl::updateBeatDistance() {
     // sync against itself.
     m_pThisBeatDistance->set(beat_distance - m_dUserOffset.getValue());
     if (!isSynchronized()) {
-        //qDebug() << getGroup() << "not synced, reset offset";
+        qDebug() << getGroup() << "not synced, reset offset";
         m_dUserOffset.setValue(0.0);
     }
     return beat_distance;

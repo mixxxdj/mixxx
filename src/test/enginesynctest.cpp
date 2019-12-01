@@ -684,63 +684,53 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
                                                         "beat_distance"))->get());
 }
 
-// TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
-//     // If master sync is on when a track gets loaded, the internal clock
-//     // may or may not get synced to the new track depending on the state
-//     // of other decks and whether they have tracks loaded as well.
+TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
+    // First eject the fake tracks that come with the testing framework.
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
 
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    pButtonSyncEnabled1->slotSet(1.0);
 
-//     // This whole test no longer makes sense because we don't care about stopped decks.
-//     // I probably have to rewrite this to think about what happens when we load tracks
-//     // when something is playing, etc.
+    // No master because this deck has no track.
+    EXPECT_EQ(NULL, m_pEngineSync->getMaster());
 
-//     // Maybe better to remove this one also and start over with various load/unload situations.
+    // The track load doesn't trigger a master change, so still no master.
+    m_pMixerDeck1->loadFakeTrack(false, 140.0);
+    EXPECT_EQ(NULL, m_pEngineSync->getMaster());
+    EXPECT_FLOAT_EQ(140.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-//     // First eject the fake tracks that come with the testing framework.
-//     m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
-//     m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
-//     m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
+    // But as soon as we play, deck 1 is master
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    assertIsMaster(m_sGroup1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
 
-//     // If sync is on and we load a track, no master because it's not playing.
-//     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
-//     pButtonSyncEnabled1->slotSet(1.0);
+    // If sync is on two decks and we load a track in only one of them, Internal Clock will be
+    // master.
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    pButtonSyncEnabled2->slotSet(1.0);
 
-//     m_pMixerDeck1->loadFakeTrack(false, 140.0);
+    m_pMixerDeck1->loadFakeTrack(false, 128.0);
 
-//     qDebug() << "1";
-//     ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-//     EXPECT_FLOAT_EQ(140.0,
-//             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    assertIsMaster(m_sInternalClockGroup);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
+    // If sync is on two decks and one deck is loaded but not playing, we should
+    // initialize to that deck with internal clock master.
+    m_pMixerDeck2->loadFakeTrack(false, 110.0);
 
-//     assertIsMaster(m_sGroup1);
-
-//     // If sync is on two decks and we load a track in only one of them, that track is master./
-//     // T
-//     m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
-//     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
-//     pButtonSyncEnabled2->slotSet(1.0);
-
-//     m_pMixerDeck1->loadFakeTrack(false, 128.0);
-
-//     qDebug() << "2";
-//     assertIsMaster(m_sGroup1);
-//     EXPECT_FLOAT_EQ(128.0,
-//                     ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-
-//     // If sync is on two decks and one deck is loaded but not playing, we should
-//     // initialize to that deck with internal clock master.
-//     m_pMixerDeck2->loadFakeTrack(false, 110.0);
-
-//     qDebug() << "3";
-//     assertIsMaster(m_sInternalClockGroup);
-//     EXPECT_FLOAT_EQ(128.0,
-//                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-//     EXPECT_FLOAT_EQ(128.0,
-//                     ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-//     EXPECT_FLOAT_EQ(128.0,
-//                     ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-// }
+    assertIsMaster(m_sInternalClockGroup);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
 
 TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // Make sure playing decks with master sync enabled do not change tempo when
@@ -1407,9 +1397,11 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     EXPECT_FLOAT_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
     // now we have Deck 3 with 140 bpm and sync enabled
 
+    qDebug() << "enable sync on 1";
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
 
+    qDebug() << "everything play";
     ControlObject::getControl(ConfigKey(m_sGroup3, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);

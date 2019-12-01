@@ -36,7 +36,12 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     std::vector<Syncable*> stopped_sync_decks;
     std::vector<Syncable*> playing_sync_decks;
 
+    qDebug() << "pickmaster";
     if (enabling_syncable != nullptr) {
+        qDebug() << "enabling syncable" << enabling_syncable->getGroup() << enabling_syncable->getBaseBpm();
+    }
+
+    if (enabling_syncable != nullptr && enabling_syncable->getBaseBpm() != 0.0) {
         if (enabling_syncable->isPlaying()) {
             playing_sync_decks.push_back(enabling_syncable);
         } else {
@@ -79,7 +84,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         return m_pInternalClock;
     }
 
-    // No playing sync decks
+    // No valid playing sync decks
     if (stopped_sync_decks.size() == 1) {
         qDebug() << "one stopped sync deck" << stopped_sync_decks.front()->getGroup();
         return stopped_sync_decks.front();
@@ -88,7 +93,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         return m_pInternalClock;
     }
 
-    // No stopped sync decks
+    // No valid stopped sync decks
     qDebug() << "no stopped or playing sync deck, nullptr";
     return nullptr;
 }
@@ -202,7 +207,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    qDebug() << "request enable sync??? " << pSyncable->getGroup() << bEnabled;
+    qDebug() << "request enable sync " << pSyncable->getGroup() << bEnabled;
     // Sync disable request, hand off to a different function
     if (!bEnabled) {
         // Already disabled?  Do nothing.
@@ -238,15 +243,11 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         }
     }
 
-    // Now go through and possible pick a new master deck.
+    // Now go through and possible pick a new master deck if we can find one.
     Syncable* newMaster = pickMaster(pSyncable);
-    // At the very least we should pick ourselves
-    VERIFY_OR_DEBUG_ASSERT(newMaster != nullptr) {
-        return;
-    }
 
-    if (m_pMasterSyncable != newMaster) {
-        qDebug() << "(syncenable) master changed, activating it" << newMaster->getGroup();
+    if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
+        qDebug() << "(sync-enable) master changed, activating it" << newMaster->getGroup();
         activateMaster(newMaster);
         if (targetSyncable == nullptr) {
             setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(),
@@ -296,7 +297,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    //qDebug() << "EngineSync::notifyTrackLoaded";
+    qDebug() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 

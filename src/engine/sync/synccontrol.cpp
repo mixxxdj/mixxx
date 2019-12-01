@@ -175,7 +175,7 @@ void SyncControl::setBeatDistance(double beatDistance) {
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "SyncControl::setMasterBeatDistance" << beatDistance;
+    qDebug() << "SyncControl::setMasterBeatDistance" << beatDistance;
     m_beatDistance = beatDistance;
     updateTargetBeatDistance();
 }
@@ -185,7 +185,7 @@ void SyncControl::setMasterBaseBpm(double bpm) {
 }
 
 void SyncControl::setMasterBpm(double bpm) {
-    //qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
+    qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
 
     if (!isSynchronized()) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -210,7 +210,7 @@ void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bp
 }
 
 void SyncControl::updateTargetBeatDistance() {
-    //qDebug() << getGroup() << "SyncControl::updateTargetBeatDistance" << m_beatDistance;
+    qDebug() << getGroup() << "SyncControl::updateTargetBeatDistance" << m_beatDistance;
     m_pBpmControl->setTargetBeatDistance(m_beatDistance);
 }
 
@@ -233,17 +233,17 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 }
 
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    //qDebug() << getGroup() << "SyncControl::trackLoaded";
+    qDebug() << getGroup() << "SyncControl::trackLoaded";
     if (getSyncMode() == SYNC_MASTER) {
         // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
     if (pNewTrack) {
+        // Because of the order signals get processed, the file/local_bpm COs and
+        // rate slider are not updated as soon as we need them, so do that now.
+        m_pFileBpm->set(pNewTrack->getBpm());
+        m_pLocalBpm->set(pNewTrack->getBpm());
         if (isSynchronized()) {
-            // Because of the order signals get processed, the file/local_bpm COs and
-            // rate slider are not updated as soon as we need them, so do that now.
-            m_pFileBpm->set(pNewTrack->getBpm());
-            m_pLocalBpm->set(pNewTrack->getBpm());
             // We used to set the m_pBpm here, but that causes a signal loop whereby
             // that was interpreted as a rate slider tweak, and the master bpm
             // was changed.  Instead, now we pass the suggested bpm to enginesync

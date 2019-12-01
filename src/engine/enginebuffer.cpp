@@ -371,7 +371,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
-    //qDebug() << getGroup() << "queueNewPlayPos" << newpos;
+    qDebug() << getGroup() << "queueNewPlayPos" << newpos;
     m_queuedSeekPosition.setValue(newpos);
     // set m_queuedPosition valid
     m_iSeekQueued = seekType;
@@ -438,7 +438,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << m_group << "engine new pos " << newpos;
+    qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
 
@@ -735,7 +735,7 @@ void EngineBuffer::processTrackLocked(
     processSyncRequests();
 
     // Note: This may effects the m_filepos_play, play, scaler and crossfade buffer
-    //qDebug() << "processtrack locked: process seek!";
+    qDebug() << "processtrack locked: process seek!";
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1195,6 +1195,8 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // values from the first update.
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
+    qDebug() << "new beat distance" << beat_distance;
+
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
         //qDebug() << "we are master" << getGroup() << local_bpm << beat_distance;
