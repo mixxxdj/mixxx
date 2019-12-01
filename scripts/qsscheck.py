@@ -21,13 +21,14 @@ RE_OBJNAME_VARTAG = re.compile(r'<.*>')
 
 
 def get_skins(path):
+    """Yields (skin_name, skin_path) tuples for each skin directory in path."""
     for entry in os.scandir(path):
         if entry.is_dir():
             yield entry.name, os.path.join(path, entry.name)
 
 
-
 def get_global_names(mixxx_path):
+    """Returns 2 sets with all class and object names in the Mixx codebase."""
     classnames = set()
     objectnames = set()
     for root, dirs, fnames in os.walk(os.path.join(mixxx_path, 'src')):
@@ -47,6 +48,12 @@ def get_global_names(mixxx_path):
 
 
 def get_skin_objectnames(skin_path):
+    """
+    Yields all object names in the skin_path.
+
+    Note the names may contain one or more <Variable name="x"> tags, so it's
+    not enough to check if a name CSS object name is in this list using "in".
+    """
     for root, dirs, fnames in os.walk(skin_path):
         for fname in fnames:
             if os.path.splitext(fname)[1] != '.xml':
@@ -60,6 +67,7 @@ def get_skin_objectnames(skin_path):
 
 
 def get_skin_stylesheets(skin_path):
+    """Yields (qss_path, stylesheet) tuples for each qss file in skin_path)."""
     cssparser = tinycss.css21.CSS21Parser()
     for filename in os.listdir(skin_path):
         if os.path.splitext(filename)[1] != '.qss':
@@ -70,6 +78,7 @@ def get_skin_stylesheets(skin_path):
 
 
 def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
+    """Yields (token, problem) tuples for each problem found in stylesheet."""
     for rule in stylesheet.rules:
         if not isinstance(rule, tinycss.css21.RuleSet):
             continue
@@ -96,6 +105,12 @@ def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
 
 
 def check_skins(mixxx_path, skins, ignore_patterns=()):
+    """
+    Yields error messages for skins using class/object names from mixxx_path.
+
+    By providing a list of ignore_patterns, you can ignore certain class or
+    object names (e.g. #Test, #*Debug).
+    """
     classnames, objectnames = get_global_names(mixxx_path)
     for skin_name, skin_path in sorted(skins):
         # If the skin objectname is something like 'Deck<Variable name="i">',
@@ -127,6 +142,7 @@ def check_skins(mixxx_path, skins, ignore_patterns=()):
 
 
 def main(argv=None):
+    """Main method for handling command line arguments."""
     parser = argparse.ArgumentParser('qsscheck', description='Check Mixxx QSS '
                                      'stylesheets for non-existing '
                                      'object/class names')
