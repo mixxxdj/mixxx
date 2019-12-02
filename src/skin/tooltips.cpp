@@ -126,6 +126,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Indicates when the signal on the microphone is clipping,")
             << clippingHelp;
 
+    add("auxiliary_VuMeter")
+            << tr("Auxiliary Volume Meter")
+            << tr("Shows the current auxiliary volume.");
+
+    add("auxiliary_PeakIndicator")
+            << tr("Auxiliary Peak Indicator")
+            << tr("Indicates when the signal on the auxiliary is clipping,")
+            << clippingHelp;
+
     add("sampler_VuMeter")
             << tr("Sampler Volume Meter")
             << tr("Shows the current sampler volume.");
