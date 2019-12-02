@@ -42,6 +42,7 @@ class WCueMenuPopup : public QWidget {
     }
 
     void show() {
+        m_pEditLabel->setFocus();
         emit(aboutToShow());
         QWidget::show();
     }
