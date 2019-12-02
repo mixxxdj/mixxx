@@ -38,14 +38,14 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <image>http://www.mixxx.org/static/images/press_art/mixxx_200_deere_skin.png</image>
+      <image>https://www.mixxx.org/static/images/press_art/mixxx_200_deere_skin.png</image>
       <caption>Mixxx with the default Deere skin</caption>
     </screenshot>
   </screenshots>
-  <url type="homepage">http://mixxx.org</url>
-  <url type="bugtracker">https://bugs.launchpad.net/mixxx/</url>
-  <url type="donation">http://www.mixxx.org/support/</url>
-  <url type="help">http://www.mixxx.org/support/</url>
-  <url type="translate">https://www.transifex.com/mixxx-dj-software/public/</url>
+  <url type="homepage">https://mixxx.org</url>
+  <url type="bugtracker">https://bugs.launchpad.net/mixxx</url>
+  <url type="donation">https://www.mixxx.org/support</url>
+  <url type="help">https://www.mixxx.org/support</url>
+  <url type="translate">https://www.transifex.com/mixxx-dj-software/public</url>
   <update_contact>mixxx-devel@lists.sourceforge.net</update_contact>
 </component>
