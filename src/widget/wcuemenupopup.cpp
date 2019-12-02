@@ -27,6 +27,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     m_pEditLabel->setToolTip(tr("Edit cue label"));
     m_pEditLabel->setObjectName("CueLabelEdit");
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
+    connect(m_pEditLabel, &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
     m_pColorPicker = new WColorPicker(this);
     m_pColorPicker->setObjectName("CueColorPicker");
