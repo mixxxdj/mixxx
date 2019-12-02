@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QMapIterator>
 #include <QPushButton>
+#include <QStyle>
 
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
@@ -12,8 +13,7 @@ const int kNumColumns = 4;
 }
 
 WColorPicker::WColorPicker(QWidget* parent)
-        : QWidget(parent),
-        m_pCheckedIcon(":/images/ic_checkmark.svg") {
+        : QWidget(parent) {
     // If another title would be more appropriate in some context, setTitle
     // can be called again after construction.
     QGridLayout* pLayout = new QGridLayout();
@@ -37,6 +37,7 @@ WColorPicker::WColorPicker(QWidget* parent)
         );
 
         pColorButton->setToolTip(pColor->m_sDisplayName);
+        pColorButton->setCheckable(true);
         m_pColorButtons.insert(pColor, pColorButton);
 
         pLayout->addWidget(pColorButton, row, column);
@@ -59,8 +60,9 @@ void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
         qDebug() << "m_pSelectedColor";
         QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(m_pSelectedColor);
         if (it != m_pColorButtons.constEnd()) {
-            qDebug() << it.value() << "clear icon";
-            it.value()->setIcon(QIcon());
+            it.value()->setChecked(false);
+            it.value()->style()->unpolish(it.value());
+            it.value()->style()->polish(it.value());
         }
     }
 
@@ -68,8 +70,9 @@ void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
         qDebug() << "m_pColor";
         QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(pColor);
         if (it != m_pColorButtons.constEnd()) {
-            qDebug() << it.value() << "set checkmark icon";
-            it.value()->setIcon(m_pCheckedIcon);
+            it.value()->setChecked(true);
+            it.value()->style()->unpolish(it.value());
+            it.value()->style()->polish(it.value());
         }
     }
 
