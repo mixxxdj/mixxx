@@ -197,6 +197,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             }
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
