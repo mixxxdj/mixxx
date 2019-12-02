@@ -2,9 +2,9 @@ var DDJ200 = {};
 
 DDJ200.scratching = [];
 
-DDJ200.init = function (id, debugging) {}
+DDJ200.init = function () {}
 
-DDJ200.shutdown = function() {}
+DDJ200.shutdown = function () {}
 
 DDJ200.scratch = function (channel, control, value, status, group) {
     // enable scractch
