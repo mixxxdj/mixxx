@@ -315,9 +315,9 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO
-                || type == Cue::OUTRO) {
+        Cue::Type type = pCue->getType();
+        if (type == Cue::Type::HotCue || type == Cue::Type::MainCue || type == Cue::Type::Intro
+                || type == Cue::Type::Outro) {
             listPoints.push_back(pCue);
         }
     }
@@ -385,28 +385,28 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
-            case Cue::INVALID:
+            case Cue::Type::Invalid:
                 cueType = "?";
                 break;
-            case Cue::CUE:
+            case Cue::Type::HotCue:
                 cueType = "Hotcue";
                 break;
-            case Cue::LOAD:
+            case Cue::Type::MainCue:
                 cueType = "Main Cue";
                 break;
-            case Cue::BEAT:
+            case Cue::Type::Beat:
                 cueType = "Beat";
                 break;
-            case Cue::LOOP:
+            case Cue::Type::Loop:
                 cueType = "Loop";
                 break;
-            case Cue::JUMP:
+            case Cue::Type::Jump:
                 cueType = "Jump";
                 break;
-            case Cue::INTRO:
+            case Cue::Type::Intro:
                 cueType = "Intro";
                 break;
-            case Cue::OUTRO:
+            case Cue::Type::Outro:
                 cueType = "Outro";
                 break;
             default:
@@ -514,7 +514,7 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(-1);
         }
 
-        if (pCue->getType() == Cue::CUE) {
+        if (pCue->getType() == Cue::Type::HotCue) {
             auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
             if (colorComboBox) {
                 PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());

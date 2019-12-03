@@ -15,7 +15,6 @@
         <ObjectName>Battery</ObjectName>
         <Size>24,24</Size>
         <SizePolicy>f,f</SizePolicy>
-        <PixmapUnknown scalemode="STRETCH_ASPECT">icon/ic_battery_unknown_48px.svg</PixmapUnknown>
         <PixmapCharged scalemode="STRETCH_ASPECT">icon/ic_battery_charged_48px.svg</PixmapCharged>
         <NumberStates>8</NumberStates>
         <PixmapsCharging scalemode="STRETCH_ASPECT">icon/ic_battery_charging_%1_48px.svg</PixmapsCharging>
@@ -285,7 +284,7 @@
               -->
               <Template src="skin:statuslight_3state.xml">
                 <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="Tooltip">AutoDJ active</SetVariable>
+                <SetVariable name="Tooltip">Auto DJ active</SetVariable>
                 <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>

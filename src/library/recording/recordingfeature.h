@@ -29,7 +29,7 @@ class RecordingFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
 
     TreeItemModel* getChildModel();

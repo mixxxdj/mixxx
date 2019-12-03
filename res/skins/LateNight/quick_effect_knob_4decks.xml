@@ -11,7 +11,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><Size>4f,-1min</Size></WidgetGroup>
+          <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>

@@ -4,6 +4,8 @@ WBeatSpinBox {
 	background-color: #ad9e4f;
 }
 
+#fadeModeCombobox,
+#spinBoxTransition,
 WEffectSelector {
 	color: #101307;
 	background-color: #ad9e4f;

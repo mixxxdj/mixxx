@@ -1,0 +1,43 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob.
+  Variables:
+    group
+    control: The control to connect to
+    label
+    Size
+    TooltipId
+    PotiMinAngle
+    PotiMaxAngle
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VuMeterBox</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <StatusLight>
+        <TooltipId><Variable name="GroupType"/>_PeakIndicator</TooltipId>
+        <PathStatusLight>style/vu_clipping_small_over.png</PathStatusLight>
+        <PathBack>style/vu_clipping_small.png</PathBack>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
+      <VuMeter>
+        <TooltipId><Variable name="GroupType"/>_VuMeter</TooltipId>
+        <PathVu>style/vu_level_small_over.png</PathVu>
+        <PathBack>style/vu_level_small.png</PathBack>
+        <Horizontal>false</Horizontal>
+        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldTime>500</PeakHoldTime>
+        <PeakFallTime>50</PeakFallTime>
+        <PeakFallStep>2</PeakFallStep>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
+    </Children>
+  </WidgetGroup>
+</Template>

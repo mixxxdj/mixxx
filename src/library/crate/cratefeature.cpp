@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 #include "util/dnd.h"
@@ -236,26 +237,20 @@ void updateTreeItemForTrackSelection(
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     CrateId crateId(crateIdFromIndex(index));
-    if (!crateId.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
     }
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<TrackId> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-        m_pTrackCollection->unhideTracks(trackIds);
-    } else {
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    // If a track is dropped onto a crate's name, but the track isn't in the
+    // library, then add the track to the library before adding it to the
+    // playlist.
+    // pSource != nullptr it is a drop from inside Mixxx and indicates all
+    // tracks already in the DB
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+            !pSource);
+    if (!trackIds.size()) {
+        return false;
     }
-    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
-            << trackIds.size() << " to crate "<< crateId;
-    // remove tracks that could not be added
-    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
-        if (!trackIds.at(trackIdIndex).isValid()) {
-            trackIds.removeAt(trackIdIndex--);
-        }
-    }
+
     m_pTrackCollection->addCrateTracks(crateId, trackIds);
     return true;
 }
@@ -273,7 +268,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
+void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -284,6 +279,11 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView("CRATEHOME", edit);
+}
+
+void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -340,7 +340,7 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
@@ -367,7 +367,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction.get());

@@ -18,21 +18,25 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
-enum SeekOnLoadMode {
-    SEEK_ON_LOAD_DEFAULT = 0,  // Use CueRecall preference setting
-    SEEK_ON_LOAD_ZERO_POS = 1,  // Use 0:00.000
-    SEEK_ON_LOAD_MAIN_CUE = 2,  // Use main cue point
-    SEEK_ON_LOAD_INTRO_CUE = 3,  // Use intro cue point
-    SEEK_ON_LOAD_NUM_MODES
+enum class CueMode {
+    Mixxx,
+    Pioneer,
+    Denon,
+    Numark,
+    MixxxNoBlinking,
+    CueAndPlay
+};
+
+enum class SeekOnLoadMode {
+    MainCue = 0,    // Use main cue point
+    Beginning = 1,  // Use 0:00.000
+    FirstSound = 2, // Skip leading silence
+    IntroStart = 3, // Use intro start cue point
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
-    // msvs does not allow to cast from double to an enum
-    SeekOnLoadMode mode = static_cast<SeekOnLoadMode>(int(value));
-    if (mode >= SEEK_ON_LOAD_NUM_MODES || mode < 0) {
-        return SEEK_ON_LOAD_DEFAULT;
-    }
-    return mode;
+    return static_cast<SeekOnLoadMode>(int(value));
+    ;
 }
 
 class HotcueControl : public QObject {
@@ -49,8 +53,8 @@ class HotcueControl : public QObject {
     void resetCue();
     void setPosition(double position);
     void setLength(double length);
-    void setType(Cue::CueType type);
-    void setStatus(Cue::CueStatus status);
+    void setType(Cue::Type type);
+    void setStatus(Cue::Status status);
     void setColor(PredefinedColorPointer newColor);
     PredefinedColorPointer getColor() const;
 
@@ -151,9 +155,8 @@ class CueControl : public EngineControl {
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
-    bool isCueRecallEnabled();
+    SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
-    SeekOnLoadMode getSeekOnLoadMode();
 
   private slots:
     void quantizeChanged(double v);
@@ -223,7 +226,7 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
-    double quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode);
+    double quantizeCuePoint(double position, QuantizeMode mode);
     double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 
@@ -247,7 +250,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
-    ControlObject* m_pSeekOnLoadMode;
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;

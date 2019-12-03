@@ -291,8 +291,8 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     m_loopSamples.setValue(loopSamples);
     if(m_pCue) {
-        m_pCue->setPosition(loopSamples.start);
-        m_pCue->setLength(loopSamples.end - loopSamples.start);
+        m_pCue->setStartPosition(loopSamples.start);
+        m_pCue->setEndPosition(loopSamples.end);
     }
 
     // Update CO for loop end marker
@@ -541,7 +541,7 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
         clearActiveBeatLoop();
         return;
     }
-    DEBUG_ASSERT(pCue->getType() == Cue::LOOP);
+    DEBUG_ASSERT(pCue->getType() == Cue::Type::Loop);
 
     double startPosition = pCue->getPosition();;
     double endPosition = startPosition + pCue->getLength();
@@ -1270,8 +1270,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     m_loopSamples.setValue(newloopSamples);
     if(m_pCue) {
-        m_pCue->setPosition(newloopSamples.start);
-        m_pCue->setLength(newloopSamples.end - newloopSamples.start);
+        m_pCue->setStartPosition(newloopSamples.start);
+        m_pCue->setEndPosition(newloopSamples.end);
     }
     m_pCOLoopStartPosition->set(newloopSamples.start);
     m_pCOLoopEndPosition->set(newloopSamples.end);
@@ -1378,8 +1378,8 @@ void LoopingControl::slotLoopMove(double beats) {
         loopSamples.end = new_loop_out;
         m_loopSamples.setValue(loopSamples);
         if (m_pCue)  {
-            m_pCue->setPosition(loopSamples.start);
-            m_pCue->setLength(loopSamples.end - loopSamples.start);
+            m_pCue->setStartPosition(loopSamples.start);
+            m_pCue->setEndPosition(loopSamples.end);
         }
         m_pCOLoopStartPosition->set(new_loop_in);
         m_pCOLoopEndPosition->set(new_loop_out);
