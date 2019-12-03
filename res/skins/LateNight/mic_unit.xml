@@ -51,7 +51,7 @@
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
                               <Template src="skin:knob_textless.xml">
-                                <SetVariable name="TooltipId">pregain</SetVariable>
+                                <SetVariable name="TooltipId">microphone_pregain</SetVariable>
                                 <SetVariable name="Size">36f,30f</SetVariable>
                                 <SetVariable name="Color">orange</SetVariable>
                                 <SetVariable name="group"><Variable name="group"/></SetVariable>

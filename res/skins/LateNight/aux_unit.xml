@@ -51,7 +51,7 @@
                             <SizePolicy>min,min</SizePolicy>
                             <Children>
                               <Template src="skin:knob_textless.xml">
-                                <SetVariable name="TooltipId">pregain</SetVariable>
+                                <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
                                 <SetVariable name="Size">36f,30f</SetVariable>
                                 <SetVariable name="Color">orange</SetVariable>
                                 <SetVariable name="group"><Variable name="group"/></SetVariable>
@@ -133,7 +133,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:vumeter_small.xml">
-                        <SetVariable name="GroupType">microphone</SetVariable>
+                        <SetVariable name="GroupType">auxiliary</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
