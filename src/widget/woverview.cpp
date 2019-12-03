@@ -73,12 +73,9 @@ WOverview::WOverview(
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
-    m_pRateDirControl = new ControlProxy(m_group, "rate_dir", this);
-    m_pRateRangeControl = new ControlProxy(m_group, "rateRange", this);
-    m_pRateSliderControl = new ControlProxy(m_group, "rate", this);
+    m_pRateRatioControl = new ControlProxy(m_group, "rate_ratio", this);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
-    // TODO: connect to rate_ratio instead in PR #1765
-    m_pRateSliderControl->connectValueChanged(this, &WOverview::onRateSliderChange);
+    m_pRateRatioControl->connectValueChanged(this, &WOverview::onRateRatioChange);
     m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
@@ -340,7 +337,7 @@ void WOverview::onMarkRangeChange(double /*v*/) {
     update();
 }
 
-void WOverview::onRateSliderChange(double /*v*/) {
+void WOverview::onRateRatioChange(double /*v*/) {
     update();
 }
 
@@ -1091,8 +1088,8 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 
 double WOverview::samplePositionToSeconds(double sample) {
     // TODO: replace with rate_ratio in PR #1765
-    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
-    return sample / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio;
+    return sample / m_trackSampleRateControl->get() / 
+            mixxx::kEngineChannelCount / m_pRateRatioControl->get();
 }
 
 void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
