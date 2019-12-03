@@ -169,30 +169,35 @@ TEST_F(EngineSyncTest, SetEnabledBecomesMaster) {
     assertIsMaster(m_sInternalClockGroup);
 }
 
-// TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
-//     auto pButtonMasterSync = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
-//     pButtonMasterSync->slotSet(1.0);
-//     auto pButtonSyncMode1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
-//     pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
-//     ProcessBuffer();
+TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
+    auto pButtonMasterSync = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
+    pButtonMasterSync->slotSet(1.0);
+    auto pButtonSyncMode1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
+    auto pButtonSyncMode2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
+    pButtonSyncMode2->slotSet(SYNC_FOLLOWER);
+    ProcessBuffer();
 
-//     // The master sync should now be Internal.
-//     assertIsMaster(m_sInternalClockGroup);
+    // The master sync should now be Internal.
+    assertIsMaster(m_sInternalClockGroup);
 
-//     // Make sure deck 1 is playing.
-//     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
-//     pFileBpm1->set(80.0);
-//     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-//     ProcessBuffer();
+    // Make sure both decks are playing.
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(80.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(80.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ProcessBuffer();
 
-//     // Now unset Internal master.
-//     pButtonMasterSync->slotSet(0.0);
-//     ProcessBuffer();
+    // Now unset Internal master.
+    pButtonMasterSync->slotSet(0.0);
+    ProcessBuffer();
 
-//     // This is not allowed, Internal should still be master.
-//     assertIsMaster(m_sInternalClockGroup);
-//     ASSERT_EQ(1, pButtonMasterSync->get());
-// }
+    // This is not allowed, Internal should still be master.
+    assertIsMaster(m_sInternalClockGroup);
+    ASSERT_EQ(1, pButtonMasterSync->get());
+}
 
 TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     // Channel 1 follower, channel 2 master.
