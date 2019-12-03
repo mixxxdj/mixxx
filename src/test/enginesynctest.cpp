@@ -1168,16 +1168,22 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
-    // Make Channel2 master to weed out any channel ordering issues.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_MASTER);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
 
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    // Mixxx will choose the first playing deck to be master.  Let's start deck 2 first.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
+
+    EXPECT_EQ(0.5,
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
+    EXPECT_EQ(1.0,
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
     for (int i=0; i<50; ++i) {
+        qDebug() << "bpm test loop iter" << i;
         ProcessBuffer();
         // The beat distances are NOT as simple as x2 or /2.  Use the built-in functions
         // to do the proper conversion.
@@ -1188,20 +1194,26 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
 
-    // Now switch master and follower and check again.
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
+    // Now start deck 1 first and check again.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     ProcessBuffer();
 
+    EXPECT_EQ(1.0,
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
+    EXPECT_EQ(2.0,
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
+
     // Exaggerate the effect with a high rate.
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(2.0));
 
     for (int i=0; i<50; ++i) {
+        qDebug() << "bpm test loop 2 iter" << i;
         ProcessBuffer();
         EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
                   m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
@@ -1231,8 +1243,8 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     EXPECT_FLOAT_EQ(175.0,
                 ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
     EXPECT_FLOAT_EQ(175.0,
                 ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
@@ -1245,8 +1257,7 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
               m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 
     // Now enable the other deck first.
-    // Unset Play so that EngineBuffer immediately responds to the sync_enabled
-    // changes rather than waiting for the buffer processing.
+    // Sync only cares about which deck plays first now, enable order is irrelevant.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
     pButtonSyncEnabled1->slotSet(0.0);
@@ -1283,7 +1294,7 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
 
     EXPECT_FLOAT_EQ(140.0,
                 ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    EXPECT_FLOAT_EQ(getRateSliderValue(2.0),
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
                     ControlObject::getControl(
                             ConfigKey(m_sGroup1, "rate"))->get());
     EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
@@ -1703,8 +1714,8 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     // we expect that the new beatgrid is aligned to the other playing track
     // Not the case before fixing lp1808698
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    // We used to sync on half beats but now we just sync to simple beat marks.
-    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    // Expect to sync on half beats
+    EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 

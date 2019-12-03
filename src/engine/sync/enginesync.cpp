@@ -25,6 +25,8 @@
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 
+const bool SYNC_DEBUG = false;
+
 EngineSync::EngineSync(UserSettingsPointer pConfig)
         : BaseSyncableListener(pConfig) {
 }
@@ -84,7 +86,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    if (SYNC_DEBUG) qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
@@ -185,7 +187,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    //qDebug() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
+    if (SYNC_DEBUG) qDebug() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
     // Sync disable request, hand off to a different function
     if (!bEnabled) {
         // Already disabled?  Do nothing.
@@ -247,7 +249,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
     if (!pSyncable->isSynchronized()) {
         return;
@@ -266,7 +268,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    //qDebug() << "EngineSync::notifyTrackLoaded";
+    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -387,7 +389,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 }
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
-    //qDebug() << "EngineSync::deactivateSync" << pSyncable->getGroup();
+    if (SYNC_DEBUG) qDebug() << "EngineSync::deactivateSync" << pSyncable->getGroup();
     bool wasMaster = pSyncable->getSyncMode() == SYNC_MASTER;
     if (wasMaster) {
         m_pMasterSyncable = NULL;
@@ -403,8 +405,6 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
         m_pMasterSyncable = NULL;
         m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
     }
-
-    // checkUniquePlayingSyncable();
 
     Syncable* newMaster = pickMaster(nullptr);
 

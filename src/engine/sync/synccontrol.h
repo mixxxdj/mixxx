@@ -17,6 +17,9 @@ class ControlPushButton;
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
+    static const double kBpmUnity;
+    static const double kBpmHalve;
+    static const double kBpmDouble;
     SyncControl(const QString& group, UserSettingsPointer pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     ~SyncControl() override;
@@ -81,6 +84,12 @@ class SyncControl : public EngineControl, public Syncable {
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
+    FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
+    // Sometimes it's best to match bpms based on half or double the target
+    // bpm.  e.g. 70 matches better with 140/2.  This function returns the
+    // best factor for multiplying the master bpm to get a bpm this syncable
+    // should match against.
+    double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
 
     QString m_sGroup;
@@ -93,7 +102,15 @@ class SyncControl : public EngineControl, public Syncable {
     RateControl* m_pRateControl;
     bool m_bOldScratching;
 
+    // When syncing, sometimes it's better to match half or double the
+    // master bpm.
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
+    // The amount we should multiply the master BPM to find a good sync match.
+    // Sometimes this is 2 or 0.5.
+    double m_masterBpmAdjustFactor;
+    // It is handy to store the raw reported target beat distance in case the
+    // multiplier changes and we need to recalculate the target distance.
+    double m_unmultipliedTargetBeatDistance;
     double m_beatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
 

@@ -15,6 +15,7 @@
 #include "util/duration.h"
 
 namespace {
+const bool BPM_DEBUG = false;
 
 constexpr double kBpmRangeMin = 1.0;
 // TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
@@ -165,7 +166,7 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
-    //qDebug() << "BpmControl::slotFileBpmChanged" << file_bpm;
+    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::slotFileBpmChanged" << file_bpm;
     BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         const double beats_bpm =
@@ -381,7 +382,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 }
 
 double BpmControl::calcSyncedRate(double userTweak) {
-    //qDebug() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
+    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     m_dUserRateTweak = userTweak;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
@@ -444,15 +445,28 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     // than modular 1.0 beat fractions. This will allow sync to work across loop
     // boundaries too.
 
-    double master_percentage = m_dSyncTargetBeatDistance.getValue();
-    double shortest_distance = shortestPercentageChange(
-        master_percentage, my_percentage);
 
-    /*qDebug() << m_sGroup << m_dUserOffset.getValue();
-    qDebug() << "master beat distance:" << master_percentage;
-    qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
-    qDebug() << "user offset         :" << m_dUserOffset.getValue();*/
+    double master_percentage = m_dSyncTargetBeatDistance.getValue();
+
+    // If we're doing half bpm adjustment, the master beat distance will never get over 0.5.
+    // We have to halve our beat distance to do the sync adjustment calculation.
+    double adjust_factor = m_dSyncAdjustFactor.getValue();
+    if (adjust_factor == 0.5) {
+        while (my_percentage >= 0.5) {
+            my_percentage -= 0.5;
+        }
+    }
+    double shortest_distance = shortestPercentageChange(
+            master_percentage, my_percentage);
+
+    if (BPM_DEBUG) {
+        qDebug() << m_sGroup << m_dUserOffset.getValue();
+        qDebug() << m_dSyncAdjustFactor.getValue();
+        qDebug() << "master beat distance:" << master_percentage;
+        qDebug() << "my     beat distance:" << my_percentage;
+        qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
+        qDebug() << "user offset         :" << m_dUserOffset.getValue();
+    }
 
     double adjustment = 1.0;
 
@@ -494,6 +508,8 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
 }
 
 double BpmControl::getBeatDistance(double dThisPosition) const {
+    if (BPM_DEBUG)
+        qDebug() << getGroup() << "BpmControl::getBeatDistance" << dThisPosition;
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
 
@@ -814,7 +830,6 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    //qDebug() << getGroup() << "BpmControl::updateBeatDistance";
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
     if (m_dUserRateTweak != 0.0) {
         double master_percentage = m_dSyncTargetBeatDistance.getValue();
@@ -832,6 +847,8 @@ double BpmControl::updateBeatDistance() {
     if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
     }
+    if (BPM_DEBUG)
+        qDebug() << getGroup() << "BpmControl::updateBeatDistance" << beat_distance;
     return beat_distance;
 }
 
@@ -839,12 +856,16 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
     m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 
+void BpmControl::setSyncAdjustFactor(double adjustFactor) {
+    m_dSyncAdjustFactor.setValue(adjustFactor);
+}
+
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
 }
 
 void BpmControl::resetSyncAdjustment() {
-    //qDebug() << getGroup() << "BpmControl::resetSyncAdjustment";
+    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::resetSyncAdjustment";
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     m_pThisBeatDistance->set(new_distance);
