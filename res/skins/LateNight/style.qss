@@ -1739,6 +1739,10 @@ QTableView::item:selected {
   color: #fff;
   background-color: #5e4507;
 }
+/* DEBUG */
+QTableView::item:focus {
+  border: 1px solid red;
+}
 
 /* checkbox in library "Played" column */
 QTableView::indicator {/*
