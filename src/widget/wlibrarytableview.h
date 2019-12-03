@@ -60,6 +60,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void saveVScrollBarPosState();
 
     QMap<TrackModel*, int> m_vScrollBarPosValues;
+    QMap<TrackModel*, QModelIndexList> m_selectedIndices;
 
     UserSettingsPointer m_pConfig;
     ConfigKey m_vScrollBarPosKey;

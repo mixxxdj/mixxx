@@ -1140,6 +1140,7 @@ void WTrackTableView::onSearch(const QString& text) {
 }
 
 void WTrackTableView::onShow() {
+    qDebug("    WTrackTableView::onShow()");
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {

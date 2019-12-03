@@ -38,13 +38,15 @@ bool WLibrary::registerView(QString name, QWidget* view) {
 
 void WLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
-    //qDebug() << "WLibrary::switchToView" << name;
+    qDebug() << "";
+    qDebug() << "WLibrary::switchToView" << name;
 
     WTrackTableView* ttView = dynamic_cast<WTrackTableView*>(
                 currentWidget());
+    qDebug() << "       currentWidget =" << ttView;
 
     if (ttView != nullptr){
-        //qDebug("trying to save position");
+        qDebug("trying to save position");
         ttView->saveCurrentVScrollBarPos();
     }
 
@@ -71,6 +73,7 @@ void WLibrary::switchToView(const QString& name) {
             ttWidgetView->restoreCurrentVScrollBarPos();
         }
     }
+    qDebug() << "";
 }
 
 void WLibrary::search(const QString& name) {

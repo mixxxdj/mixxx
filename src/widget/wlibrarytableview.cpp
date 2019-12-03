@@ -115,18 +115,94 @@ void WLibraryTableView::moveSelection(int delta) {
 }
 
 void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
+    qDebug()<<"";
+    qDebug()<<"    WLibraryTableView::saveVScrollBarPos";
+    qDebug()<<"        m_vScrollBarPosValues["<<key<<"] = verticalScrollBar()->value()";
+    qDebug()<<"                = "<<verticalScrollBar()->value();
     m_vScrollBarPosValues[key] = verticalScrollBar()->value();
+    // also store current index (last selected row)
+    // This stores last focused row which might have been a click
+    // to remove a row from row selection:
+//    QModelIndex current = currentIndex();
+    // list selected rows:
+    // https://stackoverflow.com/a/28085512
+    // ( if (selectionModel()->hasSelection) { )
+    //      selectionModel()->selectedRows(); }
+
+    // store multi-selection:
+    // https://stackoverflow.com/a/6276831
+    // QMap <QString, QList <QString> > map;
+    // QMap<TrackModel*, QModelIndexList > m_selectedIndicesValues;
+    //
+    if (currentIndex().isValid()) {
+        // Only act when the view has a selection. For example, there is none
+        // when library features are added initially after start.
+        qDebug()<<"        currentIndex().isValid()";
+        qDebug()<<"        QModelIndexList selection = selectionModel()->selectedRows();";
+        QModelIndexList selection = selectionModel()->selectedRows();
+//        QModelIndexList selection = selectionModel()->selectedIndexes();
+        if (selection.size() > 0) {
+            qDebug()<<"        if (selection.size() > 0)";
+            qDebug()<<"        m_selectedIndicesValues["<<key<<"] = selection";
+            m_selectedIndices[key] = selection;
+        }
+    } else {
+        qDebug()<<"        !currentIndex().isValid()";
+    }
+    qDebug()<<"";
 }
 
 void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
+    qDebug()<<"";
+    qDebug()<<"    WLibraryTableView::restoreVScrollBarPos";
     updateGeometries();
 
-    if (m_vScrollBarPosValues.contains(key)){
+    if (m_vScrollBarPosValues.contains(key)) {
+        qDebug()<<"        restore previous vertical scrollbar pos from m_vScrollBarPosValues[key]";
         verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
-    }else{
+    } else {
         m_vScrollBarPosValues[key] = 0;
+        qDebug()<<"        set/store default vertical scrollbar position";
         verticalScrollBar()->setValue(0);
     }
+    if (m_selectedIndices.contains(key)) {
+        QModelIndexList selection = m_selectedIndices[key];
+        // before restoring selected indices select first row first
+        // in order to set focus for arrow key navigation
+        selectRow(selection.first().row());
+        // before looping over indices remove first index
+        if (selection.size() > 1) {
+            selection.removeFirst();
+        } else {
+            return;
+        }
+        foreach (QModelIndex index, selection) {
+            if (index.isValid()) {
+                qDebug()<<"            "<<index<<" isValid(), select";
+                selectionModel()->select(index,
+                        QItemSelectionModel::Select | QItemSelectionModel::Rows);
+
+                // This restores selection properly
+                // Con: top-left table cell has focus when the table gets focused:
+                // selectionModel()->select(index,
+                //         QItemSelectionModel::Select | QItemSelectionModel::Rows);
+
+                // Use setCurrentIndex for last list item
+                // Con: Up/Down keys wouldn't work before pressing Right which moves the focus
+                // if (index == selection.last()) {
+                //     selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
+                //     selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
+                // }
+
+                // This selects each row
+                // Pro: last selected row has focus for navigation.
+                // Con: clears the previous selection for every new row
+                // int row = index.row();
+                // selectRow(row);
+            }
+        }
+    }
+    qDebug()<<"";
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
