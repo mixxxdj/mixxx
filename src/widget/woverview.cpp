@@ -1091,8 +1091,9 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 }
 
 double WOverview::samplePositionToSeconds(double sample) {
-    return sample / m_trackSampleRateControl->get() / 
-            mixxx::kEngineChannelCount / m_pRateRatioControl->get();
+    double trackTime = sample /
+            (m_trackSampleRateControl->get() * mixxx::kEngineChannelCount);
+    return trackTime / m_pRateRatioControl->get();
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
