@@ -33,10 +33,10 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     m_pColorPicker->setObjectName("CueColorPicker");
     connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);
 
-    m_pRemoveCue = new QPushButton("", this);
-    m_pRemoveCue->setToolTip(tr("Delete this cue"));
-    m_pRemoveCue->setObjectName("CueRemoveButton");
-    connect(m_pRemoveCue, &QPushButton::clicked, this, &WCueMenuPopup::slotRemoveCue);
+    m_pDeleteCue = new QPushButton("", this);
+    m_pDeleteCue->setToolTip(tr("Delete this cue"));
+    m_pDeleteCue->setObjectName("CueDeleteButton");
+    connect(m_pDeleteCue, &QPushButton::clicked, this, &WCueMenuPopup::slotDeleteCue);
 
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber);
@@ -49,7 +49,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     pLeftLayout->addWidget(m_pColorPicker);
 
     QVBoxLayout* pRightLayout = new QVBoxLayout();
-    pRightLayout->addWidget(m_pRemoveCue);
+    pRightLayout->addWidget(m_pDeleteCue);
     pRightLayout->addStretch(1);
 
     QHBoxLayout* pMainLayout = new QHBoxLayout();
@@ -117,7 +117,7 @@ void WCueMenuPopup::slotChangeCueColor(PredefinedColorPointer pColor) {
     hide();
 }
 
-void WCueMenuPopup::slotRemoveCue() {
+void WCueMenuPopup::slotDeleteCue() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
