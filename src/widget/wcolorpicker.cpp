@@ -14,8 +14,6 @@ namespace {
 
 WColorPicker::WColorPicker(QWidget* parent)
         : QWidget(parent) {
-    // If another title would be more appropriate in some context, setTitle
-    // can be called again after construction.
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
@@ -55,9 +53,7 @@ WColorPicker::WColorPicker(QWidget* parent)
 }
 
 void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
-    qDebug() << "setSelectedColor";
     if (m_pSelectedColor) {
-        qDebug() << "m_pSelectedColor";
         QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(m_pSelectedColor);
         if (it != m_pColorButtons.constEnd()) {
             it.value()->setChecked(false);
@@ -67,7 +63,6 @@ void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
     }
 
     if (pColor) {
-        qDebug() << "m_pColor";
         QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(pColor);
         if (it != m_pColorButtons.constEnd()) {
             it.value()->setChecked(true);
