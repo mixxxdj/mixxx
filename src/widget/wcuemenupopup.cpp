@@ -34,7 +34,6 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);
 
     m_pRemoveCue = new QPushButton("", this);
-    m_pRemoveCue->setFixedHeight(m_pEditLabel->sizeHint().height());
     m_pRemoveCue->setToolTip(tr("Delete this cue"));
     m_pRemoveCue->setObjectName("CueRemoveButton");
     connect(m_pRemoveCue, &QPushButton::clicked, this, &WCueMenuPopup::slotRemoveCue);
