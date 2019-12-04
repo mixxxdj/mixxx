@@ -324,7 +324,8 @@ void WOverview::onEndOfTrackChange(double v) {
     update();
 }
 
-void WOverview::onMarkChanged(double /*v*/) {
+void WOverview::onMarkChanged(double v) {
+    Q_UNUSED(v);
     //qDebug() << "WOverview::onMarkChanged()" << v;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
@@ -332,12 +333,14 @@ void WOverview::onMarkChanged(double /*v*/) {
     }
 }
 
-void WOverview::onMarkRangeChange(double /*v*/) {
+void WOverview::onMarkRangeChange(double v) {
+    Q_UNUSED(v);
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
 
-void WOverview::onRateRatioChange(double /*v*/) {
+void WOverview::onRateRatioChange(double v) {
+    Q_UNUSED(v);
     update();
 }
 
@@ -518,8 +521,8 @@ void WOverview::slotCueMenuAboutToHide() {
     update();
 }
 
-void WOverview::leaveEvent(QEvent* e) {
-    Q_UNUSED(e);
+void WOverview::leaveEvent(QEvent* pEvent) {
+    Q_UNUSED(pEvent);
     if (!m_bHotcueMenuShowing) {
         m_pHoveredMark.clear();
     }
@@ -528,7 +531,8 @@ void WOverview::leaveEvent(QEvent* e) {
     update();
 }
 
-void WOverview::paintEvent(QPaintEvent * /*unused*/) {
+void WOverview::paintEvent(QPaintEvent* pEvent) {
+    Q_UNUSED(pEvent);
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
@@ -1092,7 +1096,8 @@ double WOverview::samplePositionToSeconds(double sample) {
             mixxx::kEngineChannelCount / m_pRateRatioControl->get();
 }
 
-void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
+void WOverview::resizeEvent(QResizeEvent* pEvent) {
+    Q_UNUSED(pEvent);   
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
     const double kMaxPlayposRange = 1.0;
@@ -1114,9 +1119,9 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     Init();
 }
 
-void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WOverview::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
-void WOverview::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WOverview::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
