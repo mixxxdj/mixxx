@@ -1,5 +1,6 @@
 <Template>
   <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+
   <WidgetGroup>
     <ObjectName>SamplerDeckMini</ObjectName>
     <Layout>horizontal</Layout>
@@ -48,15 +49,16 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>SamplerMiniControls</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>0me,36f</Size>
         <Children>
 
-          <!-- First row -->
+          <!-- Top row -->
           <WidgetGroup>
             <ObjectName>SamplerTextSmall</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <Size>0min,18f</Size>
             <Children>
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
@@ -68,16 +70,12 @@
               </TrackProperty>
             </Children>
           </WidgetGroup>
-          <!-- /First row -->
 
-          <!-- Second row -->
+          <!-- Bottom row -->
           <WidgetGroup>
-            <ObjectName>AlignLeft</ObjectName>
             <Layout>horizontal</Layout>
+            <Size>0min,18f</Size>
             <Children>
-
-              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-
               <Number>
                 <TooltipId>visual_bpm</TooltipId>
                 <ObjectName>SamplerBpm</ObjectName>
@@ -137,13 +135,11 @@
               </Template>
 
             </Children>
-          </WidgetGroup>
-          <!-- /Second row -->
-
+          </WidgetGroup><!-- Bottom row -->
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- SamplerMiniControls -->
 
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- SamplerDeckMini -->
 </Template>

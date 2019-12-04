@@ -25,11 +25,11 @@
                 <Children>
                   <TrackProperty>
                     <ObjectName>TitleText</ObjectName>
-                    <Alignment>Left</Alignment>
+                    <Size>0me,25f</Size>
                     <TooltipId>track_title</TooltipId>
                     <Property>title</Property>
+                    <Alignment>Left</Alignment>
                     <Elide>right</Elide>
-                    <SizePolicy>me,min</SizePolicy>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
                 </Children>
@@ -69,10 +69,10 @@
                 <Children>
                   <TrackProperty>
                     <ObjectName>ArtistText</ObjectName>
+                    <Size>0me,25f</Size>
                     <TooltipId>track_artist</TooltipId>
                     <Property>artist</Property>
                     <Elide>right</Elide>
-                    <SizePolicy>me,min</SizePolicy>
                     <Channel>
                       <Variable name="channum"/>
                     </Channel>

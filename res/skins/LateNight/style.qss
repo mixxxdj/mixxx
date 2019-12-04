@@ -1,75 +1,258 @@
 /* LateNight 2.3 */
 
-/************** font settings ************************/
+/************** font settings *************************************************/
 #Mixxx, WWidget,
-WLabel, WLibrary QLabel,
-WPushButton, WLibrary QPushButton,
 WEffect, WEffectSelector,
-WBeatSpinBox,
-QSpinBox {
-  font-family: Ubuntu;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-#KeyText,
-#PlayPositionText,
-#PlayPositionTextSmall,
-#DurationText,
-#BpmText,
-#BpmTextSmall,
-#RateText,
+WKey,
+WLabel, WLibrary QLabel,
+WNumber,
+WNumberPos,
+WPushButton, WLibrary QPushButton,
+WRecordingDuration,
+WSearchLineEdit,
+WText,
+WTime,
+WTrackText,
+WTrackProperty,
 WBeatSpinBox,
 QSpinBox,
-/* Hotcue labels in the overview */
-WOverview
+QComboBox,
+WLibrary QHeaderView,
+QToolTip,
+WOverview /* Hotcue labels in the overview */
 /* Edit label and pushbuttons in the hotcue label edit dialog
 WOverview QLabel,
 WOverview QPushButton */ {
   font-family: "Open Sans";
-  text-transform: none;
-  font-weight: normal;
-}/**/
-WOverview {
+  text-transform: uppercase;
   font-weight: bold;
-  font-size: 12px;
-  color: green;
-  background-color: blue;
+  font-style: normal;
 }
-/* Those styles affect the labels in the overview cue menu and its child dialogs.
-  To style the overview cue labels use this
-  <LabelFontSize>
-  <LabelTextColor>
-  <LabelBackgroundColor>
-  in deck_overview.xml instead.
-  See https://github.com/mixxxdj/mixxx/pull/2238/files#diff-63372b146329ec67669d336bc0decfdaR100
-WOverview QLabel {
-  font-weight: bold;
-  font-size: 12px;
-  color: green;
-  background-color: blue;
-}
-WOverview QLabel:hover {
-  font-size: 12px;
-  color: green;
-  background-color: blue;
-} */
 
+/* regular font weight */
+WSearchLineEdit,
 QToolTip {
-  font-family: Ubuntu;
-  text-transform: none;
   font-weight: normal;
-  padding: 3px;
-  border: 1px solid #333;
-  border-radius: 2px;
 }
 
+/* regular case / no text transformation */
+WKey,
+WOverview,
+WSearchLineEdit,
+WTrackProperty, WTrackText,
+QToolTip,
+/* WLibrary QMenu,  */
+WLibrary QHeaderView {
+  text-transform: none;
+}
+
+/************** font sizes / alignment ****************************************/
 WPushButton, WLibrary QPushButton,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px/12px;
 }
-/************** font settings ************************/
+#RecDuration[highlight="2"] {
+	font-size: 12px/12px;
+}
+
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel,
+#LatencyLabel {
+  font-size: 10px;
+  text-align: center;
+}
+#EQKillButton {
+  font-size: 12px;
+}
+#QuickEffectButton {
+  font-size: 16px;
+}
+
+#ArtistText,
+#TitleText,
+#BpmText {
+  font-size: 18px;
+  }
+  #ArtistText,
+  #TitleText {
+    text-align: left;
+  }
+  #BpmText {
+    text-align: center;
+  }
+
+#SkinSettingsLabelButton,
+#CategoryLabel  {
+  font-size: 17px;
+  text-align: left;
+}
+
+#TitleTextSmall,
+#ArtistTextSmall,
+#PlayPositionText,
+#PlayPositionTextSmall,
+#BpmTextSmall,
+#FxUnitLabel,
+#SamplerTitle {
+	font-size: 16px;
+}
+
+#SamplerTitleSmall,
+#MicAuxSubTitle,
+#PreviewTitle,
+#PreviewLabel,
+WTime {
+  font-size: 14px;
+  text-align: left;
+}
+
+WKey,
+#DurationText,
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox,
+#LibraryBPMSpinBox,
+WLibrary QHeaderView {
+  font-size: 13px;
+}
+
+#RateText,
+#PreviewBPM,
+WEffectSelector,
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractItemView {
+  font-size: 12px;
+  }
+  #RateText,
+  #MicAuxSubTitle,
+  #PreviewBPM {
+    text-align: center;
+  }
+
+#SamplerTitle {
+  text-align: left;
+}
+#SamplerTitleSmall {
+  text-align: left;
+}
+
+
+/* This does NOT style the cue labels in the overview
+WOverview {
+  font-size: 20px;
+}
+  To style the overview cue labels use this
+  <LabelFontSize>
+  <LabelTextColor>
+  <LabelBackgroundColor>
+  in deck_overview.xml instead.
+  See https://github.com/mixxxdj/mixxx/pull/2238/files#diff-63372b146329ec67669d336bc0decfdaR100  */
+/* Those styles affect the labels in the overview cue menu and its child dialogs.
+WOverview QLabel {
+  font-weight: bold;
+  font-size: 12px;
+  color: green;
+  background-color: blue;
+} */
+/************** font sizes / alignment ****************************************/
+
+
+
+/************** font colors **************************************************/
+#KeyMatchButton,
+#VinylButton[displayValue="0"],
+#VinylTristateButton,
+#FxAssignButton WPushButton[displayValue="0"],
+#FxAssignButtonDeck[displayValue="0"],
+#GuiToggleButton[displayValue="0"],
+#BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"],
+#RecDuration[highlight="0"],
+#RecDuration[highlight="1"] {
+  color: #bfbfbf;
+  }
+  #RecDuration[highlight="2"] {
+    color: #d2d2d2;
+  }
+
+#VinylButton[displayValue="1"],
+#VinylButton[displayValue="2"],
+#FxAssignButton WPushButton[displayValue="1"],
+#FxAssignButtonDeck[displayValue="1"],
+#GuiToggleButton[displayValue="1"],
+#GuiToggleButton[displayValue="2"],
+#BroadcastButton[displayValue="1"], /* connecting: yellow */
+#SettingsButton[displayValue="1"] {
+  color: #000;
+}
+
+#EQKillButton[displayValue="0"],
+#QuickEffectButton[displayValue="0"] {
+  color: #666;
+}
+#KeyButton[displayValue="1"] {
+  color: #d2d2d2;
+}
+
+WSearchLineEdit,
+#LibraryBPMSpinBox,
+#LibraryBPMButton::item,
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView {
+  color: #eece33;
+  selection-color: #eece33;
+}
+
+/* gold */
+#Deck1 WLabel, #Deck2 WLabel,
+#DeckMini1 WLabel, #DeckMini2 WLabel,
+#Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
+#Deck1 WStarRating, #Deck2 WStarRating,
+#SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
+#FxUnitLabel, #MicAuxSubTitle,
+WEffectSelector, WEffectSelector QAbstractItemView,
+#PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
+#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
+#CategoryLabel, #SkinSettingsLabelButton,
+WLibrary QLabel, WLibrary QRadioButton,
+WLibrary QTableView::indicator,
+WSearchLineEdit,
+QToolTip,
+#LatencyLabel, WTime {
+  color: #f0bb2b;
+}
+
+/* light blue / cyan */
+#Deck3 WLabel, #Deck4 WLabel,
+#DeckMini3 WLabel, #DeckMini4 WLabel,
+#Deck3 WStarRating, #Deck4 WStarRating,
+#Deck3 WBeatSpinBox, #Deck4 WBeatSpinBox {
+  color: #0bd9d1;
+}
+
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  color: #666;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
+  padding-top: -1px;
+}
+
+#MasterHeadphoneMixer WLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  padding: 0px;
+  background-color: #101010;
+  }
+  #FxKnobLabel,
+  #FxButtonLabel {
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    }
+/************** font colors **************************************************/
+/************** font settings *************************************************/
 
 
 
@@ -78,6 +261,12 @@ WPushButton, WLibrary QPushButton,
 
 #debugbg {
     background-color: #fff;
+}
+
+QToolTip {
+  padding: 3px;
+  border: 1px solid #333;
+  border-radius: 2px;
 }
 
 #SkinContainer {
@@ -104,7 +293,7 @@ QTableView, QTextBrowser, QTreeView {
   #FxSlotsExpanded, #FxSlotsCollapsed, #FxSlotContainer,
 #MixerContainer, #MasterHeadphoneSeparator,
 #MicRack, #AuxRack, #MicAuxMainControls,
-#SamplerDeck, #SamplerDeckMini, #SamplerExpand,
+#SamplerDeck, #SamplerDeckMini, #SamplerExpandButtonBox,
   #SamplerDeckMini, #SamplerText, #SamplerRowTwo, #SamplerPfl,
 WEffectSelector::checked, #fadeModeCombobox::checked,
 #ToolBar, #WaveformsContainer,
@@ -120,7 +309,7 @@ QAbstractScrollArea::corner {
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MixerContainer,
 #MicRack, #AuxRack, #MicAuxMainControls,
-#SamplerDeck, #SamplerDeckMini, #SamplerExpand,
+#SamplerDeck, #SamplerDeckMini, #SamplerExpandButtonBox,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
@@ -493,8 +682,9 @@ QPushButton#pushButtonRecording:checked,
 }
 
 #BroadcastButton[displayValue="3"] {
-/* pink */
-  }
+  /* pink */
+  background-color: #f856e7;
+}
 
 /* Orange/yellow */
 /* Play bg when playing from Cue / hotcue */
@@ -864,138 +1054,7 @@ WSearchLineEdit QToolButton:!focus {
     image: url(skin:/buttons_classic/btn__lib_clear_search_focus.svg);
   }
 /************** Button icons **************************************************/
-
-
-
-/************** Button text colors ********************************************/
-#KeyMatchButton,
-#VinylButton[displayValue="0"],
-#VinylTristateButton,
-#FxAssignButton WPushButton[displayValue="0"],
-#FxAssignButtonDeck[displayValue="0"],
-#GuiToggleButton[displayValue="0"],
-#BroadcastButton[displayValue="0"],
-#SettingsButton[displayValue="0"],
-#RecDuration[highlight="0"],
-#RecDuration[highlight="1"] {
-  color: #bfbfbf;
-  }
-  #RecDuration[highlight="2"] {
-    color: #d2d2d2;
-    font-size: 12px/12px;
-  }
-
-#VinylButton[displayValue="1"],
-#VinylButton[displayValue="2"],
-#FxAssignButton WPushButton[displayValue="1"],
-#FxAssignButtonDeck[displayValue="1"],
-#GuiToggleButton[displayValue="1"],
-#GuiToggleButton[displayValue="2"],
-#BroadcastButton[displayValue="1"], /* connecting: yellow */
-#SettingsButton[displayValue="1"] {
-  color: #000;
-}
-
-#EQKillButton[displayValue="0"],
-#QuickEffectButton[displayValue="0"] {
-  color: #666;
-}
-#KeyButton[displayValue="1"] {
-  color: #d2d2d2;
-}
-#QuickEffectButton {
-  font-size: 16px;
-}
-/************** Button text colors ********************************************/
 /************** Button styles *************************************************/
-
-
-
-/************** Label styles **************************************************/
-#KeyText,
-#PlayPositionText,
-#PlayPositionTextSmall,
-#DurationText,
-#BpmText,
-#BpmTextSmall,
-#RateText,
-WBeatSpinBox,
-QSpinBox,
-WOverview {
-  font-family: "Open Sans";
-}
-
-WSearchLineEdit,
-#LibraryBPMSpinBox,
-#LibraryBPMButton::item,
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView {
-  color: #eece33;
-  selection-color: #eece33;
-}
-
-/* gold */
-#Deck1 WLabel, #Deck2 WLabel,
-#DeckMini1 WLabel, #DeckMini2 WLabel,
-#Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
-#Deck1 WStarRating, #Deck2 WStarRating,
-#SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
-#FxUnitLabel, #MicAuxSubTitle,
-WEffectSelector, WEffectSelector QAbstractItemView,
-#PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
-#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
-#CategoryLabel, #SkinSettingsLabelButton,
-WLibrary QLabel, WLibrary QRadioButton,
-WLibrary QTableView::indicator,
-WSearchLineEdit,
-QToolTip,
-#LatencyLabel, WTime {
-  color: #f0bb2b;
-}
-
-/* light blue / cyan */
-#Deck3 WLabel, #Deck4 WLabel,
-#DeckMini3 WLabel, #DeckMini4 WLabel,
-#Deck3 WStarRating, #Deck4 WStarRating,
-#Deck3 WBeatSpinBox, #Deck4 WBeatSpinBox {
-  color: #0bd9d1;
-}
-
-#Deck1 WLabel, #Deck2 WLabel,
-#Deck3 WLabel, #Deck4 WLabel,
-#FxUnitLabel,
-#SamplerTitleSmall,
-#MicAuxSubTitle,
-#PreviewLabel,
-WSearchLineEdit,
-#LatencyLabel,
-WTime {
-  font-weight: bold;
-}
-
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  font: bold 10px/10px;
-  color: #666;
-  text-align: center;
-  qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: -1px;
-  text-transform: uppercase;
-}
-
-#MasterHeadphoneMixer WLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  padding: 0px;
-  background-color: #101010;
-  }
-  #FxKnobLabel,
-  #FxButtonLabel {
-    qproperty-alignment: 'AlignLeft | AlignVCenter';
-    }
-/************** Label styles **************************************************/
 
 
 
@@ -1021,13 +1080,9 @@ WTime {
     qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
     margin-bottom: 2px;
     }
-    WTime {
-      font-size: 14px/14px;
-    }
 
   #LatencyLabel {
     padding-bottom: 2px;
-    font-size: 10px/10px;
   }
 /************** ToolBar *******************************************************/
 
@@ -1042,10 +1097,6 @@ WTime {
   padding: 1px 0px 2px 0px;
   border-width: 0px 0px 1px 0px;
   }
-  /* needs larger font for note icon
-  #KeyMatchButton {
-    font-size: 18px;
-  } */
   #VinylButtons, #FxAssingButtonsDeck {
     qproperty-layoutSpacing: 2;
   }
@@ -1076,10 +1127,6 @@ WTime {
   #Stars {
     qproperty-layoutAlignment: 'AlignCenter';
     border-radius: 1px;
-    }
-    WStarRating {
-      font-weight: bold;
-      font-size: 20pt;
     }
   #DeckControlButtons {
     padding: 0px 2px;
@@ -1136,7 +1183,6 @@ WCoverArt {
 
 #KeyText {
   qproperty-alignment: 'AlignCenter';
-  font-size: 13px/13px;
   border-radius: 1px;
   }
 
@@ -1146,33 +1192,11 @@ WCoverArt {
   padding: 2px 2px 1px 2px;
 }
 
-#TitleGutter WLabel {
-  font-size: 16px/19px;
-  text-transform: none;
-  text-align: left;
-}
-
 #ArtistText,
 #TitleText {
-  font-size: 18px/20px;
   /* for some reason the padding/margin is double in the skin...
   margin-left: 1px;
   padding-left: 1px; */
-  }
-  #TitleTextSmall,
-  #ArtistTextSmall,
-  #PlayPositionText,
-  #PlayPositionTextSmall,
-  #BpmTextSmall,
-  #FxUnitLabel {
-    font-size: 16px/16px;
-    text-transform: none;
-  }
-  #TitleTextSmall,
-  #ArtistTextSmall,
-  #PlayPositionTextSmall,
-  #BpmTextSmall {
-    font-weight: bold;
   }
   #TitleTextSmall {
     padding: 1px 3px 1px 1px;
@@ -1194,24 +1218,8 @@ WCoverArt {
     border-width: 1px 0px 0px 1px;
   }
   #KeyTextSmall {
-    font-size: 13px/13px;
     padding: 0px 1px 0px 0px;
-    text-transform: none;
   }
-
-
-#ArtistText,
-#TitleText,
-#PlayPositionText,
-#PlayPositionTextSmall,
-#KeyText,
-#PreviewTitle {
-  text-transform: none;
-}
-
-#DurationText {
-  font-size: 13px/15px;
-}
 
 #VinylControls {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -1234,27 +1242,18 @@ WCoverArt {
   }
   #BpmText {
     qproperty-alignment: 'AlignCenter';
-    font-size: 18px/18px;
-    font-weight: bold;
-    background-color: transparent;
-    text-align: center;
     padding: 0px;
     margin: 0px;
     }
   #RateText {
     qproperty-alignment: 'AlignCenter';
-    font-size: 12px/13px;
-    background-color: transparent;
-    text-align: center;
     padding: 0px;
-    margin: 0px;/*
-    background-color: #999933;  */
+    margin: 0px;
   }
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  margin-right: 2px;/*
-  background-color: #313349;  */
+  margin-right: 2px;
   }
   #RateSlider {
   }
@@ -1274,8 +1273,6 @@ WBeatSpinBox,
 #LibraryBPMSpinBox  {
   selection-color: #000;
   selection-background-color: #d2d2d2;
-  font-size: 13px/13px;
-  font-weight: bold;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
@@ -1520,19 +1517,14 @@ WBeatSpinBox,
   #PreviewLabel {
     qproperty-alignment: 'AlignVCenter | AlignHCenter';
     border-width: 0px 1px 0px 0px;
-    text-align: center;
     padding: 1px 3px 1px 2px;
     margin-bottom: 1px;
   }
   #PreviewDeckText {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    font-size: 10px/11px;
     padding: 0px;
-    text-align: left;
   }
     #PreviewTitle {
-      font: bold 14px/14px;
-      text-align: left;
       margin: 2px 2px 2px 0px;
     }
     #PreviewBPM {
@@ -1560,7 +1552,6 @@ WBeatSpinBox,
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  text-align: left;
   padding: 2px 0px 2px 0px;
   border: 1px solid #585858;
   border-width: 0px 0px 1px 1px;
@@ -1584,21 +1575,16 @@ WBeatSpinBox,
   margin-bottom: 3px;
   }
   #CategoryLabel {
-    font-size: 17px/17px;
-    text-align: left;
     padding: 3px 0px 2px 3px;
   }
+  #SkinSettingsLabelButton {
+    padding: 0px 0px 0px 3px;
+  }
+  #SkinSettingsButton {
+    padding-top: 1px;
+    color: #d2d2d2;
+  }
 
-#SkinSettingsButton {
-  padding-top: 1px;
-  color: #d2d2d2;
-}
-
-#SkinSettingsLabelButton {
-  font-size: 17px/21px;
-  text-align: left;
-  padding: 0px 0px 0px 3px;
-}
 
 #SubmenuCover {
   background-color: rgba(15, 15, 15, 180);
@@ -1631,9 +1617,7 @@ WBeatSpinBox,
       }
       #MicAuxSubTitle {
         qproperty-alignment: 'AlignCenter | AlignTop';
-        font-size: 12px/12px;
-        text-align: center;
-        margin: 0px 0px 2px 1px;
+        margin: 0px 0px 3px 1px;
       }
       #MicAuxPlayButtonBox {
         margin: 0px 0px 2px 1px;
@@ -1696,11 +1680,10 @@ WBeatSpinBox,
   padding: 1px;
 }
 
-#SamplerExpand {
+#SamplerExpandButtonBox {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 1px 2px 1px 1px;
-  }
-  #SamplerExpandButton {
-  }
+}
 
 #SamplerText {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -1710,26 +1693,7 @@ WBeatSpinBox,
 
 #SamplerTextSmall {
   qproperty-layoutAlignment: 'AlignLeft';
-  padding: 1px 0px 1px 2px;
-}
-
-#SamplerTitle {
-  font-size: 16px/18px;
-  text-align: left;
-  text-transform: none;
-}
-
-#SamplerTitleSmall {
-  font-size: 12px;
-  text-align: left;
-  text-transform: none;
-  padding: 0px;
-}
-
-#SamplerRowTwo {
-}
-
-#SamplerMainControls {
+  padding: 0px 0px 0px 3px;
 }
 
 #SamplerPlay {
@@ -1742,6 +1706,10 @@ WBeatSpinBox,
 
 #SamplerPlaySmall {
   padding: 1px;
+}
+
+#SamplerMiniControls {
+  padding: 0px 0px 0px 2px;
 }
 
 #SamplerButtons {
@@ -1759,11 +1727,6 @@ WBeatSpinBox,
 #SamplerButtonGrid {
   border-width: 1px 1px 0px 0px;
   padding: 1px 0px 1px 0px;
-}
-
-#SmallSamplerButtonGrid {
-  border-top: 0px;
-  border-bottom: 0px;
 }
 
 #SamplerHotcues,
@@ -1795,11 +1758,6 @@ WBeatSpinBox,
     padding: 0px 0px 1px 0px;
     qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   }
-
-#TitleGutter WLabel {
-  font-size: 16px/19px;
-  text-align: left;
-}
 /************** Samplers *****************************************************/
 
 
@@ -1833,14 +1791,11 @@ WBeatSpinBox,
     border: 1px solid #000;
   }
 
-#FxUnit1_ExpandCollapseButton WPushButton,
-#FxUnit2_ExpandCollapseButton WPushButton,
-#FxUnit3_ExpandCollapseButton WPushButton,
-#FxUnit4_ExpandCollapseButton WPushButton {
-  font-size: 13px/13px;
-  font-weight: bold;
-  padding-top: 10px;
-  color: #bfbfbf;
+#FxUnitControlsCollapsed #FxUnitLabel {
+  margin: 4px 3px 6px 4px;
+}
+#FxUnitControlsExpanded #FxUnitLabel {
+  margin: 2px 0px;
 }
 
 #FxSlotContainer {
@@ -1870,6 +1825,8 @@ WBeatSpinBox,
   padding: 1px 4px 2px 4px;
 }
 
+
+
 #FxKnobContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
@@ -1887,13 +1844,6 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignRight';
   padding: 3px;
 }
-
-WEffectSelector,
-#fadeModeCombobox {
-  font-weight: bold;
-  font-size: 12px/13px;
-  text-transform: uppercase;
-  }
 WEffectSelector {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   min-height: 13px;
@@ -1929,7 +1879,6 @@ WEffectSelector {
   #fadeModeCombobox QAbstractItemView {
     width: 142px;
     /* padding-left: 6px; */
-    font-size: 12px/13px;
     /* On Linux, this is not applied but font color from WEffectSelector
     is inherited.
     On Windows, it must be defined here */
@@ -1942,8 +1891,7 @@ WEffectSelector {
   WEffectSelector::checked,
   #fadeModeCombobox::checked {
     /* not applied
-    padding-left: 5px;
-    font-weight: bold;	*/
+    padding-left: 5px;	*/
     padding: 0px;
     margin: 0px;
     color: #eee;
@@ -2186,9 +2134,7 @@ QTableView::indicator {/*
     }
 
 QHeaderView {
-  font-size: 13px/15px;
   color: #bbb;
-  font-weight: bold;
   border-bottom: 1px solid #000;
   }
   QHeaderView::section {
@@ -2222,7 +2168,6 @@ QScrollBar {
   border-radius: 2px;
   padding: 1px;
   color: #999999;
-  font-size: 8pt;
   }
   QScrollBar:horizontal {
     min-width: 12px;

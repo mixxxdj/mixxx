@@ -7,10 +7,16 @@
 QToolTip,
 #CrossfaderButtonContainerDeck, #CrossfaderButtonContainerAux,
 #CrossfaderButton[value="0"],
-WEffectSelector, WEffectSelector QAbstractItemView,
-#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
+WEffectSelector,
+#fadeModeCombobox,
 QTableView, QTextBrowser, QTreeView {
   background-color: #1e1e1d;
+}
+WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractItemView::item,
+#fadeModeCombobox QAbstractItemView,
+QToolTip {
+  background-color: #0a0a0a;
 }
 
 /* borders of elevated containers */
@@ -27,7 +33,7 @@ QTableView, QTextBrowser, QTreeView {
   #FxSlotBorder2[highlight="0"],
   #FxSlotBorder3[highlight="0"],
   #FxRackFiller,
-#SamplerDeck, #SamplerDeckMini, #SamplerExpand,
+#SamplerDeck, #SamplerDeckMini, #SamplerExpandButtonBox,
 #MicAuxMainControlsFrame, #MicAuxSubControlsFrame,
 #MicDuckingContainer, #MicAuxRackFiller,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
@@ -199,19 +205,319 @@ WBeatSpinBox#Spinbox_embedded:focus,
 
 
 
-/************** Label styles **************************************************/
-#KeyText,
-#PlayPositionText,
-#PlayPositionTextSmall,
-#DurationText,
-#BpmText,
-#BpmTextSmall,
-#RateText,
-WBeatSpinBox,
-QSpinBox,
-WOverview {
-  font-family: "Open Sans";
+/************** Button icons **************************************************/
+#SyncButton {
+  image: url(skin:/buttons_flip/btn__sync_deck.svg) no-repeat center center;
+  }
+  #SamplerSyncButton {
+    image: url(skin:/buttons_flip/btn__sync_sampler.svg) no-repeat center center;
+  }
+  #RatePermUp {
+    image: url(skin:/buttons_flip/btn__plus.svg) no-repeat center center;
+  }
+  #RateTempUp,
+  #JumpForward {
+    image: url(skin:/buttons_flip/btn__arrow_right.svg) no-repeat center center;
+  }
+  #RatePermDown {
+    image: url(skin:/buttons_flip/btn__minus.svg) no-repeat center center;
+  }
+  #RateTempDown,
+  #JumpBack {
+    image: url(skin:/buttons_flip/btn__arrow_left.svg) no-repeat center center;
+  }
+
+#LoopActivate {
+  image: url(skin:/buttons_flip/btn__loop.svg) no-repeat center center;
+  }
+  #Reloop {
+    image: url(skin:/buttons_flip/btn__reloop.svg) no-repeat center center;
+  }
+  #LoopIn {
+    image: url(skin:/buttons_flip/btn__loop_in.svg) no-repeat center center;
+  }
+  #LoopOut {
+    image: url(skin:/buttons_flip/btn__loop_out.svg) no-repeat center center;
+  }
+
+#PflButton {
+  image: url(skin:/buttons_flip/btn__pfl.svg) no-repeat center center;
 }
+
+#Hotcue1 WPushButton {
+  image: url(skin:/buttons_flip/btn__1.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton {
+    image: url(skin:/buttons_flip/btn__2.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton {
+    image: url(skin:/buttons_flip/btn__3.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton {
+    image: url(skin:/buttons_flip/btn__4.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton {
+    image: url(skin:/buttons_flip/btn__5.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton {
+    image: url(skin:/buttons_flip/btn__6.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton {
+    image: url(skin:/buttons_flip/btn__7.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton {
+    image: url(skin:/buttons_flip/btn__8.svg) no-repeat center center;
+  }
+
+#SpecialCueButton_intro_start WPushButton {
+  image: url(skin:/buttons_flip/btn__intro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_intro_end WPushButton {
+    image: url(skin:/buttons_flip/btn__intro_end.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_start WPushButton {
+    image: url(skin:/buttons_flip/btn__outro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_end WPushButton {
+    image: url(skin:/buttons_flip/btn__outro_end.svg) no-repeat center center;
+  }
+
+#PlayDeck {
+  image: url(skin:/buttons_flip/btn__play_deck.svg) no-repeat center center;
+}
+#CueDeck {
+  image: url(skin:/buttons_flip/btn__cue_deck.svg) no-repeat center center;
+}
+#Reverse {
+  image: url(skin:/buttons_flip/btn__reverse.svg) no-repeat center center;
+}
+
+#FxAssignButton_FX1 WPushButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__fx_FX1.svg) no-repeat center center;
+    }
+    #FxAssignButton_FX1 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_FX1_active.svg) no-repeat center center;
+    }
+  #FxAssignButton_FX2 WPushButton[value="0"] {
+    image: url(skin:/buttons_flip/btn__fx_FX2.svg) no-repeat center center;
+    }
+    #FxAssignButton_FX2 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_FX2_active.svg) no-repeat center center;
+    }
+  #FxAssignButton_FX3 WPushButton[value="0"] {
+    image: url(skin:/buttons_flip/btn__fx_FX3.svg) no-repeat center center;
+    }
+    #FxAssignButton_FX3 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_FX3_active.svg) no-repeat center center;
+    }
+  #FxAssignButton_FX4 WPushButton[value="0"] {
+    image: url(skin:/buttons_flip/btn__fx_FX4.svg) no-repeat center center;
+    }
+    #FxAssignButton_FX4 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_FX4_active.svg) no-repeat center center;
+    }
+  #FxAssignButton_2 WPushButton[value="0"] {
+    image: url(skin:/buttons_flip/btn__fx_2.svg) no-repeat center center;
+    }
+    #FxAssignButton_2 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_2_active.svg) no-repeat center center;
+    }
+  #FxAssignButton_3 WPushButton[value="0"] {
+    image: url(skin:/buttons_flip/btn__fx_3.svg) no-repeat center center;
+    }
+    #FxAssignButton_3 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_3_active.svg) no-repeat center center;
+    }
+  #FxAssignButton_4 WPushButton[value="0"] {
+    image: url(skin:/buttons_flip/btn__fx_4.svg) no-repeat center center;
+    }
+    #FxAssignButton_4 WPushButton[value="1"] {
+      image: url(skin:/buttons_flip/btn__fx_4_active.svg) no-repeat center center;
+    }
+
+#SplitCueButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__splitcue.svg) no-repeat center center;
+  }
+  #SplitCueButton[value="1"] {
+    image: url(skin:/buttons_flip/btn__splitcue_active.svg) no-repeat center center;
+  }
+
+#PlayButtonSampler[value="0"],
+#PlayButtonDeckMini[value="0"],
+#PlayButtonPreview[displayValue="0"] {
+  image: url(skin:/buttons_flip/btn__play_sampler.svg) no-repeat center center;
+  }
+  #PlayButtonSampler[value="1"],
+  #PlayButtonDeckMini[value="1"],
+  #PlayButtonPreview[displayValue="1"] {
+    image: url(skin:/buttons_flip/btn__pause_sampler.svg) no-repeat center center;
+  }
+
+#MixModeButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__fx_mixmode_d-w.svg) no-repeat center center;
+  }
+  #MixModeButton[value="1"] {
+    image: url(skin:/buttons_flip/btn__fx_mixmode_d+w.svg) no-repeat center center;
+  }
+
+#FxExpandCollapseButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__fx_sampler_expand.svg) no-repeat center center;
+  }
+  #FxExpandCollapseButton[value="1"] {
+    image: url(skin:/buttons_flip/btn__fx_sampler_collapse.svg) no-repeat center center;
+  }
+
+#FxToggleButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__fx_toggle.svg) no-repeat center center;
+  }
+  #FxToggleButton[value="1"] {
+    image: url(skin:/buttons_flip/btn__fx_toggle_active.svg) no-repeat center center;
+  }
+
+#FxFocusButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__fx_focus.svg) no-repeat center center;
+  }
+  #FxFocusButton[value="1"] {
+    image: url(skin:/buttons_flip/btn__fx_focus_active.svg) no-repeat center center;
+  }
+
+#KeyMatchButton {
+  image: url(skin:/buttons_flip/btn__key_match.svg) no-repeat center center;
+  }
+#KeyUpButton {
+  image: url(skin:/buttons_flip/btn__key_up.svg) no-repeat center center;
+  }
+#KeyDownButton {
+  image: url(skin:/buttons_flip/btn__key_down.svg) no-repeat center center;
+  }
+
+/* deck controls for decks 1-4 and samplers */
+#CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
+  image: url(skin:/buttons_flip/btn__beat_curpos.svg) no-repeat center center;
+  }
+  #CurposButton12[value="1"] {
+    image: url(skin:/buttons_flip/btn__beat_curpos_active_12.svg) no-repeat center center;
+  }
+  #CurposButton34[value="1"] {
+    image: url(skin:/buttons_flip/btn__beat_curpos_active_34.svg) no-repeat center center;
+  }
+
+  #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
+    image: url(skin:/buttons_flip/btn__eject.svg) no-repeat center center;
+    }
+    #EjectButton12[value="1"] {
+      image: url(skin:/buttons_flip/btn__eject_active_12.svg) no-repeat center center;
+    }
+    #EjectButton34[value="1"] {
+      image: url(skin:/buttons_flip/btn__eject_active_34.svg) no-repeat center center;
+    }
+
+  #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
+    image: url(skin:/buttons_flip/btn__repeat.svg) no-repeat center center;
+    }
+    #RepeatButton12[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__repeat_active_12.svg) no-repeat center center;
+    }
+    #RepeatButton34[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__repeat_active_34.svg) no-repeat center center;
+    }
+
+  #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
+    image: url(skin:/buttons_flip/btn__quantize.svg) no-repeat center center;
+    }
+    #QuantizeButton12[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__quantize_active_12.svg) no-repeat center center;
+    }
+    #QuantizeButton34[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__quantize_active_34.svg) no-repeat center center;
+    }
+
+  #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
+    image: url(skin:/buttons_flip/btn__slip.svg) no-repeat center center;
+    }
+    #SlipmodeButton12[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__slip_active_12.svg) no-repeat center center;
+    }
+    #SlipmodeButton34[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__slip_active_34.svg) no-repeat center center;
+    }
+
+  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
+    image: url(skin:/buttons_flip/btn__keylock.svg) no-repeat center center;
+    }
+    #KeylockButton12[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__keylock_active_12.svg) no-repeat center center;
+    }
+    #KeylockButton34[displayValue="1"] {
+      image: url(skin:/buttons_flip/btn__keylock_active_34.svg) no-repeat center center;
+    }
+
+#BeatgridButtonsToggle {
+  border-width: 3px;
+  border-image: url(skin:buttons_flip/btn_embedded_library.svg) 3 3 3 3;
+  image: url(skin:/buttons_flip/btn__beatgrid_buttons_toggle.svg) no-repeat center center;
+  }
+  #BeatCurposLarge {
+    image: url(skin:/buttons_flip/btn__beat_curpos_large.svg) no-repeat center center;
+    }
+    #BeatsEarlier {
+      image: url(skin:/buttons_flip/btn__beats_earlier.svg) no-repeat center center;
+    }
+    #BeatsLater {
+      image: url(skin:/buttons_flip/btn__beats_later.svg) no-repeat center center;
+    }
+    #BeatsSlower {
+      image: url(skin:/buttons_flip/btn__beats_slower.svg) no-repeat center center;
+    }
+    #BeatsFaster {
+      image: url(skin:/buttons_flip/btn__beats_faster.svg) no-repeat center center;
+    }
+
+#MicTalkButton {
+  image: url(skin:/buttons_flip/btn__mic_talk.svg) no-repeat center center;
+}
+#AuxPlayButton {
+  image: url(skin:/buttons_flip/btn__aux_play.svg) no-repeat center center;
+}
+#MicDuckingButton[value="0"] {
+  image: url(skin:/buttons_flip/btn__mic_duck_off.svg) no-repeat center center;
+  }
+  #MicDuckingButton[value="1"] {
+    image: url(skin:/buttons_flip/btn__mic_duck_auto.svg) no-repeat center center;
+  }
+  #MicDuckingButton[value="2"] {
+    image: url(skin:/buttons_flip/btn__mic_duck_manual.svg) no-repeat center center;
+  }
+
+#RecDot {
+  background: transparent;
+  image: url(skin:/buttons_flip/btn__rec_dot.svg) no-repeat center center;
+}
+
+#SettingsButton[displayValue="0"] {
+  /* for some reason the alignment isn't rescpected, so the icons
+    have to be sized like available area (76x16px) */
+  image: url(skin:/buttons_flip/btn__settings_off.svg) no-repeat left top;
+  }
+  #SettingsButton[displayValue="1"] {
+    image: url(skin:/buttons_flip/btn__settings_on.svg) no-repeat left top;
+  }
+
+#ToolbarLogo {
+  image: url(skin:/style_flip/mixxx_logo.svg) no-repeat center center;
+}
+
+WSearchLineEdit QToolButton:!focus {
+  image: url(skin:/buttons_flip/btn__lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    image: url(skin:/buttons_flip/btn__lib_clear_search_focus.svg);
+  }
+/************** Button icons **************************************************/
+
+
+
+/************** Label styles **************************************************/
 
 WSearchLineEdit,
 #LibraryBPMSpinBox,
@@ -228,7 +534,7 @@ WSearchLineEdit,
 #DeckMini1 WLabel, #DeckMini2 WLabel,
 #Deck1 WStarRating, #Deck2 WStarRating,
 #Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
-#PreviewLabel, #PreviewDeckText, #PreviewTitle,
+#PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
 #FxUnitLabel, #MicAuxSubTitle,
 WEffectSelector, WEffectSelector QAbstractItemView,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
@@ -248,30 +554,15 @@ WSearchLineEdit,
 #DeckMini3 WLabel, #DeckMini4 WLabel,
 #Deck3 WStarRating, #Deck4 WStarRating,
 #Deck3 WBeatSpinBox, #Deck4 WBeatSpinBox {
-  color: #0bd9d1;
-}
-
-#PreviewLabel,
-#FxUnitLabel,
-#MicAuxSubTitle,
-#SamplerTitleSmall,
-#Deck1 WLabel, #Deck2 WLabel,
-#Deck3 WLabel, #Deck4 WLabel,
-WSearchLineEdit,
-#LatencyLabel,
-WTime {
-  font-weight: bold;
+  color: #00aaff;
 }
 
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel {
-  font: bold 10px/10px;
   color: #666;
-  text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-top: -1px;
-  text-transform: uppercase;
 }
 
 #MasterHeadphoneMixer WLabel,
@@ -311,6 +602,7 @@ WTime {
   #DeckRow_2_3_ArtistTitleTime {
     margin: 0px;
     }
+    #ArtistRow,
     #ArtistRow {
       border-width: 0px;
     }
@@ -477,7 +769,7 @@ WEffectSelector {
   padding: 1px 0px 0px 1px;
 }
 
-#SamplerExpand {
+#SamplerExpandButtonBox {
   padding: 1px 0px 1px 1px;
   }
 

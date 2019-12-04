@@ -46,7 +46,7 @@
             </Children>
           </WidgetGroup>
 
-          <!-- Second Row: Play, Overview, Controls, Gain -->
+          <!-- SamplerRowTwo: Play, Overview, Controls, Gain -->
           <WidgetGroup>
             <ObjectName>SamplerRowTwo</ObjectName>
             <Layout>horizontal</Layout>
@@ -215,9 +215,9 @@
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- Second Row: Play, Overview, Controls, Gain -->
+          </WidgetGroup><!-- SamplerRowTwo: Play, Overview, Controls, Gain -->
 
-          <!-- Third Row: SamplerButtons -->
+          <!-- Third Row -->
           <WidgetGroup>
             <ObjectName>SamplerButtons</ObjectName>
             <Layout>horizontal</Layout>
@@ -298,7 +298,6 @@
         </Children>
       </WidgetGroup><!-- /SamplerMainControls -->
 
-      <!-- VU Meter -->
       <WidgetGroup>
         <ObjectName>SamplerVU</ObjectName>
         <Layout>vertical</Layout>
@@ -333,7 +332,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /VU Meter -->
+      </WidgetGroup><!-- SamplerVU -->
 
       <WidgetGroup>
         <ObjectName>SamplerRateControls</ObjectName>

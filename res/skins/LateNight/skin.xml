@@ -165,7 +165,8 @@
     <Scheme>
       <Name>Flip</Name>
       <Style src="skin:style_flip.qss"/>
-      <SetVariable name="btn_scheme">classic</SetVariable>
+      <!-- btn_theme actually only changes color of deck control icons: keylock, ... -->
+      <SetVariable name="btn_scheme">flip</SetVariable>
       <SetVariable name="knob_scheme">classic</SetVariable>
       <SetVariable name="slider_scheme">flip</SetVariable>
       <SetVariable name="style_scheme">flip</SetVariable>
@@ -188,10 +189,10 @@
       <SetVariable name="SeparatorSize">0f</SetVariable>
 
       <SetVariable name="SignalBgColor_12">#0f0f0e</SetVariable>
-      <SetVariable name="SignalBgColor_34">#012322</SetVariable>
+      <SetVariable name="SignalBgColor_34">#001b23</SetVariable>
       <SetVariable name="SignalBgColor_SamplerPreview">#080807</SetVariable>
       <SetVariable name="SignalColor_12">#e7c413</SetVariable>
-      <SetVariable name="SignalColor_34">#09b2Ae</SetVariable>
+      <SetVariable name="SignalColor_34">#0893b2</SetVariable>
       <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
       <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
       <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>

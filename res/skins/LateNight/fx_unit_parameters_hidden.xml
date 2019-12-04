@@ -126,7 +126,6 @@
                 <SetVariable name="btn_format">square</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit"/>,group_[Headphone]_enable</SetVariable>
               </Template>
-              <WidgetGroup><Size>4f,</Size></WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey>[LateNight],wide_screen</ConfigKey>
@@ -145,34 +144,15 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <!-- Label -->
                   <Label>
                     <ObjectName>FxUnitLabel</ObjectName>
-                    <Size>me,22f</Size>
+                    <Size>30min,16min</Size>
                     <Text>FX&#8202;<Variable name="FxUnit"/></Text>
                     <Alignment>center</Alignment>
                   </Label>
-                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
-                  <PushButton>
-                    <TooltipId>EffectUnit_show_parameters</TooltipId>
-                    <ObjectName>FxExpandCollapseButton</ObjectName>
-                    <Size>26f,26f</Size>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <SingletonContainer>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
+                  </SingletonContainer>
                 </Children>
               </WidgetGroup>
               <!-- MixMode_Collapsed + Pfl -->

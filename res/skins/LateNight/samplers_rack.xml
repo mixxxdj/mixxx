@@ -10,7 +10,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>SamplerExpand</ObjectName>
+            <ObjectName>SamplerExpandButtonBox</ObjectName>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -34,7 +34,6 @@
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
-              <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
