@@ -527,7 +527,7 @@ TraktorS2MK3.parameterHandler = function (field) {
 TraktorS2MK3.jogTouchHandler = function (field) {
     var deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
     if (field.value > 0) {
-        engine.scratchEnable(deckNumber, 1024, 33.3333, 0.125, 0.125 / 8, true);
+        engine.scratchEnable(deckNumber, 1024, 33 + 1/3, 0.125, 0.125 / 8, true);
     } else {
         engine.scratchDisable(deckNumber);
     }
