@@ -1091,7 +1091,6 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 }
 
 double WOverview::samplePositionToSeconds(double sample) {
-    // TODO: replace with rate_ratio in PR #1765
     return sample / m_trackSampleRateControl->get() / 
             mixxx::kEngineChannelCount / m_pRateRatioControl->get();
 }
