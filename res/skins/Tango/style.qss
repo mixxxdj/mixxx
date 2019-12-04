@@ -94,18 +94,6 @@ WWidgetGroup {
       image: url(skin:/graphics/splitterVert_handle_pressed.svg);
     }
 
-WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(:/images/library/ic_library_cross.svg);
-}
-
-WColorPicker QPushButton[checked="false"] {
-  qproperty-icon: none;
-}
-
-WColorPicker QPushButton[checked="true"] {
-  qproperty-icon: url(:/images/ic_checkmark.svg);
-}
-
 /* ################################################################
 ####### Colors ##################################################
 ###############################################################*/

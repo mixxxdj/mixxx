@@ -1742,18 +1742,6 @@ WPushButton[value="2"]:hover {
     border-radius: 3px;
 }
 
-WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(:/images/library/ic_library_cross.svg);
-}
-
-WColorPicker QPushButton[checked="false"] {
-  qproperty-icon: none;
-}
-
-WColorPicker QPushButton[checked="true"] {
-  qproperty-icon: url(:/images/ic_checkmark.svg);
-}
-
 WRecordingDuration {
   font-weight: bold;
 }
