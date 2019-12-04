@@ -1,5 +1,5 @@
 WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(:/images/library/ic_library_cross.svg);
+  qproperty-icon: url(:/images/ic_delete.svg);
 }
 
 WColorPicker QPushButton[checked="false"] {

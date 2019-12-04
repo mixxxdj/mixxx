@@ -31,6 +31,7 @@
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
+        <file>images/ic_delete.svg</file>
         <file>images/preferences/ic_preferences_autodj.svg</file>
         <file>images/preferences/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/ic_preferences_broadcast.svg</file>
