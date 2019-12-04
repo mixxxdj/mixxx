@@ -9,7 +9,7 @@
 #include "util/parented_ptr.h"
 
 namespace {
-const int kNumColumns = 4;
+    const int kNumColumns = 4;
 }
 
 WColorPicker::WColorPicker(QWidget* parent)
