@@ -6,11 +6,6 @@
   background-position:center top;
 }
 
-#Deck WPushButton {
-  font-family: "Open Sans";
-  font-size: 14px;
-}
-
 #DeckRowSmall {
   padding: 3px 3px 2px 3px;
 }
@@ -360,10 +355,6 @@ QTreeView::item:!selected {
     border: 0px;
     border-radius: 2px; */
   }
-
-  #LibraryTimesPlayed::item {
-    color: #cfcfcf;
-    }
 
   /* Button in library "Preview" column */
   #LibraryPreviewButton {
