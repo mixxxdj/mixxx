@@ -14,7 +14,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     setObjectName("WCueMenuPopup");
 
     m_pCueNumber = new QLabel(this);
-    m_pCueNumber->setToolTip(tr("cue number"));
+    m_pCueNumber->setToolTip(tr("Cue number"));
     m_pCueNumber->setObjectName("CueNumberLabel");
     m_pCueNumber->setAlignment(Qt::AlignLeft);
 
