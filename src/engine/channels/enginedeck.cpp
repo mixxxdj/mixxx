@@ -30,7 +30,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        UserSettingsPointer pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
-                       EngineChannel::ChannelOrientation defaultOrientation)
+                       EngineChannel::ChannelOrientation defaultOrientation,
+                       bool primaryDeck)
         : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
           m_pConfig(pConfig),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
@@ -38,6 +39,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_wasActive(false) {
+    m_bIsPrimaryDeck = primaryDeck;
     m_pInputConfigured->setReadOnly();
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);

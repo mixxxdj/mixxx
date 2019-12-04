@@ -50,8 +50,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         if (pSyncable == enabling_syncable) {
             continue;
         }
-        // This is a string comparison, but this function is not hot.
-        if (!pSyncable->getGroup().contains("Channel")) {
+        if (!pSyncable->getChannel()->isPrimaryDeck()) {
             continue;
         }
         if (!pSyncable->isSynchronized()) {
@@ -157,9 +156,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
             continue;
         }
-        // Also skip non-primary decks like samplers.
-        // This is a string comparison, but this function is not hot.
-        if (!pOtherSyncable->getGroup().contains("Channel")) {
+        if (!pOtherSyncable->getChannel()->isPrimaryDeck()) {
             continue;
         }
         if (pOtherSyncable->getBaseBpm() == 0.0) {

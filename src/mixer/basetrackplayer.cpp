@@ -33,7 +33,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          EngineChannel::ChannelOrientation defaultOrientation,
                                          const QString& group,
                                          bool defaultMaster,
-                                         bool defaultHeadphones)
+                                         bool defaultHeadphones,
+                                         bool primaryDeck)
         : BaseTrackPlayer(pParent, group),
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
@@ -43,7 +44,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
-                                pEffectsManager, defaultOrientation);
+                                pEffectsManager, defaultOrientation, primaryDeck);
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
     m_pPassthroughEnabled = std::make_unique<ControlProxy>(group, "passthrough", this);

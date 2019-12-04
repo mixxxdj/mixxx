@@ -63,6 +63,7 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
+    inline bool isPrimaryDeck() { return m_bIsPrimaryDeck; };
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;
@@ -80,6 +81,7 @@ class EngineChannel : public EngineObject {
     EngineVuMeter m_vuMeter;
     ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
+    bool m_bIsPrimaryDeck = false;
 
   private slots:
     void slotOrientationLeft(double v);

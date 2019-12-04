@@ -60,7 +60,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         EngineChannel::ChannelOrientation defaultOrientation,
                         const QString& group,
                         bool defaultMaster,
-                        bool defaultHeadphones);
+                        bool defaultHeadphones,
+                        bool primaryDeck);
     virtual ~BaseTrackPlayerImpl();
 
     TrackPointer getLoadedTrack() const final;
