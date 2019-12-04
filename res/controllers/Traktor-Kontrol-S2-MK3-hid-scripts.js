@@ -286,11 +286,8 @@ TraktorS2MK3.syncHandler = function (field) {
             engine.setValue(field.group, "sync_enabled", !sync);
         } else {
             // Button is released, check if timer is still running
-            if (TraktorS2MK3.syncPressedTimer[field.group] === 0) {
-                // long press -> sync lock
-                engine.stopTimer(TraktorS2MK3.syncPressedTimer[field.group]);
-                TraktorS2MK3.syncPressedTimer[field.group] = 0;
-            } else {
+            // If not expired disable sync, otherwise do nothing to lock sync
+            if (TraktorS2MK3.syncPressedTimer[field.group] !== 0) {
                 // short press -> disable sync
                 engine.setValue(field.group, "sync_enabled", 0);
             }
