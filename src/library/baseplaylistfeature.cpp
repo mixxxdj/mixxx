@@ -47,6 +47,12 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotAddToAutoDJTop);
 
+    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    connect(m_pAddToAutoDJReplaceAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJReplace);
+
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
     connect(m_pDeletePlaylistAction,
             &QAction::triggered,
@@ -148,6 +154,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pDuplicatePlaylistAction;
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
+    delete m_pAddToAutoDJReplaceAction;
     delete m_pRenamePlaylistAction;
     delete m_pLockPlaylistAction;
     delete m_pAnalyzePlaylistAction;
@@ -604,6 +611,11 @@ void BasePlaylistFeature::slotAddToAutoDJ() {
 void BasePlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
+}
+
+void BasePlaylistFeature::slotAddToAutoDJReplace() {
+    //qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
 void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {

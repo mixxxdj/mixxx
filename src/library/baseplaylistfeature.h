@@ -56,6 +56,7 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotDuplicatePlaylist();
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
+    void slotAddToAutoDJReplace();
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
@@ -95,6 +96,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pDeletePlaylistAction;
     QAction *m_pAddToAutoDJAction;
     QAction *m_pAddToAutoDJTopAction;
+    QAction *m_pAddToAutoDJReplaceAction;
     QAction *m_pRenamePlaylistAction;
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
