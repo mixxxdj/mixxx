@@ -53,9 +53,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
 
   private slots:
     void slotRemove();
@@ -109,7 +109,7 @@ class WTrackTableView : public WLibraryTableView {
 
   private:
 
-    void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void createActions(const QList<ExternalTrackCollection*>& externalTrackCollections);
