@@ -2399,9 +2399,9 @@ WEffectSelector QAbstractItemView,
       image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
     }
 
-QTableView,
-QTextBrowser,
-QTreeView {
+#LibraryContainer QTableView,
+#LibraryContainer #LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView {
   border: 1px solid #585858;
   font-weight: normal;
   color: #9e9e9e;
@@ -2415,7 +2415,7 @@ QTreeView {
 }
 
 /* selected table row */
-QTableView::item:selected,
+#LibraryContainer QTableView::item:selected,
 #LibraryBPMButton::item:selected {
   color: #fff;
   background-color: #555;
@@ -2425,7 +2425,7 @@ QTableView::item:selected,
   selection-background-color: #125454; */
   }
   /* focused cell */
-  QTableView::item:focus {/*
+  #LibraryContainer QTableView::item:focus {/*
     background-color: #666; */
     /* overrides font color:
     selection-color: #ff5411; */
@@ -2447,7 +2447,7 @@ QTableView::item:selected,
     border: 1px solid #555;
   }
 
-QTreeView {
+#LibraryContainer QTreeView {
   min-height: 90px;
   min-width: 90px;
   border-width: 1px 1px 1px 0px;
@@ -2458,8 +2458,8 @@ QTreeView {
   Shift WSearchLineEdit instead */
   margin: 0px;
   }
-  QTreeView:focus,
-  QTableView:focus { /*
+  #LibraryContainer QTreeView:focus,
+  #LibraryContainer QTableView:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
     In conjunction with [Library],MoveFocusBackward/..Forward, some highlight
@@ -2468,37 +2468,37 @@ QTreeView {
   }
 
 /*  Closed branch icon in tree */
-QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings {
+#LibraryContainer QTreeView::branch:has-children:!has-siblings:closed,
+#LibraryContainer QTreeView::branch:closed:has-children:has-siblings {
   image: url(skin:/graphics/branch_closed.png);
   }
-  QTreeView::branch:has-children:!has-siblings:closed:selected,
-  QTreeView::branch:closed:has-children:has-siblings:selected {
+  #LibraryContainer QTreeView::branch:has-children:!has-siblings:closed:selected,
+  #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:selected {
     background-color: #333;
   }
 
 /*  Open branch icon in tree */
-QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings {
+#LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
+#LibraryContainer QTreeView::branch:open:has-children:has-siblings {
   image: url(skin:/graphics/branch_open.png);
   }
-  QTreeView::branch:open:has-children:!has-siblings:selected,
-  QTreeView::branch:open:has-children:has-siblings:selected {
+  #LibraryContainer QTreeView::branch:open:has-children:!has-siblings:selected,
+  #LibraryContainer QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     background-color: #333;
   }
 /* Text label of branch item */
-QTreeView::item:selected {
+#LibraryContainer QTreeView::item:selected {
   border-image: none;
   background-image: none;
   background-color: #333;
   color: #d2d2d2;
   }
   /* space left of selected child item */
-  QTreeView::branch:!has-children:!has-siblings:closed:selected,
-  QTreeView::branch:closed:!has-children:has-siblings:selected,
-  QTreeView::branch:open:!has-children:!has-siblings:selected,
-  QTreeView::branch:open:!has-children:has-siblings:selected {
+  #LibraryContainer QTreeView::branch:!has-children:!has-siblings:closed:selected,
+  #LibraryContainer QTreeView::branch:closed:!has-children:has-siblings:selected,
+  #LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
+  #LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
     border-image: none;
     background-color: #0f0f0f;
   }
@@ -2853,7 +2853,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     }*/
 
   /* checkbox in library "Played" column */
-  QTableView::indicator {
+  #LibraryContainer QTableView::indicator {
     width: 10px;
     height: 10px;
     margin: 0px;
@@ -2862,13 +2862,13 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     /* border is added to size defined above */
     border: 1px solid rgba(151,151,151,128);
     }
-  QTableView::indicator:hover {
+  #LibraryContainer QTableView::indicator:hover {
       border: 1px solid #888;
     }
-  QTableView::indicator:checked {
+  #LibraryContainer QTableView::indicator:checked {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     }
-  QTableView::indicator:unchecked {
+  #LibraryContainer QTableView::indicator:unchecked {
     background: none;
     }
 
