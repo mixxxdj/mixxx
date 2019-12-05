@@ -39,6 +39,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
+    void slotAddToAutoDJReplace();
     void slotImportAsMixxxPlaylist();
 
   private:
@@ -46,6 +47,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
 
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
+    QAction* m_pAddToAutoDJReplaceAction;
     QAction* m_pImportAsMixxxPlaylistAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
