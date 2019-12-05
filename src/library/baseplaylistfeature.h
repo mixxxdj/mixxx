@@ -80,7 +80,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QList<IdAndLabel> createPlaylistLabels() = 0;
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
     virtual void decorateChild(TreeItem *pChild, int playlistId) = 0;
-    virtual void addToAutoDJ(bool bTop);
+    virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     int playlistIdFromIndex(QModelIndex index);
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()

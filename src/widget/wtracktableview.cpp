@@ -1519,7 +1519,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 
     // TODO(XXX): Care whether the append succeeded.
     m_pTrackCollection->unhideTracks(trackIds);
-    playlistDao.sendToAutoDJ(trackIds, loc);
+    playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
 void WTrackTableView::slotImportTrackMetadataFromFileTags() {

@@ -614,7 +614,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     return tracksAdded;
 }
 
-void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop) {
+void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 
     // Query the PlaylistTracks database to locate tracks in the selected
@@ -634,19 +634,7 @@ void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop
     while (query.next()) {
         trackIds.append(TrackId(query.value(0)));
     }
-    addTracksToAutoDJQueue(trackIds, bTop);
-}
-
-void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, const bool bTop) {
-    // Get the ID of the Auto-DJ playlist
-    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
-
-    if (bTop) {
-        // Start at position 2 because position 1 might be already loaded to the deck.
-        insertTracksIntoPlaylist(trackIds, autoDJId, 2);
-    } else {
-        appendTracksToPlaylist(trackIds, autoDJId);
-    }
+    addTracksToAutoDJQueue(trackIds, loc);
 }
 
 int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const {
@@ -1025,7 +1013,7 @@ void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {
     m_pAutoDJProcessor = pAutoDJProcessor;
 }
 
-void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
+void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
     int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
     if (iAutoDJPlaylistId == -1) {
         return;

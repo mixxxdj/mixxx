@@ -6,6 +6,7 @@
 #include <QPointer>
 
 #include "library/libraryfeature.h"
+#include "library/dao/playlistdao.h"
 
 class BaseSqlTableModel;
 class TrackCollection;
@@ -41,7 +42,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     void slotImportAsMixxxPlaylist();
 
   private:
-    void addToAutoDJ(bool bTop);
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;

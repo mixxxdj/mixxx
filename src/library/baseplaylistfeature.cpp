@@ -598,21 +598,21 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false); // Top = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true); // bTop = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void BasePlaylistFeature::addToAutoDJ(bool bTop) {
+void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
         }
     }
 }

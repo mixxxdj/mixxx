@@ -57,15 +57,15 @@ void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QMod
 
 void BaseExternalLibraryFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false);
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true);
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
+void BaseExternalLibraryFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     QList<TrackId> trackIds;
@@ -76,7 +76,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     }
 
     PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-    playlistDao.addTracksToAutoDJQueue(trackIds, bTop);
+    playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
