@@ -757,6 +757,7 @@ void BpmControl::slotUpdateRateSlider(double value) {
 
 // called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
+    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::trackLoaded";
     if (m_pTrack) {
         disconnect(m_pTrack.get(), &Track::beatsUpdated,
                    this, &BpmControl::slotUpdatedTrackBeats);
@@ -770,6 +771,7 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.get(), &Track::beatsUpdated,
                 this, &BpmControl::slotUpdatedTrackBeats);
+        slotUpdateEngineBpm();
     } else {
         m_pTrack.reset();
         m_pBeats.clear();
@@ -810,6 +812,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
 }
 
 double BpmControl::updateLocalBpm() {
+    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::updateLocalBpm";
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
     BeatsPointer pBeats = m_pBeats;

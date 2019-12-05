@@ -319,11 +319,11 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     }
     if (pNewTrack) {
         m_masterBpmAdjustFactor = kBpmUnity;
-        // Because of the order signals get processed, the file/local_bpm COs and
-        // rate slider are not updated as soon as we need them, so do that now.
-        m_pFileBpm->set(pNewTrack->getBpm());
-        m_pLocalBpm->set(pNewTrack->getBpm());
         if (isSynchronized()) {
+            // Because of the order signals get processed, the file/local_bpm COs and
+            // rate slider are not updated as soon as we need them, so do that now.
+            m_pFileBpm->set(pNewTrack->getBpm());
+            m_pLocalBpm->set(pNewTrack->getBpm());
             // We used to set the m_pBpm here, but that causes a signal loop whereby
             // that was interpreted as a rate slider tweak, and the master bpm
             // was changed.  Instead, now we pass the suggested bpm to enginesync
