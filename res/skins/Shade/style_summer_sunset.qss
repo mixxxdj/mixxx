@@ -5,9 +5,15 @@ WEffectSelector::down-arrow,
 WEffectSelector::indicator:!checked,
 WEffectSelector::item:checked:selected,
 QToolTip,
-QMenu,
-QMenu::item,
-QMenu QCheckBox,
+#LibraryContainer QMenu,
+  WCoverArt QMenu,
+  WSpinny QMenu,
+#LibraryContainer QMenu::item,
+  WCoverArt QMenu::item,
+  WSpinny QMenu::item,
+#LibraryContainer QMenu QCheckBox,
+  WCoverArt QMenu QCheckBox,
+  WSpinny QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition,
 #fadeModeCombobox,
@@ -17,44 +23,64 @@ WLibrary QPushButton:enabled {
   }
   /* hovered items */
   WEffectSelector::item:selected,
-  QMenu::item:selected,
-  QMenu QCheckBox:selected,
-  QMenu QCheckBox:focus,  /* selected by keyboard */
-  QMenu QCheckBox:hover  /* mouse hover */ {
-    background-color: #d9c663;
-  }
+  #fadeModeCombobox::item:selected,
+  #LibraryContainer QMenu::item:selected,
+    WCoverArt QMenu::item:selected,
+    WSpinny QMenu::item:selected,
+  #LibraryContainer QMenu QCheckBox:selected,
+    WCoverArt QMenu QCheckBox:selected,
+    WSpinny QMenu QCheckBox:selected,
+  #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
+    WCoverArt QMenu QCheckBox:focus,
+    WSpinny QMenu QCheckBox:focus,
+  #LibraryContainer QMenu QCheckBox:hover, /* mouse hover */
+    WCoverArt QMenu QCheckBox:hover,
+    WSpinny QMenu QCheckBox:hover {
+      background-color: #d9c663;
+    }
 
-/* hover over checked effect */
-WEffectSelector::item:checked:selected {
-  background-color: #887a35;
-  }
+  /* hover over checked effect */
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
+    background-color: #887a35;
+    }
 
-QMenu::separator {
-  }
   /* checked effect and menu checkbox */
-  WEffectSelector::indicator:checked,
-  QMenu QCheckBox::indicator:checked,
-  QMenu QCheckBox::indicator:!checked:pressed {
-    border-color: #222;
-    background-color: #4bcf09;
+  #LibraryContainer QMenu QCheckBox::indicator:checked,
+    WCoverArt QMenu QCheckBox::indicator:checked,
+    WSpinny QMenu QCheckBox::indicator:checked,
+  #LibraryContainer QMenu::indicator:checked,
+    WCoverArt QMenu::indicator:checked,
+    WSpinny QMenu::indicator:checked {
+      border-color: #222;
+      background-color: #4bcf09;
     }
   /* unchecked menu checkbox */
-  QMenu QCheckBox::indicator:!checked,
-  QMenu QCheckBox::indicator:checked:pressed {
-    border-color: #222;
-    background-color: #998a3c;
+  #LibraryContainer QMenu QCheckBox::indicator:!enabled:!checked,
+    WCoverArt QMenu QCheckBox::indicator:!enabled:!checked,
+    WSpinny QMenu QCheckBox::indicator:!enabled:!checked,
+  #LibraryContainer QMenu::indicator:!enabled:!checked,
+    WCoverArt QMenu::indicator:!enabled:!checked,
+    WSpinny QMenu::indicator:!enabled:!checked {
+      border-color: #222;
+      background-color: #998a3c;
     }
   /* disabled menu checkbox */
-  QMenu QCheckBox::indicator:!enabled {
+  #LibraryContainer QMenu::item:!enabled,
+    WCoverArt QMenu::item:!enabled,
+    WSpinny QMenu::item:!enabled,
+  #LibraryContainer QMenu QCheckBox:!enabled,
+    WCoverArt QMenu QCheckBox:!enabled,
+    WSpinny QMenu QCheckBox:!enabled {
     border-color: #ad9e4f;
     background-color: #998a3c;
     }
 
-#EffectSelectorGroup[highlight="1"]{ 
-	border: 1px solid #f8ba54;  
-} 
-#EffectSelectorGroup[highlight="0"]{ 
-	border: 0px solid #f8ba54;  
+#EffectSelectorGroup[highlight="1"]{
+	border: 1px solid #f8ba54;
+}
+#EffectSelectorGroup[highlight="0"]{
+	border: 0px solid #f8ba54;
 }
 
 WLibrary QPushButton:!enabled {

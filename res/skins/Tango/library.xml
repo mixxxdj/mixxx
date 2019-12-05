@@ -9,7 +9,7 @@ Description:
 <!-- Finally fixed: library can shrink to noting!
     Solution was to define SizePolicy as 'xx,i'.
     Found this in Deere-2.1 -->
-    <ObjectName>Library</ObjectName>
+    <ObjectName>LibraryContainer </ObjectName>
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
     <Children>

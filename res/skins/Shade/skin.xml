@@ -425,17 +425,11 @@
         **********************************************
         -->
         <WidgetGroup>
-          <ObjectName>Library</ObjectName>
+          <ObjectName>LibraryContainer</ObjectName>
           <Size>e,e</Size>
           <SizePolicy>me,me</SizePolicy>
           <Layout>horizontal</Layout>
           <Style>
-          <!--
-          <BgColor>#101010</BgColor>
-          <FgColor>#C1C1C1</FgColor>
-          <BgColorRowEven>#101010</BgColorRowEven>
-          <BgColorRowUneven>#151515</BgColorRowUneven>
-          -->
           </Style>
           <Children>
             <Splitter>
