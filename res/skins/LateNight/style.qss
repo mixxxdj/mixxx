@@ -354,10 +354,6 @@ WSearchLineEdit,
   any color would cover the background texture
   background-color: #131313;  */
 }
-
-#KeyText {
-  border-left: 0px;
-}
 /* In conjunction with
     <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
     <Transform><Not><Variable name="group"/>,file_key</Not></Transform>
@@ -369,7 +365,7 @@ WSearchLineEdit,
 } */
 
 /************ separator lines within decks, samplers etc. *********************/
-#DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControls, #DeckRateSeparator,
+#DeckRow_1_KeyVinylFx, #ArtistRow, #DeckControlsStars, #DeckRateSeparator,
 #BigSpinnyCoverContainer, #SmallSpinnyCoverContainer,
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
 #PlayContainerSmall,
@@ -1097,11 +1093,32 @@ WSearchLineEdit QToolButton:!focus {
   padding: 1px 0px 2px 0px;
   border-width: 0px 0px 1px 0px;
   }
+  #KeyText {
+    qproperty-alignment: 'AlignCenter';
+    border-radius: 1px;
+    border-left: 0px;
+  }
+  #KeyTextSmall {
+    border-width: 1px 0px 0px 1px;
+    padding: 0px 1px 0px 0px;
+  }
   #VinylButtons, #FxAssingButtonsDeck {
     qproperty-layoutSpacing: 2;
   }
+  #VinylControls {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #VinylStatus {
+    border-radius: 5px;
+  }
 
 #DeckRows234 {
+}
+
+#BigSpinnyCoverContainer,
+#SmallSpinnyCoverContainer {
+  border-width: 0px;
+  margin-bottom: 1px;
 }
 
 #DeckRow_2_3_ArtistTitleTime {
@@ -1110,24 +1127,46 @@ WSearchLineEdit QToolButton:!focus {
   }
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-    padding: 0px 3px 2px 0px;
-  }
-  #TimeGutter, #DurationGutter {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-    padding: 2px;
+    padding: 0px;
   }
   #ArtistRow {
     border-width: 1px 0px 0px 0px;
-  }
+    }
+    #ArtistGutter,
+    #TitleGutter {
+      qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+      padding: 0px 2px 1px 2px;
+      }
+      #ArtistText,
+      #TitleText {
+        /* for some reason the padding/margin is double in the skin...
+        margin-left: 1px;
+        padding-left: 1px; */
+      }
+    #PlayPositionGutter, #DurationGutter {
+      qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+      padding: 0px 2px 1px 2px;
+      }
+      #PlayPositionText,
+      #DurationText {
+      }
 
 #DeckRow_4_OverviewSpinny {
   padding: 0px 0px 1px 0px;
 }
 
+  #SmallSpinnyCoverContainer {
+    border-width: 1px 0px 0px 0px;
+  }
   #Stars {
     qproperty-layoutAlignment: 'AlignCenter';
     border-radius: 1px;
     }
+  #DeckControlsStars {
+    qproperty-layoutAlignment: 'AlignCenter';
+    border-width: 1px 0px 0px 0px;
+    padding: 2px 1px 1px 2px;
+  }
   #DeckControlButtons {
     padding: 0px 2px;
     qproperty-layoutSpacing: 4;
@@ -1136,28 +1175,18 @@ WSearchLineEdit QToolButton:!focus {
 #DeckRow_5_LoopCuesTransport {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   padding: 1px 2px 2px 1px;
-}
-
-#PlayContainerSmall {
-  margin: 1px 0px;
-  padding: 0px 1px 0px 2px;
-  border-width: 0px 0px 0px 1px;
-}
-
-#DecksAndMixer {
-}
-
-
-#BigSpinnyCoverContainer {
-  border-width: 0px;
-  margin-bottom: 1px;
-}
-#SmallSpinnyCoverContainer {
-  border-width: 1px 0px 0px 0px;
-}
-#MiniDeckSpinnyCoverContainer {
-  margin: 1px 2px 1px 1px;
-}
+  }
+  #PlayCueRevHotCues {
+    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  }
+  #PlayContainerSmall {
+    margin: 1px 0px;
+    padding: 0px 1px 0px 2px;
+    border-width: 0px 0px 0px 1px;
+  }
+  #MiniDeckSpinnyCoverContainer {
+    margin: 1px 2px 1px 1px;
+  }
 
 WSpinny { /*
   This produces artifacts in spinny bg
@@ -1171,33 +1200,8 @@ WCoverArt {
   color: #ACACAC;
 }
 
-#PlayCueRevHotCues {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-}
 
-#DeckControls {
-  qproperty-layoutAlignment: 'AlignCenter';
-  border-width: 1px 0px 0px 0px;
-  padding: 2px 1px 1px 2px;
-}
 
-#KeyText {
-  qproperty-alignment: 'AlignCenter';
-  border-radius: 1px;
-  }
-
-#ArtistGutter,
-#TitleGutter {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  padding: 2px 2px 1px 2px;
-}
-
-#ArtistText,
-#TitleText {
-  /* for some reason the padding/margin is double in the skin...
-  margin-left: 1px;
-  padding-left: 1px; */
-  }
   #TitleTextSmall {
     padding: 1px 3px 1px 1px;
   }
@@ -1210,24 +1214,6 @@ WCoverArt {
     padding: 0px 3px 2px 2px; /*
     border-width: 0px 1px 0px 0px;  */
   }
-
-  #KeyTextSmall {
-    border-width: 1px 0px 0px 1px;
-  }
-  #BpmTextSmall {
-    border-width: 1px 0px 0px 1px;
-  }
-  #KeyTextSmall {
-    padding: 0px 1px 0px 0px;
-  }
-
-#VinylControls {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#VinylStatus {
-  border-radius: 5px;
-}
 
 #RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1245,6 +1231,9 @@ WCoverArt {
     padding: 0px;
     margin: 0px;
     }
+  #BpmTextSmall {
+    border-width: 1px 0px 0px 1px;
+  }
   #RateText {
     qproperty-alignment: 'AlignCenter';
     padding: 0px;

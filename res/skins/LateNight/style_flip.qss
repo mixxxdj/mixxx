@@ -24,7 +24,7 @@ QToolTip {
 #DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
   #RateContainer,
   #DeckRow_1_KeyVinylFx, #DeckRow_2_3_ArtistTitleTime,
-  #DeckRow_4_OverviewSpinny #OverviewBox, #DeckControls,
+  #DeckRow_4_OverviewSpinny #OverviewBox, #DeckControlsStars,
   #DeckRow_5_LoopCuesTransport,
   #SmallSpinnyCoverContainer, #BigSpinnyCoverContainer,
 #MixerDecks, #MasterControls, #HeadphoneControls,
@@ -600,27 +600,25 @@ WSearchLineEdit,
     border-left: 0px;
     margin: 0px 0px 1px 0px;
   }
+
 #DeckRows234 {
-  margin: 0px;
+  }
+  #BigSpinnyCoverContainer {
+    margin: 0px;
   }
   #DeckRow_2_3_ArtistTitleTime {
     margin: 0px;
+    padding: 0px;
     }
-    #ArtistRow,
+    #TitleRow {
+      border-width: 0px;
+      margin: 3px 2px;
+    }
     #ArtistRow {
       border-width: 0px;
+      margin: 3px 2px 2px 2px;
     }
-    #BigSpinnyCoverContainer {
-      margin: 0px;
-    }
-    #TitleTextSmall,
-    #ArtistTextSmall,
-    #PlayPositionTextSmall,
-    #BpmTextSmall,
-    #KeyTextSmall,
-    #PlayContainerSmall {
-      border-width: 0px;
-    }
+
   #DeckRow_4_OverviewSpinny {
     padding: 0px;
     margin: 0px;
@@ -628,24 +626,32 @@ WSearchLineEdit,
     #DeckRow_4_OverviewSpinny #OverviewBox {
       margin: 0px;
     }
-    #DeckControls {
+    #DeckControlsStars {
       border-width: 1px;
     }
     #SmallSpinnyCoverContainer {
       margin: 0px;
     }
-    #MiniDeckSpinnyCoverContainer {
-      margin: 0px 2px 0px 0px;
-    }
 
-#DeckRow_5_LoopCuesTransport {
-  padding: 2px 1px 1px 2px;
-}
+  #DeckRow_5_LoopCuesTransport {
+    padding: 2px 1px 1px 2px;
+  }
+
+  #MiniDeckSpinnyCoverContainer {
+    margin: 0px 2px 0px 0px;
+  }
+  #TitleTextSmall,
+  #ArtistTextSmall,
+  #PlayPositionTextSmall,
+  #BpmTextSmall,
+  #KeyTextSmall,
+  #PlayContainerSmall {
+    border-width: 0px;
+  }
 
 #PreviewDeck {
   margin: 0px 0px 4px 2px;
 }
-
 /************** Decks *********************************************************/
 
 

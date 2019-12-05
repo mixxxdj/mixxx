@@ -1,5 +1,6 @@
 <Template>
   <SetVariable name="btn_type"></SetVariable>
+
   <WidgetGroup>
     <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
     <Layout>horizontal</Layout>
@@ -39,8 +40,7 @@
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
-      <!-- Small spinny / cover art -->
+      </WidgetGroup><!-- Small spinny / cover art -->
 
       <WidgetGroup>
         <ObjectName>OverviewBox</ObjectName>
@@ -53,9 +53,8 @@
         </Children>
       </WidgetGroup>
 
-      <!-- Deck controls + Star rating -->
       <WidgetGroup>
-        <ObjectName>DeckControls</ObjectName>
+        <ObjectName>DeckControlsStars</ObjectName>
         <Layout>vertical</Layout>
         <Children>
 
@@ -77,7 +76,6 @@
 
           <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
 
-          <!-- Deck controls row 1 -->
           <WidgetGroup>
             <ObjectName>DeckControlButtons</ObjectName>
             <Layout>horizontal</Layout>
@@ -106,9 +104,8 @@
               </Template>
 
             </Children>
-          </WidgetGroup><!-- Deck controls row 1 -->
+          </WidgetGroup><!-- DeckControlButtons row 1 -->
 
-          <!-- Deck controls row 2 -->
           <WidgetGroup>
             <ObjectName>DeckControlButtons</ObjectName>
             <Layout>horizontal</Layout>
@@ -135,12 +132,12 @@
               </Template>
 
             </Children>
-          </WidgetGroup><!-- /Deck controls row 2 -->
+          </WidgetGroup><!-- /DeckControlButtons row 2 -->
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- DeckControlsStars -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- DeckRow_4_OverviewSpinny -->
 </Template>

@@ -8,7 +8,7 @@
 
       <Template src="skin:deck_rate_controls.xml"/>
 
-      <WidgetGroup>  <!-- Deck Channel -->
+      <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
@@ -20,7 +20,7 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Big spinny /cover -->
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
@@ -51,7 +51,7 @@
                   <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- Big spinny -->
+              </WidgetGroup><!-- Big spinny /cover -->
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
