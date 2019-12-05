@@ -206,7 +206,7 @@ WSearchLineEdit,
   selection-color: #eece33;
 }
 
-/* gold */
+/* yellow */
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckMini1 WLabel, #DeckMini2 WLabel,
 #Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
