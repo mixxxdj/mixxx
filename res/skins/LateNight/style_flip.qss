@@ -292,6 +292,10 @@ WBeatSpinBox#Spinbox_embedded:focus,
   image: url(skin:/buttons_flip/btn__reverse.svg) no-repeat center center;
 }
 
+#QuickEffectButton[displayValue="0"] {
+  image: url(skin:/buttons_flip/btn__star.svg) no-repeat center center;
+}
+
 #FxAssignButton_FX1 WPushButton[value="0"] {
   image: url(skin:/buttons_flip/btn__fx_FX1.svg) no-repeat center center;
     }
@@ -672,8 +676,7 @@ WSearchLineEdit,
   #CrossfaderButton[value="1"] {
     background-color: #151514;
     }
-  #EQKillButton[displayValue="0"],
-  #QuickEffectButton[displayValue="0"] {
+  #EQKillButton[displayValue="0"] {
     color: #aaa;
   }
 

@@ -66,9 +66,6 @@ WPushButton, WLibrary QPushButton,
 #EQKillButton {
   font-size: 12px;
 }
-#QuickEffectButton {
-  font-size: 16px;
-}
 
 #ArtistText,
 #TitleText,
@@ -188,8 +185,7 @@ WOverview QLabel {
   color: #000;
 }
 
-#EQKillButton[displayValue="0"],
-#QuickEffectButton[displayValue="0"] {
+#EQKillButton[displayValue="0"] {
   color: #666;
 }
 #KeyButton[displayValue="1"] {
@@ -830,6 +826,10 @@ QPushButton#pushButtonAutoDJ:checked,
 }
 #Reverse {
   image: url(skin:/buttons_classic/btn__reverse.svg) no-repeat center center;
+}
+
+#QuickEffectButton[displayValue="0"] {
+  image: url(skin:/buttons_classic/btn__star.svg) no-repeat center center;
 }
 
 #FxAssignButton_FX1 WPushButton[value="0"] {
