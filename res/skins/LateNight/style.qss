@@ -1040,7 +1040,7 @@ QPushButton#pushButtonAutoDJ:checked,
   }
 
 #ToolbarLogo {
-  image: url(skin:/style_classic/mixxx_logo.svg) no-repeat center center;
+  image: url(skin:/style_classic/mixxx_logo_small.svg) no-repeat center center;
 }
 
 WSearchLineEdit QToolButton:!focus {
