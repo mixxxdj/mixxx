@@ -677,12 +677,14 @@ QSplitter::handle:vertical { height: 6px;}
 
 WLibrary QPushButton {
   font-size: 10px;
-  font-family: "Open Sans";}
+  font-family: "Open Sans";
+}
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
   font-size: 13px;
   background: transparent;
-  color: #C1C1C1;}
+  color: #C1C1C1;
+}
 
 
 WLibrary { margin: 2px 3px 0px 0px; }

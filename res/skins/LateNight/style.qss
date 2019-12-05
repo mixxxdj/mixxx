@@ -571,8 +571,6 @@ WTime {
     font-size: 10px/10px;
   }
 
-
-
 /********************** Decks **********************/
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
