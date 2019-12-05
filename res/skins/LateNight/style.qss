@@ -1517,14 +1517,14 @@ WBeatSpinBox,
       margin: 2px 2px 2px 0px;
     }
     #PreviewBPM {
-      padding: 0px 0px 2px 2px;
+      padding: 4px 0px 2px 2px;
     }
   #PreviewEjectButton {
   }
 
 #PreviewPlayBox {
   padding: 0px;
-  margin-right: 1px;
+  margin: 0px 1px 0px 0px;
   border-width: 0px;
 }
 

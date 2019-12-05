@@ -111,7 +111,7 @@
                   <WidgetGroup>
                     <ObjectName>OverviewBox</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>0me,20me</Size>
+                    <Size>0me,32f</Size>
                     <Children>
                       <Overview>
                         <TooltipId>waveform_overview</TooltipId>
