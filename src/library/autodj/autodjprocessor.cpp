@@ -592,7 +592,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
         double crossfaderPosition = value * (m_pCOCrossfaderReverse->toBool() ? -1 : 1);
 
         if ((crossfaderPosition == 1.0 && fromDeck->isLeft()) ||       // crossfader right
-                (crossfaderPosition == -1.0 && fromDeck->isRight())) { // crossfader right
+                (crossfaderPosition == -1.0 && fromDeck->isRight())) { // crossfader left
             if (!toDeck->isPlaying()) {
                 // Re-cue the track if the user has seeked it to the very end
                 if (toDeck->playPosition() >= toDeck->fadeBeginPos) {
@@ -600,11 +600,11 @@ void AutoDJProcessor::crossfaderChanged(double value) {
                 }
                 toDeck->play();
             }
+            fromDeck->stop();
 
             // Now that we have started the other deck playing, remove the track
             // that was "on deck" from the top of the queue.
             removeLoadedTrackFromTopOfQueue(*toDeck);
-            fromDeck->stop();
             loadNextTrackFromQueue(*fromDeck);
         }
     }
@@ -756,13 +756,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     otherDeck->play();
                 }
 
-                // Now that we have started the other deck playing, remove the track
-                // that was "on deck" from the top of the queue.
-                removeLoadedTrackFromTopOfQueue(*otherDeck);
-
                 if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
                     setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
+
+                // Now that we have started the other deck playing, remove the track
+                // that was "on deck" from the top of the queue.
+                // Note: This is a DB call and takes long.
+                removeLoadedTrackFromTopOfQueue(*otherDeck);
             }
         }
 
