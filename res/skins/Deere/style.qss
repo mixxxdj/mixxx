@@ -325,13 +325,13 @@ QPushButton#LibraryPreviewButton:checked:hover {
 }
 
 /* library header row */
-QHeaderView {
+#LibraryContainer QHeaderView {
   color: #d2d2d2;
   background: #1A1A1A;
   border-bottom: 1px solid #141414;
 }
 
-QHeaderView::section {
+#LibraryContainer QHeaderView::section {
   font-size: 12px/14px;
   font-weight: normal;
   padding: 2px;
@@ -342,7 +342,7 @@ QHeaderView::section {
   border-right: 1px solid #141414;
 }
 
-QHeaderView::section:selected {
+#LibraryContainer QHeaderView::section:selected {
   font-size: 12px/14px;
   font-weight: bold;
   padding: 2px;
@@ -352,17 +352,17 @@ QHeaderView::section:selected {
   border-right: none;
 }
 
-QHeaderView::up-arrow,
-QHeaderView::down-arrow {
+#LibraryContainer QHeaderView::up-arrow,
+#LibraryContainer QHeaderView::down-arrow {
   background-color: rgba(26,26,26,220);
   margin: 0px -1px 0px 0xp;
   padding: 0px;
 }
-QHeaderView::up-arrow {
+#LibraryContainer QHeaderView::up-arrow {
   image: url(skin:/image/style_sort_up.svg);
 }
 
-QHeaderView::down-arrow {
+#LibraryContainer QHeaderView::down-arrow {
   image: url(skin:/image/style_sort_down.svg);
 }
 
@@ -688,14 +688,14 @@ QPushButton#pushButtonRepeatPlaylist {
 /* AutoDJ button icons */
 
 /* Scroll bars */
-QScrollBar:horizontal {
+#LibraryContainer QScrollBar:horizontal {
   border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
   background: #222222;
   padding: 3px;
 }
-QScrollBar:vertical {
+#LibraryContainer QScrollBar:vertical {
   border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
@@ -703,38 +703,38 @@ QScrollBar:vertical {
   padding: 3px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
-QScrollBar::add-page, QScrollBar::sub-page {
+#LibraryContainer QScrollBar::add-page,
+#LibraryContainer QScrollBar::sub-page {
   background: none;
 }
-QScrollBar::handle:horizontal {
+#LibraryContainer QScrollBar::handle:horizontal {
   min-width: 25px;
   background: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
-QScrollBar::handle:vertical {
+#LibraryContainer QScrollBar::handle:vertical {
   min-height: 25px;
   background: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
-QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {
+#LibraryContainer QScrollBar::handle:horizontal:hover,
+#LibraryContainer QScrollBar::handle:vertical:hover {
   background: #B3B3B3;
 }
 
 /* Turn off buttons */
-QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
-  width: 0px;
-  height: 0px;
-  border: none;
-}
-QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
+#LibraryContainer QScrollBar::add-line:horizontal,
+#LibraryContainer QScrollBar::add-line:vertical,
+#LibraryContainer QScrollBar::sub-line:horizontal,
+#LibraryContainer QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
   border: none;
 }
 /* Corner in between two scrollbars */
-QAbstractScrollArea::corner {
+#LibraryContainer QAbstractScrollArea::corner {
   border-top: 1px solid #141414;
   border-left: 1px solid #141414;
 }
@@ -2209,43 +2209,3 @@ WEffectSelector {
     #LibraryContainer QHeaderView QMenu::indicator:checked {
       image: url(skin:/icon/ic_library_checkmark_blue.svg);
     }
-
-
-
-
-
-/*
-
-#Deck1 {
-  margin: 0px;
-  qproperty-layoutSpacing: 0;
-  qproperty-layoutContentsMargins: rect(10 2 10 2);
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-}
-
-WWidget {
-  border: 1px solid rgb(128, 128, 128);
-  background-color: grey;
-}
-
-WSliderComposed {
-  background-color: orange;
-}
-
-WPushButton[value="1"] {
-  background-color: green;
-}
-
-WPushButton[pressed="true"] {
-  background-color: pink;
-}
-
-#BeatLoopButton[value="1"][pressed="true"] {
-  background-color: pink;
-}
-
-#BeatLoopButton[value="0"][pressed="true"] {
-  background-color: orange;
-}
-*/
