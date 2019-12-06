@@ -543,7 +543,7 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
     }
     DEBUG_ASSERT(pCue->getType() == Cue::Type::Loop);
 
-    double startPosition = pCue->getPosition();;
+    double startPosition = pCue->getPosition();
     double endPosition = startPosition + pCue->getLength();
     if(startPosition < 0 || startPosition >= endPosition) {
         if(m_pCue) {
