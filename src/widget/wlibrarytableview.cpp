@@ -133,32 +133,29 @@ void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
     qDebug()<<"    WLibraryTableView::restoreVScrollBarPos";
     updateGeometries();
 
-    if (m_vScrollBarPosValues.contains(key)) {
+    QMap<TrackModel*, int>::const_iterator vScrollBarPos = m_vScrollBarPosValues.find(key);
+    if (vScrollBarPos != m_vScrollBarPosValues.end()) {
         qDebug()<<"   restore previous vertical scrollbar pos from m_vScrollBarPosValues["<<key<<"]";
-        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
+        verticalScrollBar()->setValue(vScrollBarPos.value());
     } else {
         qDebug()<<"   store & set default vertical scrollbar position";
         m_vScrollBarPosValues[key] = 0;
         verticalScrollBar()->setValue(0);
     }
-    if (m_selectedIndices.contains(key)) {
-        QModelIndexList selection = m_selectedIndices[key];
+
+    QMap<TrackModel*, QModelIndexList>::const_iterator prevSelection = m_selectedIndices.find(key);
+    if (prevSelection != m_selectedIndices.end()) {
         // See documentation of failed commands in https://github.com/mixxxdj/mixxx/pull/2378
         // before restoring the previous selection first select the first row
         // in order to set focus for arrow key navigation
-        QModelIndex firstIndex = selection.first();
+        const QModelIndex firstIndex= prevSelection.value().first();
         if (firstIndex.isValid()) {
             qDebug()<<"   select row "<<firstIndex.row();
             selectRow(firstIndex.row());
+            // It's not necessesary to remove this index from the list
+            // for the loop below; select() will not affect focus
         }
-        // before looping over indices, remove first index we just restored
-        if (selection.size() > 1) {
-            selection.removeFirst();
-        } else {
-            // return when there was only one index stored
-            return;
-        }
-        foreach (QModelIndex index, selection) {
+        foreach (QModelIndex index, prevSelection.value()) {
             if (index.isValid()) {
                 qDebug()<<"    index "<<index<<" isValid(), select.";
                 selectionModel()->select(index,
