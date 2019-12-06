@@ -8,28 +8,42 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>show_samplers</TooltipId>
-            <ObjectName>SamplerExpandbutton</ObjectName>
-            <Size>min,me</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerExpand.svg</Pressed>
-              <Unpressed>skin:/buttons/btn_samplerExpand.svg</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerCollapse.svg</Pressed>
-              <Unpressed>skin:/buttons/btn_samplerCollapse.svg</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey>[Skin],expand_samplers</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <WidgetGroup>
+            <ObjectName>SamplerExpand</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>EmbeddeButtonBox</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>22f,22f</Size>
+                <Children>
+                  <PushButton>
+                    <Size>20f,20f</Size>
+                    <TooltipId>show_samplers</TooltipId>
+                    <ObjectName>SamplerExpandButton</ObjectName>
+                    <NumberStates>2</NumberStates>
+                      <State>
+                        <Number>0</Number>
+                        <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Pressed>
+                        <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_expand.svg</Unpressed>
+                      </State>
+                      <State>
+                        <Number>1</Number>
+                        <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Pressed>
+                        <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_sampler_collapse.svg</Unpressed>
+                      </State>
+                    <Connection>
+                      <ConfigKey>[Skin],expand_samplers</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+                  <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>
@@ -43,7 +57,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">1</SetVariable>
           </Template>
         </Children>
@@ -59,7 +73,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">2</SetVariable>
           </Template>
         </Children>
@@ -75,7 +89,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">3</SetVariable>
           </Template>
         </Children>
@@ -91,8 +105,72 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_small.xml">
             <SetVariable name="samplernum">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler5Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_small.xml">
+            <SetVariable name="samplernum">5</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler6Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_small.xml">
+            <SetVariable name="samplernum">6</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler7Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_small.xml">
+            <SetVariable name="samplernum">7</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler8Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_small.xml">
+            <SetVariable name="samplernum">8</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -172,6 +250,8 @@
     </Connection>
     <Children>
 
+      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -189,6 +269,8 @@
 
         </Children>
       </WidgetGroup>
+
+      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
       <WidgetGroup>
         <Size>5f,1min</Size>

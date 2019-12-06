@@ -1,12 +1,11 @@
 <Template>
 	<!-- VinylControl sub-widget -->
 	<WidgetGroup>
-        <BackPath>style/style_bg_vinylcontrol.png</BackPath>
+    <BackPath>style/style_bg_vinylcontrol.png</BackPath>
 		<Size>21,82</Size>
 		<Children>
 			<PushButton>
 				<TooltipId>vinylcontrol_status</TooltipId>
-				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
@@ -26,7 +25,6 @@
 
 			<PushButton>
 				<TooltipId>vinylcontrol_status</TooltipId>
-				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
@@ -57,7 +55,6 @@
 
 			<PushButton>
 				<TooltipId>vinylcontrol_mode</TooltipId>
-				<Style></Style>
 				<NumberStates>3</NumberStates>
 				<State>
 					<Number>0</Number>
@@ -88,7 +85,6 @@
 
 			<PushButton>
 				<TooltipId>vinylcontrol_cueing</TooltipId>
-				<Style></Style>
 				<NumberStates>3</NumberStates>
 				<State>
 					<Number>0</Number>

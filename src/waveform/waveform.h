@@ -111,7 +111,7 @@ class Waveform {
 
     // We do not lock the mutex since m_data is not resized after the
     // constructor runs.
-    inline int getTextureSize() const { return m_data.size(); }
+    inline int getTextureSize() const { return static_cast<int>(m_data.size()); }
 
     // Atomically get the number of data elements in this Waveform. We do not
     // lock the mutex since m_dataSize is not changed after the constructor

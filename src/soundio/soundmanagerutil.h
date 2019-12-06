@@ -197,6 +197,50 @@ public:
 
 typedef AudioPath::AudioPathType AudioPathType;
 
+class SoundDeviceId {
+  public:
+    QString name;
+    // The "hw:X,Y" device name. Remains an empty string if not using ALSA
+    // or using a non-hw ALSA device such as "default" or "pulse".
+    QString alsaHwDevice;
+    int portAudioIndex;
+
+    QString debugName() const {
+        if (alsaHwDevice.isEmpty()) {
+            return name + ", " + portAudioIndex;
+        } else {
+            return name + ", " + alsaHwDevice + ", " + QString::number(portAudioIndex);
+        }
+    }
+
+    SoundDeviceId()
+       : portAudioIndex(-1) {}
+};
+
+// This must be registered with QMetaType::registerComparators for
+// QVariant::operator== to use it, which is required for QComboBox::findData to
+// work in DlgPrefSoundItem.
+inline bool operator==(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
+    return lhs.name == rhs.name
+            && lhs.alsaHwDevice == rhs.alsaHwDevice
+            && lhs.portAudioIndex == rhs.portAudioIndex;
+}
+
+// There is not really a use case for this, but it is required for QMetaType::registerComparators.
+inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
+    return lhs.portAudioIndex < rhs.portAudioIndex;
+}
+
+Q_DECLARE_METATYPE(SoundDeviceId);
+
+inline unsigned int qHash(const SoundDeviceId& id) {
+    return qHash(id.name) + qHash(id.alsaHwDevice) + id.portAudioIndex;
+}
+
+inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {
+    return dbg << QString("SoundDeviceId(" + soundDeviceId.debugName() + ")");
+}
+
 // globals for QHash
 unsigned int qHash(const ChannelGroup &group);
 unsigned int qHash(const AudioOutput &output);

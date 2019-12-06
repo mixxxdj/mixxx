@@ -1,0 +1,11 @@
+WCueMenuPopup #CueDeleteButton {
+  qproperty-icon: url(:/images/ic_delete.svg);
+}
+
+WColorPicker QPushButton[checked="false"] {
+  qproperty-icon: none;
+}
+
+WColorPicker QPushButton[checked="true"] {
+  qproperty-icon: url(:/images/ic_checkmark.svg);
+}

@@ -104,8 +104,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(changed(int)),
-            this, SLOT(playlistChanged(int)));
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::changed,
+            this,
+            &PlaylistTableModel::playlistChanged);
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
@@ -113,6 +115,9 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     if (locations.isEmpty()) {
         return 0;
     }
+
+    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromLocations(
+            locations);
 
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
@@ -122,18 +127,8 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         position = rowCount() + 1;
     }
 
-    QList<QFileInfo> fileInfoList;
-    foreach (QString fileLocation, locations) {
-        QFileInfo fileInfo(fileLocation);
-        if (fileInfo.exists()) {
-            fileInfoList.append(fileInfo);
-        }
-    }
-
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
-
     int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
-        trackIds, m_iPlaylistId, position);
+            trackIds, m_iPlaylistId, position);
 
     if (locations.size() - tracksAdded > 0) {
         qDebug() << "PlaylistTableModel::addTracks could not add"

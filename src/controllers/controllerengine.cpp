@@ -1134,21 +1134,10 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
 
 double ControllerEngine::getDeckRate(const QString& group) {
     double rate = 0.0;
-    ControlObjectScript* pRate = getControlObjectScript(group, "rate");
-    if (pRate != nullptr) {
-        rate = pRate->get();
+    ControlObjectScript* pRateRatio = getControlObjectScript(group, "rate_ratio");
+    if (pRateRatio != nullptr) {
+        rate = pRateRatio->get();
     }
-    ControlObjectScript* pRateDir = getControlObjectScript(group, "rate_dir");
-    if (pRateDir != nullptr) {
-        rate *= pRateDir->get();
-    }
-    ControlObjectScript* pRateRange = getControlObjectScript(group, "rateRange");
-    if (pRateRange != nullptr) {
-        rate *= pRateRange->get();
-    }
-
-    // Add 1 since the deck is playing
-    rate += 1.0;
 
     // See if we're in reverse play
     ControlObjectScript* pReverse = getControlObjectScript(group, "reverse");

@@ -6,7 +6,7 @@
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>0me,45f</Size>
+        <Size>0me,51f</Size>
         <Children>
           <Template src="skin:deck_small.xml">
             <SetVariable name="i">1</SetVariable>
@@ -20,7 +20,7 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>0me,45f</Size>
+        <Size>0me,51f</Size>
         <Children>
           <Template src="skin:deck_small.xml">
             <SetVariable name="i">3</SetVariable>

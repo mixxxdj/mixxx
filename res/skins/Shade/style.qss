@@ -6,11 +6,6 @@
   background-position:center top;
 }
 
-#Deck WPushButton {
-  font-family: "Open Sans";
-  font-size: 14px;
-}
-
 #DeckRowSmall {
   padding: 3px 3px 2px 3px;
 }
@@ -19,7 +14,9 @@
   padding: 5px 0px;
 }
 
-
+WOverview {
+  font-family: "Ubuntu";
+}
 
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
@@ -62,23 +59,32 @@ WBeatSpinBox::down-button,
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
-
+#fadeModeCombobox,
 WEffectSelector {
   color: #060613;
   background-color: #aab2b7;
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin-top: 0px;
-  margin-bottom: 0px;
-  border: 1px solid #060613;
   padding-left: 3px;
   font: 13px;
 }
+WEffectSelector {
+  border: 1px solid #060613;
+  margin-bottom: 0px;
+}
+#fadeModeCombobox {
+  height: 18px;
+  border: 1px solid #99A0A4;
+  margin: 0px 0px 2px 1px;
+}
 
+#fadeModeCombobox::drop-down,
 WEffectSelector::drop-down {
   /* This causes the Qt theme's widget style to magically not apply. Go figure. */
   border: 0;
 }
 
+#fadeModeCombobox::down-arrow,
 WEffectSelector::down-arrow {
   height: 20px;
   border-style: solid;
@@ -87,18 +93,21 @@ WEffectSelector::down-arrow {
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
-WEffectSelector QAbstractItemView {
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea {
   color: #060613;
   background-color: #aab2b7;
   border: 2px solid #060613;
   selection-background-color: lightgray;
 }
 
-WEffectSelector::item:selected {
+WEffectSelector::item:selected,
+#fadeModeCombobox::item:selected {
   background-color: lightgray;
 }
 
-WEffectSelector::checked {
+WEffectSelector::checked,
+#fadeModeCombobox::checked {
   color: #EC4522;
 }
 
@@ -231,10 +240,6 @@ QTreeView::item:!selected {
     border-radius: 2px; */
   }
 
-  #LibraryTimesPlayed::item {
-    color: #cfcfcf;
-    }
-
   /* Button in library "Preview" column */
   #LibraryPreviewButton {
     background: transparent;
@@ -297,10 +302,21 @@ WSearchLineEdit {
     color: #eeeeee;
     padding: 2px;
   }
-  /* Clear button next to text field */
+  /* Clear button */
   WSearchLineEdit QToolButton {
-    margin-bottom: 4px;
-  }
+    /* C++ code adds 3px in each dimension.
+       height of search box inside the border: 22px
+       make the button use the available height */
+    height: 19px;
+    width: 19px;
+    margin-bottom: 2px;
+    }
+    WSearchLineEdit QToolButton:!focus {
+      image: url(skin:/btn/btn_lib_clear_search.svg);
+    }
+    WSearchLineEdit QToolButton:focus {
+      image: url(skin:/btn/btn_lib_clear_search_focus.svg);
+    }
 
 QHeaderView {
   /* Note(ronso0)
@@ -396,7 +412,12 @@ The general rule when it comes to stylesheets is always to remember that if you 
 /* transition time in Auto DJ tab*/
 QSpinBox:editable,
 /* or addressed directly */
-#spinBoxTransition {}
+#spinBoxTransition {
+  height: 18px;
+  border: 1px solid #99A0A4;
+  background-color: #99a0a4;
+  margin-left: 3px;
+}
 
 /* Cover Art*/
 WCoverArt {
@@ -412,10 +433,10 @@ QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); ba
 QSplitter::handle:horizontal { width: 6px; }
 QSplitter::handle:vertical { height: 6px;}
 
-QPushButton { font-size: 10pt;
+WLibrary QPushButton { font-size: 10pt;
   font-family: "Open Sans";}
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-QLabel, QRadioButton {
+WLibrary QLabel, WLibrary QRadioButton {
   font-size: 10pt;
   background: transparent;
   color: #C1C1C1;}
@@ -455,6 +476,15 @@ WLibrary QPushButton {
   background-position: center;
   border: 1px solid #99A0A4;
   }
+  #DlgAutoDJ > QPushButton {
+    padding: 0px;
+    width: 32px;
+    height: 18px;
+    }
+    QPushButton#pushButtonAutoDJ {
+      width: 40px;
+    } 
+  
   WLibrary QPushButton:!enabled {
     background-color: #72777A;
     border: 1px solid #72777A;
@@ -467,28 +497,52 @@ WLibrary QPushButton {
     color: #000;
     background-color: #F90562;
     }
+  WLibrary QPushButton:focus,
+  #fadeModeCombobox:focus,
+  #spinBoxTransition:focus {
+    outline: none;
+    border-color: #fff; 
+  }
   /* Hover highlight for action buttons	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonRecording:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #F90562;
   }
-  /* Space in between 'Enable AutoDJ' button and transition time spinbox	*/
-  QPushButton#pushButtonAutoDJ {
-    margin: 1px 12px 3px 1px;
-  }
   /* Space in between 'Recording'	button and recording label */
   QPushButton#pushButtonRecording {
     margin: 1px 6px 3px 1px;
-  }
-  /* Space in between AutoDJ 'Fade'/'Skip' and 'Shuffle'/'Add Random' */
-  QPushButton#pushButtonSkipNext {
-    margin: 1px 12px 3px 1px;
   }
   /* Push 'Select All' button and away from radio buttons	*/
   QPushButton#pushButtonSelectAll {
     margin: 1px 2px 3px 10px;
   }
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ {
+  image: url(skin:/btn/btn_autodj_enable.svg) no-repeat center center;
+}
+QPushButton#pushButtonFadeNow:!enabled {
+  image: url(skin:/btn/btn_autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    image: url(skin:/btn/btn_autodj_fade.svg) no-repeat center center;
+  }
+QPushButton#pushButtonSkipNext:!enabled {
+  image: url(skin:/btn/btn_autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    image: url(skin:/btn/btn_autodj_skip.svg) no-repeat center center;
+  }
+QPushButton#pushButtonShuffle {
+  image: url(skin:/btn/btn_autodj_shuffle.svg) no-repeat center center;
+}
+QPushButton#pushButtonAddRandom {
+  image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
+}
+QPushButton#pushButtonRepeatPlaylist {
+  image: url(skin:/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;
+}
+/* AutoDJ button icons */
 
 /* Hotcue Color: No Color */
 #HotcueButton[highlight="0"] {
