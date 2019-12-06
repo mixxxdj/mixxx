@@ -146,9 +146,10 @@ void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
         // See documentation of failed commands in https://github.com/mixxxdj/mixxx/pull/2378
         // before restoring the previous selection first select the first row
         // in order to set focus for arrow key navigation
-        if (index.isValid()) {
-            qDebug()<<"   select row "<<selection.first().row();
-            selectRow(selection.first().row());
+        QModelIndex firstIndex = selection.first();
+        if (firstIndex.isValid()) {
+            qDebug()<<"   select row "<<firstIndex.row();
+            selectRow(firstIndex.row());
         }
         // before looping over indices, remove first index we just restored
         if (selection.size() > 1) {
