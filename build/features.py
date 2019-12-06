@@ -812,7 +812,7 @@ class LiveBroadcasting(Feature):
 
     def add_options(self, build, vars):
         vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
-	vars.Add('shoutcast_internal', 'Set to 1 to use internal libshout', 1)
+        vars.Add('shoutcast_internal', 'Set to 1 to use internal libshout', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
