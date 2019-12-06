@@ -1742,6 +1742,20 @@ HotcueControl::HotcueControl(QString group, int i)
             &HotcueControl::slotHotcueColorChanged,
             Qt::DirectConnection);
 
+    m_hotcueColorPrev = new ControlObject(keyForControl(i, "color_prev"));
+    connect(m_hotcueColorPrev,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueColorPrev,
+            Qt::DirectConnection);
+
+    m_hotcueColorNext = new ControlObject(keyForControl(i, "color_next"));
+    connect(m_hotcueColorNext,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueColorNext,
+            Qt::DirectConnection);
+
     m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));
     connect(m_hotcueSet, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueSet,
@@ -1827,6 +1841,46 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 void HotcueControl::slotHotcueColorChanged(double newColorId) {
     m_pCue->setColor(Color::kPredefinedColorsSet.predefinedColorFromId(newColorId));
     emit(hotcueColorChanged(this, newColorId));
+}
+
+void HotcueControl::slotHotcueColorPrev(double v) {
+    if (!v || !m_pCue) {
+        return;
+    }
+
+    // Reset CO object
+    m_hotcueColorPrev->set(0);
+
+    // Get previous color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(m_pCue->getColor()) - 1;
+    if (iColorIndex <= 0) {
+        iColorIndex = Color::kPredefinedColorsSet.allColors.size() - 1;
+    }
+    PredefinedColorPointer pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    m_pCue->setColor(pColor);
+    emit(hotcueColorChanged(this, pColor->m_iId));
+}
+
+void HotcueControl::slotHotcueColorNext(double v) {
+    if (!v || !m_pCue) {
+        return;
+    }
+
+    // Reset CO object
+    m_hotcueColorNext->set(0);
+
+    // Get next color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(m_pCue->getColor()) + 1;
+    if (iColorIndex >= Color::kPredefinedColorsSet.allColors.size()) {
+        iColorIndex = 0;
+    }
+    PredefinedColorPointer pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    m_pCue->setColor(pColor);
+    emit(hotcueColorChanged(this, pColor->m_iId));
 }
 
 double HotcueControl::getPosition() const {
