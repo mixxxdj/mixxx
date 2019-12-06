@@ -100,7 +100,6 @@ void WLibraryTableView::moveSelection(int delta) {
             if (row + 1 < pModel->rowCount()) {
                 selectRow(row + 1);
             }
-
             delta--;
         } else {
             // i is negative, so we want to move the highlight up
@@ -108,7 +107,6 @@ void WLibraryTableView::moveSelection(int delta) {
             if (row - 1 >= 0) {
                 selectRow(row - 1);
             }
-
             delta++;
         }
     }
@@ -117,39 +115,17 @@ void WLibraryTableView::moveSelection(int delta) {
 void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
     qDebug()<<"";
     qDebug()<<"    WLibraryTableView::saveVScrollBarPos";
-    qDebug()<<"        m_vScrollBarPosValues["<<key<<"] = verticalScrollBar()->value()";
-    qDebug()<<"                = "<<verticalScrollBar()->value();
+    qDebug()<<"       m_vScrollBarPosValues["<<key<<"] ="<<verticalScrollBar()->value();
     m_vScrollBarPosValues[key] = verticalScrollBar()->value();
-    // also store current index (last selected row)
-    // This stores last focused row which might have been a click
-    // to remove a row from row selection:
-//    QModelIndex current = currentIndex();
-    // list selected rows:
-    // https://stackoverflow.com/a/28085512
-    // ( if (selectionModel()->hasSelection) { )
-    //      selectionModel()->selectedRows(); }
-
-    // store multi-selection:
-    // https://stackoverflow.com/a/6276831
-    // QMap <QString, QList <QString> > map;
-    // QMap<TrackModel*, QModelIndexList > m_selectedIndicesValues;
-    //
     if (currentIndex().isValid()) {
-        // Only act when the view has a selection. For example, there is none
+        // Act only when there is a focused cell. For example, there is none
         // when library features are added initially after start.
-        qDebug()<<"        currentIndex().isValid()";
         qDebug()<<"        QModelIndexList selection = selectionModel()->selectedRows();";
         QModelIndexList selection = selectionModel()->selectedRows();
-//        QModelIndexList selection = selectionModel()->selectedIndexes();
         if (selection.size() > 0) {
-            qDebug()<<"        if (selection.size() > 0)";
-            qDebug()<<"        m_selectedIndicesValues["<<key<<"] = selection";
             m_selectedIndices[key] = selection;
         }
-    } else {
-        qDebug()<<"        !currentIndex().isValid()";
     }
-    qDebug()<<"";
 }
 
 void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
@@ -158,51 +134,37 @@ void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
     updateGeometries();
 
     if (m_vScrollBarPosValues.contains(key)) {
-        qDebug()<<"        restore previous vertical scrollbar pos from m_vScrollBarPosValues[key]";
+        qDebug()<<"   restore previous vertical scrollbar pos from m_vScrollBarPosValues["<<key<<"]";
         verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
     } else {
+        qDebug()<<"   store & set default vertical scrollbar position";
         m_vScrollBarPosValues[key] = 0;
-        qDebug()<<"        set/store default vertical scrollbar position";
         verticalScrollBar()->setValue(0);
     }
     if (m_selectedIndices.contains(key)) {
         QModelIndexList selection = m_selectedIndices[key];
-        // before restoring selected indices select first row first
+        // See documentation of failed commands in https://github.com/mixxxdj/mixxx/pull/2378
+        // before restoring the previous selection first select the first row
         // in order to set focus for arrow key navigation
-        selectRow(selection.first().row());
-        // before looping over indices remove first index
+        if (index.isValid()) {
+            qDebug()<<"   select row "<<selection.first().row();
+            selectRow(selection.first().row());
+        }
+        // before looping over indices, remove first index we just restored
         if (selection.size() > 1) {
             selection.removeFirst();
         } else {
+            // return when there was only one index stored
             return;
         }
         foreach (QModelIndex index, selection) {
             if (index.isValid()) {
-                qDebug()<<"            "<<index<<" isValid(), select";
+                qDebug()<<"    index "<<index<<" isValid(), select.";
                 selectionModel()->select(index,
                         QItemSelectionModel::Select | QItemSelectionModel::Rows);
-
-                // This restores selection properly
-                // Con: top-left table cell has focus when the table gets focused:
-                // selectionModel()->select(index,
-                //         QItemSelectionModel::Select | QItemSelectionModel::Rows);
-
-                // Use setCurrentIndex for last list item
-                // Con: Up/Down keys wouldn't work before pressing Right which moves the focus
-                // if (index == selection.last()) {
-                //     selectionModel()->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
-                //     selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
-                // }
-
-                // This selects each row
-                // Pro: last selected row has focus for navigation.
-                // Con: clears the previous selection for every new row
-                // int row = index.row();
-                // selectRow(row);
             }
         }
     }
-    qDebug()<<"";
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
