@@ -1115,11 +1115,12 @@ void CueControl::hotcueTypeChanged(HotcueControl* pControl, double newType) {
     CuePointer pCue(pControl->getCue());
     if (pCue) {
         // Setting the type to 0 or -1 is the same as calling hotcue_x_clear
-        if (newType <= 0) {
+        int iType = static_cast<int>(newType);
+        if (iType <= 0 || iType > static_cast<int>(Cue::Type::AudibleSound)) {
             pCue->setHotCue(-1);
             detachCue(pControl);
         } else {
-            pCue->setType(static_cast<Cue::Type>(static_cast<int>(newType)));
+            pCue->setType(static_cast<Cue::Type>(iType));
         }
     }
 }
