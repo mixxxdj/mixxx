@@ -1,6 +1,11 @@
 var PioneerDDJ400 = {};
 
-print("HELLU");
+// JogWheel
+PioneerDDJ400.vinylMode = true;
+PioneerDDJ400.alpha = 1.0/8;
+PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
+PioneerDDJ400.highspeedScale = 2;
+PioneerDDJ400.bendScale = 0.5;
 
 var LightsPioneerDDJ400 = {
     deck1: {
@@ -51,6 +56,7 @@ var LightsPioneerDDJ400 = {
 
 
 PioneerDDJ400.init = function() {
+    "use strict";
     // Connect the VU-Meter LEDS
     engine.connectControl('[Channel1]','VuMeter','PioneerDDJ400.vuMeterUpdate');
     engine.connectControl('[Channel2]','VuMeter','PioneerDDJ400.vuMeterUpdate');
@@ -76,7 +82,48 @@ PioneerDDJ400.vuMeterUpdate = function(value, group){
             midi.sendShortMsg(0xB1, 0x02, newVal);
             break;
     }
+};
 
+
+PioneerDDJ400.jogDial = function(channel, _control, value, _status, group) {
+    'use strict';
+    var deckNum = channel + 1;
+    // wheel center at 64; <64 rew >64 fwd
+    var newVal = value - 64;
+    engine.setValue(group, 'jog', newVal * this.bendScale);
+};
+
+
+PioneerDDJ400.jogPlatter = function(channel, _control, value, _status, group) {
+    'use strict';
+    var deckNum = channel + 1;
+    // wheel center at 64; <64 rew >64 fwd
+    var newVal = value - 64;
+
+    if (engine.isScratching(deckNum)) {
+        engine.scratchTick(deckNum, newVal);
+    } else {
+        // if not in vinylMode, this just behaves like jogDial
+        engine.setValue(group, 'jog', newVal * this.bendScale);
+    }
+};
+
+PioneerDDJ400.jogTouch = function(channel, _control, value, _status, group) {
+    'use strict';
+    var deckNum = channel + 1;
+
+    if (this.vinylMode && value != 0) {
+        engine.scratchEnable(deckNum, 720, 33+1/3, this.alpha, this.beta);
+    } else {  // value == 0
+        engine.scratchDisable(deckNum);
+    }
+};
+
+PioneerDDJ400.jogSearch = function(_channel, _control, value, _status, group) {
+    'use strict';
+    // "highspeed" (scaleup value) pitch bend
+    var newVal = (value - 64) * this.highspeedScale;
+    engine.setValue(group, 'jog', newVal);
 };
 
 

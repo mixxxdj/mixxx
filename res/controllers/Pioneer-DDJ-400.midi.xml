@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3.0">
     <info>
-        <name>Pioneer DDJ-400</name>
+        <name>Pioneer DDJ-400 WIP</name>
         <author>nschloe</author>
         <description>MIDI Mapping for the Pioneer DDJ-400</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12113</forums>
@@ -1087,6 +1087,91 @@
                     <normal/>
                 </options>
             </control>
+
+            <control>
+                <description>JOG DIAL SIDE (DECK1) - rotate - Pitch bend</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.jogDial</key>
+                <status>0xB0</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>JOG DIAL PLATTER (DECK1) - rotate - Scratch</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.jogPlatter</key>
+                <status>0xB0</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>JOG DIAL PLATTER +SHIFT (DECK1) - rotate - Search (Fast Pitch bend)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.jogSearch</key>
+                <status>0xB0</status>
+                <midino>0x29</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>JOG DIAL PLATTER (DECK1) - touch - enable (on touch) / disable (on release) Scraching/Pitch bend</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.jogTouch</key>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <description>JOG DIAL SIDE (DECK2) - rotate - Pitch bend</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.jogDial</key>
+                <status>0xB1</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>JOG DIAL PLATTER Vinyl mode On (DECK2) - rotate - Scratch</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.jogPlatter</key>
+                <status>0xB1</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>JOG DIAL PLATTER +SHIFT (DECK2) - rotate - Search (Fast Pitch bend)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.jogSearch</key>
+                <status>0xB1</status>
+                <midino>0x29</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>JOG DIAL PLATTER (DECK2) - touch - enable (on touch) / disable (on release) Scraching/Pitch
+                    bend
+                </description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.jogTouch</key>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
         </controls>
         <outputs>
             <output>
