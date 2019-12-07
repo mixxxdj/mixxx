@@ -141,7 +141,7 @@ PioneerDDJ400.jogPlatter = function(channel, _control, value, _status, group) {
     }
 };
 
-PioneerDDJ400.jogTouch = function(channel, _control, value, _status, _group) {
+PioneerDDJ400.jogTouch = function(channel, _control, value) {
     'use strict';
     var deckNum = channel + 1;
 
