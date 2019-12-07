@@ -121,7 +121,6 @@ PioneerDDJ400.vuMeterUpdate = function(value, group){
 
 PioneerDDJ400.jogDial = function(channel, _control, value, _status, group) {
     'use strict';
-    var deckNum = channel + 1;
     // wheel center at 64; <64 rew >64 fwd
     var newVal = value - 64;
     engine.setValue(group, 'jog', newVal * this.bendScale);
@@ -142,7 +141,7 @@ PioneerDDJ400.jogPlatter = function(channel, _control, value, _status, group) {
     }
 };
 
-PioneerDDJ400.jogTouch = function(channel, _control, value, _status, group) {
+PioneerDDJ400.jogTouch = function(channel, _control, value, _status, _group) {
     'use strict';
     var deckNum = channel + 1;
 
