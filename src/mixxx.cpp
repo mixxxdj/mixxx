@@ -473,6 +473,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     QWidget* oldWidget = m_pWidgetParent;
 
+    // Load default styles that can be overridden by skins
+    QFile file(":/skins/default.qss");
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray fileBytes = file.readAll();
+        QString style = QString::fromLocal8Bit(fileBytes.constData(),
+                                               fileBytes.length());
+        setStyleSheet(style);
+    } else {
+        qWarning() << "Failed to load default skin styles!";
+    }
+
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
