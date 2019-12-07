@@ -1351,12 +1351,12 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         this->selectionModel()->clear();
 
         // Add all the dropped URLs/tracks to the track model (playlist/crate)
-        QList<QFileInfo> fileList = DragAndDropHelper::supportedTracksFromUrls(
+        QList<TrackFile> trackFiles = DragAndDropHelper::supportedTracksFromUrls(
             event->mimeData()->urls(), false, true);
 
         QList<QString> fileLocationList;
-        for (const QFileInfo& fileInfo : fileList) {
-            fileLocationList.append(TrackFile(fileInfo).location());
+        for (const TrackFile& trackFile : trackFiles) {
+            fileLocationList.append(trackFile.location());
         }
 
         // Drag-and-drop from an external application

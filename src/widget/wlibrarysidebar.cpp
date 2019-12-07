@@ -44,7 +44,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         // drag so for now we accept all drags. Since almost every
         // LibraryFeature accepts all files in the drop and accepts playlist
         // drops we default to those flags to DragAndDropHelper.
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+        QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(
                 event->mimeData()->urls(), false, true);
         if (!files.isEmpty()) {
             event->acceptProposedAction();
