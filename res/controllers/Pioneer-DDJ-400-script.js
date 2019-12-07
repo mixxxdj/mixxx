@@ -1,3 +1,37 @@
+// Pioneer-DDJ-400-script.js
+//
+// ****************************************************************************
+// * Mixxx mapping script file for the Pioneer DDJ-400.
+// * Author: Nico Schlömer (nschloe) with parts by WarkerAnhaltRanger
+// * Version 0.1 (Dec 7 2019)
+// * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
+// * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
+//
+//            Working:
+//                * Mixer Section (Faders, EQ, Filter, Gain, Cue)
+//                * Browsing and loading
+//                * Jogwheels, Scratching, Bending
+//                * Beat Sync
+//                * Beatjump mode
+//                * Hot cue Mode
+//                * Beat Loop Mode
+//
+//            Partially:
+//                * Loop Section: Loop in / Out + Adjust, Call, Double, Half
+//                * Hot Cue Mode (including loops)
+//                * Output (lights)
+//
+//            Not working/implemented:
+//                * Waveform zoom (shift)
+//                * cycle Temporange
+//                * Channel & Crossfader Start
+//                * Sampler Mode
+//                * PAD FX (only slots A-H, Q-P)
+//                * Effect Section (without Beat FX left + Right - no equivalent function found)
+//                * Effect Section (Beat FX left + Right - select the Effect Slot (not Effect BPM))
+//                * Keyboard Mode (check pitch value)
+//                * Keyshift Mode (check pitch value)
+// ****************************************************************************
 var PioneerDDJ400 = {};
 
 // JogWheel
