@@ -491,12 +491,13 @@ void WTrackTableView::createActions() {
             this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        if (!externalTrackCollection->isActive()) {
+        if (!externalTrackCollection->isConnected()) {
             continue; // skip
         }
         UpdateExternalTrackCollection updateInExternalTrackCollection;
         updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
         updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), this);
+        updateInExternalTrackCollection.action->setToolTip(externalTrackCollection->description());
         m_updateInExternalTrackCollections += updateInExternalTrackCollection;
         auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
         connect(updateInExternalTrackCollection.action, &QAction::triggered,
@@ -952,7 +953,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                     updateInExternalTrackCollection.externalTrackCollection;
             if (externalTrackCollection) {
                 updateInExternalTrackCollection.action->setEnabled(
-                        externalTrackCollection->isActive());
+                        externalTrackCollection->isConnected());
                 m_pMetadataUpdateExternalCollectionsMenu->addAction(
                         updateInExternalTrackCollection.action);
             }
@@ -966,7 +967,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                     updateInExternalTrackCollection.externalTrackCollection;
             if (externalTrackCollection) {
                 updateInExternalTrackCollection.action->setEnabled(
-                        externalTrackCollection->isActive());
+                        externalTrackCollection->isConnected());
                 m_pMetadataUpdateExternalCollectionsMenu->addAction(
                         updateInExternalTrackCollection.action);
             }

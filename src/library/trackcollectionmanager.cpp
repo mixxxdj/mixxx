@@ -50,6 +50,12 @@ TrackCollectionManager::TrackCollectionManager(
         // TODO: Add external collections
     }
 
+    kLogger.info() << "Connecting external collections";
+    for (const auto& externalCollection : m_externalCollections) {
+        kLogger.info() << "Connecting" << externalCollection->name();
+        externalCollection->establishConnection();
+    }
+
     // Forward signals
     connect(&m_scanner,
             &LibraryScanner::scanStarted,
@@ -91,8 +97,9 @@ TrackCollectionManager::~TrackCollectionManager() {
 
     if (!m_externalCollections.isEmpty()) {
         kLogger.info() << "Disconnecting from external track collections";
-        for (const auto& externalTrackCollection : m_externalCollections) {
-            externalTrackCollection->shutdown();
+        for (const auto& externalCollection : m_externalCollections) {
+            kLogger.info() << "Disconnecting from" << externalCollection->name();
+            externalCollection->finishPendingTasksAndDisconnect();
         }
     }
 
