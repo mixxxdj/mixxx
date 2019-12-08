@@ -656,9 +656,9 @@ because somehow bg color for #SpecialCueButton can't be overwritten */
 #PlayDeck[value="1"][highlight="0"], #PlayDeck[value="1"][highlight="1"],
 #PlayButtonDeckMini[value="1"][highlight="0"], #PlayButtonDeckMini[value="1"][highlight="1"],
 #PlayButtonSampler[value="1"][highlight="0"], #PlayButtonSampler[value="1"][highlight="1"], */
-#PlayDeck[value="1"],
-#PlayButtonDeckMini[value="1"],
-#PlayButtonSampler[value="1"],
+#PlayDeck[displayValue="1"],
+#PlayButtonDeckMini[displayValue="1"],
+#PlayButtonSampler[displayValue="1"],
 #PflButton[value="1"],
 #SamplerSyncButton[displayValue="1"],
 #EQKillButton[displayValue="1"],
