@@ -12,39 +12,16 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>cue_gotoandplay_cue_default</TooltipId>
-            <ObjectName>PlayButtonSampler</ObjectName>
-            <Size>34f,34f</Size>
-            <NumberStates>2</NumberStates>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="TopRegion_btn_type"/>_square_big_active.svg</Pressed>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
-              <ConnectValueFromWidget>false</ConnectValueFromWidget>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,play</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_right_display.xml">
+            <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+            <SetVariable name="ObjectName">PlayButtonSampler</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
+            <SetVariable name="btn_format">square_big</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 

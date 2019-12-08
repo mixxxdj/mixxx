@@ -1,6 +1,4 @@
 <Template>
-  <!--SetVariable name="btn_type">embedded</SetVariable-->
-  <!--SetVariable name="btn_type">elevated</SetVariable-->
   <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
   <SetVariable name="btn_format">square</SetVariable>
 
@@ -316,39 +314,16 @@
                 </Children>
               </WidgetGroup><!-- Reverse | Cue -->
 
-              <PushButton>
-                <TooltipId>play_cue_set</TooltipId>
-                <ObjectName>PlayDeck</ObjectName>
-                <Size>68f,26f</Size>
-                <NumberStates>2</NumberStates>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
-                  <BindProperty>highlight</BindProperty>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_right_display.xml">
+                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="ObjectName">PlayDeck</SetVariable>
+                <SetVariable name="Size">68f,26f</SetVariable>
+                <SetVariable name="btn_format">play</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+              </Template>
+
             </Children>
           </WidgetGroup><!-- /HotCues, Play, Cue, Reverse -->
         </Children>
