@@ -113,7 +113,6 @@ TreeItemModel* RhythmboxFeature::getChildModel() {
 void RhythmboxFeature::activate() {
     qDebug() << "RhythmboxFeature::activate()";
 
-    emit(saveViewState());
     if (!m_isActivated) {
         m_isActivated =  true;
         m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
@@ -129,7 +128,6 @@ void RhythmboxFeature::activate() {
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "RhythmboxFeature::activateChild()" << index;
-    emit(saveViewState());
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);

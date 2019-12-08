@@ -451,7 +451,6 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSaveViewState() {
-    //qDebug() << "Library::slotSaveViewState";
     emit(saveViewState());
 }
 

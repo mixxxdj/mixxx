@@ -57,7 +57,7 @@ class CrateTableModel : public BaseSqlTableModel {
         if (!m_selectedCrate.isValid()) {
           return true;
         }
-     
+
         key = m_settingsNamespace + "." + m_selectedCrate.toString() + "." + name;
         return settings.setValue(key, value);
     }

@@ -150,7 +150,6 @@ void TraktorFeature::refreshLibraryModels() {
 
 void TraktorFeature::activate() {
     qDebug() << "TraktorFeature::activate()";
-    emit(saveViewState());
 
     if (!m_isActivated) {
         m_isActivated =  true;
@@ -175,7 +174,6 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
     if (!item->hasChildren()) {
-        emit(saveViewState());
         qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
         emit(showTrackModel(m_pTraktorPlaylistModel));

@@ -178,7 +178,6 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1 && m_pPlaylistTableModel) {
-        emit(saveViewState());
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -189,7 +188,6 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
-        emit(saveViewState());
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
