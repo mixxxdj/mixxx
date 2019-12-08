@@ -108,6 +108,8 @@ class LibraryFeature : public QObject {
     }
   signals:
     void showTrackModel(QAbstractItemModel* model);
+    // A feature can emit this signal to tell the View to save state. This is usually not
+    // required and is currently only needed when activating crates.
     void saveViewState();
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);

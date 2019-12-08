@@ -289,12 +289,20 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // Call select() on the table so it refreshes if it's dirty.
         getTrackModel()->select();
         // Also restore the header state, which may be different than for
-        // the previously-loaded table for this model. (Different crates).
+        // the previously-loaded table for this model. This happens when the user
+        // switches between crates, for example.
+        // If your Feature needs to save state before it changes (as with the
+        // CrateFeature), it must emit saveViewState before emitting showTrackModel
+        // so the header state gets correctly saved.
         if (oldHeader != nullptr) {
             oldHeader->restoreHeaderState();
         }
         return;
     } else {
+        // Save the previous track model's header state.
+        if (oldHeader != nullptr) {
+            oldHeader->saveHeaderState();
+        }
         newModel = trackModel;
         saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
@@ -314,10 +322,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setVisible(false);
 
-    // Save the previous track model's header state
-    if (oldHeader != nullptr) {
-        oldHeader->saveHeaderState();
-    }
 
     // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
     // different columns than the old model, we have to create a new horizontal

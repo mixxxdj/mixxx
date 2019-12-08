@@ -301,6 +301,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
+    // We need to save the header state now, before we activate a new crate and change track IDs.
+    emit(saveViewState());
     m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));
     emit(enableCoverArtDisplay(true));
@@ -315,6 +317,8 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
     }
+    // We need to save the header state now, before we activate a new crate and change track IDs.
+    emit(saveViewState());
     m_lastRightClickedIndex = index;
     m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));

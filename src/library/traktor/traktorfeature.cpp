@@ -604,7 +604,6 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 void TraktorFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        emit(saveViewState());
         m_childModel.setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
