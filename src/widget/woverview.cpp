@@ -54,7 +54,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_endOfTrack(false),
-          m_pCueMenu(std::make_unique<CueMenu>(this)),
+          m_pCueMenuPopup(std::make_unique<WCueMenuPopup>(this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
           m_bLeftClickDragging(false),
@@ -90,7 +90,7 @@ WOverview::WOverview(
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
 
-    connect(m_pCueMenu.get(), &QMenu::aboutToHide, this, &WOverview::slotCueMenuAboutToHide);
+    connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -139,7 +139,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             ? defaultMark->fillColor()
             : m_signalColors.getAxesColor();
     m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
-    m_pCueMenu->useColorSet(&m_predefinedColorsRepresentation);
+    m_pCueMenuPopup->useColorSet(&m_predefinedColorsRepresentation);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -417,8 +417,8 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // before hotcues in m_marksToRender so if there is a hotcue in the same
     // location, the hotcue gets rendered on top. When right clicking, the
     // the hotcue rendered on top must be assigned to m_pHoveredMark to show
-    // the CueMenu. To accomplish this, m_marksToRender is iterated in reverse
-    // and the loop breaks as soon as m_pHoveredMark is set.
+    // the CueMenuPopup. To accomplish this, m_marksToRender is iterated in
+    // reverse and the loop breaks as soon as m_pHoveredMark is set.
     for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         int hoveredPosition;
@@ -506,16 +506,15 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 }
             }
             if (pHoveredCue != nullptr) {
-                m_pCueMenu->setCue(pHoveredCue);
-                m_pCueMenu->setTrack(m_pCurrentTrack);
-                m_pCueMenu->popup(e->globalPos());
+                m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+                m_pCueMenuPopup->popup(e->globalPos());
                 m_bHotcueMenuShowing = true;
             }
         }
     }
 }
 
-void WOverview::slotCueMenuAboutToHide() {
+void WOverview::slotCueMenuPopupAboutToHide() {
     m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
     update();
