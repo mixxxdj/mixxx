@@ -238,8 +238,7 @@ TraktorS2MK3.playHandler = function (field) {
     if (TraktorS2MK3.shiftPressed[field.group]) {
         engine.setValue(field.group, "cue_set", field.value);
     } else {
-        var playing = engine.getValue(field.group, "play");
-        engine.setValue(field.group, "play", !playing);
+        script.toggleControl(field.group, "play");
     }
 };
 
@@ -266,8 +265,7 @@ TraktorS2MK3.keylockHandler = function (field) {
         return;
     }
 
-    var keylock = engine.getValue(field.group, "keylock");
-    engine.setValue(field.group, "keylock", !keylock);
+    script.toggleControl(field.group, "keylock");
 };
 
 TraktorS2MK3.syncHandler = function (field) {
@@ -282,8 +280,7 @@ TraktorS2MK3.syncHandler = function (field) {
                 TraktorS2MK3.syncPressedTimer[field.group] = engine.beginTimer(1000, "TraktorS2MK3.syncTimer(\"" + field.group + "\")");
             }
 
-            var sync = engine.getValue(field.group, "sync_enabled");
-            engine.setValue(field.group, "sync_enabled", !sync);
+            script.toggleControl(field.group, "sync_enabled");
         } else {
             // Button is released, check if timer is still running
             // If not expired disable sync, otherwise do nothing to lock sync
@@ -377,8 +374,7 @@ TraktorS2MK3.headphoneHandler = function (field) {
         return;
     }
 
-    var pfl = engine.getValue(field.group, "pfl");
-    engine.setValue(field.group, "pfl", !pfl);
+    script.toggleControl(field.group, "pfl");
 };
 
 TraktorS2MK3.selectTrackHandler = function (field) {
@@ -429,8 +425,7 @@ TraktorS2MK3.maximizeLibraryHandler = function (field) {
         return;
     }
 
-    var maximize = engine.getValue("[Master]", "maximize_library");
-    engine.setValue("[Master]", "maximize_library", !maximize);
+    script.toggleControl("[Master]", "maximize_library");
 };
 
 TraktorS2MK3.selectLoopHandler = function (field) {
@@ -498,8 +493,7 @@ TraktorS2MK3.microphoneHandler = function (field) {
             TraktorS2MK3.microphonePressedTimer = engine.beginTimer(1000, "TraktorS2MK3.microphoneTimer()");
         }
 
-        var talkover = engine.getValue("[Microphone]", "talkover");
-        engine.setValue("[Microphone]", "talkover", !talkover);
+        script.toggleControl("[Microphone]", "talkover");
     } else {
         // Button is released, check if timer is still running
         if (TraktorS2MK3.microphonePressedTimer !== 0) {
