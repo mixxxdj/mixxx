@@ -15,6 +15,10 @@ class LibraryFeature;
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
+    // Keep object tree functions from QObject accessible
+    // for parented_ptr
+    using QObject::parent;
+
     explicit SidebarModel(
             QObject* parent = nullptr);
     ~SidebarModel() override = default;

@@ -14,6 +14,7 @@
 #include "library/browse/browsefeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "track/track.h"
 #include "util/memory.h"
@@ -24,20 +25,19 @@
 
 const QString kQuickLinksSeparator = "-+-";
 
-BrowseFeature::BrowseFeature(Library* parent,
+BrowseFeature::BrowseFeature(
+        Library* pLibrary,
         UserSettingsPointer pConfig,
-        TrackCollection* pTrackCollection,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_browseModel(this, pTrackCollection, pRecordingManager),
+        : LibraryFeature(pLibrary, pConfig),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL),
+          m_pLastRightClickedItem(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
     connect(this,
             &BrowseFeature::requestAddDir,
-            parent,
+            pLibrary,
             &Library::slotRequestAddDir);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);

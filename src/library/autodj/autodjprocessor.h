@@ -14,7 +14,7 @@
 #include "util/class.h"
 
 class ControlPushButton;
-class TrackCollection;
+class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
 
@@ -175,8 +175,8 @@ class AutoDJProcessor : public QObject {
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
-                    int iAutoDJPlaylistId,
-                    TrackCollection* pCollection);
+                    TrackCollectionManager* pTrackCollectionManager,
+                    int iAutoDJPlaylistId);
     virtual ~AutoDJProcessor();
 
     AutoDJState getState() const {

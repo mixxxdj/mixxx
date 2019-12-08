@@ -253,12 +253,21 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
     if (s_pInstance) {
         QMetaObject::invokeMethod(
                 s_pInstance,
-                "evictAndSave",
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+                "evictAndSave"
+#else
+                [cacheEntryPtr = std::move(cacheEntryPtr)] {
+                    s_pInstance->evictAndSave(cacheEntryPtr);
+                }
+#endif
                 // Qt will choose either a direct or a queued connection
                 // depending on the thread from which this method has
                 // been invoked!
-                Qt::AutoConnection,
-                Q_ARG(GlobalTrackCacheEntryPointer, std::move(cacheEntryPtr)));
+                , Qt::AutoConnection
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+                , Q_ARG(GlobalTrackCacheEntryPointer, std::move(cacheEntryPtr))
+#endif
+                );
     } else {
         // After the singular instance has been destroyed we are
         // not able to save pending changes. The track is deleted
@@ -344,7 +353,8 @@ void GlobalTrackCache::relocateTracks(
 void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
     DEBUG_ASSERT(pEvictedTrack);
     // Disconnect all receivers and block signals before saving the
-    // track.
+    // track. Accessing an object-under-destruction in signal handlers
+    // could cause undefined behavior!
     // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
     // doesn't seem to work reliably. Emitting the clean() signal from
     // a track that is about to deleted may cause access violations!!
@@ -354,25 +364,35 @@ void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
 }
 
 void GlobalTrackCache::deactivate() {
+    DEBUG_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
+
+    if (!isEmpty()) {
+        kLogger.warning()
+                << "Not empty when deactivating:"
+                << m_tracksById.size()
+                << '/'
+                << m_tracksByCanonicalLocation.size();
+    }
+
     // Ideally the cache should be empty when destroyed.
     // But since this is difficult to achieve all remaining
     // cached tracks will be evicted no matter if they are still
     // referenced or not. This ensures that the eviction
     // callback is triggered for all modified tracks before
     // exiting the application.
-    auto i = m_tracksById.begin();
-    while (i != m_tracksById.end()) {
+    while (!m_tracksById.empty()) {
+        auto i = m_tracksById.begin();
         Track* plainPtr= i->second->getPlainPtr();
         saveEvictedTrack(plainPtr);
         m_tracksByCanonicalLocation.erase(plainPtr->getCanonicalLocation());
-        i = m_tracksById.erase(i);
+        m_tracksById.erase(i);
     }
 
-    auto j = m_tracksByCanonicalLocation.begin();
-    while (j != m_tracksByCanonicalLocation.end()) {
-        Track* plainPtr= j->second->getPlainPtr();
+    while (!m_tracksByCanonicalLocation.empty()) {
+        auto i = m_tracksByCanonicalLocation.begin();
+        Track* plainPtr= i->second->getPlainPtr();
         saveEvictedTrack(plainPtr);
-        j = m_tracksByCanonicalLocation.erase(j);
+        m_tracksByCanonicalLocation.erase(i);
     }
 
     // Verify that all cached tracks have been evicted

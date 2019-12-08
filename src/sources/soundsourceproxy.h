@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOURCES_SOUNDSOURCEPROXY_H
-#define MIXXX_SOURCES_SOUNDSOURCEPROXY_H
+#pragma once
 
 #include "track/track.h"
 
@@ -108,8 +107,8 @@ class SoundSourceProxy {
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
-    friend class TrackCollection;
-    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
+    friend class TrackCollectionManager;
+    static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
@@ -143,5 +142,3 @@ class SoundSourceProxy {
     // that keeps it alive.
     mixxx::AudioSourcePointer m_pAudioSource;
 };
-
-#endif // MIXXX_SOURCES_SOUNDSOURCEPROXY_H
