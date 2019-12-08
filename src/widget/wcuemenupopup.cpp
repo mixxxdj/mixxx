@@ -11,6 +11,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
         : QWidget(parent) {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
+    setAttribute(Qt::WA_StyledBackground);
     setObjectName("WCueMenuPopup");
 
     m_pCueNumber = new QLabel(this);
