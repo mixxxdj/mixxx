@@ -1,0 +1,7 @@
+<svg width="27" height="18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<g transform="translate(-3)">
+		<path d="m4 6v6h2v-3h4v-1h-4v-1h5v-1h-7"/>
+		<path d="m19 11.5-2.25-2.25 2.25-2.25v-1h-1.5l-2 2-2-2h-1.5v.5l2.5 2.5-2.5 2.5v.5h2l1.75-1.75 1.75 1.75h1.5z"/>
+		<path d="m22 6h7v4h-5v1h5v1h-7v-3h5v-2h-5v-1"/>
+	</g>
+</svg>
