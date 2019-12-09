@@ -545,12 +545,11 @@ PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEnabled);
 });
 
-PioneerDDJ400.beatFxOnOffShiftPressed = ignoreRelease(function(_channel, control, value, status) {
+PioneerDDJ400.beatFxOnOffShiftPressed = ignoreRelease(function() {
     'use strict';
     for (var i = 1; i <= PioneerDDJ400.numFxSlots; i += 1) {
         engine.setValue('[EffectRack1_EffectUnit3_Effect' + i + ']', 'enabled', 0);
     }
-
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
 });
 
