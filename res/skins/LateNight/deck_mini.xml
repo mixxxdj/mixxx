@@ -132,7 +132,7 @@
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ObjectName">PlayButtonDeckMini</SetVariable>
                 <SetVariable name="Size">34f,34f</SetVariable>
-                <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
+                <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
                 <SetVariable name="btn_format">square_big</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
