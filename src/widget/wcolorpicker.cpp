@@ -22,8 +22,8 @@ WColorPicker::WColorPicker(QWidget* parent)
     // background color for QPushButtons (see
     // https://bugreports.qt.io/browse/QTBUG-11089). For example, when using
     // the gtk2 style all color buttons would be just grey. It's possible to
-    // work around this by modifing the button border with a QSS stylesheet, so
-    // that the QStyle will be overwritten, but as a sane default for skins
+    // work around this by modifying the button border with a QSS stylesheet,
+    // so that the QStyle will be overwritten, but as a sane default for skins
     // without styles for WColorPicker, we're setting the platform-independent
     // "Fusion" style here. This will make the buttons look slightly different
     // from the rest of the application (when not styled via QSS), but that's

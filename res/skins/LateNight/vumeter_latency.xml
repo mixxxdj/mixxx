@@ -17,8 +17,8 @@
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <MinimumSize>64,4</MinimumSize>
         <MaximumSize>64,4</MaximumSize>
-        <PathVu>style/vumeter_latency_over.png</PathVu>
-        <PathBack>style/vumeter_latency_bg.png</PathBack>
+        <PathVu>skin:/style_<Variable name="style_scheme"/>/vumeter_latency_over.png</PathVu>
+        <PathBack>skin:/style_<Variable name="style_scheme"/>/vumeter_latency_bg.png</PathBack>
         <Horizontal>true</Horizontal>
         <PeakHoldSize>5</PeakHoldSize>
         <PeakHoldTime>1000</PeakHoldTime>

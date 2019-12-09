@@ -13,23 +13,22 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
-BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         UserSettingsPointer pConfig,
-                                         TrackCollection* pTrackCollection,
-                                         QString rootViewName)
-        : LibraryFeature(pConfig, parent),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(NULL),
+BasePlaylistFeature::BasePlaylistFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig,
+        const QString& rootViewName)
+        : LibraryFeature(pLibrary, pConfig),
+          m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
+          m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
             this,
@@ -53,19 +52,19 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotAddToAutoDJReplace);
 
-    m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
+    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
     connect(m_pDeletePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotDeletePlaylist);
 
-    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
+    m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotRenamePlaylist);
 
-    m_pLockPlaylistAction = new QAction(tr("Lock"),this);
+    m_pLockPlaylistAction = new QAction(tr("Lock"), this);
     connect(m_pLockPlaylistAction,
             &QAction::triggered,
             this,
@@ -77,7 +76,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotDuplicatePlaylist);
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pImportPlaylistAction,
             &QAction::triggered,
             this,
@@ -132,7 +131,6 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    Library* pLibrary = static_cast<Library*>(parent);
     connect(pLibrary,
             &Library::trackSelected,
             this,
@@ -143,21 +141,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
-BasePlaylistFeature::~BasePlaylistFeature() {
-    delete m_pPlaylistTableModel;
-    delete m_pCreatePlaylistAction;
-    delete m_pDeletePlaylistAction;
-    delete m_pImportPlaylistAction;
-    delete m_pCreateImportPlaylistAction;
-    delete m_pExportPlaylistAction;
-    delete m_pExportTrackFilesAction;
-    delete m_pDuplicatePlaylistAction;
-    delete m_pAddToAutoDJAction;
-    delete m_pAddToAutoDJTopAction;
-    delete m_pAddToAutoDJReplaceAction;
-    delete m_pRenamePlaylistAction;
-    delete m_pLockPlaylistAction;
-    delete m_pAnalyzePlaylistAction;
+void BasePlaylistFeature::initTableModel(
+        PlaylistTableModel* pPlaylistTableModel) {
+    DEBUG_ASSERT(!m_pPlaylistTableModel);
+    m_pPlaylistTableModel = pPlaylistTableModel;
 }
 
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
@@ -183,8 +170,11 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId != -1 && m_pPlaylistTableModel) {
+    if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -193,8 +183,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -536,7 +529,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -584,7 +577,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());

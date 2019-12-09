@@ -21,9 +21,9 @@ Variables:
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="Icon"/>_down.svg</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="Icon"/>.svg</Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>

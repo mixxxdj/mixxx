@@ -29,7 +29,7 @@ This will define the following variables:
 ``HIDAPI_LIBRARIES``
   Libraries needed to link to HIDAPI.
 ``HIDAPI_DEFINITIONS``
-  Compile defitions needed to use HIDAPI.
+  Compile definitions needed to use HIDAPI.
 
 Cache Variables
 ^^^^^^^^^^^^^^^
