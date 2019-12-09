@@ -33,6 +33,8 @@ jobs:
       compiler: gcc
       # Ubuntu Xenial build prerequisites
       env: SCONS_MIXXX_EXTRA_FLAGS="localecompare=1"
+      before_install:
+        - sudo apt-get install -y scons
       install:
         - scons $SCONS_MIXXX_COMMON_FLAGS $SCONS_MIXX_EXTRA_FLAGS
       script:
@@ -52,6 +54,7 @@ jobs:
         CXXFLAGS="-isystem /usr/local/include/opus"
         DISPLAY=:99.0
       before_install:
+      - brew install scons
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
       - echo "QTDIR=$QTDIR"
       install:
@@ -105,7 +108,6 @@ addons:
       - qt5-default
       - qtscript5-dev
       - qt5keychain-dev
-      - scons
   homebrew:
     update: true
     packages:
@@ -129,7 +131,6 @@ addons:
       - protobuf
       - qt5
       - rubberband
-      - scons
       - sound-touch
       - taglib
       - wavpack
