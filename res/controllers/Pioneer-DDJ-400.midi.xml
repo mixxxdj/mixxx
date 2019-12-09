@@ -1179,8 +1179,6 @@
                     <Script-Binding/>
                 </options>
             </control>
-
-
             <!-- BEAT FX SECTION END-->
 
             <!-- EFFECT Section END -->
@@ -1191,321 +1189,321 @@
             <control>
                 <description>PAD 1 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_1_activate</key>
                 <status>0x97</status>
                 <midino>0x00</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 1 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_1_clear</key>
                 <status>0x98</status>
                 <midino>0x00</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 1 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_1_activate</key>
                 <status>0x99</status>
                 <midino>0x00</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 1 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_1_clear</key>
                 <status>0x9A</status>
                 <midino>0x00</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 2 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_2_activate</key>
                 <status>0x97</status>
                 <midino>0x01</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 2 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_2_clear</key>
                 <status>0x98</status>
                 <midino>0x01</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 2 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_2_activate</key>
                 <status>0x99</status>
                 <midino>0x01</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 2 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_2_clear</key>
                 <status>0x9A</status>
                 <midino>0x01</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 3 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_3_activate</key>
                 <status>0x97</status>
                 <midino>0x02</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 3 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_3_clear</key>
                 <status>0x98</status>
                 <midino>0x02</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 3 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_3_activate</key>
                 <status>0x99</status>
                 <midino>0x02</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 3 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_3_clear</key>
                 <status>0x9A</status>
                 <midino>0x02</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 4 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_4_activate</key>
                 <status>0x97</status>
                 <midino>0x03</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 4 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_4_clear</key>
                 <status>0x98</status>
                 <midino>0x03</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 4 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_4_activate</key>
                 <status>0x99</status>
                 <midino>0x03</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 4 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_4_clear</key>
                 <status>0x9A</status>
                 <midino>0x03</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 5(DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_5_activate</key>
                 <status>0x97</status>
                 <midino>0x04</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 5 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_5_clear</key>
                 <status>0x98</status>
                 <midino>0x04</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 5 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_5_activate</key>
                 <status>0x99</status>
                 <midino>0x04</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 5 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_5_clear</key>
                 <status>0x9A</status>
                 <midino>0x04</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 6 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_6_activate</key>
                 <status>0x97</status>
                 <midino>0x05</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 6 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_6_clear</key>
                 <status>0x98</status>
                 <midino>0x05</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 6 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_6_activate</key>
                 <status>0x99</status>
                 <midino>0x05</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 6 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_6_clear</key>
                 <status>0x9A</status>
                 <midino>0x05</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 7 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_7_activate</key>
                 <status>0x97</status>
                 <midino>0x06</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 7 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_7_clear</key>
                 <status>0x98</status>
                 <midino>0x06</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 7 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_7_activate</key>
                 <status>0x99</status>
                 <midino>0x06</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 7 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_7_clear</key>
                 <status>0x9A</status>
                 <midino>0x06</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 8 (DECK1) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_8_activate</key>
                 <status>0x97</status>
                 <midino>0x07</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 8 +SHIFT (DECK1) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_8_clear</key>
                 <status>0x98</status>
                 <midino>0x07</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 8 (DECK2) HOT CUE MODE - press - set hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadPressed</key>
+                <key>hotcue_8_activate</key>
                 <status>0x99</status>
                 <midino>0x07</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <description>PAD 8 +SHIFT (DECK2) HOT CUE MODE - press - delete hotcue</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.hotcuePadShiftPressed</key>
+                <key>hotcue_8_clear</key>
                 <status>0x9A</status>
                 <midino>0x07</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <!-- HOT CUE MODE END -->

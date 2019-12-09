@@ -436,65 +436,6 @@ PioneerDDJ400.shiftPressed = function(channel, _control, value) {
     this.shiftState[channel] = value;
 };
 
-PioneerDDJ400.hotcuePadPressed = function(_channel, control, value, status, group) {
-    'use strict';
-    var loopPlaying = engine.getValue(group, 'loop_enabled');
-    var padNum = (control & 0xf) +1;
-    var loopPoint = PioneerDDJ400.hotcueLoopPoints[group][padNum-1];
-    var hotcueSet = engine.getValue(group, 'hotcue_'+padNum+'_enabled');
-
-    // play hotcue if set or set if not set and no loop is playing
-    if (hotcueSet > 0 || (loopPlaying === 0 && (!loopPoint || loopPoint.start <= -1))) {
-        engine.setValue(group, 'hotcue_'+padNum+'_activate', value);
-        midi.sendShortMsg(status, control, 0x7f); // enable PAD LED
-        return;
-    }
-
-    // play saved loop if set
-    if (value > 0 && loopPoint && loopPoint.start >= 0) {
-        engine.setValue(group, 'loop_start_position', loopPoint.start);
-        engine.setValue(group, 'loop_end_position', loopPoint.end);
-        engine.setValue(group, 'loop_in_goto', 1);
-        engine.setValue(group, 'reloop_toggle', 1);
-        // This is a hack, TODO find a command like loop_in_goto_and_play
-        if (engine.getValue(group, 'loop_enabled') === 0) {
-            engine.setValue(group, 'reloop_toggle', 1);
-        }
-        return;
-    }
-
-    // save playing loop on hotcue pad
-    if (value > 0 && loopPlaying > 0) {
-        var loopStart = engine.getValue(group, 'loop_start_position');
-        var loopEnd = engine.getValue(group, 'loop_end_position');
-
-        this.hotcueLoopPoints[group][padNum-1] = {start: loopStart, end: loopEnd};
-        midi.sendShortMsg(status, control, 0x7f); // enable pad LED
-        return;
-    }
-
-};
-
-PioneerDDJ400.hotcuePadShiftPressed = function(_channel, control, value, status, group) {
-    'use strict';
-    var loopPlaying = engine.getValue(group, 'loop_enabled');
-    var padNum = (control & 0xf) +1;
-    var loopPoint = this.hotcueLoopPoints[group][padNum-1];
-
-    // shift is pressed -> delete hotcue or loop point
-    if (value > 0) {
-        midi.sendShortMsg(status-1, control, 0); // disable Pad LED
-        engine.setValue(group, 'hotcue_'+padNum+'_clear', 1);
-        if ( loopPoint && loopPoint.start >=0 ) {
-            this.hotcueLoopPoints[group][padNum-1] = {start: -1, end: -1};
-            if (loopPlaying > 0 ) {
-                engine.setValue(group, 'reloop_toggle', 1);
-            }
-        }
-        return;
-    }
-};
-
 PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
     'use strict';
     // select the Waveform to zoom left shift = deck1, right shift = deck2
