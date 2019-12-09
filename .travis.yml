@@ -7,7 +7,9 @@ language: c++
 # TODO(2019-07-21): Add "ffmpeg=1" if FFmpeg 4.x becomes available in Ubuntu
 env:
   global:
-    - SCONS_MIXXX_COMMON_FLAGS="-j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+    # For SCons builds
+    - SCONSFLAGS="test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+    # For CMake builds
     - CMAKE_MIXXX_COMMON_FLAGS="-DMAD=ON -DFAAD=ON -DOPUS=ON -DMODPLUG=ON -DWAVPACK=ON -DHSS1394=OFF"
     - GTEST_COLOR=1
     - CTEST_OUTPUT_ON_FAILURE=1
@@ -35,11 +37,10 @@ jobs:
       dist: xenial
       compiler: gcc
       # Ubuntu Xenial build prerequisites
-      env: SCONS_MIXXX_EXTRA_FLAGS="localecompare=1"
       before_install:
         - sudo apt-get install -y scons
       install:
-        - scons $SCONS_MIXXX_COMMON_FLAGS $SCONS_MIXX_EXTRA_FLAGS
+        - scons -j "$(nproc)" localecompare=1
       script:
         # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
         # return code in order to avoid having a successful build when a test fail.
@@ -84,7 +85,7 @@ jobs:
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
       - echo "QTDIR=$QTDIR"
       install:
-        - scons $SCONS_MIXXX_COMMON_FLAGS $SCONS_MIXXX_EXTRA_FLAGS
+        - scons -j "$(sysctl -n hw.ncpu)"
       script:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
