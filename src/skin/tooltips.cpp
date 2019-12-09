@@ -26,6 +26,7 @@ QList<QString>& Tooltips::add(QString id) {
 
 void Tooltips::addStandardTooltips() {
     QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
+    QString dragItem = tr("Drag this item to other decks/samplers, to crates and playlist or to external file manager.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
@@ -707,6 +708,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the title of the loaded track.")
             << trackTags
             << dropTracksHere;
+            << dragItem;
 
     add("track_album")
             << tr("Track Album")
@@ -718,12 +720,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
             << trackTags;
+            << dropTracksHere;
+            << dragItem;
 
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
             << trackTags
             << dropTracksHere;
+            << dragItem;
 
     add("time")
             << tr("Clock")
@@ -743,6 +748,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Displays cover artwork of the loaded track.")
             << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."));
+            << dropTracksHere;
+            << dragItem;
 
     add("starrating")
             << tr("Star Rating")
