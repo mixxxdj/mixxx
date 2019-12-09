@@ -125,7 +125,7 @@
             </Children>
           </WidgetGroup><!-- MicAuxSubControls -->
 
-          <!-- Background tile underneath controls conatiner -->
+          <!-- Background tile underneath controls container -->
           <WidgetGroup>
             <BackPath><Variable name="BgTile"/></BackPath>
             <SizePolicy>me,me</SizePolicy>

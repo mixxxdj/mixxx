@@ -37,7 +37,7 @@ RateControl::RateControl(QString group,
       m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
-    // This is the resulting rate ratio that can used for dispaly or calculations.
+    // This is the resulting rate ratio that can be used for display or calculations.
     // The track original rate ratio is 1.
     m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
                   true, false, false, 1.0);

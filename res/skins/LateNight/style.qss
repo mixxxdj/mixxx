@@ -378,7 +378,7 @@ WSearchLineEdit,
 /* see
   separator_artist_title.xml and
   separator_spinny_cover
-  for visibilty conditions */
+  for visibility conditions */
 #SeparatorLine {
   background-color: #0c0c0c;
 }
