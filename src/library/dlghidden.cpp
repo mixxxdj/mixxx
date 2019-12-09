@@ -1,17 +1,17 @@
-#include "QItemSelection"
-
 #include "library/dlghidden.h"
+
 #include "library/hiddentablemodel.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
 DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-                     Library* pLibrary, TrackCollection* pTrackCollection,
+                     Library* pLibrary,
                      KeyboardEventFilter* pKeyboard)
          : QWidget(parent),
            Ui::DlgHidden(),
            m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -24,7 +24,7 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary);
+    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollections());
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
     connect(btnUnhide,

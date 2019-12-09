@@ -29,7 +29,7 @@ This will define the following variables:
 ``Shout_LIBRARIES``
   Libraries needed to link to Shout.
 ``Shout_DEFINITIONS``
-  Compile defitions needed to use Shout.
+  Compile definitions needed to use Shout.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

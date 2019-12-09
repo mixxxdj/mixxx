@@ -70,7 +70,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         }
         m_pSvg.reset(pSvg.release());
 #ifdef __APPLE__
-        // Apple does Retina scaling behind the sceens, so we also pass a
+        // Apple does Retina scaling behind the scenes, so we also pass a
         // Paintable::FIXED image. On the other targets, it is better to
         // cache the pixmap. We do not do this for TILE and color schemas.
         // which can result in a correct but possibly blurry picture at a

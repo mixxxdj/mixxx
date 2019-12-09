@@ -29,7 +29,7 @@ This will define the following variables:
 ``ID3Tag_LIBRARIES``
   Libraries needed to link to ID3Tag.
 ``ID3Tag_DEFINITIONS``
-  Compile defitions needed to use ID3Tag.
+  Compile definitions needed to use ID3Tag.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

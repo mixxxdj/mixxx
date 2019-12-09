@@ -790,7 +790,7 @@ void ShoutConnection::updateMetaData() {
      * Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
      * This was done in EncoderVorbis previously and caused interruptions on track change as well
      * which sounds awful to listeners.
-     * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
+     * To conclude: Only write OGG metadata one time, i.e., if static metadata is used.
      */
 
 

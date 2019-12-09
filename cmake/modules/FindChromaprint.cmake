@@ -29,7 +29,7 @@ This will define the following variables:
 ``Chromaprint_LIBRARIES``
   Libraries needed to link to Chromaprint.
 ``Chromaprint_DEFINITIONS``
-  Compile defitions needed to use Chromaprint.
+  Compile definitions needed to use Chromaprint.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

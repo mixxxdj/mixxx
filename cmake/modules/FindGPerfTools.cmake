@@ -31,7 +31,7 @@ This will define the following variables:
 ``GPerfTools_LIBRARIES``
   Libraries needed to link to GPerfTools.
 ``GPerfTools_DEFINITIONS``
-  Compile defitions needed to use GPerfTools.
+  Compile definitions needed to use GPerfTools.
 
 Cache Variables
 ^^^^^^^^^^^^^^^
