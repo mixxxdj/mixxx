@@ -923,13 +923,13 @@ quint16 Track::getCoverHash() const {
     return m_record.getCoverInfo().hash;
 }
 
-Track::ExportMetadataResult Track::exportMetadata(
+ExportTrackMetadataResult Track::exportMetadata(
         mixxx::MetadataSourcePointer pMetadataSource) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
                 << getLocation();
-        return ExportMetadataResult::Failed;
+        return ExportTrackMetadataResult::Failed;
     }
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
@@ -959,7 +959,7 @@ Track::ExportMetadataResult Track::exportMetadata(
             kLogger.info()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
-            return ExportMetadataResult::Skipped;
+            return ExportTrackMetadataResult::Skipped;
         }
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata
@@ -1004,7 +1004,7 @@ Track::ExportMetadataResult Track::exportMetadata(
                                 << "Skip exporting of unmodified track metadata into file:"
                                 << getLocation();
                 }
-                return ExportMetadataResult::Skipped;
+                return ExportTrackMetadataResult::Skipped;
             }
         } else {
             // Something must be wrong with the file or it doesn't
@@ -1015,7 +1015,7 @@ Track::ExportMetadataResult Track::exportMetadata(
                     << "Skip exporting of track metadata after import failed."
                     << "Export of metadata must be triggered explicitly for this file:"
                     << getLocation();
-            return ExportMetadataResult::Skipped;
+            return ExportTrackMetadataResult::Skipped;
         }
         // ...by continuing the file tags will be updated
     }
@@ -1039,11 +1039,11 @@ Track::ExportMetadataResult Track::exportMetadata(
                     << "Exported track metadata:"
                     << getLocation();
         }
-        return ExportMetadataResult::Succeeded;
+        return ExportTrackMetadataResult::Succeeded;
     } else {
         kLogger.warning()
                 << "Failed to export track metadata:"
                 << getLocation();
-        return ExportMetadataResult::Failed;
+        return ExportTrackMetadataResult::Failed;
     }
 }

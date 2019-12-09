@@ -17,6 +17,7 @@
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 
 #include "sources/soundsourceproxy.h"
@@ -41,13 +42,12 @@ QString formatLabel(
 } // anonymous namespace
 
 CrateFeature::CrateFeature(Library* pLibrary,
-                           TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
-        : LibraryFeature(pConfig),
+        : LibraryFeature(pLibrary, pConfig),
           m_cratesIcon(":/images/library/ic_library_crates.svg"),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
-          m_pTrackCollection(pTrackCollection),
-          m_crateTableModel(this, pTrackCollection) {
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_crateTableModel(this, pLibrary->trackCollections()) {
 
     initActions();
 
@@ -57,9 +57,6 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
     connectLibrary(pLibrary);
     connectTrackCollection();
-}
-
-CrateFeature::~CrateFeature() {
 }
 
 void CrateFeature::initActions() {
@@ -732,7 +729,7 @@ void CrateFeature::slotExportPlaylist() {
     QList<QString> playlist_items;
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
-        new CrateTableModel(this, m_pTrackCollection));
+        new CrateTableModel(this, m_pLibrary->trackCollections()));
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 
@@ -769,7 +766,7 @@ void CrateFeature::slotExportPlaylist() {
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
-        new CrateTableModel(this, m_pTrackCollection));
+        new CrateTableModel(this, m_pLibrary->trackCollections()));
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 

@@ -7,12 +7,14 @@
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 
-RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
+RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
@@ -44,12 +46,12 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_trackSource->setSearchColumns(searchColumns);
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
-        this, m_pTrackCollection,
+        this, pLibrary->trackCollections(),
         "mixxx.db.model.rhythmbox",
         "rhythmbox_library",
         m_trackSource);
     m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, pLibrary->trackCollections(),
         "mixxx.db.model.rhythmbox_playlist",
         "rhythmbox_playlists",
         "rhythmbox_playlist_tracks",
@@ -58,7 +60,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
+    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
                                              "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
@@ -84,7 +86,7 @@ RhythmboxFeature::~RhythmboxFeature() {
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-                                            this, m_pTrackCollection,
+                                            this, m_pLibrary->trackCollections(),
                                             "mixxx.db.model.rhythmbox_playlist",
                                             "rhythmbox_playlists",
                                             "rhythmbox_playlist_tracks",

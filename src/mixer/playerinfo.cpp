@@ -23,8 +23,13 @@
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 
-static const int kPlayingDeckUpdateIntervalMillis = 2000;
-static PlayerInfo* m_pPlayerInfo = NULL;
+namespace {
+
+const int kPlayingDeckUpdateIntervalMillis = 2000;
+
+PlayerInfo* s_pPlayerInfo = nullptr;
+
+}
 
 PlayerInfo::PlayerInfo()
         : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),
@@ -39,15 +44,16 @@ PlayerInfo::~PlayerInfo() {
 
 // static
 PlayerInfo& PlayerInfo::instance() {
-    if (!m_pPlayerInfo) {
-        m_pPlayerInfo = new PlayerInfo();
+    if (!s_pPlayerInfo) {
+        s_pPlayerInfo = new PlayerInfo();
     }
-    return *m_pPlayerInfo;
+    return *s_pPlayerInfo;
 }
 
 // static
 void PlayerInfo::destroy() {
-    delete m_pPlayerInfo;
+    delete s_pPlayerInfo;
+    s_pPlayerInfo = nullptr;
 }
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {

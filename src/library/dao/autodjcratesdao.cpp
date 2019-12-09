@@ -710,8 +710,8 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
 // Signaled by the track DAO when a track's information is updated.
 void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
     // Update our record of the number of times played, if that changed.
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
-    if (pTrack == NULL) {
+    TrackPointer pTrack = m_pTrackCollection->getTrackById(trackId);
+    if (!pTrack) {
         return;
     }
     const PlayCounter playCounter(pTrack->getPlayCounter());

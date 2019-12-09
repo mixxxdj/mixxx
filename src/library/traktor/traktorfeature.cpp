@@ -13,7 +13,9 @@
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "util/sandbox.h"
 
@@ -29,9 +31,9 @@ QString fromTraktorSeparators(QString path) {
 
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
-                                     TrackCollection* pTrackCollection,
+                                     TrackCollectionManager* pTrackCollectionManager,
                                      QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalTrackModel(parent, pTrackCollection,
+        : BaseExternalTrackModel(parent, pTrackCollectionManager,
                                  "mixxx.db.model.traktor_tablemodel",
                                  "traktor_library",
                                  trackSource) {
@@ -45,9 +47,9 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
-                                           TrackCollection* pTrackCollection,
+                                           TrackCollectionManager* pTrackCollectionManager,
                                            QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, pTrackCollection,
+        : BaseExternalPlaylistModel(parent, pTrackCollectionManager,
                                     "mixxx.db.model.traktor.playlistmodel",
                                     "traktor_playlists",
                                     "traktor_playlist_tracks",
@@ -61,9 +63,8 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
+TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_traktor.svg") {
     QString tableName = "traktor_library";
@@ -84,7 +85,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
             << "bpm"
             << "key";
     m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+            new BaseTrackCache(pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
                            columns, false));
     QStringList searchColumns;
     searchColumns << "artist"
@@ -96,12 +97,12 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_trackSource->setSearchColumns(searchColumns);
 
     m_isActivated = false;
-    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection, m_trackSource);
-    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    m_pTraktorTableModel = new TraktorTrackModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
 
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
+    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
                                              "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
@@ -124,7 +125,7 @@ TraktorFeature::~TraktorFeature() {
 }
 
 BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
