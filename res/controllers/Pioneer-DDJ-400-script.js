@@ -603,7 +603,7 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
 };
 
 
-PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(channel, control, value, status, group) {
+PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, _value, status, group) {
     'use strict';
     var isLoaded = engine.getValue(group, 'track_loaded') === 1;
 
