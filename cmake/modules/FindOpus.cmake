@@ -21,7 +21,7 @@ This will define the following variables:
 ``Opus_LIBRARIES``
   Libraries needed to link to Opus.
 ``Opus_DEFINITIONS``
-  Compile defitions needed to use Opus.
+  Compile definitions needed to use Opus.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

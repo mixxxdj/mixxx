@@ -229,7 +229,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view and
-        // hightlights crate and playlists. Doing this in selectionChanged
+        // highlights crate and playlists. Doing this in selectionChanged
         // slows down scrolling performance so we wait until the user has
         // stopped interacting first.
         if (m_selectionChangedSinceLastGuiTick) {

@@ -247,7 +247,7 @@
     Singletons - create singletons for scrolling waveforms
         Above the maximized library there are minimal decks which contain overview waveforms.
         For the end-of-track warning in those overviews to work instances of scrolling waveforms
-        are required. We load in the maximzed library view, as well, but they are invisble as
+        are required. We load in the maximzed library view, as well, but they are invisible as
         they are 0px tall. 
     ############################################################################################
     ############################################################################################

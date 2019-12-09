@@ -29,7 +29,7 @@ This will define the following variables:
 ``Modplug_LIBRARIES``
   Libraries needed to link to Modplug.
 ``Modplug_DEFINITIONS``
-  Compile defitions needed to use Modplug.
+  Compile definitions needed to use Modplug.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

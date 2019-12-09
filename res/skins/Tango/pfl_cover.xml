@@ -4,7 +4,7 @@ Description:
   when no headphone device is configured.
   Intention is to indicate the headphone device is lacking BEFORE
   starting a live session instead of having to re-configure sound
-  devices DURING a sesion and producing a playback gap.
+  devices DURING a session and producing a playback gap.
 -->
 <Template>
   <WidgetGroup>
