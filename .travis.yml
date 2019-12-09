@@ -8,6 +8,9 @@ language: c++
 env:
   global:
     - SCONS_MIXXX_COMMON_FLAGS="-j4 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+    - CMAKE_MIXXX_COMMON_FLAGS="-DMAD=ON -DFAAD=ON -DOPUS=ON -DMODPLUG=ON -DWAVPACK=ON -DHSS1394=OFF"
+    - GTEST_COLOR=1
+    - CTEST_OUTPUT_ON_FAILURE=1
 
 jobs:
   include:
@@ -43,6 +46,29 @@ jobs:
         # https://bugs.launchpad.net/mixxx/+bug/1699689
         - ./mixxx-test
 
+    - name: Ubuntu/gcc/CMake build
+      os: linux
+      dist: xenial
+      compiler: gcc
+      cache: ccache
+      # Ubuntu Xenial build prerequisites
+      env: CMAKE_MIXXX_EXTRA_FLAGS="-DLOCALECOMPARE=ON"
+      before_install:
+        - sudo apt-get install -y cmake
+        - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+        - cmake --version
+        - ccache -s
+      install:
+        - mkdir cmake_build
+        - cd cmake_build
+        - cmake -L $CMAKE_MIXXX_COMMON_FLAGS $CMAKE_MIXXX_EXTRA_FLAGS ..
+        - cmake --build .
+        - sudo cmake --build . --target install
+      script:
+        # Run tests and benchmarks
+        - cmake --build . --target test
+        - cmake --build . --target benchmark
+
     - name: OSX/clang/SCons build
       os: osx
       compiler: clang
@@ -63,6 +89,32 @@ jobs:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
         - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"
+
+    - name: OSX/clang/CMake build
+      os: osx
+      compiler: clang
+      cache: ccache
+      # Workaround for bug in libopus's opus.h including <opus_multistream.h>
+      # instead of <opus/opus_multistream.h>.
+      # Virtual X (Xvfb) is needed for analyzer waveform tests
+      env: >-
+        CMAKE_MIXXX_EXTRA_FLAGS="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
+        DISPLAY=:99.0
+      before_install:
+        - export CMAKE_BUILD_PARALLEL_LEVEL="$(sysctl -n hw.ncpu)"
+        - export PATH="/usr/local/opt/ccache/bin:$PATH"
+        - cmake --version
+        - ccache -s
+      install:
+        - mkdir cmake_build
+        - cd cmake_build
+        - cmake -L $CMAKE_MIXXX_COMMON_FLAGS $CMAKE_MIXXX_EXTRA_FLAGS ..
+        - cmake --build .
+        - sudo cmake --build . --target install
+      script:
+        # Run tests and benchmarks
+        - cmake --build . --target test
+        - cmake --build . --target benchmark
 
 git:
   depth: 1
