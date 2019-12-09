@@ -29,7 +29,7 @@ This will define the following variables:
 ``Lilv_LIBRARIES``
   Libraries needed to link to Lilv.
 ``Lilv_DEFINITIONS``
-  Compile defitions needed to use Lilv.
+  Compile definitions needed to use Lilv.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

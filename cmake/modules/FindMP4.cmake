@@ -29,7 +29,7 @@ This will define the following variables:
 ``MP4_LIBRARIES``
   Libraries needed to link to MP4.
 ``MP4_DEFINITIONS``
-  Compile defitions needed to use MP4.
+  Compile definitions needed to use MP4.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

@@ -6,7 +6,7 @@
   Variables:
     group:
     xfaderLeft, xfaderRight: default | warning | off
-          Picks a colored icon for L,M,R depending on wether
+          Picks a colored icon for L,M,R depending on whether
           the deck's orientation is the default, set to Master
           or to the opposite side
 -->
