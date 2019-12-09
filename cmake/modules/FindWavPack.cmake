@@ -29,7 +29,7 @@ This will define the following variables:
 ``WavPack_LIBRARIES``
   Libraries needed to link to WavPack.
 ``WavPack_DEFINITIONS``
-  Compile defitions needed to use WavPack.
+  Compile definitions needed to use WavPack.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

@@ -1021,7 +1021,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1110,7 +1110,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1210,7 +1210,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1299,7 +1299,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1419,7 +1419,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
 
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1501,7 +1501,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
