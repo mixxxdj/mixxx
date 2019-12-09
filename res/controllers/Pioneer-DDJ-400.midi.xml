@@ -506,7 +506,7 @@
             <control>
                 <description>RELOOP/EXIT (DECK1) - press - (loop off) Reloop, (loop on) Loop exit</description>
                 <group>[Channel1]</group>
-                <key>reloop_toggle</key> <!-- check if correct -->
+                <key>reloop_andstop</key> <!-- check if correct -->
                 <status>0x90</status>
                 <midino>0x4D</midino>
                 <options>
@@ -516,7 +516,7 @@
             <control>
                 <description>RELOOP/EXIT +SHIFT (DECK1) - press - Active loop on/off</description>
                 <group>[Channel1]</group>
-                <key>reloop_toggle</key> <!-- TODO Check if correct -->
+                <key>reloop_andstop</key> <!-- TODO Check if correct -->
                 <status>0x90</status>
                 <midino>0x50</midino>
                 <options>
@@ -527,7 +527,7 @@
             <control>
                 <description>RELOOP/EXIT (DECK2) - press - (loop off) Reloop, (loop on) Loop exit</description>
                 <group>[Channel2]</group>
-                <key>reloop_toggle</key> <!-- check if correct -->
+                <key>reloop_andstop</key> <!-- check if correct -->
                 <status>0x91</status>
                 <midino>0x4D</midino>
                 <options>
@@ -537,7 +537,7 @@
             <control>
                 <description>RELOOP/EXIT +SHIFT (DECK2) - press - Active loop on/off</description>
                 <group>[Channel2]</group>
-                <key>reloop_toggle</key> <!-- TODO Check if correct -->
+                <key>reloop_andstop</key> <!-- TODO Check if correct -->
                 <status>0x91</status>
                 <midino>0x50</midino>
                 <options>
