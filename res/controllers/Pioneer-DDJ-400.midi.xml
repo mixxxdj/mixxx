@@ -1676,8 +1676,156 @@
             <!-- BEAT LOOP MODE END -->
 
             <!-- BEAT JUMP MODE START -->
-
+            <!-- This approach uses the beatjump_*_*ward functions. Missing: SHIFT modifiers, lights. -->
+            <!--channel 1-->
             <control>
+                <group>[Channel1]</group>
+                <key>beatjump_1_backward</key>
+                <status>0x97</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+              </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_1_forward</key>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_2_backward</key>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_2_forward</key>
+                <status>0x97</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_4_backward</key>
+                <status>0x97</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_4_forward</key>
+                <status>0x97</status>
+                <midino>0x25</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_8_backward</key>
+                <status>0x97</status>
+                <midino>0x26</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatjump_8_forward</key>
+                <status>0x97</status>
+                <midino>0x27</midino>
+                <options>
+                    <normal/>
+                </options>
+              </control>
+            <!--beatjump channel 2-->
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_1_backward</key>
+                <status>0x99</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_1_forward</key>
+                <status>0x99</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_2_backward</key>
+                <status>0x99</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_2_forward</key>
+                <status>0x99</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_4_backward</key>
+                <status>0x99</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+              </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_4_forward</key>
+                <status>0x99</status>
+                <midino>0x25</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_8_backward</key>
+                <status>0x99</status>
+                <midino>0x26</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatjump_8_forward</key>
+                <status>0x99</status>
+                <midino>0x27</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <!--Some prelimary work on beat jumps with shift - not yet working.-->
+            <!--control>
                 <description>PAD 1 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat left</description>
                 <group>[Channel1]</group>
                 <key>PioneerDDJ400.beatjumpPadPressed</key>
@@ -1877,8 +2025,7 @@
                 <options>
                     <Script-Binding/>
                 </options>
-            </control>
-
+            </control-->
             <!-- BEAT JUMP MODE END -->
 
             <!-- SAMPLER MODE START -->

@@ -390,35 +390,38 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _
     // TODO: while playing a sample blink playing PAD?
 };
 
-PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, status, group){
-    'use strict';
-    if(value == 0) {
-        midi.sendShortMsg(status, control, 0); // turn off LED
-        return; // ignore release
-    }
-
-    var newVal = this.beatjumpPad[control & 0xf] * this.beatjumpMultiplier;
-
-    engine.setValue(group, 'beatjump', newVal);
-    midi.sendShortMsg(status, control, 0x7f); // turn LED back on
-};
-
-PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status){
-    'use strict';
-    if(value == 0) {
-        midi.sendShortMsg(status, control, 0); // turn off LED
-        return; // ignore release
-    }
-
-    var direction = status <= 0x98 ? -1 : 1;
-
-    if ( direction == -1 && this.beatjumpMultiplier <= 1){
-        direction = 0;
-    }
-
-    this.beatjumpMultiplier += direction;
-    midi.sendShortMsg(status, control, 0x7f); // turn LED back on
-};
+// nschloe: This section handles the beat jump mode. It's not working yet, so in the XML
+// we simply use the intrinsic beatjump_*_{forward,backward} functions for now.
+//
+// PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, status, group){
+//     'use strict';
+//     if(value == 0) {
+//         midi.sendShortMsg(status, control, 0); // turn off LED
+//         return; // ignore release
+//     }
+//
+//     var newVal = this.beatjumpPad[control & 0xf] * this.beatjumpMultiplier;
+//
+//     engine.setValue(group, 'beatjump', newVal);
+//     midi.sendShortMsg(status, control, 0x7f); // turn LED back on
+// };
+//
+// PioneerDDJ400.beatjumpShiftByOne = function(_channel, control, value, status){
+//     'use strict';
+//     if(value == 0) {
+//         midi.sendShortMsg(status, control, 0); // turn off LED
+//         return; // ignore release
+//     }
+//
+//     var direction = status <= 0x98 ? -1 : 1;
+//
+//     if ( direction == -1 && this.beatjumpMultiplier <= 1){
+//         direction = 0;
+//     }
+//
+//     this.beatjumpMultiplier += direction;
+//     midi.sendShortMsg(status, control, 0x7f); // turn LED back on
+// };
 
 PioneerDDJ400.shiftPressed = function(channel, _control, value){
     'use strict';
