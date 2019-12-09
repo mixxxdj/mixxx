@@ -178,6 +178,7 @@ TraktorS2MK3.registerInputPackets = function () {
 
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Master]", "gain", 0x15, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Sampler]", "pregain", 0x17, 0xFFFF, this.samplerPregainHandler);
     this.registerInputScaler(messageLong, "[Master]", "headMix", 0x19, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
 
@@ -208,6 +209,10 @@ TraktorS2MK3.registerInputPackets = function () {
     engine.softTakeover("[Master]", "gain", true);
     engine.softTakeover("[Master]", "headMix", true);
     engine.softTakeover("[Master]", "headGain", true);
+
+    for (var i = 1; i <= 16; ++i) {
+        engine.softTakeover("[Sampler" + i + "]", "pregain", true);
+    }
 
     // Dirty hack to set initial values in the packet parser
     var data = TraktorS2MK3.toBytes("01 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 00 00 00 00");
@@ -516,6 +521,14 @@ TraktorS2MK3.microphoneTimer = function () {
 
 TraktorS2MK3.parameterHandler = function (field) {
     engine.setParameter(field.group, field.name, field.value / 4095);
+};
+
+TraktorS2MK3.samplerPregainHandler = function (field) {
+    // Map sampler gain knob of all sampler together.
+    // Dirty hack, but the best we can do for now.
+    for (var i = 1; i <= 16; ++i) {
+        engine.setParameter("[Sampler" + i + "]", field.name, field.value / 4095);
+    }
 };
 
 TraktorS2MK3.jogTouchHandler = function (field) {
