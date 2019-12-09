@@ -7,7 +7,6 @@
 #include "preferences/usersettings.h"
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
-#include "library/trackcollection.h"
 #include "library/ui_dlganalysis.h"
 #include "analyzer/analyzerprogress.h"
 
@@ -58,7 +57,6 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;
     WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;

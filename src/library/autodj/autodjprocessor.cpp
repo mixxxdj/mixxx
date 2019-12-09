@@ -126,11 +126,12 @@ double DeckAttributes::timeElapsed() const {
     return playPosition() * trackTime();
 }
 
-AutoDJProcessor::AutoDJProcessor(QObject* pParent,
+AutoDJProcessor::AutoDJProcessor(
+        QObject* pParent,
         UserSettingsPointer pConfig,
         PlayerManagerInterface* pPlayerManager,
-        int iAutoDJPlaylistId,
-        TrackCollection* pTrackCollection)
+        TrackCollectionManager* pTrackCollectionManager,
+        int iAutoDJPlaylistId)
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
@@ -138,7 +139,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
-    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
+    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
 

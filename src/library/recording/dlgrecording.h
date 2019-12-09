@@ -20,7 +20,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     Q_OBJECT
   public:
     DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
-                 Library* pLibrary, TrackCollection* pTrackCollection,
+                 Library* pLibrary,
                  RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 
@@ -50,7 +50,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   private:
     UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;

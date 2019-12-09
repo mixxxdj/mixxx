@@ -15,6 +15,8 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/queryutil.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
 #include "widget/wlibrarysidebar.h"
@@ -59,9 +61,8 @@ QString localhost_token() {
 
 } // anonymous namespace
 
-ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
+ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";
@@ -84,15 +85,15 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "rating";
 
     m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+            new BaseTrackCache(m_pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
                                columns, false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes",
         "itunes_library",
         m_trackSource);
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
@@ -100,7 +101,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(), "ITUNES_SCANNER");
+    m_database = QSqlDatabase::cloneDatabase(m_pLibrary->trackCollections()->internalCollection()->database(), "ITUNES_SCANNER");
 
     // Open the database connection in this thread.
     if (!m_database.open()) {
@@ -122,7 +123,7 @@ ITunesFeature::~ITunesFeature() {
 
 BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
