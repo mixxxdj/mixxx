@@ -76,17 +76,9 @@ KeyControl::KeyControl(QString group,
     m_keyunlockMode = new ControlPushButton(ConfigKey(group, "keyunlockMode"));
     m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
 
-    // In case of vinyl control "rate" is a filtered mean value for display
-    m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pRateSlider->connectValueChanged(this, &KeyControl::slotRateChanged,
-            Qt::DirectConnection);
-
-    m_pRateRange = new ControlProxy(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(this, &KeyControl::slotRateChanged,
-            Qt::DirectConnection);
-
-    m_pRateDir = new ControlProxy(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(this, &KeyControl::slotRateChanged,
+    // In case of vinyl control "rate_ratio" is a filtered mean value for display
+    m_pRateRatio = make_parented<ControlProxy>(ConfigKey(group, "rate_ratio"), this);
+    m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
     m_pVCEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
@@ -147,9 +139,7 @@ void KeyControl::updateRate() {
     if(m_pVCEnabled->toBool()) {
         m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
-        m_pitchRateInfo.tempoRatio = 1.0
-                + m_pRateDir->get() * m_pRateRange->get()
-                        * m_pRateSlider->get();
+        m_pitchRateInfo.tempoRatio = m_pRateRatio->get();
     }
 
     if (m_pitchRateInfo.tempoRatio == 0) {
@@ -196,11 +186,11 @@ void KeyControl::updateRate() {
                 // don't reset to linear pitch, instead adopt speedSliderPitchRatio
                 // change as pitchTweakRatio
                 m_pitchRateInfo.pitchTweakRatio *=
-                 (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
+                        (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
                 // adopt pitch_adjust now so that it doesn't jump and resets key
                 // when touching pitch_adjust knob after unlock with offset key
                 m_pPitchAdjust->set(
-                    KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
+                        KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
             } else {
                 // If 'current' aka 'not original' key was locked
                 if (m_keylockMode->get() == kLockCurrentKey) {

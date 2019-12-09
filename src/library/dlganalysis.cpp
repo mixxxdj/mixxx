@@ -5,7 +5,7 @@
 #include "widget/wanalysislibrarytableview.h"
 #include "analyzer/analyzerprogress.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
 #include "util/assert.h"
@@ -15,13 +15,12 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
                        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(&pLibrary->trackCollection()),
           m_bAnalysisActive(false) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, m_pTrackCollection);
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pLibrary->trackCollections());
     connect(m_pAnalysisLibraryTableView,
             &WAnalysisLibraryTableView::loadTrack,
             this,
@@ -44,7 +43,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, m_pTrackCollection);
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pLibrary->trackCollections());
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded,

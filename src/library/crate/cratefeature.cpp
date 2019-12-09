@@ -17,11 +17,13 @@
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 
 #include "sources/soundsourceproxy.h"
 
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 #include "util/dnd.h"
@@ -40,13 +42,12 @@ QString formatLabel(
 } // anonymous namespace
 
 CrateFeature::CrateFeature(Library* pLibrary,
-                           TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
-        : LibraryFeature(pConfig),
+        : LibraryFeature(pLibrary, pConfig),
           m_cratesIcon(":/images/library/ic_library_crates.svg"),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
-          m_pTrackCollection(pTrackCollection),
-          m_crateTableModel(this, pTrackCollection) {
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_crateTableModel(this, pLibrary->trackCollections()) {
 
     initActions();
 
@@ -56,9 +57,6 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
     connectLibrary(pLibrary);
     connectTrackCollection();
-}
-
-CrateFeature::~CrateFeature() {
 }
 
 void CrateFeature::initActions() {
@@ -267,7 +265,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
-void CrateFeature::bindWidget(WLibrary* libraryWidget,
+void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
                               KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -278,6 +276,11 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
             this,
             &CrateFeature::htmlLinkClicked);
     libraryWidget->registerView("CRATEHOME", edit);
+}
+
+void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* CrateFeature::getChildModel() {
@@ -334,7 +337,7 @@ bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
@@ -361,7 +364,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction.get());
@@ -722,7 +725,7 @@ void CrateFeature::slotExportPlaylist() {
     QList<QString> playlist_items;
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
-        new CrateTableModel(this, m_pTrackCollection));
+        new CrateTableModel(this, m_pLibrary->trackCollections()));
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 
@@ -759,7 +762,7 @@ void CrateFeature::slotExportPlaylist() {
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
-        new CrateTableModel(this, m_pTrackCollection));
+        new CrateTableModel(this, m_pLibrary->trackCollections()));
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 

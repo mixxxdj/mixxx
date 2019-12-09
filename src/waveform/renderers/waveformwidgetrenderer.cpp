@@ -26,7 +26,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_trackPixelCount(0.0),
 
       m_zoomFactor(1.0),
-      m_rateAdjust(0.0),
       m_visualSamplePerPixel(1.0),
       m_audioSamplePerPixel(1.0),
       m_alphaBeatGrid(90),
@@ -34,12 +33,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_visualPlayPosition(NULL),
       m_playPos(-1),
       m_playPosVSample(0),
-      m_pRateControlObject(NULL),
-      m_rate(0.0),
-      m_pRateRangeControlObject(NULL),
-      m_rateRange(0.0),
-      m_pRateDirControlObject(NULL),
-      m_rateDir(0.0),
+      m_pRateRatioCO(NULL),
+      m_rateRatio(1.0),
       m_pGainControlObject(NULL),
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
@@ -69,9 +64,7 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     for (int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
-    delete m_pRateControlObject;
-    delete m_pRateRangeControlObject;
-    delete m_pRateDirControlObject;
+    delete m_pRateRatioCO;
     delete m_pGainControlObject;
     delete m_pTrackSamplesControlObject;
 
@@ -86,12 +79,8 @@ bool WaveformWidgetRenderer::init() {
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateControlObject = new ControlProxy(
-            m_group, "rate");
-    m_pRateRangeControlObject = new ControlProxy(
-            m_group, "rateRange");
-    m_pRateDirControlObject = new ControlProxy(
-            m_group, "rate_dir");
+    m_pRateRatioCO = new ControlProxy(
+            m_group, "rate_ratio");
     m_pGainControlObject = new ControlProxy(
             m_group, "total_gain");
     m_pTrackSamplesControlObject = new ControlProxy(
@@ -113,22 +102,17 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     }
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    m_rate = m_pRateControlObject->get();
-    m_rateDir = m_pRateDirControlObject->get();
-    m_rateRange = m_pRateRangeControlObject->get();
+    m_rateRatio = m_pRateRatioCO->get();
 
     // This gain adjustment compensates for an arbitrary /2 gain chop in
     // EnginePregain. See the comment there.
     m_gain = m_pGainControlObject->get() * 2;
 
-    //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
-    m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
-
     // Compute visual sample to pixel ratio
     // Allow waveform to spread one visual sample across a hundred pixels
     // NOTE: The hundred pixel limit is totally arbitrary. Theoretically,
     // there should be no limit to how far the waveforms can be zoomed in.
-    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust) / m_scaleFactor;
+    double visualSamplePerPixel = m_zoomFactor * m_rateRatio / m_scaleFactor;
     m_visualSamplePerPixel = math_max(0.01, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
@@ -175,9 +159,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //        "m_group" << m_group <<
     //        "m_trackSamples" << m_trackSamples <<
     //        "m_playPos" << m_playPos <<
-    //        "m_rate" << m_rate <<
-    //        "m_rateDir" << m_rateDir <<
-    //        "m_rateRange" << m_rateRange <<
+    //        "m_rateRatio" << m_rate <<
     //        "m_gain" << m_gain;
 }
 

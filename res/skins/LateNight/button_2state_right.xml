@@ -24,15 +24,15 @@ Variables:
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>

@@ -3,6 +3,7 @@
 
 #include <QAction>
 #include <QModelIndex>
+#include <QPointer>
 
 #include "library/libraryfeature.h"
 
@@ -12,10 +13,13 @@ class TrackCollection;
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
-    virtual ~BaseExternalLibraryFeature();
+    BaseExternalLibraryFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
+    ~BaseExternalLibraryFeature() override;
 
   public slots:
+    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
     virtual void onRightClick(const QPoint& globalPos);
     virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
@@ -28,21 +32,28 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
-    QModelIndex m_lastRightClickedIndex;
-
-    TrackCollection* const m_pTrackCollection;
-
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
     void slotImportAsMixxxPlaylist();
 
+  protected:
+    QModelIndex lastRightClickedIndex() const {
+        return m_lastRightClickedIndex;
+    }
+
+    TrackCollection* const m_pTrackCollection;
+
   private:
     void addToAutoDJ(bool bTop);
+
+    QModelIndex m_lastRightClickedIndex;
 
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;
+
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 #endif // BASEEXTERNALLIBRARYFEATURE_H
