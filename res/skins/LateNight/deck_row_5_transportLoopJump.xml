@@ -314,6 +314,7 @@
                 </Children>
               </WidgetGroup><!-- Reverse | Cue -->
 
+              <!-- Make play_indicator reliable in all Cue modes -->
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ObjectName">PlayDeck</SetVariable>
