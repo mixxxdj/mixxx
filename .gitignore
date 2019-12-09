@@ -63,3 +63,12 @@ lib/*/lib/*.lib
 lib/qtscript-bytearray/*.cc
 
 compile_commands.json
+/Doxyfile
+/Doxyfile.bak
+/DoxygenLayout.xml
+/.swp
+/.cproject
+/.gdbinit
+/.project
+/.settings/
+/doc/
