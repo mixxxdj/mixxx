@@ -960,4 +960,8 @@ void Tooltips::addStandardTooltips() {
     add("LoadSamplerBank")
             << tr("Load Sampler Bank")
             << tr("Load a previously saved collection of samples into the samplers.");
+
+    add("configure_input")
+            << tr("Select and configure a hardware device for this input");
+
 }
