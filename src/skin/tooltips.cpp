@@ -701,13 +701,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
             << trackTags
-            << dropTracksHere;
+            << dropTracksHere
+            << dragItem;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
             << trackTags
-            << dropTracksHere;
+            << dropTracksHere
             << dragItem;
 
     add("track_album")
@@ -720,14 +721,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
             << trackTags;
-            << dropTracksHere;
-            << dragItem;
 
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
             << trackTags
-            << dropTracksHere;
+            << dropTracksHere
             << dragItem;
 
     add("time")
@@ -747,8 +746,8 @@ void Tooltips::addStandardTooltips() {
     add("coverart")
             << tr("Cover Art")
             << tr("Displays cover artwork of the loaded track.")
-            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."));
-            << dropTracksHere;
+            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."))
+            << dropTracksHere
             << dragItem;
 
     add("starrating")
