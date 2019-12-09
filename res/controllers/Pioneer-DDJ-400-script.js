@@ -625,7 +625,7 @@ PioneerDDJ400.beatFxChannel = ignoreRelease(function(_channel, control, _value, 
 PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
     'use strict';
     var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
-        var effectAbove = parseInt(effect, 10) - 4;
+        var effectAbove = parseInt(effect) - 4;
 
         return '[EffectRack1_EffectUnit' + unit + '_Effect' + effectAbove + ']';
     });
@@ -636,7 +636,7 @@ PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value
 PioneerDDJ400.padFxShiftBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
     'use strict';
     var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
-        var effectAbove = parseInt(effect, 10) - 4;
+        var effectAbove = parseInt(effect) - 4;
 
         return '[EffectRack1_EffectUnit' + unit + '_Effect' + effectAbove + ']';
     });
