@@ -1,6 +1,7 @@
 
 #include "library/crate/cratetablemodel.h"
 
+#include "library/dao/settingsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -189,4 +190,36 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     select();
+}
+
+QString CrateTableModel::getModelSetting(QString name) {
+    SettingsDAO settings(m_db);
+    QString key = m_settingsNamespace + "." + name;
+    if (!m_selectedCrate.isValid()) {
+        return settings.getValue(key);
+    }
+
+    // The default value is the top-level crate setting, which gets updated
+    // every time a change is made, so that newly-seen crates will look like
+    // the last-edited crate.
+    QString defaultVal = settings.getValue(key);
+    key = m_settingsNamespace + "." + m_selectedCrate.toString() + "." + name;
+    return settings.getValue(key, defaultVal);
+}
+
+bool CrateTableModel::setModelSetting(QString name, QVariant value) {
+    SettingsDAO settings(m_db);
+    // Also set the top-level crate setting so the next default initialization
+    // will use the most recent value created.
+    QString key = m_settingsNamespace + "." + name;
+    if (!settings.setValue(key, value)) {
+        return false;
+    }
+
+    if (!m_selectedCrate.isValid()) {
+        return true;
+    }
+
+    key = m_settingsNamespace + "." + m_selectedCrate.toString() + "." + name;
+    return settings.setValue(key, value);
 }

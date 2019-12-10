@@ -89,7 +89,6 @@ class Library: public QObject {
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
-    void slotSaveViewState();
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);

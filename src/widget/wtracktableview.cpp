@@ -296,13 +296,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // If your Feature needs to save state before it changes (as with the
         // CrateFeature), it must emit saveViewState before emitting showTrackModel
         // so the header state gets correctly saved.
-        if (oldHeader != nullptr) {
+        if (oldHeader) {
             oldHeader->restoreHeaderState();
         }
         return;
     } else {
         // Save the previous track model's header state.
-        if (oldHeader != nullptr) {
+        if (oldHeader) {
             oldHeader->saveHeaderState();
         }
         newModel = trackModel;
@@ -729,7 +729,7 @@ void WTrackTableView::slotTrackInfoClosed() {
     DlgTrackInfo* pTrackInfo = m_pTrackInfo.take();
     // We are in a slot directly invoked from DlgTrackInfo. Delete it
     // later.
-    if (pTrackInfo != nullptr) {
+    if (pTrackInfo) {
         pTrackInfo->deleteLater();
     }
 }
@@ -738,7 +738,7 @@ void WTrackTableView::slotTagFetcherClosed() {
     DlgTagFetcher* pTagFetcher = m_pTagFetcher.take();
     // We are in a slot directly invoked from DlgTagFetcher. Delete it
     // later.
-    if (pTagFetcher != nullptr) {
+    if (pTagFetcher) {
         pTagFetcher->deleteLater();
     }
 }
@@ -1471,13 +1471,13 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     QList<TrackId> trackIds;
 
     QItemSelectionModel* pSelectionModel = selectionModel();
-    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel) {
         qWarning() << "No selected tracks available";
         return trackIds;
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         qWarning() << "No selected tracks available";
         return trackIds;
     }
@@ -1500,13 +1500,13 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
 
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
-    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel) {
         qWarning() << "No selected tracks available";
         return;
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         qWarning() << "No selected tracks available";
         return;
     }
@@ -1948,7 +1948,7 @@ void WTrackTableView::slotScaleBpm(int scale) {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->isBpmLocked()) { // bpm is not locked
             BeatsPointer beats = track->getBeats();
-            if (beats != nullptr) {
+            if (beats) {
                 beats->scale(static_cast<Beats::BPMScale>(scale));
             } else {
                 continue;

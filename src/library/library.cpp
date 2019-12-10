@@ -367,7 +367,7 @@ void Library::addFeature(LibraryFeature* feature) {
     connect(feature,
             &LibraryFeature::saveViewState,
             this,
-            &Library::slotSaveViewState);
+            &Library::saveViewState);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(
@@ -392,10 +392,6 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     emit(showTrackModel(model));
     emit(switchToView(m_sTrackViewName));
     emit(restoreSearch(trackModel->currentSearch()));
-}
-
-void Library::slotSaveViewState() {
-    emit(saveViewState());
 }
 
 void Library::slotSwitchToView(const QString& view) {
