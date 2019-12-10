@@ -406,8 +406,8 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     }
 
     while (query.next()) {
-    	int position = query.value(query.record().indexOf("position")).toInt();
-    	removeTracksFromPlaylistInner(playlistId, position);
+        int position = query.value(query.record().indexOf("position")).toInt();
+        removeTracksFromPlaylistInner(playlistId, position);
     }
 
     transaction.commit();
@@ -431,7 +431,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, TrackId trackId) {
     }
 
     while (query.next()) {
-    	int position = query.value(query.record().indexOf("position")).toInt();
+        int position = query.value(query.record().indexOf("position")).toInt();
         removeTracksFromPlaylistInner(playlistId, position);
 
     }
@@ -457,9 +457,8 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    QSqlQuery query(m_database);
-    foreach (int position , positions) {
-    	removeTracksFromPlaylistInner(playlistId, position);
+    for (const auto position : positions) {
+        removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();
     emit(changed(playlistId));
