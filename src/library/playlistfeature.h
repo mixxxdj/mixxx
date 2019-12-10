@@ -36,7 +36,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(int playlistId) override;
+    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
  protected:

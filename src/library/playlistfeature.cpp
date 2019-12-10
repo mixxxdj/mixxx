@@ -232,16 +232,17 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void PlaylistFeature::slotPlaylistContentChanged(int playlistId) {
+void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     if (!m_pPlaylistTableModel) {
         return;
     }
 
-    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        updateChildModel(playlistId);
+    for (const auto playlistId : playlistIds) {
+        enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+        if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            updateChildModel(playlistId);
+        }
     }
 }
 

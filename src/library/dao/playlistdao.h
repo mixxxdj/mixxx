@@ -91,9 +91,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // removes all hidden and purged Tracks from the playlist
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
-    void removeTrackFromPlaylist(int playlistId, TrackId trackId);
     void removeTrackFromPlaylist(int playlistId, int position);
     void removeTracksFromPlaylist(int playlistId, QList<int> positions);
+    void removeTracksFromPlaylistById(int playlistId, TrackId trackId);
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
@@ -125,14 +125,15 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void added(int playlistId);
     void deleted(int playlistId);
     void renamed(int playlistId, QString newName);
-    void changed(int playlistId);
+    void lockChanged(int playlistId);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
-    void lockChanged(int playlistId);
+    void tracksChanged(QSet<int> playlistIds); // added/removed/reordered
 
   private:
     bool removeTracksFromPlaylist(int playlistId, int startIndex);
     void removeTracksFromPlaylistInner(int playlistId, int position);
+    void removeTracksFromPlaylistByIdInner(int playlistId, TrackId trackId);
     void searchForDuplicateTrack(const int fromPosition,
                                  const int toPosition,
                                  TrackId trackID,

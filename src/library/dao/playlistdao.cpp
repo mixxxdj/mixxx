@@ -256,7 +256,7 @@ bool PlaylistDAO::removeTracksFromPlaylist(int playlistId, int startIndex) {
         return false;
     }
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
 
@@ -298,7 +298,7 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const i
         // TODO(XXX) don't emit if the track didn't add successfully.
         emit(trackAdded(playlistId, trackId, insertPosition++));
     }
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
 
@@ -411,13 +411,18 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     }
 
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 
-void PlaylistDAO::removeTrackFromPlaylist(int playlistId, TrackId trackId) {
+void PlaylistDAO::removeTracksFromPlaylistById(int playlistId, TrackId trackId) {
     ScopedTransaction transaction(m_database);
+    removeTracksFromPlaylistByIdInner(playlistId, trackId);
+    transaction.commit();
+    emit tracksChanged(QSet<int>{playlistId});
+}
 
+void PlaylistDAO::removeTracksFromPlaylistByIdInner(int playlistId, TrackId trackId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT position FROM PlaylistTracks WHERE playlist_id=:id "
                 "AND track_id=:track_id");
@@ -433,11 +438,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, TrackId trackId) {
     while (query.next()) {
         int position = query.value(query.record().indexOf("position")).toInt();
         removeTracksFromPlaylistInner(playlistId, position);
-
     }
-
-    transaction.commit();
-    emit(changed(playlistId));
 }
 
 
@@ -447,7 +448,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     ScopedTransaction transaction(m_database);
     removeTracksFromPlaylistInner(playlistId, position);
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
@@ -461,7 +462,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
@@ -549,7 +550,7 @@ bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId,
 
     m_playlistsTrackIsIn.insert(trackId, playlistId);
     emit(trackAdded(playlistId, trackId, position));
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
 
@@ -610,7 +611,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
         // TODO(XXX) The position is wrong if any track failed to insert.
         emit(trackAdded(playlistId, trackId, insertPositon++));
     }
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return tracksAdded;
 }
 
@@ -723,7 +724,7 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
         m_playlistsTrackIsIn.insert(copiedTrackId, targetPlaylistID);
         emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
     }
-    emit(changed(targetPlaylistID));
+    emit tracksChanged(QSet<int>{targetPlaylistID});
     return true;
 }
 
@@ -749,14 +750,22 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
 void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
     // copy the hash, because there is no guarantee that "it" is valid after remove
     QMultiHash<TrackId, int> playlistsTrackIsInCopy = m_playlistsTrackIsIn;
-    for (const auto& trackId: trackIds) {
+    QSet<int> playlistIds;
+
+    ScopedTransaction transaction(m_database);
+    for (const auto& trackId : trackIds) {
         for (auto it = playlistsTrackIsInCopy.constBegin();
                 it != playlistsTrackIsInCopy.constEnd(); ++it) {
             if (it.key() == trackId) {
-                removeTrackFromPlaylist(it.value(), trackId);
+                const auto playlistId = it.value();
+                removeTracksFromPlaylistByIdInner(playlistId, trackId);
+                playlistIds.insert(playlistId);
             }
         }
     }
+    transaction.commit();
+
+    emit tracksChanged(playlistIds);
 }
 
 int PlaylistDAO::tracksInPlaylist(const int playlistId) const {
@@ -829,7 +838,7 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
         qDebug() << query.lastError();
     }
 
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
@@ -993,7 +1002,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     }
 
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 bool PlaylistDAO::isTrackInPlaylist(TrackId trackId, const int playlistId) const {
