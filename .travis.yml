@@ -103,6 +103,7 @@ jobs:
         DISPLAY=:99.0
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(sysctl -n hw.ncpu)"
+        - brew install ccache
         - export PATH="/usr/local/opt/ccache/bin:$PATH"
         - cmake --version
         - ccache -s
