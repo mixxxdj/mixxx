@@ -345,8 +345,10 @@ void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
-                                             QString /* a_strName */) {
+void SetlogFeature::slotPlaylistTableRenamed(
+        int playlistId,
+        QString newName) {
+    Q_UNUSED(newName);
     if (!m_pPlaylistTableModel) {
         return;
     }

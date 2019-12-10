@@ -124,10 +124,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
+    void renamed(int playlistId, QString newName);
     void changed(int playlistId);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
-    void renamed(int playlistId, QString a_strName);
     void lockChanged(int playlistId);
 
   private:

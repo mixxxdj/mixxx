@@ -245,10 +245,10 @@ void PlaylistFeature::slotPlaylistContentChanged(int playlistId) {
     }
 }
 
-
-
-void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
-                                               QString /* a_strName */) {
+void PlaylistFeature::slotPlaylistTableRenamed(
+        int playlistId,
+        QString newName) {
+    Q_UNUSED(newName);
     if (!m_pPlaylistTableModel) {
         return;
     }
