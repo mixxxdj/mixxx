@@ -73,6 +73,10 @@ jobs:
     - name: OSX/clang/SCons build
       os: osx
       compiler: clang
+      cache:
+        directories:
+          - $HOME/Library/Caches/Homebrew
+          - /usr/local/Homebrew
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
       # Virtual X (Xvfb) is needed for analyzer waveform tests
@@ -90,11 +94,22 @@ jobs:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
         - lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)"
+      before_cache:
+        # Avoid indefinite cache growth
+        - brew cleanup
+        # Cache only .git files under "/usr/local/Homebrew" so "brew update"
+        # does not take 5min every build
+        # Source: https://discourse.brew.sh/t/best-practice-for-homebrew-on-travis-brew-update-is-5min-to-build-time/5215/12
+        - find /usr/local/Homebrew \! -regex ".+\.git.+" -delete
 
     - name: OSX/clang/CMake build
       os: osx
       compiler: clang
-      cache: ccache
+      cache:
+        ccache: true
+        directories:
+          - $HOME/Library/Caches/Homebrew
+          - /usr/local/Homebrew
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
       # Virtual X (Xvfb) is needed for analyzer waveform tests
@@ -117,6 +132,13 @@ jobs:
         # Run tests and benchmarks
         - cmake --build . --target test
         - cmake --build . --target benchmark
+      before_cache:
+        # Avoid indefinite cache growth
+        - brew cleanup
+        # Cache only .git files under "/usr/local/Homebrew" so "brew update"
+        # does not take 5min every build
+        # Source: https://discourse.brew.sh/t/best-practice-for-homebrew-on-travis-brew-update-is-5min-to-build-time/5215/12
+        - find /usr/local/Homebrew \! -regex ".+\.git.+" -delete
 
 git:
   depth: 1
