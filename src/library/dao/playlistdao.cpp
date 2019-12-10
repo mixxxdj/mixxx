@@ -243,7 +243,7 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     return false;
 }
 
-bool PlaylistDAO::removeTracksFromPlaylist(const int playlistId, const int startIndex) {
+bool PlaylistDAO::removeTracksFromPlaylist(int playlistId, int startIndex) {
     // Retain the first track if it is loaded in a deck
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -415,7 +415,7 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
 }
 
 
-void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& trackId) {
+void PlaylistDAO::removeTrackFromPlaylist(int playlistId, TrackId trackId) {
     ScopedTransaction transaction(m_database);
 
     QSqlQuery query(m_database);
@@ -441,7 +441,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& t
 }
 
 
-void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int position) {
+void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
@@ -450,7 +450,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
     emit(changed(playlistId));
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
+void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
     // get positions in reversed order
     qSort(positions.begin(), positions.end(), qGreater<int>());
 
