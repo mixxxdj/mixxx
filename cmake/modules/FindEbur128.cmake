@@ -29,7 +29,7 @@ This will define the following variables:
 ``Ebur128_LIBRARIES``
   Libraries needed to link to Ebur128.
 ``Ebur128_DEFINITIONS``
-  Compile defitions needed to use Ebur128.
+  Compile definitions needed to use Ebur128.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

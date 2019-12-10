@@ -29,7 +29,7 @@ This will define the following variables:
 ``SQLite3_LIBRARIES``
   Libraries needed to link to SQLite3.
 ``SQLite3_DEFINITIONS``
-  Compile defitions needed to use SQLite3.
+  Compile definitions needed to use SQLite3.
 
 Cache Variables
 ^^^^^^^^^^^^^^^
