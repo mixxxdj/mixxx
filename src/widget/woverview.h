@@ -151,7 +151,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
     int m_iPickupPos;
-    // position of the overlay shaddow
+    // position of the overlay shadow
     int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;

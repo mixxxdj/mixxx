@@ -1,0 +1,68 @@
+<!-- Description:
+        draws a black line to separate
+         * rate controls  | Artist/Title  (small or no spinny) 
+         * big spinny     | Artist/Title
+         
+        Conditions:
+        a) with rate_controls
+          OR
+        b) !rate controls && spinny_cover && big_spinny_coverart
+ 
+ -->
+<Template>
+  <WidgetGroup>
+    <Size>0min,0me</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <!-- rate_controls -->
+      <WidgetGroup>
+        <Size>0min,0me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- rate_controls && !big_spinny_coverart -->
+          <WidgetGroup>
+            <ObjectName>SeparatorLine</ObjectName>
+            <Size><Variable name="SeparatorSize"/>,0me</Size>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
+      <!-- !rate_controls && spinny_cover && big_spinny_coverart -->
+      <WidgetGroup>
+        <Size>0min,0me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>0min,0me</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>SeparatorLine</ObjectName>
+                <Size><Variable name="SeparatorSize"/>,0me</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

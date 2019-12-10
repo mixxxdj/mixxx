@@ -29,7 +29,7 @@ This will define the following variables:
 ``Upower_LIBRARIES``
   Libraries needed to link to Upower.
 ``Upower_DEFINITIONS``
-  Compile defitions needed to use Upower.
+  Compile definitions needed to use Upower.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

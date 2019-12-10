@@ -186,7 +186,8 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when Stars wouldn't fit -->
+                      <!-- translucent cover when Stars don't fit into transport row -->
+                      <WidgetGroup>
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <Size>16f,15f</Size>
@@ -281,7 +282,8 @@ Description:
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
+              <!-- translucent cover when Pitch slider is hidden -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <MinimumSize>182,26</MinimumSize>
@@ -386,7 +388,8 @@ Description:
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- translucent cover when Spinny/Cover is disabled -->
+              <!-- translucent cover when Spinny/Cover is disabled -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
@@ -396,7 +399,8 @@ Description:
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><!-- hint: enforced small cover/spinny with mixer -->
+              <!-- hint: enforced small cover/spinny with mixer -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>horizontal</Layout>
                 <Size>182f,17f</Size>
@@ -482,7 +486,8 @@ Description:
                 <SetVariable name="Setting">[Master],show_mixer</SetVariable>
               </Template>
 
-              <WidgetGroup><!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
+              <!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <MinimumSize>8,13</MinimumSize>
                 <MaximumSize>8,17</MaximumSize>
@@ -529,7 +534,8 @@ Description:
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+              <!-- translucent cover when Channel Mixer is hidden -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <MinimumSize>182,39</MinimumSize>
@@ -559,7 +565,8 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when EQ knobs are hidden -->
+                      <!-- translucent cover when EQ knobs are hidden -->
+                      <WidgetGroup>
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <MinimumSize>182,13</MinimumSize>
@@ -600,7 +607,8 @@ Description:
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+              <!-- translucent cover when Channel Mixer is hidden -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <MinimumSize>182,13</MinimumSize>
@@ -651,7 +659,8 @@ Description:
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                  <!-- translucent cover when Effects are invisible -->
+                  <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <Size>40f,20f</Size>
@@ -695,7 +704,8 @@ Description:
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- translucent cover when Effects are invisble -->
+              <!-- translucent cover when Effects are invisble -->
+              <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
                 <Size>182f,13me</Size>
@@ -765,7 +775,8 @@ Description:
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Samlers are hidden -->
+                  <!-- translucent cover when Samlers are hidden -->
+                  <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <MinimumSize>112,13</MinimumSize>
