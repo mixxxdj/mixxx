@@ -337,7 +337,7 @@ void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
         return;
     }
 
-    for (const auto playlistId : playlistIds) {
+    for (const auto playlistId : qAsConst(playlistIds)) {
         enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_SET_LOG ||
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist

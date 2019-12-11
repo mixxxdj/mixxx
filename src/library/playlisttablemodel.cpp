@@ -132,7 +132,9 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
+    m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(
+            m_iPlaylistId,
+            std::move(trackPositions));
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
