@@ -1408,9 +1408,9 @@ TrackId TrackDAO::getTrackIdByRef(
     }
     {
         GlobalTrackCacheLocker cacheLocker;
-        const auto track = cacheLocker.lookupTrackByRef(trackRef);
-        if (track) {
-            return track->getId();
+        const auto pTrack = cacheLocker.lookupTrackByRef(trackRef);
+        if (pTrack) {
+            return pTrack->getId();
         }
     }
     return getTrackIdByLocation(trackRef.getLocation());
@@ -1423,9 +1423,9 @@ TrackPointer TrackDAO::getTrackByRef(
     }
     {
         GlobalTrackCacheLocker cacheLocker;
-        auto track = cacheLocker.lookupTrackByRef(trackRef);
-        if (track) {
-            return track;
+        auto pTrack = cacheLocker.lookupTrackByRef(trackRef);
+        if (pTrack) {
+            return pTrack;
         }
     }
     auto trackId = trackRef.getId();
