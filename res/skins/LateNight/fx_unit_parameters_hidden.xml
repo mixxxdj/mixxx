@@ -146,7 +146,7 @@
                 <Children>
                   <Label>
                     <ObjectName>FxUnitLabel</ObjectName>
-                    <Size>30min,16min</Size>
+                    <Size>39f,16min</Size>
                     <Text>FX&#8202;<Variable name="FxUnit"/></Text>
                     <Alignment>center</Alignment>
                   </Label>
@@ -158,7 +158,7 @@
               <!-- MixMode_Collapsed + Pfl -->
               <WidgetGroup>
                 <ObjectName></ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>max,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <PushButton>

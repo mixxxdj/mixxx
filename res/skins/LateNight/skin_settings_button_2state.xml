@@ -11,7 +11,7 @@ Variables:
   <PushButton>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <Size>180min,18f</Size>
+    <Size>180min,17f</Size>
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>

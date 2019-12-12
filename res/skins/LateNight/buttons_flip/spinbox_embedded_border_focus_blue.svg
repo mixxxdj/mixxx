@@ -13,7 +13,7 @@
 		</linearGradient>
 	</defs>
 	<g fill="none">
-		<rect x=".75" y=".75" width="24.5" height="24.5" rx=".30000007" ry=".30000007" stroke="#0ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="paint-order:fill markers stroke"/>
+		<rect x=".75" y=".75" width="24.5" height="24.5" rx=".30000007" ry=".30000007" stroke="#009fb4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="paint-order:fill markers stroke"/>
 		<rect x="2.5" y="2.4999981" width="22" height="22.000002" stroke="url(#d)" stroke-linecap="square" style="paint-order:fill markers stroke"/>
 		<path d="m1.50005 24.492879v-23h22.99995v23" stroke="url(#c)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1px"/>
 	</g>

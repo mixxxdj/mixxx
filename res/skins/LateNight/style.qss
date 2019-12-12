@@ -19,8 +19,9 @@ QComboBox,
 WLibrary QHeaderView,
 QToolTip,
 #LibraryContainer QMenu,
-WCoverArtMenu,
 WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCoverArtMenu,
 WOverview /* Hotcue labels in the overview */ {
   font-family: "Open Sans";
   text-transform: uppercase;
@@ -32,8 +33,9 @@ WOverview /* Hotcue labels in the overview */ {
 WSearchLineEdit,
 QToolTip,
 #LibraryContainer QMenu,
-WCoverArtMenu,
 WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCoverArtMenu,
 WBeatSpinBox QMenu {
   font-weight: normal;
 }
@@ -45,8 +47,10 @@ WSearchLineEdit,
 WTrackProperty, WTrackText,
 QToolTip,
 #LibraryContainer QMenu,
-WCoverArtMenu,
+#LibraryContainer QMenu QCheckBox,
 WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCoverArtMenu,
 WBeatSpinBox QMenu,
 WLibrary QHeaderView {
   text-transform: none;
@@ -195,17 +199,6 @@ WOverview QLabel {
   color: #d2d2d2;
 }
 
-WSearchLineEdit,
-#CueLabelEdit,
-#LibraryBPMSpinBox,
-#LibraryBPMButton::item,
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView {
-  color: #eece33;
-  selection-color: #eece33;
-}
-
 /* yellow */
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckMini1 WLabel, #DeckMini2 WLabel,
@@ -217,20 +210,36 @@ WEffectSelector, WEffectSelector QAbstractItemView,
 #PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
 #fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
 #CategoryLabel, #SkinSettingsLabelButton,
+WSearchLineEdit,
+#LibraryBPMSpinBox,
+#LibraryBPMButton::item,
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView,
 WLibrary QLabel, WLibrary QRadioButton,
 WLibrary QTableView::indicator,
-WSearchLineEdit,
 QToolTip,
 WBeatSpinBox QMenu,
 #LibraryContainer QMenu,
-WCoverArtMenu,
+#LibraryContainer QMenu QCheckBox,
 WCueMenuPopup,
+WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
+#CueLabelEdit,
+WCoverArtMenu,
 #LatencyLabel, WTime {
   color: #f0bb2b;
-}
+  }
+  WSearchLineEdit,
+  #LibraryBPMSpinBox,
+  #LibraryBPMButton::item,
+  #LibraryContainer QTableView,
+  #LibraryContainer QTextBrowser,
+  #LibraryContainer QTreeView {
+    selection-color: #f0bb2b;
+  }
 
-/* light blue / cyan */
+/* light blue */
 #Deck3 WLabel, #Deck4 WLabel,
 #DeckMini3 WLabel, #DeckMini4 WLabel,
 #Deck3 WStarRating, #Deck4 WStarRating,
@@ -272,16 +281,6 @@ WCueMenuPopup QLabel,
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#SkinContainer,
-QToolTip,
-#CrossfaderButtonContainerDeck, #CrossfaderButtonContainerAux,
-#CrossfaderButton[value="0"],
-WEffectSelector, WEffectSelector QAbstractItemView,
-#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
-QTableView, QTextBrowser, QTreeView {
-  background-color: #0f0f0f;
-}
-
 #Deck1, #DeckMini1, #Deck2, #DeckMini2,
   #Deck3, #DeckMini3, #Deck4, #DeckMini4,
   #DeckRow_1_KeyVinylFx,
@@ -296,7 +295,10 @@ QTableView, QTextBrowser, QTreeView {
   #SamplerDeckMini, #SamplerText, #SamplerRowTwo, #SamplerPfl,
 WEffectSelector::checked, #fadeModeCombobox::checked,
 #ToolBar, #WaveformsContainer,
-WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
+WLibrary,
+#SidebarBox,
+#PreviewDeck,
+#SearchLineBox,
 QAbstractScrollArea::corner {
   background-color: #1e1e1e;
 }
@@ -1096,10 +1098,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 /* AutoDJ button icons */
 
-WCueMenuPopup {
-  padding-top: 0px;
-}
-
+/* widgets in cue popup menu */
 #CueDeleteButton {  /*
   padding: 3px 6px; */
   qproperty-icon: url(skin:/buttons_classic/btn__delete.svg);
@@ -1114,13 +1113,13 @@ WCueMenuPopup {
   border-width: 2px;
   border-image: url(skin:/buttons_classic/btn_embedded_library.svg) 2 2 2 2;
   /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px; 
+  qproperty-iconSize: 20px;
   /* has no effect
   padding: 0px; */
 }
 /*    */
 #CueLabelEdit {
-  border: 1px solid #ff6600;
+  border: 1px solid #f0bb2b;
   border-radius: 0px;
   background-color: #000;
   selection-color: #000;
@@ -1629,11 +1628,10 @@ WBeatSpinBox,
   }
 
 #SkinSettingsCategory {
-  padding: 3px 8px 10px 9px;
+  padding: 3px 10px 10px 4px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #1e1e1e;
   border-width: 0px;
-  margin-bottom: 3px;
   }
   #CategoryLabel {
     padding: 3px 0px 2px 3px;
@@ -1843,6 +1841,10 @@ WBeatSpinBox,
   padding: 0px 0px 0px 3px;
 }
 
+#SuperMixKnob {
+  margin-bottom: 1px;
+}
+
 #FxUnit1_ExpandCollapseButton,
 #FxUnit2_ExpandCollapseButton,
 #FxUnit3_ExpandCollapseButton,
@@ -1853,13 +1855,16 @@ WBeatSpinBox,
   }
 
 #FxUnitControlsCollapsed #FxUnitLabel {
-  margin: 4px 3px 6px 4px;
+  margin: 0px 3px 0px 5px;
 }
 #FxUnitControlsExpanded #FxUnitLabel {
   margin: 2px 0px;
 }
 
-#FxSlotContainer {
+#FxSlotsCollapsed #FxSlotContainer {
+  margin: 2px 1px 1px 1px;
+}
+#FxSlotsExpanded #FxSlotContainer {
   margin: 1px;
 }
 
@@ -1885,8 +1890,6 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   padding: 1px 4px 2px 4px;
 }
-
-
 
 #FxKnobContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -2047,20 +2050,26 @@ WLibrary,
   border-bottom-left-radius: 0px;
 }
 
-QTableView, QTextBrowser, QTreeView {
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView {
   border-top: 1px solid #0a0a0a;
   border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #333,
     stop:1 #444);
   border-bottom: 1px solid #444;
   border-left: 1px solid #0a0a0a;
-  alternate-background-color: #1a1a1a;
+  alternate-background-color: #0a0a0a;
   selection-background-color: #5e4507;
 }
 
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus {
   border: 1px solid #ff6600;
+}
+
+#LibraryContainer QTreeView {
+  show-decoration-selected: 0;
 }
 
 /* selected items in Tree and Tracks table */
@@ -2094,7 +2103,7 @@ QTableView, QTextBrowser, QTreeView {
   }
   #LibraryContainer QTableView::indicator:checked,
   #LibraryContainer QTableView::indicator:checked:selected {
-    image: url(skin:/buttons/btn_lib_checkmark.svg);
+    image: url(skin:/buttons_classic/btn__lib_checkmark_orange.svg);
     border: 1px solid #ff6600;
     }
     #LibraryContainer QTableView::indicator:checked:hover,
@@ -2126,13 +2135,13 @@ WLibrary QLineEdit {
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/buttons_classic/btn__lib_bpm_locked.svg);
+  image: url(skin:/buttons_classic/btn__lib_bpm_locked_orange.svg);
   border: 0px;
   margin: 0px;
   padding: 0px;
   }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/buttons_classic/btn__lib_bpm_unlocked.svg);
+  image: url(skin:/buttons_classic/btn__lib_bpm_unlocked_grey.svg);
   border: 0px;
   margin: 0px;
   padding: 0px;
@@ -2177,7 +2186,7 @@ WLibrary QLineEdit {
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
-    image: url(skin:/buttons_classic/btn__lib_preview_play.svg);
+    image: url(skin:/buttons_classic/btn__lib_preview_play_grey.svg);
     }
     #LibraryPreviewButton:!checked:hover {
       border: 1px solid #5e4507;
@@ -2217,7 +2226,7 @@ WLibrary QLineEdit {
       stop:0 rgba(34,34,34,190),
       stop:1 rgba(17,17,17,190));
     }
-    QHeaderView::up-arrow {
+    #LibraryContainer QHeaderView::up-arrow {
       image: url(skin:/buttons_classic/btn__lib_sort_up.png);
       }
     #LibraryContainer QHeaderView::down-arrow {
@@ -2418,40 +2427,42 @@ WLibrary QRadioButton::indicator:unchecked {
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;
 }
-  /* triangle for closed/opened branches in treeview */
-  /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
-  #LibraryContainer QTreeView::branch:has-children:!has-siblings:closed,
-  #LibraryContainer QTreeView::branch:closed:has-children:has-siblings {
-    border-image: none;
-    image: url(skin:/style_classic/library_branch_closed.png);
+/* triangle for closed/opened branches in treeview */
+/* closed */
+#LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:!selected,
+#LibraryContainer QTreeView::branch:closed:has-children:has-siblings:!selected {
+/*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+  border-image: none;
+    image: url(skin:/style_classic/library_branch_closed_grey.png);
   }
-  #LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
-  #LibraryContainer QTreeView::branch:open:has-children:has-siblings {
-    border-image: none;
-    image: url(skin:/style_classic/library_branch_open.png);
-  }
-  /* closed branch * selected item */
-  #LibraryContainer QTreeView::branch:has-children:!has-siblings:closed:selected,
+  /* closed, selected */
+  #LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:selected,
   #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/style_classic/library_branch_closed_selected.png);
+    image: url(skin:/style_classic/library_branch_closed_selected_white.png);
     background-color: #5e4507;
   }
-  /* open branch * selected item */
+/* open */
+#LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
+#LibraryContainer QTreeView::branch:open:has-children:has-siblings {
+  border-image: none;
+  image: url(skin:/style_classic/library_branch_open_grey.png);
+  }
+  /* open, selected */
   #LibraryContainer QTreeView::branch:open:has-children:!has-siblings:selected,
   #LibraryContainer QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/style_classic/library_branch_open_selected.png);
+    image: url(skin:/style_classic/library_branch_open_selected_white.png);
     background-color: #5e4507;
     }
-    /* space left of selected child item */
-    #LibraryContainer QTreeView::branch:!has-children:!has-siblings:closed:selected,
-    #LibraryContainer QTreeView::branch:closed:!has-children:has-siblings:selected,
-    #LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
-    #LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
-      border-image: none;
-      background-color: #151515;
-    }
+  /* space left of selected child item */
+  #LibraryContainer QTreeView::branch:closed:!has-children:!has-siblings:selected,
+  #LibraryContainer QTreeView::branch:closed:!has-children:has-siblings:selected,
+  #LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
+  #LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
+    border-image: none;
+    background-color: #151515;
+  }
 /************** Library *******************************************************/
 
 
@@ -2463,30 +2474,40 @@ WEffectSelector QAbstractItemView,
 QToolTip,
 WBeatSpinBox QMenu,
 #LibraryContainer QMenu,
-WCoverArtMenu,
 WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCoverArtMenu,
 #SkinSettings {
   padding: 3px;
   border: 1px solid #888;
   border-radius: 2px;
 }
 
+#SkinContainer,
+#CrossfaderButtonContainerDeck,
+#CrossfaderButtonContainerAux,
+#CrossfaderButton[value="0"],
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView,
 QToolTip,
 WBeatSpinBox QMenu,
-#LibraryContainer QMenu,
-WCoverArtMenu,
-WCueMenuPopup,
+  WCueMenuPopup,
+  #LibraryContainer QMenu,
+  WCueMenuPopup QMenu,
+  WCoverArtMenu,
 WBeatSpinBox QMenu::item,
-#LibraryContainer QMenu::item,
-WCoverArtMenu::item,
-WCueMenuPopup QLabel,
+  #LibraryContainer QMenu::item,
+  WCueMenuPopup QMenu::item,
+  WCueMenuPopup QLabel,
+  WCoverArtMenu::item,
 #LibraryContainer QMenu QCheckBox,
 WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
 WSearchLineEdit,
-WEffectSelector, WEffectSelector QAbstractItemView,
-#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
+WEffectSelector, WEffectSelector::item,
+#fadeModeCombobox, #fadeModeCombobox::item {
   background-color: #0f0f0f;
 }
 WBeatSpinBox,
@@ -2502,6 +2523,7 @@ WEffectSelector, WEffectSelector QAbstractItemView,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
   #LibraryContainer QMenu::item:selected,
+  WCueMenuPopup QMenu::item:selected,
   WCoverArtMenu::item:selected,
   #LibraryContainer QMenu QCheckBox:selected,
   #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
@@ -2561,7 +2583,7 @@ WEffectSelector,
     /* checkbox container is 28 x 22px;
       use margin + border to create a square checkbox sized like kill buttons */ 
     margin: 2px;
-    image: url(skin:/buttons_classic/btn__lib_checkmark.svg);
+    image: url(skin:/buttons_classic/btn__lib_checkmark_orange.svg);
   }
   WEffectSelector::checked, /* selected item */
   WEffectSelector::indicator, /* checkbox, tick mark */
@@ -2573,6 +2595,7 @@ WEffectSelector,
   #fadeModeCombobox::indicator:!checked,
   WBeatSpinBox QMenu::item,
   #LibraryContainer QMenu::item,
+  WCueMenuPopup QMenu::item,
   WCoverArtMenu::item,
   #LibraryContainer QMenu QCheckBox {
       padding: 0px;
@@ -2583,12 +2606,14 @@ WEffectSelector,
     }
   WBeatSpinBox QMenu::separator,
   #LibraryContainer QMenu::separator,
+  WCueMenuPopup QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #222;
     }
     WBeatSpinBox QMenu::separator,
-    #LibraryContainer QMenu::separator {
+    #LibraryContainer QMenu::separator,
+    WCueMenuPopup QMenu::separator {
         height: 0px;
         margin: 4px;
       }
@@ -2597,65 +2622,75 @@ WEffectSelector,
     }
   WBeatSpinBox QMenu::item,
   #LibraryContainer QMenu::item,
+  WCueMenuPopup QMenu::item,
   WCoverArtMenu::item {
-    /* right padding creates a margin to the menu expand arrow,
-      left padding should be bigger than menu icon width + menu icon
-      margin */
+  /* Right padding creates a margin to the menu expand arrow.
+    Left padding should be bigger than menu icon width + menu icon
+    left/right margin */
     padding: 5px 12px 5px 26px;
   }
-  /* icons in editline menu (searchbox, editable track properties) */ 
+  /* Icons in QLineEdit menus:
+   beatsize spinbox, searchbox, editable track properties */ 
   WBeatSpinBox QMenu::icon,
   #LibraryContainer QMenu::icon,
+  WCueMenuPopup QMenu::icon,
+  /* checkbox in Crate name context menu:
+    "[ ] Auto DJ Track Source"  */
   #LibraryContainer QMenu::indicator {
-      margin: 0px 4px 0px 2px;
+    margin: 0px 4px 0px 5px;
     }
+  /* items in Crate sub menu */
   #LibraryContainer QMenu QCheckBox {
-      padding: 2px 10px 2px 3px;
+    padding: 3px 10px 3px 5px;
     }
   #LibraryContainer QMenu QCheckBox::indicator,
-  #LibraryContainer QMenu::indicator {
-      width: 13px;
-      height: 13px;
-      border: 1px solid #333;
-      border-radius: 1px;
-      background-color: #000;
-      /* remove OS focus indicator */
-      outline: none;
+  #LibraryContainer QMenu::indicator,
+  WCueMenuPopup QMenu::indicator {
+    width: 13px;
+    height: 13px;
+    border: 1px solid #333;
+    border-radius: 1px;
+    background-color: #000;
+    /* remove OS focus indicator */
+    outline: none;
     }
   #LibraryContainer QMenu QCheckBox::indicator:checked,
-  #LibraryContainer QMenu::indicator:checked {
-      image: url(skin:/buttons_classic/btn__lib_checkmark.svg);
+  #LibraryContainer QMenu::indicator:checked,
+  WCueMenuPopup QMenu::indicator:checked {
+    image: url(skin:/buttons_classic/btn__lib_checkmark_orange.svg);
     }
   /* disabled menu item and checkbox */
   #LibraryContainer QMenu QCheckBox:!enabled,
   #LibraryContainer QMenu::item:!enabled,
-    WCoverArtMenu::item:!enabled,
+  WCueMenuPopup QMenu::item:!enabled,
+  WCoverArtMenu::item:!enabled,
   #LibraryContainer QMenu QCheckBox::indicator:!enabled {
-      color: #494949;
+    color: #494949;
     }
   #LibraryContainer QMenu QCheckBox::indicator:!enabled:!checked,
-  #LibraryContainer QMenu::indicator:!enabled:!checked {
-      border: 1px solid #222;
-      background-color: #222;
+  #LibraryContainer QMenu::indicator:!enabled:!checked,
+  WCueMenuPopup QMenu::indicator:!enabled:!checked {
+    border: 1px solid #222;
+    background-color: #222;
     }
   #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked {
-      image: url(skin:/buttons_classic/btn__lib_checkmark_grey.svg);
-      border: 1px solid #222;
-      background-color: #222;
+    image: url(skin:/buttons_classic/btn__lib_checkmark_grey.svg);
+    border: 1px solid #222;
+    background-color: #222;
     }
   #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
   #LibraryContainer QCheckBox::indicator:indeterminate:!enabled {
-      image: url(skin:/buttons_classic/btn__lib_checkmark_grey.svg);
-    }
+    image: url(skin:/buttons_classic/btn__lib_checkmark_grey.svg);
+  }
 
   #LibraryContainer QMenu::right-arrow {
-      width: 10px;
-      height: 10px;
-      image: url(skin:/style_classic/menu_arrow.svg);
+    width: 10px;
+    height: 10px;
+    image: url(skin:/style_classic/menu_arrow.svg);
     }
   #LibraryContainer QMenu::right-arrow:selected {
-        image: url(skin:/style_classic/menu_arrow_selected.svg);
-      }
+    image: url(skin:/style_classic/menu_arrow_white.svg);
+  }
 
   #LibraryContainer QHeaderView QMenu::indicator {
     width: 10px;
@@ -2665,7 +2700,7 @@ WEffectSelector,
     background: none;
     }
     #LibraryContainer QHeaderView QMenu::indicator:checked {
-      image: url(skin:/buttons_classic/btn__lib_checkmark.svg);
+      image: url(skin:/buttons_classic/btn__lib_checkmark_orange.svg);
     }
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
