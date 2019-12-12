@@ -2023,7 +2023,6 @@ TrackPointer TrackDAO::getOrAddTrack(
 
     DEBUG_ASSERT(trackRef.hasLocation());
     addTracksPrepare();
-    const auto trackLocation = trackRef.getLocation();
     const auto pTrack = addTracksAddFile(trackRef.getLocation(), true);
     addTracksFinish(!pTrack);
     if (!pTrack) {
