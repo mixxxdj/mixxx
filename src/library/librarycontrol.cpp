@@ -357,7 +357,7 @@ void LibraryControl::slotAutoDjAddTop(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJTop();
+        activeView->slotAddToAutoDJTop();
     }
 }
 
@@ -370,7 +370,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJBottom();
+        activeView->slotAddToAutoDJBottom();
     }
 }
 

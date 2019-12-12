@@ -109,16 +109,16 @@ void DlgRecording::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgRecording::slotSendToAutoDJBottom() {
-    m_pTrackTableView->slotSendToAutoDJBottom();
+void DlgRecording::slotAddToAutoDJBottom() {
+    m_pTrackTableView->slotAddToAutoDJBottom();
 }
 
-void DlgRecording::slotSendToAutoDJTop() {
-    m_pTrackTableView->slotSendToAutoDJTop();
+void DlgRecording::slotAddToAutoDJTop() {
+    m_pTrackTableView->slotAddToAutoDJTop();
 }
 
-void DlgRecording::slotSendToAutoDJReplace() {
-    m_pTrackTableView->slotSendToAutoDJReplace();
+void DlgRecording::slotAddToAutoDJReplace() {
+    m_pTrackTableView->slotAddToAutoDJReplace();
 }
 
 void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {

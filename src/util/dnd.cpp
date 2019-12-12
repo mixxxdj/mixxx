@@ -55,6 +55,45 @@ bool addFileToList(
     return true;
 }
 
+QList<QFileInfo> dropEventFiles(
+        const QMimeData& mimeData,
+        const QString& sourceIdentifier,
+        bool firstOnly,
+        bool acceptPlaylists) {
+    qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
+    qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+
+    if (!mimeData.hasUrls() ||
+            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+        return QList<QFileInfo>();
+    }
+
+    return DragAndDropHelper::supportedTracksFromUrls(
+            mimeData.urls(),
+            firstOnly,
+            acceptPlaylists);
+}
+
+// Allow loading to a player if the player isn't playing
+// or the settings allow interrupting a playing player.
+bool allowLoadToPlayer(
+        const QString& group,
+        UserSettingsPointer pConfig) {
+    // Always allow loads to preview decks
+    if (PlayerManager::isPreviewDeckGroup(group)) {
+        return true;
+    }
+
+    // Allow if deck is not playing
+    if (ControlObject::get(ConfigKey(group, "play")) <= 0.0) {
+        return true;
+    }
+
+    return pConfig->getValueString(
+            ConfigKey("[Controls]",
+            "AllowTrackLoadToPlayingDeck")).toInt();
+}
+
 } // anonymous namespace
 
 //static
@@ -110,28 +149,6 @@ QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
 }
 
 //static
-bool DragAndDropHelper::allowLoadToPlayer(
-        const QString& group,
-        UserSettingsPointer pConfig) {
-    return allowLoadToPlayer(
-            group, ControlObject::get(ConfigKey(group, "play")) > 0.0, pConfig);
-}
-
-//static
-bool DragAndDropHelper::allowLoadToPlayer(
-        const QString& group,
-        bool isPlaying,
-        UserSettingsPointer pConfig) {
-    // Always allow loads to preview decks.
-    if (PlayerManager::isPreviewDeckGroup(group)) {
-        return true;
-    }
-
-    return !isPlaying ||
-            pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
-}
-
-//static
 bool DragAndDropHelper::allowDeckCloneAttempt(
         const QDropEvent& event,
         const QString& group) {
@@ -164,25 +181,6 @@ bool DragAndDropHelper::dragEnterAccept(
         bool acceptPlaylists) {
     QList<QFileInfo> files = dropEventFiles(mimeData, sourceIdentifier, firstOnly, acceptPlaylists);
     return !files.isEmpty();
-}
-
-//static
-QList<QFileInfo> DragAndDropHelper::dropEventFiles(
-        const QMimeData& mimeData,
-        const QString& sourceIdentifier,
-        bool firstOnly,
-        bool acceptPlaylists) {
-    qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
-    qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
-
-    if (!mimeData.hasUrls() ||
-            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
-        return QList<QFileInfo>();
-    }
-
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-            mimeData.urls(), firstOnly, acceptPlaylists);
-    return files;
 }
 
 //static
