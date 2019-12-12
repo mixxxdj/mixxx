@@ -116,7 +116,10 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
     }
 
     QSqlQuery query(m_database);
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location = track_locations.id WHERE track_locations.location=:location");
+    query.prepare(
+            "SELECT library.id FROM library "
+            "INNER JOIN track_locations ON library.location = track_locations.id "
+            "WHERE track_locations.location=:location");
     query.bindValue(":location", location);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -205,7 +208,11 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         }
         DEBUG_ASSERT(trackIds.size() <= trackFiles.size());
         if (trackIds.size() < trackFiles.size()) {
-            qDebug() << "TrackDAO::getTrackIds(): Found only" << trackIds.size() << "of" << trackFiles.size() << "tracks in library";
+            qDebug() << "TrackDAO::getTrackIds(): Found only"
+                    << trackIds.size()
+                    << "of"
+                    << trackFiles.size()
+                    << "tracks in library";
         }
     } else {
         LOG_FAILED_QUERY(query);
