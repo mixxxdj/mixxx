@@ -89,7 +89,10 @@ jobs:
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
       - echo "QTDIR=$QTDIR"
       install:
-        - scons -j "$(sysctl -n hw.ncpu)"
+        # We are hardcoding 4 threads here since "$(sysctl -n hw.ncpu)" only
+        # returns 2 and makes the travis job run into a timeout:
+        # https://docs.travis-ci.com/user/reference/overview/#virtualization-environments
+        - scons -j4
       script:
         # lldb doesn't provide an easy way to exit 1 on error:
         # https://bugs.llvm.org/show_bug.cgi?id=27326
@@ -116,8 +119,8 @@ jobs:
       env: >-
         CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
         DISPLAY=:99.0
+        CMAKE_BUILD_PARALLEL_LEVEL=4
       before_install:
-        - export CMAKE_BUILD_PARALLEL_LEVEL="$(sysctl -n hw.ncpu)"
         - brew install ccache
         - export PATH="/usr/local/opt/ccache/bin:$PATH"
         - cmake --version
