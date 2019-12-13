@@ -275,32 +275,29 @@ TraktorS2MK3.syncHandler = function (field) {
         // Light LED while pressed
         TraktorS2MK3.outputHandler(field.value, field.group, "sync_enabled");
     } else {
-        script.toggleControl(field.group, "beatsync");
-
         if (field.value) {
-            // Start timer to measure how long button is pressed
-            TraktorS2MK3.syncPressedTimer[field.group] = engine.beginTimer(300, function () {
-                // Reset sync button timer state if active
-                if (TraktorS2MK3.syncPressedTimer[field.group] !== 0) {
-                    TraktorS2MK3.syncPressedTimer[field.group] = 0;
-                }
-            }, true);
+            if (engine.getValue(field.group, 'sync_enabled') === 0) {
+                script.triggerControl(field.group, "beatsync");
+                // Start timer to measure how long button is pressed
+                TraktorS2MK3.syncPressedTimer[field.group] = engine.beginTimer(300, function () {
+                    engine.setValue(field.group, "sync_enabled", 1);
+                    // Reset sync button timer state if active
+                    if (TraktorS2MK3.syncPressedTimer[field.group] !== 0) {
+                        TraktorS2MK3.syncPressedTimer[field.group] = 0;
+                    }
+                }, true);
 
-            // Light corresponding LED when button is pressed
-            TraktorS2MK3.outputHandler(1, field.group, "sync_enabled");
-        } else {
-            if (engine.getValue(field.group, "sync_enabled")) {
+                // Light corresponding LED when button is pressed
+                TraktorS2MK3.outputHandler(1, field.group, "sync_enabled");
+            } else {
                 // Deactivate sync lock
                 engine.setValue(field.group, "sync_enabled", 0);
-            } else {
-                // Button is released, check if timer already expired
-                if (TraktorS2MK3.syncPressedTimer[field.group] === 0) {
-                    // Timer expired -> long press -> enable sync lock
-                    engine.setValue(field.group, "sync_enabled", 1);
-                } else {
-                    // Timer still running -> just unlight LED
-                    TraktorS2MK3.outputHandler(0, field.group, "sync_enabled");
-                }
+            }
+        } else {
+            if (TraktorS2MK3.syncPressedTimer[field.group] !== 0) {
+                // Timer still running -> stop it and unlight LED
+                engine.stopTimer(TraktorS2MK3.syncPressedTimer[field.group]);
+                TraktorS2MK3.outputHandler(0, field.group, "sync_enabled");
             }
         }
     }
