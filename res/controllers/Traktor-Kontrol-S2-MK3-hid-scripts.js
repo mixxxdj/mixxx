@@ -151,12 +151,12 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[ChannelX]", "!fx3", 0x03, 0x40, this.fxHandler);
     this.registerInputButton(messageShort, "[ChannelX]", "!fx4", 0x03, 0x80, this.fxHandler);
 
-    // Rev / FLX / GRID
+    // Rev / FLUX / GRID
     this.registerInputButton(messageShort, "[Channel1]", "!reverse", 0x01, 0x01, this.reverseHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!reverse", 0x04, 0x04, this.reverseHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!flx", 0x01, 0x02, this.fluxHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!flx", 0x04, 0x08, this.fluxHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!slip_enabled", 0x01, 0x02, this.fluxHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!slip_enabled", 0x04, 0x08, this.fluxHandler);
 
     this.registerInputButton(messageShort, "[Channel1]", "!grid", 0x01, 0x10, this.beatgridHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!grid", 0x04, 0x40, this.beatgridHandler);
@@ -623,9 +623,7 @@ TraktorS2MK3.fluxHandler = function (field) {
         return;
     }
 
-    var slip = engine.getValue(field.group, "slip_enabled");
-    engine.setValue(field.group, "slip_enabled", !slip);
-    TraktorS2MK3.outputHandler(!slip, field.group, "flx");
+    script.toggleControl(field.group, "slip_enabled");
 };
 
 TraktorS2MK3.beatgridHandler = function (field) {
@@ -705,8 +703,8 @@ TraktorS2MK3.registerOutputPackets = function () {
     output.addOutput("[Channel1]", "reverse", 0x01, "B");
     output.addOutput("[Channel2]", "reverse", 0x28, "B");
 
-    output.addOutput("[Channel1]", "flx", 0x02, "B");
-    output.addOutput("[Channel2]", "flx", 0x29, "B");
+    output.addOutput("[Channel1]", "slip_enabled", 0x02, "B");
+    output.addOutput("[Channel2]", "slip_enabled", 0x29, "B");
 
     output.addOutput("[Channel1]", "addTrack", 0x03, "B");
     output.addOutput("[Channel2]", "addTrack", 0x2A, "B");
@@ -741,6 +739,9 @@ TraktorS2MK3.registerOutputPackets = function () {
 
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
     this.linkOutput("[Channel2]", "pfl", this.outputHandler);
+
+    this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler);
+    this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler);
 
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
@@ -915,9 +916,9 @@ TraktorS2MK3.lightDeck = function (switchOff) {
     TraktorS2MK3.controller.setOutput("[Channel2]", "reverse", softLight, false);
 
     current = (!!engine.getValue("[Channel1]", "slip_enabled")) ? fullLight : softLight;
-    TraktorS2MK3.controller.setOutput("[Channel1]", "flx", current, false);
+    TraktorS2MK3.controller.setOutput("[Channel1]", "slip_enabled", current, false);
     current = (!!engine.getValue("[Channel2]", "slip_enabled")) ? fullLight : softLight;
-    TraktorS2MK3.controller.setOutput("[Channel2]", "flx", current, false);
+    TraktorS2MK3.controller.setOutput("[Channel2]", "slip_enabled", current, false);
 
     TraktorS2MK3.controller.setOutput("[Channel1]", "addTrack", softLight, false);
     TraktorS2MK3.controller.setOutput("[Channel2]", "addTrack", softLight, false);
