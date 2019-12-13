@@ -168,10 +168,12 @@
   <Schemes>
     <Scheme>
       <Name>Classic</Name>
+      <SetVariable name="color_scheme">classic</SetVariable>
       <Filters/>
     </Scheme>
     <Scheme>
       <Name>Dark</Name>
+      <SetVariable name="color_scheme">dark</SetVariable>
       <Filters>
         <HSVTweak>
           <HConst>75</HConst>
@@ -186,6 +188,7 @@
     </Scheme>
     <Scheme>
       <Name>Summer Sunset</Name>
+      <SetVariable name="color_scheme">summersunset</SetVariable>
       <Filters>
         <HSVTweak>
           <SMin>100</SMin>
