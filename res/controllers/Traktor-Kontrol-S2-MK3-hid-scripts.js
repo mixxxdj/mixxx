@@ -424,7 +424,7 @@ TraktorS2MK3.selectLoopHandler = function (field) {
     } else {
         script.triggerControl(field.group, "loop_double");
     }
-    
+
     TraktorS2MK3.loopKnobEncoderState[field.group] = field.value;
 };
 
@@ -819,6 +819,7 @@ TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
                 // Green light on play
                 TraktorS2MK3.outputHandler(0x9E, deck, "pad_" + num);
             } else {
+                // Reset LED to full white light
                 TraktorS2MK3.outputHandler(1, deck, "pad_" + num);
             }
         } else if (key === "track_loaded") {
