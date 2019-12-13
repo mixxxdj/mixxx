@@ -298,3 +298,7 @@ void WSearchLineEdit::updateText(const QString& text) {
 void WSearchLineEdit::setShortcutFocus() {
     setFocus(Qt::ShortcutFocusReason);
 }
+
+void WSearchLineEdit::slotSetFont(const QFont& font) {
+    setFont(font);
+}
