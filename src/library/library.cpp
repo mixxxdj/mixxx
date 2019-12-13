@@ -224,6 +224,18 @@ void Library::stopPendingTasks() {
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::search,
+            this,
+            &Library::search);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::disableSearch,
+            this,
+            &Library::disableSearch);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::restoreSearch,
+            this,
+            &Library::restoreSearch);
     connect(this,
             &Library::setTrackTableFont,
             pSearchboxWidget,

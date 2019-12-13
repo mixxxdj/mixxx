@@ -66,7 +66,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_clearButton->hide();
-    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clearSearch()));
+    connect(m_clearButton,
+            SIGNAL(clicked()),
+            this,
+            SLOT(clearSearch()));
 
     setFocusPolicy(Qt::ClickFocus);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
@@ -75,12 +78,19 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
-    connect(&m_debouncingTimer, SIGNAL(timeout()), this, SLOT(triggerSearch()));
-
-    connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateText(const QString&)));
+    connect(&m_debouncingTimer,
+            SIGNAL(timeout()),
+            this,
+            SLOT(triggerSearch()));
+    connect(this,
+            SIGNAL(textChanged(const QString&)),
+            this, SLOT(updateText(const QString&)));
 
     // When you hit enter, it will trigger the search.
-    connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
+    connect(this,
+            SIGNAL(returnPressed()),
+            this,
+            SLOT(triggerSearch()));
 
     // The width of the frame for the widget based on the styling.
     const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
