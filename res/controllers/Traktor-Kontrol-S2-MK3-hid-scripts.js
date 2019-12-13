@@ -466,10 +466,6 @@ TraktorS2MK3.selectBeatjumpHandler = function (field) {
 };
 
 TraktorS2MK3.activateBeatjumpHandler = function (field) {
-    if (field.value === 0) {
-        return;
-    }
-
     if (TraktorS2MK3.shiftPressed[field.group]) {
         engine.setValue(field.group, "reloop_andstop", field.value);
     } else {
