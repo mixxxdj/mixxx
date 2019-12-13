@@ -127,8 +127,11 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x07, 0x04, this.activateLoopHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x07, 0x20, this.activateLoopHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!beatjump", 0x09, 0xF0, this.beatjumpHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!beatjump", 0x0B, 0x0F, this.beatjumpHandler);
+    // Beatjump
+    this.registerInputButton(messageShort, "[Channel1]", "!SelectBeatjump", 0x09, 0xF0, this.selectBeatjumpHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!SelectBeatjump", 0x0B, 0x0F, this.selectBeatjumpHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x07, 0x02, this.activateBeatjumpHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x07, 0x10, this.activateBeatjumpHandler);
 
     // There is only one button on the controller, we use to toggle quantization for all channels
     this.registerInputButton(messageShort, "[ChannelX]", "!quantize", 0x06, 0x40, this.quantizeHandler);
@@ -291,6 +294,7 @@ TraktorS2MK3.syncHandler = function (field) {
                 TraktorS2MK3.outputHandler(1, field.group, "sync_enabled");
             } else {
                 // Deactivate sync lock
+                // LED is turned off by the callback handler for sync_enabled
                 engine.setValue(field.group, "sync_enabled", 0);
             }
         } else {
@@ -431,13 +435,13 @@ TraktorS2MK3.activateLoopHandler = function (field) {
     }
 
     if (TraktorS2MK3.shiftPressed[field.group]) {
-        engine.setValue(field.group, "reloop_andstop", field.value);
-    } else {
         engine.setValue(field.group, "reloop_toggle", field.value);
+    } else {
+        engine.setValue(field.group, "beatloop_activate", field.value);
     }
 };
 
-TraktorS2MK3.beatjumpHandler = function (field) {
+TraktorS2MK3.selectBeatjumpHandler = function (field) {
     var delta = 1;
     if ((field.value + 1) % 16 === TraktorS2MK3.moveKnobEncoderState[field.group]) {
         delta = -1;
@@ -459,6 +463,18 @@ TraktorS2MK3.beatjumpHandler = function (field) {
     }
 
     TraktorS2MK3.moveKnobEncoderState[field.group] = field.value;
+};
+
+TraktorS2MK3.activateBeatjumpHandler = function (field) {
+    if (field.value === 0) {
+        return;
+    }
+
+    if (TraktorS2MK3.shiftPressed[field.group]) {
+        engine.setValue(field.group, "reloop_andstop", field.value);
+    } else {
+        engine.setValue(field.group, "beatlooproll_activate", field.value);
+    }
 };
 
 TraktorS2MK3.quantizeHandler = function (field) {
