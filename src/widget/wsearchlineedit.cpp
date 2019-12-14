@@ -9,6 +9,7 @@
 #include "skin/skincontext.h"
 
 #include "util/assert.h"
+#include "util/debug.h"
 #include "util/logger.h"
 
 namespace {
@@ -63,6 +64,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     setAcceptDrops(false);
 
     m_clearButton->setCursor(Qt::ArrowCursor);
+    // ToDO Make second part of tooltip also show up
     m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_clearButton->hide();
@@ -94,9 +96,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     // The width of the frame for the widget based on the styling.
     const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    QSize clearButtonSize = m_clearButton->sizeHint();
     // Ensures the text does not obscure the clear image.
     setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
-                          .arg(m_clearButton->sizeHint().width() + frameWidth + 1));
+                          .arg(clearButtonSize.width() + frameWidth + 1));
+    kLogger.debug()
+            << "Clear button size:"
+            << clearButtonSize;
 
     showPlaceholder();
 }
@@ -156,14 +162,29 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
-    QSize sz = m_clearButton->sizeHint();
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    int height = (rect().bottom() + 1 - sz.height()) / 2;
-    if (layoutDirection() == Qt::LeftToRight) {
-        m_clearButton->move(rect().right() - frameWidth - sz.width() - 1, height);
-    } else {
-        m_clearButton->move(frameWidth + 1, height);
+    // ToDo This just reads some default Qt frame width. For me it yileds '2'
+    // int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    // How to read the widget's actual custom qss values like margin, border etc.?
+    // For now, assume the qss border is at least 1px wide
+    int frameWidth = 1;
+    int innerHeight = this->height() - 2 * frameWidth;
+    // Test if this is a vertical resize due to changed library font.
+    // Assuming current button height is innerHeight from last resize
+    // we will resize the Clear button icon only if height has changes.
+    if (m_clearButton->size().height() != innerHeight) {
+        QSize newSize = QSize(innerHeight, innerHeight);
+        m_clearButton->resize(innerHeight, innerHeight);
+        m_clearButton->setIconSize(newSize);
     }
+    int top = rect().top() + frameWidth;
+    if (layoutDirection() == Qt::LeftToRight) {
+        m_clearButton->move(rect().right() - innerHeight - frameWidth, top);
+    } else {
+        m_clearButton->move(frameWidth, top);
+    }
+    // Reassure the text won't be drawn behind the Clear button icon
+    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
+                          .arg(innerHeight + frameWidth));
 }
 
 QString WSearchLineEdit::getSearchText() const {
@@ -309,6 +330,7 @@ void WSearchLineEdit::setShortcutFocus() {
     setFocus(Qt::ShortcutFocusReason);
 }
 
+// Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
     setFont(font);
 }
