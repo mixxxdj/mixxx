@@ -23,7 +23,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
             UserSettingsPointer pConfig,
             Library* pLibrary,
             AutoDJProcessor* pProcessor,
-            TrackCollection* pTrackCollection,
             KeyboardEventFilter* pKeyboard,
             bool showButtonText);
     ~DlgAutoDJ() override;
@@ -58,11 +57,13 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
             void (DlgAutoDJ::*pSlot)(bool),
             QString fallbackText);
 
-    AutoDJProcessor* m_pAutoDJProcessor;
-    WTrackTableView* m_pTrackTableView;
+    const UserSettingsPointer m_pConfig;
+
+    AutoDJProcessor* const m_pAutoDJProcessor;
+    WTrackTableView* const m_pTrackTableView;
+    const bool m_bShowButtonText;
+
     PlaylistTableModel* m_pAutoDJTableModel;
-    UserSettingsPointer m_pConfig;
-    bool m_bShowButtonText;
 };
 
 #endif //DLGAUTODJ_H

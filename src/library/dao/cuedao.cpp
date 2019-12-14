@@ -59,7 +59,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QRgb colorValue = record.value(record.indexOf("color")).toUInt();
     QColor color = QColor::fromRgba(colorValue);
     bool colorIsDefault = false;
-    if (!color.isValid() || colorValue == Cue::kDefaultDbColorValue) {
+    if (!color.isValid() || !colorValue || colorValue == Cue::kDefaultDbColorValue) {
         colorIsDefault = true;
         color = m_colorPaletteSettings.getDefaultColor(hotcue);
     }

@@ -29,7 +29,7 @@ This will define the following variables:
 ``MAD_LIBRARIES``
   Libraries needed to link to MAD.
 ``MAD_DEFINITIONS``
-  Compile defitions needed to use MAD.
+  Compile definitions needed to use MAD.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

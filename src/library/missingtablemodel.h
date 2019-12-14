@@ -9,12 +9,10 @@
 #include "trackmodel.h"
 #include "library/basesqltablemodel.h"
 
-class Library;
-
 class MissingTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    MissingTableModel(QObject* parent, Library* pLibrary);
+    MissingTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~MissingTableModel() final;
 
     void setTableModel(int id = -1);
@@ -23,9 +21,6 @@ class MissingTableModel : public BaseSqlTableModel {
     void purgeTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
-
-  private:
-    Library* m_pLibrary;
 };
 
 #endif

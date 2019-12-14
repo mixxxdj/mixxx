@@ -309,6 +309,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/errordialoghandler.cpp
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp
+  src/library/trackloader.cpp
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
@@ -401,6 +402,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/starrating.cpp
   src/library/tableitemdelegate.cpp
   src/library/trackcollection.cpp
+  src/library/trackcollectionmanager.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
@@ -618,19 +620,19 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/widgets/rgbwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
-  src/widget/colormenu.cpp
   src/widget/controlwidgetconnection.cpp
-  src/widget/cuemenu.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
+  src/widget/wcolorpicker.cpp
   src/widget/wcombobox.cpp
   src/widget/wcoverart.cpp
   src/widget/wcoverartlabel.cpp
   src/widget/wcoverartmenu.cpp
+  src/widget/wcuemenupopup.cpp
   src/widget/wdisplay.cpp
   src/widget/weffect.cpp
   src/widget/weffectbuttonparameter.cpp

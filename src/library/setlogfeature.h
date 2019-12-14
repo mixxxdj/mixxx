@@ -11,15 +11,11 @@
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
-class TrackCollection;
-class TreeItem;
-class WLibrarySidebar;
-
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
 public:
-    SetlogFeature(QObject* parent, UserSettingsPointer pConfig,
-                  TrackCollection* pTrackCollection);
+    SetlogFeature(Library* pLibrary,
+                  UserSettingsPointer pConfig);
     virtual ~SetlogFeature();
 
     QVariant title() override;
@@ -55,7 +51,7 @@ public:
     int m_playlistId;
     WLibrary* m_libraryWidget;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
-    QIcon m_icon;
+    const QIcon m_icon;
 };
 
 #endif // SETLOGFEATURE_H

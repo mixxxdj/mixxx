@@ -18,6 +18,7 @@
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"
@@ -889,9 +890,9 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 } // anonymous namespace
 
 RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
-        TrackCollection* trackCollection,
+        TrackCollectionManager* trackCollectionManager,
         QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, trackCollection, "mixxx.db.model.rekordbox.playlistmodel", "rekordbox_playlists", "rekordbox_playlist_tracks", trackSource) {
+        : BaseExternalPlaylistModel(parent, trackCollectionManager, "mixxx.db.model.rekordbox.playlistmodel", "rekordbox_playlists", "rekordbox_playlist_tracks", trackSource) {
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -1003,9 +1004,10 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-RekordboxFeature::RekordboxFeature(QObject* parent, TrackCollection* trackCollection)
-        : BaseExternalLibraryFeature(parent, trackCollection),
-          m_pTrackCollection(trackCollection),
+RekordboxFeature::RekordboxFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_icon(":/images/library/ic_library_rekordbox.svg") {
     QString tableName = "rekordbox_library";
     QString idColumn = "id";
@@ -1043,7 +1045,7 @@ RekordboxFeature::RekordboxFeature(QObject* parent, TrackCollection* trackCollec
             << "key";
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
 
     m_title = tr("Rekordbox");
 
@@ -1086,7 +1088,7 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(QString playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }

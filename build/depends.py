@@ -931,9 +931,7 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
-                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
-                   "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -984,6 +982,8 @@ class MixxxCore(Feature):
                    "src/widget/wcoverart.cpp",
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
+                   "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
@@ -1007,6 +1007,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
@@ -1112,6 +1113,8 @@ class MixxxCore(Feature):
                    "src/library/parserpls.cpp",
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
+
+                   "src/library/trackloader.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 
