@@ -466,9 +466,9 @@ void CueControl::loadCuesFromTrack() {
         double startPosition = pIntroCue->getPosition();
         double endPosition = pIntroCue->getEndPosition();
 
-        m_pIntroStartPosition->set(quantizeCuePoint(startPosition, QuantizeMode::PreviousBeat));
+        m_pIntroStartPosition->set(quantizeCuePoint(startPosition, QuantizeMode::ClosestBeat));
         m_pIntroStartEnabled->forceSet(startPosition == Cue::kNoPosition ? 0.0 : 1.0);
-        m_pIntroEndPosition->set(quantizeCuePoint(endPosition, QuantizeMode::NextBeat));
+        m_pIntroEndPosition->set(quantizeCuePoint(endPosition, QuantizeMode::ClosestBeat));
         m_pIntroEndEnabled->forceSet(endPosition == Cue::kNoPosition ? 0.0 : 1.0);
     } else {
         m_pIntroStartPosition->set(Cue::kNoPosition);
@@ -481,9 +481,9 @@ void CueControl::loadCuesFromTrack() {
         double startPosition = pOutroCue->getPosition();
         double endPosition = pOutroCue->getEndPosition();
 
-        m_pOutroStartPosition->set(quantizeCuePoint(startPosition, QuantizeMode::PreviousBeat));
+        m_pOutroStartPosition->set(quantizeCuePoint(startPosition, QuantizeMode::ClosestBeat));
         m_pOutroStartEnabled->forceSet(startPosition == Cue::kNoPosition ? 0.0 : 1.0);
-        m_pOutroEndPosition->set(quantizeCuePoint(endPosition, QuantizeMode::NextBeat));
+        m_pOutroEndPosition->set(quantizeCuePoint(endPosition, QuantizeMode::ClosestBeat));
         m_pOutroEndEnabled->forceSet(endPosition == Cue::kNoPosition ? 0.0 : 1.0);
     } else {
         m_pOutroStartPosition->set(Cue::kNoPosition);
@@ -1116,9 +1116,7 @@ void CueControl::introStartSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat before current position.
-    // Fall back to nearest beat after or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::PreviousBeat);
+    double position = quantizeCurrentPosition(QuantizeMode::ClosestBeat);
 
     // Make sure user is not trying to place intro start cue on or after
     // other intro/outro cues.
@@ -1194,9 +1192,7 @@ void CueControl::introEndSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat after current position.
-    // Fall back to nearest beat before or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::NextBeat);
+    double position = quantizeCurrentPosition(QuantizeMode::ClosestBeat);
 
     // Make sure user is not trying to place intro end cue on or before
     // intro start cue, or on or after outro start/end cue.
@@ -1272,9 +1268,7 @@ void CueControl::outroStartSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat before current position.
-    // Fall back to nearest beat after or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::PreviousBeat);
+    double position = quantizeCurrentPosition(QuantizeMode::ClosestBeat);
 
     // Make sure user is not trying to place outro start cue on or before
     // intro end cue or on or after outro end cue.
@@ -1350,9 +1344,7 @@ void CueControl::outroEndSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat after current position.
-    // Fall back to nearest beat before or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::NextBeat);
+    double position = quantizeCurrentPosition(QuantizeMode::ClosestBeat);
 
     // Make sure user is not trying to place outro end cue on or before
     // other intro/outro cues.
