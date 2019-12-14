@@ -22,8 +22,7 @@ WLabel,
 WNumber,
 WTrackProperty,
 WBeatSpinBox,
-WEffectSelector, WEffectSelector QAbstractItemView,
-WSearchLineEdit {
+WEffectSelector, WEffectSelector QAbstractItemView {
   font-family: Ubuntu;
   font-weight: normal;
 }
@@ -2290,6 +2289,12 @@ QTreeView::branch:open:has-children:has-siblings {
     background-color: #333;
   }
 /* Text label of branch item */
+/* TEST */
+QTreeView::item:indicator {
+  qproperty-iconSize: 40px;
+  qproperty-icon: url(skin:/buttons/btn_lib_clear_search.svg);
+  background-color: green;
+  }
 QTreeView::item:selected {
   border-image: none;
   background-image: none;
@@ -2690,13 +2695,15 @@ WLibrary QSpinBox {
 /* library search text box */
 WSearchLineEdit {
   padding: 2px;
-  margin-bottom: 5px;
   border: 1px solid #656565;
-  border-left: 0px;
   color: #cfcfcf;
   background: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
+/* margin will increase the Qt widget size which is used to position the
+  Clear button. If > 0 it will shift the cue button outside the visible
+  search box.
+  margin-bottom: 5px; */
   }
   WSearchLineEdit:focus {
     border: 2px solid #ff6600;
@@ -2705,18 +2712,14 @@ WSearchLineEdit {
   }
   /* Clear button */
   WSearchLineEdit QToolButton {
-    /* C++ code adds 3px in each dimension.
-       height of search box inside the border: 22px
-       make the button use the available height */
-    height: 19px;
-    width: 19px;
-    margin-bottom: 5px;
+/*  Somehow the default size is alway 19x19 px */
     }
+    /* ToDo move this to default.qss */
     WSearchLineEdit QToolButton:!focus {
-      image: url(skin:/buttons/btn_lib_clear_search.svg);
+      qproperty-icon: url(skin:/buttons/btn_lib_clear_search.svg);
     }
     WSearchLineEdit QToolButton:focus {
-      image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
+      qproperty-icon: url(skin:/buttons/btn_lib_clear_search_focus.svg);
     }
 
 WLibrary QLabel,

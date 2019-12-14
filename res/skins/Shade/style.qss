@@ -150,7 +150,7 @@ QTreeView {
   border-color: #585858;
   show-decoration-selected: 0;
   /* Don't define top margin here, it won't shift ScrollBar.
-  Defined by SearchBox	*/
+  Set by SearchBox wrapper	*/
   margin: 0px;
   }
   QTreeView:focus,
@@ -286,37 +286,25 @@ QTreeView::item:!selected {
 
 /* library search text box */
 WSearchLineEdit {
-  padding: 2px;
   margin-top: 2px;
+  padding: 2px;
   border: 1px solid #656565;
-  font-size: 10pt;
-  font-family: "Open Sans";
   background: #0f0f0f;
   color: #cfcfcf;
-  selection-background-color: #d2d2d2;
-  selection-color: #0f0f0f;
-  margin-bottom: 5px;
   }
   WSearchLineEdit:focus {
     border: 2px solid #ff6600;
     color: #eeeeee;
-    padding: 2px;
+    selection-color: #0f0f0f;
+    selection-background-color: #d2d2d2;
   }
   /* Clear button */
-  WSearchLineEdit QToolButton {
-    /* C++ code adds 3px in each dimension.
-       height of search box inside the border: 22px
-       make the button use the available height */
-    height: 19px;
-    width: 19px;
-    margin-bottom: 2px;
-    }
-    WSearchLineEdit QToolButton:!focus {
-      image: url(skin:/btn/btn_lib_clear_search.svg);
-    }
-    WSearchLineEdit QToolButton:focus {
-      image: url(skin:/btn/btn_lib_clear_search_focus.svg);
-    }
+  WSearchLineEdit QToolButton:!focus {
+    image: url(skin:/btn/btn_lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    image: url(skin:/btn/btn_lib_clear_search_focus.svg);
+  }
 
 QHeaderView {
   /* Note(ronso0)

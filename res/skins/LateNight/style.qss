@@ -9,7 +9,6 @@ WNumber,
 WNumberPos,
 WPushButton, WLibrary QPushButton,
 WRecordingDuration,
-WSearchLineEdit,
 WTime,
 WTrackText,
 WTrackProperty,
@@ -29,7 +28,6 @@ WOverview QPushButton */ {
 }
 
 /* regular font weight */
-WSearchLineEdit,
 QToolTip {
   font-weight: normal;
 }
@@ -37,7 +35,6 @@ QToolTip {
 /* regular case / no text transformation */
 WKey,
 WOverview,
-WSearchLineEdit,
 WTrackProperty, WTrackText,
 QToolTip,
 /* WLibrary QMenu,  */
@@ -191,7 +188,6 @@ WOverview QLabel {
   color: #d2d2d2;
 }
 
-WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
 #LibraryContainer QTableView,
@@ -2223,18 +2219,10 @@ WSearchLineEdit {
   background: #0f0f0f;
   }
   WSearchLineEdit:focus {
-    padding: 2px 0px 2px 2px;
     border: 2px solid #d08e00;
   }
   /* Clear button */
-  WSearchLineEdit QToolButton {
-    /* C++ code adds 3px in each dimension.
-      height of search box inside the border: 22px
-      make the button use the available height */
-    height: 19px;
-    width: 19px;
-    margin-right: -1px;
-    }
+  WSearchLineEdit QToolButton {}
 
 /* HorizontalSplitter
   (the splitter itself is horizontal)
