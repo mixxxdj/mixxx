@@ -1824,7 +1824,7 @@ void WTrackTableView::addSelectionToNewCrate() {
             m_pTrackCollectionManager->internalCollection(), m_pConfig).createEmptyCrate();
 
     if (crateId.isValid()) {
-        m_pTrackCollectionManager->hideTracks(trackIds);
+        m_pTrackCollectionManager->unhideTracks(trackIds);
         m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
     }
 
