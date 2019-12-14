@@ -9,7 +9,6 @@
 #include "skin/skincontext.h"
 
 #include "util/assert.h"
-#include "util/debug.h"
 #include "util/logger.h"
 
 namespace {
