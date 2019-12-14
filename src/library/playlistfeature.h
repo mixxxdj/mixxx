@@ -35,9 +35,9 @@ class PlaylistFeature : public BasePlaylistFeature {
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
   private slots:
-    void slotPlaylistTableChanged(int playlistId);
-    void slotPlaylistContentChanged(int playlistId);
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
+    void slotPlaylistTableChanged(int playlistId) override;
+    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
  protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
