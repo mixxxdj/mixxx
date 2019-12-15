@@ -6,6 +6,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/autodj/autodjprocessor.h"
+#include "util/compatibility.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
