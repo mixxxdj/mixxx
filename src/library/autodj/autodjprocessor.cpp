@@ -1107,6 +1107,11 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     if (pFromDeck == nullptr || pToDeck == nullptr) {
         return;
     }
+    if (pFromDeck->loading || pToDeck->loading) {
+        // don't use halve new halve old data during
+        // changing of tracks
+        return;
+    }
 
     qDebug() << "player" << pFromDeck->group << "calculateTransition()";
 
