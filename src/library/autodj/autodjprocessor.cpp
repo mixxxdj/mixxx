@@ -292,7 +292,6 @@ void AutoDJProcessor::fadeNow() {
         double timeUntilOutroEnd = outroEnd - fromDeckCurrentPosition;
 
         if (toDeckCurrentPosition >= introStart &&
-                introStart >= 0 &&
                 toDeckCurrentPosition <= introEnd &&
                 introEnd >= 0) {
             double timeUntilIntroEnd = introEnd - toDeckCurrentPosition;
@@ -1022,11 +1021,11 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
-    double introStart = samplePositionToSeconds(pDeck->introStartPosition(), pDeck);
-    if (introStart <= 0.0) {
-        introStart = getFirstSoundPosition(pDeck);
+    double introStartSample = pDeck->introStartPosition();
+    if (introStartSample == Cue::kNoPosition) {
+        return getFirstSoundPosition(pDeck);
     }
-    return introStart;
+    return samplePositionToSeconds(introStartSample, pDeck);
 }
 
 double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
@@ -1088,8 +1087,8 @@ double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
     samplePosition /= kChannelCount;
     double sampleRate = pDeck->sampleRate();
-    if (samplePosition <= 0.0 || sampleRate <= 0.0) {
-        return -1.0;
+    if (sampleRate <= 0.0) {
+        return 0.0;
     }
     return samplePosition / sampleRate / pDeck->calcRateRatio();
 }
