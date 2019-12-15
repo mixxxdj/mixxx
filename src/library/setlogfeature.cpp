@@ -15,6 +15,7 @@
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "util/compatibility.h"
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
