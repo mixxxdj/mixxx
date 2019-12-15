@@ -1029,27 +1029,35 @@ double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
-    return samplePositionToSeconds(pDeck->introEndPosition(), pDeck);
+    double introEndSample = pDeck->introEndPosition();
+    if (introEndSample == Cue::kNoPosition) {
+        // Assume a zero length intro if introEnd is not set.
+        // The introStart is automatically placed by AnalyzerSilence, so use
+        // that as a fallback if the user has not placed outroStart. If it has
+        // not been placed, getIntroStartPosition will return 0:00.
+        return getIntroStartPosition(pDeck);
+    }
+    return samplePositionToSeconds(introEndSample, pDeck);
 }
 
 double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
-    double outroStart = samplePositionToSeconds(pDeck->outroStartPosition(), pDeck);
-    if (outroStart < 0.0) {
-        // Assume a zero length outro if outroStartIsNot set.
+    double outroStartSample = pDeck->outroStartPosition();
+    if (outroStartSample == Cue::kNoPosition) {
+        // Assume a zero length outro if outroStart is not set.
         // The outroEnd is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
         // not been placed, getOutroEndPosition will return the end of the track.
-        outroStart = getOutroEndPosition(pDeck);
+        return getOutroEndPosition(pDeck);
     }
-    return outroStart;
+    return samplePositionToSeconds(outroStartSample, pDeck);
 }
 
 double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
-    double outroEnd = samplePositionToSeconds(pDeck->outroEndPosition(), pDeck);
-    if (outroEnd <= 0.0) {
-        outroEnd = getLastSoundPosition(pDeck);
+    double outroEndSample = pDeck->outroEndPosition();
+    if (outroEndSample == Cue::kNoPosition) {
+        return getLastSoundPosition(pDeck);
     }
-    return outroEnd;
+    return samplePositionToSeconds(outroEndSample, pDeck);;
 }
 
 double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
