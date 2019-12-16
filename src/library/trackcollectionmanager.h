@@ -74,7 +74,7 @@ class TrackCollectionManager: public QObject,
 
     void slotScanTrackAdded(TrackPointer pTrack);
     void slotScanTracksUpdated(QSet<TrackId> updatedTrackIds);
-    void slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
+    void slotScanTracksRelocated(QList<RelocatedTrack> relocatedTracks);
 
   private:
     // Callback for GlobalTrackCache

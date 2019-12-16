@@ -32,6 +32,7 @@
 #include "track/globaltrackcache.h"
 #include "track/tracknumbers.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/file.h"
 #include "util/logger.h"
 #include "util/timer.h"
@@ -363,32 +364,25 @@ void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
     emit dbTrackAdded(pTrack);
 }
 
-void TrackDAO::databaseTracksChanged(QSet<TrackId> tracksChanged) {
+void TrackDAO::databaseTracksChanged(QSet<TrackId> changedTracks) {
     // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    if (!tracksChanged.isEmpty()) {
-        emit tracksAdded(tracksChanged);
+    if (!changedTracks.isEmpty()) {
+        emit tracksAdded(changedTracks);
     }
 }
 
-void TrackDAO::databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
+void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
-    for (const auto& replacedTrack : replacedTracks) {
-        const auto& removedTrackRef = replacedTrack.first;
-        const auto& changedTrackRef = replacedTrack.second;
-        DEBUG_ASSERT(removedTrackRef.getId().isValid());
-        DEBUG_ASSERT(changedTrackRef.getId().isValid());
-        // The (old)) location of the (re)moved track must be known!
-        DEBUG_ASSERT(!removedTrackRef.getLocation().isEmpty());
-        // The (new) location of the changed track might be empty.
-        DEBUG_ASSERT(removedTrackRef.getLocation() != changedTrackRef.getLocation());
-        changedTrackIds.insert(changedTrackRef.getId());
-        // The ids might be identical if the same track has been only been
-        // relocated. In this case the track has not been removed.
-        if (removedTrackRef.getId() != changedTrackRef.getId()) {
-            // The id must also not match with any other changed track!
-            DEBUG_ASSERT(!changedTrackIds.contains(removedTrackRef.getId()));
-            removedTrackIds.insert(removedTrackRef.getId());
+    for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
+        const auto changedTrackId = relocatedTrack.mergedTrackRef().getId();
+        DEBUG_ASSERT(changedTrackId.isValid());
+        DEBUG_ASSERT(!removedTrackIds.contains(changedTrackId));
+        changedTrackIds.insert(changedTrackId);
+        const auto removedTrackId = relocatedTrack.deletedTrackId();
+        if (removedTrackId.isValid()) {
+            DEBUG_ASSERT(!changedTrackIds.contains(removedTrackId));
+            removedTrackIds.insert(removedTrackId);
         }
     }
     DEBUG_ASSERT(removedTrackIds.size() <= changedTrackIds.size());
@@ -638,6 +632,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
     if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), *pTrack)) {
+        DEBUG_ASSERT(pTrack->getDateAdded().isValid());
         // Inserting into track_locations failed, so the file already
         // exists. Query for its trackLocationId.
         m_pQueryTrackLocationSelect->bindValue(":location", pTrack->getLocation());
@@ -765,6 +760,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
         qDebug() << "TrackDAO::addTracksAddFile:"
                 << "Track has already been added to the database"
                 << oldTrackId;
+        DEBUG_ASSERT(pTrack->getDateAdded().isValid());
         return pTrack;
     }
     // Keep the GlobalTrackCache locked until the id of the Track
@@ -1617,7 +1613,8 @@ namespace {
 // moved instead of being deleted outright, and so we can salvage your
 // existing metadata that you have in your DB (like cue points, etc.).
 // returns falls if canceled
-bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTracks,
+bool TrackDAO::detectMovedTracks(
+        QList<RelocatedTrack> *pRelocatedTracks,
         const QStringList& addedTracks,
         volatile const bool* pCancel) {
     // This function should not start a transaction on it's own!
@@ -1735,6 +1732,16 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
         DEBUG_ASSERT(oldTrackId != newTrackId);
         DEBUG_ASSERT(oldTrackLocationId != newTrackLocationId);
 
+        auto missingTrackRef = TrackRef::fromFileInfo(
+                TrackFile(oldTrackLocation),
+                std::move(oldTrackId));
+        auto addedTrackRef = TrackRef::fromFileInfo(
+                TrackFile(newTrackLocation),
+                std::move(newTrackId));
+        auto relocatedTrack = RelocatedTrack(
+            std::move(missingTrackRef),
+            std::move(addedTrackRef));
+
         // The library scanner will have added a new row to the Library
         // table which corresponds to the track in the new location. We need
         // to remove that so we don't end up with two rows in the library
@@ -1742,7 +1749,7 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
         {
             QSqlQuery query(m_database);
             query.prepare("DELETE FROM library WHERE id=:newid");
-            query.bindValue(":newid", newTrackId.toVariant());
+            query.bindValue(":newid", relocatedTrack.deletedTrackId().toVariant());
             VERIFY_OR_DEBUG_ASSERT(query.exec()) {
                 LOG_FAILED_QUERY(query);
                 // Last chance to skip this entry, i.e. nothing has been
@@ -1750,6 +1757,7 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
                 continue;
             }
         }
+
         // Update the location foreign key for the existing row in the
         // library table to point to the correct row in the track_locations
         // table.
@@ -1757,11 +1765,12 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
             QSqlQuery query(m_database);
             query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
             query.bindValue(":newloc", newTrackLocationId.toVariant());
-            query.bindValue(":oldid", oldTrackId.toVariant());
+            query.bindValue(":oldid", relocatedTrack.mergedTrackRef().getId().toVariant());
             VERIFY_OR_DEBUG_ASSERT(query.exec()) {
                 LOG_FAILED_QUERY(query);
             }
         }
+
         // Remove old, orphaned row from track_locations table
         {
             QSqlQuery query(m_database);
@@ -1772,10 +1781,8 @@ bool TrackDAO::detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTrac
             }
         }
 
-        if (pReplacedTracks) {
-            auto oldTrackRef = TrackRef::fromFileInfo(oldTrackLocation, oldTrackId);
-            auto newTrackRef = TrackRef::fromFileInfo(newTrackLocation, newTrackId);
-            pReplacedTracks->append(qMakePair(oldTrackRef, newTrackRef));
+        if (pRelocatedTracks) {
+            pRelocatedTracks->append(std::move(relocatedTrack));
         }
     }
     return true;
@@ -1993,6 +2000,7 @@ TrackPointer TrackDAO::getOrAddTrack(
     if (trackId.isValid()) {
         const auto pTrack = getTrackById(trackId);
         if (pTrack) {
+            DEBUG_ASSERT(pTrack->getDateAdded().isValid());
             if (pAlreadyInLibrary) {
                 *pAlreadyInLibrary = true;
             }
@@ -2019,6 +2027,7 @@ TrackPointer TrackDAO::getOrAddTrack(
     if (pAlreadyInLibrary) {
         *pAlreadyInLibrary = false;
     }
+    DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.

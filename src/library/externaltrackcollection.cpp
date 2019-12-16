@@ -1,15 +1,18 @@
 #include "library/externaltrackcollection.h"
 
 
-void ExternalTrackCollection::deduplicateTracks(
-        const QList<DuplicateTrack>& duplicateTracks) {
+void ExternalTrackCollection::relocateTracks(
+        const QList<RelocatedTrack>& relocatedTracks) {
     QList<QString> purgedTracks;
     QList<TrackRef> updatedTracks;
-    purgedTracks.reserve(duplicateTracks.size());
-    updatedTracks.reserve(duplicateTracks.size());
-    for (const auto& duplicateTrack : duplicateTracks) {
-        purgedTracks += duplicateTrack.removed.getLocation();
-        updatedTracks += duplicateTrack.replacedBy;
+    purgedTracks.reserve(relocatedTracks.size());
+    updatedTracks.reserve(relocatedTracks.size());
+    for (const auto& relocatedTrack : relocatedTracks) {
+        if (!relocatedTrack.deletedTrackLocation().isEmpty()) {
+            purgedTracks.append(relocatedTrack.deletedTrackLocation());
+        }
+        DEBUG_ASSERT(relocatedTrack.mergedTrackRef().isValid());
+        updatedTracks.append(relocatedTrack.mergedTrackRef());
     }
     purgeTracks(purgedTracks);
     updateTracks(updatedTracks);
