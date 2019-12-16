@@ -751,3 +751,10 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
+
+mixxx::Signature BeatMap::getSignature() const {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid())
+        return mixxx::Signature(0,0);
+    return mixxx::Signature(m_beats.first().signature().beats(),m_beats.first().signature().note_value());
+}

@@ -1,3 +1,4 @@
+// This proto describes the beats information attached to a track.
 syntax = "proto2";
 
 package mixxx.track.io;
@@ -17,10 +18,11 @@ enum Type {
 }
 
 message Signature {
-  required int32 a = 1;
-  required int32 b = 2;
+  required int32 beats = 1;
+  required int32 note_value = 2;
 }
 
+// Each beat can  
 message Beat {
   optional int32 frame_position = 1;
   optional bool enabled = 2 [ default = true ];

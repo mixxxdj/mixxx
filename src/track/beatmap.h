@@ -5,8 +5,7 @@
  *      Author: vittorio
  */
 
-#ifndef BEATMAP_H_
-#define BEATMAP_H_
+#pragma once
 
 #include <QMutex>
 
@@ -80,6 +79,12 @@ class BeatMap final : public Beats {
     virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Signature related
+    ////////////////////////////////////////////////////////////////////////////
+
+    virtual mixxx::Signature getSignature() const;
+
   private:
     BeatMap(const BeatMap& other);
     bool readByteArray(const QByteArray& byteArray);
@@ -105,5 +110,3 @@ class BeatMap final : public Beats {
     double m_dLastFrame;
     BeatList m_beats;
 };
-
-#endif /* BEATMAP_H_ */

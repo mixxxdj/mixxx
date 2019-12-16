@@ -369,3 +369,10 @@ void BeatGrid::setBpm(double dBpm) {
     locker.unlock();
     emit(updated());
 }
+
+mixxx::Signature BeatGrid::getSignature() const {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid())
+        return mixxx::Signature(0,0);
+    return mixxx::Signature(m_grid.first_beat().signature().beats(),m_grid.first_beat().signature().note_value());
+}

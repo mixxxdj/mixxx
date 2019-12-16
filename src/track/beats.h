@@ -1,5 +1,4 @@
-#ifndef BEATS_H
-#define BEATS_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -8,6 +7,7 @@
 #include <QSharedPointer>
 
 #include "util/memory.h"
+#include "track/signature.h"
 
 namespace {
     double kMaxBpm = 500;
@@ -139,6 +139,9 @@ class Beats : public QObject {
         return kMaxBpm;
     }
 
+    // Return the initial track Signature
+    virtual mixxx::Signature getSignature() const = 0;
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
@@ -168,4 +171,3 @@ class Beats : public QObject {
     void updated();
 };
 
-#endif /* BEATS_H */

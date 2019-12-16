@@ -1,5 +1,4 @@
-#ifndef BEATGRID_H
-#define BEATGRID_H
+#pragma once
 
 #include <QMutex>
 
@@ -71,6 +70,12 @@ class BeatGrid final : public Beats {
     virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Signature related
+    ////////////////////////////////////////////////////////////////////////////
+
+    virtual mixxx::Signature getSignature() const;
+
   private:
     BeatGrid(const BeatGrid& other);
     double firstBeatSample() const;
@@ -90,6 +95,3 @@ class BeatGrid final : public Beats {
     // The length of a beat in samples
     double m_dBeatLength;
 };
-
-
-#endif /* BEATGRID_H */
