@@ -20,7 +20,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "track/track.h"
-#include "widget/cuemenu.h"
+#include "widget/wcuemenupopup.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 
@@ -57,12 +57,12 @@ class WOverview : public WWidget, public TrackDropTarget {
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
 
-    void mouseMoveEvent(QMouseEvent *e) override;
-    void mouseReleaseEvent(QMouseEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
     void leaveEvent(QEvent* event) override;
-    void paintEvent(QPaintEvent * /*unused*/) override;
-    void resizeEvent(QResizeEvent * /*unused*/) override;
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
@@ -101,7 +101,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
-    void slotCueMenuAboutToHide();
+    void slotCueMenuPopupAboutToHide();
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -114,7 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
-    void drawCurrentPosition(QPainter* pPainter);
+    void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
     void paintText(const QString& text, QPainter* pPainter);
@@ -143,12 +143,16 @@ class WOverview : public WWidget, public TrackDropTarget {
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    std::unique_ptr<CueMenu> m_pCueMenu;
+    std::unique_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
+    // True if pick-up is dragged. Only used when m_bEventWhileDrag is false
+    bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
-    int m_iPos;
+    int m_iPickupPos;
+    // position of the overlay shadow
+    int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;
     bool m_bHotcueMenuShowing;

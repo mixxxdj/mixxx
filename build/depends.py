@@ -489,7 +489,7 @@ class Kaitai(Dependence):
 
     def configure(self, build, conf):
         build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
-        build.env.Append(CPPPATH="#lib/kaitai")        
+        build.env.Append(CPPPATH="#lib/kaitai")
 
 # For determining MP3 timing offset cases in Rekordbox library feature
 class MP3GuessEnc(Dependence):
@@ -499,7 +499,7 @@ class MP3GuessEnc(Dependence):
             "lib/mp3guessenc-0.27.4/mp3guessenc.c",
             "lib/mp3guessenc-0.27.4/tags.c",
             "lib/mp3guessenc-0.27.4/decode.c",
-            "lib/mp3guessenc-0.27.4/bit_utils.c",            
+            "lib/mp3guessenc-0.27.4/bit_utils.c",
         ]
 
     def configure(self, build, conf):
@@ -930,9 +930,7 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
-                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
-                   "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -983,6 +981,8 @@ class MixxxCore(Feature):
                    "src/widget/wcoverart.cpp",
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
+                   "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
@@ -1006,6 +1006,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
@@ -1074,7 +1075,7 @@ class MixxxCore(Feature):
 
                    "src/library/rekordbox/rekordboxfeature.cpp",
                    "src/library/rekordbox/rekordbox_pdb.cpp",
-                   "src/library/rekordbox/rekordbox_anlz.cpp",                     
+                   "src/library/rekordbox/rekordbox_anlz.cpp",
 
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
@@ -1111,6 +1112,8 @@ class MixxxCore(Feature):
                    "src/library/parserpls.cpp",
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
+
+                   "src/library/trackloader.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 

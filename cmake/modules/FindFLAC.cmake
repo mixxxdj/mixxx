@@ -29,7 +29,7 @@ This will define the following variables:
 ``FLAC_LIBRARIES``
   Libraries needed to link to FLAC.
 ``FLAC_DEFINITIONS``
-  Compile defitions needed to use FLAC.
+  Compile definitions needed to use FLAC.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

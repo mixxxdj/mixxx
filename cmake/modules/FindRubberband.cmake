@@ -29,7 +29,7 @@ This will define the following variables:
 ``Rubberband_LIBRARIES``
   Libraries needed to link to Rubberband.
 ``Rubberband_DEFINITIONS``
-  Compile defitions needed to use Rubberband.
+  Compile definitions needed to use Rubberband.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

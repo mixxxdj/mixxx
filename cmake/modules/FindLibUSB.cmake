@@ -29,7 +29,7 @@ This will define the following variables:
 ``LibUSB_LIBRARIES``
   Libraries needed to link to LibUSB.
 ``LibUSB_DEFINITIONS``
-  Compile defitions needed to use LibUSB.
+  Compile definitions needed to use LibUSB.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

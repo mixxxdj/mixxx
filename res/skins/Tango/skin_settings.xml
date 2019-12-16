@@ -61,7 +61,7 @@ Description:
               <SizePolicy> is very hard to handle in many places here due to
               translucent covers and submenus, defining button sizes explicitly helps.
 
-              Each categroy has a padding: top 2px, bottom 2px
+              Each category has a padding: top 2px, bottom 2px
               For every button we need to provide space (13-17px):
               MinSize = (num. of buttons/rows x 13px) + 15px + 3px padding + 3px border-bottom
               MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom +10px
@@ -115,7 +115,7 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when Hot Cues are invisble -->
+                      <WidgetGroup><!-- translucent cover when Hot Cues are invisible -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <Size>182f,13me</Size>
@@ -680,7 +680,7 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                      <WidgetGroup><!-- translucent cover when Effects are invisible -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <Size>182f,13me</Size>
@@ -726,7 +726,7 @@ Description:
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                  <WidgetGroup><!-- translucent cover when Effects are invisible -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <Size>182f,13me</Size>

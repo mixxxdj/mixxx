@@ -12,6 +12,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 
@@ -190,7 +191,11 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaled;
+    scaled = normal.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    return scaled;
 }
 
 void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
