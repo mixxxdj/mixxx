@@ -179,7 +179,11 @@
           border-width: 2px;}
         #LibraryContainer QTreeView:focus,
         #LibraryContainer QTableView:focus,
-        #LibraryContainer WSearchLineEdit:focus {
+        #LibraryContainer WSearchLineEdit:focus,
+        WBeatSpinBox:focus,
+        QSpinBox#spinBoxTransition:focus,
+        WLibrary QLineEdit,
+        #LibraryBPMSpinBox {
           border-color: #ff8800;}
       </Style>
     </Scheme>
