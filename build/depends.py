@@ -1304,7 +1304,7 @@ class MixxxCore(Feature):
             'preferences/dialog/dlgprefvinyldlg.ui',
             'preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
