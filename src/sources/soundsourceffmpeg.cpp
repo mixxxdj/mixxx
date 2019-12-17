@@ -161,7 +161,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
         // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
         // "It must also be assumed that without an explicit value, the playback
         // system will trim 2112 samples from the AAC decoder output when starting
-        // playback from any point in the bistream."
+        // playback from any point in the bitsream."
         // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
         const SINT aacSeekPrerollFrameCount = 2112;
         return math_max(aacSeekPrerollFrameCount, defaultSeekPrerollFrameCount);
@@ -583,6 +583,13 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return OpenResult::Failed;
     }
 
+    if (m_pavStream->duration == AV_NOPTS_VALUE) {
+        // Streams with unknown or unlimited duration are
+        // not (yet) supported.
+        kLogger.warning()
+                << "Unknown or unlimited stream duration";
+        return OpenResult::Failed;
+    }
     const auto streamFrameIndexRange =
             getStreamFrameIndexRange(*m_pavStream);
     // The nominal frame index range includes the lead-in that
@@ -1014,7 +1021,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
         return ReadableSampleFrames();
     }
 
-    // Start decoding into the output buffer from the current positon
+    // Start decoding into the output buffer from the current position
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
 
     AVPacket avPacket;

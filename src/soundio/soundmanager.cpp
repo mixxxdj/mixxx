@@ -64,8 +64,10 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_jackSampleRate(-1),
+          m_config(this),
           m_pErrorDevice(NULL),
-          m_underflowHappened(0) {
+          m_underflowHappened(0),
+          m_underflowUpdateCount(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -131,10 +133,14 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
     for (const auto& pDevice: m_devices) {
         // Skip devices that don't match the API, don't have input channels when
         // we want input devices, or don't have output channels when we want
-        // output devices.
+        // output devices. If searching for both input and output devices,
+        // make sure to include any devices that have >0 channels.
+        bool hasOutputs = pDevice->getNumOutputChannels() >= 0;
+        bool hasInputs = pDevice->getNumInputChannels() >= 0;
         if (pDevice->getHostAPI() != filterAPI ||
-                (bOutputDevices && pDevice->getNumOutputChannels() <= 0) ||
-                (bInputDevices && pDevice->getNumInputChannels() <= 0)) {
+                (bOutputDevices && !bInputDevices && !hasOutputs) ||
+                (bInputDevices && !bOutputDevices && !hasInputs) ||
+                (!hasInputs && !hasOutputs)) {
             continue;
         }
         filteredDeviceList.push_back(pDevice);
@@ -278,6 +284,18 @@ void SoundManager::queryDevicesPortaudio() {
         return;
     }
 
+    // PaDeviceInfo structs have a PaHostApiIndex member, but PortAudio
+    // unfortunately provides no good way to associate this with a persistent,
+    // unique identifier for the API. So, build a QHash to do that and pass
+    // it to the SoundDevicePortAudio constructor.
+    QHash<PaHostApiIndex, PaHostApiTypeId> paApiIndexToTypeId;
+    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
+        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
+        if (api && QString(api->name) != "skeleton implementation") {
+            paApiIndexToTypeId.insert(i, api->type);
+        }
+    }
+
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++) {
         deviceInfo = Pa_GetDeviceInfo(i);
@@ -297,7 +315,7 @@ void SoundManager::queryDevicesPortaudio() {
             double  defaultSampleRate
          */
         auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, i));
+                m_pConfig, this, deviceInfo, i, paApiIndexToTypeId));
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
@@ -350,7 +368,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
     // load with all configured devices.
     // all found devices are removed below
-    QSet<QString> devicesNotFound = m_config.getDevices();
+    QSet<SoundDeviceId> devicesNotFound = m_config.getDevices();
 
     // pair is isInput, isOutput
     QVector<DeviceMode> toOpen;
@@ -362,7 +380,7 @@ SoundDeviceError SoundManager::setupDevices() {
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
         for (const auto& in:
-                     m_config.getInputs().values(pDevice->getInternalName())) {
+                 m_config.getInputs().values(pDevice->getDeviceId())) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -385,10 +403,10 @@ SoundDeviceError SoundManager::setupDevices() {
             }
         }
         QList<AudioOutput> outputs =
-                m_config.getOutputs().values(pDevice->getInternalName());
+                m_config.getOutputs().values(pDevice->getDeviceId());
 
         // Statically connect the Network Device to the Sidechain
-        if (pDevice->getInternalName() == kNetworkDeviceInternalName) {
+        if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
             outputs.append(out);
             if (m_config.getForceNetworkClock()) {
@@ -398,7 +416,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
         for (const auto& out: qAsConst(outputs)) {
             mode.isOutput = true;
-            if (pDevice->getInternalName() != kNetworkDeviceInternalName) {
+            if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
                 haveOutput = true;
             }
             // following keeps us from asking for a channel buffer EngineMaster
@@ -460,7 +478,7 @@ SoundDeviceError SoundManager::setupDevices() {
         }
         err = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
         if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
-        devicesNotFound.remove(pDevice->getInternalName());
+        devicesNotFound.remove(pDevice->getDeviceId());
         if (mode.isOutput) {
             ++outputDevicesOpened;
         }
@@ -478,8 +496,8 @@ SoundDeviceError SoundManager::setupDevices() {
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
     qDebug() << inputDevicesOpened << "input sound devices opened";
-    for (const auto& deviceName: devicesNotFound) {
-        qWarning() << deviceName << "not found";
+    for (const auto& device: devicesNotFound) {
+        qWarning() << device << "not found";
     }
 
     m_pControlObjectSoundStatusCO->set(
@@ -492,7 +510,7 @@ SoundDeviceError SoundManager::setupDevices() {
         return SOUNDDEVICE_ERROR_OK;
     }
     m_pErrorDevice = SoundDevicePointer(
-            new SoundDeviceNotFound(*devicesNotFound.constBegin()));
+            new SoundDeviceNotFound(devicesNotFound.constBegin()->name));
     return SOUNDDEVICE_ERROR_DEVICE_COUNT;
 
 closeAndError:
@@ -562,7 +580,7 @@ SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
 }
 
 void SoundManager::checkConfig() {
-    if (!m_config.checkAPI(*this)) {
+    if (!m_config.checkAPI()) {
         m_config.setAPI(SoundManagerConfig::kDefaultAPI);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }

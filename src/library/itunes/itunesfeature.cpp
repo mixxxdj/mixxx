@@ -15,8 +15,11 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/queryutil.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
+#include "widget/wlibrarysidebar.h"
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
@@ -58,9 +61,8 @@ QString localhost_token() {
 
 } // anonymous namespace
 
-ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
+ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";
@@ -83,15 +85,15 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "rating";
 
     m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+            new BaseTrackCache(m_pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
                                columns, false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes",
         "itunes_library",
         m_trackSource);
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
@@ -99,13 +101,16 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(), "ITUNES_SCANNER");
+    m_database = QSqlDatabase::cloneDatabase(m_pLibrary->trackCollections()->internalCollection()->database(), "ITUNES_SCANNER");
 
     // Open the database connection in this thread.
     if (!m_database.open()) {
         qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &ITunesFeature::onTrackCollectionLoaded);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -118,7 +123,7 @@ ITunesFeature::~ITunesFeature() {
 
 BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
@@ -141,6 +146,13 @@ QVariant ITunesFeature::title() {
 
 QIcon ITunesFeature::getIcon() {
     return m_icon;
+}
+
+void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClick()
+    m_pSidebarWidget = pSidebarWidget;
+    // send it to BaseExternalLibraryFeature for onRightClickChild()
+    BaseExternalLibraryFeature::bindSidebarWidget(pSidebarWidget);
 }
 
 void ITunesFeature::activate() {
@@ -223,7 +235,7 @@ TreeItemModel* ITunesFeature::getChildModel() {
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    QMenu menu;
+    QMenu menu(m_pSidebarWidget);
     QAction useDefault(tr("Use Default Library"), &menu);
     QAction chooseNew(tr("Choose Library..."), &menu);
     menu.addAction(&useDefault);
@@ -726,7 +738,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                        if (query_insert_to_playlists.lastError().nativeErrorCode() == QString::number(SQLITE_CONSTRAINT)) {
                             // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
                             query_insert_to_playlists.bindValue(":name", playlistname );

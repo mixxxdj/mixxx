@@ -13,106 +13,138 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
-BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         UserSettingsPointer pConfig,
-                                         TrackCollection* pTrackCollection,
-                                         QString rootViewName)
-        : LibraryFeature(pConfig, parent),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(NULL),
+BasePlaylistFeature::BasePlaylistFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig,
+        const QString& rootViewName)
+        : LibraryFeature(pLibrary, pConfig),
+          m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
+          m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
-    connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotCreatePlaylist()));
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
+    connect(m_pCreatePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreatePlaylist);
 
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJ()));
+    connect(m_pAddToAutoDJAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJ);
 
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-    connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJTop()));
+    connect(m_pAddToAutoDJTopAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJTop);
 
-    m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
-    connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDeletePlaylist()));
+    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    connect(m_pAddToAutoDJReplaceAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJReplace);
 
-    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
-    connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotRenamePlaylist()));
+    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
+    connect(m_pDeletePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotDeletePlaylist);
 
-    m_pLockPlaylistAction = new QAction(tr("Lock"),this);
-    connect(m_pLockPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotTogglePlaylistLock()));
+    m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
+    connect(m_pRenamePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotRenamePlaylist);
+
+    m_pLockPlaylistAction = new QAction(tr("Lock"), this);
+    connect(m_pLockPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotTogglePlaylistLock);
 
     m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
-    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDuplicatePlaylist()));
+    connect(m_pDuplicatePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotDuplicatePlaylist);
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
-    connect(m_pImportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotImportPlaylist()));
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pImportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotImportPlaylist);
 
     m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotCreateImportPlaylist()));
+    connect(m_pCreateImportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreateImportPlaylist);
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
-    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotExportPlaylist()));
+    connect(m_pExportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportPlaylist);
 
     m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
-    connect(m_pExportTrackFilesAction, SIGNAL(triggered()),
-            this, SLOT(slotExportTrackFiles()));
+    connect(m_pExportTrackFilesAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportTrackFiles);
 
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
-    connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotAnalyzePlaylist()));
+    connect(m_pAnalyzePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAnalyzePlaylist);
 
-    connect(&m_playlistDao, SIGNAL(added(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::added,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    connect(&m_playlistDao, SIGNAL(deleted(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::deleted,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
-            this, SLOT(slotPlaylistTableRenamed(int,QString)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::renamed,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableRenamed);
 
-    connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(slotPlaylistContentChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::tracksChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistContentChanged);
 
-    connect(&m_playlistDao, SIGNAL(lockChanged(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::lockChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    Library* pLibrary = static_cast<Library*>(parent);
-    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
+    connect(pLibrary,
+            &Library::trackSelected,
+            this,
+            &BasePlaylistFeature::slotTrackSelected);
+    connect(pLibrary,
+            &Library::switchToView,
+            this,
+            &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
-BasePlaylistFeature::~BasePlaylistFeature() {
-    delete m_pPlaylistTableModel;
-    delete m_pCreatePlaylistAction;
-    delete m_pDeletePlaylistAction;
-    delete m_pImportPlaylistAction;
-    delete m_pCreateImportPlaylistAction;
-    delete m_pExportPlaylistAction;
-    delete m_pExportTrackFilesAction;
-    delete m_pDuplicatePlaylistAction;
-    delete m_pAddToAutoDJAction;
-    delete m_pAddToAutoDJTopAction;
-    delete m_pRenamePlaylistAction;
-    delete m_pLockPlaylistAction;
-    delete m_pAnalyzePlaylistAction;
+void BasePlaylistFeature::initTableModel(
+        PlaylistTableModel* pPlaylistTableModel) {
+    DEBUG_ASSERT(!m_pPlaylistTableModel);
+    m_pPlaylistTableModel = pPlaylistTableModel;
 }
 
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
@@ -138,8 +170,11 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId != -1 && m_pPlaylistTableModel) {
+    if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -148,8 +183,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -491,7 +529,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -539,7 +577,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -560,21 +598,26 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false); // Top = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true); // bTop = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void BasePlaylistFeature::addToAutoDJ(bool bTop) {
+void BasePlaylistFeature::slotAddToAutoDJReplace() {
+    //qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
         }
     }
 }
@@ -593,14 +636,16 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
+void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                      KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)),
-            this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &BasePlaylistFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
 }
 

@@ -9,12 +9,10 @@
 #include "trackmodel.h"
 #include "library/basesqltablemodel.h"
 
-class TrackCollection;
-
 class MissingTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    MissingTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~MissingTableModel() final;
 
     void setTableModel(int id = -1);

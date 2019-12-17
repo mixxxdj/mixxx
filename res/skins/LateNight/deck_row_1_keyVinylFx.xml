@@ -1,118 +1,142 @@
 <Template>
+  <SetVariable name="Type">group</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckRow_1_KeyVinylFx</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <Template src="skin:button_2state_right.xml">
-        <SetVariable name="TooltipId">sync_reset_key</SetVariable>
-        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
-        <SetVariable name="Size">28f,22f</SetVariable>
-        <SetVariable name="state_0_text">KEY</SetVariable>
-        <SetVariable name="state_1_text">KEY</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_adjust_set_default</SetVariable>
-        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
-      </Template>
-
-      <Template src="skin:button_1state_right.xml">
-        <SetVariable name="TooltipId">pitch_down</SetVariable>
-        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
-        <SetVariable name="Size">16f,22f</SetVariable>
-        <SetVariable name="state_0_pressed">prev_down.svg</SetVariable>
-        <SetVariable name="state_0_unpressed">prev.svg</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
-        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
-      </Template>
-
-      <Key>
-        <ObjectName>KeyText</ObjectName>
-        <TooltipId>track_key</TooltipId>
-        <Group><Variable name="group"/></Group>
-        <MinimumSize>30,20</MinimumSize>
-        <MaximumSize>65,20</MaximumSize>
-        <SizePolicy>me,f</SizePolicy>
-        <Elide>right</Elide>
-        <!-- has no effect, only 'qproperty-alignment' in style.qss works
-        <Alignment>left</Alignment-->
-        <Connection>
-          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-        </Connection>
-      </Key>
-
-      <Template src="skin:button_1state_right.xml">
-        <SetVariable name="TooltipId">pitch_up</SetVariable>
-        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
-        <SetVariable name="Size">16f,22f</SetVariable>
-        <SetVariable name="state_0_pressed">next_down.svg</SetVariable>
-        <SetVariable name="state_0_unpressed">next.svg</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
-        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
-      </Template>
-
-      <WidgetGroup>  <!-- spacer -->
+      <WidgetGroup>
+        <ObjectName>KeyButtons</ObjectName>
+        <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
-      </WidgetGroup>
+        <MaximumSize>118,</MaximumSize>
+        <Children>
+          <Template src="skin:button_2state_right.xml">
+            <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+            <SetVariable name="ObjectName">KeyMatchButton</SetVariable>
+            <SetVariable name="Size">26f,20f</SetVariable>
+            <!--Musical note 1/8th icon: &#9834; -->
+            <!--SetVariable name="state_0_text">&#8202;&#9834;&#8202;</SetVariable>
+            <SetVariable name="state_1_text">&#8202;&#9834;&#8202;</SetVariable-->
+            <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
+          </Template>
 
-      <Template src="skin:vinyl_controls.xml"/>
+          <Key>
+            <ObjectName>KeyText</ObjectName>
+            <TooltipId>track_key</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <MinimumSize>30,20</MinimumSize>
+            <MaximumSize>65,20</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+            </Connection>
+            <!-- unfortunately this doesn't indicate a not-original key -->
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+              <Transform><Not><Variable name="group"/>,file_key</Not></Transform>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
+          </Key>
 
-      <WidgetGroup>  <!-- spacer -->
-        <SizePolicy>min,min</SizePolicy>
+          <Template src="skin:button_2state_right.xml">
+            <SetVariable name="TooltipId">pitch_up</SetVariable>
+            <SetVariable name="ObjectName">KeyUpButton</SetVariable>
+            <SetVariable name="Size">13f,20f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_right.xml">
+            <SetVariable name="TooltipId">pitch_down</SetVariable>
+            <SetVariable name="ObjectName">KeyDownButton</SetVariable>
+            <SetVariable name="Size">14f,20f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
+          </Template>
+        </Children>
       </WidgetGroup>
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>3,0</MinimumSize>
+      </WidgetGroup>
+
+      <Template src="skin:deck_vinyl_controls.xml"/>
+
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>3,0</MinimumSize>
+      </WidgetGroup>
+
+      <!-- FX buttons -->
+      <WidgetGroup>
         <ObjectName>AlignRightTop</ObjectName>
-          <Children>
-
-          <!-- FX buttons 1-4 -->
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-            <SetVariable name="Size">28f,22f</SetVariable>
-            <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
-            <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-            <SetVariable name="Size">28f,22f</SetVariable>
-            <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
-            <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</SetVariable>
-          </Template>
-
+        <Layout>horizontal</Layout>
+        <SizePolicy>f,min</SizePolicy>
+        <Children>
           <WidgetGroup>
+            <ObjectName>FxAssingButtonsDeck</ObjectName>
             <Layout>horizontal</Layout>
-            <Connection>
-              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
+            <SizePolicy>f,min</SizePolicy>
             <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                <SetVariable name="Size">28f,22f</SetVariable>
-                <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
-                <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</SetVariable>
+              <Template src="skin:fx_assign_button_deck.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+                <SetVariable name="Width">26</SetVariable>
+                <SetVariable name="Text">&#8202;FX</SetVariable>
               </Template>
-
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                <SetVariable name="Size">28f,22f</SetVariable>
-                <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
-                <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</SetVariable>
+              <Template src="skin:fx_assign_button_deck.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+                <SetVariable name="Width">26</SetVariable>
+                <SetVariable name="Text">&#8202;FX</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
-          <!-- /FX buttons 1-4 -->
         </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>AlignRightTop</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>f,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>FxAssingButtonsDeck</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_assign_button_deck.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+                <SetVariable name="Width">26</SetVariable>
+                <SetVariable name="Text">&#8202;FX&#8202;</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button_deck.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+                <SetVariable name="Width">20</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button_deck.xml">
+                <SetVariable name="FxUnit">3</SetVariable>
+                <SetVariable name="Width">20</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button_deck.xml">
+                <SetVariable name="FxUnit">4</SetVariable>
+                <SetVariable name="Width">20</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- FX buttons -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- DeckRow_1_KeyVinylFx -->
 </Template>

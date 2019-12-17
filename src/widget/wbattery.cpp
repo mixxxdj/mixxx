@@ -8,6 +8,7 @@
 WBattery::WBattery(QWidget* parent)
         : WWidget(parent),
           m_pBattery(Battery::getBattery(this)) {
+    setVisible(false);
     if (m_pBattery) {
         connect(m_pBattery.data(), SIGNAL(stateChanged()),
                 this, SLOT(update()));
@@ -20,14 +21,6 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
         setPixmap(&m_pPixmapBack,
                   context.getPixmapSource(backPath),
                   context.selectScaleMode(backPath, Paintable::TILE),
-                  context.getScaleFactor());
-    }
-
-    QDomElement unknownPath = context.selectElement(node, "PixmapUnknown");
-    if (!unknownPath.isNull()) {
-        setPixmap(&m_pPixmapUnknown,
-                  context.getPixmapSource(unknownPath),
-                  context.selectScaleMode(unknownPath, Paintable::TILE),
                   context.getScaleFactor());
     }
 
@@ -99,9 +92,8 @@ void WBattery::update() {
 
     if (chargingState != Battery::UNKNOWN) {
         setBaseTooltip(QString("%1\%").arg(dPercentage, 0, 'f', 0));
-    } else {
-        setBaseTooltip(tr("Battery status unknown."));
     }
+
     m_pCurrentPixmap.clear();
     switch (chargingState) {
         case Battery::CHARGING:
@@ -130,11 +122,10 @@ void WBattery::update() {
             m_pCurrentPixmap = m_pPixmapCharged;
             appendBaseTooltip("\n" + tr("Battery fully charged."));
             break;
-        case Battery::UNKNOWN:
         default:
-            m_pCurrentPixmap = m_pPixmapUnknown;
             break;
     }
+    setVisible(chargingState != Battery::UNKNOWN);
 
     // call parent's update() to show changes, this should call
     // QWidget::update()

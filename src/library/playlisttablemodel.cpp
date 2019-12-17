@@ -1,18 +1,20 @@
 #include "library/playlisttablemodel.h"
-#include "library/queryutil.h"
+
+#include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+
 #include "mixer/playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection,
+                                       TrackCollectionManager* pTrackCollectionManager,
                                        const char* settingsNamespace,
                                        bool showAll)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
+        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(-1),
           m_showAll(showAll) {
-}
-
-PlaylistTableModel::~PlaylistTableModel() {
 }
 
 void PlaylistTableModel::initSortColumnMapping() {
@@ -65,7 +67,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
         // in the library (mixxx_deleted = 0) from playlists.
         // These invisible tracks, consuming a playlist position number where
         // a source user of confusion in the past.
-        m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
+        m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
 
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
@@ -99,13 +101,15 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
     setTable(playlistTableName, LIBRARYTABLE_ID, columns,
-            m_pTrackCollection->getTrackSource());
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 
-    connect(&m_pTrackCollection->getPlaylistDAO(), SIGNAL(changed(int)),
-            this, SLOT(playlistChanged(int)));
+    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
+            &PlaylistDAO::tracksChanged,
+            this,
+            &PlaylistTableModel::playlistsChanged);
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
@@ -113,6 +117,9 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     if (locations.isEmpty()) {
         return 0;
     }
+
+    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+            locations);
 
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
@@ -122,18 +129,8 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         position = rowCount() + 1;
     }
 
-    QList<QFileInfo> fileInfoList;
-    foreach (QString fileLocation, locations) {
-        QFileInfo fileInfo(fileLocation);
-        if (fileInfo.exists()) {
-            fileInfoList.append(fileInfo);
-        }
-    }
-
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
-
-    int tracksAdded = m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(
-        trackIds, m_iPlaylistId, position);
+    int tracksAdded = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().insertTracksIntoPlaylist(
+            trackIds, m_iPlaylistId, position);
 
     if (locations.size() - tracksAdded > 0) {
         qDebug() << "PlaylistTableModel::addTracks could not add"
@@ -147,21 +144,21 @@ bool PlaylistTableModel::appendTrack(TrackId trackId) {
     if (!trackId.isValid()) {
         return false;
     }
-    return m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(trackId, m_iPlaylistId);
+    return m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().appendTrackToPlaylist(trackId, m_iPlaylistId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
-    if (m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
+    if (m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
 
     const int positionColumnIndex = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_pTrackCollection->getPlaylistDAO().removeTrackFromPlaylist(m_iPlaylistId, position);
+    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTrackFromPlaylist(m_iPlaylistId, position);
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    if (m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
+    if (m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
 
@@ -173,7 +170,9 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    m_pTrackCollection->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
+    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTracksFromPlaylist(
+            m_iPlaylistId,
+            std::move(trackPositions));
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -196,14 +195,14 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         return;
     } else if (newPosition == 0) {
         // Dragged out of bounds, which is past the end of the rows...
-        newPosition = m_pTrackCollection->getPlaylistDAO().getMaxPosition(m_iPlaylistId);
+        newPosition = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getMaxPosition(m_iPlaylistId);
     }
 
-    m_pTrackCollection->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
+    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
 }
 
 bool PlaylistTableModel::isLocked() {
-    return m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
+    return m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
 }
 
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
@@ -241,7 +240,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         TrackId trackId(index(i, idColumn).data());
         allIds.insert(position, trackId);
     }
-    m_pTrackCollection->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
+    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
@@ -284,17 +283,17 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_RESETPLAYED;
 
-    if (m_iPlaylistId != m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
+    if (m_iPlaylistId != m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
         // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
         caps |= TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_REMOVE_PLAYLIST;
     } else {
         caps |= TRACKMODELCAPS_REMOVE;
     }
-    if (m_pTrackCollection->getPlaylistDAO().getHiddenType(m_iPlaylistId)== PlaylistDAO::PLHT_SET_LOG) {
+    if (m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getHiddenType(m_iPlaylistId)== PlaylistDAO::PLHT_SET_LOG) {
         // Disable reording tracks for history playlists
         caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
     }
-    bool locked = m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
+    bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
     }
@@ -302,8 +301,8 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
-void PlaylistTableModel::playlistChanged(int playlistId) {
-    if (playlistId == m_iPlaylistId) {
+void PlaylistTableModel::playlistsChanged(QSet<int> playlistIds) {
+    if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.
     }
 }

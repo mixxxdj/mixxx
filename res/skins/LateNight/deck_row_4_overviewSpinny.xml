@@ -1,23 +1,38 @@
 <Template>
+  <SetVariable name="btn_type"></SetVariable>
+
   <WidgetGroup>
     <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
+
+      <!-- Small spinny / cover art -->
       <WidgetGroup>
         <SizePolicy>min,me</SizePolicy>
-        <MaximumSize>54,</MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <SizePolicy>min,me</SizePolicy>
-            <MaximumSize>54,</MaximumSize>
             <Layout>horizontal</Layout>
             <Children>
-              <SingletonContainer>
-                <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
-              </SingletonContainer>
+              <!-- draws a line to separate rate rate controls and spinny/cover -->
+              <Template src="skin:separator_spinny_cover.xml"/>
+              <WidgetGroup>
+                <ObjectName>SmallSpinnyCoverContainer</ObjectName>
+                <Size><Variable name="SmallSpinnySize"/></Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
@@ -25,15 +40,21 @@
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
+      </WidgetGroup><!-- Small spinny / cover art -->
+
+      <WidgetGroup>
+        <ObjectName>OverviewBox</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
       </WidgetGroup>
 
-      <SingletonContainer>
-        <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
-      </SingletonContainer>
-
-      <!-- Deck controls + Star rating -->
       <WidgetGroup>
-        <ObjectName>DeckControls</ObjectName>
+        <ObjectName>DeckControlsStars</ObjectName>
         <Layout>vertical</Layout>
         <Children>
 
@@ -42,10 +63,10 @@
           <WidgetGroup>
             <ObjectName>Stars</ObjectName>
             <Layout>vertical</Layout>
-            <Size>-1min,17me</Size>
+            <Size>0min,15f</Size>
             <Children>
               <StarRating>
-                <Size>-1min,15f</Size>
+                <Size>0min,15f</Size>
                 <Alignment>center</Alignment>
                 <TooltipId>starrating</TooltipId>
                 <Channel><Variable name="channum"/></Channel>
@@ -53,71 +74,70 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
 
-          <!-- Deck controls row 1 -->
           <WidgetGroup>
+            <ObjectName>DeckControlButtons</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
-                <SetVariable name="icon">slip</SetVariable>
+                <SetVariable name="ObjectName">SlipmodeButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">quantize</SetVariable>
-                <SetVariable name="icon">quantize</SetVariable>
+                <SetVariable name="ObjectName">QuantizeButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="state_0_unpressed">beat_curpos</SetVariable>
-                <SetVariable name="state_0_pressed">beat_curpos_over</SetVariable>
+                <SetVariable name="ObjectName">CurposButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
             </Children>
-          </WidgetGroup><!-- Deck controls row 1 -->
+          </WidgetGroup><!-- DeckControlButtons row 1 -->
 
-          <!-- Deck controls row 2 -->
           <WidgetGroup>
+            <ObjectName>DeckControlButtons</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="icon">eject</SetVariable>
+                <SetVariable name="ObjectName">EjectButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">repeat</SetVariable>
-                <SetVariable name="icon">repeat</SetVariable>
+                <SetVariable name="ObjectName">RepeatButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
-              <Template src="skin:button_2state_nohover.xml">
+              <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="icon">keylock</SetVariable>
+                <SetVariable name="ObjectName">KeylockButton<Variable name="decks_group"/></SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
-                <SetVariable name="Size">25,18</SetVariable>
+                <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
             </Children>
-          </WidgetGroup><!-- /Deck controls row 2 -->
+          </WidgetGroup><!-- /DeckControlButtons row 2 -->
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- DeckControlsStars -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- DeckRow_4_OverviewSpinny -->
 </Template>

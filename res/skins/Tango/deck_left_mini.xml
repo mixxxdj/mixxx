@@ -127,7 +127,7 @@ Variables:
                     </Connection>
                   </WidgetGroup><!-- /Key Display/Match -->
 
-                  <WidgetGroup><!-- BPM display & invisble sync button -->
+                  <WidgetGroup><!-- BPM display & invisible sync button -->
                     <ObjectName>BpmMini</ObjectName>
                     <Layout>stacked</Layout>
                     <MinimumSize>50,20</MinimumSize>
@@ -154,7 +154,7 @@ Variables:
                         </Connection>
                       </Number>
                     </Children>
-                  </WidgetGroup><!-- /BPM display & invisble sync button -->
+                  </WidgetGroup><!-- /BPM display & invisible sync button -->
 
                 </Children>
               </WidgetGroup><!-- by / Artist / Key / BPM -->

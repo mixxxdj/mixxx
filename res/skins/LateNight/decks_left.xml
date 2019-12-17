@@ -5,12 +5,12 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>DecksLeftContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:deck.xml">
             <SetVariable name="channum">1</SetVariable>
+            <SetVariable name="decks_group">12</SetVariable>
           </Template>
 
           <WidgetGroup>
@@ -19,6 +19,7 @@
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channum">3</SetVariable>
+                <SetVariable name="decks_group">34</SetVariable>
               </Template>
             </Children>
             <Connection>

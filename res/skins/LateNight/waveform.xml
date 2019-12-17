@@ -1,5 +1,8 @@
 <Template>
+  <SetVariable name="btn_type">embedded</SetVariable>
+  <SetVariable name="btn_format">square</SetVariable>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+
   <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
     <Layout>horizontal</Layout>
@@ -9,16 +12,17 @@
         <TooltipId>waveform_display</TooltipId>
         <Channel><Variable name="channum"/></Channel>
         <BgColor><Variable name="SignalBgColor"/></BgColor>
-        <SignalColor><Variable name="signal_color"/></SignalColor>
+        <SignalColor><Variable name="SignalColor"/></SignalColor>
         <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-        <BeatColor>#ffffff</BeatColor>
+        <BeatColor><Variable name="BeatColor"/></BeatColor>
+        <AxesColor><Variable name="AxesColor"/></AxesColor>
         <BeatHighlightColor></BeatHighlightColor>
         <PlayPosColor>#00FF00</PlayPosColor>
-        <EndOfTrackColor>#EA0000</EndOfTrackColor>
+        <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
-          <Align>top|right</Align>
+          <Align>bottom|right</Align>
           <Color>#FF0000</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
@@ -33,14 +37,14 @@
         <Mark>
           <Control>loop_start_position</Control>
           <Text>IN</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
         <Mark>
           <Control>loop_end_position</Control>
           <Text>OUT</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
@@ -59,7 +63,7 @@
         <Mark>
           <Control>intro_start_position</Control>
           <Text>|&#9698;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -67,7 +71,7 @@
         <Mark>
           <Control>intro_end_position</Control>
           <Text>&#9698;|</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -75,7 +79,7 @@
         <Mark>
           <Control>outro_start_position</Control>
           <Text>|&#9699;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -83,7 +87,7 @@
         <Mark>
           <Control>outro_end_position</Control>
           <Text>&#9699;|</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
@@ -96,13 +100,20 @@
         <Mark>
           <Control>cue_point</Control>
           <Text>CUE</Text>
-          <Align>top</Align>
+          <Align>top|right</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
       </Visual>
 
-      <WidgetGroup><!-- Transparent container for beatgrid buttons -->
+      <!-- 3D border like in all embedded containers.
+            Bottom border is created in waveforms_container.xml -->
+      <WidgetGroup>
+        <ObjectName>WaveformsRightBorder</ObjectName>
+        <Size><Variable name="SeparatorWidth"/>f,0min</Size>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>BeatgridButtons</ObjectName>
         <Layout>vertical</Layout>
         <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
@@ -112,16 +123,14 @@
           <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
 
           <WidgetGroup><!-- beat grid buttons row -->
-            <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="ObjectName">BeatCurpos</SetVariable>
-                <SetVariable name="state_0_pressed">beat_curpos_large_down</SetVariable>
-                <SetVariable name="state_0_unpressed">beat_curpos_large</SetVariable>
+                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                 <SetVariable name="Size">26f,52f</SetVariable>
+                <SetVariable name="btn_format">tall</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
               </Template>
@@ -132,16 +141,14 @@
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Icon">beats_earlier</SetVariable>
+                    <SetVariable name="ObjectName">BeatsEarlier</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
                   </Template>
 
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Icon">beats_faster</SetVariable>
+                    <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
                   </Template>
@@ -154,15 +161,14 @@
                 <Children>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Icon">beats_later</SetVariable>
+                    <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
                   </Template>
 
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>

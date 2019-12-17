@@ -4,14 +4,20 @@
     <TooltipId>waveform_overview</TooltipId>
     <Channel><Variable name="channum"/></Channel>
     <Size>150me,40me</Size>
-    <BgColor>#1E1E1E</BgColor>
+    <BgColor><Variable name="SignalBgColor"/></BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
     <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
     <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
     <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-    <PlayPosColor>#00FF00</PlayPosColor>
-    <EndOfTrackColor>#EA0000</EndOfTrackColor>
+    <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
+    <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <!--LabelFontSize>12</LabelFontSize>
+    <LabelTextColor>#fff</LabelTextColor>
+    <LabelBackgroundColor>rgba(0,0,0,255)</LabelBackgroundColor>
+    <LabelBackgroundColor>0,0,0,255</LabelBackgroundColor>
+    <LabelBackgroundColor>#aa000000</LabelBackgroundColor>
+    <LabelBackgroundColor>0,0,0,255</LabelBackgroundColor-->
     <DefaultMark>
       <Align>bottom|right</Align>
       <Color>#FF0000</Color>

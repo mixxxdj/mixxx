@@ -82,7 +82,6 @@ void VinylControlProcessor::run() {
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
 
     while (!m_bQuit) {
-        Event::start("VinylControlProcessor");
         if (m_bReloadConfig) {
             reloadConfig();
             m_bReloadConfig = false;
@@ -130,7 +129,6 @@ void VinylControlProcessor::run() {
 
         // Wait for a signal from the main thread or engine thread that we
         // should wake up and process input.
-        Event::end("VinylControlProcessor");
         m_waitForSampleMutex.lock();
         m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
         m_waitForSampleMutex.unlock();

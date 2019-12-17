@@ -19,8 +19,8 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
