@@ -150,7 +150,10 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     // lp1744550: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
-    for (int i = 0; i < 250000; ++i) {
+    // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
+    // iterations takes ~1 sec. In order to safely finish this test within
+    // the timeout limit of 30 sec. we use 20 * 10_000 = 200_000 iterations.
+    for (int i = 0; i < 200000; ++i) {
         m_recentTrackPtr.reset();
 
         TrackId trackId;
