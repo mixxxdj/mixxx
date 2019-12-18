@@ -64,8 +64,11 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     // ToDO Make second part of tooltip also show up
-    m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
-    m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
+    m_clearButton->setToolTip(tr("Clear input") + "\n" +
+            tr("Clear the search bar input field") + "\n\n" +
+
+            tr("Shortcut") + ": \n" +
+            tr("Ctrl+Backspace"));
     m_clearButton->hide();
     connect(m_clearButton,
             SIGNAL(clicked()),
