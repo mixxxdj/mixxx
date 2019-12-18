@@ -491,9 +491,6 @@ void WTrackTableView::createActions() {
             this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        if (!externalTrackCollection->isConnected()) {
-            continue; // skip
-        }
         UpdateExternalTrackCollection updateInExternalTrackCollection;
         updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
         updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), this);
