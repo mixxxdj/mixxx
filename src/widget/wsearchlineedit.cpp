@@ -160,15 +160,12 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
-    // ToDo This just reads some default Qt frame width. For me it always retiurns '2'
-    // int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    // How to read the widget's actual custom qss values like margin, border etc.?
-    // For now, assume the qss border is at least 1px wide
+    // Assume the qss border is at least 1px wide
     int frameWidth = 1;
     int innerHeight = this->height() - 2 * frameWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
-    // we will resize the Clear button icon only if height has changes.
+    // we will resize the Clear button icon only if height has changed.
     if (m_clearButton->size().height() != innerHeight) {
         QSize newSize = QSize(innerHeight, innerHeight);
         m_clearButton->resize(innerHeight, innerHeight);
