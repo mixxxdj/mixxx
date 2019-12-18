@@ -2288,13 +2288,12 @@ QTreeView::branch:open:has-children:has-siblings {
     border-image: none;
     background-color: #333;
   }
-/* Text label of branch item */
-/* TEST */
+/* ToDo Style branch icons
 QTreeView::item:indicator {
   qproperty-iconSize: 40px;
   qproperty-icon: url(skin:/buttons/btn_lib_clear_search.svg);
   background-color: green;
-  }
+  } */
 QTreeView::item:selected {
   border-image: none;
   background-image: none;
