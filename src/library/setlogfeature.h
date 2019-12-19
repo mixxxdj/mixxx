@@ -39,8 +39,8 @@ public:
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(int playlistId) override;
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName) override;
+    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
   private:
     QString getRootViewHtml() const override;

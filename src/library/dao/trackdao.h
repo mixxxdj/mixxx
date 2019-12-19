@@ -47,10 +47,17 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     }
     void finish();
 
-    TrackId getTrackId(const QString& absoluteFilePath) const;
-    QList<TrackId> resolveTrackIds(const QList<QFileInfo> &files,
-            ResolveTrackIdFlags flags);
-    QList<TrackId> getAllTrackIds(const QDir& rootDir);
+    QList<TrackId> resolveTrackIds(
+            const QList<TrackFile> &trackFiles,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
+
+    TrackId getTrackIdByRef(
+            const TrackRef& trackRef) const;
+    QList<TrackId> getAllTrackIds(
+            const QDir& rootDir);
+
+    TrackPointer getTrackByRef(
+            const TrackRef& trackRef) const;
 
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
@@ -90,16 +97,18 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class LibraryScanner;
     friend class TrackCollection;
 
-    TrackPointer getTrackById(TrackId trackId) const;
+    TrackId getTrackIdByLocation(
+            const QString& location) const;
+    TrackPointer getTrackById(
+            TrackId trackId) const;
 
-    // Fetches trackLocation from the database or adds it. If searchForCoverArt
-    // is true, searches the track and its directory for cover art via
-    // asynchronous request to CoverArtCache. If adding or fetching the track
-    // fails, returns a transient TrackPointer for trackLocation. If
-    // pAlreadyInLibrary is non-NULL, sets it to whether trackLocation was
-    // already in the database.
-    TrackPointer getOrAddTrackByLocation(
-            const QString& trackLocation,
+    // Loads a track from the database (by id if available, otherwise by location)
+    // or adds it if not found in case the location is known. The (optional) out
+    // parameter is set if the track has been found (-> true) or added (-> false).
+    // Asynchronously imports cover art for newly added tracks. On failure a nullptr
+    // is returned and pAlreadyInLibrary is left untouched.
+    TrackPointer getOrAddTrack(
+            const TrackRef& trackRef,
             bool* pAlreadyInLibrary = nullptr);
 
     void addTracksPrepare();
