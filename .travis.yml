@@ -72,6 +72,7 @@ jobs:
 
     - name: OSX/clang/SCons build
       os: osx
+      osx_image: xcode11
       compiler: clang
       cache:
         directories:
@@ -107,6 +108,7 @@ jobs:
 
     - name: OSX/clang/CMake build
       os: osx
+      osx_image: xcode11
       compiler: clang
       cache:
         ccache: true
