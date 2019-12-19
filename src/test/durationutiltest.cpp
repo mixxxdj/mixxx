@@ -1,3 +1,5 @@
+#include <limits>
+
 #include <gtest/gtest.h>
 
 #include "util/duration.h"
@@ -9,15 +11,17 @@ namespace {
 class DurationUtilTest : public testing::Test {
   protected:
     static QString adjustPrecision(
-        QString withMilliseconds,
-        mixxx::Duration::Precision precision) {
-        switch (precision) {
-        case mixxx::Duration::Precision::SECONDS:
+            QString withMilliseconds,
+            mixxx::Duration::Precision precision) {
+        if (withMilliseconds == mixxx::DurationBase::kInvalidDurationString)
         {
+            return withMilliseconds;
+        }
+        switch (precision) {
+        case mixxx::Duration::Precision::SECONDS: {
             return withMilliseconds.left(withMilliseconds.length() - 4);
         }
-        case mixxx::Duration::Precision::CENTISECONDS:
-        {
+        case mixxx::Duration::Precision::CENTISECONDS: {
             return withMilliseconds.left(withMilliseconds.length() - 1);
         }
         default:
@@ -26,7 +30,6 @@ class DurationUtilTest : public testing::Test {
     }
 
     void formatTime(QString expectedMilliseconds, double dSeconds) {
-        ASSERT_LE(4, expectedMilliseconds.length()); // 3 digits + 1 decimal point
         const QString actualSeconds =
             mixxx::Duration::formatTime(dSeconds, mixxx::Duration::Precision::SECONDS);
         const QString expectedSeconds =
@@ -112,6 +115,8 @@ TEST_F(DurationUtilTest, formatTime) {
     formatTime("24:00:00.000", 24 * 3600);
     formatTime("24:00:01.000", 24 * 3600 + 1);
     formatTime("25:00:01.000", 25 * 3600 + 1);
+    formatTime("?", std::numeric_limits<double>::infinity());
+    formatTime("?", -1);
 }
 
 TEST_F(DurationUtilTest, formatSeconds) {

@@ -27,6 +27,7 @@ class DlgAutoDJ;
 class Library;
 class PlayerManagerInterface;
 class TrackCollection;
+class TrackCollectionManager;
 class AutoDJProcessor;
 class WLibrarySidebar;
 
@@ -35,41 +36,38 @@ class AutoDJFeature : public LibraryFeature {
   public:
     AutoDJFeature(Library* pLibrary,
                   UserSettingsPointer pConfig,
-                  PlayerManagerInterface* pPlayerManager,
-                  TrackCollection* pTrackCollection);
+                  PlayerManagerInterface* pPlayerManager);
     virtual ~AutoDJFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+                    KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
     bool hasTrackTable() override {
         return true;
     }
 
   public slots:
-    void activate();
+    void activate() override;
 
     // Temporary, until WCrateTableView can be written.
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   private:
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
-    TrackCollection* m_pTrackCollection;
+    TrackCollection* const m_pTrackCollection;
+
     PlaylistDAO& m_playlistDao;
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     DlgAutoDJ* m_pAutoDJView;
 

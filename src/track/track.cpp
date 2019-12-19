@@ -653,21 +653,19 @@ void Track::setCuePoint(CuePosition cue) {
     }
 
     // Store the cue point in a load cue
-    CuePointer pLoadCue = findCueByType(Cue::LOAD);
-    Cue::CueSource source = cue.getSource();
+    CuePointer pLoadCue = findCueByType(Cue::Type::MainCue);
     double position = cue.getPosition();
     if (position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
-            pLoadCue->setType(Cue::LOAD);
+            pLoadCue->setType(Cue::Type::MainCue);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
-        pLoadCue->setPosition(position);
-        pLoadCue->setSource(source);
+        pLoadCue->setStartPosition(position);
     } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
@@ -697,10 +695,10 @@ CuePointer Track::createAndAddCue() {
     return pCue;
 }
 
-CuePointer Track::findCueByType(Cue::CueType type) const {
+CuePointer Track::findCueByType(Cue::Type type) const {
     // This method cannot be used for hotcues because there can be
     // multiple hotcues and this function returns only a single CuePointer.
-    DEBUG_ASSERT(type != Cue::CUE);
+    DEBUG_ASSERT(type != Cue::Type::HotCue);
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
@@ -718,20 +716,20 @@ void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
-    if (pCue->getType() == Cue::LOAD) {
+    if (pCue->getType() == Cue::Type::MainCue) {
         m_record.setCuePoint(CuePosition());
     }
     markDirtyAndUnlock(&lock);
     emit(cuesUpdated());
 }
 
-void Track::removeCuesOfType(Cue::CueType type) {
+void Track::removeCuesOfType(Cue::Type type) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = false;
     QMutableListIterator<CuePointer> it(m_cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        // FIXME: Why does this only work for the CUE CueType?
+        // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
             disconnect(pCue.get(), 0, this, 0);
             it.remove();
@@ -764,8 +762,8 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
-        if (pCue->getType() == Cue::LOAD) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
+        if (pCue->getType() == Cue::Type::MainCue) {
+            m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
     markDirtyAndUnlock(&lock);
@@ -925,13 +923,13 @@ quint16 Track::getCoverHash() const {
     return m_record.getCoverInfo().hash;
 }
 
-Track::ExportMetadataResult Track::exportMetadata(
+ExportTrackMetadataResult Track::exportMetadata(
         mixxx::MetadataSourcePointer pMetadataSource) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
                 << getLocation();
-        return ExportMetadataResult::Failed;
+        return ExportTrackMetadataResult::Failed;
     }
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
@@ -961,7 +959,7 @@ Track::ExportMetadataResult Track::exportMetadata(
             kLogger.info()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
-            return ExportMetadataResult::Skipped;
+            return ExportTrackMetadataResult::Skipped;
         }
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata
@@ -1006,7 +1004,7 @@ Track::ExportMetadataResult Track::exportMetadata(
                                 << "Skip exporting of unmodified track metadata into file:"
                                 << getLocation();
                 }
-                return ExportMetadataResult::Skipped;
+                return ExportTrackMetadataResult::Skipped;
             }
         } else {
             // Something must be wrong with the file or it doesn't
@@ -1017,7 +1015,7 @@ Track::ExportMetadataResult Track::exportMetadata(
                     << "Skip exporting of track metadata after import failed."
                     << "Export of metadata must be triggered explicitly for this file:"
                     << getLocation();
-            return ExportMetadataResult::Skipped;
+            return ExportTrackMetadataResult::Skipped;
         }
         // ...by continuing the file tags will be updated
     }
@@ -1041,11 +1039,11 @@ Track::ExportMetadataResult Track::exportMetadata(
                     << "Exported track metadata:"
                     << getLocation();
         }
-        return ExportMetadataResult::Succeeded;
+        return ExportTrackMetadataResult::Succeeded;
     } else {
         kLogger.warning()
                 << "Failed to export track metadata:"
                 << getLocation();
-        return ExportMetadataResult::Failed;
+        return ExportTrackMetadataResult::Failed;
     }
 }

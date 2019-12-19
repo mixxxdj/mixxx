@@ -30,8 +30,8 @@ class EncoderVorbisSettings : public EncoderSettings {
     // Sets the quality value by its index
     void setQualityByIndex(int qualityIndex) override;
     // Returns the current quality value
-    virtual int getQuality() const override;
-    virtual int getQualityIndex() const override;
+    int getQuality() const override;
+    int getQualityIndex() const override;
 
   private:
     QList<int> m_qualList;

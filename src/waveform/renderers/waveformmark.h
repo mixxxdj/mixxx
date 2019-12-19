@@ -4,11 +4,11 @@
 #include <QDomNode>
 #include <QImage>
 
-#include "waveform/waveformmarklabel.h"
-#include "control/controlproxy.h"
-#include "util/memory.h"
-
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "track/cue.h"
+#include "util/memory.h"
+#include "waveform/waveformmarklabel.h"
 
 class SkinContext;
 class WaveformSignalColors;
@@ -17,13 +17,12 @@ class WOverview;
 
 class WaveformMark {
   public:
-    static const int kNoHotCue = -1;
     WaveformMark(
             const QString& group,
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors,
-            int hotCue = kNoHotCue);
+            int hotCue = Cue::kNoHotCue);
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
@@ -99,9 +98,9 @@ inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer&
     if (leftPosition == rightPosition) {
         // Sort WaveformMarks without hotcues before those with hotcues;
         // if both have hotcues, sort numerically by hotcue number.
-        if (leftHotcue == WaveformMark::kNoHotCue && rightHotcue != WaveformMark::kNoHotCue) {
+        if (leftHotcue == Cue::kNoHotCue && rightHotcue != Cue::kNoHotCue) {
             return true;
-        } else if (leftHotcue != WaveformMark::kNoHotCue && rightHotcue == WaveformMark::kNoHotCue) {
+        } else if (leftHotcue != Cue::kNoHotCue && rightHotcue == Cue::kNoHotCue) {
             return false;
         } else {
             return leftHotcue < rightHotcue;

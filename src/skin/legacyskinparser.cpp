@@ -1318,6 +1318,7 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pLibraryWidget->setup(node, *m_pContext);
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary, SIGNAL(search(const QString&)),
@@ -1412,21 +1413,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     // Workaround to support legacy color styling
     QColor color(0,0,0);
 
-    // Style the library preview button with a default image.
-    QString styleHack = (
-        "#LibraryPreviewButton { background: transparent; border: 0; }"
-        "#LibraryPreviewButton:checked {"
-        "  image: url(:/images/library/ic_library_preview_pause.svg);"
-        "}"
-        "#LibraryPreviewButton:!checked {"
-        "  image: url(:/images/library/ic_library_preview_play.svg);"
-        "}");
-    // Style the library BPM Button with a default image
-    styleHack.append(QString(
-        "QPushButton#LibraryBPMButton { background: transparent; border: 0; }"
-        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_locked.svg);}"
-        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unlocked.svg);}"));
-
+    QString styleHack = "";
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
         color.setNamedColor(fgColor);

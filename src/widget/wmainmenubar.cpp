@@ -179,7 +179,7 @@ void WMainMenuBar::initialize() {
     pViewShowSkinSettings->setCheckable(true);
     pViewShowSkinSettings->setShortcut(
         QKeySequence(m_pKbdConfig->getValue(
-            ConfigKey("[Master]", "ViewMenu_ShowSkinSettings"),
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowSkinSettings"),
             tr("Ctrl+1", "Menubar|View|Show Skin Settings"))));
     pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
     pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));

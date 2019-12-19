@@ -5,6 +5,7 @@
  *      Author: vittorio
  */
 
+#include <algorithm>
 #include <QtDebug>
 #include <QtGlobal>
 #include <QMutexLocker>
@@ -206,7 +207,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            qLowerBound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -297,7 +298,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            qLowerBound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -380,11 +381,11 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
     stopBeat.set_frame_position(samplesToFrames(stopSample));
 
     BeatList::const_iterator curBeat =
-            qLowerBound(m_beats.constBegin(), m_beats.constEnd(),
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
                         startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
-            qUpperBound(m_beats.constBegin(), m_beats.constEnd(),
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(),
                         stopBeat, BeatLessThan);
 
     if (curBeat >= lastBeat) {
@@ -457,7 +458,7 @@ void BeatMap::addBeat(double dBeatSample) {
     QMutexLocker locker(&m_mutex);
     Beat beat;
     beat.set_frame_position(samplesToFrames(dBeatSample));
-    BeatList::iterator it = qLowerBound(
+    BeatList::iterator it = std::lower_bound(
         m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
@@ -475,7 +476,7 @@ void BeatMap::removeBeat(double dBeatSample) {
     QMutexLocker locker(&m_mutex);
     Beat beat;
     beat.set_frame_position(samplesToFrames(dBeatSample));
-    BeatList::iterator it = qLowerBound(
+    BeatList::iterator it = std::lower_bound(
         m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
     // In case there are duplicates, remove every instance of dBeatSample
@@ -495,7 +496,7 @@ void BeatMap::moveBeat(double dBeatSample, double dNewBeatSample) {
     beat.set_frame_position(samplesToFrames(dBeatSample));
     newBeat.set_frame_position(samplesToFrames(dNewBeatSample));
 
-    BeatList::iterator it = qLowerBound(
+    BeatList::iterator it = std::lower_bound(
         m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
     // In case there are duplicates, remove every instance of dBeatSample
@@ -509,7 +510,7 @@ void BeatMap::moveBeat(double dBeatSample, double dNewBeatSample) {
     }
 
     // Now add a beat to dNewBeatSample
-    it = qLowerBound(m_beats.begin(), m_beats.end(), newBeat, BeatLessThan);
+    it = std::lower_bound(m_beats.begin(), m_beats.end(), newBeat, BeatLessThan);
     // TODO(XXX) beat epsilon
     if (it->frame_position() != newBeat.frame_position()) {
         m_beats.insert(it, newBeat);
@@ -732,10 +733,10 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
     }
 
     BeatList::const_iterator curBeat =
-            qLowerBound(m_beats.constBegin(), m_beats.constEnd(), startBeat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
-            qUpperBound(m_beats.constBegin(), m_beats.constEnd(), stopBeat, BeatLessThan);
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), stopBeat, BeatLessThan);
 
     QVector<double> beatvect;
     for (; curBeat != lastBeat; ++curBeat) {

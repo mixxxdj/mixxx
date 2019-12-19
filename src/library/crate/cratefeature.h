@@ -11,6 +11,7 @@
 #include <QPoint>
 #include <QPointer>
 
+#include "library/crate/cratestorage.h"
 #include "library/crate/cratetablemodel.h"
 
 #include "library/libraryfeature.h"
@@ -24,16 +25,14 @@
 
 // forward declaration(s)
 class Library;
-class TrackCollection;
 class WLibrarySidebar;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
     CrateFeature(Library* pLibrary,
-                 TrackCollection* pTrackCollection,
                  UserSettingsPointer pConfig);
-    ~CrateFeature() override;
+    ~CrateFeature() override = default;
 
     QVariant title() override;
     QIcon getIcon() override;
@@ -44,7 +43,7 @@ class CrateFeature : public LibraryFeature {
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* getChildModel() override;
 
@@ -104,7 +103,7 @@ class CrateFeature : public LibraryFeature {
     const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollection* const m_pTrackCollection;
 
     CrateTableModel m_crateTableModel;
     TreeItemModel m_childModel;

@@ -1,16 +1,15 @@
-// Created by RJ Ryan (rryan@mit.edu) 1/29/2010
-#ifndef BASESQLTABLEMODEL_H
-#define BASESQLTABLEMODEL_H
+#pragma once
 
 #include <QHash>
 #include <QtSql>
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
-#include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/columncache.h"
 #include "util/class.h"
+
+class TrackCollectionManager;
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
@@ -18,7 +17,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
   public:
     BaseSqlTableModel(QObject* pParent,
-                      TrackCollection* pTrackCollection,
+                      TrackCollectionManager* pTrackCollectionManager,
                       const char* settingsNamespace);
     ~BaseSqlTableModel() override;
 
@@ -56,11 +55,11 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  Functions that might be reimplemented/overridden in derived classes
     ///////////////////////////////////////////////////////////////////////////
     //  This class also has protected variables that should be used in children
-    //  m_database, m_pTrackCollection, m_trackDAO
+    //  m_database, m_pTrackCollection
 
     // calls readWriteFlags() by default, reimplement this if the child calls
     // should be readOnly
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from TrackModel
@@ -85,7 +84,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
   public slots:
-    void select();
+    void select() override;
 
   protected:
     void setTable(const QString& tableName, const QString& trackIdColumn,
@@ -99,7 +98,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // Use this if you want a model that can be changed
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollectionManager* const m_pTrackCollectionManager;
+
+  protected:
     QSqlDatabase m_database;
 
     QString m_previewDeckGroup;
@@ -166,5 +167,3 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };
-
-#endif /* BASESQLTABLEMODEL_H */

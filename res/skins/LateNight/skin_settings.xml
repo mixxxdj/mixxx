@@ -127,10 +127,27 @@ Description:
               </Template>
 
               <!-- Big Spinny -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[LateNight],no_spinny_no_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- Big Spinny -->
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
@@ -147,6 +164,11 @@ Description:
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">Master / Headphone Mixer</SetVariable>
+                <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+              </Template>
 
               <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
