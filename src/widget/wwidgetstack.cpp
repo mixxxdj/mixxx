@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QApplication>
 
 #include "widget/wwidgetstack.h"
 
@@ -64,7 +65,7 @@ void WWidgetStack::showIndex(int index) {
     // Only respond to changes if the stack is visible.  This allows multiple
     // stacks to use the same trigger COs without causing conflicts.
     if (isVisible()) {
-        setCurrentIndex(index);
+        slotSetIndex(index);
     }
 }
 
@@ -75,12 +76,12 @@ void WWidgetStack::hideIndex(int index) {
     if (currentIndex() == index) {
         auto it = m_hideMap.constFind(index);
         if (it != m_hideMap.constEnd()) {
-            setCurrentIndex(*it);
+            slotSetIndex(*it);
         } else {
             // TODO: This default behavior is a little odd, is it really what
             // we want?  Or should we save the previously-selected page and then
             // switch to that.
-            setCurrentIndex((index + 1) % count());
+            slotSetIndex((index + 1) % count());
         }
     }
 }
@@ -94,7 +95,7 @@ void WWidgetStack::showEvent(QShowEvent* /*unused*/) {
         it.value()->setControl(it.key() == index ? 1.0 : 0.0);
     }
 
-    setCurrentIndex(index);
+    slotSetIndex(index);
 }
 
 void WWidgetStack::onNextControlChanged(double v) {
@@ -102,7 +103,7 @@ void WWidgetStack::onNextControlChanged(double v) {
         return;
     }
     if (v > 0.0) {
-        setCurrentIndex((currentIndex() + 1) % count());
+        slotSetIndex((currentIndex() + 1) % count());
     }
 }
 
@@ -115,7 +116,7 @@ void WWidgetStack::onPrevControlChanged(double v) {
         while (newIndex < 0) {
             newIndex += count();
         }
-        setCurrentIndex(newIndex);
+        slotSetIndex(newIndex);
     }
 }
 
@@ -131,7 +132,7 @@ void WWidgetStack::onCurrentPageControlChanged(double v) {
         return;
     }
     int newIndex = static_cast<int>(v);
-    setCurrentIndex(newIndex);
+    slotSetIndex(newIndex);
 }
 
 void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
@@ -161,6 +162,21 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
     }
     if (on_hide_select != -1) {
         m_hideMap[index] = on_hide_select;
+    }
+}
+
+void WWidgetStack::slotSetIndex(int index) {
+    // If the previously focused widget was a child of the previous
+    // index widget re-focus that widget after the index has changed.
+    // For now, its only purpose is to restore the keyboard focus of
+    // library widgets in the Library singleton when toggling
+    // [Master],maximize_library
+    QWidget* prevFocusWidget = QApplication::focusWidget();
+    setCurrentIndex(index);
+    QWidget* newIndexWidget = currentWidget();
+    if (newIndexWidget->isAncestorOf(prevFocusWidget)) {
+        // restore previous keyboard focus
+        prevFocusWidget->setFocus();
     }
 }
 
