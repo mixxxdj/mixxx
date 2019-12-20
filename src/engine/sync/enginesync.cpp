@@ -52,14 +52,14 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             if (syncDeckExists()) {
                 // Internal clock cannot be set to follower if there are other decks
                 // with sync on. Notify them that their mode has not changed.
-                pSyncable->notifySyncModeChanged(SYNC_MASTER);
+                pSyncable->setSyncMode(SYNC_MASTER);
             } else {
                 // No sync deck exists. Allow the clock to go inactive. This
                 // case does not happen in practice since the logic in
                 // deactivateSync also deactivates the internal clock when the
                 // last sync deck deactivates but leave this in for good
                 // measure.
-                pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
+                pSyncable->setSyncMode(SYNC_FOLLOWER);
             }
         } else if (channelIsMaster) {
             // Was this deck master before? If so do a handoff.
@@ -84,7 +84,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
                 syncDeckExists()) {
             // Internal clock cannot be disabled if there are other decks with
             // sync on. Notify them that their mode has not changed.
-            pSyncable->notifySyncModeChanged(SYNC_MASTER);
+            pSyncable->setSyncMode(SYNC_MASTER);
         } else {
             deactivateSync(pSyncable);
         }
@@ -302,7 +302,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
         return;
     }
 
-    pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
+    pSyncable->setSyncMode(SYNC_FOLLOWER);
     pSyncable->setMasterParams(masterBeatDistance(), masterBaseBpm(), masterBpm());
 }
 
@@ -331,7 +331,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 
     //qDebug() << "Setting up master " << pSyncable->getGroup();
     m_pMasterSyncable = pSyncable;
-    pSyncable->notifySyncModeChanged(SYNC_MASTER);
+    pSyncable->setSyncMode(SYNC_MASTER);
 
     // It is up to callers of this function to initialize bpm and beat_distance
     // if necessary.
@@ -344,7 +344,7 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 
     // Notifications happen after-the-fact.
-    pSyncable->notifySyncModeChanged(SYNC_NONE);
+    pSyncable->setSyncMode(SYNC_NONE);
 
     bool bSyncDeckExists = syncDeckExists();
 
@@ -357,7 +357,7 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
         } else {
             // Deactivate the internal clock if there are no more sync decks left.
             m_pMasterSyncable = NULL;
-            m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
+            m_pInternalClock->setSyncMode(SYNC_NONE);
         }
     }
 }

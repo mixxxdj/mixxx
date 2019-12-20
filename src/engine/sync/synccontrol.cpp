@@ -116,7 +116,7 @@ SyncMode SyncControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-void SyncControl::notifySyncModeChanged(SyncMode mode) {
+void SyncControl::setSyncMode(SyncMode mode) {
     //qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
@@ -139,9 +139,14 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the followers update based on our current rate.
-        slotRateChanged();
-        m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
-        m_pBpm->set(m_pLocalBpm->get() * m_pRateRatio->get());
+        //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
+        double bpm = m_pBpm->get();
+        if (bpm > 0) {
+            // When reporting our bpm, remove the multiplier so the masters all
+            // think the followers have the same bpm.
+            m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+            m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
+        }
     }
 }
 

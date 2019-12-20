@@ -29,7 +29,7 @@ class SyncControl : public EngineControl, public Syncable {
     double getBpm() const override;
 
     SyncMode getSyncMode() const override;
-    void notifySyncModeChanged(SyncMode mode) override;
+    void setSyncMode(SyncMode mode) override;
     void notifyOnlyPlayingSyncable() override;
     void requestSync() override;
     bool isPlaying() const override;

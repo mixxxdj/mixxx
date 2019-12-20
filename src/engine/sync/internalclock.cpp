@@ -43,7 +43,7 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
 InternalClock::~InternalClock() {
 }
 
-void InternalClock::notifySyncModeChanged(SyncMode mode) {
+void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
