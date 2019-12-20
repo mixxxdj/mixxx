@@ -1097,7 +1097,7 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_MASTER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
     // Exaggerate the effect with a high rate.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(10.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 10.0);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);

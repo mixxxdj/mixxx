@@ -1328,7 +1328,14 @@ void EngineBuffer::slotEjectTrack(double v) {
 }
 
 double EngineBuffer::getExactPlayPos() {
-    return getVisualPlayPos() * getTrackSamples();
+    double visualPlayPos = getVisualPlayPos();
+    if (visualPlayPos > 0) {
+        return getVisualPlayPos() * getTrackSamples();
+    } else {
+        // Track was just loaded and the first buffer was not processed yet.
+        // asume it is at 0:00
+        return 0.0;
+    }
 }
 
 double EngineBuffer::getVisualPlayPos() {
