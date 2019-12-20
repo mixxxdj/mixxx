@@ -166,16 +166,15 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
 }
 
 void WWidgetStack::slotSetIndex(int index) {
-    // If the previously focused widget was a child of the previous
-    // index widget re-focus that widget after the index has changed.
-    // For now, its only purpose is to restore the keyboard focus of
+    // If the previously focused widget is a child of the new
+    // index widget re-focus that widget.
+    // For now, its only purpose is to keep the keyboard focus on
     // library widgets in the Library singleton when toggling
     // [Master],maximize_library
     QWidget* prevFocusWidget = QApplication::focusWidget();
     setCurrentIndex(index);
     QWidget* newIndexWidget = currentWidget();
     if (newIndexWidget->isAncestorOf(prevFocusWidget)) {
-        // restore previous keyboard focus
         prevFocusWidget->setFocus();
     }
 }
