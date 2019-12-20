@@ -785,10 +785,7 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
-    double dOtherLength = ControlObject::get(
-            ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"));
-    double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
-    double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
+    double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
     if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
                   &dOtherPrevBeat, &dOtherNextBeat, &dOtherBeatLength, &dOtherBeatFraction)) {
