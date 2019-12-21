@@ -317,7 +317,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     qDebug() << "parseDeviceDB device: " << device << " devicePath: " << devicePath;
 
-    QString dbPath = devicePath + "/" + kPdbPath;
+    QString dbPath = devicePath + QStringLiteral("/") + kPdbPath;
 
     if (!QFile(dbPath).exists()) {
         return devicePath;
