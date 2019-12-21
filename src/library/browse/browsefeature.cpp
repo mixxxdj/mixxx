@@ -23,7 +23,11 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
 
-const QString kQuickLinksSeparator = "-+-";
+namespace {
+
+const QString kQuickLinksSeparator = QStringLiteral("-+-");
+
+} // anonymous namespace
 
 BrowseFeature::BrowseFeature(
         Library* pLibrary,
@@ -343,7 +347,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    QDir run_media_user_dir(QStringLiteral("/run/media/") % QString::fromLocal8Bit(qgetenv("USER")));
     devices += run_media_user_dir.entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
@@ -352,7 +356,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         TreeItem* folder = new TreeItem(
             pFeature,
             device.fileName(),
-            device.filePath() + "/");
+            QVariant(device.filePath() % QStringLiteral("/")));
         ret << folder;
     }
 
@@ -421,7 +425,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             TreeItem* folder = new TreeItem(
                 this,
                 one.fileName(),
-                one.absoluteFilePath() + "/");
+                QVariant(one.absoluteFilePath() % QStringLiteral("/")));
             folders << folder;
         }
     }

@@ -200,7 +200,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group + "," + mapping.control.item;
+                    return QVariant(mapping.control.group % QStringLiteral(",") % mapping.control.item);
                 }
                 return qVariantFromValue(mapping.control);
             case MIDI_COLUMN_COMMENT:
