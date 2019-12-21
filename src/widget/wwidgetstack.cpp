@@ -173,8 +173,7 @@ void WWidgetStack::slotSetIndex(int index) {
     // [Master],maximize_library
     QWidget* prevFocusWidget = QApplication::focusWidget();
     setCurrentIndex(index);
-    QWidget* newIndexWidget = currentWidget();
-    if (newIndexWidget->isAncestorOf(prevFocusWidget)) {
+    if (currentWidget()->isAncestorOf(prevFocusWidget)) {
         prevFocusWidget->setFocus();
     }
 }
