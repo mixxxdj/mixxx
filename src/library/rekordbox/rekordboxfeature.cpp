@@ -112,17 +112,17 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /media/$USER to devices.
-    QDir mediaUserDir(QStringLiteral("/media/") % QString::fromLocal8Bit(qgetenv("USER")));
+    QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += mediaUserDir.entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir runMediaUserDir(QStringLiteral("/run/media/") % QString::fromLocal8Bit(qgetenv("USER")));
+    QDir runMediaUserDir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += runMediaUserDir.entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() % QStringLiteral("/") % kPdbPath);
+        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
             TreeItem* foundDevice = new TreeItem(rekordboxFeature);
@@ -141,7 +141,7 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
     QFileInfoList devices = QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() % QStringLiteral("/") % kPdbPath);
+        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
             TreeItem* foundDevice = new TreeItem(rekordboxFeature);

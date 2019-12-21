@@ -347,7 +347,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir(QStringLiteral("/run/media/") % QString::fromLocal8Bit(qgetenv("USER")));
+    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += run_media_user_dir.entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
@@ -356,7 +356,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         TreeItem* folder = new TreeItem(
             pFeature,
             device.fileName(),
-            QVariant(device.filePath() % QStringLiteral("/")));
+            QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
 
@@ -425,7 +425,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             TreeItem* folder = new TreeItem(
                 this,
                 one.fileName(),
-                QVariant(one.absoluteFilePath() % QStringLiteral("/")));
+                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
             folders << folder;
         }
     }

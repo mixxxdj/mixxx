@@ -14,9 +14,9 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QString filename = QStringLiteral("file.mp3");
 
-    TrackFile oldFile(QDir(QDir::tempPath() % QStringLiteral("/old/dir1")), filename);
-    TrackFile newFile(QDir(QDir::tempPath() % QStringLiteral("/new/dir1")), filename);
-    TrackFile otherFile(QDir(QDir::tempPath() % QStringLiteral("/new")), filename);
+    TrackFile oldFile(QDir(QDir::tempPath() + QStringLiteral("/old/dir1")), filename);
+    TrackFile newFile(QDir(QDir::tempPath() + QStringLiteral("/new/dir1")), filename);
+    TrackFile otherFile(QDir(QDir::tempPath() + QStringLiteral("/new")), filename);
 
     TrackPointer pOldTrack = Track::newTemporary(oldFile);
     TrackPointer pNewTrack = Track::newTemporary(newFile);
