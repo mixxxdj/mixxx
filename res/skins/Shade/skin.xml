@@ -291,6 +291,15 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>LibraryTable</ObjectName>
+      <Children>
+        <Library>
+          <ShowButtonText>false</ShowButtonText>
+        </Library>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <Size>0e,2f</Size>
     </WidgetGroup>
@@ -441,9 +450,11 @@
               <Collapsible>1,0</Collapsible>
               <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
               <Children>
+                <!-- Sidebar etc. -->
                 <WidgetGroup>
                   <Layout>vertical</Layout>
                   <Children>
+                    <!-- Preview deck -->
                     <WidgetGroup>
                       <Style>
                         QGroupBox {
@@ -458,7 +469,8 @@
                         <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
-                    </WidgetGroup>
+                    </WidgetGroup><!-- Preview deck -->
+
                     <!--Search Input Field-->
                     <SearchBox></SearchBox>
                     <!--Library Tree View-->
@@ -480,21 +492,14 @@
                       </Children>
                     </Splitter>
                   </Children>
-                </WidgetGroup>
-                <WidgetGroup>
-                  <!-- Library Table-->
-                  <Layout>vertical</Layout>
-                  <SizePolicy>me,me</SizePolicy>
-                  <Children>
-                    <Library>
-                      <ShowButtonText>false</ShowButtonText>
-                    </Library>
-                  </Children>
-                </WidgetGroup>
+                </WidgetGroup><!-- Sidebar etc. -->
+                <SingletonContainer>
+                  <ObjectName>LibraryTable</ObjectName>
+                </SingletonContainer>
               </Children>
             </Splitter>
           </Children>
-        </WidgetGroup>
+        </WidgetGroup><!-- LibraryContainer -->
       </Children>
     </WidgetGroup>
   </Children>
