@@ -151,7 +151,7 @@ exit /b 1
 echo Mixxx built successfully
 ENDLOCAL
 )
-EXIT 0
+EXIT /b 0
 
 :function_get_product
 FOR %%Y IN (2019,2017) DO (
