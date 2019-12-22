@@ -68,8 +68,10 @@ void mergeReplayGainMetadataProperty(
     }
 }
 
+// This conditional copy operation only works for nullable properties
+// like QString or QUuid.
 template<typename T>
-void mergeNullableMetadataProperty(
+void copyIfNotNull(
         T& mergedProperty,
         const T& importedProperty) {
     if (mergedProperty.isNull()) {
@@ -94,32 +96,32 @@ void TrackRecord::mergeImportedMetadata(
         }
     }
 #if defined(__EXTRA_METADATA__)
-    mergeNullableMetadataProperty(mergedTrackInfo.refConductor(), importedTrackInfo.getConductor());
-    mergeNullableMetadataProperty(mergedTrackInfo.refDiscNumber(), importedTrackInfo.getDiscNumber());
-    mergeNullableMetadataProperty(mergedTrackInfo.refDiscTotal(), importedTrackInfo.getDiscTotal());
-    mergeNullableMetadataProperty(mergedTrackInfo.refEncoder(), importedTrackInfo.getEncoder());
-    mergeNullableMetadataProperty(mergedTrackInfo.refEncoderSettings(), importedTrackInfo.getEncoderSettings());
-    mergeNullableMetadataProperty(mergedTrackInfo.refISRC(), importedTrackInfo.getISRC());
-    mergeNullableMetadataProperty(mergedTrackInfo.refLanguage(), importedTrackInfo.getLanguage());
-    mergeNullableMetadataProperty(mergedTrackInfo.refLyricist(), importedTrackInfo.getLyricist());
-    mergeNullableMetadataProperty(mergedTrackInfo.refMood(), importedTrackInfo.getMood());
-    mergeNullableMetadataProperty(mergedTrackInfo.refMovement(), importedTrackInfo.getMovement());
-    mergeNullableMetadataProperty(mergedTrackInfo.refMusicBrainzArtistId(), importedTrackInfo.getMusicBrainzArtistId());
-    mergeNullableMetadataProperty(mergedTrackInfo.refMusicBrainzRecordingId(), importedTrackInfo.getMusicBrainzRecordingId());
-    mergeNullableMetadataProperty(mergedTrackInfo.refMusicBrainzReleaseId(), importedTrackInfo.getMusicBrainzReleaseId());
-    mergeNullableMetadataProperty(mergedTrackInfo.refMusicBrainzWorkId(), importedTrackInfo.getMusicBrainzWorkId());
-    mergeNullableMetadataProperty(mergedTrackInfo.refRemixer(), importedTrackInfo.getRemixer());
-    mergeNullableMetadataProperty(mergedTrackInfo.refSubtitle(), importedTrackInfo.getSubtitle());
-    mergeNullableMetadataProperty(mergedTrackInfo.refWork(), importedTrackInfo.getWork());
+    copyIfNotNull(mergedTrackInfo.refConductor(), importedTrackInfo.getConductor());
+    copyIfNotNull(mergedTrackInfo.refDiscNumber(), importedTrackInfo.getDiscNumber());
+    copyIfNotNull(mergedTrackInfo.refDiscTotal(), importedTrackInfo.getDiscTotal());
+    copyIfNotNull(mergedTrackInfo.refEncoder(), importedTrackInfo.getEncoder());
+    copyIfNotNull(mergedTrackInfo.refEncoderSettings(), importedTrackInfo.getEncoderSettings());
+    copyIfNotNull(mergedTrackInfo.refISRC(), importedTrackInfo.getISRC());
+    copyIfNotNull(mergedTrackInfo.refLanguage(), importedTrackInfo.getLanguage());
+    copyIfNotNull(mergedTrackInfo.refLyricist(), importedTrackInfo.getLyricist());
+    copyIfNotNull(mergedTrackInfo.refMood(), importedTrackInfo.getMood());
+    copyIfNotNull(mergedTrackInfo.refMovement(), importedTrackInfo.getMovement());
+    copyIfNotNull(mergedTrackInfo.refMusicBrainzArtistId(), importedTrackInfo.getMusicBrainzArtistId());
+    copyIfNotNull(mergedTrackInfo.refMusicBrainzRecordingId(), importedTrackInfo.getMusicBrainzRecordingId());
+    copyIfNotNull(mergedTrackInfo.refMusicBrainzReleaseId(), importedTrackInfo.getMusicBrainzReleaseId());
+    copyIfNotNull(mergedTrackInfo.refMusicBrainzWorkId(), importedTrackInfo.getMusicBrainzWorkId());
+    copyIfNotNull(mergedTrackInfo.refRemixer(), importedTrackInfo.getRemixer());
+    copyIfNotNull(mergedTrackInfo.refSubtitle(), importedTrackInfo.getSubtitle());
+    copyIfNotNull(mergedTrackInfo.refWork(), importedTrackInfo.getWork());
     AlbumInfo& mergedAlbumInfo = refMetadata().refAlbumInfo();
     const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
     mergeReplayGainMetadataProperty(mergedAlbumInfo.refReplayGain(), importedAlbumInfo.getReplayGain());
-    mergeNullableMetadataProperty(mergedAlbumInfo.refCopyright(), importedAlbumInfo.getCopyright());
-    mergeNullableMetadataProperty(mergedAlbumInfo.refLicense(), importedAlbumInfo.getLicense());
-    mergeNullableMetadataProperty(mergedAlbumInfo.refMusicBrainzArtistId(), importedAlbumInfo.getMusicBrainzArtistId());
-    mergeNullableMetadataProperty(mergedAlbumInfo.refMusicBrainzReleaseGroupId(), importedAlbumInfo.getMusicBrainzReleaseGroupId());
-    mergeNullableMetadataProperty(mergedAlbumInfo.refMusicBrainzReleaseId(), importedAlbumInfo.getMusicBrainzReleaseId());
-    mergeNullableMetadataProperty(mergedAlbumInfo.refRecordLabel(), importedAlbumInfo.getRecordLabel());
+    copyIfNotNull(mergedAlbumInfo.refCopyright(), importedAlbumInfo.getCopyright());
+    copyIfNotNull(mergedAlbumInfo.refLicense(), importedAlbumInfo.getLicense());
+    copyIfNotNull(mergedAlbumInfo.refMusicBrainzArtistId(), importedAlbumInfo.getMusicBrainzArtistId());
+    copyIfNotNull(mergedAlbumInfo.refMusicBrainzReleaseGroupId(), importedAlbumInfo.getMusicBrainzReleaseGroupId());
+    copyIfNotNull(mergedAlbumInfo.refMusicBrainzReleaseId(), importedAlbumInfo.getMusicBrainzReleaseId());
+    copyIfNotNull(mergedAlbumInfo.refRecordLabel(), importedAlbumInfo.getRecordLabel());
 #endif // __EXTRA_METADATA__
 }
 
