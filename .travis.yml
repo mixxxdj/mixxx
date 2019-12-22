@@ -55,8 +55,9 @@ jobs:
       # Ubuntu Xenial build prerequisites
       env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
       before_install:
-        - sudo apt-get install -y cmake
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+        - export PATH="$HOME/.local/bin:$PATH"
+        - pip install --user cmake
         - cmake --version
         - ccache -s
       install:
@@ -64,7 +65,7 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
         - cmake --build .
-        - sudo cmake --build . --target install
+        - sudo env "PATH=$PATH" cmake --build . --target install
       script:
         # Run tests and benchmarks
         - cmake --build . --target test
