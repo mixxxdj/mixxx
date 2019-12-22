@@ -2,7 +2,6 @@
 
 #include <QDrag>
 #include <QDropEvent>
-#include <QFileInfo>
 #include <QList>
 #include <QMimeData>
 #include <QString>
@@ -16,7 +15,7 @@ class DragAndDropHelper final {
   public:
     DragAndDropHelper() = delete;
 
-    static QList<QFileInfo> supportedTracksFromUrls(
+    static QList<TrackFile> supportedTracksFromUrls(
             const QList<QUrl>& urls,
             bool firstOnly,
             bool acceptPlaylists);

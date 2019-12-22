@@ -122,7 +122,7 @@ BasePlaylistFeature::BasePlaylistFeature(
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 
     connect(&m_playlistDao,
-            &PlaylistDAO::changed,
+            &PlaylistDAO::tracksChanged,
             this,
             &BasePlaylistFeature::slotPlaylistContentChanged);
 

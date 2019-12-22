@@ -65,9 +65,11 @@ class TrackCollection : public QObject,
 
     // This function returns a track ID of all file in the list not already visible,
     // it adds and unhides the tracks as well.
-    QList<TrackId> resolveTrackIds(const QList<QFileInfo> &files,
+    QList<TrackId> resolveTrackIds(
+            const QList<TrackFile> &trackFiles,
             TrackDAO::ResolveTrackIdFlags flags);
-    QList<TrackId> resolveTrackIdsFromUrls(const QList<QUrl>& urls,
+    QList<TrackId> resolveTrackIdsFromUrls(
+            const QList<QUrl>& urls,
             bool addMissing);
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations);
@@ -81,7 +83,12 @@ class TrackCollection : public QObject,
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
     TrackPointer getTrackById(
-            const TrackId& trackId) const;
+            TrackId trackId) const;
+
+    TrackPointer getTrackByRef(
+            const TrackRef& trackRef) const;
+    TrackId getTrackIdByRef(
+            const TrackRef& trackRef) const;
 
     // Only public for tests
     TrackPointer getOrAddTrack(

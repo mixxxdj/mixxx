@@ -21,11 +21,11 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent)
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
     m_pRateRatio->connectValueChanged(this, &WNumberRate::setValue);
     // Initialize the widget.
-    setValue(0);
+    setValue(m_pRateRatio->get());
 }
 
-void WNumberRate::setValue(double /*dValue*/) {
-    double vsign = m_pRateRatio->get() - 1;
+void WNumberRate::setValue(double dValue) {
+    double vsign = dValue - 1;
 
     char sign = '+';
     if (vsign < -0.00000001) {
