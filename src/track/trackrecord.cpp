@@ -79,6 +79,17 @@ void copyIfNotNull(
     }
 }
 
+// This conditional copy operation only works for properties where
+// empty = missing.
+template<typename T>
+void copyIfNotEmpty(
+        T& mergedProperty,
+        const T& importedProperty) {
+    if (mergedProperty.isEmpty()) {
+        mergedProperty = importedProperty;
+    }
+}
+
 } // anonymous namespace
 
 void TrackRecord::mergeImportedMetadata(
@@ -111,6 +122,7 @@ void TrackRecord::mergeImportedMetadata(
     copyIfNotNull(mergedTrackInfo.refMusicBrainzReleaseId(), importedTrackInfo.getMusicBrainzReleaseId());
     copyIfNotNull(mergedTrackInfo.refMusicBrainzWorkId(), importedTrackInfo.getMusicBrainzWorkId());
     copyIfNotNull(mergedTrackInfo.refRemixer(), importedTrackInfo.getRemixer());
+    copyIfNotEmpty(mergedTrackInfo.refSeratoMarkers2(), importedTrackInfo.getSeratoMarkers2());
     copyIfNotNull(mergedTrackInfo.refSubtitle(), importedTrackInfo.getSubtitle());
     copyIfNotNull(mergedTrackInfo.refWork(), importedTrackInfo.getWork());
     AlbumInfo& mergedAlbumInfo = refMetadata().refAlbumInfo();
