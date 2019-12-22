@@ -19,6 +19,8 @@ class WBattery : public WWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
+    static QString formatTooltip(double dPercentage);
+
   public slots:
     // gets information from battery and updates the Pixmap
     void update();
