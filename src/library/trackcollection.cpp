@@ -1,24 +1,26 @@
+#include <QApplication>
 #include <QStringBuilder>
 #include <QThread>
-#include <QApplication>
 
 #include "library/trackcollection.h"
 
-#include "sources/soundsourceproxy.h"
+#include "library/basetrackcache.h"
 #include "track/globaltrackcache.h"
-#include "util/logger.h"
-#include "util/db/sqltransaction.h"
-
 #include "util/assert.h"
+#include "util/db/sqltransaction.h"
 #include "util/dnd.h"
+#include "util/logger.h"
 
 namespace {
-    mixxx::Logger kLogger("TrackCollection");
+
+mixxx::Logger kLogger("TrackCollection");
+
 } // anonymous namespace
 
 TrackCollection::TrackCollection(
+        QObject* parent,
         const UserSettingsPointer& pConfig)
-        : m_pConfig(pConfig),
+        : QObject(parent),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
@@ -59,13 +61,26 @@ void TrackCollection::disconnectDatabase() {
     m_crates.disconnectDatabase();
 }
 
-void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
     VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
+        kLogger.warning() << "Track source has already been connected";
         return;
     }
     m_pTrackSource = pTrackSource;
+    m_pTrackSource->connectTrackDAO(&m_trackDao);
+}
+
+QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
+    auto pWeakPtr = m_pTrackSource.toWeakRef();
+    if (m_pTrackSource) {
+        m_pTrackSource->disconnectTrackDAO(&m_trackDao);
+        m_pTrackSource.reset();
+    }
+    return pWeakPtr;
 }
 
 bool TrackCollection::addDirectory(const QString& dir) {
@@ -78,8 +93,23 @@ bool TrackCollection::addDirectory(const QString& dir) {
     case ALL_FINE:
         transaction.commit();
         return true;
+    default:
+        DEBUG_ASSERT("unreachable");
     }
-    DEBUG_ASSERT("unreachable");
+    return false;
+}
+
+bool TrackCollection::removeDirectory(const QString& dir) {
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.removeDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    default:
+        DEBUG_ASSERT("unreachable");
+    }
     return false;
 }
 
@@ -218,6 +248,10 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     return true;
 }
 
+void TrackCollection::hideAllTracks(const QDir& rootDir) {
+    m_trackDao.hideAllTracks(rootDir);
+}
+
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
@@ -227,9 +261,8 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
-    // To update BaseTrackCache
+    // to update BaseTrackCache
     m_trackDao.afterUnhidingTracks(trackIds);
-    // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
@@ -421,25 +454,40 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::exportTrackMetadata(Track* pTrack) const {
-    DEBUG_ASSERT(pTrack);
-
-    // Write audio meta data, if explicitly requested by the user
-    // for individual tracks or enabled in the preferences for all
-    // tracks.
-    //
-    // This must be done before updating the database, because
-    // a timestamp is used to keep track of when metadata has been
-    // last synchronized. Exporting metadata will update this time
-    // stamp on the track object!
-    if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
-        SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
-    }
-}
-
 void TrackCollection::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
     m_trackDao.saveTrack(pTrack);
+}
+
+TrackPointer TrackCollection::getTrackById(
+        const TrackId& trackId) const {
+    return m_trackDao.getTrackById(trackId);
+}
+
+TrackPointer TrackCollection::getOrAddTrack(
+        const TrackRef& trackRef,
+        bool* pAlreadyInLibrary) {
+    TrackPointer pTrack;
+    if (trackRef.hasId()) {
+        pTrack = getTrackById(trackRef.getId());
+        if (pAlreadyInLibrary) {
+            *pAlreadyInLibrary = pTrack != nullptr;
+        }
+    }
+    if (!pTrack && trackRef.hasLocation()) {
+        pTrack = m_trackDao.getOrAddTrackByLocation(
+                trackRef.getLocation(),
+                pAlreadyInLibrary);
+    }
+    return pTrack;
+}
+
+TrackId TrackCollection::addTrack(
+        const TrackPointer& pTrack,
+        bool unremove) {
+    m_trackDao.addTracksPrepare();
+    const auto trackId = m_trackDao.addTracksAddTrack(pTrack, unremove);
+    m_trackDao.addTracksFinish(!trackId.isValid());
+    return trackId;
 }

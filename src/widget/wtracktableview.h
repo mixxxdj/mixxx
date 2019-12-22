@@ -6,18 +6,16 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "library/coverart.h"
-#include "library/dlgtagfetcher.h"
-#include "library/libraryview.h"
-#include "library/trackcollection.h"
+#include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
 
 class ControlProxy;
+class DlgTagFetcher;
 class DlgTrackInfo;
-class TrackCollection;
+class TrackCollectionManager;
 class WCoverArtMenu;
 
 class ExternalTrackCollection;
@@ -32,9 +30,8 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollection* pTrackCollection,
-            bool sorting,
-            const QList<ExternalTrackCollection*>& externalTrackCollections = {});
+            TrackCollectionManager* pTrackCollectionManager,
+            bool sorting);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
@@ -77,7 +74,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
-    void doSortByColumn(int headerSection);
+    void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
     void applySortingIfVisible();
     void applySorting();
     void slotLockBpm();
@@ -88,6 +85,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotClearPlayCount();
     void slotClearMainCue();
     void slotClearHotCues();
+    void slotClearIntroCue();
+    void slotClearOutroCue();
     void slotClearLoop();
     void slotClearKey();
     void slotClearReplayGain();
@@ -106,11 +105,11 @@ class WTrackTableView : public WLibraryTableView {
     void keyNotationChanged();
 
   private:
+    void createActions();
 
     void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
-    void createActions(const QList<ExternalTrackCollection*>& externalTrackCollections);
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
@@ -128,8 +127,9 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
 
-    UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
+    const UserSettingsPointer m_pConfig;
+
+    TrackCollectionManager* const m_pTrackCollectionManager;
 
     QSignalMapper m_loadTrackMapper;
 
@@ -137,7 +137,6 @@ class WTrackTableView : public WLibraryTableView {
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
 
     QModelIndex currentTrackInfoIndex;
-
 
     ControlProxy* m_pNumSamplers;
     ControlProxy* m_pNumDecks;
@@ -204,6 +203,8 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearPlayCountAction;
     QAction* m_pClearMainCueAction;
     QAction* m_pClearHotCuesAction;
+    QAction* m_pClearIntroCueAction;
+    QAction* m_pClearOutroCueAction;
     QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
     QAction* m_pClearKeyAction;

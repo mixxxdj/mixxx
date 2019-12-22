@@ -15,6 +15,10 @@ class LibraryFeature;
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
+    // Keep object tree functions from QObject accessible
+    // for parented_ptr
+    using QObject::parent;
+
     explicit SidebarModel(
             QObject* parent = nullptr);
     ~SidebarModel() override = default;
@@ -26,15 +30,15 @@ class SidebarModel : public QAbstractItemModel {
 
     // Required for QAbstractItemModel
     QModelIndex index(int row, int column,
-                      const QModelIndex& parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex& index) const;
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+                      const QModelIndex& parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex& index) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index,
-                  int role = Qt::DisplayRole) const;
+                  int role = Qt::DisplayRole) const override;
     bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
-    virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+    bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
 
   public slots:

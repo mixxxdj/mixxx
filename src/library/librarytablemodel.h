@@ -6,7 +6,7 @@
 class LibraryTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
+    LibraryTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager,
                       const char* settingsNamespace);
     ~LibraryTableModel() override;
 

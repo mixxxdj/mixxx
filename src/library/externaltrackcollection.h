@@ -4,12 +4,12 @@
 #include <QList>
 #include <QString>
 
+#include "preferences/usersettings.h"
 #include "track/trackref.h"
 
-
-class Track;
-
+class Library;
 class LibraryFeature;
+class Track;
 
 // This interface and base class enable to synchronize external
 // track collections with Mixxx. It provides methods that will
@@ -32,15 +32,40 @@ Q_OBJECT
   public:
     virtual ~ExternalTrackCollection() = default;
 
+    // Identifying name, e.g. for actions and menus
     virtual QString name() const = 0;
+
+    // Single line description, e.g. for tool tips
+    virtual QString description() const = 0;
+
+    // Asynchronously establish the connection with the external
+    // collection, e.g. by starting a separate worker thread or
+    // by performing non-blocking network requests.
+    virtual void establishConnection() = 0;
+
+    // Synchronously (blocking!) stop the synchronization by
+    // finishing all pending tasks and then disconnect from
+    // the external collection. Disconnecting might be performed
+    // asynchronously as long as no new synchronization tasks
+    // are accepted and if aborting this operation prematurely
+    // is safe, e.g. when shutting down Mixxx.
+    virtual void finishPendingTasksAndDisconnect() = 0;
+
+    enum class ConnectionState {
+        Connecting,
+        Connected,
+        Disconnecting,
+        Disconnected,
+    };
 
     // Check if the connection to the extenal track collection
     // has been established, i.e. if the synchronization is active.
-    virtual bool isActive() const = 0;
+    virtual ConnectionState connectionState() const = 0;
 
-    // Synchronously (blocking) stop the synchronization by
-    // finishing all pending requests.
-    virtual void shutdown() {}
+    // Utility function for convenience
+    /*non-virtual*/ bool isConnected() const {
+        return connectionState() == ConnectionState::Connected;
+    }
 
     // All tracks in the corresponding directory need to be
     // relocated recursively by updating their location.
@@ -92,9 +117,13 @@ Q_OBJECT
     // Create the corresponding library feature (if desired) that will
     // be hooked into the side pane in Mixxx.
     virtual LibraryFeature* newLibraryFeature(
-            QObject* /*parent*/) {
+            Library* /*library*/,
+            UserSettingsPointer /*userSettings*/) {
         return nullptr;
     }
+
+  signals:
+    void connectionStateChanged(ConnectionState state);
 
   protected:
     explicit ExternalTrackCollection(QObject* parent = nullptr)

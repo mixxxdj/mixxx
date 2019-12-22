@@ -109,11 +109,12 @@ bool EngineRecord::metaDataHasChanged()
 void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     float recordingStatus = m_pRecReady->get();
+    static const QString tag("EngineRecord recording");
 
     if (recordingStatus == RECORD_OFF) {
         //qDebug("Setting record flag to: OFF");
         if (fileOpen()) {
-            Event::end("EngineRecord recording");
+            Event::end(tag);
             closeFile();  // Close file and free encoder.
             if (m_bCueIsEnabled) {
                 closeCueFile();
@@ -125,7 +126,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // open a new file.
         updateFromPreferences();  // Update file location from preferences.
         if (openFile()) {
-            Event::start("EngineRecord recording");
+            Event::start(tag);
             qDebug("Setting record flag to: ON");
             m_pRecReady->set(RECORD_ON);
             emit(isRecording(true, false));  // will notify the RecordingManager
@@ -177,7 +178,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
         } else {  // Maybe the encoder could not be initialized
             qDebug() << "Could not open" << m_fileName << "for writing.";
-            Event::end("EngineRecord recording");
+            Event::end(tag);
             qDebug("Setting record flag to: OFF");
             m_pRecReady->slotSet(RECORD_OFF);
             // An error occurred.

@@ -1,0 +1,18 @@
+<svg width="35" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="c" x1="1.00003" x2="21.000031" y1="-17" y2="-17" gradientTransform="matrix(.89473685 0 0 1.0322581 .1578978 .0483871)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#393939" offset="0"/>
+			<stop stop-color="#393939" offset=".30102351"/>
+			<stop stop-color="#141414" offset="1"/>
+		</linearGradient>
+		<linearGradient id="b" x1="2" x2="24" y1="12" y2="12" gradientTransform="matrix(.69565218 0 0 1.3478261 .95650088 -32.326087)" gradientUnits="userSpaceOnUse">
+			<stop stop-opacity=".0047619" offset="0"/>
+			<stop stop-opacity="0" offset=".5"/>
+			<stop stop-opacity=".47451" offset="1"/>
+		</linearGradient>
+	</defs>
+	<path d="m33.313235 2.08793c.11592.25262.185545.52951.18555.82422l.000225 14.088c1.8e-5 1.0994-.9006 1.965577-2 1.965572l-28.49901-.00012c-.6598637-3e-6-1.135675-.352003-1.325-.511743.2090942.790888.7641575 1.546137 1.8242 1.546141l28.99979 1e-4c1.108 4e-6 2.000018-.892 2-2l-.000225-14.088c-1.3e-5-.81658-.48717-1.5129-1.1855-1.8242z" fill="#020201"/>
+	<rect transform="rotate(90)" x="1.5000299" y="-33.5" width="17" height="32" rx=".30000001" ry=".30000004" fill="none" stroke="url(#c)" stroke-linecap="round" stroke-linejoin="round" stroke-width=".99999988" style="paint-order:fill markers stroke"/>
+	<rect transform="rotate(90)" x="2" y="-33" width="16" height="31" color="#000000" fill="url(#b)"/>
+	<rect transform="rotate(90)" x="2" y="-33" width="16" height="31" color="#000000" fill-opacity=".09019608"/>
+</svg>

@@ -23,6 +23,12 @@ typedef std::weak_ptr<Track> TrackWeakPointer;
 
 Q_DECLARE_METATYPE(TrackPointer);
 
+enum class ExportTrackMetadataResult {
+    Succeeded,
+    Failed,
+    Skipped,
+};
+
 class Track : public QObject {
     Q_OBJECT
 
@@ -244,9 +250,9 @@ class Track : public QObject {
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
-    CuePointer findCueByType(Cue::CueType type) const; // NOTE: Cannot be used for hotcues.
+    CuePointer findCueByType(Cue::Type type) const; // NOTE: Cannot be used for hotcues.
     void removeCue(const CuePointer& pCue);
-    void removeCuesOfType(Cue::CueType);
+    void removeCuesOfType(Cue::Type);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
@@ -344,12 +350,7 @@ class Track : public QObject {
     };
     double getDuration(DurationRounding rounding) const;
 
-    enum class ExportMetadataResult {
-        Succeeded,
-        Failed,
-        Skipped,
-    };
-    ExportMetadataResult exportMetadata(
+    ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource);
 
     // Mutex protecting access to object

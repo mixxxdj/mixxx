@@ -37,7 +37,7 @@ constexpr SINT kSamplesPerFrame = 2;
 }
 
 BpmControl::BpmControl(QString group,
-                       UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
@@ -48,16 +48,11 @@ BpmControl::BpmControl(QString group,
 
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
-    m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pRateSlider->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
-                                       Qt::DirectConnection);
-    m_pQuantize = ControlObject::getControl(group, "quantize");
-    m_pRateRange = new ControlProxy(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(this, &BpmControl::slotUpdateRateSlider,
+    m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
+    m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
                                       Qt::DirectConnection);
-    m_pRateDir = new ControlProxy(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
-                                    Qt::DirectConnection);
+
+    m_pQuantize = ControlObject::getControl(group, "quantize");
 
     m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
     m_pNextBeat.reset(new ControlProxy(group, "beat_next"));
@@ -96,9 +91,12 @@ BpmControl::BpmControl(QString group,
     // bpm_up_small / bpm_down_small steps by kBpmRangeSmallStep
     m_pEngineBpm = new ControlLinPotmeter(
             ConfigKey(group, "bpm"),
-            kBpmRangeMin, kBpmRangeMax,
-            kBpmRangeStep, kBpmRangeSmallStep,
+            kBpmRangeMin,
+            kBpmRangeMax,
+            kBpmRangeStep,
+            kBpmRangeSmallStep,
             true);
+    m_pEngineBpm->set(0.0);
     connect(m_pEngineBpm, &ControlObject::valueChanged,
             this, &BpmControl::slotUpdateRateSlider,
             Qt::DirectConnection);
@@ -231,19 +229,23 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // averageLength is the average interval in milliseconds tapped over
     // numSamples samples.  Have to convert to BPM now:
 
-    if (averageLength <= 0)
+    if (averageLength <= 0 || numSamples < 4) {
         return;
-
-    if (numSamples < 4)
-        return;
+    }
 
     BeatsPointer pBeats = m_pBeats;
-    if (!pBeats)
+    if (!pBeats) {
         return;
+    }
+
+    double rateRatio = m_pRateRatio->get();
+    if (rateRatio == 0.0) {
+        return;
+    }
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength / calcRateRatio();
+    double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
     pBeats->setBpm(averageBpm);
 }
 
@@ -297,11 +299,7 @@ bool BpmControl::syncTempo() {
     // The goal is for this deck's effective BPM to equal the other decks.
     //
     // thisBpm = otherBpm
-    //
-    // The overall rate is the product of range, direction, and scale plus 1:
-    //
-    // rate = 1.0 + rateDir * rateRange * rateScale
-    //
+    ///
     // An effective BPM is the file-bpm times the rate:
     //
     // bpm = fileBpm * rate
@@ -336,26 +334,10 @@ bool BpmControl::syncTempo() {
             desiredRate *= 2.0;
         }
 
-        // Subtract the base 1.0, now fDesiredRate is the percentage
-        // increase/decrease in playback rate, not the playback rate.
-        double desiredRateShift = desiredRate - 1.0;
-
-        // Ensure the rate is within reasonable boundaries. Remember, this is the
-        // percent to scale the rate, not the rate itself. If fDesiredRate was -1,
-        // that would mean the deck would be completely stopped. If fDesiredRate
-        // is 1, that means it is playing at 2x speed. This limit enforces that
-        // we are scaled between 0.5x and 2x.
-        if (desiredRateShift < 1.0 && desiredRateShift > -0.5)
+        if (desiredRate < 2.0 && desiredRate > 0.5)
         {
             m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
-
-
-            // Adjust the rateScale. We have to divide by the range and
-            // direction to get the correct rateScale.
-            double desiredRateSlider = desiredRateShift / (m_pRateRange->get() * m_pRateDir->get());
-            // And finally, set the slider
-            m_pRateSlider->set(desiredRateSlider);
-
+            m_pRateRatio->set(desiredRate);
             return true;
         }
     }
@@ -750,23 +732,23 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    Q_UNUSED(value);
-    // Adjust playback bpm in response to a change in the rate slider.
-    double dRate = calcRateRatio();
+    Q_UNUSED(value);    
+    // Adjust playback bpm in response to a rate_ration update
+    double dRate = m_pRateRatio->get();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
-    Q_UNUSED(value);
-    // Adjust rate slider position to reflect change in rate range.
+   Q_UNUSED(value); 
+   // Adjust rate slider position response to a change in rate range or m_pEngineBpm
+
     double localBpm = m_pLocalBpm->get();
-    double rateScale = m_pRateDir->get() * m_pRateRange->get();
-    if (localBpm == 0.0 || rateScale == 0.0) {
+    if (localBpm == 0.0) {
         return;
     }
 
-    double dRateSlider = (m_pEngineBpm->get() / localBpm - 1.0) / rateScale;
-    m_pRateSlider->set(dRateSlider);
+    double dRateRatio = m_pEngineBpm->get() / localBpm;
+    m_pRateRatio->set(dRateRatio);
 }
 
 // called from an engine worker thread
@@ -881,20 +863,19 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     double dThisBeatLength;
     double dThisBeatFraction;
     if (getBeatContextNoLookup(sot.current,
-                       dThisPrevBeat, dThisNextBeat,
-                       &dThisBeatLength, &dThisBeatFraction)) {
-        pGroupFeatures->has_beat_length_sec = true;
+            dThisPrevBeat, dThisNextBeat,
+            &dThisBeatLength, &dThisBeatFraction)) {
 
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
-        pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
-                / sot.rate / calcRateRatio();
+	double sotPerSec = kSamplesPerFrame * sot.rate * m_pRateRatio->get();
+	if (sotPerSec != 0.0) { 
+            pGroupFeatures->beat_length_sec = dThisBeatLength / sotPerSec;
+            pGroupFeatures->has_beat_length_sec = true;
+	} else {
+            pGroupFeatures->has_beat_length_sec = false;
+        }
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
     }
-}
-
-double BpmControl::calcRateRatio() const {
-    return std::max(1e-6,
-            1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get());
 }

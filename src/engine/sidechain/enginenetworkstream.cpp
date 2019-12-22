@@ -44,8 +44,7 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
       m_inputStreamStartTimeUs(-1),
       m_inputStreamFramesWritten(0),
       m_inputStreamFramesRead(0),
-      m_outputWorkers(BROADCAST_MAX_CONNECTIONS),
-      m_pInputWorker(nullptr) {
+      m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }

@@ -489,7 +489,9 @@
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
-                    <Library></Library>
+                    <Library>
+                      <ShowButtonText>false</ShowButtonText>
+                    </Library>
                   </Children>
                 </WidgetGroup>
               </Children>
