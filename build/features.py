@@ -682,6 +682,7 @@ class LiveBroadcasting(Feature):
 
     def enabled(self, build):
         build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
+        build.flags['shoutcast_internal'] = util.get_flags(build.env, 'shoutcast_internal', 0)
         if int(build.flags['shoutcast']):
             return True
         return False
@@ -696,7 +697,6 @@ class LiveBroadcasting(Feature):
 
         build.env.Append(CPPDEFINES='__BROADCAST__')
 
-        build.flags['shoutcast_internal'] = util.get_flags(build.env, 'shoutcast_internal', 0)
         if build.platform_is_linux and not int(build.flags['shoutcast_internal']):
             # Check if system lib is lower 2.4.2 or 2.4.3 and not suffering bug
             # https://bugs.launchpad.net/mixxx/+bug/1833225
