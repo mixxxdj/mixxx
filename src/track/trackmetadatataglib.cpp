@@ -71,7 +71,7 @@ bool checkID3v2HeaderVersionSupported(const TagLib::ID3v2::Header& header) {
 // as written by MusicBrainz Picard 2.1.3 although the mapping table
 // doesn't mention any "http://" prefix.
 // See also: https://picard.musicbrainz.org/docs/mappings
-const QString kMusicBrainzOwner = "http://musicbrainz.org";
+const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 } // anonymous namespace
 

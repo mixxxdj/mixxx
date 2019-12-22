@@ -5,8 +5,8 @@ namespace mixxx {
 
 namespace {
 
-const QString kArtistTitleSeparatorWithSpaces = " - ";
-const QString kArtistTitleSeparator = "_-_";
+const QString kArtistTitleSeparatorWithSpaces = QStringLiteral(" - ");
+const QString kArtistTitleSeparator = QStringLiteral("_-_");
 
 const QChar kFileExtensionSeparator = '.';
 

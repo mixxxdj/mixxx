@@ -53,7 +53,7 @@ namespace {
 // yet. The added column "tracktotal" has been initialized with the
 // default value "//".
 // See also: Schema revision 26 in schema.xml
-const QString kReloadTrackTotal = "//";
+const QString kReloadTrackTotal = QStringLiteral("//");
 
 void mergeReplayGainMetadataProperty(
         ReplayGain& mergedReplayGain,
