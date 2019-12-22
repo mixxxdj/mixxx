@@ -369,6 +369,11 @@
                   <SizePolicy>me,min</SizePolicy>
                   <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                   <Collapsible>1,0</Collapsible>
+                  <Connection>
+                    <ConfigKey>[Master],maximize_library</ConfigKey>
+                    <Transform><Not/></Transform>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
                   <Children>
 
                     <SingletonContainer>
@@ -401,13 +406,15 @@
                 </Splitter><!-- Decks, Effects ... Library -->
 
                 <!-- Maximized Library -->
-                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                <WidgetGroup>
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
+                  <Connection>
+                    <ConfigKey>[Master],maximize_library</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
                   <Children>
-
                     <Template src="skin:decks_mini.xml"/>
-
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>
                     </SingletonContainer>

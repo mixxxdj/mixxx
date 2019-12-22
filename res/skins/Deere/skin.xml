@@ -366,21 +366,19 @@
             </Splitter><!-- regular library with decks etc. -->
 
             <!-- maximized Library with minimal decks -->
-            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+            <WidgetGroup>
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
-              <Children>
-
-                <Template src="skin:../Deere/decks_small.xml"/>
-
-                <SingletonContainer>
-                  <ObjectName>Library</ObjectName>
-                </SingletonContainer>
-              </Children>
               <Connection>
                 <ConfigKey>[Master],maximize_library</ConfigKey>
                 <BindProperty>visible</BindProperty>
               </Connection>
+              <Children>
+                <Template src="skin:../Deere/decks_small.xml"/>
+                <SingletonContainer>
+                  <ObjectName>Library</ObjectName>
+                </SingletonContainer>
+              </Children>
             </WidgetGroup><!-- maximized Library with minimal decks -->
 
           </Children>

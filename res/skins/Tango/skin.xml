@@ -465,6 +465,11 @@
                       <SplitSizes>100,10000</SplitSizes>
                       <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
+                      <Connection>
+                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <Transform><Not/></Transform>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
                       <Children>
 
                         <WidgetGroup>
@@ -544,12 +549,14 @@
                     </Splitter>
                     <!-- regular library with decks etc. -->
 
-                    <!-- maximized library:
-                        [minimal decks]
-                        [Library] -->
-                    <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                    <!-- maximized library with minimal decks -->
+                    <WidgetGroup>
                       <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
+                      <Connection>
+                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
                       <Children>
 
                         <WidgetGroup><!-- Minimal decks 1/2 -->
@@ -591,7 +598,7 @@
 
                   </Children>
                 </WidgetStack>
-            <!-- regular / maximized library -->
+                <!-- regular / maximized library -->
 
               </Children>
             </WidgetGroup><!-- topbar + skin elements -->
