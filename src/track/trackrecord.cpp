@@ -111,10 +111,8 @@ void TrackRecord::mergeImportedMetadata(
     mergeNullableMetadataProperty(mergedTrackInfo.refRemixer(), importedTrackInfo.getRemixer());
     mergeNullableMetadataProperty(mergedTrackInfo.refSubtitle(), importedTrackInfo.getSubtitle());
     mergeNullableMetadataProperty(mergedTrackInfo.refWork(), importedTrackInfo.getWork());
-#endif // __EXTRA_METADATA__
     AlbumInfo& mergedAlbumInfo = refMetadata().refAlbumInfo();
     const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
-#if defined(__EXTRA_METADATA__)
     mergeReplayGainMetadataProperty(mergedAlbumInfo.refReplayGain(), importedAlbumInfo.getReplayGain());
     mergeNullableMetadataProperty(mergedAlbumInfo.refCopyright(), importedAlbumInfo.getCopyright());
     mergeNullableMetadataProperty(mergedAlbumInfo.refLicense(), importedAlbumInfo.getLicense());
@@ -122,9 +120,6 @@ void TrackRecord::mergeImportedMetadata(
     mergeNullableMetadataProperty(mergedAlbumInfo.refMusicBrainzReleaseGroupId(), importedAlbumInfo.getMusicBrainzReleaseGroupId());
     mergeNullableMetadataProperty(mergedAlbumInfo.refMusicBrainzReleaseId(), importedAlbumInfo.getMusicBrainzReleaseId());
     mergeNullableMetadataProperty(mergedAlbumInfo.refRecordLabel(), importedAlbumInfo.getRecordLabel());
-#else
-    Q_UNUSED(mergedAlbumInfo);
-    Q_UNUSED(importedAlbumInfo);
 #endif // __EXTRA_METADATA__
 }
 
