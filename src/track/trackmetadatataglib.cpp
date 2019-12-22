@@ -2508,6 +2508,10 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             pTag,
             "TSSE",
             trackMetadata.getTrackInfo().getEncoderSettings());
+    writeID3v2GeneralEncapsulatedObjectFrame(
+            pTag,
+            "Serato Markers2",
+            trackMetadata.getTrackInfo().getSeratoMarkers2().data());
 #endif // __EXTRA_METADATA__
 
     return true;
