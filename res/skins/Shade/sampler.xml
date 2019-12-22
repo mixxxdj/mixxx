@@ -1,16 +1,16 @@
 <Template>
   <WidgetGroup>
     <ObjectName>Sampler</ObjectName>
-    <Size>i,103f</Size>
+    <Size>i,95f</Size>
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
         <ObjectName>SamplerLeftBorder</ObjectName>
-        <Size>5f,100f</Size>
+        <Size>5f,92f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
       <WidgetGroup>
-        <Size>0e,103f</Size>
+        <Size>0e,95f</Size>
         <Layout>vertical</Layout>
         <Children>
           <WidgetGroup>
@@ -264,17 +264,14 @@
           </WidgetGroup>
           <WidgetGroup>
             <ObjectName>SamplerBottom</ObjectName>
-            <Size>0e,40f</Size>
+            <Size>0e,32f</Size>
             <BackPath>style/style_bg_sampler_bottom.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>
+              <WidgetGroup><Size>0e,0min</Size></WidgetGroup>
               <WidgetGroup>
                 <ObjectName>SamplerBottom</ObjectName>
-                <Size>0e,40f</Size>
-              </WidgetGroup>
-              <WidgetGroup>
-                <ObjectName>SamplerBottom</ObjectName>
-                <Size>204f,40f</Size>
+                <Size>204f,32f</Size>
                 <Children>
                   <PushButton>
                     <TooltipId>beatsync_beatsync_tempo</TooltipId>
@@ -284,7 +281,7 @@
                       <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_sync_sampler.png</Unpressed>
                     </State>
-                    <Pos>3,8</Pos>
+                    <Pos>3,4</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -312,7 +309,7 @@
                       <Pressed>skin:/btn/btn_hotcue_1_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_hotcue_1_over.png</Unpressed>
                     </State>
-                    <Pos>47,8</Pos>
+                    <Pos>47,4</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -345,7 +342,7 @@
                       <Pressed>skin:/btn/btn_hotcue_2_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_hotcue_2_over.png</Unpressed>
                     </State>
-                    <Pos>68,8</Pos>
+                    <Pos>68,4</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -378,7 +375,7 @@
                       <Pressed>skin:/btn/btn_hotcue_3_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_hotcue_3_over.png</Unpressed>
                     </State>
-                    <Pos>89,8</Pos>
+                    <Pos>89,4</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -411,7 +408,7 @@
                       <Pressed>skin:/btn/btn_hotcue_4_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_hotcue_4_over.png</Unpressed>
                     </State>
-                    <Pos>110,8</Pos>
+                    <Pos>110,4</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -442,7 +439,7 @@
                       <Pressed>skin:/btn/btn_pfl_sampler_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_pfl_sampler_over.png</Unpressed>
                     </State>
-                    <Pos>134,8</Pos>
+                    <Pos>134,4</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
                     </Connection>
@@ -451,7 +448,7 @@
                     <TooltipId>pregain</TooltipId>
                     <NumberStates>64</NumberStates>
                     <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Pos>168,6</Pos>
+                    <Pos>168,2</Pos>
                     <Connection>
                       <ConfigKey>[Sampler<Variable name="samplernum"/>],pregain</ConfigKey>
                     </Connection>
@@ -459,13 +456,13 @@
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- SamplerBottom -->
         </Children>
       </WidgetGroup>
       <WidgetGroup>
         <ObjectName>SamplerVUMeter</ObjectName>
-        <Size>8f,100f</Size>
-        <BackPath>style/style_bg_sampler_vu.png</BackPath>
+        <Size>8f,92f</Size>
+        <BackPath>style/style_bg_sampler_right.png</BackPath>
         <Children>
           <StatusLight>
             <TooltipId>sampler_PeakIndicator</TooltipId>
@@ -491,17 +488,17 @@
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- SamplerVUMeter -->
       <WidgetGroup>
         <ObjectName>SamplerPitch</ObjectName>
-        <Size>21f,100f</Size>
+        <Size>21f,92f</Size>
         <BackPath>style/style_bg_sampler_right.png</BackPath>
         <Children>
           <SliderComposed>
             <TooltipId>rate</TooltipId>
             <Handle>knob_pitch_sampler.png</Handle>
             <Slider>slider_pitch_sampler.png</Slider>
-            <Pos>3,8</Pos>
+            <Pos>3,7</Pos>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
@@ -509,15 +506,15 @@
             </Connection>
           </SliderComposed>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- SamplerPitch -->
       <WidgetGroup>
         <ObjectName>SamplerRightBorder</ObjectName>
-        <Size>5f,100f</Size>
+        <Size>5f,92f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
       <WidgetGroup>
         <ObjectName>SamplerRightBorder</ObjectName>
-        <Size>3f,100f</Size>
+        <Size>3f,92f</Size>
       </WidgetGroup>
     </Children>
   </WidgetGroup>
