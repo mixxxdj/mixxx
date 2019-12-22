@@ -88,7 +88,7 @@ public:
             track::io::key::Source keySource);
 
     // Merge the current metadata from the file with the subset of metadata
-    // that is stored in the library. This is required to delete any tags
+    // that is stored in the library. This is required to NOT delete any tags
     // from the file that are not (yet) stored in the library database!
     void mergeImportedMetadata(
             const TrackMetadata& importedMetadata);
