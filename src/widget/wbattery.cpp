@@ -85,7 +85,7 @@ int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
 }
 
 QString WBattery::formatTooltip(double dPercentage) {
-    return QString("%1%").arg(dPercentage, 0, 'f', 0);
+    return QString::number(dPercentage, 'f', 0) + QStringLiteral("%");
 }
 
 void WBattery::update() {
