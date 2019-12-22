@@ -18,12 +18,12 @@
 			<path d="m22 49.500303h-6v.999596h6z" color="#000000"/>
 		</g>
 	</g>
-	<path d="m13 61h4v-57.000001h-4zm1-1v-55h2v55z" fill="#505050" style="paint-order:fill markers stroke"/>
+	<path d="m13 61h4v-57.000001h-4zm1-1v-55h2v55z" fill="#636363" style="paint-order:fill markers stroke"/>
 	<g transform="translate(2)" fill="#636363" stroke-width=".99979782">
 		<path d="m2 32.000404h8v.999596h-8z" color="#000000"/>
 		<path d="m24 32.000404h-8v.999596h8z" color="#000000"/>
 	</g>
-	<g transform="translate(2)" fill="#404040" stroke-width=".99979782">
+	<g transform="translate(2)" fill="#505050" stroke-width=".99979782">
 		<path d="m4 5.000412h6v.999596h-6z" color="#000000"/>
 		<path d="m4 14.000404h6v.999596h-6z" color="#000000"/>
 		<path d="m4 23.000404h6v.999596h-6z" color="#000000"/>

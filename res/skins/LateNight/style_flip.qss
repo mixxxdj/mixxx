@@ -49,6 +49,7 @@ WBeatSpinBox QMenu,
 #LibraryContainer QMenu QCheckBox,
 WCoverArtMenu,
 WCueMenuPopup,
+WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
 #CueLabelEdit,
 WLibrary QTableView::indicator,
@@ -107,6 +108,9 @@ WSearchLineEdit,
     border: 1px solid #c88500;
     background-color: #050504;
   }
+  #LibraryContainer QMenu::right-arrow {
+    image: url(skin:/style_classic/menu_arrow_gold.svg);
+    }
   #LibraryContainer QMenu::right-arrow:selected {
     image: url(skin:/style_classic/menu_arrow_black.svg);
   }
@@ -149,10 +153,10 @@ WSearchLineEdit,
 #MicDuckingContainer, #MicAuxRackFiller,
 WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
 #SkinSettings {
-  border-top: 1px solid #333;
-  border-left: 1px solid #333;
-  border-bottom: 1px solid #020201;
-  border-right: 1px solid #020201;
+  border-top: 1px solid #444;
+  border-left: 1px solid #444;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
   border-radius: 2px;
 /*  more realistic drop shadow:
   border-top: 1px solid #333;
@@ -182,8 +186,8 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck,
 WSearchLineEdit {
   border-top: 1px solid #000;
   border-left: 1px solid #000;
-  border-bottom: 1px solid #222;
-  border-right: 1px solid #222;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
 /* more realistic drop shadow:
   border-top: 1px solid #000;
   border-left: 1px solid #050504;
@@ -994,6 +998,21 @@ WSearchLineEdit:focus {
 WLibrary QRadioButton::indicator:checked {
   background: url(skin:/buttons_classic/btn__lib_radio_button_on_gold.svg) center center;
 }
+
+/* adjust pposition of Library featurecontrols */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton,
+#fadeModeCombobox,
+#spinBoxTransition {
+  margin-top: 1px;
+  margin-bottom: 2px;
+  }
+  QPushButton#pushButtonAutoDJ {
+    margin-left: 2px;
+  }
 
 /* selected items in Tracks table */
 #LibraryContainer QTableView::item:selected,

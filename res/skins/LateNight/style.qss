@@ -118,7 +118,7 @@ WTime {
 WKey,
 #DurationText,
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox,
+#spinBoxTransition,
 WLibrary QHeaderView {
   font-size: 13px;
 }
@@ -201,7 +201,7 @@ WOverview QLabel {
 /* yellow */
 #Deck1 WLabel, #Deck2 WLabel,
 #DeckMini1 WLabel, #DeckMini2 WLabel,
-#Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #DlgAutoDJ QSpinBox,
+#Deck1 WBeatSpinBox, #Deck2 WBeatSpinBox, #spinBoxTransition,
 #Deck1 WStarRating, #Deck2 WStarRating,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
 #FxUnitLabel, #MicAuxSubTitle,
@@ -1328,17 +1328,17 @@ WSpinny { /*
 
 /***************** Loop Controls *****************/
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox,
+#spinBoxTransition,
 #LibraryBPMSpinBox  {
   selection-color: #000;
   selection-background-color: #d2d2d2;
   }
   WBeatSpinBox:hover,
-  #DlgAutoDJ QSpinBox:hover {
+  #spinBoxTransition:hover {
     background-color: #0a0a0a;
   }
   WBeatSpinBox:focus,
-  #DlgAutoDJ QSpinBox:focus {
+  #spinBoxTransition:focus {
     background-color: #000;
   }
   WBeatSpinBox#Spinbox_embedded {
@@ -1369,7 +1369,7 @@ WBeatSpinBox,
     WBeatSpinBox#Spinbox_elevated:focus {
       border-image: url(skin:buttons_classic/spinbox_elevated_border_focus.svg) 2 19 2 2;
     }
-  #DlgAutoDJ QSpinBox {
+  #spinBoxTransition {
     border-width: 3px 19px 2px 3px;
     border-image: url(skin:buttons_classic/spinbox_embedded_border.svg) 3 19 2 3;
     width: 24px;
@@ -1377,17 +1377,17 @@ WBeatSpinBox,
     padding: 0px -15px 0px 0px;
     margin: 0px 2px 3px 5px;
     }
-    #DlgAutoDJ QSpinBox:hover {
+    #spinBoxTransition:hover {
       border-image: url(skin:buttons_classic/spinbox_embedded_border_hover.svg) 3 19 2 3;
     }
-    #DlgAutoDJ QSpinBox:focus {
+    #spinBoxTransition:focus {
       border-image: url(skin:buttons_classic/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
     }
 
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
-  #DlgAutoDJ QSpinBox::up-button,
-  #DlgAutoDJ QSpinBox::down-button {
+  #spinBoxTransition::up-button,
+  #spinBoxTransition::down-button {
     subcontrol-origin: content;
     position: relative;
     /* as with spinbox: border is added to size.
@@ -1396,7 +1396,7 @@ WBeatSpinBox,
     padding: 0px;
     }
     WBeatSpinBox::up-button,
-    #DlgAutoDJ QSpinBox::up-button {
+    #spinBoxTransition::up-button {
       height: 11px;
       subcontrol-position: top right;
       image: url(skin:/buttons_classic/spinbox_up.svg) no-repeat;
@@ -1404,11 +1404,11 @@ WBeatSpinBox,
       WBeatSpinBox::up-button {
         margin: -1px 0px 0px 0px;
         }
-      #DlgAutoDJ QSpinBox::up-button {
+      #spinBoxTransition::up-button {
         margin: -1px -2px 0px 0px;
         }
     WBeatSpinBox::down-button,
-    #DlgAutoDJ QSpinBox::down-button {
+    #spinBoxTransition::down-button {
       height: 11px;
       subcontrol-position: bottom right;
       image: url(skin:/buttons_classic/spinbox_down.svg) no-repeat;
@@ -1416,7 +1416,7 @@ WBeatSpinBox,
       WBeatSpinBox::down-button {
         margin: 0px 0px -2px 0px;
         }
-      #DlgAutoDJ QSpinBox::down-button {
+      #spinBoxTransition::down-button {
         margin: 0px -2px -1px 0px;
         }
 
@@ -2414,6 +2414,10 @@ WLibrary QRadioButton::indicator:unchecked {
   #DlgAutoDJ > #horizontalSpacer {
     width: 100px;
   }
+  /* Push 'New' radio button away from corner */
+  #radioButtonRecentlyAdded {
+    margin-left: 10px;
+  }
   /* Space in between 'All' radio button and 'Select All' button */
   QPushButton#pushButtonSelectAll {
     margin-left: 12px;
@@ -2458,7 +2462,7 @@ WLibrary QRadioButton::indicator:unchecked {
   #LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
   #LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
     border-image: none;
-    background-color: #151515;
+    background-color: #0f0f0f;
   }
 /************** Library *******************************************************/
 
@@ -2503,6 +2507,8 @@ WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
 WSearchLineEdit,
+WEffectSelector QAbstractItemView,
+#fadeModeCombobox QAbstractItemView,
 WEffectSelector, WEffectSelector::item,
 #fadeModeCombobox, #fadeModeCombobox::item {
   background-color: #0f0f0f;
@@ -2536,6 +2542,7 @@ WEffectSelector, WEffectSelector QAbstractItemView,
   WEffectSelector::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #2a1e03;
+    color: #fff;
     }
 
 
@@ -2555,7 +2562,7 @@ WEffectSelector,
   #fadeModeCombobox {
     height: 19px;
     padding: 0px 0px 1px 5px;
-    margin: 0px 1px 1px 0px; 
+    margin: 0px 1px 2px 1px; 
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
@@ -2683,7 +2690,7 @@ WEffectSelector,
   #LibraryContainer QMenu::right-arrow {
     width: 10px;
     height: 10px;
-    image: url(skin:/style_classic/menu_arrow.svg);
+    image: url(skin:/style_classic/menu_arrow_yellow.svg);
     }
   #LibraryContainer QMenu::right-arrow:selected {
     image: url(skin:/style_classic/menu_arrow_white.svg);
