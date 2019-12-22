@@ -40,12 +40,6 @@ that's why we do it in another way here */
 WLibrary QPushButton {
   border: 1px solid #99A0A4;
   }
-/*
-QSpinBox:editable {
-  font-size: 13px;
-  background: transparent;
-  color: #ACACAC; }
-QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}*/
 
 WBeatSpinBox::up-button,
 #spinBoxTransition::up-button {

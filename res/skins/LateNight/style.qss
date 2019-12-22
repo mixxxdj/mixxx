@@ -119,7 +119,6 @@ WKey,
 #DurationText,
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox,
-#LibraryBPMSpinBox,
 WLibrary QHeaderView {
   font-size: 13px;
 }
@@ -2095,8 +2094,6 @@ WLibrary,
   border: 1px solid transparent;
   margin: 0px;
   padding: 0px;
-  /* Play count next to checkbox
-  color: #xxx; */
   }
   #LibraryContainer QTableView::indicator:hover {
     border: 1px solid #888;
