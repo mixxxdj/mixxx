@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QStringBuilder>
 #include <QThread>
 
 #include "library/trackcollection.h"

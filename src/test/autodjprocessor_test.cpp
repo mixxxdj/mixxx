@@ -41,6 +41,7 @@ class FakeDeck : public BaseTrackPlayer {
             : BaseTrackPlayer(NULL, group),
               duration(ConfigKey(group, "duration")),
               samplerate(ConfigKey(group, "track_samplerate")),
+              rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
@@ -95,6 +96,7 @@ class FakeDeck : public BaseTrackPlayer {
     TrackPointer loadedTrack;
     ControlObject duration;
     ControlObject samplerate;
+    ControlObject rateratio;
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;

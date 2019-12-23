@@ -1,6 +1,5 @@
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
