@@ -1,9 +1,9 @@
 /* Dark */
 WEffectSelector,
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 WEffectSelector::down-arrow,
 WEffectSelector::indicator:!checked,
-#fadeModeCombobox QAbstractItemView,
+#fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::item,
 #fadeModeCombobox::indicator:!checked,
 QToolTip,

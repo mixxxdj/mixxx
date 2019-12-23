@@ -11,3 +11,9 @@ WEffectSelector::indicator {
     border: 0;
 } */
 
+
+#LibraryBPMSpinBox {
+  padding: 0px;
+  margin: 0px;
+}
+

@@ -126,9 +126,9 @@ WLibrary QHeaderView {
 #RateText,
 #PreviewBPM,
 WEffectSelector,
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractItemView {
+#fadeModeCombobox QAbstractScrollArea {
   font-size: 12px;
   }
   #RateText,
@@ -205,9 +205,9 @@ WOverview QLabel {
 #Deck1 WStarRating, #Deck2 WStarRating,
 #SamplerTitle, #SamplerTitleSmall, #SamplerBpm,
 #FxUnitLabel, #MicAuxSubTitle,
-WEffectSelector, WEffectSelector QAbstractItemView,
+WEffectSelector, WEffectSelector QAbstractScrollArea,
 #PreviewLabel, #PreviewDeckText, #PreviewTitle, #PreviewBPM,
-#fadeModeCombobox, #fadeModeCombobox QAbstractItemView,
+#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
 #CategoryLabel, #SkinSettingsLabelButton,
 WSearchLineEdit,
 #LibraryBPMSpinBox,
@@ -1923,8 +1923,8 @@ WEffectSelector {
   padding: 1px 0px 1px 4px;
   }
 
-  WEffectSelector QAbstractItemView,
-  #fadeModeCombobox QAbstractItemView {
+  WEffectSelector QAbstractScrollArea,
+  #fadeModeCombobox QAbstractScrollArea {
     width: 142px;
     /* padding-left: 6px; */
     /* On Linux, this is not applied but font color from WEffectSelector
@@ -2124,7 +2124,8 @@ WLibrary QLineEdit,
   selection-color: #000;
   selection-background-color: #ccc;
 }
-WLibrary QLineEdit {
+WLibrary QLineEdit,
+#LibraryBPMSpinBox {
   border: 1px solid #5E4507;
 }
 
@@ -2158,17 +2159,38 @@ WLibrary QLineEdit {
     creates a 1px border around the spinbox' text area.
     Increased left/right padding/margin removes the overlap of
     text of activated spinbox and text artefact from regular
-    BPM value display. */
+    BPM value display.
+    Note: for MacOS this is overwritten in mac-style.qss
   padding: -1px -8px -1px -4px;
-  margin: -2px 0px -2px -3px;
+  margin: -2px 0px -2px -3px; */
+  /* just this to crop graphic BPM artifact when activating qspinbox
+  margin-left: -4px;
+  padding-left: 2px;  */
+  border-left: 0px;
   /* As soon as any border property is set, the up/down buttons
     lose their style & icons
   border: 0px;
   border-radius: 2px; */
   }
+  #LibraryBPMSpinBox::up-button,
+  #LibraryBPMSpinBox::down-button {
+    /* as with spinbox: border is added to size.
+      define it with same width as hover border, otherwise size jumps */
+    width: 13px;
+    height: 10px;
+    padding: 0px;
+    background-color: #5E4507;
+    }
+    #LibraryBPMSpinBox::up-button {
+      image: url(skin:/buttons_classic/btn__lib_spinbox_up_black.svg) no-repeat;
+      }
+    #LibraryBPMSpinBox::down-button {
+      image: url(skin:/buttons_classic/btn__lib_spinbox_down_black.svg) no-repeat;
+      }
   /* remove OS focus indicator from BPM cell */
   WLibrary QCheckBox,
-  #LibraryBPMButton::item:selected {
+  #LibraryBPMButton::item:selected,
+  WCueMenuPopup QPushButton:focus {
     outline: none;
   }
 
@@ -2470,7 +2492,7 @@ WLibrary QRadioButton::indicator:unchecked {
 
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 WBeatSpinBox QMenu,
@@ -2507,8 +2529,8 @@ WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
 WSearchLineEdit,
-WEffectSelector QAbstractItemView,
-#fadeModeCombobox QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea,
 WEffectSelector, WEffectSelector::item,
 #fadeModeCombobox, #fadeModeCombobox::item {
   background-color: #0f0f0f;
@@ -2517,7 +2539,7 @@ WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
 WSearchLineEdit,
-WEffectSelector, WEffectSelector QAbstractItemView,
+WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
   font-size: 13px/13px;
 }
@@ -2576,10 +2598,10 @@ WEffectSelector,
       image: url(skin:/buttons_classic/btn__fx_selector_down_pressed.svg);
     }
 
-  WEffectSelector QAbstractItemView {
+  WEffectSelector QAbstractScrollArea {
     min-width: 160px;
   }
-  #fadeModeCombobox QAbstractItemView {
+  #fadeModeCombobox QAbstractScrollArea {
     min-width: 185px;
   }
   WEffectSelector::indicator:checked,

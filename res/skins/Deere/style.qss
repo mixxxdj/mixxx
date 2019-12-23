@@ -1953,7 +1953,7 @@ do not highlight either state. */
 
 
 /* common styles for WEffectSelector, QMenu, QToolTip */
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
@@ -1963,16 +1963,16 @@ WCueMenuPopup QMenu,
 WCoverArtMenu {
   padding: 2px;
 }
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   font: 13px;
 }
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   min-width: 180px;
 }
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 WEffectSelector::indicator:!checked,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::indicator:!checked,
@@ -1990,7 +1990,7 @@ WCoverArtMenu::item {
     color: #c1cabe;
     background-color: #201f1f;
   }
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,

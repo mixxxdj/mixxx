@@ -1023,10 +1023,16 @@ WLibrary QRadioButton::indicator:checked {
 }
 /* Match border color of table cell in edit mode and Preview button */
 WLibrary QLineEdit,
+#LibraryBPMSpinBox,
 #LibraryPreviewButton:!checked:hover,
 #LibraryPreviewButton:checked:hover,
 #LibraryPreviewButton:checked {
   border: 1px solid #aa7100;
+}
+
+#LibraryBPMSpinBox::up-button,
+#LibraryBPMSpinBox::down-button {
+  background-color: #aa7100;
 }
 
 /* selected items in sidebar tree */

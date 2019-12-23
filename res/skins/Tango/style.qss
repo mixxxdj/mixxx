@@ -22,7 +22,7 @@ WLabel,
 WNumber,
 WTrackProperty,
 WBeatSpinBox,
-WEffectSelector, WEffectSelector QAbstractItemView,
+WEffectSelector, WEffectSelector QAbstractScrollArea,
 WSearchLineEdit,
 WPushButton,
 WSearchLineEdit,
@@ -1737,15 +1737,15 @@ decks, samplers, mic, aux, fx */
         image: url(skin:/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
       }
 
-    WEffectSelector QAbstractItemView,
-    #fadeModeCombobox QAbstractItemView {
+    WEffectSelector QAbstractScrollArea,
+    #fadeModeCombobox QAbstractScrollArea {
       border-radius: 2px;
       margin: 0px;
     }
-    WEffectSelector QAbstractItemView{
+    WEffectSelector QAbstractScrollArea{
       min-width: 140px;
     }
-    #fadeModeCombobox QAbstractItemView {
+    #fadeModeCombobox QAbstractScrollArea {
       min-width: 165px;
     }
     /* selected item */
@@ -2133,7 +2133,7 @@ WCueMenuPopup QMenu::item,
 WCoverArtMenu::item,
 #LibraryContainer QMenu QCheckBox,
 #SkinSettings,
-WEffectSelector, WEffectSelector QAbstractItemView,
+WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea::item {
   background-color: #1a1a1a;
@@ -2146,7 +2146,7 @@ WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCoverArtMenu,
 #SkinSettings,
-WEffectSelector QAbstractItemView,
+WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   border: 1px solid #888;
