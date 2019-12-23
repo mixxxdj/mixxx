@@ -12,11 +12,11 @@ class TrackDAOTest : public LibraryTest {
 TEST_F(TrackDAOTest, detectMovedTracks) {
     TrackDAO& trackDAO = internalCollection()->getTrackDAO();
 
-    QString filename("file.mp3");
+    QString filename = QStringLiteral("file.mp3");
 
-    TrackFile oldFile(QDir::tempPath() + "/old/dir1", filename);
-    TrackFile newFile(QDir::tempPath() + "/new/dir1", filename);
-    TrackFile otherFile(QDir::tempPath() + "/new", filename);
+    TrackFile oldFile(QDir(QDir::tempPath() + QStringLiteral("/old/dir1")), filename);
+    TrackFile newFile(QDir(QDir::tempPath() + QStringLiteral("/new/dir1")), filename);
+    TrackFile otherFile(QDir(QDir::tempPath() + QStringLiteral("/new")), filename);
 
     TrackPointer pOldTrack = Track::newTemporary(oldFile);
     TrackPointer pNewTrack = Track::newTemporary(newFile);

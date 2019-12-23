@@ -1,6 +1,5 @@
 #include <QDesktopServices>
 #include <QtDebug>
-#include <QStringBuilder>
 #include <QComboBox>
 
 #include "library/coverartcache.h"
