@@ -1662,6 +1662,12 @@ if(COREAUDIO)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
 
+# Extra Metadata support
+option(EXTRA_METADATA "Extra Metadata support" OFF)
+if(EXTRA_METADATA)
+    target_compile_definitions(mixxx-lib PUBLIC __EXTRA_METADATA__)
+endif()
+
 # FAAD AAC audio file decoder plugin
 find_package(MP4)
 find_package(MP4v2)
