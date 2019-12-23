@@ -6,6 +6,28 @@ from .mixxx import Feature
 import SCons.Script as SCons
 from . import depends
 
+
+class ExtraMetadata(Feature):
+    def description(self):
+        return "Extra Metadata support (experimental)"
+
+    def enabled(self, build):
+        build.flags['extra_metadata'] = util.get_flags(build.env, 'extra_metadata', 0)
+        if int(build.flags['extra_metadata']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('extra_metadata',
+                     'Set to 1 to enable experimental extra metadata support.', 0)
+
+    def configure(self, build, conf):
+        build.env.Append(CPPDEFINES='__EXTRA_METADATA__')
+
+    def sources(self, build):
+        return []
+
+
 class HSS1394(Feature):
     def description(self):
         return "HSS1394 MIDI device support"

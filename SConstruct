@@ -58,6 +58,7 @@ available_features = [features.Mad,
                       features.Lilv,
                       features.Battery,
                       features.QtKeychain,
+                      features.ExtraMetadata,
 
                       # "Features" of dubious quality
                       features.PerfTools,
