@@ -1,7 +1,6 @@
 #include "util/duration.h"
 
 #include <QtGlobal>
-#include <QStringBuilder>
 #include <QTime>
 
 #include "util/assert.h"

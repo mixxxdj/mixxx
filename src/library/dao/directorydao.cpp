@@ -2,7 +2,6 @@
 #include <QDir>
 #include <QtDebug>
 #include <QRegExp>
-#include <QStringBuilder>
 
 #include "library/dao/directorydao.h"
 #include "library/queryutil.h"
