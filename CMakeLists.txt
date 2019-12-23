@@ -960,6 +960,7 @@ add_executable(mixxx-test
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
+  src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
 )
@@ -1330,7 +1331,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Test
   Qt5::Widgets
   Qt5::Xml)
-target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
+target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)

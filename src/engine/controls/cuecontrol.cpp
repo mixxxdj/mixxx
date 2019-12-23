@@ -2,7 +2,6 @@
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QMutexLocker>
-#include <QStringBuilder>
 
 #include "engine/enginebuffer.h"
 #include "engine/controls/cuecontrol.h"
