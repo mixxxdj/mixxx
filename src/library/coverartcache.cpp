@@ -1,6 +1,5 @@
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
@@ -15,7 +14,7 @@ mixxx::Logger kLogger("CoverArtCache");
 
 QString pixmapCacheKey(quint16 hash, int width) {
     return QString("CoverArtCache_%1_%2")
-            .arg(QString::number(hash)).arg(width);
+            .arg(QString::number(hash), QString::number(width));
 }
 
 // The transformation mode when scaling images
@@ -26,9 +25,9 @@ inline QImage resizeImageWidth(const QImage& image, int width) {
     return image.scaledToWidth(width, kTransformationMode);
 }
 
-} // anonymous namespace
-
 const bool sDebug = false;
+
+} // anonymous namespace
 
 CoverArtCache::CoverArtCache() {
     // The initial QPixmapCache limit is 10MB.
@@ -80,6 +79,9 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
+        if (sDebug) {
+            kLogger.debug() << "CoverArtCache::requestCover cover found in cache" << requestInfo << signalWhenDone;
+        }
         if (signalWhenDone) {
             emit(coverFound(pRequestor, requestInfo, pixmap, true));
         }
@@ -93,6 +95,9 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
         return QPixmap();
     }
 
+    if (sDebug) {
+        kLogger.debug() << "CoverArtCache::requestCover starting future for" << requestInfo;
+    }
     m_runningRequests.insert(requestId);
     // The watcher will be deleted in coverLoaded()
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);

@@ -14,6 +14,7 @@
 #include "library/browse/browsefeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "track/track.h"
 #include "util/memory.h"
@@ -22,22 +23,25 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
 
-const QString kQuickLinksSeparator = "-+-";
+namespace {
 
-BrowseFeature::BrowseFeature(Library* parent,
+const QString kQuickLinksSeparator = QStringLiteral("-+-");
+
+} // anonymous namespace
+
+BrowseFeature::BrowseFeature(
+        Library* pLibrary,
         UserSettingsPointer pConfig,
-        TrackCollection* pTrackCollection,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_browseModel(this, pTrackCollection, pRecordingManager),
+        : LibraryFeature(pLibrary, pConfig),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL),
+          m_pLastRightClickedItem(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
     connect(this,
             &BrowseFeature::requestAddDir,
-            parent,
+            pLibrary,
             &Library::slotRequestAddDir);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
@@ -343,7 +347,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += run_media_user_dir.entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
@@ -352,7 +356,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         TreeItem* folder = new TreeItem(
             pFeature,
             device.fileName(),
-            device.filePath() + "/");
+            QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
 
@@ -421,7 +425,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             TreeItem* folder = new TreeItem(
                 this,
                 one.fileName(),
-                one.absoluteFilePath() + "/");
+                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
             folders << folder;
         }
     }

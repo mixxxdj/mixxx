@@ -210,7 +210,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
     // emit(loadingTrack(pNewTrack, pOldTrack));
     // but the newTrack may change if we load a new track while the previous one
     // is still loading. This leads to inconsistent states for example a different
-    // track in the Mixx Title and the Deck label.
+    // track in the Mixxx Title and the Deck label.
     if (oldState == STATE_TRACK_LOADING &&
             newState == STATE_TRACK_LOADING) {
         kLogger.warning()

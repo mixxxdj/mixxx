@@ -22,8 +22,9 @@ class WLibrarySidebar;
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
   public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection,
-                    UserSettingsPointer pConfig);
+    PlaylistFeature(
+            Library* pLibrary,
+            UserSettingsPointer pConfig);
     virtual ~PlaylistFeature();
 
     QVariant title() override;
@@ -40,8 +41,8 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(int playlistId) override;
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName) override;
+    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
  protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
@@ -50,7 +51,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private:
     QString getRootViewHtml() const override;
-    QIcon m_icon;
+    const QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 

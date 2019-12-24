@@ -54,14 +54,17 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_endOfTrack(false),
-          m_pCueMenu(std::make_unique<CueMenu>(this)),
+          m_pCueMenuPopup(std::make_unique<WCueMenuPopup>(this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
-          m_iPos(0),
+          m_bLeftClickDragging(false),
+          m_iPickupPos(0),
+          m_iPlayPos(0),
           m_pHoveredMark(nullptr),
           m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
+          m_iLabelFontSize(10),
           m_a(1.0),
           m_b(0.0),
           m_analyzerProgress(kAnalyzerProgressUnknown),
@@ -70,12 +73,9 @@ WOverview::WOverview(
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
-    m_pRateDirControl = new ControlProxy(m_group, "rate_dir", this);
-    m_pRateRangeControl = new ControlProxy(m_group, "rateRange", this);
-    m_pRateSliderControl = new ControlProxy(m_group, "rate", this);
+    m_pRateRatioControl = new ControlProxy(m_group, "rate_ratio", this);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
-    // TODO: connect to rate_ratio instead in PR #1765
-    m_pRateSliderControl->connectValueChanged(this, &WOverview::onRateSliderChange);
+    m_pRateRatioControl->connectValueChanged(this, &WOverview::onRateRatioChange);
     m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
@@ -87,7 +87,7 @@ WOverview::WOverview(
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
 
-    connect(m_pCueMenu.get(), &QMenu::aboutToHide, this, &WOverview::slotCueMenuAboutToHide);
+    connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -108,9 +108,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     bool okay = false;
-    m_iLabelFontSize = context.selectInt(node, "LabelFontSize", &okay);
-    if (!okay) {
-        m_iLabelFontSize = 10;
+    int labelFontSize = context.selectInt(node, "LabelFontSize", &okay);
+    if (okay) {
+        m_iLabelFontSize = labelFontSize;
     }
 
     // Clear the background pixmap, if it exists.
@@ -136,7 +136,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             ? defaultMark->fillColor()
             : m_signalColors.getAxesColor();
     m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
-    m_pCueMenu->useColorSet(&m_predefinedColorsRepresentation);
+    m_pCueMenuPopup->useColorSet(&m_predefinedColorsRepresentation);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -204,15 +204,21 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
+
     // Calculate handle position. Clamp the value within 0-1 because that's
     // all we represent with this widget.
     dParameter = math_clamp(dParameter, 0.0, 1.0);
 
     bool redraw = false;
-    int oldPos = m_iPos;
-    m_iPos = valueToPosition(dParameter);
-    if (oldPos != m_iPos) {
+    int oldPos = m_iPlayPos;
+    m_iPlayPos = valueToPosition(dParameter);
+    if (oldPos != m_iPlayPos) {
         redraw = true;
+    }
+
+    if (!m_bLeftClickDragging) {
+        // if not dragged the pick-up moves with the play position
+        m_iPickupPos = m_iPlayPos;
     }
 
     // In case the user is hovering a cue point or holding right click, the
@@ -318,7 +324,8 @@ void WOverview::onEndOfTrackChange(double v) {
     update();
 }
 
-void WOverview::onMarkChanged(double /*v*/) {
+void WOverview::onMarkChanged(double v) {
+    Q_UNUSED(v);
     //qDebug() << "WOverview::onMarkChanged()" << v;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
@@ -326,12 +333,14 @@ void WOverview::onMarkChanged(double /*v*/) {
     }
 }
 
-void WOverview::onMarkRangeChange(double /*v*/) {
+void WOverview::onMarkRangeChange(double v) {
+    Q_UNUSED(v);
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
 
-void WOverview::onRateSliderChange(double /*v*/) {
+void WOverview::onRateRatioChange(double v) {
+    Q_UNUSED(v);
     update();
 }
 
@@ -381,6 +390,14 @@ void WOverview::receiveCuesUpdated() {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
+    if (m_bLeftClickDragging) {
+        if (m_orientation == Qt::Horizontal) {
+            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
+        } else {
+            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
+        }
+    }
+
     // Do not activate cue hovering while right click is held down and the
     // button down event was not on a cue.
     if (m_bTimeRulerActive) {
@@ -400,8 +417,8 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // before hotcues in m_marksToRender so if there is a hotcue in the same
     // location, the hotcue gets rendered on top. When right clicking, the
     // the hotcue rendered on top must be assigned to m_pHoveredMark to show
-    // the CueMenu. To accomplish this, m_marksToRender is iterated in reverse
-    // and the loop breaks as soon as m_pHoveredMark is set.
+    // the CueMenuPopup. To accomplish this, m_marksToRender is iterated in
+    // reverse and the loop breaks as soon as m_pHoveredMark is set.
     for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         int hoveredPosition;
@@ -427,7 +444,17 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::RightButton) {
+    if (e->button() == Qt::LeftButton) {
+        if (m_bLeftClickDragging) {
+            m_iPlayPos = m_iPickupPos;
+            double dValue = positionToValue(m_iPickupPos);
+            setControlParameterUp(dValue);
+            m_bLeftClickDragging = false;
+        }
+        m_bTimeRulerActive = false;
+    } else if (e->button() == Qt::RightButton) {
+        // Do not seek when releasing a right click. This is important to
+        // prevent accidental seeking when trying to right click a hotcue.
         m_bTimeRulerActive = false;
     }
 }
@@ -438,22 +465,30 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     if (m_pCurrentTrack == nullptr) {
         return;
     }
-
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
-            m_iPos = math_clamp(e->x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
         } else {
-            m_iPos = math_clamp(e->y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
         }
 
-        double dValue = positionToValue(m_iPos);
+        double dValue = positionToValue(m_iPickupPos);
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
-            m_iPos = valueToPosition(dValue);
+            m_iPickupPos = valueToPosition(dValue);
+            setControlParameterUp(dValue);
+            m_bLeftClickDragging = false;
+        } else {
+            m_bLeftClickDragging = true;
+            m_bTimeRulerActive = true;
+            m_timeRulerPos = e->pos();
         }
-        setControlParameterUp(dValue);
     } else if (e->button() == Qt::RightButton) {
-        if (m_pHoveredMark == nullptr) {
+        if (m_bLeftClickDragging) {
+            m_iPickupPos = m_iPlayPos;
+            m_bLeftClickDragging = false;
+            m_bTimeRulerActive = false;
+        } else if (m_pHoveredMark == nullptr) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
         } else if (m_pHoveredMark->getHotCue() != Cue::kNoHotCue) {
@@ -471,31 +506,32 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 }
             }
             if (pHoveredCue != nullptr) {
-                m_pCueMenu->setCue(pHoveredCue);
-                m_pCueMenu->setTrack(m_pCurrentTrack);
-                m_pCueMenu->popup(e->globalPos());
+                m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+                m_pCueMenuPopup->popup(e->globalPos());
                 m_bHotcueMenuShowing = true;
             }
         }
     }
 }
 
-void WOverview::slotCueMenuAboutToHide() {
+void WOverview::slotCueMenuPopupAboutToHide() {
     m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
     update();
 }
 
-void WOverview::leaveEvent(QEvent* e) {
-    Q_UNUSED(e);
+void WOverview::leaveEvent(QEvent* pEvent) {
+    Q_UNUSED(pEvent);
     if (!m_bHotcueMenuShowing) {
         m_pHoveredMark.clear();
     }
+    m_bLeftClickDragging = false;
     m_bTimeRulerActive = false;
     update();
 }
 
-void WOverview::paintEvent(QPaintEvent * /*unused*/) {
+void WOverview::paintEvent(QPaintEvent* pEvent) {
+    Q_UNUSED(pEvent);
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
@@ -521,7 +557,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
-            drawCurrentPosition(&painter);
+            drawPickupPosition(&painter);
             drawTimeRuler(&painter);
             drawMarkLabels(&painter, offset, gain);
         }
@@ -578,11 +614,23 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         QColor playedOverlayColor = m_signalColors.getPlayedOverlayColor();
         if (playedOverlayColor.alpha() > 0) {
             if (m_orientation == Qt::Vertical) {
-                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPos, playedOverlayColor);
+                pPainter->fillRect(0, 0, m_waveformImageScaled.width(), m_iPlayPos, playedOverlayColor);
             } else {
-                pPainter->fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
+                pPainter->fillRect(0, 0, m_iPlayPos, m_waveformImageScaled.height(), playedOverlayColor);
             }
         }
+    }
+    if (m_bLeftClickDragging) {
+        PainterScope painterScope(pPainter);
+        QLineF line;
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(m_iPlayPos, 0.0, m_iPlayPos, height());
+        } else {
+            line.setLine(0.0, m_iPlayPos, width(), m_iPlayPos);
+        }
+        pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+        pPainter->setOpacity(0.5);
+        pPainter->drawLine(line);
     }
 }
 
@@ -845,7 +893,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     }
 }
 
-void WOverview::drawCurrentPosition(QPainter* pPainter) {
+void WOverview::drawPickupPosition(QPainter* pPainter) {
     PainterScope painterScope(pPainter);
 
     if (m_orientation == Qt::Vertical) {
@@ -854,20 +902,20 @@ void WOverview::drawCurrentPosition(QPainter* pPainter) {
 
     pPainter->setPen(QPen(QBrush(m_qColorBackground), 1 * m_scaleFactor));
     pPainter->setOpacity(0.5);
-    pPainter->drawLine(m_iPos + 1, 0, m_iPos + 1, breadth());
-    pPainter->drawLine(m_iPos - 1, 0, m_iPos - 1, breadth());
+    pPainter->drawLine(m_iPickupPos + 1, 0, m_iPickupPos + 1, breadth());
+    pPainter->drawLine(m_iPickupPos - 1, 0, m_iPickupPos - 1, breadth());
 
     pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
     pPainter->setOpacity(1.0);
-    pPainter->drawLine(m_iPos, 0, m_iPos, breadth());
+    pPainter->drawLine(m_iPickupPos, 0, m_iPickupPos, breadth());
 
-    pPainter->drawLine(m_iPos - 2, 0, m_iPos, 2);
-    pPainter->drawLine(m_iPos, 2, m_iPos + 2, 0);
-    pPainter->drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
+    pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos, 2);
+    pPainter->drawLine(m_iPickupPos, 2, m_iPickupPos + 2, 0);
+    pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos + 2, 0);
 
-    pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos, breadth() - 3);
-    pPainter->drawLine(m_iPos, breadth() - 3, m_iPos + 2, breadth() - 1);
-    pPainter->drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
+    pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos, breadth() - 3);
+    pPainter->drawLine(m_iPickupPos, breadth() - 3, m_iPickupPos + 2, breadth() - 1);
+    pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos + 2, breadth() - 1);
 }
 
 void WOverview::drawTimeRuler(QPainter* pPainter) {
@@ -881,17 +929,19 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
     if (m_bTimeRulerActive) {
-        QLineF line;
-        if (m_orientation == Qt::Horizontal) {
-            line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
-        } else {
-            line.setLine(0.0, m_timeRulerPos.x(), width(), m_timeRulerPos.x());
-        }
-        pPainter->setPen(shadowPen);
-        pPainter->drawLine(line);
+        if (!m_bLeftClickDragging) {
+            QLineF line;
+            if (m_orientation == Qt::Horizontal) {
+                line.setLine(m_timeRulerPos.x(), 0.0, m_timeRulerPos.x(), height());
+            } else {
+                line.setLine(0.0, m_timeRulerPos.x(), width(), m_timeRulerPos.x());
+            }
+            pPainter->setPen(shadowPen);
+            pPainter->drawLine(line);
 
-        pPainter->setPen(Qt::green);
-        pPainter->drawLine(line);
+            pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
+            pPainter->drawLine(line);
+        }
 
         QPointF textPoint = m_timeRulerPos;
         QPointF textPointDistance = m_timeRulerPos;
@@ -1040,12 +1090,13 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 }
 
 double WOverview::samplePositionToSeconds(double sample) {
-    // TODO: replace with rate_ratio in PR #1765
-    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
-    return sample / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio;
+    double trackTime = sample /
+            (m_trackSampleRateControl->get() * mixxx::kEngineChannelCount);
+    return trackTime / m_pRateRatioControl->get();
 }
 
-void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
+void WOverview::resizeEvent(QResizeEvent* pEvent) {
+    Q_UNUSED(pEvent);   
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
     const double kMaxPlayposRange = 1.0;
@@ -1067,9 +1118,9 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     Init();
 }
 
-void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WOverview::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
-void WOverview::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WOverview::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }

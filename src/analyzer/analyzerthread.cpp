@@ -81,7 +81,7 @@ AnalyzerThread::AnalyzerThread(
         : WorkerThread(QString("AnalyzerThread %1").arg(id)),
           m_id(id),
           m_dbConnectionPool(std::move(dbConnectionPool)),
-          m_pConfig(std::move(pConfig)),
+          m_pConfig(pConfig),
           m_modeFlags(modeFlags),
           m_nextTrack(2), // minimum capacity
           m_sampleBuffer(mixxx::kAnalysisSamplesPerChunk),

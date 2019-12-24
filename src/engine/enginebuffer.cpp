@@ -1207,8 +1207,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    VERIFY_OR_DEBUG_ASSERT(m_trackSampleRateOld && m_tempo_ratio_old) {
-        // no track loaded, function not called in this case
+    if (!m_trackSampleRateOld) {
+        // This happens if Deck Passthrough is active but no track is loaded.
+        // We skip indicator updates.
         return;
     }
 
@@ -1216,6 +1217,14 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
+
+    double ratio = m_tempo_ratio_old;
+    if (ratio == 0.0) {
+        // In case the track is slowed done to zero we will have INF remaining seconds.
+        // We jump back to a rate of 1.0 to show a useful time.
+        ratio = 1.0;
+    }
+
     const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
             / m_trackSampleRateOld / m_tempo_ratio_old;
     if(speed > 0 && fFractionalPlaypos == 1.0) {

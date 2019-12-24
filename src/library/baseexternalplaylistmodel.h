@@ -16,7 +16,7 @@
 class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    BaseExternalPlaylistModel(QObject* pParent, TrackCollection* pTrackCollection,
+    BaseExternalPlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager,
                               const char* settingsNamespace, const QString& playlistsTable,
                               const QString& playlistTracksTable, QSharedPointer<BaseTrackCache> trackSource);
 
