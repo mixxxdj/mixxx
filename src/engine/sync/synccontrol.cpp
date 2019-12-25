@@ -58,6 +58,7 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pSyncEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 
+    // The relative position between two beats in the range 0.0 ... 1.0
     m_pSyncBeatDistance.reset(
             new ControlObject(ConfigKey(group, "beat_distance")));
 
