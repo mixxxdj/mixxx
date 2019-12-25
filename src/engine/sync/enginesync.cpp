@@ -149,9 +149,11 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             if (foundTargetBpm) {
                 setMasterParams(pSyncable, targetBeatDistance,
                                 targetBaseBpm, targetBpm);
+                setMasterInstantaneousBpm(m_pInternalClock, targetBpm);
             } else if (pSyncable->getBaseBpm() > 0) {
                 setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                                 pSyncable->getBaseBpm(), pSyncable->getBpm());
+                setMasterInstantaneousBpm(m_pInternalClock, pSyncable->getBpm());
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
             if (!syncDeckExists() && pSyncable->getBaseBpm() > 0) {
@@ -304,6 +306,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
 
     pSyncable->setSyncMode(SYNC_FOLLOWER);
     pSyncable->setMasterParams(masterBeatDistance(), masterBaseBpm(), masterBpm());
+    pSyncable->setInstantaneousBpm(masterBpm());
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable) {
