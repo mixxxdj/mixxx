@@ -6,6 +6,7 @@
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
 #define OPUS_BITRATE_MODES_COUNT 3
 #define OPUS_BITRATE_CONSTRAINED_VBR 0
@@ -46,6 +47,11 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
     // Return the selected option of the group. If it is a single-element option,
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
+
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_OPUS;
+    }
 
     static const QString BITRATE_MODE_GROUP;
 

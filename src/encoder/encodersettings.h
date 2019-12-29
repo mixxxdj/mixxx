@@ -48,6 +48,9 @@ class EncoderSettings {
     virtual int getSelectedOption(QString groupCode) const { Q_UNUSED(groupCode); return 0; }
     
     virtual ChannelMode getChannelMode() const { return ChannelMode::AUTOMATIC; }
+
+    // Returns the format subtype of this encoder settings.
+    virtual QString getFormat() const = 0;
 };
 
 typedef std::shared_ptr<EncoderSettings> EncoderSettingsPointer;

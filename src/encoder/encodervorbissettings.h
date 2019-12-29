@@ -10,6 +10,7 @@
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
 class EncoderVorbisSettings : public EncoderRecordingSettings {
     public:
@@ -30,6 +31,11 @@ class EncoderVorbisSettings : public EncoderRecordingSettings {
     // Returns the current quality value
     int getQuality() const override;
     int getQualityIndex() const override;
+
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_OGG;
+    }
 
   private:
     QList<int> m_qualList;

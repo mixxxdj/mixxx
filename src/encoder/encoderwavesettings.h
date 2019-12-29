@@ -42,7 +42,7 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
     int getSelectedOption(QString groupCode) const override;
 
     // Returns the format subtype of this encoder settings.
-    QString getFormat() const {
+    QString getFormat() const override{
         return m_format;
     }
     

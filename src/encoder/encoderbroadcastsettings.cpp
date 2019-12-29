@@ -56,3 +56,7 @@ EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
     }
 }
 
+QString EncoderBroadcastSettings::getFormat() const {
+    return m_pProfile->getFormat();
+}
+

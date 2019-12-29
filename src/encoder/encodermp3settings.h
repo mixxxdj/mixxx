@@ -10,6 +10,7 @@
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
 class EncoderMp3Settings : public EncoderRecordingSettings {
   public:
@@ -39,6 +40,11 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     // Return the selected option of the group. If it is a single-element option, 
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
+
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_MP3;
+    }
 
     static const int DEFAULT_BITRATE_INDEX;
     static const QString ENCODING_MODE_GROUP;

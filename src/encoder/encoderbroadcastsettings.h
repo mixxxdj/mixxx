@@ -24,6 +24,7 @@ class EncoderBroadcastSettings : public EncoderSettings {
     int getQuality() const override;
     int getQualityIndex() const override;
     ChannelMode getChannelMode() const override;
+    QString getFormat() const override;
 
   private:
     QList<int> m_qualList;
