@@ -41,7 +41,6 @@ class EncoderSettings {
     // Returns the list of quality values supported, to assign them to the slider
     virtual QList<int> getQualityValues() const { return QList<int>(); }
     // Sets the quality value by its value
-    virtual void setQualityByValue(int qualityValue) { Q_UNUSED(qualityValue); }
     // Sets the quality value by its index
     virtual void setQualityByIndex(int qualityIndex) { Q_UNUSED(qualityIndex); }
     virtual int getQuality() const { return 0; }
@@ -55,13 +54,13 @@ class EncoderSettings {
     virtual QList<OptionsGroup> getOptionGroups() const { return QList<OptionsGroup>(); }
     // Selects the option by its index. If it is a single-element option, 
     // index 0 means disabled and 1 enabled.
-    virtual void setGroupOption(QString groupCode, int optionIndex) { 
-            Q_UNUSED(groupCode); Q_UNUSED(optionIndex); }
+    virtual void setGroupOption(QString groupCode, int optionIndex) {
+        Q_UNUSED(groupCode);
+        Q_UNUSED(optionIndex); }
     // Return the selected option of the group. If it is a single-element option, 
     // 0 means disabled and 1 enabled.
     virtual int getSelectedOption(QString groupCode) const { Q_UNUSED(groupCode); return 0; }
     
-    virtual void setChannelMode(ChannelMode mode) { Q_UNUSED(mode); }
     virtual ChannelMode getChannelMode() const { return ChannelMode::AUTOMATIC; }
 };
 
