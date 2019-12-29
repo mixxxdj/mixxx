@@ -58,8 +58,9 @@ void EngineRecord::updateFromPreferences() {
     }
     Encoder::Format format = EncoderFactory::getFactory().getSelectedFormat(m_pConfig);
     m_encoding = format.internalName;
-    m_pEncoder = EncoderFactory::getFactory().getNewEncoder(format,  m_pConfig, this);
-    m_pEncoder->updateMetaData(m_baAuthor,m_baTitle,m_baAlbum);
+    m_pEncoder = EncoderFactory::getFactory().createRecordingEncoder(
+            format, m_pConfig, this);
+    m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
 
     QString errorMsg;
     if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
