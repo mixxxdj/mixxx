@@ -61,7 +61,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),  ConfigValue(m_selFormat.internalName));
     }
 
-    setupEncoderUI(m_selFormat);
+    setupEncoderUI();
 
     // Setting Metadata
     loadMetaData();
@@ -160,7 +160,7 @@ void DlgPrefRecord::slotUpdate()
             break;
         }
     }
-    setupEncoderUI(m_selFormat);
+    setupEncoderUI();
 
     loadMetaData();
 
@@ -178,8 +178,9 @@ void DlgPrefRecord::slotUpdate()
 void DlgPrefRecord::slotResetToDefaults()
 {
     m_formatButtons.first()->setChecked(true);
-    setupEncoderUI(EncoderFactory::getFactory().getFormatFor(
-        m_formatButtons.first()->objectName()));
+    m_selFormat = EncoderFactory::getFactory().getFormatFor(
+            m_formatButtons.first()->objectName());
+    setupEncoderUI();
     // TODO (XXX): It would be better that a defaultSettings() method is added
     // to the EncoderSettings interface so that we know which option to set
     m_optionWidgets.first()->setChecked(true);
@@ -218,14 +219,13 @@ void DlgPrefRecord::slotFormatChanged()
 {
     QObject *senderObj = sender();
     m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
-    setupEncoderUI(m_selFormat);
+    setupEncoderUI();
 }
 
-void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
-{
+void DlgPrefRecord::setupEncoderUI() {
     EncoderRecordingSettingsPointer settings =
             EncoderFactory::getFactory().getEncoderRecordingSettings(
-                    selformat, m_pConfig);
+                    m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
         LabelQuality->setVisible(true);
         SliderQuality->setVisible(true);
