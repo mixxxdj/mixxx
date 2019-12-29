@@ -18,11 +18,19 @@ class EncoderWaveSettings : public EncoderSettings {
     virtual ~EncoderWaveSettings();
 
     // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
+    bool usesQualitySlider() const override {
+        return false;
+    }
+
     // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override;
+    bool usesCompressionSlider() const override {
+        return false;
+    }
+
     // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
+    bool usesOptionGroups() const override {
+        return true;
+    }
 
     // Returns the list of radio options to show to the user
     QList<OptionsGroup> getOptionGroups() const override;
@@ -34,7 +42,9 @@ class EncoderWaveSettings : public EncoderSettings {
     int getSelectedOption(QString groupCode) const override;
 
     // Returns the format subtype of this encoder settings.
-    Encoder::Format getFormat() const;
+    Encoder::Format getFormat() const {
+        return m_format;
+    }
     
     static const QString BITS_GROUP;
   private:
@@ -44,22 +54,10 @@ class EncoderWaveSettings : public EncoderSettings {
 };
 
 
-inline bool EncoderWaveSettings::usesQualitySlider() const
-{
-    return false;
-}
-inline bool EncoderWaveSettings::usesCompressionSlider() const
-{
-    return false;
-}
-inline bool EncoderWaveSettings::usesOptionGroups() const
-{
-    return true;
-}
 
-inline Encoder::Format EncoderWaveSettings::getFormat() const
-{
-    return m_format;
-}
+
+
+
+
 
 #endif // ENCODERWAVESETTINGS_H
