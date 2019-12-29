@@ -14,7 +14,7 @@
 
 class EncoderWaveSettings : public EncoderSettings {
   public:
-    EncoderWaveSettings(UserSettingsPointer pConfig, Encoder::Format format);
+    EncoderWaveSettings(UserSettingsPointer pConfig, QString format);
     virtual ~EncoderWaveSettings();
 
     // Indicates that it uses the quality slider section of the preferences
@@ -42,7 +42,7 @@ class EncoderWaveSettings : public EncoderSettings {
     int getSelectedOption(QString groupCode) const override;
 
     // Returns the format subtype of this encoder settings.
-    Encoder::Format getFormat() const {
+    QString getFormat() const {
         return m_format;
     }
     
@@ -50,7 +50,7 @@ class EncoderWaveSettings : public EncoderSettings {
   private:
     QList<OptionsGroup> m_radioList;
     UserSettingsPointer m_pConfig;
-    Encoder::Format m_format;
+    QString m_format;
 };
 
 

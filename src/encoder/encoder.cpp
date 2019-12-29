@@ -88,10 +88,10 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
     EncoderPointer pEncoder;
     if (format.internalName == ENCODING_WAVE) {
         pEncoder = std::make_shared<EncoderWave>(pCallback);
-        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
+        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format.internalName));
     } else if (format.internalName == ENCODING_AIFF) {
         pEncoder = std::make_shared<EncoderWave>(pCallback);
-        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
+        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format.internalName));
     } else if (format.internalName == ENCODING_FLAC) {
         pEncoder = std::make_shared<EncoderSndfileFlac>(pCallback);
         pEncoder->setEncoderSettings(EncoderFlacSettings(pConfig));
@@ -120,7 +120,7 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
         qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);
-        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
+        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, ENCODING_WAVE));
     }
     return pEncoder;
 }
@@ -129,9 +129,9 @@ EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format
     UserSettingsPointer pConfig) const
 {
     if (format.internalName == ENCODING_WAVE) {
-        return std::make_shared<EncoderWaveSettings>(pConfig, format);
+        return std::make_shared<EncoderWaveSettings>(pConfig, format.internalName);
     } else if (format.internalName == ENCODING_AIFF) {
-        return std::make_shared<EncoderWaveSettings>(pConfig, format);
+        return std::make_shared<EncoderWaveSettings>(pConfig, format.internalName);
     } else if (format.internalName == ENCODING_FLAC) {
         return std::make_shared<EncoderFlacSettings>(pConfig);
     } else if (format.internalName == ENCODING_MP3) {
@@ -143,6 +143,6 @@ EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format
     } else {
         qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
-        return std::make_shared<EncoderWaveSettings>(pConfig, format);
+        return std::make_shared<EncoderWaveSettings>(pConfig, ENCODING_WAVE);
     }
 }
