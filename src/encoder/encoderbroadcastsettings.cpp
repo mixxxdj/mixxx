@@ -26,20 +26,9 @@ EncoderBroadcastSettings::EncoderBroadcastSettings(
     m_qualList.append(256);
     m_qualList.append(320);
 }
-EncoderBroadcastSettings::~EncoderBroadcastSettings() {
-}
 
 QList<int> EncoderBroadcastSettings::getQualityValues() const {
     return m_qualList;
-}
-
-void EncoderBroadcastSettings::setQualityByIndex(int qualityIndex) {
-    if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
-        m_pProfile->setBitrate(m_qualList.at(qualityIndex));
-    } else {
-        qWarning() << "Invalid qualityIndex given to EncoderBroadcastSettings: " 
-            << qualityIndex << ". Ignoring it";
-    }
 }
 
 int EncoderBroadcastSettings::getQuality() const {
