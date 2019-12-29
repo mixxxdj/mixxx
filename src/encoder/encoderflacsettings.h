@@ -8,10 +8,10 @@
 #ifndef ENCODERFLACSETTINGS_H
 #define ENCODERFLACSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 
-class EncoderFlacSettings : public EncoderSettings {
+class EncoderFlacSettings : public EncoderRecordingSettings {
   public:
     EncoderFlacSettings(UserSettingsPointer pConfig);
     virtual ~EncoderFlacSettings();

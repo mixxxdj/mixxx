@@ -14,6 +14,7 @@
 #include "util/types.h"
 #include "preferences/usersettings.h"
 #include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encodercallback.h"
 
 class Encoder {
@@ -57,7 +58,7 @@ class EncoderFactory {
         UserSettingsPointer pConfig, EncoderCallback* pCallback) const;
     EncoderPointer getNewEncoder(Encoder::Format format,
         UserSettingsPointer pConfig, EncoderCallback* pCallback) const;
-    EncoderSettingsPointer getEncoderSettings(Encoder::Format format,
+    EncoderRecordingSettingsPointer getEncoderRecordingSettings(Encoder::Format format,
         UserSettingsPointer pConfig) const;
   private:
     static EncoderFactory factory;

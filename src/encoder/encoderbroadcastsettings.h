@@ -9,11 +9,11 @@
 #ifndef ENCODERBROADCASTSETTINGS_H
 #define ENCODERBROADCASTSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "preferences/broadcastsettings.h"
 
-class EncoderBroadcastSettings : public EncoderSettings {
+class EncoderBroadcastSettings : public EncoderRecordingSettings {
   public:
     EncoderBroadcastSettings(BroadcastProfilePtr profile);
     virtual ~EncoderBroadcastSettings();

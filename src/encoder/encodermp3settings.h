@@ -8,10 +8,10 @@
 #ifndef ENCODERMP3SETTINGS_H
 #define ENCODERMP3SETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 
-class EncoderMp3Settings : public EncoderSettings {
+class EncoderMp3Settings : public EncoderRecordingSettings {
   public:
     EncoderMp3Settings(UserSettingsPointer m_pConfig);
     virtual ~EncoderMp3Settings();

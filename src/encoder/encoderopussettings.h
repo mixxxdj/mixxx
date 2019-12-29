@@ -4,7 +4,7 @@
 #ifndef ENCODER_ENCODEROPUSSETTINGS_H
 #define ENCODER_ENCODEROPUSSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 
 #define OPUS_BITRATE_MODES_COUNT 3
@@ -12,7 +12,7 @@
 #define OPUS_BITRATE_CBR 1
 #define OPUS_BITRATE_VBR 2
 
-class EncoderOpusSettings: public EncoderSettings {
+class EncoderOpusSettings: public EncoderRecordingSettings {
   public:
     explicit EncoderOpusSettings(UserSettingsPointer pConfig);
     ~EncoderOpusSettings() override = default;

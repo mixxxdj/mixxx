@@ -125,7 +125,7 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
     return pEncoder;
 }
 
-EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format,
+EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Encoder::Format format,
     UserSettingsPointer pConfig) const
 {
     if (format.internalName == ENCODING_WAVE) {

@@ -8,10 +8,10 @@
 #ifndef ENCODERVORBISSETTINGS_H
 #define ENCODERVORBISSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 
-class EncoderVorbisSettings : public EncoderSettings {
+class EncoderVorbisSettings : public EncoderRecordingSettings {
     public:
     EncoderVorbisSettings(UserSettingsPointer pConfig);
     virtual ~EncoderVorbisSettings();

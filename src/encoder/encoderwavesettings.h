@@ -8,11 +8,11 @@
 #ifndef ENCODERWAVESETTINGS_H
 #define ENCODERWAVESETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include <QList>
 
-class EncoderWaveSettings : public EncoderSettings {
+class EncoderWaveSettings : public EncoderRecordingSettings {
   public:
     EncoderWaveSettings(UserSettingsPointer pConfig, QString format);
     virtual ~EncoderWaveSettings();

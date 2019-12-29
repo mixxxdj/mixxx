@@ -223,7 +223,9 @@ void DlgPrefRecord::slotFormatChanged()
 
 void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
 {
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(selformat, m_pConfig);
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    selformat, m_pConfig);
     if (settings->usesQualitySlider()) {
         LabelQuality->setVisible(true);
         SliderQuality->setVisible(true);
@@ -304,9 +306,10 @@ void DlgPrefRecord::slotSliderQuality()
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
 
-void DlgPrefRecord::updateTextQuality()
-{
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+void DlgPrefRecord::updateTextQuality() {
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     int quality;
     // This should be handled somehow by the EncoderSettings classes, but currently
     // I don't have a clean way to do it
@@ -338,9 +341,11 @@ void DlgPrefRecord::slotSliderCompression()
     updateTextCompression();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
-void DlgPrefRecord::updateTextCompression()
-{
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+
+void DlgPrefRecord::updateTextCompression() {
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     int quality = settings->getCompressionValues().at(SliderCompression->value());
     TextCompression->setText(QString::number(quality));
 }
@@ -349,7 +354,9 @@ void DlgPrefRecord::slotGroupChanged()
 {
     // On complex scenarios, one could want to enable or disable some controls when changing
     // these, but we don't have these needs now.
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
         updateTextQuality();
     }
@@ -379,10 +386,11 @@ void DlgPrefRecord::saveMetaData()
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
 }
-void DlgPrefRecord::saveEncoding()
-{
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
 
+void DlgPrefRecord::saveEncoding() {
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),
         ConfigValue(m_selFormat.internalName));
 
