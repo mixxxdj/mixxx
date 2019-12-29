@@ -15,15 +15,15 @@
       </Template>
 
       <WidgetGroup>
+        <ObjectName>ToolBarSeparator</ObjectName>
+        <Size>13f,9min</Size>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>ToolBarSection</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-
-          <WidgetGroup>
-            <ObjectName>ToolBarSeparator</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_mixer</SetVariable>
@@ -34,33 +34,6 @@
             <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
           </Template>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_effects</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">59f,20f</SetVariable>
-            <SetVariable name="state_0_text">EFFECTS</SetVariable>
-            <SetVariable name="state_1_text">EFFECTS</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_samplers</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">71f,20f</SetVariable>
-            <SetVariable name="state_0_text">SAMPLERS</SetVariable>
-            <SetVariable name="state_1_text">SAMPLERS</SetVariable>
-            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_microphone</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">61f,20f</SetVariable>
-            <SetVariable name="state_0_text">MIC/AUX</SetVariable>
-            <SetVariable name="state_1_text">MIC/AUX</SetVariable>
-            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
-          </Template>
-
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -68,6 +41,34 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="TooltipId">show_effects</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">59f,20f</SetVariable>
+        <SetVariable name="state_0_text">EFFECTS</SetVariable>
+        <SetVariable name="state_1_text">EFFECTS</SetVariable>
+        <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+      </Template>
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="TooltipId">show_samplers</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">71f,20f</SetVariable>
+        <SetVariable name="state_0_text">SAMPLERS</SetVariable>
+        <SetVariable name="state_1_text">SAMPLERS</SetVariable>
+        <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+      </Template>
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="TooltipId">show_microphone</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">61f,20f</SetVariable>
+        <SetVariable name="state_0_text">MIC/AUX</SetVariable>
+        <SetVariable name="state_1_text">MIC/AUX</SetVariable>
+        <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+      </Template>
 
       <!-- Spacer -->
       <WidgetGroup>
