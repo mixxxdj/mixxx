@@ -1,5 +1,5 @@
 @ECHO OFF
-SETLOCAL
+SETLOCAL enableDelayedExpansion
 
 REM Base URL to download winlibs from.
 SET BASEURL=%1
@@ -22,7 +22,7 @@ IF NOT EXIST "%WINLIBS_PATH%\%WINLIB_NAME%" (
       where /q powershell
       if ERRORLEVEL 1 (
          echo Could not find 7z or 7za on the path, and powershell is not available. 
-         echo Either install http://7-zip.org
+         echo Either install http://7-zip.org and retry
          echo or download %BASEURL%/%WINLIB_NAME%.zip
          echo yourself and unzip it at %WINLIBS_PATH%
          ENDLOCAL && EXIT /b 1
@@ -39,15 +39,20 @@ IF NOT EXIST "%WINLIBS_PATH%\%WINLIB_NAME%" (
   echo Installing winlib %WINLIB_NAME%.
   CD "%WINLIBS_PATH%"
   echo ..Downloading %WINLIB_NAME%.zip
+  where /q curl
+  IF ERRORLEVEL 1 (
+    echo curl not found. Please download %WINLIB_NAME%.zip from %BASEURL%/ and unzip it yourself at %WINLIBS_PATH%
+    ENDLOCAL && EXIT /b 1
+  )
   curl -fsS -L -o %WINLIB_NAME%.zip %BASEURL%/%WINLIB_NAME%.zip
   IF ERRORLEVEL 1 ENDLOCAL && EXIT /b 1
   REM TODO(XXX) check fingerprint on zip file.
   echo ..unzipping %WINLIB_NAME%.zip
-  IF "%POWERSHELL%" == "powershell" (
+  IF "!POWERSHELL!" == "powershell" (
     powershell -Command "& {Expand-Archive \"%WINLIBS_PATH%/%WINLIB_NAME%.zip\" \"%WINLIBS_PATH%\\\"}"
     IF ERRORLEVEL 1 ENDLOCAL && EXIT /b 1
   ) ELSE (
-    %ZIP% x %WINLIB_NAME%.zip
+    !ZIP! x %WINLIB_NAME%.zip
     IF ERRORLEVEL 1 ENDLOCAL && EXIT /b 1
   )
   DEL %WINLIB_NAME%.zip
