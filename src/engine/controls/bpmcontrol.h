@@ -35,7 +35,9 @@ class BpmControl : public EngineControl {
     // Get the phase offset from the specified position.
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getPhaseOffset(double dThisPosition);
-    double getBeatDistance(double dThisPosition) const;
+
+    // Calculate the raw, untweaked beat distance for the current deck.
+    double calcRawBeatDistance(double dThisPosition) const;
 
     void setTargetBeatDistance(double beatDistance);
     void setSyncAdjustFactor(double adjustFactor);

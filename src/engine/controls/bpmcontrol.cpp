@@ -507,14 +507,14 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     return adjustment;
 }
 
-double BpmControl::getBeatDistance(double dThisPosition) const {
+double BpmControl::calcRawBeatDistance(double dThisPosition) const {
     if (BPM_DEBUG)
-        qDebug() << getGroup() << "BpmControl::getBeatDistance" << dThisPosition;
+        qDebug() << getGroup() << "BpmControl::calcRawBeatDistance" << dThisPosition;
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
 
     if (dPrevBeat == -1 || dNextBeat == -1) {
-        return 0.0 - m_dUserOffset.getValue();
+        return 0.0;
     }
 
     double dBeatLength = dNextBeat - dPrevBeat;
@@ -833,7 +833,7 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beat_distance = getBeatDistance(getSampleOfTrack().current);
+    double beat_distance = calcRawBeatDistance(getSampleOfTrack().current);
     // If the user is tweaking the rate, record the corrent offset between the master and this
     // track.  Future calculations will include this offset so that the user's adjustment will be
     // taken into acount.
