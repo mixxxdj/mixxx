@@ -3,12 +3,16 @@
 #include <QMenu>
 
 #include "library/basesqltablemodel.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wlibrarysidebar.h"
 
-BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
-                                                       TrackCollection* pCollection)
-        : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+BaseExternalLibraryFeature::BaseExternalLibraryFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : LibraryFeature(pLibrary, pConfig),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
@@ -21,6 +25,12 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
             this,
             &BaseExternalLibraryFeature::slotAddToAutoDJTop);
 
+    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    connect(m_pAddToAutoDJReplaceAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotAddToAutoDJReplace);
+
     m_pImportAsMixxxPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pImportAsMixxxPlaylistAction,
             &QAction::triggered,
@@ -31,6 +41,7 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
 BaseExternalLibraryFeature::~BaseExternalLibraryFeature() {
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
+    delete m_pAddToAutoDJReplaceAction;
     delete m_pImportAsMixxxPlaylistAction;
 }
 
@@ -50,6 +61,7 @@ void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QMod
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
+    menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
     menu.addAction(m_pImportAsMixxxPlaylistAction);
     menu.exec(globalPos);
@@ -57,15 +69,20 @@ void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QMod
 
 void BaseExternalLibraryFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false);
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true);
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
+void BaseExternalLibraryFeature::slotAddToAutoDJReplace() {
+    //qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void BaseExternalLibraryFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     QList<TrackId> trackIds;
@@ -76,7 +93,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     }
 
     PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-    playlistDao.addTracksToAutoDJQueue(trackIds, bTop);
+    playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {

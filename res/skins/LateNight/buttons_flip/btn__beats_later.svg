@@ -1,0 +1,12 @@
+<svg width="24" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<g>
+		<path d="m17 21h-2v-9h2z" fill="#888886"/>
+		<path d="m9 21h2v-12h-2z" fill="#888886"/>
+		<path d="m15 3v3l-11 1e-6v2l11-1e-6v3l7-4z" fill="#bfbfbe"/>
+		<g transform="translate(1,1)" fill="#888886">
+			<path d="m8 4h2v-2h-2z"/>
+			<path d="m2 20h2v-12h-2z"/>
+			<path d="m2 4h2v-2h-2z"/>
+		</g>
+	</g>
+</svg>

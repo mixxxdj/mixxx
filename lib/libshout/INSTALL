@@ -1,0 +1,41 @@
+Prerequisites
+-------------
+
+libvorbis
+libogg
+
+Both of these libraries must be installed before you can build
+libshout. If they aren't available in your OS's package system, you
+can find them at vorbis.com. You may also want libtheora if you're
+interested in doing video streaming.
+
+Building
+--------
+
+Normally, just ./configure; make
+
+You may need to specify --with-ogg-prefix and/or --with-vorbis-prefix
+if you have installed those libraries in a non-standard
+location. The arguments to these will match the --prefix you used when
+configuring ogg and vorbis, respectively.
+
+You may also choose to build libshout without thread safety, with the
+--disable-pthread argument to configure. Only do this if you know you
+will never be using the library in a threaded application, or if you
+intend to make all calls to libshout threadsafe by hand in your
+calling application.
+
+Installation
+------------
+(as root) make install
+
+This will install header files in $(prefix)/shout and library files in
+$(prefix)/lib.
+
+configure will have detected whether or not you have pkg-config
+automatically. If you have, it will place a pkg-config data file in
+$(prefix)/lib/pkgconfig, otherwise it will place a shout-config script
+in $(prefix)/bin. You can force libshout to use shout-config instead
+of pkgconfig with the configure option --disable-pkgconfig.
+
+$Id$

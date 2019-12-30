@@ -41,6 +41,7 @@ class FakeDeck : public BaseTrackPlayer {
             : BaseTrackPlayer(NULL, group),
               duration(ConfigKey(group, "duration")),
               samplerate(ConfigKey(group, "track_samplerate")),
+              rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
@@ -95,6 +96,7 @@ class FakeDeck : public BaseTrackPlayer {
     TrackPointer loadedTrack;
     ControlObject duration;
     ControlObject samplerate;
+    ControlObject rateratio;
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;
@@ -143,10 +145,10 @@ class MockAutoDJProcessor : public AutoDJProcessor {
     MockAutoDJProcessor(QObject* pParent,
                         UserSettingsPointer pConfig,
                         PlayerManagerInterface* pPlayerManager,
-                        int iAutoDJPlaylistId,
-                        TrackCollection* pCollection)
+                        TrackCollectionManager* pTrackCollectionManager,
+                        int iAutoDJPlaylistId)
             : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              iAutoDJPlaylistId, pCollection) {
+                              pTrackCollectionManager, iAutoDJPlaylistId) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -175,7 +177,7 @@ class AutoDJProcessorTest : public LibraryTest {
                deck4("[Channel4]") {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
-        PlaylistDAO& playlistDao = collection()->getPlaylistDAO();
+        PlaylistDAO& playlistDao = internalCollection()->getPlaylistDAO();
         m_iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         // If the AutoDJ playlist does not exist yet then create it.
         if (m_iAutoDJPlaylistId < 0) {
@@ -202,15 +204,16 @@ class AutoDJProcessorTest : public LibraryTest {
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(
-                NULL, config(), pPlayerManager.data(),
-                m_iAutoDJPlaylistId, collection()));
+                nullptr, config(), pPlayerManager.data(),
+                trackCollections(), m_iAutoDJPlaylistId));
     }
 
     virtual ~AutoDJProcessorTest() {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack(collection()->getTrackDAO().addSingleTrack(trackLocation, false));
+        TrackPointer pTrack = internalCollection()->getOrAddTrack(
+                TrackRef::fromFileInfo(trackLocation));
         return pTrack ? pTrack->getId() : TrackId();
     }
 
@@ -540,8 +543,8 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
     pProcessor.reset(new MockAutoDJProcessor(
-            NULL, config(), pPlayerManager.data(),
-            m_iAutoDJPlaylistId, collection()));
+            nullptr, config(), pPlayerManager.data(),
+            trackCollections(), m_iAutoDJPlaylistId));
     EXPECT_EQ(25, pProcessor->getTransitionTime());
 }
 
@@ -606,7 +609,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
 
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
-    TrackPointer pTrack = collection()->getTrackDAO().getTrack(testId);
+    TrackPointer pTrack = internalCollection()->getTrackById(testId);
     deck1.slotLoadTrack(pTrack, true);
 
     // Signal that the request to load pTrack succeeded.
@@ -1020,7 +1023,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1109,7 +1112,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1209,7 +1212,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1298,7 +1301,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1418,7 +1421,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
 
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1500,7 +1503,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 

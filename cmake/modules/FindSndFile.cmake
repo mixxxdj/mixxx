@@ -29,7 +29,7 @@ This will define the following variables:
 ``SndFile_LIBRARIES``
   Libraries needed to link to SndFile.
 ``SndFile_DEFINITIONS``
-  Compile defitions needed to use SndFile.
+  Compile definitions needed to use SndFile.
 
 Cache Variables
 ^^^^^^^^^^^^^^^

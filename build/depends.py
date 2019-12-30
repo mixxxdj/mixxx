@@ -274,6 +274,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
@@ -1006,6 +1007,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
@@ -1111,6 +1113,8 @@ class MixxxCore(Feature):
                    "src/library/parserpls.cpp",
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
+
+                   "src/library/trackloader.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 

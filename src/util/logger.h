@@ -55,12 +55,7 @@ public:
     }
 
     QDebug info() const {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         return log(qInfo());
-#else
-        // Qt4 does not support log level Info, use Debug instead
-        return debug();
-#endif
     }
 
     bool infoEnabled() const {
