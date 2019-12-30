@@ -22,12 +22,14 @@
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
                              EngineChannel::ChannelOrientation defaultOrientation,
-                             EffectsManager* pEffectsManager, bool isTalkoverChannel)
+                             EffectsManager* pEffectsManager, bool isTalkoverChannel,
+                             bool isPrimaryDeck)
         : m_group(handle_group),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
           m_sampleBuffer(nullptr),
+          m_bIsPrimaryDeck(isPrimaryDeck),
           m_bIsTalkoverChannel(isTalkoverChannel) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);

@@ -15,7 +15,7 @@
 #include "util/duration.h"
 
 namespace {
-const bool BPM_DEBUG = false;
+constexpr bool BPM_DEBUG = false;
 
 constexpr double kBpmRangeMin = 1.0;
 // TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
@@ -834,7 +834,10 @@ double BpmControl::updateLocalBpm() {
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
-    if (m_dUserRateTweak != 0.0) {
+    // If the user is tweaking the rate, record the corrent offset between the master and this
+    // track.  Future calculations will include this offset so that the user's adjustment will be
+    // taken into acount.
+    if (m_dUserRateTweak != 0.0 && getSyncMode() == SYNC_FOLLOWER) {
         double master_percentage = m_dSyncTargetBeatDistance.getValue();
         double shortest_distance = shortestPercentageChange(
             master_percentage, beat_distance);

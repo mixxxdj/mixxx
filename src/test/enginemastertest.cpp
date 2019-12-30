@@ -22,8 +22,8 @@ class EngineChannelMock : public EngineChannel {
     EngineChannelMock(const QString& group,
                       ChannelOrientation defaultOrientation,
                       EngineMaster* pMaster)
-            : EngineChannel(pMaster->registerChannelGroup(group),
-                            defaultOrientation) {
+            : EngineChannel(pMaster->registerChannelGroup(group), defaultOrientation,
+                            nullptr, /*isTalkoverChannel*/ false, /*isPrimarydeck*/ true) {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {

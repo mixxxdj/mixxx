@@ -267,6 +267,9 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
+    // Update internal master sync rate.
+    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
+
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
     m_activeBusChannels[EngineChannel::RIGHT].clear();
@@ -397,9 +400,7 @@ void EngineMaster::process(const int iBufferSize) {
         m_pEngineEffectsManager->onCallbackStart();
     }
 
-    // Update internal master sync rate.
-    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
-    // Prepare each channel for output
+    // Prepare all channels for output
     processChannels(m_iBufferSize);
 
     // Compute headphone mix
