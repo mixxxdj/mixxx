@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
+    <info>
+        <name>Reloop Digital Jockey 2 (DJ aK)</name>
+        <author>DJ aK</author>
+        <description>This is an experimental mapping for a Reloop Digital Jockey 2 Controller rewritten from scratch</description>
+        <forums>na razie nic</forums>
+        <wiki>na razie nic</wiki>
+    </info>
+    <controller id="DIGITALJOCKEY2">
+        <scriptfiles>
+            <file functionprefix="" filename="lodash.mixxx.js"/>
+            <file functionprefix="" filename="midi-components-0.0.js"/>
+            <file functionprefix="RDJ2" filename="Reloop Digital Jockey 2 (DJ aK)-scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.recvBendPlusButton</key>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.recvBendMinusButton</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.recvJogTouch</key>
+                <status>0x90</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.recvJogSpin</key>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        </controls>
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
