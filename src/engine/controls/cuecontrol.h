@@ -36,7 +36,6 @@ enum class SeekOnLoadMode {
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     return static_cast<SeekOnLoadMode>(int(value));
-    ;
 }
 
 class HotcueControl : public QObject {
@@ -175,12 +174,6 @@ class CueControl : public EngineControl {
     void outroEndActivate(double v);
 
   private:
-    enum class QuantizeMode {
-        ClosestBeat,
-        PreviousBeat,
-        NextBeat,
-    };
-
     enum class TrackAt {
         Cue,
         End,
@@ -193,8 +186,8 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
-    double quantizeCuePoint(double position, QuantizeMode mode);
-    double quantizeCurrentPosition(QuantizeMode mode);
+    double quantizeCuePoint(double position);
+    double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
@@ -202,8 +195,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pPrevBeat;
-    ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
 
