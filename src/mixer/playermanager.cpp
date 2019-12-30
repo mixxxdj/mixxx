@@ -20,6 +20,7 @@
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/logger.h"
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
@@ -267,6 +268,12 @@ unsigned int PlayerManager::numPreviewDecks() {
 void PlayerManager::slotChangeNumDecks(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
+
+    VERIFY_OR_DEBUG_ASSERT(num <= kMaxNumberOfDecks) {
+        qWarning() << "Number of decks exceeds the maximum we expect."
+                   << num << "vs" << kMaxNumberOfDecks
+                   << " Please update util/defs.h";
+    }
 
     // Update the soundmanager config even if the number of decks has been
     // reduced.

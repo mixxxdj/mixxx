@@ -15,6 +15,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
+#include "util/defs.h"
 
 class ControlProxy;
 class ControlPushButton;
@@ -22,11 +23,6 @@ class SoundManager;
 class VinylControl;
 class VinylControlProcessor;
 
-
-const int kMaxNumberOfDecks = 4; // set to 4 because it will ideally not be more
-// or less than the number of vinyl-controlled decks but will probably be
-// forgotten in any 2->4 deck switchover. Only real consequence is
-// sizeof(void*)*2 bytes of wasted memory if we're only using 2 decks -bkgood
 
 // VinylControlManager is the main-thread interface that other parts of Mixxx
 // use to interact with the vinyl control subsystem (other than controls exposed

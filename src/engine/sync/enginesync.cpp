@@ -24,6 +24,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
+#include "util/defs.h"
 
 const bool SYNC_DEBUG = false;
 
@@ -37,6 +38,9 @@ EngineSync::~EngineSync() {
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     std::vector<Syncable*> stopped_sync_decks;
     std::vector<Syncable*> playing_sync_decks;
+
+    stopped_sync_decks.reserve(kMaxNumberOfDecks);
+    playing_sync_decks.reserve(kMaxNumberOfDecks);
 
     if (enabling_syncable != nullptr && enabling_syncable->getBaseBpm() != 0.0) {
         if (enabling_syncable->isPlaying()) {
