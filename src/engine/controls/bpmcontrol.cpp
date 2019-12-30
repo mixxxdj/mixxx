@@ -383,7 +383,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 
 double BpmControl::calcSyncedRate(double userTweak) {
     if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
-    m_dUserRateTweak = userTweak;
+    m_dUserTweakingSync = userTweak != 0.0;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
     if (m_pLocalBpm->get() != 0.0) {
@@ -422,7 +422,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
     }
 
     // Now we have all we need to calculate the sync adjustment if any.
-    double adjustment = calcSyncAdjustment(my_percentage, userTweak != 0.0);
+    double adjustment = calcSyncAdjustment(my_percentage, m_dUserTweakingSync);
     return (rate + userTweak) * adjustment;
 }
 
@@ -837,7 +837,7 @@ double BpmControl::updateBeatDistance() {
     // If the user is tweaking the rate, record the corrent offset between the master and this
     // track.  Future calculations will include this offset so that the user's adjustment will be
     // taken into acount.
-    if (m_dUserRateTweak != 0.0 && getSyncMode() == SYNC_FOLLOWER) {
+    if (m_dUserTweakingSync && getSyncMode() == SYNC_FOLLOWER) {
         double master_percentage = m_dSyncTargetBeatDistance.getValue();
         double shortest_distance = shortestPercentageChange(
             master_percentage, beat_distance);
