@@ -1205,14 +1205,12 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
 DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
     var i = control - ((control >= 0x1C) ? 0x1C : 0x14);
     if (this.currentMode) {
-        this.currentMode.lastPadNumber = this.currentMode.pads[i].number;
         this.currentMode.pads[i].input(channel, control, value, status, group);
     }
 };
 
 DJ505.HotcueMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.lastPadNumber = 1;
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.WHITE;
 
@@ -1247,34 +1245,14 @@ DJ505.HotcueMode = function (deck, offset) {
     this.param2MinusButton = new components.Button({
         midi: [0x94 + offset, 0x2A],
         mode: this,
-        input: function (channel, control, value, status, group) {
-            print("hotcue_" + this.mode.lastPadNumber + "_color_prev", value);
-            if (value) {
-                if (this.mode.lastPadNumber === undefined) {
-                    return;
-                }
-                engine.setValue(group, "hotcue_" + this.mode.lastPadNumber + "_color_prev", 1);
-                this.send(value);
-            } else {
-                this.send(value);
-            }
-        }
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
     });
     this.param2PlusButton = new components.Button({
         midi: [0x94 + offset, 0x2B],
         mode: this,
-        input: function (channel, control, value, status, group) {
-            print("hotcue_" + this.mode.lastPadNumber + "_color_next", value);
-            if (value) {
-                if (this.mode.lastPadNumber === undefined) {
-                    return;
-                }
-                engine.setValue(group, "hotcue_" + this.mode.lastPadNumber + "_color_next", 1);
-                this.send(value);
-            } else {
-                this.send(value);
-            }
-        }
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
     });
 };
 DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
