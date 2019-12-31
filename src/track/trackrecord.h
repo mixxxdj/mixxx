@@ -49,6 +49,13 @@ class TrackRecord final {
     PROPERTY_SET_BYVAL_GET_BYREF(bool,        bpmLocked,      BpmLocked)
 
 public:
+    // Data migration: Reload track total from file tags if not initialized
+    // yet. The added column "tracktotal" has been initialized with the
+    // default value "//".
+    // See also: Schema revision 26 in schema.xml
+    // Public only for testing purposes!
+    static const QString kTrackTotalPlaceholder;
+
     explicit TrackRecord(TrackId id = TrackId());
     TrackRecord(TrackRecord&&) = default;
     TrackRecord(const TrackRecord&) = default;

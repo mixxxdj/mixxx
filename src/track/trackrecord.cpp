@@ -5,6 +5,8 @@
 
 namespace mixxx {
 
+/*static*/ const QString TrackRecord::kTrackTotalPlaceholder = QStringLiteral("//");
+
 TrackRecord::TrackRecord(TrackId id)
         : m_id(std::move(id)),
           m_metadataSynchronized(false),
@@ -49,12 +51,6 @@ bool TrackRecord::updateGlobalKeyText(
 
 namespace {
 
-// Data migration: Reload track total from file tags if not initialized
-// yet. The added column "tracktotal" has been initialized with the
-// default value "//".
-// See also: Schema revision 26 in schema.xml
-const QString kReloadTrackTotal = QStringLiteral("//");
-
 void mergeReplayGainMetadataProperty(
         ReplayGain& mergedReplayGain,
         const ReplayGain& importedReplayGain) {
@@ -96,7 +92,7 @@ void TrackRecord::mergeImportedMetadata(
         const TrackMetadata& importedFromFile) {
     TrackInfo& mergedTrackInfo = refMetadata().refTrackInfo();
     const TrackInfo& importedTrackInfo = importedFromFile.getTrackInfo();
-    if (mergedTrackInfo.getTrackTotal() == kReloadTrackTotal) {
+    if (mergedTrackInfo.getTrackTotal() == kTrackTotalPlaceholder) {
         mergedTrackInfo.setTrackTotal(importedTrackInfo.getTrackTotal());
         // Also set the track number if it is still empty due
         // to insufficient parsing capabilities of Mixxx in
