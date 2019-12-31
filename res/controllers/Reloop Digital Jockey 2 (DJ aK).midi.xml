@@ -14,9 +14,10 @@
             <file functionprefix="RDJ2" filename="Reloop Digital Jockey 2 (DJ aK)-scripts.js"/>
         </scriptfiles>
         <controls>
+        <!-- Left Deck -->
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.recvBendPlusButton</key>
+                <key>RDJ2.leftDeck.recvBendPlusButton</key>
                 <status>0x90</status>
                 <midino>0x04</midino>
                 <options>
@@ -25,7 +26,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.recvBendMinusButton</key>
+                <key>RDJ2.leftDeck.recvBendMinusButton</key>
                 <status>0x90</status>
                 <midino>0x03</midino>
                 <options>
@@ -34,7 +35,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.recvJogTouch</key>
+                <key>RDJ2.leftDeck.recvJogTouch</key>
                 <status>0x90</status>
                 <midino>0x1D</midino>
                 <options>
@@ -43,7 +44,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.recvJogSpin</key>
+                <key>RDJ2.leftDeck.recvJogSpin</key>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>

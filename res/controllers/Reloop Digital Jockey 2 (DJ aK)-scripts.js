@@ -87,67 +87,26 @@ RDJ2.isButtonPressed = function (midiValue) {
     }
 };
 
+/* This map is necessary as Reloop has designed the controller in such
+   a way that not all buttons/knobs have the same offset comparing
+   CH0 and CH1. By looking at the MIDI messages sent by the controller,
+   we can see that the hardware is designed as symmetric halves.
+   
+   In other words, constant offset in hardware corresponds to symmetric
+   halves, but the controller layout is not fully symmetric.
+   (e.x. ACTIVATE 1 buttons)
+
+   Thus we need a map to preserve object oriented approach .*/
+RDJ2.BUTTONMAP_CH0_CH1 = {
+    play: [0x19, 0x55],
+    play2: [0x19, 0x55]
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Controls                                                           //
 ////////////////////////////////////////////////////////////////////////
 
-RDJ2.Control = function (group, ctrl, func) {
-    this.group = group;
-    this.ctrl = ctrl;
-    this.func = func;
-    this.isConnected = false;
-};
-
-RDJ2.Control.prototype.connect = function () {
-    if (this.isConnected) {
-        RDJ2.logWarning("Control is already connected: group=" + this.group + ", ctrl=" + this.ctrl + ", func=" + this.func);
-        return true;
-    }
-    if (engine.connectControl(this.group, this.ctrl, this.func)) {
-        this.isConnected = true;
-        this.trigger();
-    } else {
-        RDJ2.logError("Failed to connect control: group=" + this.group + ", ctrl=" + this.ctrl + ", func=" + this.func);
-    }
-    return this.isConnected;
-};
-
-RDJ2.Control.prototype.disconnect = function () {
-    if (this.isConnected) {
-        if (engine.connectControl(this.group, this.ctrl, this.func, true)) {
-            this.isConnected = false;
-        } else {
-            RDJ2.logError("Failed to disconnect control: group=" + this.group + ", ctrl=" + this.ctrl + ", func=" + this.func);
-        }
-    } else {
-        RDJ2.logWarning("Control is not connected: group=" + this.group + ", ctrl=" + this.ctrl + ", func=" + this.func);
-    }
-};
-
-RDJ2.Control.prototype.trigger = function () {
-    engine.trigger(this.group, this.ctrl);
-};
-
-RDJ2.connectedControls = [];
-
-RDJ2.connectControl = function (group, ctrl, func) {
-    var control = new RDJ2.Control(group, ctrl, func);
-    if (control.connect()) {
-        RDJ2.connectedControls.push(control);
-        return control;
-    } else {
-        return undefined;
-    }
-};
-
-RDJ2.disconnectControls = function () {
-    for (var index in RDJ2.connectedControls) {
-        RDJ2.connectedControls[index].disconnect();
-    }
-    RDJ2.connectedControls = [];
-};
-
+//code removed - looks as deprecated
 
 ////////////////////////////////////////////////////////////////////////
 // Decks                                                              //
@@ -155,64 +114,83 @@ RDJ2.disconnectControls = function () {
 
 /* Management */
 
-RDJ2.decksByGroup = {};
+//TODO REMOVE
+// RDJ2.decksByGroup = {};
 
-RDJ2.getDeckByGroup = function (group) {
-    var deck = RDJ2.decksByGroup[group];
-    if (undefined === deck) {
-        RDJ2.logError("No deck found for " + group);
-    }
-    return deck;
-};
+// RDJ2.getDeckByGroup = function (group) {
+//     var deck = RDJ2.decksByGroup[group];
+//     if (undefined === deck) {
+//         RDJ2.logError("No deck found for " + group);
+//     }
+//     return deck;
+// };
 
 /* Constructor */
 
-RDJ2.OldDeck = function (number) {
-    RDJ2.logDebug("Creating OldDeck " + number);
+RDJ2.Deck = function (number) {
+    RDJ2.logDebug("Creating Deck " + number);
 
-    this.side = undefined;
     this.number = number;
     this.group = "[Channel" + number + "]";
     this.filterGroup = "[QuickEffectRack1_" + this.group + "_Effect1]";
     this.jogTouchState = false;
-    RDJ2.decksByGroup[this.group] = this;
     this.rateDirBackup = this.getValue("rate_dir");
     this.setValue("rate_dir", -1);
     this.vinylMode = undefined;
     this.syncMode = undefined;
+
+    components.Deck.call(this, 1);
+
+    this.playButton = new components.PlayButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.play[number - 1]]);
+    //this.cueButton = new components.CueButton([0x90, 0x02]);
+    //this.syncButton = new components.SyncButton([0x90, 0x03]);
+
+    // Set the group properties of the above Components and connect their output callback functions
+    // Without this, the group property for each Component would have to be specified to its
+    // constructor.
+    this.reconnectComponents(function (component) {
+        if (component.group === undefined) {
+            // 'this' inside a function passed to reconnectComponents refers to the ComponentContainer
+            // so 'this' refers to the custom Deck object being constructed
+            component.group = this.currentDeck;
+        }
+    });
 };
+
+// give our custom Deck all the methods of the generic Deck in the Components library
+RDJ2.Deck.prototype = Object.create(components.Deck.prototype);
 
 /* Values & Parameters */
 
-RDJ2.OldDeck.prototype.getValue = function (key) {
+RDJ2.Deck.prototype.getValue = function (key) {
     return engine.getValue(this.group, key);
 };
 
-RDJ2.OldDeck.prototype.setValue = function (key, value) {
+RDJ2.Deck.prototype.setValue = function (key, value) {
     engine.setValue(this.group, key, value);
 };
 
-RDJ2.OldDeck.prototype.toggleValue = function (key) {
+RDJ2.Deck.prototype.toggleValue = function (key) {
     this.setValue(key, !this.getValue(key));
 };
 
-RDJ2.OldDeck.prototype.setParameter = function (key, param) {
+RDJ2.Deck.prototype.setParameter = function (key, param) {
     engine.setParameter(this.group, key, param);
 };
 
-RDJ2.OldDeck.prototype.triggerValue = function (key) {
+RDJ2.Deck.prototype.triggerValue = function (key) {
     engine.trigger(this.group, key);
 };
 
 /* Cue & Play */
 
-RDJ2.OldDeck.prototype.isPlaying = function () {
+RDJ2.Deck.prototype.isPlaying = function () {
     return this.getValue("play");
 };
 
 /* Pitch Bend / Track Search */
 
-RDJ2.OldDeck.prototype.onBendPlusButton = function (isButtonPressed) {
+RDJ2.Deck.prototype.onBendPlusButton = function (isButtonPressed) {
     if (this.isPlaying()) {
         this.setValue("fwd", false);
         /*if (this.getShiftState()) {
@@ -225,7 +203,7 @@ RDJ2.OldDeck.prototype.onBendPlusButton = function (isButtonPressed) {
     }
 };
 
-RDJ2.OldDeck.prototype.onBendMinusButton = function (isButtonPressed) {
+RDJ2.Deck.prototype.onBendMinusButton = function (isButtonPressed) {
     if (this.isPlaying()) {
         this.setValue("back", false);
         /*if (this.getShiftState()) {
@@ -240,17 +218,17 @@ RDJ2.OldDeck.prototype.onBendMinusButton = function (isButtonPressed) {
 
 /* Vinyl Mode (Scratching) */
 
-RDJ2.OldDeck.prototype.onVinylModeValue = function () {
+RDJ2.Deck.prototype.onVinylModeValue = function () {
     //this.vinylModeLed.setStateBoolean(this.vinylMode);
 };
 
-RDJ2.OldDeck.prototype.enableScratching = function () {
+RDJ2.Deck.prototype.enableScratching = function () {
 };
 
-RDJ2.OldDeck.prototype.disableScratching = function () {
+RDJ2.Deck.prototype.disableScratching = function () {
 };
 
-RDJ2.OldDeck.prototype.updateVinylMode = function () {
+RDJ2.Deck.prototype.updateVinylMode = function () {
     if (this.vinylMode && this.jogTouchState) {
         engine.scratchEnable(this.number,
             RDJ2.JOG_RESOLUTION,
@@ -265,35 +243,35 @@ RDJ2.OldDeck.prototype.updateVinylMode = function () {
     this.onVinylModeValue();
 };
 
-RDJ2.OldDeck.prototype.setVinylMode = function (vinylMode) {
+RDJ2.Deck.prototype.setVinylMode = function (vinylMode) {
     this.vinylMode = vinylMode;
     this.updateVinylMode();
 };
 
-RDJ2.OldDeck.prototype.toggleVinylMode = function () {
+RDJ2.Deck.prototype.toggleVinylMode = function () {
     this.setVinylMode(!this.vinylMode);
 };
 
-RDJ2.OldDeck.prototype.enableVinylMode = function () {
+RDJ2.Deck.prototype.enableVinylMode = function () {
     this.setVinylMode(true);
 };
 
-RDJ2.OldDeck.prototype.disableVinylMode = function () {
+RDJ2.Deck.prototype.disableVinylMode = function () {
     this.setVinylMode(false);
 };
 
-RDJ2.OldDeck.prototype.onVinylButton = function (isButtonPressed) {
+RDJ2.Deck.prototype.onVinylButton = function (isButtonPressed) {
     this.toggleVinylMode();
 };
 
 /* Jog Wheel */
 
-RDJ2.OldDeck.prototype.touchJog = function (isJogTouched) {
+RDJ2.Deck.prototype.touchJog = function (isJogTouched) {
     this.jogTouchState = isJogTouched;
     this.updateVinylMode();
 };
 
-RDJ2.OldDeck.prototype.spinJog = function (jogDelta) {
+RDJ2.Deck.prototype.spinJog = function (jogDelta) {
     if (/*this.getShiftState() &&*/ this.jogTouchState && !this.isPlaying()) {
         // fast track seek (strip search)
         var playPos = engine.getValue(this.group, "playposition");
@@ -333,25 +311,30 @@ RDJ2.OldDeck.prototype.spinJog = function (jogDelta) {
     }
 };
 
+/* MIDI Input Callbacks */
 
-////////////////////////////////////////////////////////////////////////
-// Sides                                                              //
-////////////////////////////////////////////////////////////////////////
+RDJ2.Deck.prototype.recvBendPlusButton = function (channel, control, value) {
+    this.onBendPlusButton(RDJ2.isButtonPressed(value));
+};
+
+RDJ2.Deck.prototype.recvBendMinusButton = function (channel, control, value) {
+    this.onBendMinusButton(RDJ2.isButtonPressed(value));
+};
+
+RDJ2.Deck.prototype.recvJogTouch = function (channel, control, value) {
+    this.touchJog(RDJ2.isButtonPressed(value));
+};
+
+RDJ2.Deck.prototype.recvJogSpin = function (channel, control, value) {
+    this.spinJog(RDJ2.getJogDeltaValue(value));
+};
 
 
 ////////////////////////////////////////////////////////////////////////
 // Controller functions                                               //
 ////////////////////////////////////////////////////////////////////////
 
-RDJ2.id = undefined;
-RDJ2.debug = undefined;
 RDJ2.group = "[Master]";
-
-// left side
-RDJ2.deck1 = new RDJ2.OldDeck(1);
-
-// right side
-RDJ2.deck2 = new RDJ2.OldDeck(2);
 
 RDJ2.getValue = function (key) {
     return engine.getValue(RDJ2.group, key);
@@ -379,86 +362,12 @@ RDJ2.getJogDeltaValue = function (value) {
 // MIDI [Channel<n>] callback functions                               //
 ////////////////////////////////////////////////////////////////////////
 
-RDJ2.recvBendPlusButton = function (channel, control, value, status, group) {
-    var isButtonPressed = RDJ2.isButtonPressed(value);
-    var deck = RDJ2.getDeckByGroup(group);
-    deck.onBendPlusButton(isButtonPressed);
-};
-
-RDJ2.recvBendMinusButton = function (channel, control, value, status, group) {
-    var isButtonPressed = RDJ2.isButtonPressed(value);
-    var deck = RDJ2.getDeckByGroup(group);
-    deck.onBendMinusButton(isButtonPressed);
-};
-
-RDJ2.recvJogTouch = function (channel, control, value, status, group) {
-    var isJogTouched = RDJ2.isButtonPressed(value);
-    var deck = RDJ2.getDeckByGroup(group);
-    deck.touchJog(isJogTouched);
-};
-
-RDJ2.recvJogTouchVinyl = function (channel, control, value, status, group) {
-    var isJogTouched = RDJ2.isButtonPressed(value);
-    var deck = RDJ2.getDeckByGroup(group);
-    deck.touchJog(isJogTouched);
-};
-
-RDJ2.recvJogSpin = function (channel, control, value, status, group) {
-    var deck = RDJ2.getDeckByGroup(group);
-    var jogDelta = RDJ2.getJogDeltaValue(value);
-    deck.spinJog(jogDelta);
-};
-
-RDJ2.recvJogSpinVinyl = function (channel, control, value, status, group) {
-    var deck = RDJ2.getDeckByGroup(group);
-    var jogDelta = RDJ2.getJogDeltaValue(value);
-    deck.spinJog(jogDelta);
-};
-
 
 ////////////////////////////////////////////////////////////////////////
 // Mixxx connected controls callback functions                        //
 ////////////////////////////////////////////////////////////////////////
 
-
-// ...
-
-
-RDJ2.Deck = function (number, channel) {
-    RDJ2.logDebug("Creating deck: " + number);
-
-    components.Deck.call(this, number);
-    //var thisDeck = this;
-
-    this.side = undefined;
-
-    this.loadButton = new RDJ2.LoadButton();
-
-    this.cueButton = new components.CueButton([0xB0 + channel, 0x26]);
-    this.playButton = new components.PlayButton([0xB0 + channel, 0x27]);
-    this.syncButton = new components.SyncButton([0xB0 + channel, 0x09]);
-
-    this.hotcueButtons = [];
-    for (var i = 1; i <= 4; i++) {
-        this.hotcueButtons[i] = new components.HotcueButton({
-            midi: [0xB0 + channel, 0x11 + 2 * (i - 1)],
-            number: i,
-        });
-    }
-
-    // Set the group properties of the above Components and connect their output callback functions
-    // Without this, the group property for each Component would have to be specified to its
-    // constructor.
-    this.reconnectComponents(function (component) {
-        if (component.group === undefined) {
-            // 'this' inside a function passed to reconnectComponents refers to the ComponentContainer.
-            component.group = this.currentDeck;
-        }
-    });
-};
-
-RDJ2.Deck.prototype = Object.create(components.Deck.prototype);
-
+//some out of context code was here (?)
 
 ////////////////////////////////////////////////////////////////////////
 // Mixxx Callback Functions                                           //
@@ -470,12 +379,10 @@ RDJ2.init = function (id, debug) {
     
     RDJ2.logInfo("Initializing controller");
 
-    // left side
-    RDJ2.newDeck1 = new RDJ2.OldDeck(1);
-
-    // right side
-    RDJ2.newDeck2 = new RDJ2.OldDeck(2);
-
+    // left deck
+    RDJ2.leftDeck = new RDJ2.Deck(1);
+    // right deck
+    RDJ2.rightDeck = new RDJ2.Deck(2);
 };
 
 RDJ2.shutdown = function () {
