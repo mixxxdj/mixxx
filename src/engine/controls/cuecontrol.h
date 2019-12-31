@@ -77,8 +77,6 @@ class HotcueControl : public QObject {
     void slotHotcueClear(double v);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcueColorChanged(double newColorId);
-    void slotHotcueColorPrev(double v);
-    void slotHotcueColorNext(double v);
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v);
@@ -103,8 +101,6 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcuePosition;
     ControlObject* m_hotcueEnabled;
     ControlObject* m_hotcueColor;
-    ControlObject* m_hotcueColorPrev;
-    ControlObject* m_hotcueColorNext;
     // Hotcue button controls
     ControlObject* m_hotcueSet;
     ControlObject* m_hotcueGoto;
@@ -150,6 +146,9 @@ class CueControl : public EngineControl {
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
+
+    void hotcueFocusColorNext(double v);
+    void hotcueFocusColorPrev(double v);
 
     void cueSet(double v);
     void cueClear(double v);
@@ -247,6 +246,10 @@ class CueControl : public EngineControl {
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
+
+    ControlObject* m_pHotcueFocus;
+    ControlObject* m_pHotcueFocusColorNext;
+    ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
