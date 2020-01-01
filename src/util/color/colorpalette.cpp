@@ -4,15 +4,17 @@
 
 #include "colorpalette.h"
 
-ColorPalette::ColorPalette(QList<QColor> colorList) : m_colorList(colorList) {
+ColorPalette::ColorPalette(QList<QRgb> colorList)
+    : m_colorList(colorList) {
 }
 
 const ColorPalette ColorPalette::mixxxHotcuesPalette =
-        ColorPalette(QList<QColor>{QColor("#c50a08"),
-                QColor("#32be44"),
-                QColor("#0044ff"),
-                QColor("#f8d200"),
-                QColor("#42d4f4"),
-                QColor("#af00cc"),
-                QColor("#fca6d7"),
-                QColor("#f2f2ff")});
+        ColorPalette(QList<QRgb>{
+                0xc50a08,
+                0x32be44,
+                0x0044ff,
+                0xf8d200,
+                0x42d4f4,
+                0xaf00cc,
+                0xfca6d7,
+                0xf2f2ff});

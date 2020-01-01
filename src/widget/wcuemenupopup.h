@@ -54,7 +54,7 @@ class WCueMenuPopup : public QWidget {
   private slots:
     void slotEditLabel();
     void slotDeleteCue();
-    void slotChangeCueColor(QColor color);
+    void slotChangeCueColor(QRgb rgb);
 
   private:
     CuePointer m_pCue;

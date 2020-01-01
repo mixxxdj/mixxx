@@ -13,14 +13,14 @@ class WColorPicker : public QWidget {
   public:
     WColorPicker(QWidget* parent = nullptr);
 
-    void setSelectedColor(const QColor& color);
+    void setSelectedColor(QRgb color);
     void useColorPalette(const ColorPalette& colorPalette);
 
   signals:
-    void colorPicked(QColor color);
+    void colorPicked(QRgb color);
 
   private:
-    QColor m_selectedColor;
+    QRgb m_selectedColor;
     ColorPalette m_palette;
     QList<QPushButton*> m_colorButtons;
     QStyle* m_pStyle;

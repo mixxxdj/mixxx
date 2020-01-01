@@ -28,7 +28,7 @@ Cue::Cue(TrackId trackId)
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(QColor()),
+          m_color(0),
           m_colorIsDefault(true) {
     DEBUG_ASSERT(!m_label.isNull());
 }
@@ -40,7 +40,7 @@ Cue::Cue(int id,
         double length,
         int hotCue,
         QString label,
-        QColor color,
+        QRgb color,
         bool colorIsDefault)
         : m_bDirty(false),
           m_iId(id),
@@ -62,7 +62,7 @@ Cue::Cue(int id,
         m_sampleEndPosition = Cue::kNoPosition;
     }
 
-    DEBUG_ASSERT(m_color.isValid() && m_color.rgba() != 0);
+    DEBUG_ASSERT(m_color);
 }
 int Cue::getId() const {
     QMutexLocker lock(&m_mutex);
@@ -164,7 +164,7 @@ void Cue::setLabel(const QString label) {
     emit(updated());
 }
 
-QColor Cue::getColor() const {
+QRgb Cue::getColor() const {
     QMutexLocker lock(&m_mutex);
     return m_color;
 }
@@ -175,24 +175,24 @@ QRgb Cue::getColorValueForDb() const {
         // We store black for default color.
         return kDefaultDbColorValue;
     }
-    return m_color.rgba();
+    return m_color;
 }
 
-void Cue::setColor(const QColor& color) {
+void Cue::setColor(QRgb rgb) {
     QMutexLocker lock(&m_mutex);
 
-    DEBUG_ASSERT(m_color.isValid() && m_color.rgba() != kDefaultDbColorValue);
+    DEBUG_ASSERT(m_color != kDefaultDbColorValue);
 
-    m_color = color;
+    m_color = rgb;
     m_bDirty = true;
     m_colorIsDefault = false;
     lock.unlock();
     emit(updated());
 }
 
-void Cue::setDefaultColor(const QColor& color) {
+void Cue::setDefaultColor(QRgb rgb) {
     QMutexLocker lock(&m_mutex);
-    m_color = color;
+    m_color = rgb;
     if (!m_colorIsDefault) {
         // Default color is not stored in the DB
         // thats why changing the default color does not dirty the track

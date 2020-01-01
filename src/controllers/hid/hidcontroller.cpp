@@ -18,7 +18,7 @@
 
 HidController::HidController(
         const hid_device_info deviceInfo, UserSettingsPointer pConfig)
-        : Controller(pConfig), m_pHidDevice(NULL) {
+        : Controller(pConfig), m_pHidDevice(nullptr) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;

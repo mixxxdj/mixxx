@@ -56,12 +56,11 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
-    QRgb colorValue = record.value(record.indexOf("color")).toUInt();
-    QColor color = QColor::fromRgba(colorValue);
+    QRgb rgb = record.value(record.indexOf("color")).toUInt() & RGB_MASK;
     bool colorIsDefault = false;
-    if (!color.isValid() || !colorValue || colorValue == Cue::kDefaultDbColorValue) {
+    if (rgb == Cue::kDefaultDbColorValue) {
         colorIsDefault = true;
-        color = m_colorPaletteSettings.getDefaultColor(hotcue);
+        rgb = m_colorPaletteSettings.getDefaultColor(hotcue);
     }
     CuePointer pCue(new Cue(id,
             trackId,
@@ -70,7 +69,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
             length,
             hotcue,
             label,
-            color,
+            rgb,
             colorIsDefault));
     m_cues[id] = pCue;
     return pCue;

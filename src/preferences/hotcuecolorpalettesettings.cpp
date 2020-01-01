@@ -3,11 +3,11 @@
 const QString HotcueColorPaletteSettings::sGroup = "[HotcueColorPalette]";
 
 ColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
-    QList<QColor> colorList;
+    QList<QRgb> colorList;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(sGroup)) {
         QColor color = m_pConfig->getValue<QColor>(key);
         if (color.isValid()) {
-            colorList.append(color);
+            colorList.append(color.rgb());
         }
     }
 
@@ -35,7 +35,7 @@ void HotcueColorPaletteSettings::removePalette() {
     }
 }
 
-QColor HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
+QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
     if (hotcue >= 0) {
         auto hotcueColorPalette = getHotcueColorPalette();
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
@@ -44,5 +44,5 @@ QColor HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
             return colors.at(hotcue % colors.count());
         }
     }
-    return QColor(0xf3, 0x61, 0x00); // library icons orange
+    return QRgb(0xf36100); // library icons orange
 }

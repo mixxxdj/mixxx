@@ -51,8 +51,8 @@ class HotcueControl : public QObject {
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
-    void setColor(const QColor& newColor);
-    QColor getColor() const;
+    void setColor(QRgb rgb);
+    QRgb getColor() const;
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() {
@@ -88,7 +88,6 @@ class HotcueControl : public QObject {
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
-    void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
   private:

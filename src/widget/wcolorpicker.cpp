@@ -34,7 +34,7 @@ WColorPicker::WColorPicker(QWidget* parent)
 
     int row = 0;
     int column = 0;
-    for (const auto& color : m_palette.m_colorList) {
+    for (const auto& rgb : m_palette.m_colorList) {
         parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
         if (m_pStyle) {
             pColorButton->setStyle(m_pStyle);
@@ -42,7 +42,7 @@ WColorPicker::WColorPicker(QWidget* parent)
 
         // Set the background color of the button. This can't be overridden in skin stylesheets.
         pColorButton->setStyleSheet(
-            QString("QPushButton { background-color: %1; }").arg(color.name()));
+            QString("QPushButton { background-color: %1; }").arg(QColor(rgb).name()));
 
         pColorButton->setCheckable(true);
         m_colorButtons.append(pColorButton);
@@ -54,14 +54,14 @@ WColorPicker::WColorPicker(QWidget* parent)
             row++;
         }
 
-        connect(pColorButton, &QPushButton::clicked, this, [color, this]() {
-            emit(colorPicked(color));
+        connect(pColorButton, &QPushButton::clicked, this, [rgb, this]() {
+            emit(colorPicked(rgb));
         });
     }
     setLayout(pLayout);
 }
 
-void WColorPicker::setSelectedColor(const QColor& color) {
+void WColorPicker::setSelectedColor(QRgb color) {
     for (int i = 0; i < m_palette.m_colorList.count(); ++i) {
         if (m_palette.m_colorList[i] == m_selectedColor) {
             QPushButton* pButton = m_colorButtons.at(i);
@@ -101,6 +101,6 @@ void WColorPicker::useColorPalette(const ColorPalette& palette) {
         // Set the background color of the button. This can't be overridden in skin stylesheets.
         m_colorButtons.at(i)->setStyleSheet(
                 QString("QPushButton { background-color: %1; }")
-                .arg(palette.m_colorList.at(i).name()));
+                .arg(QColor(palette.m_colorList.at(i)).name()));
     }
 }

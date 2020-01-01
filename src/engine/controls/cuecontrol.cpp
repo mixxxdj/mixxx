@@ -295,8 +295,6 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
-    // Reset the color CO to -1
-    pControl->setColor(QColor());
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1749,8 +1747,9 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColor) {
-    m_pCue->setColor(QColor::fromRgba(newColor));
-    emit(hotcueColorChanged(this, newColor));
+    if (newColor >= 0) {
+        m_pCue->setColor(QRgb(newColor));
+    }
 }
 
 double HotcueControl::getPosition() const {
@@ -1764,22 +1763,21 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
-QColor HotcueControl::getColor() const {
-    return QColor::fromRgba(m_hotcueColor->get());
+
+QRgb HotcueControl::getColor() const {
+    return QRgb(m_hotcueColor->get());
 }
 
-void HotcueControl::setColor(const QColor& newColor) {
-    if (newColor.isValid()) {
-        m_hotcueColor->set(newColor.rgba());
-    } else {
-        m_hotcueColor->set(-1);
-    }
+void HotcueControl::setColor(QRgb rgb) {
+    m_hotcueColor->set(rgb);
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code
     m_pCue.reset();
     setPosition(Cue::kNoPosition);
+    m_hotcueColor->set(-1);
 }
 
 void HotcueControl::setPosition(double position) {

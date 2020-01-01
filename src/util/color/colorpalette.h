@@ -9,11 +9,11 @@
 
 class ColorPalette {
   public:
-    ColorPalette(QList<QColor>);
+    ColorPalette(QList<QRgb>);
 
     static const ColorPalette mixxxHotcuesPalette;
 
-    QList<QColor> m_colorList;
+    QList<QRgb> m_colorList;
 };
 
 inline bool operator==(const ColorPalette& lhs, const ColorPalette& rhs) {

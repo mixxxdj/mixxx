@@ -13,7 +13,7 @@ class HotcueColorPaletteSettings {
 
     void setHotcueColorPalette(const ColorPalette& colorPalette);
 
-    QColor getDefaultColor(int hotcue) const;
+    QRgb getDefaultColor(int hotcue) const;
 
   private:
     static const QString sGroup;

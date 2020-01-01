@@ -286,7 +286,7 @@ template<>
 template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const QColor& value) {
-    set(key, ConfigValue(value.name(QColor::NameFormat::HexArgb)));
+    set(key, ConfigValue(value.name(QColor::NameFormat::HexRgb)));
 }
 
 template <> template <>

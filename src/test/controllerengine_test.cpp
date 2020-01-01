@@ -620,23 +620,21 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
 }
 
 TEST_F(ControllerEngineTest, colorProxyTestMixxxPalette) {
-    QList<QColor> allColors = ColorPalette::mixxxHotcuesPalette.m_colorList;
+    const QList<QRgb> allColors = ColorPalette::mixxxHotcuesPalette.m_colorList;
     for (int i = 0; i < allColors.length(); ++i) {
         QColor color = allColors[i];
         qDebug() << "Testing color " << color.name();
-        QString colorCode = QString::number(color.rgba());
+        QString colorCode = QString::number(color.rgb());
         QScriptValue jsColor = pScriptEngine->evaluate(
-                "color.colorFromHexCode(" + colorCode + ")");
+                "color.colorFromRgb(" + colorCode + ")");
         EXPECT_EQ(jsColor.property("red").toInt32(), color.red());
         EXPECT_EQ(jsColor.property("green").toInt32(), color.green());
         EXPECT_EQ(jsColor.property("blue").toInt32(), color.blue());
-        EXPECT_EQ(jsColor.property("alpha").toInt32(), color.alpha());
 
         QScriptValue jsColor2 = pScriptEngine->evaluate(
                 "color.hotcueColorPalette()[" + QString::number(i) + "]");
         EXPECT_EQ(jsColor2.property("red").toInt32(), color.red());
         EXPECT_EQ(jsColor2.property("green").toInt32(), color.green());
         EXPECT_EQ(jsColor2.property("blue").toInt32(), color.blue());
-        EXPECT_EQ(jsColor2.property("alpha").toInt32(), color.alpha());
     }
 }

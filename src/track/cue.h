@@ -31,7 +31,7 @@ class Cue : public QObject {
 
     static constexpr double kNoPosition = -1.0;
     static const int kNoHotCue = -1;
-    static const QRgb kDefaultDbColorValue = 0xFF000000; // Black
+    static const QRgb kDefaultDbColorValue = 0x000000; // Black
 
     ~Cue() override = default;
 
@@ -54,13 +54,13 @@ class Cue : public QObject {
     QString getLabel() const;
     void setLabel(QString label);
 
-    QColor getColor() const;
+    QRgb getColor() const;
     QRgb getColorValueForDb() const;
 
     // This function shall be used for explicit user selected colors
-    void setColor(const QColor& color);
+    void setColor(QRgb rgb);
     // This function shall be used to set automatic selected colors
-    void setDefaultColor(const QColor& color);
+    void setDefaultColor(QRgb rgb);
 
     double getEndPosition() const;
 
@@ -76,7 +76,7 @@ class Cue : public QObject {
             double length,
             int hotCue,
             QString label,
-            QColor color,
+            QRgb color,
             bool colorIsDefault);
     void setDirty(bool dirty);
     void setId(int id);
@@ -92,7 +92,7 @@ class Cue : public QObject {
     double m_sampleEndPosition;
     int m_iHotCue;
     QString m_label;
-    QColor m_color;
+    QRgb m_color;
     bool m_colorIsDefault;
 
     friend class Track;

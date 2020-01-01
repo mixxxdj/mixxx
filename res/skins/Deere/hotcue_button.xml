@@ -47,7 +47,7 @@
     </Connection>
     <Connection>
       <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_color</ConfigKey>
-      <BindProperty>backgroundColorRgba</BindProperty>
+      <BindProperty>backgroundColorRgb</BindProperty>
     </Connection>
   </PushButton>
 </Template>

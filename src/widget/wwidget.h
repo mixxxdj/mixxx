@@ -45,17 +45,17 @@ class WWidget : public QWidget, public WBaseWidget {
     ~WWidget() override;
 
     Q_PROPERTY(double value READ getControlParameterDisplay);
-    Q_PROPERTY(double backgroundColorRgba READ getBackgroundColorRgba WRITE
-                    setBackgroundColorRgba);
+    Q_PROPERTY(double backgroundColorRgb READ getBackgroundColorRgb WRITE
+                    setBackgroundColorRgb);
     Q_PROPERTY(bool shouldHighlightBackgroundOnHover MEMBER
                     m_bShouldHighlightBackgroundOnHover);
     Q_PROPERTY(bool hasBackgroundColor READ hasBackgroundColor);
     Q_PROPERTY(bool backgroundIsDark READ backgroundIsDark);
 
-    double getBackgroundColorRgba() const;
-    void setBackgroundColorRgba(double rgba);
+    double getBackgroundColorRgb() const;
+    void setBackgroundColorRgb(double rgb);
     bool hasBackgroundColor() const {
-        return m_backgroundColorRgba >= 0;
+        return m_backgroundColorRgb >= 0;
     }
     bool backgroundIsDark() const {
         return m_bBackgroundIsDark;
@@ -76,7 +76,7 @@ class WWidget : public QWidget, public WBaseWidget {
   private:
     ControlProxy* m_pTouchShift;
     double m_scaleFactor;
-    double m_backgroundColorRgba;
+    double m_backgroundColorRgb;
     bool m_bBackgroundIsDark;
     bool m_bShouldHighlightBackgroundOnHover;
 };

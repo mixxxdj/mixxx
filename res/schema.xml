@@ -486,24 +486,24 @@ METADATA
       Convert the PredefinedColor id to the actual RGBA value.
     </description>
     <sql>
-      <!-- No Color becomes black-->
-      UPDATE cues SET color=4278190080 WHERE color=0;
-      <!-- Red -->
-      UPDATE cues SET color=4291103240 WHERE color=1;
-      <!-- Green -->
-      UPDATE cues SET color=4281515588 WHERE color=2;
-      <!-- Blue -->
-      UPDATE cues SET color=4278207743 WHERE color=3;
-      <!-- Yellow -->
-      UPDATE cues SET color=4294496768 WHERE color=4;
-      <!-- Celeste -->
-      UPDATE cues SET color=4282569972 WHERE color=5;
-      <!-- Magenta -->
-      UPDATE cues SET color=4289659084 WHERE color=6;
-      <!-- Pink -->
-      UPDATE cues SET color=4294747863 WHERE color=7;
-      <!-- White -->
-      UPDATE cues SET color=4294111999 WHERE color=8;
+      <!-- No Color becomes black 0x000000 -->
+      UPDATE cues SET color=0 WHERE color=0;
+      <!-- Red 0xC50A08 -->
+      UPDATE cues SET color=12913160 WHERE color=1;
+      <!-- Green 0x32BE44 -->
+      UPDATE cues SET color=3325508 WHERE color=2;
+      <!-- Blue 0x0044FF-->
+      UPDATE cues SET color=17663 WHERE color=3;
+      <!-- Yellow 0xF8D200 -->
+      UPDATE cues SET color=16306688 WHERE color=4;
+      <!-- Celeste 0x42D4F4-->
+      UPDATE cues SET color=4379892 WHERE color=5;
+      <!-- Magenta 0xAF00CC -->
+      UPDATE cues SET color=11469004 WHERE color=6;
+      <!-- Pink 0xFCA6D7 -->
+      UPDATE cues SET color=16557783 WHERE color=7;
+      <!-- White 0xF2F2FF -->
+      UPDATE cues SET color=15921919 WHERE color=8;
     </sql>
   </revision>
 </schema>

@@ -17,10 +17,10 @@ class ColorJSProxy final : public QObject {
     ~ColorJSProxy() override;
 
     Q_INVOKABLE QScriptValue hotcueColorPalette();
-    // Return a JS object with the red, green, blue and alpha components
+    // Return a JS object with the red, green and blue components
     // of a color. The parameter is the hexadecimal representation of the color
-    // i.e. 0xAARRGGBB
-    Q_INVOKABLE QScriptValue colorFromHexCode(uint colorCode);
+    // i.e. 0xRRGGBB
+    Q_INVOKABLE QScriptValue colorFromRgb(uint rgb);
 
   private:
     QScriptValue makeHotcueColorPalette(QScriptEngine* pScriptEngine,
