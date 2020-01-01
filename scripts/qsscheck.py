@@ -66,13 +66,13 @@ def get_skin_objectnames(skin_path):
                     yield from RE_XML_OBJNAME_SETVAR.findall(line)
 
 
-def get_skin_stylesheets(skin_path):
-    """Yields (qss_path, stylesheet) tuples for each qss file in skin_path)."""
+def get_stylesheets(path):
+    """Yields (qss_path, stylesheet) tuples for each qss file in path)."""
     cssparser = tinycss.css21.CSS21Parser()
-    for filename in os.listdir(skin_path):
+    for filename in os.listdir(path):
         if os.path.splitext(filename)[1] != '.qss':
             continue
-        qss_path = os.path.join(skin_path, filename)
+        qss_path = os.path.join(path, filename)
         stylesheet = cssparser.parse_stylesheet_file(qss_path)
         yield qss_path, stylesheet
 
@@ -112,6 +112,25 @@ def check_skins(mixxx_path, skins, ignore_patterns=()):
     object names (e.g. #Test, #*Debug).
     """
     classnames, objectnames = get_global_names(mixxx_path)
+
+    # Check default stylesheets
+    default_styles_path = os.path.join(mixxx_path, 'res', 'skins')
+    for qss_path, stylesheet in get_stylesheets(default_styles_path):
+        for error in stylesheet.errors:
+            yield '%s:%d:%d: %s - %s' % (
+                qss_path, error.line, error.column,
+                error.__class__.__name__, error.reason,
+            )
+        for token, message in check_stylesheet(
+                stylesheet, classnames, objectnames, []):
+            if any(fnmatch.fnmatchcase(token.value, pattern)
+                    for pattern in ignore_patterns):
+                continue
+            yield '%s:%d:%d: %s' % (
+                qss_path, token.line, token.column, message,
+            )
+
+    # Check skin stylesheets
     for skin_name, skin_path in sorted(skins):
         # If the skin objectname is something like 'Deck<Variable name="i">',
         # then replace it with 'Deck*' and use glob-like matching
@@ -124,7 +143,7 @@ def check_skins(mixxx_path, skins, ignore_patterns=()):
             else:
                 skin_objectnames.add(new_objname)
 
-        for qss_path, stylesheet in get_skin_stylesheets(skin_path):
+        for qss_path, stylesheet in get_stylesheets(skin_path):
             for error in stylesheet.errors:
                 yield '%s:%d:%d: %s - %s' % (
                     qss_path, error.line, error.column,

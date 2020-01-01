@@ -110,35 +110,35 @@ void TrackDAO::finish() {
     transaction.commit();
 }
 
-/** Retrieve the track id for the track that's located at "location" on disk.
-    @return the track id for the track located at location, or -1 if the track
-            is not in the database.
-*/
-TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) const {
-
-    TrackId trackId;
-
-    QSqlQuery query(m_database);
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON library.location = track_locations.id WHERE track_locations.location=:location");
-    query.bindValue(":location", absoluteFilePath);
-    if (query.exec()) {
-        if (query.next()) {
-            trackId = TrackId(query.value(query.record().indexOf("id")));
-        } else {
-            qDebug() << "TrackDAO::getTrackId(): Track location not found in library:" << absoluteFilePath;
-        }
-    } else {
-        LOG_FAILED_QUERY(query);
+TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
+    if (location.isEmpty()) {
         return TrackId();
     }
 
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT library.id FROM library "
+            "INNER JOIN track_locations ON library.location = track_locations.id "
+            "WHERE track_locations.location=:location");
+    query.bindValue(":location", location);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return TrackId();
+    }
+    if (!query.next()) {
+        qDebug() << "TrackDAO::getTrackId(): Track location not found in library:" << location;
+        return TrackId();
+    }
+    const auto trackId = TrackId(query.value(query.record().indexOf("id")));
+    DEBUG_ASSERT(trackId.isValid());
     return trackId;
 }
 
-QList<TrackId> TrackDAO::resolveTrackIds(const QList<QFileInfo>& files,
+QList<TrackId> TrackDAO::resolveTrackIds(
+        const QList<TrackFile>& trackFiles,
         ResolveTrackIdFlags flags) {
     QList<TrackId> trackIds;
-    trackIds.reserve(files.size());
+    trackIds.reserve(trackFiles.size());
 
     // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
@@ -151,9 +151,9 @@ QList<TrackId> TrackDAO::resolveTrackIds(const QList<QFileInfo>& files,
     }
 
     QStringList pathList;
-    pathList.reserve(files.size());
-    for (const auto& file: files) {
-        pathList << "(" + SqlStringFormatter::format(m_database, file.absoluteFilePath()) + ")";
+    pathList.reserve(trackFiles.size());
+    for (const auto& trackFile: trackFiles) {
+        pathList << "(" + SqlStringFormatter::format(m_database, trackFile.location()) + ")";
     }
 
     // Add all the track paths temporary to this database.
@@ -206,9 +206,13 @@ QList<TrackId> TrackDAO::resolveTrackIds(const QList<QFileInfo>& files,
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
         }
-        DEBUG_ASSERT(trackIds.size() <= files.size());
-        if (trackIds.size() < files.size()) {
-            qDebug() << "TrackDAO::getTrackIds(): Found only" << trackIds.size() << "of" << files.size() << "tracks in library";
+        DEBUG_ASSERT(trackIds.size() <= trackFiles.size());
+        if (trackIds.size() < trackFiles.size()) {
+            qDebug() << "TrackDAO::getTrackIds(): Found only"
+                    << trackIds.size()
+                    << "of"
+                    << trackFiles.size()
+                    << "tracks in library";
         }
     } else {
         LOG_FAILED_QUERY(query);
@@ -1397,6 +1401,44 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     return pTrack;
 }
 
+TrackId TrackDAO::getTrackIdByRef(
+        const TrackRef& trackRef) const {
+    if (trackRef.getId().isValid()) {
+        return trackRef.getId();
+    }
+    {
+        GlobalTrackCacheLocker cacheLocker;
+        const auto pTrack = cacheLocker.lookupTrackByRef(trackRef);
+        if (pTrack) {
+            return pTrack->getId();
+        }
+    }
+    return getTrackIdByLocation(trackRef.getLocation());
+}
+
+TrackPointer TrackDAO::getTrackByRef(
+        const TrackRef& trackRef) const {
+    if (!trackRef.isValid()) {
+        return TrackPointer();
+    }
+    {
+        GlobalTrackCacheLocker cacheLocker;
+        auto pTrack = cacheLocker.lookupTrackByRef(trackRef);
+        if (pTrack) {
+            return pTrack;
+        }
+    }
+    auto trackId = trackRef.getId();
+    if (!trackId.isValid()) {
+        trackId = getTrackIdByLocation(trackRef.getLocation());
+    }
+    if (!trackId.isValid()) {
+        qWarning() << "Track not found:" << trackRef;
+        return TrackPointer();
+    }
+    return getTrackById(trackId);
+}
+
 // Saves a track's info back to the database
 bool TrackDAO::updateTrack(Track* pTrack) {
     const TrackId trackId = pTrack->getId();
@@ -1962,39 +2004,50 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
     }
 }
 
-TrackPointer TrackDAO::getOrAddTrackByLocation(
-        const QString& trackLocation,
+TrackPointer TrackDAO::getOrAddTrack(
+        const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
-    const TrackId trackId = getTrackId(trackLocation);
-    if (pAlreadyInLibrary) {
-        *pAlreadyInLibrary = trackId.isValid();
+    if (!trackRef.isValid()) {
+        return TrackPointer();
     }
 
-    TrackPointer pTrack;
+    const TrackId trackId = getTrackIdByRef(trackRef);
     if (trackId.isValid()) {
-        pTrack = getTrackById(trackId);
-        if (!pTrack) {
-            qWarning() << "Failed to load track"
-                    << trackLocation;
+        const auto pTrack = getTrackById(trackId);
+        if (pTrack) {
+            if (pAlreadyInLibrary) {
+                *pAlreadyInLibrary = true;
+            }
             return pTrack;
         }
-    } else {
-        // Add Track to library -- unremove if it was previously removed.
-        addTracksPrepare();
-        pTrack = addTracksAddFile(trackLocation, true);
-        addTracksFinish(!pTrack);
-        if (!pTrack) {
-            qWarning() << "Failed to add track"
-                    << trackLocation;
-            return pTrack;
+        if (!trackRef.hasLocation()) {
+            qWarning()
+                    << "Failed to get track"
+                    << trackRef;
+            return TrackPointer();
         }
-        // If the track wasn't in the library already then it has not yet
-        // been checked for cover art.
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache) {
-            // Process cover art asynchronously
-            pCache->requestGuessCover(pTrack);
-        }
+    }
+
+    DEBUG_ASSERT(trackRef.hasLocation());
+    addTracksPrepare();
+    const auto pTrack = addTracksAddFile(trackRef.getLocation(), true);
+    addTracksFinish(!pTrack);
+    if (!pTrack) {
+        qWarning()
+                << "Failed to add track"
+                << trackRef;
+        return TrackPointer();
+    }
+    if (pAlreadyInLibrary) {
+        *pAlreadyInLibrary = false;
+    }
+
+    // If the track wasn't in the library already then it has not yet
+    // been checked for cover art.
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        // Process cover art asynchronously
+        pCache->requestGuessCover(pTrack);
     }
 
     return pTrack;

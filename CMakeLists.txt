@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.13.0)
 project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -961,6 +961,7 @@ add_executable(mixxx-test
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
+  src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
 )
@@ -1331,7 +1332,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Test
   Qt5::Widgets
   Qt5::Xml)
-target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
+target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)

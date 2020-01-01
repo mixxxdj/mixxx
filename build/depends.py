@@ -274,6 +274,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
