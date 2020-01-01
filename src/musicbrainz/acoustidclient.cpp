@@ -17,7 +17,11 @@
 #include "musicbrainz/gzip.h"
 #include "musicbrainz/network.h"
 
+#include "util/logger.h"
+
 namespace {
+
+mixxx::Logger kLogger("AcoustidClient");
 
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
@@ -119,15 +123,26 @@ void AcoustidClient::requestFinished() {
 
     QString recordingId;
     DEBUG_ASSERT(jsonResponse.isObject());
-    DEBUG_ASSERT(jsonResponse.object().value("results").isArray());
-    const QJsonArray results = jsonResponse.object().value("results").toArray();
-    if (!results.isEmpty()) {
-        // Only take the first result with the maximum(?) score
-        DEBUG_ASSERT(results.at(0).toObject().value("recordings").isArray());
-        const QJsonArray recordings = results.at(0).toObject().value("recordings").toArray();
-        if (!recordings.isEmpty()) {
-            // Only take the first recording
-            recordingId = recordings.at(0).toObject().value("id").toString();
+    DEBUG_ASSERT(jsonResponse.object().value(QStringLiteral("results")).isArray());
+    const QJsonArray results = jsonResponse.object().value(QStringLiteral("results")).toArray();
+    // Results are ordered by score (descending)
+    for (const auto result : results) {
+        const auto recordings = result.toObject().value(QStringLiteral("recordings"));
+        if (recordings.isUndefined()) {
+            kLogger.info()
+                    << "No recording(s) found";
+            continue;
+        } else {
+            DEBUG_ASSERT(result.toObject().value(QStringLiteral("recordings")).isArray());
+            const QJsonArray recordings = results.at(0).toObject().value(QStringLiteral("recordings")).toArray();
+            if (!recordings.isEmpty()) {
+                // Only take the first recording
+                recordingId = recordings.at(0).toObject().value(QStringLiteral("id")).toString();
+                if (!recordingId.isEmpty()) {
+                    // Found a recording with maximum score
+                    break;
+                }
+            }
         }
     }
     emit finished(id, recordingId);
