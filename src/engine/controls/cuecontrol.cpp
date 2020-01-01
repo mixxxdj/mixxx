@@ -1559,6 +1559,7 @@ void CueControl::resetIndicators() {
 
 CueControl::TrackAt CueControl::getTrackAt() const {
     SampleOfTrack sot = getSampleOfTrack();
+    // Note: current can be in the padded silence after the track end > total.
     if (sot.current >= sot.total) {
         return TrackAt::End;
     }
@@ -1571,8 +1572,13 @@ CueControl::TrackAt CueControl::getTrackAt() const {
 
 double CueControl::getQuantizedCurrentPosition() {
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    const double currentPos = sampleOfTrack.current;
+    double currentPos = sampleOfTrack.current;
     const double total = sampleOfTrack.total;
+
+    // Note: currentPos can be passed the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    currentPos = math_min(currentPos, total);
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
@@ -1580,6 +1586,8 @@ double CueControl::getQuantizedCurrentPosition() {
     }
 
     double closestBeat = m_pClosestBeat->get();
+    // Note: closestBeat can be an interpolated beat passed the end of the track,
+    // which cannot be reached.
     if (closestBeat != -1.0 && closestBeat <= total) {
         return closestBeat;
     }
@@ -1592,7 +1600,9 @@ double CueControl::quantizeCuePoint(double cuePos) {
     // is set later by the engine and not during EngineBuffer::slotTrackLoaded
     const double total = m_pTrackSamples->get();
 
-    VERIFY_OR_DEBUG_ASSERT(cuePos <= total) {
+    if (cuePos > total) {
+        // This can happen if the track length has changed or the cue was set in the
+        // the padded silence after the track.
         cuePos = total;
     }
 
@@ -1607,6 +1617,8 @@ double CueControl::quantizeCuePoint(double cuePos) {
     }
 
     double closestBeat = pBeats->findClosestBeat(cuePos);
+    // The closest beat can be an unreachable  interpolated beat past the end of
+    // the track.
     if (closestBeat != -1.0 && closestBeat <= total) {
         return closestBeat;
     }
