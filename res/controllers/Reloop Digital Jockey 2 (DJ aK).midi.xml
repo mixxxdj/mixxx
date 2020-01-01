@@ -13,8 +13,36 @@
             <file functionprefix="" filename="midi-components-0.0.js"/>
             <file functionprefix="RDJ2" filename="Reloop Digital Jockey 2 (DJ aK)-scripts.js"/>
         </scriptfiles>
+
         <controls>
         <!-- Left Deck -->
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.playButton.input</key>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.cueButton.input</key>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.syncButton.input</key>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>RDJ2.leftDeck.recvBendPlusButton</key>
@@ -51,7 +79,73 @@
                     <script-binding/>
                 </options>
             </control>
+
+            <!-- Right Deck -->
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.playButton.input</key>
+                <status>0x90</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.cueButton.input</key>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.syncButton.input</key>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.recvBendPlusButton</key>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.recvBendMinusButton</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.recvJogTouch</key>
+                <status>0x90</status>
+                <midino>0x59</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.recvJogSpin</key>
+                <status>0xB0</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
         </controls>
+
         <outputs>
         </outputs>
     </controller>

@@ -99,7 +99,8 @@ RDJ2.isButtonPressed = function (midiValue) {
    Thus we need a map to preserve object oriented approach .*/
 RDJ2.BUTTONMAP_CH0_CH1 = {
     play: [0x19, 0x55],
-    play2: [0x19, 0x55]
+    cue: [0x18, 0x54],
+    sync: [0x01, 0x3D]
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -139,11 +140,11 @@ RDJ2.Deck = function (number) {
     this.vinylMode = undefined;
     this.syncMode = undefined;
 
-    components.Deck.call(this, 1);
+    components.Deck.call(this, number);
 
     this.playButton = new components.PlayButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.play[number - 1]]);
-    //this.cueButton = new components.CueButton([0x90, 0x02]);
-    //this.syncButton = new components.SyncButton([0x90, 0x03]);
+    this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
+    this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
 
     // Set the group properties of the above Components and connect their output callback functions
     // Without this, the group property for each Component would have to be specified to its
