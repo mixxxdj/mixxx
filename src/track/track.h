@@ -240,9 +240,6 @@ class Track : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    void setAnalyzerProgress(int progress);
-    int getAnalyzerProgress() const;
-
     // Get the track's main cue point
     CuePosition getCuePoint() const;
     // Set the track's main cue point
