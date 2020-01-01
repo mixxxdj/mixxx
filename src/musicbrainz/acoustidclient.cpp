@@ -121,29 +121,35 @@ void AcoustidClient::requestFinished() {
         return;
     }
 
-    QString recordingId;
+    QStringList recordingIds;
     DEBUG_ASSERT(jsonResponse.isObject());
     DEBUG_ASSERT(jsonResponse.object().value(QStringLiteral("results")).isArray());
     const QJsonArray results = jsonResponse.object().value(QStringLiteral("results")).toArray();
-    // Results are ordered by score (descending)
+    // Results are ordered by score (descending), only take the recordings
+    // from the first result with maximum score.
     for (const auto result : results) {
-        const auto recordings = result.toObject().value(QStringLiteral("recordings"));
-        if (recordings.isUndefined()) {
+        DEBUG_ASSERT(result.isObject());
+        const auto recordingsValue = result.toObject().value(QStringLiteral("recordings"));
+        if (recordingsValue.isUndefined()) {
             kLogger.info()
                     << "No recording(s) found";
             continue;
         } else {
-            DEBUG_ASSERT(result.toObject().value(QStringLiteral("recordings")).isArray());
-            const QJsonArray recordings = results.at(0).toObject().value(QStringLiteral("recordings")).toArray();
-            if (!recordings.isEmpty()) {
-                // Only take the first recording
-                recordingId = recordings.at(0).toObject().value(QStringLiteral("id")).toString();
-                if (!recordingId.isEmpty()) {
-                    // Found a recording with maximum score
-                    break;
-                }
+            DEBUG_ASSERT(recordingsValue.isArray());
+            const QJsonArray recordings = recordingsValue.toArray();
+            DEBUG_ASSERT(recordingIds.isEmpty());
+            for (const auto recording : recordings) {
+                const auto recordingId =
+                        recording.toObject().value(QStringLiteral("id")).toString();
+                DEBUG_ASSERT(!recordingId.isEmpty());
+                recordingIds.append(recordingId);
+            }
+            if (!recordingIds.isEmpty()) {
+                // Only collect the recordings from the first result
+                // with maximum score
+                break;
             }
         }
     }
-    emit finished(id, recordingId);
+    emit finished(id, recordingIds);
 }
