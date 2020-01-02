@@ -34,7 +34,7 @@ RDJ2.JOG_SEEK_REVOLUTIONS = 2;
 
 // Controller constants
 RDJ2.DECK_COUNT = 2;
-RDJ2.JOG_RESOLUTION = 600; // measured/estimated
+RDJ2.JOG_RESOLUTION = 128; // measured/estimated
 
 
 // Jog constants
