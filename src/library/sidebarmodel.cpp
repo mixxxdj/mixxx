@@ -385,7 +385,7 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      * For child models, this always the child models itself
      */
 
-    const QAbstractItemModel* model = dynamic_cast<QAbstractItemModel*>(sender());
+    const QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
     VERIFY_OR_DEBUG_ASSERT(model != NULL) {
         return QModelIndex();
     }

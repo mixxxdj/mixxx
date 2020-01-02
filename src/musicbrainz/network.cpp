@@ -59,7 +59,7 @@ void NetworkTimeouts::addReply(QNetworkReply* reply) {
 }
 
 void NetworkTimeouts::replyFinished() {
-    QNetworkReply* reply = reinterpret_cast<QNetworkReply*>(sender());
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (m_timers.contains(reply)) {
         killTimer(m_timers.take(reply));
     }
