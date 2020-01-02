@@ -80,7 +80,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotCueModeCombobox(int);
     void slotSetTrackLoadMode(int comboboxIndex);
     void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
-    void slotAssignHotcueColorsCheckbox(bool);
+    void slotHotCueDefaultColorCombobox(int index);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 
@@ -126,7 +126,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_bSetIntroStartAtMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;
     bool m_bCloneDeckOnLoadDoubleTap;
-    bool m_bAssignHotcueColors;
+    int m_hotcueDefaultColorIndex;
 
     int m_iRateRangePercent;
     bool m_bRateInverted;

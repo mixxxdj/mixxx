@@ -36,13 +36,19 @@ void HotcueColorPaletteSettings::removePalette() {
 }
 
 QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
-    if (hotcue >= 0) {
-        auto hotcueColorPalette = getHotcueColorPalette();
-        ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-        if (m_pConfig->getValue(autoHotcueColorsKey, false)) {
-            auto colors = hotcueColorPalette.m_colorList;
-            return colors.at(hotcue % colors.count());
-        }
+    ConfigKey autoHotcueColorsKey("[Controls]", "HotcueDefaultColorIndex");
+    //  QRgb(0xf36100) library icons orange
+    int index = m_pConfig->getValue(autoHotcueColorsKey, -1);
+    if (index == -2) {
+        index = hotcue;
     }
-    return QRgb(0xf36100); // library icons orange
+
+    if (index < 0) {
+        // -1 or invalid hotcue
+        return QRgb(0xf36100); // library icons orange
+    }
+
+    auto hotcueColorPalette = getHotcueColorPalette();
+    auto colors = hotcueColorPalette.m_colorList;
+    return colors.at(index % colors.count());
 }

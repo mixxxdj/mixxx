@@ -16,6 +16,7 @@
 #include "mixer/playermanager.h"
 #include "mixxx.h"
 #include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -207,13 +208,29 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this,
             SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
 
+    // Fill ComboBox
+    auto colorPaletteSettings = HotcueColorPaletteSettings(m_pConfig);
+    auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
+
+    auto skinDefault = new ControlProxy("[Skin]","hotcue_default_color", this);
+
+    //comboBoxHotcueDefaultColor->addItem(tr("Skin Default"), -3);
+    comboBoxHotcueDefaultColor->addItem(QString("Skin Default 0x%1").arg(static_cast<int>(skinDefault->get()), 6, 16, QChar('0')), -3);
+    comboBoxHotcueDefaultColor->addItem(tr("By HotCue Number"), -2);
+    comboBoxHotcueDefaultColor->addItem(tr("Outside Palette"), -1);
+
+    for (int i = 0; i < colorPalette.m_colorList.size(); ++i) {
+        QRgb color = colorPalette.m_colorList.at(i);
+        comboBoxHotcueDefaultColor->addItem(QString("0x%1").arg(static_cast<int>(color), 6, 16, QChar('0')), i);
+    }
+
     // Automatically assign a color to new hot cues
-    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
-    checkBoxAssignHotcueColors->setChecked(m_bAssignHotcueColors);
-    connect(checkBoxAssignHotcueColors,
-            SIGNAL(toggled(bool)),
+    m_hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+    comboBoxHotcueDefaultColor->setCurrentIndex(m_hotcueDefaultColorIndex + 3);
+    connect(comboBoxHotcueDefaultColor,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            SLOT(slotAssignHotcueColorsCheckbox(bool)));
+            &DlgPrefDeck::slotHotCueDefaultColorCombobox);
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
@@ -387,8 +404,8 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
-    checkBoxAssignHotcueColors->setChecked(m_pConfig->getValue(
-            ConfigKey("[Controls]", "auto_hotcue_colors"), false));
+    comboBoxHotcueDefaultColor->setCurrentIndex(m_pConfig->getValue(
+            ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1) + 3);
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
@@ -485,6 +502,9 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+
+    m_hotcueDefaultColorIndex = -1;
+    comboBoxHotcueDefaultColor->setCurrentIndex(m_hotcueDefaultColorIndex + 3);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -552,8 +572,8 @@ void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
     m_bCloneDeckOnLoadDoubleTap = checked;
 }
 
-void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
-    m_bAssignHotcueColors = checked;
+void DlgPrefDeck::slotHotCueDefaultColorCombobox(int index) {
+    m_hotcueDefaultColorIndex = comboBoxHotcueDefaultColor->itemData(index).toInt();
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
@@ -643,7 +663,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
-    m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);
+    m_pConfig->setValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), m_hotcueDefaultColorIndex);
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);
