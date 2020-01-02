@@ -100,8 +100,33 @@ RDJ2.isButtonPressed = function (midiValue) {
 RDJ2.BUTTONMAP_CH0_CH1 = {
     play: [0x19, 0x55],
     cue: [0x18, 0x54],
-    sync: [0x01, 0x3D]
+    sync: [0x01, 0x3D],
+    scratch: [0x1B, 0x57]
 }
+
+/* Custom buttons */
+RDJ2.ScratchButton = function (options) {
+    this.state = undefined;
+    components.Button.call(this, options);
+    this.init();
+};
+RDJ2.ScratchButton.prototype = new components.Button({
+    type: components.Button.prototype.types.toggle,
+    init: function () {
+        this.state = false;
+        this.send(this.outValueScale(this.state));
+    },
+    input: function (isButtonPressed) {
+        if (isButtonPressed) {
+            this.state = !this.state;
+            this.send(this.outValueScale(this.state));
+        }
+    },
+    isActive: function () {
+        return this.state;
+    }
+});
+
 
 ////////////////////////////////////////////////////////////////////////
 // Controls                                                           //
@@ -134,10 +159,10 @@ RDJ2.Deck = function (number) {
     this.number = number;
     this.group = "[Channel" + number + "]";
     this.filterGroup = "[QuickEffectRack1_" + this.group + "_Effect1]";
-    this.jogTouchState = false;
     this.rateDirBackup = this.getValue("rate_dir");
     this.setValue("rate_dir", -1);
-    this.vinylMode = undefined;
+    this.vinylMode = false;
+    this.jogTouchState = false;
     this.syncMode = undefined;
 
     components.Deck.call(this, number);
@@ -145,6 +170,7 @@ RDJ2.Deck = function (number) {
     this.playButton = new components.PlayButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.play[number - 1]]);
     this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
     this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
+    this.scratchButton = new RDJ2.ScratchButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.scratch[number - 1]]);
 
     // Set the group properties of the above Components and connect their output callback functions
     // Without this, the group property for each Component would have to be specified to its
@@ -219,61 +245,33 @@ RDJ2.Deck.prototype.onBendMinusButton = function (isButtonPressed) {
 
 /* Vinyl Mode (Scratching) */
 
-RDJ2.Deck.prototype.onVinylModeValue = function () {
-    //this.vinylModeLed.setStateBoolean(this.vinylMode);
+RDJ2.Deck.prototype.onScratchButton = function (isButtonPressed) {
+    this.scratchButton.input(isButtonPressed);
+    this.vinylMode = this.scratchButton.isActive();
+
 };
 
-RDJ2.Deck.prototype.enableScratching = function () {
-};
+/* Jog Wheel */
 
-RDJ2.Deck.prototype.disableScratching = function () {
-};
-
-RDJ2.Deck.prototype.updateVinylMode = function () {
-    if (this.vinylMode && this.jogTouchState) {
+RDJ2.Deck.prototype.onJogTouch = function (isJogTouched) {    
+    this.jogTouchState = isJogTouched;
+    
+    if (this.vinylMode && isJogTouched) {
         engine.scratchEnable(this.number,
             RDJ2.JOG_RESOLUTION,
             RDJ2.JOG_SCRATCH_RPM,
             RDJ2.JOG_SCRATCH_ALPHA,
             RDJ2.JOG_SCRATCH_BETA,
             RDJ2.JOG_SCRATCH_RAMP);
-    } else {
-        engine.scratchDisable(this.number,
-            RDJ2.JOG_SCRATCH_RAMP);
+    } else if (!isJogTouched && engine.isScratching(this.number)) {
+        engine.scratchDisable(this.number, RDJ2.JOG_SCRATCH_RAMP);
     }
-    this.onVinylModeValue();
 };
 
-RDJ2.Deck.prototype.setVinylMode = function (vinylMode) {
-    this.vinylMode = vinylMode;
-    this.updateVinylMode();
-};
-
-RDJ2.Deck.prototype.toggleVinylMode = function () {
-    this.setVinylMode(!this.vinylMode);
-};
-
-RDJ2.Deck.prototype.enableVinylMode = function () {
-    this.setVinylMode(true);
-};
-
-RDJ2.Deck.prototype.disableVinylMode = function () {
-    this.setVinylMode(false);
-};
-
-RDJ2.Deck.prototype.onVinylButton = function (isButtonPressed) {
-    this.toggleVinylMode();
-};
-
-/* Jog Wheel */
-
-RDJ2.Deck.prototype.touchJog = function (isJogTouched) {
-    this.jogTouchState = isJogTouched;
-    this.updateVinylMode();
-};
-
-RDJ2.Deck.prototype.spinJog = function (jogDelta) {
-    if (/*this.getShiftState() &&*/ this.jogTouchState && !this.isPlaying()) {
+RDJ2.Deck.prototype.onJogSpin = function (jogDelta) {
+    if (engine.isScratching(this.number)) {
+        engine.scratchTick(this.number, jogDelta);
+    } else if (this.jogTouchState && !this.isPlaying()) {
         // fast track seek (strip search)
         var playPos = engine.getValue(this.group, "playposition");
         if (undefined !== playPos) {
@@ -281,34 +279,30 @@ RDJ2.Deck.prototype.spinJog = function (jogDelta) {
             this.setValue("playposition", Math.max(0.0, Math.min(1.0, seekPos)));
         }
     } else {
-        if (engine.isScratching(this.number)) {
-            engine.scratchTick(this.number, jogDelta);
+        var normalizedDelta = jogDelta / RDJ2.MIDI_JOG_DELTA_RANGE;
+        var scaledDelta;
+        var jogExponent;
+        if (this.isPlaying()) {
+            // bending
+            scaledDelta = normalizedDelta / RDJ2.JOG_SPIN_PLAY_PEAK;
+            jogExponent = RDJ2.JOG_SPIN_PLAY_EXPONENT;
         } else {
-            var normalizedDelta = jogDelta / RDJ2.MIDI_JOG_DELTA_RANGE;
-            var scaledDelta;
-            var jogExponent;
-            if (this.isPlaying()) {
-                // bending
-                scaledDelta = normalizedDelta / RDJ2.JOG_SPIN_PLAY_PEAK;
-                jogExponent = RDJ2.JOG_SPIN_PLAY_EXPONENT;
-            } else {
-                // cueing
-                scaledDelta = normalizedDelta / RDJ2.JOG_SPIN_CUE_PEAK;
-                jogExponent = RDJ2.JOG_SPIN_CUE_EXPONENT;
-            }
-            var direction;
-            var scaledDeltaAbs;
-            if (scaledDelta < 0.0) {
-                direction = -1.0;
-                scaledDeltaAbs = -scaledDelta;
-            } else {
-                direction = 1.0;
-                scaledDeltaAbs = scaledDelta;
-            }
-            var scaledDeltaPow = direction * Math.pow(scaledDeltaAbs, jogExponent);
-            var jogValue = RDJ2.MIXXX_JOG_RANGE * scaledDeltaPow;
-            this.setValue("jog", jogValue);
+            // cueing
+            scaledDelta = normalizedDelta / RDJ2.JOG_SPIN_CUE_PEAK;
+            jogExponent = RDJ2.JOG_SPIN_CUE_EXPONENT;
         }
+        var direction;
+        var scaledDeltaAbs;
+        if (scaledDelta < 0.0) {
+            direction = -1.0;
+            scaledDeltaAbs = -scaledDelta;
+        } else {
+            direction = 1.0;
+            scaledDeltaAbs = scaledDelta;
+        }
+        var scaledDeltaPow = direction * Math.pow(scaledDeltaAbs, jogExponent);
+        var jogValue = RDJ2.MIXXX_JOG_RANGE * scaledDeltaPow;
+        this.setValue("jog", jogValue);
     }
 };
 
@@ -323,11 +317,15 @@ RDJ2.Deck.prototype.recvBendMinusButton = function (channel, control, value) {
 };
 
 RDJ2.Deck.prototype.recvJogTouch = function (channel, control, value) {
-    this.touchJog(RDJ2.isButtonPressed(value));
+    this.onJogTouch(RDJ2.isButtonPressed(value));
 };
 
 RDJ2.Deck.prototype.recvJogSpin = function (channel, control, value) {
-    this.spinJog(RDJ2.getJogDeltaValue(value));
+    this.onJogSpin(RDJ2.getJogDeltaValue(value));
+};
+
+RDJ2.Deck.prototype.recvScratchButton = function (channel, control, value) {
+    this.onScratchButton(RDJ2.isButtonPressed(value));
 };
 
 
