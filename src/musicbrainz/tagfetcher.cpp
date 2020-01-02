@@ -66,7 +66,7 @@ void TagFetcher::cancel() {
 }
 
 void TagFetcher::fingerprintFound(int index) {
-    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
+    QFutureWatcher<QString>* watcher = static_cast<QFutureWatcher<QString>*>(sender());
     if (!watcher || index >= m_tracks.count()) {
         return;
     }
