@@ -39,6 +39,10 @@ AcoustidClient::AcoustidClient(QObject* parent)
 }
 
 void AcoustidClient::setTimeout(int msec) {
+    VERIFY_OR_DEBUG_ASSERT(msec > 0) {
+        kLogger.warning() << "Invalid timeout" << msec << "[ms]";
+        return;
+    }
     m_timeouts.setTimeout(msec);
 }
 
@@ -58,46 +62,61 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
 
-    qDebug() << "AcoustIdClient POST request:" << ACOUSTID_URL
-             << "body:" << body;
+    kLogger.debug()
+            << "POST request:" << ACOUSTID_URL
+            << "body:" << body;
 
     QNetworkReply* reply = m_network.post(req, gzipCompress(body));
-    connect(reply, &QNetworkReply::finished, this, &AcoustidClient::requestFinished);
-    m_requests[reply] = id;
-
+    m_pendingReplies[reply] = id;
+    connect(reply, &QNetworkReply::finished, this, &AcoustidClient::onReplyFinished);
     m_timeouts.addReply(reply);
 }
 
 void AcoustidClient::cancel(int id) {
-    QNetworkReply* reply = m_requests.key(id);
-    m_requests.remove(reply);
-    delete reply;
+    QNetworkReply* reply = m_pendingReplies.key(id);
+    if (!reply) {
+        return;
+    }
+    cancelPendingReply(reply);
 }
 
-void AcoustidClient::cancelAll() {
-    auto requests = m_requests;
-    m_requests.clear();
-
-    for (auto it = requests.constBegin();
-         it != requests.constEnd(); ++it) {
-        delete it.key();
+void AcoustidClient::cancelPendingReply(QNetworkReply* reply) {
+    DEBUG_ASSERT(reply);
+    m_timeouts.removeReply(reply);
+    m_pendingReplies.remove(reply);
+    if (reply->isRunning()) {
+        reply->abort();
     }
 }
 
-void AcoustidClient::requestFinished() {
+void AcoustidClient::cancelAll() {
+    while (!m_pendingReplies.isEmpty()) {
+        QNetworkReply* reply = m_pendingReplies.firstKey();
+        cancelPendingReply(reply);
+        DEBUG_ASSERT(!m_pendingReplies.contains(reply));
+    }
+}
+
+void AcoustidClient::onReplyFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
+    VERIFY_OR_DEBUG_ASSERT(reply) {
         return;
-
+    }
     reply->deleteLater();
-    if (!m_requests.contains(reply))
-        return;
 
-    int id = m_requests.take(reply);
+    if (!m_pendingReplies.contains(reply)) {
+        // Already Cancelled
+        return;
+    }
+
+    m_timeouts.removeReply(reply);
+    int id = m_pendingReplies.take(reply);
 
     const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     const QByteArray body = reply->readAll();
-    qDebug() << "AcoustIdClient POST reply status:" << statusCode << "body:" << body;
+    kLogger.debug()
+            << "POST reply status:" << statusCode
+            << "body:" << body;
 
     const auto jsonResponse = QJsonDocument::fromJson(body);
     QString statusText;
