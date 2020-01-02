@@ -114,9 +114,11 @@ void AcoustidClient::onReplyFinished() {
 
     const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     const QByteArray body = reply->readAll();
-    kLogger.debug()
-            << "POST reply status:" << statusCode
-            << "body:" << body;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "POST reply status:" << statusCode
+                << "body:" << body;
+    }
 
     const auto jsonResponse = QJsonDocument::fromJson(body);
     QString statusText;
@@ -144,29 +146,58 @@ void AcoustidClient::onReplyFinished() {
     DEBUG_ASSERT(jsonResponse.isObject());
     DEBUG_ASSERT(jsonResponse.object().value(QStringLiteral("results")).isArray());
     const QJsonArray results = jsonResponse.object().value(QStringLiteral("results")).toArray();
-    // Results are ordered by score (descending), only take the recordings
-    // from the first result with maximum score.
+    double maxScore = -1.0; // uninitialized (< 0)
+    // Results are expected to be ordered by score (descending)
     for (const auto result : results) {
         DEBUG_ASSERT(result.isObject());
-        const auto recordingsValue = result.toObject().value(QStringLiteral("recordings"));
-        if (recordingsValue.isUndefined()) {
-            kLogger.info()
-                    << "No recording(s) found";
+        const auto resultObject = result.toObject();
+        const auto resultId =
+                resultObject.value(QStringLiteral("id")).toString();
+        DEBUG_ASSERT(!resultId.isEmpty());
+        // The default score is 1.0 if missing
+        const double score =
+                resultObject.value(QStringLiteral("score")).toDouble(1.0);
+        DEBUG_ASSERT(score >= 0.0);
+        DEBUG_ASSERT(score <= 1.0);
+        if (maxScore < 0.0) {
+            // Initialize the maximum score
+            maxScore = score;
+        }
+        DEBUG_ASSERT(score <= maxScore);
+        if (score < maxScore && !recordingIds.isEmpty()) {
+            // Ignore all remaining results with lower values
+            // than the maximum score
+            break;
+        }
+        const auto recordings = result.toObject().value(QStringLiteral("recordings"));
+        if (recordings.isUndefined()) {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "No recording(s) available for result"
+                        << resultId
+                        << "with score"
+                        << score;
+            }
             continue;
         } else {
-            DEBUG_ASSERT(recordingsValue.isArray());
-            const QJsonArray recordings = recordingsValue.toArray();
-            DEBUG_ASSERT(recordingIds.isEmpty());
-            for (const auto recording : recordings) {
+            DEBUG_ASSERT(recordings.isArray());
+            const QJsonArray recordingsArray = recordings.toArray();
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Found"
+                        << recordingsArray.size()
+                        << "recording(s) for result"
+                        << resultId
+                        << "with score"
+                        << score;
+            }
+            for (const auto recording : recordingsArray) {
+                DEBUG_ASSERT(recording.isObject());
+                const auto recordingObject = recording.toObject();
                 const auto recordingId =
-                        recording.toObject().value(QStringLiteral("id")).toString();
+                        recordingObject.value(QStringLiteral("id")).toString();
                 DEBUG_ASSERT(!recordingId.isEmpty());
                 recordingIds.append(recordingId);
-            }
-            if (!recordingIds.isEmpty()) {
-                // Only collect the recordings from the first result
-                // with maximum score
-                break;
             }
         }
     }
