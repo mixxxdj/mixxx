@@ -438,30 +438,11 @@ void SoundSourceProxy::updateTrackFromSource(
 
     if (pCoverImg) {
         // If the pointer is not null then the cover art should be guessed
-        // from the embedded metadata
-        CoverInfoRelative coverInfoNew;
-        DEBUG_ASSERT(coverInfoNew.coverLocation.isNull());
-        if (pCoverImg->isNull()) {
-            // Cover art will be cleared
-            DEBUG_ASSERT(coverInfoNew.source == CoverInfo::UNKNOWN);
-            DEBUG_ASSERT(coverInfoNew.type == CoverInfo::NONE);
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "No embedded cover art found in file"
-                        << getUrl().toString();
-            }
-        } else {
-            coverInfoNew.source = CoverInfo::GUESSED;
-            coverInfoNew.type = CoverInfo::METADATA;
-            // TODO(XXX) here we may introduce a duplicate hash code
-            coverInfoNew.hash = CoverArtUtils::calculateHash(coverImg);
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Embedded cover art found in file"
-                        << getUrl().toString();
-            }
-        }
-        m_pTrack->setCoverInfo(coverInfoNew);
+        auto coverInfo =
+                CoverArtUtils::guessCoverInfo(
+                        *m_pTrack, *pCoverImg);
+        DEBUG_ASSERT(coverInfo.source == CoverInfo::GUESSED);
+        m_pTrack->setCoverInfo(coverInfo);
     }
 }
 

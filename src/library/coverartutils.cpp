@@ -81,10 +81,16 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
 
 //static
 CoverInfoRelative CoverArtUtils::guessCoverInfo(
-        const Track& track) {
+        const Track& track,
+        QImage embeddedCover) {
     const auto trackFile = track.getFileInfo();
 
-    QImage image = extractEmbeddedCover(trackFile, track.getSecurityToken());
+    QImage image;
+    if (embeddedCover.isNull()) {
+        image = extractEmbeddedCover(trackFile, track.getSecurityToken());
+    } else {
+        image = std::move(embeddedCover);
+    }
     if (!image.isNull()) {
         CoverInfoRelative coverInfo;
         coverInfo.source = CoverInfo::GUESSED;

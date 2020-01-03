@@ -51,8 +51,13 @@ class CoverArtUtils {
     };
 
     // Guesses the cover art for the provided track.
+    // If a non-null image is provided as an optional argument
+    // then this is assumed to contain the embedded cover art
+    // that has already been extracted from the track's file
+    // beforehand.
     static CoverInfoRelative guessCoverInfo(
-            const Track& track);
+            const Track& track,
+            QImage embeddedCover = QImage());
 
     static QLinkedList<QFileInfo> findPossibleCoversInFolder(
             const QString& folder);
