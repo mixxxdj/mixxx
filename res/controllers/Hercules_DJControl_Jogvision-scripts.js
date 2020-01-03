@@ -8,6 +8,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.5 (January 2020)
 // * Version 1.4 (December 2019)
 // * Version 1.3 (November 2019)
 // * Version 1.2 (November 2019)
@@ -15,11 +16,14 @@
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
 //
+// Changes to v1.5
+// - Fixed regression not updating the VuMeters
+// - Fixed regression not updating the CUE/MIX buttons
+//
 // Changes to v1.4
 // - Code cleanup and standarization
-// - Adjusted the speed of Jogs' outer led rotation ('ledRotationSpeed' variable)
 // - Added "orage" track led color (ala Serato) when play position is beyond the
-//   half part of the track, but before the "end of track" Mixxx event
+//   part of the track, but before the "end of track" Mixxx signal
 //
 // Changes to v1.3
 // - Enabled the creation of beatloop (beatloop_activate) by using SHIFT+LoopON
@@ -108,10 +112,10 @@ DJCJV.init = function(id) {
 	engine.connectControl ("[Channel1]", "stop", "DJCJV.beatInactive");
 	engine.connectControl ("[Channel2]", "stop", "DJCJV.beatInactive");
 	
-	// Set inner jog leds to position 0
+	// Set inner jog leds to 0
 	midi.sendShortMsg(DJCJV.Channel['[Channel1]'].deck, 0x61, 0);
 	midi.sendShortMsg(DJCJV.Channel['[Channel2]'].deck, 0x61, 0);
-	//// Set outer jog leds to position 0
+	//// Set outer jog leds to 0
 	midi.sendShortMsg(DJCJV.Channel['[Channel1]'].deck, 0x60, 1);
 	midi.sendShortMsg(DJCJV.Channel['[Channel2]'].deck, 0x60, 1);
 	
@@ -186,21 +190,22 @@ DJCJV.wheelInnerUpdate = function(value, group, control) {
 
 //Vu Meter
 DJCJV.vuMeterUpdate = function(value, group, control) {
-	midi.sendShortMsg(DJCJV.Channel[group].deck, 0x44, value * 6);
-
+	midi.sendShortMsg(DJCJV.Channel[group].central, 0x44, value * 6);
 };
 
 // Headphone CUE/MIX buttons status
-DJCJV.headCueOrMix = function(midino, control, value, status, group) {
-	if (engine.getValue(group, "headMix") === 0) {
+DJCJV.headCue = function(midino, control, value, status, group) {
+	if(engine.getValue(group, "headMix") == 0) {
 		engine.setValue(group, "headMix", -1.0);
-		midi.sendShortMsg(masterLeds, 0x4C, off);
-		midi.sendShortMsg(masterLeds, 0x4D, on);
+		midi.sendShortMsg(masterLeds, 0x4D, 0x7f);
+		midi.sendShortMsg(masterLeds, 0x4C, 0x00);
 	}
-	else if (engine.getValue(group, "headMix") !== 1) {
+};
+DJCJV.headMix = function(midino, control, value, status, group) {
+	if(engine.getValue(group, "headMix") != 1) {
 		engine.setValue(group, "headMix", 0);
-		midi.sendShortMsg(masterLeds, 0x4C, on);
-		midi.sendShortMsg(masterLeds, 0x4D, off);
+		midi.sendShortMsg(masterLeds, 0x4D, 0x00);
+		midi.sendShortMsg(masterLeds, 0x4C, 0x7f);
 	}
 };
 
@@ -275,5 +280,5 @@ DJCJV.scratchWheel = function(channel, control, value, status, group) {
 
 // Bending by either using the side of wheel, or with the Job surface when not in vinyl-mode
 DJCJV.bendWheel = function(channel, control, value, status, group) {
-	engine.setValue(group, 'jog', (value >= 64) ? value - 128 : value);
+	engine.setValue(group, 'jog', (value >= 64) ? value - 128 : value); // Pitch bend
 };

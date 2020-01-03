@@ -91,7 +91,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJCJV.headCueOrMix</key>
+        <key>DJCJV.headCue</key>
         <description>Headphone CUE button</description>
         <status>0x90</status>
         <midino>0x4D</midino>
@@ -101,7 +101,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJCJV.headCueOrMix</key>
+        <key>DJCJV.headMix</key>
         <description>Headphone MIX button</description>
         <status>0x90</status>
         <midino>0x4C</midino>
