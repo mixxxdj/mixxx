@@ -342,9 +342,9 @@ void SoundSourceProxy::updateTrackFromSource(
     DEBUG_ASSERT(coverImg.isNull());
     QImage* pCoverImg = nullptr; // pointer also serves as a flag
     if (!mergeImportedMetadata) {
-        const CoverInfoRelative coverInfoOld = m_pTrack->getCoverInfo();
-        if (coverInfoOld.source == CoverInfo::USER_SELECTED &&
-                coverInfoOld.type == CoverInfo::FILE) {
+        const auto coverInfo = m_pTrack->getCoverInfo();
+        if (coverInfo.source == CoverInfo::USER_SELECTED &&
+                coverInfo.type == CoverInfo::FILE) {
             // Ignore embedded cover art
             if (kLogger.debugEnabled()) {
                 kLogger.debug()

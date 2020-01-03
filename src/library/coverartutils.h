@@ -51,13 +51,14 @@ class CoverArtUtils {
     };
 
     // Guesses the cover art for the provided track.
-    static CoverInfo guessCoverInfo(const Track& track);
+    static CoverInfoRelative guessCoverInfo(
+            const Track& track);
 
     static QLinkedList<QFileInfo> findPossibleCoversInFolder(
             const QString& folder);
 
     // Selects an appropriate cover file from provided list of image files.
-    static CoverInfo selectCoverArtForTrack(
+    static CoverInfoRelative selectCoverArtForTrack(
             const Track& track,
             const QLinkedList<QFileInfo>& covers);
 

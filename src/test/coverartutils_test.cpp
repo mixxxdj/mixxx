@@ -118,12 +118,11 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
     QLinkedList<QFileInfo> covers;
-    CoverInfo res;
+    CoverInfoRelative res;
     // looking for cover in an empty directory
     res = CoverArtUtils::selectCoverArtForTrack(*pTrack, covers);
-    CoverInfo expected1;
+    CoverInfoRelative expected1;
     expected1.source = CoverInfo::GUESSED;
-    expected1.trackLocation = pTrack->getLocation();
     EXPECT_EQ(expected1, res);
 
     // Looking for a track with embedded cover.
