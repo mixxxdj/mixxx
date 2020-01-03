@@ -1941,7 +1941,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
             // TODO() here we may introduce a duplicate hash code
             updateQuery.bindValue(":coverart_hash",
                                   CoverArtUtils::calculateHash(image));
-            updateQuery.bindValue(":coverart_location", "");
+            updateQuery.bindValue(":coverart_location", QString()); // NULL
             updateQuery.bindValue(":track_id", track.trackId.toVariant());
             if (!updateQuery.exec()) {
                 LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
@@ -1951,6 +1951,8 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
             continue;
         }
 
+        // This optimization is the reason for not using CoverArtUtils::guessCoverInfo()
+        // that needs to determine the possible cover for every single track.
         if (track.directoryPath != currentDirectoryPath) {
             possibleCovers.clear();
             currentDirectoryPath = track.directoryPath;
@@ -1961,6 +1963,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 
         CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
             trackFile, track.trackAlbum, possibleCovers);
+        DEBUG_ASSERT(coverInfo.source != CoverInfo::UNKNOWN);
 
         updateQuery.bindValue(":coverart_type",
                               static_cast<int>(coverInfo.type));
