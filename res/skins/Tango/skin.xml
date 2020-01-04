@@ -139,6 +139,7 @@
       <SetVariable name="SpinnyCoverColor_12">blue</SetVariable>
       <SetVariable name="SpinnyCoverColor_34">purple</SetVariable>
       <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
+      <SetVariable name="HotcueSkinDefaultColor">#666</SetVariable>
       <Style>
         <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
         #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
@@ -163,6 +164,7 @@
       <SetVariable name="SpinnyCoverColor_34">blue</SetVariable>
       <!-- Cyan end-of-track warning -->
       <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
+      <SetVariable name="HotcueSkinDefaultColor">#666</SetVariable>
       <Style>
         #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
         #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {

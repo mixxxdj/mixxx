@@ -169,6 +169,7 @@
     <Scheme>
       <Name>Classic</Name>
       <Filters/>
+      <SetVariable name="HotcueSkinDefaultColor">#fd0564</SetVariable>
     </Scheme>
     <Scheme>
       <Name>Dark</Name>
@@ -183,6 +184,7 @@
         </Add>
       </Filters>
       <Style src="skin:style_dark.qss"/>
+      <SetVariable name="HotcueSkinDefaultColor">#b39a00</SetVariable>
     </Scheme>
     <Scheme>
       <Name>Summer Sunset</Name>
@@ -201,6 +203,7 @@
         </HSVTweak>
       </Filters>
       <Style src="skin:style_summer_sunset.qss"/>
+      <SetVariable name="HotcueSkinDefaultColor">#52f904</SetVariable>
     </Scheme>
   </Schemes>
 

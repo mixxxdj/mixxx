@@ -208,13 +208,21 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this,
             SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
 
+    // This control communicates the "HotcueSkinDefaultColor" value of the current skin
+    m_pControlSkinHotcueDefaultColor = new ControlObject(
+            ConfigKey("[Skin]","hotcue_default_color"));
+    m_pControlSkinHotcueDefaultColor->set(0xf36100); // library icons orange
+    connect(m_pControlSkinHotcueDefaultColor,
+            &ControlObject::valueChanged,
+            this,
+            &DlgPrefDeck::slotSkinHotcueDefaultColorChanged);
+
     // Fill ComboBox
     auto colorPaletteSettings = HotcueColorPaletteSettings(m_pConfig);
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
 
     auto skinDefault = new ControlProxy("[Skin]","hotcue_default_color", this);
 
-    //comboBoxHotcueDefaultColor->addItem(tr("Skin Default"), -3);
     comboBoxHotcueDefaultColor->addItem(QString("Skin Default 0x%1").arg(static_cast<int>(skinDefault->get()), 6, 16, QChar('0')), -3);
     comboBoxHotcueDefaultColor->addItem(tr("By HotCue Number"), -2);
     comboBoxHotcueDefaultColor->addItem(tr("Outside Palette"), -1);
@@ -225,7 +233,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     }
 
     // Automatically assign a color to new hot cues
-    m_hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+    m_hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -3);
     comboBoxHotcueDefaultColor->setCurrentIndex(m_hotcueDefaultColorIndex + 3);
     connect(comboBoxHotcueDefaultColor,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -384,6 +392,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 
 DlgPrefDeck::~DlgPrefDeck() {
     delete m_pControlTrackTimeDisplay;
+    delete m_pControlTrackTimeFormat;
+    delete m_pControlSkinHotcueDefaultColor;
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
     qDeleteAll(m_cueControls);
@@ -503,7 +513,7 @@ void DlgPrefDeck::slotResetToDefaults() {
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
 
-    m_hotcueDefaultColorIndex = -1;
+    m_hotcueDefaultColorIndex = -3;
     comboBoxHotcueDefaultColor->setCurrentIndex(m_hotcueDefaultColorIndex + 3);
 }
 
@@ -631,6 +641,10 @@ void DlgPrefDeck::slotTimeFormatChanged(double v) {
     m_pConfig->set(ConfigKey("[Controls]","TimeFormat"), ConfigValue(v));
     comboBoxTimeFormat->setCurrentIndex(
                 comboBoxTimeFormat->findData(i));
+}
+
+void DlgPrefDeck::slotSkinHotcueDefaultColorChanged(double v) {
+    comboBoxHotcueDefaultColor->setItemText(0, QString("Skin Default 0x%1").arg(static_cast<int>(v), 6, 16, QChar('0')));
 }
 
 void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {

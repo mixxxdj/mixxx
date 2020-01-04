@@ -1,4 +1,5 @@
 #include "preferences/hotcuecolorpalettesettings.h"
+#include "control/controlobject.h"
 
 const QString HotcueColorPaletteSettings::sGroup = "[HotcueColorPalette]";
 
@@ -38,13 +39,22 @@ void HotcueColorPaletteSettings::removePalette() {
 QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
     ConfigKey autoHotcueColorsKey("[Controls]", "HotcueDefaultColorIndex");
     //  QRgb(0xf36100) library icons orange
-    int index = m_pConfig->getValue(autoHotcueColorsKey, -1);
+    int index = m_pConfig->getValue(autoHotcueColorsKey, -3);
+
+    if (index == -1) {
+        return QRgb(0xf36100); // library icons orange
+    }
+
     if (index == -2) {
         index = hotcue;
     }
 
     if (index < 0) {
-        // -1 or invalid hotcue
+        // -3 or invalid hotcue return skin default
+        double dRgb = ControlObject::get(ConfigKey("[Skin]","hotcue_default_color"));
+        if (dRgb <= 0xFFFFFF && dRgb >= 0) {
+            return QRgb(dRgb);
+        }
         return QRgb(0xf36100); // library icons orange
     }
 

@@ -159,7 +159,7 @@
       <SetVariable name="PlayPosColor">#00FF00</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
-
+      <SetVariable name="HotcueSkinDefaultColor">#ff0909</SetVariable>
     </Scheme>
 
     <Scheme>
@@ -201,7 +201,7 @@
       <SetVariable name="PlayPosColor">#00ff00</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
       <SetVariable name="EndOfTrackColor">#ff00ff</SetVariable>
-
+      <SetVariable name="HotcueSkinDefaultColor">#ff0909</SetVariable>
     </Scheme>
   </Schemes>
 

@@ -388,6 +388,15 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     m_pParent = pParent;
     QList<QWidget*> widgets = parseNode(skinDocument);
 
+    const QString hotcueSkinDefaultColor = m_pContext->variable("HotcueSkinDefaultColor");
+    if (!hotcueSkinDefaultColor.isNull()) {
+        QColor color;
+        color.setNamedColor(hotcueSkinDefaultColor);
+        QRgb rgb = color.rgb() & RGB_MASK; // The mask is required for some reasons. A Qt bug?
+        DEBUG_ASSERT(rgb <= 0xFFFFFF);
+        ControlObject::set(ConfigKey("[Skin]","hotcue_default_color"), rgb);
+    }
+
     if (widgets.empty()) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced no widgets!";
         return NULL;
