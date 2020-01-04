@@ -36,16 +36,27 @@ void HotcueColorPaletteSettings::removePalette() {
     }
 }
 
-QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
+QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue, bool* keepDefault) const {
+    if (keepDefault) {
+        *keepDefault = false;
+    }
+
+
     ConfigKey autoHotcueColorsKey("[Controls]", "HotcueDefaultColorIndex");
     //  QRgb(0xf36100) library icons orange
     int index = m_pConfig->getValue(autoHotcueColorsKey, -3);
 
     if (index == -1) {
+        if (keepDefault) {
+            *keepDefault = true;
+        }
         return QRgb(0xf36100); // library icons orange
     }
 
     if (index == -2) {
+        if (keepDefault) {
+            *keepDefault = true;
+        }
         index = hotcue;
     }
 
@@ -54,6 +65,9 @@ QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue) const {
         double dRgb = ControlObject::get(ConfigKey("[Skin]","hotcue_default_color"));
         if (dRgb <= 0xFFFFFF && dRgb >= 0) {
             return QRgb(dRgb);
+        }
+        if (keepDefault) {
+            *keepDefault = true;
         }
         return QRgb(0xf36100); // library icons orange
     }
