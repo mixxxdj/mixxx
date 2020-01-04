@@ -211,7 +211,7 @@ void CoverArtCache::guessCover(TrackPointer pTrack) {
                 << pTrack->getFileInfo();
     }
     pTrack->setCoverInfo(
-            CoverArtUtils::guessCoverInfo(*pTrack));
+            CoverInfoGuesser().guessCoverInfoForTrack(*pTrack));
 }
 
 void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {

@@ -117,7 +117,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    QLinkedList<QFileInfo> covers;
+    QList<QFileInfo> covers;
     CoverInfoRelative res;
     // looking for cover in an empty directory
     res = CoverArtUtils::selectCoverArtForTrack(*pTrack, covers);
@@ -192,7 +192,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     extraCovers << cLoc_big3;
 
     // saving more covers using the preferred names in the right order
-    QLinkedList<QFileInfo> prefCovers;
+    QList<QFileInfo> prefCovers;
     // 1. track_filename.jpg
     QString cLoc_filename = QString(trackdir % "/cover-test." % qFormat);
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));

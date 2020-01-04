@@ -439,8 +439,10 @@ void SoundSourceProxy::updateTrackFromSource(
     if (pCoverImg) {
         // If the pointer is not null then the cover art should be guessed
         auto coverInfo =
-                CoverArtUtils::guessCoverInfo(
-                        *m_pTrack, *pCoverImg);
+                CoverInfoGuesser().guessCoverInfo(
+                        m_pTrack->getFileInfo(),
+                        m_pTrack->getAlbum(),
+                        *pCoverImg);
         DEBUG_ASSERT(coverInfo.source == CoverInfo::GUESSED);
         m_pTrack->setCoverInfo(coverInfo);
     }
