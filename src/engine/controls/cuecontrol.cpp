@@ -1662,9 +1662,6 @@ void CueControl::hotcueFocusColorPrev(double v) {
         return;
     }
 
-    // Reset CO object
-    m_pHotcueFocusColorPrev->set(0);
-
     int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
     if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
         return;
@@ -1695,9 +1692,6 @@ void CueControl::hotcueFocusColorNext(double v) {
     if (!v) {
         return;
     }
-
-    // Reset CO object
-    m_pHotcueFocusColorNext->set(0);
 
     int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
     if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
