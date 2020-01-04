@@ -387,9 +387,6 @@ WCueMenuPopup QLabel {
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
-  }
-
-  WLibrary QLineEdit {
     border: 1px solid #656d75;
   }
 
@@ -409,22 +406,21 @@ WCueMenuPopup QLabel {
     }
 
   #LibraryBPMSpinBox {
-    color: #fff;
-    background-color: #0f0f0f;
-    selection-color: #000;
-    selection-background-color: #ddd;
-    /* This combination of negative top/bottom padding & margin
-    creates a 1px border around the spinbox' text area.
-    Increased left/right padding/margin removes the overlap of
-    text of activated spinbox and left-over text from regular
-    BPM value display. */
-    padding: -1px -8px -1px -4px;
-    margin: -2px 0px -2px -2px;
-    /* As soon as any border property is set, the up/down buttons
-    lose their style & icons
-    border: 0px;
-    border-radius: 2px; */
-  }
+    border-left: 0px;
+    padding: 0px;
+    margin: 0px;
+    }
+    #LibraryBPMSpinBox::up-button,
+    #LibraryBPMSpinBox::down-button {
+      padding: 0px;
+      background-color: #656d75;
+      }
+      #LibraryBPMSpinBox::up-button {
+        image: url(skin:/btn/btn_lib_spinbox_up_white.svg) no-repeat;
+        }
+      #LibraryBPMSpinBox::down-button {
+        image: url(skin:/btn/btn_lib_spinbox_down_white.svg) no-repeat;
+        }
 
   /* Button in library "Preview" column */
   #LibraryPreviewButton {

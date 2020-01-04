@@ -2073,10 +2073,11 @@ WLibrary,
 
 /* selected items in Tree and Tracks table */
 #LibraryContainer QTreeView::item:selected,
-#LibraryContainer QTableView::item:selected
+#LibraryContainer QTableView::item:selected,
+#LibraryBPMButton::item:selected {
 /* this doesn't style BPM value in selected row
 #LibraryContainer QTableView::item:selected #LibraryBPMSpinBox::item:selected,
-#LibraryContainer QTableView::item:selected > #LibraryBPMSpinBox::item:selected */ {
+#LibraryContainer QTableView::item:selected > #LibraryBPMSpinBox::item:selected */
   color: #fff;
   background-color: #5e4507;
 }
@@ -2123,76 +2124,41 @@ WLibrary QLineEdit,
   background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
-}
-WLibrary QLineEdit,
-#LibraryBPMSpinBox {
   border: 1px solid #5E4507;
 }
-
 
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
   image: url(skin:/buttons_classic/btn__lib_bpm_locked_orange.svg);
-  border: 0px;
-  margin: 0px;
-  padding: 0px;
   }
 #LibraryBPMButton::indicator:unchecked {
   image: url(skin:/buttons_classic/btn__lib_bpm_unlocked_grey.svg);
-  border: 0px;
-  margin: 0px;
-  padding: 0px;
   }
 /* BPM value */
 #LibraryBPMButton::item {
-  border: 0px;
-  margin: 0px;
-  padding: 0px;
   }
-#LibraryBPMButton::item:selected {
-  selection-color: #fff;
-  background-color: #5E4507;
-}
 #LibraryBPMSpinBox {
-  /* This combination of negative top/bottom padding & margin
-    creates a 1px border around the spinbox' text area.
-    Increased left/right padding/margin removes the overlap of
-    text of activated spinbox and text artefact from regular
-    BPM value display.
-    Note: for MacOS this is overwritten in mac-style.qss
-  padding: -1px -8px -1px -4px;
-  margin: -2px 0px -2px -3px; */
-  /* just this to crop graphic BPM artifact when activating qspinbox
-  margin-left: -4px;
-  padding-left: 2px;  */
   border-left: 0px;
-  /* As soon as any border property is set, the up/down buttons
-    lose their style & icons
-  border: 0px;
-  border-radius: 2px; */
+}
+/* When activated, the left border of the spinbox shows an
+  artefact of the inactive BPM value. */
+#LibraryBPMSpinBox::up-button,
+#LibraryBPMSpinBox::down-button {
+  background-color: #5E4507;
   }
-  #LibraryBPMSpinBox::up-button,
-  #LibraryBPMSpinBox::down-button {
-    /* as with spinbox: border is added to size.
-      define it with same width as hover border, otherwise size jumps */
-    width: 13px;
-    height: 10px;
-    padding: 0px;
-    background-color: #5E4507;
+  #LibraryBPMSpinBox::up-button {
+    image: url(skin:/buttons_classic/btn__lib_spinbox_up_white.svg) no-repeat;
     }
-    #LibraryBPMSpinBox::up-button {
-      image: url(skin:/buttons_classic/btn__lib_spinbox_up_black.svg) no-repeat;
-      }
-    #LibraryBPMSpinBox::down-button {
-      image: url(skin:/buttons_classic/btn__lib_spinbox_down_black.svg) no-repeat;
-      }
-  /* remove OS focus indicator from BPM cell */
-  WLibrary QCheckBox,
-  #LibraryBPMButton::item:selected,
-  WCueMenuPopup QPushButton:focus {
-    outline: none;
-  }
+  #LibraryBPMSpinBox::down-button {
+    image: url(skin:/buttons_classic/btn__lib_spinbox_down_white.svg) no-repeat;
+    }
+/* remove OS focus indicator from BPM cell */
+WLibrary QCheckBox,
+#LibraryBPMButton::item:selected,
+WCueMenuPopup QPushButton:focus {
+  outline: none;
+}
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {/*

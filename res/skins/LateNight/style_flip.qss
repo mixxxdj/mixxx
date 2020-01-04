@@ -1033,7 +1033,13 @@ WLibrary QLineEdit,
 #LibraryBPMSpinBox::up-button,
 #LibraryBPMSpinBox::down-button {
   background-color: #aa7100;
-}
+  }
+  #LibraryBPMSpinBox::up-button {
+    image: url(skin:/buttons_classic/btn__lib_spinbox_up_black.svg) no-repeat;
+    }
+  #LibraryBPMSpinBox::down-button {
+    image: url(skin:/buttons_classic/btn__lib_spinbox_down_black.svg) no-repeat;
+    }
 
 /* selected items in sidebar tree */
 #LibraryContainer QTreeView::item:selected {

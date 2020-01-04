@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <Size>255f,229me</Size>
+    <Size>255f,229min</Size>
     <Layout>vertical</Layout>
     <Children>
       <WidgetGroup>
@@ -742,8 +742,12 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Size>255f,0me</Size>
+        <Size>255f,24f</Size>
         <BackPath>style/style_bg_mixer_panel_stretch.png</BackPath>
+        <Connection>
+          <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
