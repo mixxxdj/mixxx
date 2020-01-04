@@ -592,6 +592,110 @@ WEffectSelector {
   border-radius: 2px;
 }
 
+/************** button background colors **************************************/
+/* embedded buttons */
+#RateControls WPushButton[value="0"], #SyncButton[value="0"],
+#PflButton[value="0"],
+#EQKillButton[displayValue="0"],
+#QuickEffectButton[displayValue="0"],
+#FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
+#FxExpandCollapseButton,
+#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
+#SamplerSyncButton[displayValue="0"],
+#MicTalkButton[value="0"], #AuxPlayButton[value="0"],
+#MicDuckingButton[value="0"],
+#PlayButtonPreview[displayValue="0"],
+QPushButton#pushButtonAutoDJ:enabled:!checked,
+#DlgMissing > QPushButton:enabled,
+#DlgHidden > QPushButton:enabled,
+#DlgAutoDJ > QPushButton:enabled,
+#DlgRecording > QPushButton:enabled,
+#DlgAnalysis > QPushButton:enabled,
+#BeatgridButtonsToggle, #BeatgridButtons WPushButton[displayValue="0"],
+#DeckRow_1_KeyVinylFx WPushButton[displayValue="0"],
+#VinylTristateButton[displayValue="1"], #VinylTristateButton[displayValue="2"],
+#GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
+#BroadcastButton[displayValue="0"], #SettingsButton[displayValue="0"] {
+  background-color: #262626;
+}
+/* elevated buttons & embedded buttons in top row & toolbar
+      brighter bg color to enhance contrast in darker containers
+      and with small size respectively */
+#DeckRow_5_LoopCuesTransport WPushButton[value="0"],
+#HotcueButton[displayValue="0"],
+#FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
+#FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
+#SplitCueButton[value="0"],
+#MicAuxGainPFlContainer WPushButton[displayValue="0"] {
+  background-color: #2c2c2c;
+}
+
+/* Green/Lime Fx-related buttons */
+#FxToggleButton[displayValue="1"], #QuickEffectButton[displayValue="1"],
+#FxAssignButton[displayValue="1"], #FxAssignButtonDeck[displayValue="1"],
+#BroadcastButton[displayValue="2"] {
+  background-color: #659f08;
+  }
+  /* Grey for active Fx parameters and SplitCue */
+  QPushButton#pushButtonRepeatPlaylist:checked,
+  #FxParameterButton[displayValue="1"],
+  #SplitCueButton[value="1"] {
+    background-color: #888;
+  }
+
+/* Red */
+#RateControls WPushButton[value="1"], #SyncButton[value="1"],
+/* define red buttons in DeckRow_5_LoopCuesTransport indivually,
+because somehow bg color for #SpecialCueButton can't be overwritten */
+#LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
+#CueDeck[value="1"], #Reverse[value="1"],
+/* Indicating play_from_cue. Not working 100%, will be fixed later on
+#PlayDeck[value="1"][highlight="0"], #PlayDeck[value="1"][highlight="1"],
+#PlayButtonDeckMini[value="1"][highlight="0"], #PlayButtonDeckMini[value="1"][highlight="1"],
+#PlayButtonSampler[value="1"][highlight="0"], #PlayButtonSampler[value="1"][highlight="1"], */
+#PlayDeck[displayValue="1"],
+#PlayButtonDeckMini[displayValue="1"],
+#PlayButtonSampler[displayValue="1"],
+#PflButton[value="1"],
+#SamplerSyncButton[displayValue="1"],
+#EQKillButton[displayValue="1"],
+#MicTalkButton[value="1"], #AuxPlayButton[value="1"],
+#MicDuckingButton[value="1"],
+#PlayButtonPreview[displayValue="1"],
+QPushButton#pushButtonRecording:checked,
+#RecFeedback[displayValue="2"],
+#BeatgridButtons WPushButton[value="1"],
+#KeyMatchButton[displayValue="1"],
+#KeyUpButton[displayValue="1"], #KeyDownButton[displayValue="1"] {
+  background-color: #db0000;
+}
+
+#BroadcastButton[displayValue="3"] {
+  /* pink */
+  background-color: #f856e7;
+}
+
+/* Orange/yellow */
+/* Play bg when playing from Cue / hotcue
+#PlayDeck[value="0"][highlight="1"],
+#PlayButtonDeckMini[value="0"][highlight="1"],
+#PlayButtonSampler[value="0"][highlight="1"], */
+#VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
+#FxFocusButton[displayValue="1"],
+#GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"],
+#BroadcastButton[displayValue="1"], /* connecting: yellow */
+#RecFeedback[displayValue="1"], /* initialize recording */
+#SettingsButton[displayValue="1"],
+QPushButton#pushButtonAutoDJ:checked,
+#DlgAnalysis > QPushButton:checked,
+#MicDuckingButton[value="1"],
+#MicDuckingButton[value="2"] {
+  background-color: #d09300;
+}
+/************** Button borders & backgrounds **********************************/
+
+
+
 /************** Button icons **************************************************/
 #SyncButton {
   image: url(skin:/buttons_classic/btn__sync_deck.svg) no-repeat center center;
