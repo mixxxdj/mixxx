@@ -31,6 +31,9 @@ public:
     // fractional value the ID3 metadata is always detected as modified
     // and will be exported regardless if it has actually been modified
     // or not.
+    // TL;DR: If metadata export is enabled ID3 tags will be rewritten
+    // for all files with a fractional bpm values even if their metadata
+    // has not been modified.
     void normalizeBeforeExport() {
         m_value = normalizeValue(m_value);
     }
