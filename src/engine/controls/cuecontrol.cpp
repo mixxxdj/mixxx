@@ -50,10 +50,10 @@ CueControl::CueControl(QString group,
     m_pPrevBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
-    m_pLoopStartPosition = new ControlProxy(group, "loop_start_position", this);
-    m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
-    m_pLoopEnabled = new ControlProxy(group, "loop_enabled", this);
-    m_pLoopToggle = new ControlProxy(group, "loop_toggle", this);
+    m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position");
+    m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position");
+    m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled");
+    m_pLoopToggle = make_parented<ControlProxy>(group, "loop_toggle");
 
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
     m_pCuePoint->set(Cue::kNoPosition);

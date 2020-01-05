@@ -11,6 +11,7 @@
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 
 #define NUM_HOT_CUES 37
 
@@ -238,10 +239,10 @@ class CueControl : public EngineControl {
     ControlObject* m_pPrevBeat;
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
-    ControlProxy* m_pLoopStartPosition;
-    ControlProxy* m_pLoopEndPosition;
-    ControlProxy* m_pLoopEnabled;
-    ControlProxy* m_pLoopToggle;
+    parented_ptr<ControlProxy> m_pLoopStartPosition;
+    parented_ptr<ControlProxy> m_pLoopEndPosition;
+    parented_ptr<ControlProxy> m_pLoopEnabled;
+    parented_ptr<ControlProxy> m_pLoopToggle;
     bool m_bypassCueSetByPlay;
 
     const int m_iNumHotCues;
