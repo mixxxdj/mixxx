@@ -1575,7 +1575,7 @@ double CueControl::getQuantizedCurrentPosition() {
     double currentPos = sampleOfTrack.current;
     const double total = sampleOfTrack.total;
 
-    // Note: currentPos can be passed the end of the track, in the padded
+    // Note: currentPos can be past the end of the track, in the padded
     // silence of the last buffer. This position might be not reachable in
     // a future runs, depending on the buffering.
     currentPos = math_min(currentPos, total);
@@ -1586,7 +1586,7 @@ double CueControl::getQuantizedCurrentPosition() {
     }
 
     double closestBeat = m_pClosestBeat->get();
-    // Note: closestBeat can be an interpolated beat passed the end of the track,
+    // Note: closestBeat can be an interpolated beat past the end of the track,
     // which cannot be reached.
     if (closestBeat != -1.0 && closestBeat <= total) {
         return closestBeat;
