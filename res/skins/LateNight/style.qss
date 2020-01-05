@@ -544,15 +544,29 @@ QHeaderView::down-arrow {
     color: #000;
   }
 
-WEffectSelector {
+WEffectSelector,
+WEffectSelector:open {
   border-width: 1px 2px 2px 1px;
-  border-image: url(skin:buttons_classic/btn_elevated_fx_selector.svg) 1 2 2 1;
-}
+  }
+  WEffectSelector {
+    border-image: url(skin:buttons_classic/btn_elevated_fx_selector.svg) 1 2 2 1;
+  }
+  WEffectSelector:open {
+    border-image: url(skin:buttons_classic/btn_elevated_fx_selector_open.svg) 1 2 2 1;
+  }
 
-#fadeModeCombobox {
+#fadeModeCombobox,
+#fadeModeCombobox:open {
   border-width: 2px 2px 2px 2px;
-  border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
-}
+  }
+  #fadeModeCombobox,
+  #fadeModeCombobox:open {
+    border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
+  }
+  #fadeModeCombobox,
+  #fadeModeCombobox:open {
+    border-image: url(skin:buttons_classic/btn_embedded_library_active.svg) 2 2 2 2;
+  }
 
 #HotcueButton {
   /* ronso0
@@ -2219,21 +2233,24 @@ WCueMenuPopup QPushButton:focus {
     }
 
 /*********** scrollbars *********************************/
-#LibraryContainer QScrollBar {
+#LibraryContainer QScrollBar,
+WEffectSelector QAbstractScrollArea QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
   padding: 1px;
   color: #999999;
   }
-  #LibraryContainer QScrollBar:horizontal {
+  #LibraryContainer QScrollBar:horizontal,
+  WEffectSelector QAbstractScrollArea QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     background-color: #000;
   }
-  #LibraryContainer QScrollBar:vertical {
+  #LibraryContainer QScrollBar:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -2244,41 +2261,48 @@ WCueMenuPopup QPushButton:focus {
   /* catch scroll bar of focused treeview like this:
   #LibraryContainer QTreeView:focus QScrollBar:vertical {
   }*/
+#LibraryContainer QScrollBar::handle:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal {
+  min-width: 25px;
+  border-radius: 2px;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #725309,
+    stop:1 #412f05);
+}
+#LibraryContainer QScrollBar::handle:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
+  min-height: 25px;
+  border-radius: 2px;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #725309,
+    stop:1 #412f05);
+}
 
-  /* "add-page" and "sub-page" are the gutter of the scrollbar */
-  #LibraryContainer QScrollBar::add-page,
-  #LibraryContainer QScrollBar::sub-page {
-    min-width: 15px;
-    min-height: 15px;
-    background-color: #000;
-    border-radius: 2px;
-  }
-  #LibraryContainer QScrollBar::handle:horizontal {
-    min-width: 25px;
-    border-radius: 2px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #725309,
-      stop:1 #412f05);
-  }
-  #LibraryContainer QScrollBar::handle:vertical {
-    min-height: 25px;
-    border-radius: 2px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #725309,
-      stop:1 #412f05);
-  }
-  /* Turn off buttons */
-  #LibraryContainer QScrollBar::add-line,
-  #LibraryContainer QScrollBar::sub-line {
-    width: 0px;
-    height: 0px;
-    border: 0px;
-  }
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+#LibraryContainer QScrollBar::add-page,
+#LibraryContainer QScrollBar::sub-page,
+WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page {
+  min-width: 15px;
+  min-height: 15px;
+  background-color: #000;
+  border-radius: 2px;
+}
+/* Turn off buttons */
+#LibraryContainer QScrollBar::add-line,
+#LibraryContainer QScrollBar::sub-line,
+WEffectSelector QAbstractScrollArea QScrollBar::add-line,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line{
+  width: 0px;
+  height: 0px;
+  border: 0px;
+}
 
-  /* Corner in between two scrollbars */
-  #LibraryContainer QAbstractScrollArea::corner {
-    background-color: #1e1e1e;
-  }
+/* Corner in between two scrollbars */
+#LibraryContainer QAbstractScrollArea::corner,
+WEffectSelector QAbstractScrollArea QScrollBar::corner {
+  background-color: #1e1e1e;
+}
 /*********** scrollbars *********************************/
 
 

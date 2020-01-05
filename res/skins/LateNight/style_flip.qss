@@ -297,12 +297,6 @@ WSearchLineEdit {
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
   background-color: #2c2c2c;
 }
-/*
-#BeatgridButtonsToggle {
-  border-width: 3px;
-  border-image: url(skin:buttons_classic/btn_embedded_libary.svg) 3 3 3 3;
-  margin: 3px;
-} */
 
 #SkinSettingsButton {
   color: #bbb;
@@ -1086,5 +1080,38 @@ WLibrary QLineEdit,
     background-color: #050504;
   }
 
+/* Scrollbars */
+#LibraryContainer QScrollBar,
+WEffectSelector QAbstractScrollArea QScrollBar {
+  padding: 0px;
+  }
+  #LibraryContainer QScrollBar::handle:horizontal,
+  #LibraryContainer QScrollBar::handle:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
+    /*
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #725309,
+      stop:1 #412f05);*/
+    background-color: #555;
+    border-top: 1px solid #888;
+    border-left: 1px solid #888;
+    border-bottom: 1px solid #222;
+    border-right: 1px solid #222;
+    border-radius: 1px;
+  }
+
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+#LibraryContainer QScrollBar::add-page,
+#LibraryContainer QScrollBar::sub-page,
+WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page {
+  background-color: #000;
+}
+
+/* Corner in between two scrollbars */
+#LibraryContainer QAbstractScrollArea::corner {
+  background-color: #0f0f0e;
+}
 
 /************** Library *******************************************************/
