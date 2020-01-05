@@ -582,8 +582,18 @@ void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
     m_bCloneDeckOnLoadDoubleTap = checked;
 }
 
-void DlgPrefDeck::slotHotCueDefaultColorCombobox(int index) {
+void DlgPrefDeck::slotHotcueDefaultColorCombobox(int index) {
     m_hotcueDefaultColorIndex = comboBoxHotcueDefaultColor->itemData(index).toInt();
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setWindowTitle(tr("Hotcue Defaut Color Changed"));
+    msgBox.setText(tr("The default color is used for new and legacy Hotcues. "
+                      "If you select one of the palette colors (recomended), "
+                      "the selected color is adopted and stored for all legacy "
+                      "cues of a track  once it is loaded. "
+                      "Hotcues of already loaded tracks are not updated."));
+    msgBox.exec();
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
