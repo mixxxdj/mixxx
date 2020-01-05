@@ -243,6 +243,7 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pLoopEndPosition;
     parented_ptr<ControlProxy> m_pLoopEnabled;
     parented_ptr<ControlProxy> m_pLoopToggle;
+    parented_ptr<ControlProxy> m_pBeatLoopActivate;
     bool m_bypassCueSetByPlay;
 
     const int m_iNumHotCues;

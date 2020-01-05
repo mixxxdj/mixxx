@@ -54,6 +54,7 @@ CueControl::CueControl(QString group,
     m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position");
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled");
     m_pLoopToggle = make_parented<ControlProxy>(group, "loop_toggle");
+    m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate");
 
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
     m_pCuePoint->set(Cue::kNoPosition);
@@ -831,13 +832,21 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
         return;
     }
 
-    double endPosition = startPosition + pCue->getLength();
-    if (startPosition >= endPosition) {
+    if (pCue->getType() == Cue::Type::Loop) {
+        double endPosition = startPosition + pCue->getLength();
+        if (startPosition >= endPosition) {
+            return;
+        }
+
+        setSavedLoop(pCue, false);
+        hotcueGoto(pControl, v);
+    } else if (pCue->getType() == Cue::Type::HotCue) {
+        hotcueGoto(pControl, v);
+        m_pBeatLoopActivate->set(1);
+    } else {
         return;
     }
 
-    setSavedLoop(pCue, false);
-    hotcueGoto(pControl, v);
 
     if (!isPlayingByPlayButton()) {
         // cueGoto is processed asynchrony.
