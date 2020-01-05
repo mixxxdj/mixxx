@@ -61,13 +61,33 @@ public:
         return std::round(value);
     }
 
+    enum class Comparison {
+        Default, // full precision
+        Integer, // rounded
+        String, // stringified
+    };
+
+    bool compareEq(
+            const Bpm& bpm,
+            Comparison cmp = Comparison::Default) const {
+        switch (cmp) {
+        case Comparison::Integer:
+            return Bpm::valueToInteger(getValue()) == Bpm::valueToInteger(bpm.getValue());
+        case Comparison::String:
+            return Bpm::valueToString(getValue()) == Bpm::valueToString(bpm.getValue());
+        case Comparison::Default:
+        default:
+            return getValue() == bpm.getValue();
+        }
+    }
+
 private:
     double m_value;
 };
 
 inline
 bool operator==(const Bpm& lhs, const Bpm& rhs) {
-    return lhs.getValue() == rhs.getValue();
+    return lhs.compareEq(rhs);
 }
 
 inline

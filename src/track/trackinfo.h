@@ -78,9 +78,16 @@ public:
         refBpm().normalizeBeforeExport();
         refReplayGain().normalizeBeforeExport();
     }
+
+    bool compareEq(
+            const TrackInfo& trackInfo,
+            Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 };
 
-bool operator==(const TrackInfo& lhs, const TrackInfo& rhs);
+inline
+bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
+    return lhs.compareEq(rhs);
+}
 
 inline
 bool operator!=(const TrackInfo& lhs, const TrackInfo& rhs) {
