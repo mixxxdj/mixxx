@@ -979,8 +979,17 @@ ExportTrackMetadataResult Track::exportMetadata(
         // copy all extra properties that are not (yet) stored in the library before
         // checking for differences! If an export has been requested explicitly then
         // we will continue even if no differences are detected.
+        // NOTE(uklotzde, 2020-01-05): Detection of modified bpm values is restricted
+        // to integer precision to avoid re-exporting of unmodified ID3 tags in case
+        // of fractional bpm values. As a consequence small changes in bpm values
+        // cannot be detected and file tags with fractional values might not be
+        // updated as expected! In these edge cases users need to explicitly
+        // trigger the re-export of file tags or they could modify other metadata
+        // properties.
         if (!m_bMarkedForMetadataExport &&
-                !m_record.getMetadata().anyFileTagsModified(importedFromFile))  {
+                !m_record.getMetadata().anyFileTagsModified(
+                        importedFromFile,
+                        mixxx::Bpm::Comparison::Integer))  {
             // The file tags are in-sync with the track's metadata and don't need
             // to be updated.
             if (kLogger.debugEnabled()) {

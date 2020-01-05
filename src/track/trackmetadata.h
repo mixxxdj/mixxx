@@ -40,7 +40,13 @@ public:
     // Returns true if the current metadata differs from the imported metadata
     // and needs to be exported. A result of false indicates that no export
     // is needed.
-    bool anyFileTagsModified(const TrackMetadata& importedFromFile) const;
+    // NOTE: Some tag formats like ID3v1/v2 only support integer precision
+    // for storing bpm values. To avoid re-exporting unmodified track metadata
+    // with fractional bpm values over and over again the comparison of bpm
+    // values should be restricted to integer.
+    bool anyFileTagsModified(
+            const TrackMetadata& importedFromFile,
+            Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 
     // Parse an format date/time values according to ISO 8601
     static QDate parseDate(QString str) {

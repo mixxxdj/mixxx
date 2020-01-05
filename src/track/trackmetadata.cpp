@@ -72,13 +72,14 @@ void TrackMetadata::normalizeBeforeExport() {
 }
 
 bool TrackMetadata::anyFileTagsModified(
-        const TrackMetadata& importedFromFile) const {
+        const TrackMetadata& importedFromFile,
+        Bpm::Comparison cmpBpm) const {
     // NOTE(uklotzde): The read-only audio properties that are stored
     // directly as members of this class might differ after they have
     // been updated while decoding audio data. They are read-only and
     // must not be considered when exporting metadata!
     return getAlbumInfo() != importedFromFile.getAlbumInfo() ||
-            getTrackInfo() != importedFromFile.getTrackInfo();
+            !getTrackInfo().compareEq(importedFromFile.getTrackInfo(), cmpBpm);
 }
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
