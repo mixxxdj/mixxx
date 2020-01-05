@@ -274,8 +274,8 @@ void CueControl::createControls() {
         connect(pControl, &HotcueControl::hotcueGotoAndStop,
                 this, &CueControl::hotcueGotoAndStop,
                 Qt::DirectConnection);
-        connect(pControl, &HotcueControl::hotcueReloop,
-                this, &CueControl::hotcueReloop,
+        connect(pControl, &HotcueControl::hotcueGotoAndLoop,
+                this, &CueControl::hotcueGotoAndLoop,
                 Qt::DirectConnection);
         connect(pControl, &HotcueControl::hotcueActivate,
                 this, &CueControl::hotcueActivate,
@@ -808,7 +808,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     }
 }
 
-void CueControl::hotcueReloop(HotcueControl* pControl, double v) {
+void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
     if (!v)
         return;
 
@@ -2119,9 +2119,9 @@ HotcueControl::HotcueControl(QString group, int i)
             this, &HotcueControl::slotHotcueGotoAndStop,
             Qt::DirectConnection);
 
-    m_hotcueReloop = new ControlPushButton(keyForControl(i, "reloop"));
-    connect(m_hotcueReloop, &ControlObject::valueChanged,
-            this, &HotcueControl::slotHotcueReloop,
+    m_hotcueGotoAndLoop = new ControlPushButton(keyForControl(i, "gotoandloop"));
+    connect(m_hotcueGotoAndLoop, &ControlObject::valueChanged,
+            this, &HotcueControl::slotHotcueGotoAndLoop,
             Qt::DirectConnection);
 
     m_hotcueActivate = new ControlPushButton(keyForControl(i, "activate"));
@@ -2162,7 +2162,7 @@ HotcueControl::~HotcueControl() {
     delete m_hotcueGoto;
     delete m_hotcueGotoAndPlay;
     delete m_hotcueGotoAndStop;
-    delete m_hotcueReloop;
+    delete m_hotcueGotoAndLoop;
     delete m_hotcueActivate;
     delete m_hotcueActivateCue;
     delete m_hotcueActivateLoop;
@@ -2194,8 +2194,8 @@ void HotcueControl::slotHotcueGotoAndStop(double v) {
     emit(hotcueGotoAndStop(this, v));
 }
 
-void HotcueControl::slotHotcueReloop(double v) {
-    emit(hotcueReloop(this, v));
+void HotcueControl::slotHotcueGotoAndLoop(double v) {
+    emit(hotcueGotoAndLoop(this, v));
 }
 
 void HotcueControl::slotHotcueActivate(double v) {

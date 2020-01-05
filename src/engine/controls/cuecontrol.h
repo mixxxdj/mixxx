@@ -80,7 +80,7 @@ class HotcueControl : public QObject {
     void slotHotcueGoto(double v);
     void slotHotcueGotoAndPlay(double v);
     void slotHotcueGotoAndStop(double v);
-    void slotHotcueReloop(double v);
+    void slotHotcueGotoAndLoop(double v);
     void slotHotcueActivate(double v);
     void slotHotcueActivateCue(double v);
     void slotHotcueActivateLoop(double v);
@@ -98,7 +98,7 @@ class HotcueControl : public QObject {
     void hotcueGoto(HotcueControl* pHotcue, double v);
     void hotcueGotoAndPlay(HotcueControl* pHotcue, double v);
     void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
-    void hotcueReloop(HotcueControl* pHotcue, double v);
+    void hotcueGotoAndLoop(HotcueControl* pHotcue, double v);
     void hotcueActivate(HotcueControl* pHotcue, double v);
     void hotcueActivateCue(HotcueControl* pHotcue, double v);
     void hotcueActivateLoop(HotcueControl* pHotcue, double v);
@@ -130,7 +130,7 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueGoto;
     ControlObject* m_hotcueGotoAndPlay;
     ControlObject* m_hotcueGotoAndStop;
-    ControlObject* m_hotcueReloop;
+    ControlObject* m_hotcueGotoAndLoop;
     ControlObject* m_hotcueActivate;
     ControlObject* m_hotcueActivateCue;
     ControlObject* m_hotcueActivateLoop;
@@ -171,7 +171,7 @@ class CueControl : public EngineControl {
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
     void hotcueGotoAndStop(HotcueControl* pControl, double v);
-    void hotcueReloop(HotcueControl* pControl, double v);
+    void hotcueGotoAndLoop(HotcueControl* pControl, double v);
     void hotcueLoopToggle(HotcueControl* pControl, double v);
     void hotcueActivate(HotcueControl* pControl, double v);
     void hotcueActivateCue(HotcueControl* pControl, double v);
