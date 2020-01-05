@@ -223,22 +223,36 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 
     auto skinDefault = new ControlProxy("[Skin]","hotcue_default_color", this);
 
-    comboBoxHotcueDefaultColor->addItem(QString("Skin Default 0x%1").arg(static_cast<int>(skinDefault->get()), 6, 16, QChar('0')), -3);
+    QPixmap pixmap(80, 80);
+
+    comboBoxHotcueDefaultColor->addItem(tr("Skin Default"), -3);
+    pixmap.fill(QColor(skinDefault->get()));
+    comboBoxHotcueDefaultColor->setItemIcon(0, QIcon(pixmap));
     comboBoxHotcueDefaultColor->addItem(tr("By HotCue Number"), -2);
+    pixmap.fill(QColor(QRgb(0)));
+    comboBoxHotcueDefaultColor->setItemIcon(1, QIcon(pixmap));
     comboBoxHotcueDefaultColor->addItem(tr("Outside Palette"), -1);
+    pixmap.fill(QColor(QRgb(0xf36100)));
+    comboBoxHotcueDefaultColor->setItemIcon(2, QIcon(pixmap));
+
+    comboBoxHotcueDefaultColor->insertSeparator(3);
 
     for (int i = 0; i < colorPalette.m_colorList.size(); ++i) {
         QRgb color = colorPalette.m_colorList.at(i);
-        comboBoxHotcueDefaultColor->addItem(QString("0x%1").arg(static_cast<int>(color), 6, 16, QChar('0')), i);
+        comboBoxHotcueDefaultColor->addItem(tr("Palette") +
+                QStringLiteral(" ") + QString::number(i + 1), i);
+        pixmap.fill(QColor(color));
+        comboBoxHotcueDefaultColor->setItemIcon(i + 4, QIcon(pixmap));
     }
 
     // Automatically assign a color to new hot cues
     m_hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -3);
-    comboBoxHotcueDefaultColor->setCurrentIndex(m_hotcueDefaultColorIndex + 3);
+    int boxIndex = comboBoxHotcueDefaultColor->findData(m_hotcueDefaultColorIndex);
+    comboBoxHotcueDefaultColor->setCurrentIndex(boxIndex);
     connect(comboBoxHotcueDefaultColor,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefDeck::slotHotCueDefaultColorCombobox);
+            &DlgPrefDeck::slotHotcueDefaultColorCombobox);
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
@@ -414,8 +428,11 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
-    comboBoxHotcueDefaultColor->setCurrentIndex(m_pConfig->getValue(
-            ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1) + 3);
+    m_hotcueDefaultColorIndex = m_pConfig->getValue( ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -3);
+    int boxIndex = comboBoxHotcueDefaultColor->findData(m_hotcueDefaultColorIndex);
+    comboBoxHotcueDefaultColor->blockSignals(true);
+    comboBoxHotcueDefaultColor->setCurrentIndex(boxIndex);
+    comboBoxHotcueDefaultColor->blockSignals(false);
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
@@ -514,7 +531,10 @@ void DlgPrefDeck::slotResetToDefaults() {
     radioButtonResetUnlockedKey->setChecked(true);
 
     m_hotcueDefaultColorIndex = -3;
-    comboBoxHotcueDefaultColor->setCurrentIndex(m_hotcueDefaultColorIndex + 3);
+    int boxIndex = comboBoxHotcueDefaultColor->findData(m_hotcueDefaultColorIndex);
+    comboBoxHotcueDefaultColor->blockSignals(true);
+    comboBoxHotcueDefaultColor->setCurrentIndex(boxIndex);
+    comboBoxHotcueDefaultColor->blockSignals(false);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -654,7 +674,9 @@ void DlgPrefDeck::slotTimeFormatChanged(double v) {
 }
 
 void DlgPrefDeck::slotSkinHotcueDefaultColorChanged(double v) {
-    comboBoxHotcueDefaultColor->setItemText(0, QString("Skin Default 0x%1").arg(static_cast<int>(v), 6, 16, QChar('0')));
+    QPixmap pixmap(80, 80);
+    pixmap.fill(QColor(v));
+    comboBoxHotcueDefaultColor->setItemIcon(0, QIcon(pixmap));
 }
 
 void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
