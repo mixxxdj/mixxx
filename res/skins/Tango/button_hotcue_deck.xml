@@ -14,7 +14,7 @@ Variables:
     <MinimumSize>15,24</MinimumSize>
     <MaximumSize>23,24</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
-    <NumberStates>2</NumberStates>
+    <NumberStates>3</NumberStates>
     <State>
       <Number>0</Number>
       <Text><Variable name="HotCue"/></Text>
@@ -22,6 +22,11 @@ Variables:
     </State>
     <State>
       <Number>1</Number>
+      <Text><Variable name="HotCue"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>2</Number>
       <Text><Variable name="HotCue"/></Text>
       <Alignment>center</Alignment>
     </State>

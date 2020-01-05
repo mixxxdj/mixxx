@@ -14,7 +14,7 @@
     <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
     <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
     <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
-    <NumberStates>2</NumberStates>
+    <NumberStates>3</NumberStates>
     <LeftClickIsPushButton><Variable name="LeftClickIsPushButton"/></LeftClickIsPushButton>
     <RightClickIsPushButton><Variable name="RightClickIsPushButton"/></RightClickIsPushButton>
     <State>
@@ -25,6 +25,12 @@
     </State>
     <State>
       <Number>1</Number>
+      <Text><Variable name="hotcue"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"></Unpressed>
+    </State>
+    <State>
+      <Number>2</Number>
       <Text><Variable name="hotcue"/></Text>
       <Pressed scalemode="STRETCH_ASPECT"></Pressed>
       <Unpressed scalemode="STRETCH_ASPECT"></Unpressed>
