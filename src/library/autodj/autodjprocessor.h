@@ -14,7 +14,7 @@
 #include "util/class.h"
 
 class ControlPushButton;
-class TrackCollection;
+class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
 
@@ -90,7 +90,9 @@ class DeckAttributes : public QObject {
         return m_duration.get();
     }
 
-    double calcRateRatio() const;
+    double rateRatio() const {
+        return m_rateRatio.get();
+    }
 
     TrackPointer getLoadedTrack() const;
 
@@ -138,9 +140,7 @@ class DeckAttributes : public QObject {
     ControlProxy m_outroEndPos;
     ControlProxy m_sampleRate;
     ControlProxy m_duration;
-    ControlProxy m_rateDir;
-    ControlProxy m_rateRange;
-    ControlProxy m_rateSlider;
+    ControlProxy m_rateRatio;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -175,8 +175,8 @@ class AutoDJProcessor : public QObject {
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
-                    int iAutoDJPlaylistId,
-                    TrackCollection* pCollection);
+                    TrackCollectionManager* pTrackCollectionManager,
+                    int iAutoDJPlaylistId);
     virtual ~AutoDJProcessor();
 
     AutoDJState getState() const {

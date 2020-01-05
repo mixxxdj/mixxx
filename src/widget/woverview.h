@@ -20,7 +20,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "track/track.h"
-#include "widget/cuemenu.h"
+#include "widget/wcuemenupopup.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 
@@ -97,11 +97,11 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
-    void onRateSliderChange(double v);
+    void onRateRatioChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
-    void slotCueMenuAboutToHide();
+    void slotCueMenuPopupAboutToHide();
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -132,9 +132,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
-    ControlProxy* m_pRateDirControl;
-    ControlProxy* m_pRateRangeControl;
-    ControlProxy* m_pRateSliderControl;
+    ControlProxy* m_pRateRatioControl;
     ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
     ControlProxy* m_playpositionControl;
@@ -143,7 +141,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    std::unique_ptr<CueMenu> m_pCueMenu;
+    std::unique_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
@@ -151,7 +149,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
     int m_iPickupPos;
-    // position of the overlay shaddow
+    // position of the overlay shadow
     int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;

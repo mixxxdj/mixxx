@@ -42,6 +42,7 @@ class GuiTick;
 class VisualsManager;
 class LaunchImage;
 class Library;
+class TrackCollectionManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
@@ -175,6 +176,8 @@ class MixxxMainWindow : public QMainWindow {
 
     // The Mixxx database connection pool
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     // The library management object
     Library* m_pLibrary;

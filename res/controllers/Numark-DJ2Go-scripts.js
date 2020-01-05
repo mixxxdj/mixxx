@@ -90,7 +90,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 		var yesno = (engine.getValue(this.group, "track_samples") > 0)?true:false;
 		return yesno;
 	};
-	//Brake effect introduced in Mixx 1.11 	
+	//Brake effect introduced in Mixxx 1.11 	
 	this.brakeOn = function(factor) {
         	engine.brake(this.deckNum, true, factor);
 		this.braked= true;
@@ -616,7 +616,7 @@ NumarkDJ2Go.playLights = function(value, group, key) {
 		};
 };
 
-//Mixx's sync feature is not the same as VDJ, where syncing appears to
+//Mixxx's sync feature is not the same as VDJ, where syncing appears to
 //be continuously going on. Therefore less relevance with Mixxx to having a sync button
 //that illuminates. Have set it so that it flashes twice when pressed.
 NumarkDJ2Go.syncLights = function(value, group, key) {

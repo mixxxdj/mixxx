@@ -23,6 +23,12 @@ typedef std::weak_ptr<Track> TrackWeakPointer;
 
 Q_DECLARE_METATYPE(TrackPointer);
 
+enum class ExportTrackMetadataResult {
+    Succeeded,
+    Failed,
+    Skipped,
+};
+
 class Track : public QObject {
     Q_OBJECT
 
@@ -344,12 +350,7 @@ class Track : public QObject {
     };
     double getDuration(DurationRounding rounding) const;
 
-    enum class ExportMetadataResult {
-        Succeeded,
-        Failed,
-        Skipped,
-    };
-    ExportMetadataResult exportMetadata(
+    ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource);
 
     // Mutex protecting access to object

@@ -433,10 +433,10 @@ QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); ba
 QSplitter::handle:horizontal { width: 6px; }
 QSplitter::handle:vertical { height: 6px;}
 
-QPushButton { font-size: 10pt;
+WLibrary QPushButton { font-size: 10pt;
   font-family: "Open Sans";}
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-QLabel, QRadioButton {
+WLibrary QLabel, WLibrary QRadioButton {
   font-size: 10pt;
   background: transparent;
   color: #C1C1C1;}

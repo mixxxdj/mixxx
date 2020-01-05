@@ -6,24 +6,32 @@
 
 #include "control/controlobject.h"
 #include "library/playlisttablemodel.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "util/compatibility.h"
 
-SetlogFeature::SetlogFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
-                             TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
+SetlogFeature::SetlogFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BasePlaylistFeature(
+                pLibrary,
+                pConfig,
+                QStringLiteral("SETLOGHOME")),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
-          m_icon(":/images/library/ic_library_history.svg") {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog",
-                                                   true); //show all tracks
+          m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
+    initTableModel(new PlaylistTableModel(
+            this,
+            pLibrary->trackCollections(),
+            "mixxx.db.model.setlog",
+            /*show-all-tracks*/ true));
 
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
@@ -134,7 +142,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlTableModel playlistTableModel(this, m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
     playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
@@ -162,7 +170,7 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlTableModel playlistTableModel(this, m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
@@ -344,21 +352,24 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
+void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     if (!m_pPlaylistTableModel) {
         return;
     }
 
-    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        updateChildModel(playlistId);
+    for (const auto playlistId : qAsConst(playlistIds)) {
+        enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+        if (type == PlaylistDAO::PLHT_SET_LOG ||
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            updateChildModel(playlistId);
+        }
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
-                                             QString /* a_strName */) {
+void SetlogFeature::slotPlaylistTableRenamed(
+        int playlistId,
+        QString newName) {
+    Q_UNUSED(newName);
     if (!m_pPlaylistTableModel) {
         return;
     }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.13.0)
 project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -309,6 +309,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/errordialoghandler.cpp
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp
+  src/library/trackloader.cpp
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
@@ -401,6 +402,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/starrating.cpp
   src/library/tableitemdelegate.cpp
   src/library/trackcollection.cpp
+  src/library/trackcollectionmanager.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
@@ -617,19 +619,19 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/widgets/rgbwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
-  src/widget/colormenu.cpp
   src/widget/controlwidgetconnection.cpp
-  src/widget/cuemenu.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
+  src/widget/wcolorpicker.cpp
   src/widget/wcombobox.cpp
   src/widget/wcoverart.cpp
   src/widget/wcoverartlabel.cpp
   src/widget/wcoverartmenu.cpp
+  src/widget/wcuemenupopup.cpp
   src/widget/wdisplay.cpp
   src/widget/weffect.cpp
   src/widget/weffectbuttonparameter.cpp
@@ -958,6 +960,7 @@ add_executable(mixxx-test
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
+  src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
 )
@@ -1328,7 +1331,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Test
   Qt5::Widgets
   Qt5::Xml)
-target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
+target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)

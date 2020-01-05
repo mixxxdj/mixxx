@@ -18,6 +18,7 @@
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"
@@ -36,8 +37,9 @@
 #define IS_NOT_RECORDBOX_DEVICE "::isNotRecordboxDevice::"
 
 namespace {
-const QString kPDBPath = "PIONEER/rekordbox/export.pdb";
-const QString kPLaylistPathDelimiter = "-->";
+
+const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
+const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 const double kLongestPosition = 999999999.0;
 
 void clearTable(QSqlDatabase& database, QString tableName) {
@@ -80,7 +82,7 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
         // drive.filePath() doesn't make any access to the filesystem and consequently
         // shorten the delay
 
-        QFileInfo rbDBFileInfo(drive.filePath() + kPDBPath);
+        QFileInfo rbDBFileInfo(drive.filePath() + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
             TreeItem* foundDevice = new TreeItem(rekordboxFeature);
@@ -106,21 +108,21 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
     QFileInfoList devices;
 
     // Add folders under /media to devices.
-    devices += QDir("/media").entryInfoList(
+    devices += QDir(QStringLiteral("/media")).entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /media/$USER to devices.
-    QDir mediaUserDir("/media/" + qgetenv("USER"));
+    QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += mediaUserDir.entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir runMediaUserDir("/run/media/" + qgetenv("USER"));
+    QDir runMediaUserDir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += runMediaUserDir.entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() + "/" + kPDBPath);
+        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
             TreeItem* foundDevice = new TreeItem(rekordboxFeature);
@@ -136,10 +138,10 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
         }
     }
 #else // __APPLE__
-    QFileInfoList devices = QDir("/Volumes").entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QFileInfoList devices = QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() + "/" + kPDBPath);
+        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
             TreeItem* foundDevice = new TreeItem(rekordboxFeature);
@@ -315,7 +317,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     qDebug() << "parseDeviceDB device: " << device << " devicePath: " << devicePath;
 
-    QString dbPath = devicePath + "/" + kPDBPath;
+    QString dbPath = devicePath + QStringLiteral("/") + kPdbPath;
 
     if (!QFile(dbPath).exists()) {
         return devicePath;
@@ -889,9 +891,9 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 } // anonymous namespace
 
 RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
-        TrackCollection* trackCollection,
+        TrackCollectionManager* trackCollectionManager,
         QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, trackCollection, "mixxx.db.model.rekordbox.playlistmodel", "rekordbox_playlists", "rekordbox_playlist_tracks", trackSource) {
+        : BaseExternalPlaylistModel(parent, trackCollectionManager, "mixxx.db.model.rekordbox.playlistmodel", "rekordbox_playlists", "rekordbox_playlist_tracks", trackSource) {
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -1003,9 +1005,10 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-RekordboxFeature::RekordboxFeature(QObject* parent, TrackCollection* trackCollection)
-        : BaseExternalLibraryFeature(parent, trackCollection),
-          m_pTrackCollection(trackCollection),
+RekordboxFeature::RekordboxFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_icon(":/images/library/ic_library_rekordbox.svg") {
     QString tableName = "rekordbox_library";
     QString idColumn = "id";
@@ -1043,7 +1046,7 @@ RekordboxFeature::RekordboxFeature(QObject* parent, TrackCollection* trackCollec
             << "key";
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
 
     m_title = tr("Rekordbox");
 
@@ -1086,7 +1089,7 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(QString playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }

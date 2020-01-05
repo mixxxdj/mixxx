@@ -44,6 +44,7 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "library/trackcollectionmanager.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
@@ -237,6 +238,18 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pChannelHandleFactory = new ChannelHandleFactory();
 
+    m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
+    if (!m_pDbConnectionPool) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+    // Create a connection for the main thread
+    m_pDbConnectionPool->createThreadLocalConnection();
+    if (!initializeDatabase()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+
     // Create the Effects subsystem.
     m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
 
@@ -334,17 +347,12 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     CoverArtCache::createInstance();
 
-    m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
-    if (!m_pDbConnectionPool) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
-    // Create a connection for the main thread
-    m_pDbConnectionPool->createThreadLocalConnection();
-    if (!initializeDatabase()) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
+    launchProgress(30);
+
+    m_pTrackCollectionManager = new TrackCollectionManager(
+            this,
+            pConfig,
+            m_pDbConnectionPool);
 
     launchProgress(35);
 
@@ -352,12 +360,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             this,
             pConfig,
             m_pDbConnectionPool,
+            m_pTrackCollectionManager,
             m_pPlayerManager,
             m_pRecordingManager);
-    // Create the singular GlobalTrackCache instance immediately after
-    // the Library has been created and BEFORE binding the
-    // PlayerManager to it!
-    GlobalTrackCache::createInstance(m_pLibrary);
 
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has
@@ -468,6 +473,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     QWidget* oldWidget = m_pWidgetParent;
 
+    // Load default styles that can be overridden by skins
+    QFile file(":/skins/default.qss");
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray fileBytes = file.readAll();
+        QString style = QString::fromLocal8Bit(fileBytes.constData(),
+                                               fileBytes.length());
+        setStyleSheet(style);
+    } else {
+        qWarning() << "Failed to load default skin styles!";
+    }
+
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
@@ -531,7 +547,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pLibrary->scan();
+        m_pTrackCollectionManager->startLibraryScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
@@ -608,6 +624,10 @@ void MixxxMainWindow::finalize() {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
+    // Stop all pending library operations
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
+    m_pTrackCollectionManager->stopLibraryScan();
+    m_pLibrary->stopPendingTasks();
 
    // Save the current window state (position, maximized, etc)
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
@@ -650,9 +670,6 @@ void MixxxMainWindow::finalize() {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
-    m_pLibrary->stopFeatures();
-
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
@@ -677,21 +694,16 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
 
-    // Evict all remaining tracks from the cache to trigger
-    // updating of modified tracks. We assume that no other
-    // components are accessing those files at this point.
-    qDebug() << t.elapsed(false) << "deactivating GlobalTrackCache";
-    GlobalTrackCacheLocker().deactivateCache();
+    // Destroy PlayerInfo explicitly to release the track
+    // pointers of tracks that were still loaded in decks
+    // or samplers when PlayerManager was destroyed!
+    PlayerInfo::destroy();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
-    m_pDbConnectionPool->destroyThreadLocalConnection();
-    m_pDbConnectionPool.reset(); // should drop the last reference
 
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
@@ -716,7 +728,6 @@ void MixxxMainWindow::finalize() {
 
     delete m_pTouchShift;
 
-    PlayerInfo::destroy();
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
@@ -758,6 +769,16 @@ void MixxxMainWindow::finalize() {
         leakedControls.clear();
     }
 
+    // Delete the track collections after all internal track pointers
+    // in other components have been released by deleting those components
+    // beforehand!
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "detaching all track collections";
+    delete m_pTrackCollectionManager;
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
+    m_pDbConnectionPool->destroyThreadLocalConnection();
+    m_pDbConnectionPool.reset(); // should drop the last reference
+
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
     // a precaution. The earlier one can be removed when stuff is more stable
@@ -776,11 +797,6 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
-
-    // NOTE(uklotzde, 2018-12-28): Finally destroy the singleton instance
-    // to prevent a deadlock when exiting the main() function! The actual
-    // cause of the deadlock is still unclear.
-    GlobalTrackCache::destroyInstance();
 }
 
 bool MixxxMainWindow::initializeDatabase() {
@@ -1148,6 +1164,21 @@ void MixxxMainWindow::connectMenuBar() {
         m_pMenuBar->onNumberOfDecksChanged(m_pPlayerManager->numberOfDecks());
     }
 
+    if (m_pTrackCollectionManager) {
+        connect(m_pMenuBar,
+                &WMainMenuBar::rescanLibrary,
+                m_pTrackCollectionManager,
+                &TrackCollectionManager::startLibraryScan);
+        connect(m_pTrackCollectionManager,
+                &TrackCollectionManager::libraryScanStarted,
+                m_pMenuBar,
+                &WMainMenuBar::onLibraryScanStarted);
+        connect(m_pTrackCollectionManager,
+                &TrackCollectionManager::libraryScanFinished,
+                m_pMenuBar,
+                &WMainMenuBar::onLibraryScanFinished);
+    }
+
     if (m_pLibrary) {
         connect(m_pMenuBar,
                 &WMainMenuBar::createCrate,
@@ -1157,20 +1188,7 @@ void MixxxMainWindow::connectMenuBar() {
                 &WMainMenuBar::createPlaylist,
                 m_pLibrary,
                 &Library::slotCreatePlaylist);
-        connect(m_pLibrary,
-                &Library::scanStarted,
-                m_pMenuBar,
-                &WMainMenuBar::onLibraryScanStarted);
-        connect(m_pLibrary,
-                &Library::scanFinished,
-                m_pMenuBar,
-                &WMainMenuBar::onLibraryScanFinished);
-        connect(m_pMenuBar,
-                &WMainMenuBar::rescanLibrary,
-                m_pLibrary,
-                &Library::scan);
     }
-
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
