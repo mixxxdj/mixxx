@@ -530,16 +530,17 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
-void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
-    qDebug() << "setSavedLoop" << toggle;
+bool LoopingControl::setSavedLoop(CuePointer pCue) {
+    qDebug() << "setSavedLoop";
 
+    bool loopAlreadyActive = false;
     if(!pCue) {
         if(m_pCue) {
             m_pCue->deactivate();
             m_pCue.reset();
         }
         clearActiveBeatLoop();
-        return;
+        return loopAlreadyActive;
     }
     DEBUG_ASSERT(pCue->getType() == Cue::Type::Loop);
 
@@ -551,7 +552,7 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
             m_pCue.reset();
         }
         clearActiveBeatLoop();
-        return;
+        return loopAlreadyActive;
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
@@ -577,10 +578,13 @@ void LoopingControl::setSavedLoop(CuePointer pCue, bool toggle) {
             // Currently active loop became a saved loop, mark it as active
             m_pCue->activate();
         }
+    } else if (!m_bLoopingEnabled) {
+        setLoopingEnabled(true);
     } else {
-        bool activate_cue = toggle ? !m_bLoopingEnabled : true;
-        setLoopingEnabled(activate_cue);
+        loopAlreadyActive = true;
     }
+
+    return loopAlreadyActive;
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {

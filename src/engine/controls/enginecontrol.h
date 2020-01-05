@@ -59,7 +59,7 @@ class EngineControl : public QObject {
             const double dTotalSamples, const double dTrackSampleRate);
     QString getGroup() const;
 
-    void setSavedLoop(CuePointer pCue, bool toggle);
+    bool setSavedLoop(CuePointer pCue);
 
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {

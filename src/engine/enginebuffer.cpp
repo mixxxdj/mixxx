@@ -356,8 +356,8 @@ double EngineBuffer::getLocalBpm() {
     return m_pBpmControl->getLocalBpm();
 }
 
-void EngineBuffer::setSavedLoop(CuePointer pCue, bool toggle) {
-    m_pLoopingControl->setSavedLoop(pCue, toggle);
+bool EngineBuffer::setSavedLoop(CuePointer pCue) {
+    return m_pLoopingControl->setSavedLoop(pCue);
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {

@@ -627,7 +627,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     };
 
     if (cueType == Cue::Type::Loop) {
-        setSavedLoop(pCue, false);
+        setSavedLoop(pCue);
     }
 
     // If quantize is enabled and we are not playing, jump to the cue point
@@ -722,7 +722,7 @@ void CueControl::hotcueSetLoop(HotcueControl* pControl, double v) {
         pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
     };
 
-    setSavedLoop(pCue, false);
+    setSavedLoop(pCue);
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
@@ -829,7 +829,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
             return;
         }
 
-        setSavedLoop(pCue, false);
+        setSavedLoop(pCue);
         hotcueGoto(pControl, v);
     } else if (pCue->getType() == Cue::Type::HotCue) {
         hotcueGoto(pControl, v);
@@ -868,7 +868,11 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    setSavedLoop(pCue, true);
+    bool loopAlreadyActive = setSavedLoop(pCue);
+    if (loopAlreadyActive) {
+        // Loop is already set and active, disable it
+        m_pLoopToggle->set(1);
+    }
 }
 
 void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
