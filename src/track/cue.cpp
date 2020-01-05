@@ -95,21 +95,21 @@ void Cue::setType(Cue::Type type) {
 }
 
 Cue::Status Cue::getStatus() const {
-    Cue::Status status = Cue::Status::Disabled;
+    Cue::Status status = Cue::Status::Invalid;
     switch(getType()) {
         case Cue::Type::Loop:
             if (getPosition() != Cue::kNoPosition && getLength() > 0) {
-                status = Cue::Status::Enabled;
+                status = Cue::Status::Valid;
             }
             break;
         default:
             if (getPosition() != Cue::kNoPosition) {
-                status = Cue::Status::Enabled;
+                status = Cue::Status::Valid;
             }
             break;
     }
 
-    if(status == Cue::Status::Enabled && isActive()) {
+    if(status == Cue::Status::Valid && isActive()) {
         status = Cue::Status::Active;
     }
 

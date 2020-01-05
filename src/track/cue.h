@@ -18,9 +18,9 @@ class Cue : public QObject {
 
   public:
     enum class Status {
-        Disabled  = 0,
-        Enabled   = 1,
-        Active    = 2,
+        Invalid = 0,
+        Valid   = 1,
+        Active  = 2,
     };
 
     enum class Type {

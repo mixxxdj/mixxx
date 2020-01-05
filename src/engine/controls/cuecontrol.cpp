@@ -2267,7 +2267,7 @@ void HotcueControl::resetCue() {
     setPosition(Cue::kNoPosition);
     setLength(0.0);
     setType(Cue::Type::Invalid);
-    setStatus(Cue::Status::Disabled);
+    setStatus(Cue::Status::Invalid);
 }
 
 void HotcueControl::setPosition(double position) {
