@@ -58,7 +58,7 @@ void MusicBrainzClient::start(int id, QStringList recordingIds) {
 void MusicBrainzClient::nextRequest(int id, Request request) {
     DEBUG_ASSERT(!m_requests.contains(id));
     if (request.recordingIds.isEmpty()) {
-        emit finished(id, std::move(request.results));
+        emit finished(id, uniqueResults(request.results));
         return;
     }
     const auto recordingId = request.recordingIds.takeFirst();
