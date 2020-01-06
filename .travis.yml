@@ -124,7 +124,7 @@ jobs:
         CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
         DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
-        CTEST_PARALLEL_LEVEL=4
+        CTEST_PARALLEL_LEVEL=2
       before_install:
         - brew install ccache
         - export PATH="/usr/local/opt/ccache/bin:$PATH"
