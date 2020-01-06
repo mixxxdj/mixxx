@@ -4,8 +4,6 @@
     <ObjectName>HotcueButton</ObjectName>
     <Pos><Variable name="pos"/></Pos>
     <NumberStates>2</NumberStates>
-    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_down.png</Pressed>
