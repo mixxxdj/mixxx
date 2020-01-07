@@ -144,8 +144,8 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                 [this, index] { showIndex(index); });
         connect(pListener, &WidgetStackControlListener::hideWidget,
                 [this, index] { hideIndex(index); });
-        connect(this, SIGNAL(currentChanged(int)),
-                pListener, SLOT(onCurrentWidgetChanged(int)));
+        connect(this, &WWidgetStack::currentChanged,
+                pListener, &WidgetStackControlListener::onCurrentWidgetChanged);
     }
 
     if (m_currentPageControl.get() == index) {
