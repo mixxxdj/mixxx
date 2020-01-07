@@ -59,9 +59,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false) {
 
-    connect(&m_samplerMapper, SIGNAL(mapped(QString)),
-            this, SLOT(loadSelectionToGroup(QString)));
-
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -870,8 +867,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
                 m_pSamplerMenu->addAction(pAction);
-                m_samplerMapper.setMapping(pAction, samplerGroup);
-                connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+                connect(pAction, &QAction::triggered,
+                        [this, samplerGroup] {loadSelectionToGroup(samplerGroup); } );
+
             }
             m_pLoadToMenu->addMenu(m_pSamplerMenu);
         }
