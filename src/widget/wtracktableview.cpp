@@ -66,8 +66,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(loadSelectionToGroup(QString)));
     connect(&m_samplerMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
-    connect(&m_BpmMapper, SIGNAL(mapped(int)),
-            this, SLOT(slotScaleBpm(int)));
 
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
@@ -571,25 +569,18 @@ void WTrackTableView::createActions() {
     m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
     m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
-    m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
-    m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
-    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
-    m_BpmMapper.setMapping(m_pBpmFourThirdsAction, Beats::FOURTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeHalvesAction, Beats::THREEHALVES);
-
-    connect(m_pBpmDoubleAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmHalveAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmTwoThirdsAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmThreeFourthsAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmFourThirdsAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmThreeHalvesAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
+    connect(m_pBpmDoubleAction, &QAction::triggered,
+            [this] { slotScaleBpm(Beats::DOUBLE); });
+    connect(m_pBpmHalveAction, &QAction::triggered,
+            [this] { slotScaleBpm(Beats::HALVE); });
+    connect(m_pBpmTwoThirdsAction, &QAction::triggered,
+            [this] { slotScaleBpm(Beats::TWOTHIRDS); });
+    connect(m_pBpmThreeFourthsAction, &QAction::triggered,
+            [this] { slotScaleBpm(Beats::THREEFOURTHS); });
+    connect(m_pBpmFourThirdsAction, &QAction::triggered,
+            [this] { slotScaleBpm(Beats::FOURTHIRDS); });
+    connect(m_pBpmThreeHalvesAction, &QAction::triggered,
+            [this] { slotScaleBpm(Beats::THREEHALVES); });
 }
 
 // slot

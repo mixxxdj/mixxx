@@ -190,7 +190,6 @@ class WTrackTableView : public WLibraryTableView {
     // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
