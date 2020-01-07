@@ -439,13 +439,13 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++14 support
+        # Mixxx requires C++17 support
         if build.platform_is_windows:
             # MSVC
-            build.env.Append(CXXFLAGS='/std:c++14')
+            build.env.Append(CXXFLAGS='/std:c++17')
         else:
             # GCC/Clang
-            build.env.Append(CXXFLAGS='-std=c++14')
+            build.env.Append(CXXFLAGS='-std=c++17')
 
 
 class TestHeaders(Dependence):
