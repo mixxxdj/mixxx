@@ -59,9 +59,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false) {
 
-    connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
-            this, SLOT(loadSelectionToGroup(QString)));
-
     connect(&m_deckMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
     connect(&m_samplerMapper, SIGNAL(mapped(QString)),

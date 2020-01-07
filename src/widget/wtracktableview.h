@@ -131,8 +131,6 @@ class WTrackTableView : public WLibraryTableView {
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-    QSignalMapper m_loadTrackMapper;
-
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
 
