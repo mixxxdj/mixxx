@@ -94,10 +94,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
-    connect(&m_crateMapper,
-            QOverload<int>::of(&QSignalMapper::mapped),
-            this,
-            &AutoDJFeature::slotAddCrateToAutoDj);
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj,
             &QAction::triggered,
@@ -305,10 +301,8 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
-            m_crateMapper.setMapping(pAction.get(), crate.getId().value());
-            connect(pAction.get(),
-                    &QAction::triggered,
-                    [=](bool) { m_crateMapper.map(); });
+            connect(pAction.get(), &QAction::triggered,
+                    [this, crate] { slotAddCrateToAutoDj(crate.getId().value()); });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }
