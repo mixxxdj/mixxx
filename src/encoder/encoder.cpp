@@ -86,7 +86,7 @@ EncoderPointer EncoderFactory::createRecordingEncoder(
 }
 
 EncoderPointer EncoderFactory::createEncoder(
-        const EncoderSettingsPointer pSettings,
+        EncoderSettingsPointer pSettings,
         EncoderCallback* pCallback) const {
     EncoderPointer pEncoder;
     if (pSettings && pSettings->getFormat() == ENCODING_WAVE) {

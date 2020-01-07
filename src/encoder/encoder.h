@@ -59,7 +59,7 @@ class EncoderFactory {
             UserSettingsPointer pConfig, 
             EncoderCallback* pCallback) const;
     EncoderPointer createEncoder(
-            const EncoderSettingsPointer pSettings, 
+            EncoderSettingsPointer pSettings,
             EncoderCallback* pCallback) const;
     EncoderRecordingSettingsPointer getEncoderRecordingSettings(
             Encoder::Format format,
