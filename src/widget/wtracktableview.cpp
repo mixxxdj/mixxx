@@ -118,9 +118,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
 
-    connect(&m_crateMapper, SIGNAL(mapped(QWidget *)),
-            this, SLOT(updateSelectionCrates(QWidget *)));
-
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
@@ -1746,13 +1743,11 @@ void WTrackTableView::slotPopulateCrateMenu() {
             pCheckBox->setCheckState(Qt::PartiallyChecked);
         }
 
-        m_crateMapper.setMapping(pAction.get(), pCheckBox.get());
-        m_crateMapper.setMapping(pCheckBox.get(), pCheckBox.get());
         m_pCrateMenu->addAction(pAction.get());
-        connect(pAction.get(), SIGNAL(triggered()),
-                &m_crateMapper, SLOT(map()));
-        connect(pCheckBox.get(), SIGNAL(stateChanged(int)),
-                &m_crateMapper, SLOT(map()));
+        connect(pAction.get(), &QAction::triggered,
+                [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+        connect(pCheckBox.get(), &QCheckBox::stateChanged,
+                [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
 
     }
     m_pCrateMenu->addSeparator();
