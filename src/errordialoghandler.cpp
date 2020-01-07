@@ -75,11 +75,7 @@ void ErrorDialogHandler::setEnabled(bool enabled) {
     s_bEnabled = enabled;
 }
 
-ErrorDialogHandler::ErrorDialogHandler()
-        : m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(QString)),
-            this, SLOT(boxClosed(QString)));
-
+ErrorDialogHandler::ErrorDialogHandler() {
     m_errorCondition = false;
     connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
             this, SLOT(errorDialog(ErrorDialogProperties*)));
@@ -183,9 +179,8 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
-    connect(msgBox, SIGNAL(finished(int)),
-            &m_signalMapper, SLOT(map()));
-    m_signalMapper.setMapping(msgBox, props->m_key);
+    connect(msgBox, &QMessageBox::finished,
+            [this, &props, &msgBox] { boxClosed(props->m_key, msgBox); });
 
     locker.unlock();
 
@@ -212,9 +207,8 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 }
 
-void ErrorDialogHandler::boxClosed(QString key) {
+void ErrorDialogHandler::boxClosed(QString key, QMessageBox* msgBox) {
     QMutexLocker locker(&m_mutex);
-    QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
