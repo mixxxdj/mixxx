@@ -57,8 +57,6 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
     initialize();
-    connect(&m_loadToDeckMapper, SIGNAL(mapped(int)),
-            this, SIGNAL(loadTrackToDeck(int)));
     connect(&m_visitUrlMapper, SIGNAL(mapped(QString)),
             this, SLOT(slotVisitUrl(QString)));
     connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
@@ -90,9 +88,9 @@ void WMainMenuBar::initialize() {
         // Visibility of load to deck actions is set in
         // WMainMenuBar::onNumberOfDecksChanged.
         pFileLoadSongToPlayer->setVisible(false);
-        connect(pFileLoadSongToPlayer, SIGNAL(triggered()),
-                &m_loadToDeckMapper, SLOT(map()));
-        m_loadToDeckMapper.setMapping(pFileLoadSongToPlayer, deck + 1);
+        connect(pFileLoadSongToPlayer, &QAction::triggered,
+                [this, deck] { loadTrackToDeck(deck + 1); });
+
         pFileMenu->addAction(pFileLoadSongToPlayer);
         m_loadToDeckActions.push_back(pFileLoadSongToPlayer);
     }
