@@ -118,9 +118,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
 
-    connect(&m_playlistMapper, SIGNAL(mapped(int)),
-            this, SLOT(addSelectionToPlaylist(int)));
-
     connect(&m_crateMapper, SIGNAL(mapped(QWidget *)),
             this, SLOT(updateSelectionCrates(QWidget *)));
 
@@ -1638,15 +1635,16 @@ void WTrackTableView::slotPopulatePlaylistMenu() {
             bool locked = playlistDao.isPlaylistLocked(it.value());
             pAction->setEnabled(!locked);
             m_pPlaylistMenu->addAction(pAction);
-            m_playlistMapper.setMapping(pAction, it.value());
-            connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+            connect(pAction, &QAction::triggered,
+                    [this, it] { addSelectionToPlaylist(it.value()); });
+
         }
     }
     m_pPlaylistMenu->addSeparator();
     QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
     m_pPlaylistMenu->addAction(newPlaylistAction);
-    m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
-    connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+    connect(newPlaylistAction, &QAction::triggered,
+            [this] { addSelectionToPlaylist(-1); });
     m_bPlaylistMenuLoaded = true;
 }
 
