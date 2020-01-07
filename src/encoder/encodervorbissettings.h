@@ -18,11 +18,14 @@ class EncoderVorbisSettings : public EncoderRecordingSettings {
     virtual ~EncoderVorbisSettings();
 
     // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override;
+    bool usesQualitySlider() const override {
+        return true;
+    }
+
     // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
+    bool usesOptionGroups() const override{
+        return true;
+    }
 
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
@@ -42,18 +45,5 @@ class EncoderVorbisSettings : public EncoderRecordingSettings {
     UserSettingsPointer m_pConfig;
 };
 
-
-inline bool EncoderVorbisSettings::usesQualitySlider() const
-{
-    return true;
-}
-inline bool EncoderVorbisSettings::usesCompressionSlider() const
-{
-    return false;
-}
-inline bool EncoderVorbisSettings::usesOptionGroups() const
-{
-    return false;
-}
 
 #endif // ENCODERVORBISSETTINGS_H

@@ -22,10 +22,7 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
     bool usesQualitySlider() const override {
         return true;
     }
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override {
-        return false;
-    }
+
     // Indicates that it uses the radio button section of the preferences.
     bool usesOptionGroups() const override {
         return true;

@@ -18,12 +18,13 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     virtual ~EncoderMp3Settings();
 
     // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override;
+    bool usesQualitySlider() const override {
+        return true;
+    }
     // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
-
+    bool usesOptionGroups() const override {
+        return true;
+    }
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
     QList<int> getVBRQualityValues() const;
@@ -54,19 +55,5 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
 };
-
-
-inline bool EncoderMp3Settings::usesQualitySlider() const
-{
-    return true;
-}
-inline bool EncoderMp3Settings::usesCompressionSlider() const
-{
-    return false;
-}
-inline bool EncoderMp3Settings::usesOptionGroups() const
-{
-    return true;
-}
 
 #endif // ENCODERMP3SETTINGS_H

@@ -17,8 +17,6 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
     EncoderFlacSettings(UserSettingsPointer pConfig);
     virtual ~EncoderFlacSettings();
 
-    // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
     // Indicates that it uses the compression slider section of the preferences
     bool usesCompressionSlider() const override;
     // Indicates that it uses the radio button section of the preferences.
@@ -52,11 +50,6 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
     UserSettingsPointer m_pConfig;
 };
 
-
-inline bool EncoderFlacSettings::usesQualitySlider() const
-{
-    return false;
-}
 inline bool EncoderFlacSettings::usesOptionGroups() const
 {
     return true;

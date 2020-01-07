@@ -17,16 +17,6 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
     EncoderWaveSettings(UserSettingsPointer pConfig, QString format);
     virtual ~EncoderWaveSettings();
 
-    // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override {
-        return false;
-    }
-
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override {
-        return false;
-    }
-
     // Indicates that it uses the radio button section of the preferences.
     bool usesOptionGroups() const override {
         return true;

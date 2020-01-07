@@ -1,25 +1,36 @@
 #pragma once
 
 #include "encoder/encodersettings.h"
+#include "util/assert.h"
 
 class EncoderRecordingSettings : public EncoderSettings {
   public:
     ~EncoderRecordingSettings() override = default;
 
     // Indicates that it uses the quality slider section of the preferences
-    virtual bool usesQualitySlider() const = 0;
+    virtual bool usesQualitySlider() const {
+        return false;
+    }
+
     // Indicates that it uses the compression slider section of the preferences
-    virtual bool usesCompressionSlider() const = 0;
+    virtual bool usesCompressionSlider() const {
+        return false;
+    }
+
     // Indicates that it uses the radio button section of the preferences.
-    virtual bool usesOptionGroups() const = 0;
+    virtual bool usesOptionGroups() const {
+        return false;
+    }
 
     virtual void setQualityByIndex(int qualityIndex) {
         Q_UNUSED(qualityIndex);
+        DEBUG_ASSERT(!"unimplemented");
     }
 
     // Sets the compression level
     virtual void setCompression(int compression) {
         Q_UNUSED(compression);
+        DEBUG_ASSERT(!"unimplemented");
     }
 
     // Selects the option by its index. If it is a single-element option, 
@@ -27,6 +38,7 @@ class EncoderRecordingSettings : public EncoderSettings {
     virtual void setGroupOption(QString groupCode, int optionIndex) {
         Q_UNUSED(groupCode);
         Q_UNUSED(optionIndex);
+        DEBUG_ASSERT(!"unimplemented");
     }
 };
 
