@@ -59,8 +59,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false) {
 
-    connect(&m_deckMapper, SIGNAL(mapped(QString)),
-            this, SLOT(loadSelectionToGroup(QString)));
     connect(&m_samplerMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
 
@@ -494,9 +492,8 @@ void WTrackTableView::createActions() {
     m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
     QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-    m_deckMapper.setMapping(m_pAddToPreviewDeck, previewDeckGroup);
-    connect(m_pAddToPreviewDeck, SIGNAL(triggered()),
-            &m_deckMapper, SLOT(map()));
+    connect(m_pAddToPreviewDeck, &QAction::triggered,
+            [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
 
 
     // Clear metadata actions
@@ -853,8 +850,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
-                m_deckMapper.setMapping(pAction, deckGroup);
-                connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+                connect(pAction, &QAction::triggered,
+                        [this, deckGroup] { loadSelectionToGroup(deckGroup); });
             }
         }
         m_pLoadToMenu->addMenu(m_pDeckMenu);

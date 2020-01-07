@@ -156,7 +156,7 @@ class WTrackTableView : public WLibraryTableView {
 
 
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_deckMapper, m_samplerMapper;
+    QSignalMapper m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pImportMetadataFromFileAct;
