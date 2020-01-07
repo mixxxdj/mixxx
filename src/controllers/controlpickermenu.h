@@ -3,7 +3,6 @@
 
 #include <QMenu>
 #include <QObject>
-#include <QSignalMapper>
 
 #include "preferences/usersettings.h"
 
@@ -75,7 +74,6 @@ class ControlPickerMenu : public QMenu {
     QString m_parameterStr;
     QString m_libraryStr;
 
-    QSignalMapper m_actionMapper;
     QList<ConfigKey> m_controlsAvailable;
     QHash<ConfigKey, QString> m_descriptionsByKey;
     QHash<ConfigKey, QString> m_titlesByKey;
