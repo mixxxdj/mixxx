@@ -86,7 +86,6 @@ class WMainMenuBar : public QMenuBar {
 
     UserSettingsPointer m_pConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
-    QSignalMapper m_visitUrlMapper;
     QList<QAction*> m_loadToDeckActions;
     QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;

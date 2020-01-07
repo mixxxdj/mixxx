@@ -57,8 +57,6 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
     initialize();
-    connect(&m_visitUrlMapper, SIGNAL(mapped(QString)),
-            this, SLOT(slotVisitUrl(QString)));
     connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
             this, SIGNAL(toggleVinylControl(int)));
 }
@@ -506,8 +504,8 @@ void WMainMenuBar::initialize() {
     auto pHelpSupport = new QAction(supportTitle, this);
     pHelpSupport->setStatusTip(supportText);
     pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
-    m_visitUrlMapper.setMapping(pHelpSupport, MIXXX_SUPPORT_URL);
-    connect(pHelpSupport, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpSupport, &QAction::triggered,
+            [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
     pHelpMenu->addAction(pHelpSupport);
 
     QDir resourceDir(m_pConfig->getResourcePath());
@@ -537,8 +535,8 @@ void WMainMenuBar::initialize() {
     auto pHelpManual = new QAction(manualTitle, this);
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
-    m_visitUrlMapper.setMapping(pHelpManual, qManualUrl.toString());
-    connect(pHelpManual, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpManual, &QAction::triggered,
+            [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
     pHelpMenu->addAction(pHelpManual);
 
     QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
@@ -546,8 +544,8 @@ void WMainMenuBar::initialize() {
     auto pHelpShortcuts = new QAction(shortcutsTitle, this);
     pHelpShortcuts->setStatusTip(shortcutsText);
     pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    m_visitUrlMapper.setMapping(pHelpShortcuts, MIXXX_SHORTCUTS_URL);
-    connect(pHelpShortcuts, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpShortcuts, &QAction::triggered,
+            [this] { slotVisitUrl(MIXXX_SHORTCUTS_URL); });
     pHelpMenu->addAction(pHelpShortcuts);
 
     QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
@@ -555,8 +553,8 @@ void WMainMenuBar::initialize() {
     auto pHelpFeedback = new QAction(feedbackTitle, this);
     pHelpFeedback->setStatusTip(feedbackText);
     pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
-    m_visitUrlMapper.setMapping(pHelpFeedback, MIXXX_FEEDBACK_URL);
-    connect(pHelpFeedback, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpFeedback, &QAction::triggered,
+            [this] { slotVisitUrl(MIXXX_FEEDBACK_URL); });
     pHelpMenu->addAction(pHelpFeedback);
 
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
@@ -564,8 +562,8 @@ void WMainMenuBar::initialize() {
     auto pHelpTranslation = new QAction(translateTitle, this);
     pHelpTranslation->setStatusTip(translateText);
     pHelpTranslation->setWhatsThis(buildWhatsThis(translateTitle, translateText));
-    m_visitUrlMapper.setMapping(pHelpTranslation, MIXXX_TRANSLATION_URL);
-    connect(pHelpTranslation, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpTranslation, &QAction::triggered,
+            [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
     pHelpMenu->addAction(pHelpTranslation);
 
     pHelpMenu->addSeparator();
