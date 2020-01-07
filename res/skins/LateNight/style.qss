@@ -1578,6 +1578,22 @@ WBeatSpinBox,
   }
 
 
+#SkinSettingsButtonMulti  {
+  font-size: 12px/12px;
+  }
+  #SkinSettingsButtonMulti {
+    text-align: center;
+  }
+
+  #SkinSettingsButtonMulti[displayValue="0"] {
+    color: #d2d2d2;
+  }
+
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    color: #eece33;
+  }
+
+
 #SubmenuCover {
   background-color: rgba(15, 15, 15, 180);
 }

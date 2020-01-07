@@ -37,8 +37,10 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],waveform_visible">4</attribute>
       <attribute config_key="[Master],num_samplers">8</attribute>
       <!-- Decks -->
+      <attribute config_key="[Skin],small_deck">0</attribute>
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
@@ -347,6 +349,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>Decks_mini_singleton</ObjectName>
+      <Children>
+        <Template src="skin:decks_mini.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <Layout>vertical</Layout>
@@ -370,14 +379,25 @@
                   <Collapsible>1,0</Collapsible>
                   <Children>
 
-                    <SingletonContainer>
-                      <ObjectName>WaveformsSingleton</ObjectName>
-                    </SingletonContainer>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,min</SizePolicy>
+                      <Children>
+                        <SingletonContainer>
+                          <ObjectName>WaveformsSingleton</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[Master],waveform_visible</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
-                      <SizePolicy>me,me</SizePolicy>
+                      <SizePolicy>me,min</SizePolicy>
                       <Children>
+
                         <WidgetGroup>
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
@@ -386,10 +406,30 @@
                             <Template src="skin:mixer.xml"/>
                             <Template src="skin:decks_right.xml"/>
                           </Children>
+                          <Connection>
+                            <ConfigKey>[Skin],small_decks</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
                         </WidgetGroup>
+                
+                        <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>Decks_mini_singleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                          <Connection>
+                            <ConfigKey>[Skin],small_decks</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
                         <Template src="skin:fx_rack.xml"/>
                         <Template src="skin:samplers_rack.xml"/>
                         <Template src="skin:mic_aux_rack.xml"/>
+
                         <SingletonContainer>
                           <ObjectName>LibrarySingleton</ObjectName>
                         </SingletonContainer>
@@ -405,10 +445,18 @@
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
 
-                    <Template src="skin:decks_mini.xml"/>
-                    <Template src="skin:fx_rack.xml"/>
-                    <Template src="skin:samplers_rack.xml"/>
-                    <Template src="skin:mic_aux_rack.xml"/>
+                    <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>Decks_mini_singleton</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    </WidgetGroup>
 
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>

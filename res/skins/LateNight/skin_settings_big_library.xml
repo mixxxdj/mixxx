@@ -1,0 +1,202 @@
+<!--
+Description:
+  The skin settings menu.
+
+  Bug: qss 'qproperty-layoutAlignment' is not respected for stacked layout.
+  No way to make SkinSettings float on top of main window at the right side
+  while keeping the screen area underneath clickable.
+
+  https://bugs.launchpad.net/mixxx/+bug/1689196
+  On OSX this widget is drawn behind main skin instead on top of it.
+  I removed the stacked layout and placed skin settings on the right hand side of main skin.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>SkinSettingsContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+      
+      <WidgetGroup>
+        <ObjectName>SkinSettings</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>190f,1me</Size>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsHeader</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <!--  Decks -->
+              <Template src="skin:skin_settings_labelbutton_2state.xml">
+                <SetVariable name="text">small Decks</SetVariable>
+                <SetVariable name="Setting">[Skin],small_decks</SetVariable>
+              </Template>
+
+              <!-- push Close button to far right -->
+              <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
+
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
+                <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
+                <SetVariable name="Size">20f,21f</SetVariable>
+                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- /Deck -->
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <WidgetGroup><!-- 2/4 Decks toggle -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>      
+   
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                    <SetVariable name="text">4 Decks</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- 2/4 Decks toggle -->
+
+              <WidgetGroup><!-- Intro & Outro cues toggle -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>      
+                   
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                    <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- Intro & Outro cues toggle -->
+
+              <WidgetGroup><!-- Spinny -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>       
+                  
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_spinny</SetVariable>
+                    <SetVariable name="text">Spinny</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- Spinny -->
+
+              <WidgetGroup><!-- Cover Art -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>       
+                  
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_coverart</SetVariable>
+                    <SetVariable name="text">Cover Art</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- Cover Art -->
+
+            </Children>
+          </WidgetGroup><!-- /Deck -->
+
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Library</Text>
+            <Size>190f,21f</Size>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <!-- Preview Deck -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
+                <SetVariable name="text">Preview Deck</SetVariable>
+                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+              </Template>
+
+              <!-- Cover Art -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_coverart</SetVariable>
+                <SetVariable name="text">Cover Art</SetVariable>
+                <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Library -->
+
+        </Children>
+      </WidgetGroup><!-- /SkinSettings -->
+    </Children>
+    <Connection>
+      <ConfigKey>[Master],skin_settings</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
