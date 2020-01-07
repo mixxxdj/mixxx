@@ -151,7 +151,8 @@ void HidController::guessDeviceCategory() {
                 case 0x6: info = tr("Generic HID Keyboard"); break;
                 case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
                 default: info = tr("Unknown HID Desktop Device") +
-                        QString().asprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
+                    QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                    QStringLiteral("/0x") + QString::number(hid_usage, 16);
                     break;
             }
         } else if (hid_vendor_id==0x5ac) {
@@ -159,19 +160,22 @@ void HidController::guessDeviceCategory() {
             if (hid_product_id==0x8242) {
                 info = tr("HID Infrared Control");
             } else {
-                info = tr("Unknown Apple HID Device") + QString().asprintf(
-                    " 0x%0x/0x%0x",hid_usage_page,hid_usage);
+                info = tr("Unknown Apple HID Device") +
+                    QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                    QStringLiteral("/0x") + QString::number(hid_usage, 16);
             }
         } else {
             // Fill in the usage page and usage fields for debugging info
-            info = tr("HID Unknown Device") + QString().asprintf(
-                " 0x%0x/0x%0x", hid_usage_page, hid_usage);
+            info = tr("HID Unknown Device") +
+                QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                QStringLiteral("/0x") + QString::number(hid_usage, 16);
         }
     } else {
         // Guess linux device types somehow as well. Or maybe just fill in the
         // interface number?
-        info = tr("HID Interface Number") + QString().asprintf(
-            " 0x%0x", hid_interface_number);
+        info = tr("HID Interface Number") +
+            QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+            QStringLiteral("/0x") + QString::number(hid_usage, 16);
     }
     setDeviceCategory(info);
 }
