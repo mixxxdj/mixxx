@@ -246,7 +246,7 @@ void StatsManager::run() {
         processIncomingStatReports();
         m_statsPipeLock.unlock();
 
-        if (atomicLoadRelaxed(m_emitAllStats) == 1) {
+        if (atomicLoadAcquire(m_emitAllStats) == 1) {
             for (auto it = m_stats.constBegin();
                  it != m_stats.constEnd(); ++it) {
                 emit(statUpdated(it.value()));
@@ -254,7 +254,7 @@ void StatsManager::run() {
             m_emitAllStats = 0;
         }
 
-        if (atomicLoadRelaxed(m_quit) == 1) {
+        if (atomicLoadAcquire(m_quit) == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }

@@ -89,7 +89,7 @@ void CachingReaderWorker::run() {
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
     Event::start(m_tag);
-    while (!atomicLoadRelaxed(m_stop)) {
+    while (!atomicLoadAcquire(m_stop)) {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable) {

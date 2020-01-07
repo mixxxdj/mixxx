@@ -231,7 +231,7 @@ void CachingReader::process() {
                     update.status == CHUNK_READ_EOF ||
                     update.status == CHUNK_READ_INVALID ||
                     update.status == CHUNK_READ_DISCARDED);
-            if (atomicLoadRelaxed(m_state) == STATE_TRACK_LOADING) {
+            if (atomicLoadAcquire(m_state) == STATE_TRACK_LOADING) {
                 // Discard all results from pending read requests for the
                 // previous track before the next track has been loaded.
                 freeChunk(pChunk);
