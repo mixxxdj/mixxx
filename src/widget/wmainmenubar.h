@@ -6,7 +6,6 @@
 #include <QMenuBar>
 #include <QObject>
 #include <QScopedPointer>
-#include <QSignalMapper>
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
@@ -87,7 +86,6 @@ class WMainMenuBar : public QMenuBar {
     UserSettingsPointer m_pConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
-    QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;
 };
 

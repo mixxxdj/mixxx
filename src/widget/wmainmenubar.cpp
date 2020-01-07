@@ -57,8 +57,6 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
     initialize();
-    connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
-            this, SIGNAL(toggleVinylControl(int)));
 }
 
 void WMainMenuBar::initialize() {
@@ -310,10 +308,8 @@ void WMainMenuBar::initialize() {
         vc_checkbox->setStatusTip(vinylControlText);
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
-
-        m_vinylControlEnabledMapper.setMapping(vc_checkbox, i);
-        connect(vc_checkbox, SIGNAL(triggered(bool)),
-                &m_vinylControlEnabledMapper, SLOT(map()));
+        connect(vc_checkbox, &QAction::triggered,
+                [this, i] { toggleVinylControl(i); });
         pVinylControlMenu->addAction(vc_checkbox);
     }
     pOptionsMenu->addMenu(pVinylControlMenu);
