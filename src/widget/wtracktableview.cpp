@@ -1627,8 +1627,9 @@ void WTrackTableView::slotPopulatePlaylistMenu() {
             bool locked = playlistDao.isPlaylistLocked(it.value());
             pAction->setEnabled(!locked);
             m_pPlaylistMenu->addAction(pAction);
+            int iPlaylistId = it.value();
             connect(pAction, &QAction::triggered,
-                    this, [this, it] { addSelectionToPlaylist(it.value()); });
+                    this, [this, iPlaylistId] { addSelectionToPlaylist(iPlaylistId); });
 
         }
     }
