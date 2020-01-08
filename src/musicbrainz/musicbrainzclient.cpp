@@ -17,13 +17,17 @@
 #include <QJsonDocument>
 
 #include "musicbrainz/musicbrainzclient.h"
+
+#include "util/logger.h"
 #include "util/version.h"
 #include "defs_urls.h"
 
 
 namespace {
 
-const QString kTrackUrl = "http://musicbrainz.org/ws/2/recording/";
+mixxx::Logger kLogger("MusicBrainzClient");
+
+const QString kRecordingUrl = "https://musicbrainz.org/ws/2/recording/";
 const QString kDateRegex = "^[12]\\d{3}";
 constexpr int kDefaultTimeout = 5000; // msec
 constexpr int kDefaultErrorCode = 0;
@@ -47,55 +51,75 @@ MusicBrainzClient::MusicBrainzClient(QObject* parent)
                    m_timeouts(kDefaultTimeout, this) {
 }
 
-void MusicBrainzClient::start(int id, const QString& mbid) {
-    typedef QPair<QString, QString> Param;
+void MusicBrainzClient::start(int id, QStringList recordingIds) {
+    nextRequest(id, Request(std::move(recordingIds)));
+}
 
+void MusicBrainzClient::nextRequest(int id, Request request) {
+    DEBUG_ASSERT(!m_requests.contains(id));
+    if (request.recordingIds.isEmpty()) {
+        emit finished(id, uniqueResults(request.results));
+        return;
+    }
+    const auto recordingId = request.recordingIds.takeFirst();
+
+    typedef QPair<QString, QString> Param;
     QList<Param> parameters;
     parameters << Param("inc", "artists+releases+media");
 
+    QUrl url(kRecordingUrl + recordingId);
     QUrlQuery query;
     query.setQueryItems(parameters);
-    QUrl url(kTrackUrl + mbid);
     url.setQuery(query);
-    qDebug() << "MusicBrainzClient GET request:" << url.toString();
+    kLogger.debug()
+            << "GET request:"
+            << url.toString();
     QNetworkRequest req(url);
     // http://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings
     QString mixxxMusicBrainzId(Version::applicationName() + "/" + Version::version() + " ( " + MIXXX_WEBSITE_URL + " )");
     // HTTP request headers must be latin1.
     req.setRawHeader("User-Agent", mixxxMusicBrainzId.toLatin1());
     QNetworkReply* reply = m_network.get(req);
-    connect(reply, &QNetworkReply::finished, this, &MusicBrainzClient::requestFinished);
-    m_requests[reply] = id;
-
+    m_requests[id] = std::move(request);
+    m_replies[reply] = id;
+    connect(reply, &QNetworkReply::finished, this, &MusicBrainzClient::replyFinished);
     m_timeouts.addReply(reply);
 }
 
 void MusicBrainzClient::cancel(int id) {
-    QNetworkReply* reply = m_requests.key(id);
-    m_requests.remove(reply);
-    delete reply;
-}
-
-void MusicBrainzClient::cancelAll() {
-    auto requests = m_requests;
-    m_requests.clear();
-    for (auto it = requests.constBegin();
-         it != requests.constEnd(); ++it) {
-        delete it.key();
+    m_requests.remove(id);
+    QNetworkReply* reply = m_replies.key(id);
+    if (reply) {
+        reply->abort();
     }
 }
 
-void MusicBrainzClient::requestFinished() {
+void MusicBrainzClient::cancelAll() {
+    m_requests.clear();
+    auto replies = m_replies;
+    m_replies.clear();
+    for (auto it = replies.constBegin();
+         it != replies.constEnd(); ++it) {
+        it.key()->abort();
+    }
+}
+
+void MusicBrainzClient::replyFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
+    if (!reply) {
         return;
-
+    }
     reply->deleteLater();
-    if (!m_requests.contains(reply))
-        return;
 
-    int id = m_requests.take(reply);
-    ResultList ret;
+    if (!m_replies.contains(reply)) {
+        return;
+    }
+    int id = m_replies.take(reply);
+
+    if (!m_requests.contains(id)) {
+        return;
+    }
+    Request request = m_requests.take(id);
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QTextStream textReader(reply);
@@ -147,7 +171,7 @@ void MusicBrainzClient::requestFinished() {
                 ResultList tracks = parseTrack(reader);
                 for (const Result& track: tracks) {
                     if (!track.m_title.isEmpty()) {
-                        ret << track;
+                        request.results << track;
                     }
                 }
             }
@@ -159,7 +183,7 @@ void MusicBrainzClient::requestFinished() {
         }
         }
     }
-    emit(finished(id, uniqueResults(ret)));
+    nextRequest(id, request);
 }
 
 MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& reader) {
