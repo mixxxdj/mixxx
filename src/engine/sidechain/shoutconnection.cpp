@@ -972,7 +972,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return m_threadWaiting.load();
+    return atomicLoadRelaxed(m_threadWaiting);
 }
 
 void ShoutConnection::run() {

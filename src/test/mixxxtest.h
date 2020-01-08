@@ -5,6 +5,7 @@
 
 #include <QDir>
 #include <QTemporaryFile>
+#include <QTemporaryDir>
 #include <QScopedPointer>
 
 #include "mixxxapplication.h"
@@ -61,13 +62,13 @@ class MixxxTest : public testing::Test {
     }
 
     QDir getTestDataDir() const {
-        return m_testDataDir;
+        return m_testDataDir.path();
     }
 
   private:
     static QScopedPointer<MixxxApplication> s_pApplication;
 
-    const QDir m_testDataDir;
+    QTemporaryDir m_testDataDir;
 
   protected:
     UserSettingsPointer m_pConfig;

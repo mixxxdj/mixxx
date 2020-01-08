@@ -815,7 +815,16 @@ bool TrackDAO::hideTracks(
 void TrackDAO::afterHidingTracks(
         const QList<TrackId>& trackIds) {
     // This signal is received by basetrackcache to remove the tracks from cache
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    emit(tracksRemoved(QSet<TrackId>(trackIds.begin(), trackIds.end())));
+#else
     emit(tracksRemoved(QSet<TrackId>::fromList(trackIds)));
+#endif
 }
 
 // If a track has been manually "hidden" from Mixxx's library by the user via
@@ -839,7 +848,16 @@ bool TrackDAO::unhideTracks(
 
 void TrackDAO::afterUnhidingTracks(
         const QList<TrackId>& trackIds) {
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    emit(tracksAdded(QSet<TrackId>(trackIds.begin(), trackIds.end())));
+#else
     emit(tracksAdded(QSet<TrackId>::fromList(trackIds)));
+#endif
 }
 
 QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
@@ -944,7 +962,17 @@ bool TrackDAO::onPurgingTracks(
 
 void TrackDAO::afterPurgingTracks(
         const QList<TrackId>& trackIds) {
+
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
+#else
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
+#endif
     emit(tracksRemoved(tracksRemovedSet));
     // notify trackmodels that they should update their cache as well.
     emit(forceModelUpdate());

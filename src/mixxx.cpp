@@ -534,12 +534,30 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     bool rescan = pConfig->getValue<bool>(
             ConfigKey("[Library]","RescanOnStartup"));
     // rescan the library if we get a new plugin
-    QSet<QString> prev_plugins = QSet<QString>::fromList(
-            pConfig->getValueString(
-                    ConfigKey("[Library]", "SupportedFileExtensions")).split(
-                    ",", QString::SkipEmptyParts));
-    QSet<QString> curr_plugins = QSet<QString>::fromList(
-        SoundSourceProxy::getSupportedFileExtensions());
+    QList<QString> prev_plugins_list = pConfig->getValueString(
+        ConfigKey("[Library]", "SupportedFileExtensions")).split(
+        ",", QString::SkipEmptyParts);
+
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+    QSet<QString> prev_plugins =
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QSet<QString>(prev_plugins_list.begin(), prev_plugins_list.end());
+#else
+        QSet<QString>::fromList(prev_plugins_list);
+#endif
+
+    QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
+    QSet<QString> curr_plugins =
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
+#else
+        QSet<QString>::fromList(curr_plugins_list);
+#endif
+
     rescan = rescan || (prev_plugins != curr_plugins);
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
