@@ -1,3 +1,6 @@
+==== 2.2.4 2020-mm-dd ====
+* Prevent infinite loop when decoding corrupt MP3 files #2417
+
 ==== 2.2.3 2019-11-24 ====
 * Don't make users reconfigure sound hardware when it has not changed #2253
 * Fix MusicBrainz metadata lookup lp:1848887 #2328
