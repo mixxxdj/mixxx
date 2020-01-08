@@ -85,7 +85,7 @@ void WMainMenuBar::initialize() {
         // WMainMenuBar::onNumberOfDecksChanged.
         pFileLoadSongToPlayer->setVisible(false);
         connect(pFileLoadSongToPlayer, &QAction::triggered,
-                [this, deck] { loadTrackToDeck(deck + 1); });
+                this, [this, deck] { loadTrackToDeck(deck + 1); });
 
         pFileMenu->addAction(pFileLoadSongToPlayer);
         m_loadToDeckActions.push_back(pFileLoadSongToPlayer);
@@ -309,7 +309,7 @@ void WMainMenuBar::initialize() {
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
         connect(vc_checkbox, &QAction::triggered,
-                [this, i] { toggleVinylControl(i); });
+                this, [this, i] { toggleVinylControl(i); });
         pVinylControlMenu->addAction(vc_checkbox);
     }
     pOptionsMenu->addMenu(pVinylControlMenu);
@@ -501,7 +501,7 @@ void WMainMenuBar::initialize() {
     pHelpSupport->setStatusTip(supportText);
     pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
     connect(pHelpSupport, &QAction::triggered,
-            [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
+            this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
     pHelpMenu->addAction(pHelpSupport);
 
     QDir resourceDir(m_pConfig->getResourcePath());
@@ -532,7 +532,7 @@ void WMainMenuBar::initialize() {
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
     connect(pHelpManual, &QAction::triggered,
-            [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
+            this, [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
     pHelpMenu->addAction(pHelpManual);
 
     QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
@@ -541,7 +541,7 @@ void WMainMenuBar::initialize() {
     pHelpShortcuts->setStatusTip(shortcutsText);
     pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
     connect(pHelpShortcuts, &QAction::triggered,
-            [this] { slotVisitUrl(MIXXX_SHORTCUTS_URL); });
+            this, [this] { slotVisitUrl(MIXXX_SHORTCUTS_URL); });
     pHelpMenu->addAction(pHelpShortcuts);
 
     QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
@@ -550,7 +550,7 @@ void WMainMenuBar::initialize() {
     pHelpFeedback->setStatusTip(feedbackText);
     pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
     connect(pHelpFeedback, &QAction::triggered,
-            [this] { slotVisitUrl(MIXXX_FEEDBACK_URL); });
+            this, [this] { slotVisitUrl(MIXXX_FEEDBACK_URL); });
     pHelpMenu->addAction(pHelpFeedback);
 
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
@@ -559,7 +559,7 @@ void WMainMenuBar::initialize() {
     pHelpTranslation->setStatusTip(translateText);
     pHelpTranslation->setWhatsThis(buildWhatsThis(translateTitle, translateText));
     connect(pHelpTranslation, &QAction::triggered,
-            [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
+            this, [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
     pHelpMenu->addAction(pHelpTranslation);
 
     pHelpMenu->addSeparator();

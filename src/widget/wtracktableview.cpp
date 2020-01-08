@@ -482,7 +482,7 @@ void WTrackTableView::createActions() {
         m_updateInExternalTrackCollections += updateInExternalTrackCollection;
         auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
         connect(updateInExternalTrackCollection.action, &QAction::triggered,
-                [=](){
+                this, [=](){
                     slotUpdateExternalTrackCollection(externalTrackCollectionPtr);});
     }
 
@@ -490,7 +490,7 @@ void WTrackTableView::createActions() {
     // currently there is only one preview deck so just map it here.
     QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
     connect(m_pAddToPreviewDeck, &QAction::triggered,
-            [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
+            this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
 
 
     // Clear metadata actions
@@ -555,17 +555,17 @@ void WTrackTableView::createActions() {
     m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
     connect(m_pBpmDoubleAction, &QAction::triggered,
-            [this] { slotScaleBpm(Beats::DOUBLE); });
+            this, [this] { slotScaleBpm(Beats::DOUBLE); });
     connect(m_pBpmHalveAction, &QAction::triggered,
-            [this] { slotScaleBpm(Beats::HALVE); });
+            this, [this] { slotScaleBpm(Beats::HALVE); });
     connect(m_pBpmTwoThirdsAction, &QAction::triggered,
-            [this] { slotScaleBpm(Beats::TWOTHIRDS); });
+            this, [this] { slotScaleBpm(Beats::TWOTHIRDS); });
     connect(m_pBpmThreeFourthsAction, &QAction::triggered,
-            [this] { slotScaleBpm(Beats::THREEFOURTHS); });
+            this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
     connect(m_pBpmFourThirdsAction, &QAction::triggered,
-            [this] { slotScaleBpm(Beats::FOURTHIRDS); });
+            this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
     connect(m_pBpmThreeHalvesAction, &QAction::triggered,
-            [this] { slotScaleBpm(Beats::THREEHALVES); });
+            this, [this] { slotScaleBpm(Beats::THREEHALVES); });
 }
 
 // slot
@@ -848,7 +848,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
                 connect(pAction, &QAction::triggered,
-                        [this, deckGroup] { loadSelectionToGroup(deckGroup); });
+                        this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
             }
         }
         m_pLoadToMenu->addMenu(m_pDeckMenu);
@@ -868,7 +868,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 pAction->setEnabled(samplerEnabled);
                 m_pSamplerMenu->addAction(pAction);
                 connect(pAction, &QAction::triggered,
-                        [this, samplerGroup] {loadSelectionToGroup(samplerGroup); } );
+                        this, [this, samplerGroup] {loadSelectionToGroup(samplerGroup); } );
 
             }
             m_pLoadToMenu->addMenu(m_pSamplerMenu);
@@ -1628,7 +1628,7 @@ void WTrackTableView::slotPopulatePlaylistMenu() {
             pAction->setEnabled(!locked);
             m_pPlaylistMenu->addAction(pAction);
             connect(pAction, &QAction::triggered,
-                    [this, it] { addSelectionToPlaylist(it.value()); });
+                    this, [this, it] { addSelectionToPlaylist(it.value()); });
 
         }
     }
@@ -1636,7 +1636,7 @@ void WTrackTableView::slotPopulatePlaylistMenu() {
     QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
     m_pPlaylistMenu->addAction(newPlaylistAction);
     connect(newPlaylistAction, &QAction::triggered,
-            [this] { addSelectionToPlaylist(-1); });
+            this, [this] { addSelectionToPlaylist(-1); });
     m_bPlaylistMenuLoaded = true;
 }
 
@@ -1740,9 +1740,9 @@ void WTrackTableView::slotPopulateCrateMenu() {
 
         m_pCrateMenu->addAction(pAction.get());
         connect(pAction.get(), &QAction::triggered,
-                [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+                this, [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
         connect(pCheckBox.get(), &QCheckBox::stateChanged,
-                [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+                this, [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
 
     }
     m_pCrateMenu->addSeparator();

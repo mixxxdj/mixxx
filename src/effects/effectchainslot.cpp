@@ -328,7 +328,7 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
     m_channelInfoByName[handle_group.name()] = pInfo;
     connect(pEnableControl, &ControlPushButton::valueChanged,
-            [this, handle_group] { slotChannelStatusChanged(handle_group.name()); });
+            this, [this, handle_group] { slotChannelStatusChanged(handle_group.name()); });
 
 }
 

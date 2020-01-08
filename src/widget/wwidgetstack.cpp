@@ -141,9 +141,9 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
         }
         pListener->onCurrentWidgetChanged(currentIndex());
         connect(pListener, &WidgetStackControlListener::switchToWidget,
-                [this, index] { showIndex(index); });
+                this, [this, index] { showIndex(index); });
         connect(pListener, &WidgetStackControlListener::hideWidget,
-                [this, index] { hideIndex(index); });
+                this, [this, index] { hideIndex(index); });
         connect(this, &WWidgetStack::currentChanged,
                 pListener, &WidgetStackControlListener::onCurrentWidgetChanged);
     }

@@ -180,7 +180,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
     connect(msgBox, &QMessageBox::finished,
-            [this, &props, &msgBox] { boxClosed(props->m_key, msgBox); });
+            this, [this, &props, &msgBox] { boxClosed(props->m_key, msgBox); });
 
     locker.unlock();
 

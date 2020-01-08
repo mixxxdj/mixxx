@@ -173,7 +173,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         // Map this action's signals
         m_columnActions.insert(i, action);
         connect(action, &QAction::triggered,
-                [this, i] { showOrHideColumn(i); });
+                this, [this, i] { showOrHideColumn(i); });
         m_menu.addAction(action);
 
         // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE

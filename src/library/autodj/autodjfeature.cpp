@@ -302,7 +302,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
             connect(pAction.get(), &QAction::triggered,
-                    [this, crate] { slotAddCrateToAutoDj(crate.getId().value()); });
+                    this, [this, crate] { slotAddCrateToAutoDj(crate.getId().value()); });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }

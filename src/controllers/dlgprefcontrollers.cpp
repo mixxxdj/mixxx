@@ -20,7 +20,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupControllerWidgets();
 
     connect(btnOpenUserPresets, &QPushButton::clicked,
-            [this] { slotOpenLocalFile(userPresetsPath(m_pConfig)); });
+            this, [this] { slotOpenLocalFile(userPresetsPath(m_pConfig)); });
 
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),
