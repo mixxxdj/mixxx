@@ -19,8 +19,9 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
+    const QString presetsPath = userPresetsPath(m_pConfig);
     connect(btnOpenUserPresets, &QPushButton::clicked,
-            this, [this] { slotOpenLocalFile(userPresetsPath(m_pConfig)); });
+            this, [this, presetsPath] { slotOpenLocalFile(presetsPath); });
 
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),
