@@ -655,8 +655,8 @@ class TestSuite(Feature):
             test_env.Append(CCFLAGS='-pthread')
             test_env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        gtest_dir = test_env.Dir("lib/gtest-1.7.0")
+        test_env.Append(CPPPATH="#lib/googletest-1.8.1/googletest/include")
+        gtest_dir = test_env.Dir("lib/googletest-1.8.1/googletest")
 
         env = test_env
         SCons.Export('env')
@@ -664,8 +664,8 @@ class TestSuite(Feature):
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        gmock_dir = test_env.Dir("lib/gmock-1.7.0")
+        test_env.Append(CPPPATH="#lib/googletest-1.8.1/googlemock/include")
+        gmock_dir = test_env.Dir("lib/googletest-1.8.1/googlemock")
         env.SConscript(env.File('SConscript', gmock_dir))
 
         # Build the benchmark library

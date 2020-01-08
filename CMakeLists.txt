@@ -987,8 +987,8 @@ if(MSVC)
   # Work around the Release/Debug subdirectories on Windows
   foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER "${OUTPUT_CONFIG}" OUTPUT_CONFIG)
-    set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
-    set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0")
+    set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest")
+    set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock")
   endforeach()
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
        OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -997,36 +997,36 @@ endif()
 
 # gtest
 ExternalProject_Add(mixxx-gtest
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googletest"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest"
   INSTALL_COMMAND ""
   CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GTEST_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gtest)
 target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googletest/include"
 )
 target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 
 # gmock
 ExternalProject_Add(mixxx-gmock
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googlemock"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock"
   INSTALL_COMMAND ""
   CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GMOCK_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gmock)
 target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googlemock/include"
 )
 target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 
 # Benchmark
@@ -1231,7 +1231,7 @@ add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
 # gtest
-target_include_directories(mixxx-lib SYSTEM PUBLIC lib/gtest-1.7.0/include)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/googletest-1.8.1/googletest/include)
 if(MSVC)
   # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
   # been deprecated and throws a warning. If /W3 is used, this causes an
