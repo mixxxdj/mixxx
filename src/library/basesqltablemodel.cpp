@@ -724,7 +724,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
                 if (value.canConvert(QMetaType::Int))
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                    value = QVariant::fromValue(StarRating(value.toInt()));
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
                 if (value.canConvert(QMetaType::Int))
                     value =  QString("(%1)").arg(value.toInt());
@@ -788,7 +788,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
                 if (value.canConvert(QMetaType::Int)) {
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                    value = QVariant::fromValue(StarRating(value.toInt()));
                 }
             }
             break;

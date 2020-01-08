@@ -239,7 +239,16 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
 }
 
 MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(const ResultList& results) {
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    ResultList ret = QSet<Result>(results.begin(), results.end()).values();
+#else
     ResultList ret = QSet<Result>::fromList(results).toList();
+#endif
     std::sort(ret.begin(), ret.end());
     return ret;
 }
