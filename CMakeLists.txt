@@ -765,7 +765,7 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    if(NOT STATIC_DEPS OR DEBUG)
+    if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
