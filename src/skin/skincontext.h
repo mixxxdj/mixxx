@@ -30,6 +30,8 @@ class SkinContext {
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
 
+    SkinContext& operator=(const SkinContext& other) = default;
+
     // Gets a path relative to the skin path.
     QString makeSkinPath(const QString& relativePath) const {
         if (relativePath.isEmpty() || relativePath.startsWith("/")
