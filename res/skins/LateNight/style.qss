@@ -2222,7 +2222,12 @@ WSearchLineEdit {
     border: 2px solid #d08e00;
   }
   /* Clear button */
-  WSearchLineEdit QToolButton {}
+  WSearchLineEdit QToolButton:!focus {
+    image: url(skin:/buttons_classic/btn__lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    image: url(skin:/buttons_classic/btn__lib_clear_search_focus.svg);
+  }
 
 /* HorizontalSplitter
   (the splitter itself is horizontal)
