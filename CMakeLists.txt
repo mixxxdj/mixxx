@@ -996,38 +996,44 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
 endif()
 
 # gtest
+set(GTEST_POSTFIX "")
+if(DEBUG)
+    set(GTEST_POSTFIX "d")
+endif()
+set(GTEST_LIBRARY_PATH "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${GTEST_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 ExternalProject_Add(mixxx-gtest
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googletest"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest"
   INSTALL_COMMAND ""
   CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GTEST_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  BUILD_BYPRODUCTS "${GTEST_LIBRARY_PATH}"
 )
 set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gtest)
 target_include_directories(mixxx-test SYSTEM PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googletest/include"
 )
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
+target_link_libraries(mixxx-test PUBLIC "${GTEST_LIBRARY_PATH}")
 
 # gmock
+set(GMOCK_POSTFIX "")
+if(DEBUG)
+    set(GMOCK_POSTFIX "d")
+endif()
+set(GMOCK_LIBRARY_PATH "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${GMOCK_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 ExternalProject_Add(mixxx-gmock
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googlemock"
   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock"
   INSTALL_COMMAND ""
   CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GMOCK_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  BUILD_BYPRODUCTS "${GMOCK_LIBRARY_PATH}"
 )
 set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(mixxx-test mixxx-gmock)
 target_include_directories(mixxx-test SYSTEM PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.1/googlemock/include"
 )
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
+target_link_libraries(mixxx-test PUBLIC "${GMOCK_LIBRARY_PATH}")
 
 # Benchmark
 add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
