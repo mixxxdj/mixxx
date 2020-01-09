@@ -1233,26 +1233,26 @@ DJ505.HotcueMode = function (deck, offset) {
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
         mode: this,
-        outKey: "beats_translate_earlier",
-        inKey: "beats_translate_earlier",
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
     });
     this.paramPlusButton = new components.Button({
         midi: [0x94 + offset, 0x29],
         mode: this,
-        outKey: "beats_translate_later",
-        inKey: "beats_translate_later",
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
     });
     this.param2MinusButton = new components.Button({
         midi: [0x94 + offset, 0x2A],
         mode: this,
-        outKey: "hotcue_focus_color_prev",
-        inKey: "hotcue_focus_color_prev",
+        outKey: "beats_translate_earlier",
+        inKey: "beats_translate_earlier",
     });
     this.param2PlusButton = new components.Button({
         midi: [0x94 + offset, 0x2B],
         mode: this,
-        outKey: "hotcue_focus_color_next",
-        inKey: "hotcue_focus_color_next",
+        outKey: "beats_translate_later",
+        inKey: "beats_translate_later",
     });
 };
 DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
