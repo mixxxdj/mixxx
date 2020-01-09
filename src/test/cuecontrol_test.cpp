@@ -176,7 +176,7 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     auto pIntro = pTrack->createAndAddCue();
     pIntro->setType(Cue::Type::Intro);
     pIntro->setStartPosition(2.1 * beatLength);
-    pIntro->setEndPosition(3.3 * beatLength);
+    pIntro->setEndPosition(3.7 * beatLength);
 
     auto pOutro = pTrack->createAndAddCue();
     pOutro->setType(Cue::Type::Outro);
