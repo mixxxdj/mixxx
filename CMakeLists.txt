@@ -997,7 +997,7 @@ endif()
 
 # gtest
 set(GTEST_POSTFIX "")
-if(DEBUG)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(GTEST_POSTFIX "d")
 endif()
 set(GTEST_LIBRARY_PATH "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googletest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${GTEST_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -1017,7 +1017,7 @@ target_link_libraries(mixxx-test PUBLIC "${GTEST_LIBRARY_PATH}")
 
 # gmock
 set(GMOCK_POSTFIX "")
-if(DEBUG)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(GMOCK_POSTFIX "d")
 endif()
 set(GMOCK_LIBRARY_PATH "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.1/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${GMOCK_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
