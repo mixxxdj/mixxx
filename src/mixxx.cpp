@@ -840,12 +840,12 @@ void MixxxMainWindow::initializeWindow() {
 
     QPalette Pal(palette());
     // safe default QMenuBar background
-    QColor MenuBarBackground(m_pMenuBar->palette().color(QPalette::Background));
-    Pal.setColor(QPalette::Background, QColor(0x202020));
+    QColor MenuBarBackground(m_pMenuBar->palette().color(QPalette::Window));
+    Pal.setColor(QPalette::Window, QColor(0x202020));
     setAutoFillBackground(true);
     setPalette(Pal);
     // restore default QMenuBar background
-    Pal.setColor(QPalette::Background, MenuBarBackground);
+    Pal.setColor(QPalette::Window, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
 
     // Restore the current window state (position, maximized, etc)
