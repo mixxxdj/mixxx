@@ -30,8 +30,10 @@ class ControlPickerMenu : public QMenu {
 
   private:
     QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
+    void addSingleControl(QString group, QString control, QString title,
+                          QString description, QMenu* pMenu, QString prefix = "");
     void addControl(QString group, QString control, QString title,
-                    QString helpText, QMenu* pMenu, bool addReset=false);
+                    QString helpText, QMenu* pMenu, bool addReset=false, QString prefix = "");
     void addPlayerControl(QString control, QString title, QString helpText,
                           QMenu* pMenu, bool deckControls, bool samplerControls,
                           bool previewdeckControls, bool addReset=false);
@@ -54,9 +56,6 @@ class ControlPickerMenu : public QMenu {
                                     QString helpText, QMenu* pMenu,
                                     bool microphoneControls, bool auxControls,
                                     bool addReset=false);
-    void addPrefixedControl(QString group, QString control, QString title,
-                            QString menuDescription, QString descriptionPrefix,
-                            QMenu* pMenu, bool addReset=false);
 
     void addAvailableControl(ConfigKey key, QString title, QString description);
 
