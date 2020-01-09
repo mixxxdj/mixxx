@@ -792,10 +792,16 @@ ControlPickerMenu::~ControlPickerMenu() {
 }
 
 void ControlPickerMenu::addSingleControl(QString group, QString control,
-                                           QString title, QString description,
-                                           QMenu* pMenu, QString prefix) {
+                                         QString title, QString description,
+                                         QMenu* pMenu, QString prefix,
+                                         QString actionTitle) {
     int controlIndex = m_controlsAvailable.size();
-    auto pAction = std::make_unique<QAction>(title, pMenu);
+
+    if (actionTitle.isEmpty()) {
+        actionTitle = title;
+    }
+
+    auto pAction = std::make_unique<QAction>(actionTitle, pMenu);
     connect(pAction.get(), &QAction::triggered,
             this, [this, controlIndex] { controlChosen(controlIndex); });
     pMenu->addAction(pAction.get());
@@ -848,86 +854,46 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
 
     for (int i = 1; deckControls && i <= iNumDecks; ++i) {
         // PlayerManager::groupForDeck is 0-indexed.
+        QString prefix = m_deckStr.arg(i);
         QString group = PlayerManager::groupForDeck(i - 1);
-        QString title = QString("%1: %2").arg(
-            m_deckStr.arg(QString::number(i)), controlTitle);
-        QString description = QString("%1: %2").arg(
-            m_deckStr.arg(QString::number(i)), controlDescription);
-
-        int controlIndex = m_controlsAvailable.size();
-        auto pAction = std::make_unique<QAction>(m_deckStr.arg(i), controlMenu);
-        connect(pAction.get(), &QAction::triggered,
-                this, [this, controlIndex] { controlChosen(controlIndex); });
-        controlMenu->addAction(pAction.get());
-        addAvailableControl(ConfigKey(group, control), title, description);
+        addSingleControl(group, control, controlTitle, controlDescription,
+                         controlMenu, prefix, prefix);
 
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-
-            controlIndex = m_controlsAvailable.size();
-            auto pAction = std::make_unique<QAction>(m_deckStr.arg(i), resetControlMenu);
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, controlIndex] { controlChosen(controlIndex); });
-            resetControlMenu->addAction(pAction.get());
-
-            addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+            addSingleControl(group, control, resetTitle, resetDescription,
+                             controlMenu, prefix, prefix);
         }
     }
 
     for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
         // PlayerManager::groupForPreviewDeck is 0-indexed.
+        QString prefix = m_previewdeckStr.arg(i);
         QString group = PlayerManager::groupForPreviewDeck(i - 1);
-        QString title = QString("%1: %2").arg(
-            m_previewdeckStr.arg(QString::number(i)), controlTitle);
-        QString description = QString("%1: %2").arg(
-            m_previewdeckStr.arg(QString::number(i)), controlDescription);
-
-        int controlIndex = m_controlsAvailable.size();
-        auto pAction = std::make_unique<QAction>(m_previewdeckStr.arg(i), controlMenu);
-        connect(pAction.get(), &QAction::triggered,
-                this, [this, controlIndex] { controlChosen(controlIndex); });
-        controlMenu->addAction(pAction.get());
-        addAvailableControl(ConfigKey(group, control), title, description);
+        addSingleControl(group, control, controlTitle, controlDescription,
+                         controlMenu, prefix, prefix);
 
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-
-            controlIndex = m_controlsAvailable.size();
-            auto pAction = std::make_unique<QAction>(m_previewdeckStr.arg(i), resetControlMenu);
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, controlIndex] { controlChosen(controlIndex); });
-            resetControlMenu->addAction(pAction.get());
-            addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+            addSingleControl(group, control, resetTitle, resetDescription,
+                             controlMenu, prefix, prefix);
         }
     }
 
     for (int i = 1; samplerControls && i <= iNumSamplers; ++i) {
         // PlayerManager::groupForSampler is 0-indexed.
+        QString prefix = m_samplerStr.arg(i);
         QString group = PlayerManager::groupForSampler(i - 1);
-        QString title = QString("%1: %2").arg(
-            m_samplerStr.arg(QString::number(i)), controlTitle);
-        QString description = QString("%1: %2").arg(
-            m_samplerStr.arg(QString::number(i)), controlDescription);
-
-        int controlIndex = m_controlsAvailable.size();
-        auto pAction = std::make_unique<QAction>(m_samplerStr.arg(i), controlMenu);
-        connect(pAction.get(), &QAction::triggered,
-                this, [this, controlIndex] { controlChosen(controlIndex); });
-        controlMenu->addAction(pAction.get());
-        addAvailableControl(ConfigKey(group, control), title, description);
+        addSingleControl(group, control, controlTitle, controlDescription,
+                         controlMenu, prefix, prefix);
 
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-
-            controlIndex = m_controlsAvailable.size();
-            auto pAction = std::make_unique<QAction>(m_samplerStr.arg(i), resetControlMenu);
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, controlIndex] { controlChosen(controlIndex); });
-            resetControlMenu->addAction(pAction.get());
-            addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+            addSingleControl(group, control, resetTitle, resetDescription,
+                             controlMenu, prefix, prefix);
         }
     }
 }
@@ -953,29 +919,16 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     if (microphoneControls) {
         const int kNumMicrophones = ControlObject::get(ConfigKey("[Master]", "num_microphones"));
         for (int i = 1; i <= kNumMicrophones; ++i) {
+            QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
-            QString title = QString("%1: %2").arg(
-                m_microphoneStr.arg(QString::number(i)), controlTitle);
-            QString description = QString("%1: %2").arg(
-                m_microphoneStr.arg(QString::number(i)), controlDescription);
+            addSingleControl(group, control, controlTitle, controlDescription,
+                             controlMenu, prefix, prefix);
 
-            int controlIndex = m_controlsAvailable.size();
-            auto pAction = std::make_unique<QAction>(m_microphoneStr.arg(i), controlMenu);
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, controlIndex] { controlChosen(controlIndex); });
-            controlMenu->addAction(pAction.get());
-            addAvailableControl(ConfigKey(group, control), title, description);
-
-            if (addReset) {
-                QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
+            if (resetControlMenu) {
+                QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-
-                controlIndex = m_controlsAvailable.size();
-                auto pAction = std::make_unique<QAction>(m_microphoneStr.arg(i), resetControlMenu);
-                connect(pAction.get(), &QAction::triggered,
-                        this, [this, controlIndex] { controlChosen(controlIndex); });
-                resetControlMenu->addAction(pAction.get());
-                addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+                addSingleControl(group, control, resetTitle, resetDescription,
+                                 controlMenu, prefix, prefix);
             }
         }
     }
@@ -983,29 +936,16 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     const int kNumAuxiliaries = ControlObject::get(ConfigKey("[Master]", "num_auxiliaries"));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
+            QString prefix = m_auxStr.arg(i);
             QString group = PlayerManager::groupForAuxiliary(i - 1);
-            QString title = QString("%1: %2").arg(
-                m_auxStr.arg(QString::number(i)), controlTitle);
-            QString description = QString("%1: %2").arg(
-                m_auxStr.arg(QString::number(i)), controlDescription);
+            addSingleControl(group, control, controlTitle, controlDescription,
+                             controlMenu, prefix, prefix);
 
-            int controlIndex = m_controlsAvailable.size();
-            auto pAction = std::make_unique<QAction>(m_auxStr.arg(i), controlMenu);
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, controlIndex] { controlChosen(controlIndex); });
-            controlMenu->addAction(pAction.get());
-            addAvailableControl(ConfigKey(group, control), title, description);
-
-            if (addReset) {
-                QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-                QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-
-                controlIndex = m_controlsAvailable.size();
-                auto pAction = std::make_unique<QAction>(m_auxStr.arg(i), resetControlMenu);
-                connect(pAction.get(), &QAction::triggered,
-                        this, [this, controlIndex] { controlChosen(controlIndex); });
-                resetControlMenu->addAction(pAction.get());
-                addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            if (resetControlMenu) {
+                QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+                QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+                addSingleControl(group, control, resetTitle, resetDescription,
+                                 controlMenu, prefix, prefix);
             }
         }
     }

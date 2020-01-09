@@ -30,8 +30,10 @@ class ControlPickerMenu : public QMenu {
 
   private:
     QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
-    void addSingleControl(QString group, QString control, QString title,
-                          QString description, QMenu* pMenu, QString prefix = "");
+    void addSingleControl(QString group, QString control,
+                          QString title, QString description,
+                          QMenu* pMenu,
+                          QString prefix = "", QString actionTitle = "");
     void addControl(QString group, QString control, QString title,
                     QString helpText, QMenu* pMenu, bool addReset=false, QString prefix = "");
     void addPlayerControl(QString control, QString title, QString helpText,
