@@ -1,22 +1,19 @@
 #ifndef MIXXX_PLAYCOUNTER_H
 #define MIXXX_PLAYCOUNTER_H
 
+#include "control/controlproxy.h"
 #include "util/assert.h"
-
 
 // Counts the total number of times a track has been played
 // and if the track has been played during the current session.
 class PlayCounter {
 public:
-    explicit PlayCounter(int timesPlayed = 0):
-        m_iTimesPlayed(timesPlayed),
-        m_bPlayed(false) {
-    }
+  explicit PlayCounter(int timesPlayed = 0);
 
-    // Sets total number of times a track has been played
-    void setTimesPlayed(int iTimesPlayed) {
-        DEBUG_ASSERT(0 <= iTimesPlayed);
-        m_iTimesPlayed = iTimesPlayed;
+  // Sets total number of times a track has been played
+  void setTimesPlayed(int iTimesPlayed) {
+      DEBUG_ASSERT(0 <= iTimesPlayed);
+      m_iTimesPlayed = iTimesPlayed;
     }
     // Returns the total number of times a track has been played
     int getTimesPlayed() const {
@@ -40,6 +37,7 @@ public:
 private:
     int m_iTimesPlayed;
     bool m_bPlayed;
+    ControlProxy* m_pTrainingmodeEnabled;
 };
 
 bool operator==(const PlayCounter& lhs, const PlayCounter& rhs);

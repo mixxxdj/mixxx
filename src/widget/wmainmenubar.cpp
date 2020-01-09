@@ -362,6 +362,18 @@ void WMainMenuBar::initialize() {
     pOptionsMenu->addAction(pOptionsBroadcasting);
 #endif
 
+    // TrainingMode
+    m_pConfigTrainingmodeEnabled = new ControlObject(ConfigKey("[TrainingMode]", "enabled"));
+    QString TrainingmodeTitle = tr("Enable Training Mode");
+    QString TrainingmodeText = tr("In training mode the play counter will not be increased");
+    auto pOptionsTrainingmode = new QAction(TrainingmodeTitle, this);
+    pOptionsTrainingmode->setCheckable(true);
+    pOptionsTrainingmode->setChecked(false);
+    pOptionsTrainingmode->setStatusTip(TrainingmodeText);
+    pOptionsTrainingmode->setWhatsThis(buildWhatsThis(TrainingmodeTitle, TrainingmodeText));
+    connect(pOptionsTrainingmode, SIGNAL(triggered(bool)), this, SLOT(toggleTrainingmode(bool)));
+    pOptionsMenu->addAction(pOptionsTrainingmode);
+
     pOptionsMenu->addSeparator();
 
     QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
@@ -583,6 +595,10 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+}
+
+void WMainMenuBar::toggleTrainingmode(bool toggle) {
+    m_pConfigTrainingmodeEnabled->set(toggle ? 1.0 : 0.0);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
