@@ -1372,6 +1372,19 @@ DJ505.CueLoopMode = function (deck, offset) {
     for (var n = 0; n <= 7; n++) {
         this.pads[n] = new this.PerformancePad(n);
     }
+
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        group: deck.currentDeck,
+        outKey: "loop_halve",
+        inKey: "loop_halve",
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        group: deck.currentDeck,
+        outKey: "loop_double",
+        inKey: "loop_double",
+    });
 };
 DJ505.CueLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
