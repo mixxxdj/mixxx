@@ -72,18 +72,22 @@ public:
             QString fileName,
             bool splitArtistTitle);
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues();
-
     // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
         refBpm().normalizeBeforeExport();
         refReplayGain().normalizeBeforeExport();
     }
+
+    bool compareEq(
+            const TrackInfo& trackInfo,
+            Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 };
 
-bool operator==(const TrackInfo& lhs, const TrackInfo& rhs);
+inline
+bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
+    return lhs.compareEq(rhs);
+}
 
 inline
 bool operator!=(const TrackInfo& lhs, const TrackInfo& rhs) {

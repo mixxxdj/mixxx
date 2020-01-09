@@ -290,9 +290,9 @@ void DlgTrackInfo::slotReloadCoverArt() {
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }
-    CoverInfo coverInfo =
-            CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-    slotCoverInfoSelected(coverInfo);
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {

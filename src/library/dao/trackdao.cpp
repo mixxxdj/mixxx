@@ -1372,33 +1372,6 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
-    // Data migration: Reload track total from file tags if not initialized
-    // yet. The added column "tracktotal" has been initialized with the
-    // default value "//".
-    // See also: Schema revision 26 in schema.xml
-    if (pTrack->getTrackTotal() == "//") {
-        // Reload track total from file tags if the special track
-        // total migration value "//" indicates that the track total
-        // is missing and needs to be reloaded.
-        qDebug() << "Reloading value for 'tracktotal' once-only from file"
-                " to replace the default value introduced with a previous"
-                " schema upgrade";
-        mixxx::TrackMetadata trackMetadata;
-        if (SoundSourceProxy(pTrack).importTrackMetadata(&trackMetadata) == mixxx::MetadataSource::ImportResult::Succeeded) {
-            // Copy the track total from the temporary track object
-            pTrack->setTrackTotal(trackMetadata.getTrackInfo().getTrackTotal());
-            // Also set the track number if it is still empty due
-            // to insufficient parsing capabilities of Mixxx in
-            // previous versions.
-            if (!trackMetadata.getTrackInfo().getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                pTrack->setTrackNumber(trackMetadata.getTrackInfo().getTrackNumber());
-            }
-        } else {
-            qWarning() << "Failed to reload value for 'tracktotal' from file tags:"
-                    << trackLocation;
-        }
-    }
-
     // Listen to dirty and changed signals
     connect(pTrack.get(),
             &Track::dirty,
@@ -1969,10 +1942,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         "WHERE id=:track_id");
 
 
-    QString currentDirectoryPath;
-    MDir currentDirectory;
-    QLinkedList<QFileInfo> possibleCovers;
-
+    CoverInfoGuesser coverInfoGuesser;
     for (const auto& track: tracksWithoutCover) {
         if (*pCancel) {
             return;
@@ -1987,35 +1957,15 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
             continue;
         }
 
-        QImage image(CoverArtUtils::extractEmbeddedCover(trackFile));
-        if (!image.isNull()) {
-            updateQuery.bindValue(":coverart_type",
-                                  static_cast<int>(CoverInfo::METADATA));
-            updateQuery.bindValue(":coverart_source",
-                                  static_cast<int>(CoverInfo::GUESSED));
-            // TODO() here we may introduce a duplicate hash code
-            updateQuery.bindValue(":coverart_hash",
-                                  CoverArtUtils::calculateHash(image));
-            updateQuery.bindValue(":coverart_location", "");
-            updateQuery.bindValue(":track_id", track.trackId.toVariant());
-            if (!updateQuery.exec()) {
-                LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
-            } else {
-                pTracksChanged->insert(track.trackId);
-            }
-            continue;
-        }
-
-        if (track.directoryPath != currentDirectoryPath) {
-            possibleCovers.clear();
-            currentDirectoryPath = track.directoryPath;
-            currentDirectory = MDir(currentDirectoryPath);
-            possibleCovers = CoverArtUtils::findPossibleCoversInFolder(
-                currentDirectoryPath);
-        }
-
-        CoverInfoRelative coverInfo = CoverArtUtils::selectCoverArtForTrack(
-            trackFile, track.trackAlbum, possibleCovers);
+        const auto embeddedCover =
+                CoverArtUtils::extractEmbeddedCover(
+                        trackFile);
+        const auto coverInfo =
+                coverInfoGuesser.guessCoverInfo(
+                        trackFile,
+                        track.trackAlbum,
+                        embeddedCover);
+        DEBUG_ASSERT(coverInfo.source != CoverInfo::UNKNOWN);
 
         updateQuery.bindValue(":coverart_type",
                               static_cast<int>(coverInfo.type));
