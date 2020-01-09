@@ -1124,24 +1124,20 @@ DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, valu
     switch(control) {
         case 0x2A: // PARAMETER 2 -
             if (this.currentMode.param2MinusButton) {
-                print('param2-');
                 button = this.currentMode.param2MinusButton;
                 break;
             }
             /* falls through */
         case 0x28: // PARAMETER -
-            print('param-');
             button = this.currentMode.paramMinusButton;
             break;
         case 0x2B: // PARAMETER 2 +
             if (this.currentMode.param2PlusButton) {
-                print('param2+');
                 button = this.currentMode.param2PlusButton;
                 break;
             }
             /* falls through */
         case 0x29: // PARAMETER +
-            print('param+');
             button = this.currentMode.paramPlusButton;
             break;
     }
