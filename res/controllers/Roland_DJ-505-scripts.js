@@ -1117,12 +1117,36 @@ DJ505.PadSection.prototype.padModeButtonPressed = function (channel, control, va
 };
 
 DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, value, status, group) {
-    if (this.currentMode && this.currentMode.paramPlusButton && this.currentMode.paramMinusButton) {
-        if (control & 1) {
-            this.currentMode.paramPlusButton.input(channel, control, value, status, group);
-        } else {
-            this.currentMode.paramMinusButton.input(channel, control, value, status, group);
-        }
+    if (!this.currentMode) {
+        return;
+    }
+    var button;
+    switch(control) {
+        case 0x2A: // PARAMETER 2 -
+            if (this.currentMode.param2MinusButton) {
+                print('param2-');
+                button = this.currentMode.param2MinusButton;
+                break;
+            }
+            /* falls through */
+        case 0x28: // PARAMETER -
+            print('param-');
+            button = this.currentMode.paramMinusButton;
+            break;
+        case 0x2B: // PARAMETER 2 +
+            if (this.currentMode.param2PlusButton) {
+                print('param2+');
+                button = this.currentMode.param2PlusButton;
+                break;
+            }
+            /* falls through */
+        case 0x29: // PARAMETER +
+            print('param+');
+            button = this.currentMode.paramPlusButton;
+            break;
+    }
+    if (button) {
+        button.input(channel, control, value, status, group);
     }
 };
 
@@ -1217,6 +1241,18 @@ DJ505.HotcueMode = function (deck, offset) {
         mode: this,
         outKey: "beats_translate_later",
         inKey: "beats_translate_later",
+    });
+    this.param2MinusButton = new components.Button({
+        midi: [0x94 + offset, 0x2A],
+        mode: this,
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
+    });
+    this.param2PlusButton = new components.Button({
+        midi: [0x94 + offset, 0x2B],
+        mode: this,
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
     });
 };
 DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);

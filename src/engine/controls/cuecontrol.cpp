@@ -197,6 +197,23 @@ CueControl::CueControl(QString group,
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
     m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
+
+    m_pHotcueFocus = new ControlObject(ConfigKey(group, "hotcue_focus"));
+    m_pHotcueFocus->set(Cue::kNoHotCue);
+
+    m_pHotcueFocusColorPrev = new ControlObject(ConfigKey(group, "hotcue_focus_color_prev"));
+    connect(m_pHotcueFocusColorPrev,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::hotcueFocusColorPrev,
+            Qt::DirectConnection);
+
+    m_pHotcueFocusColorNext = new ControlObject(ConfigKey(group, "hotcue_focus_color_next"));
+    connect(m_pHotcueFocusColorNext,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::hotcueFocusColorNext,
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -236,6 +253,9 @@ CueControl::~CueControl() {
     delete m_pOutroEndActivate;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
+    delete m_pHotcueFocus;
+    delete m_pHotcueFocusColorPrev;
+    delete m_pHotcueFocusColorNext;
     qDeleteAll(m_hotcueControls);
 }
 
@@ -314,6 +334,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
+        m_pHotcueFocus->set(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
     }
 
@@ -709,6 +730,8 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             hotcueActivatePreview(pControl, v);
         }
     }
+
+    m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
@@ -767,6 +790,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
     }
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
+    m_pHotcueFocus->set(Cue::kNoHotCue);
 }
 
 void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
@@ -1643,6 +1667,68 @@ SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
             static_cast<int>(SeekOnLoadMode::IntroStart));
     return static_cast<SeekOnLoadMode>(configValue);
+}
+
+void CueControl::hotcueFocusColorPrev(double v) {
+    if (!v) {
+        return;
+    }
+
+    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
+    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    if (!pControl) {
+        return;
+    }
+
+    PredefinedColorPointer pColor = pControl->getColor();
+    if (!pColor) {
+        return;
+    }
+
+    // Get previous color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) - 1;
+    if (iColorIndex <= 0) {
+        iColorIndex = Color::kPredefinedColorsSet.allColors.size() - 1;
+    }
+    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    pControl->setColor(pColor);
+}
+
+void CueControl::hotcueFocusColorNext(double v) {
+    if (!v) {
+        return;
+    }
+
+    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
+    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    if (!pControl) {
+        return;
+    }
+
+    PredefinedColorPointer pColor = pControl->getColor();
+    if (!pColor) {
+        return;
+    }
+
+    // Get next color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) + 1;
+    if (iColorIndex >= Color::kPredefinedColorsSet.allColors.size()) {
+        iColorIndex = 0;
+    }
+    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    pControl->setColor(pColor);
 }
 
 
