@@ -35,8 +35,10 @@ void ControlIndicator::slotGuiTick50ms(double cpuTime) {
         case RATIO1TO1_250MS:
             toggle(0.25);
             break;
-        case OFF: // fall through
-        case ON: // fall through
+        case OFF:
+            [[fallthrough]];
+        case ON:
+            [[fallthrough]];
         default:
             // nothing to do
             break;
