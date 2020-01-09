@@ -33,28 +33,20 @@ public:
     TrackMetadata& operator=(TrackMetadata&&) = default;
     TrackMetadata& operator=(const TrackMetadata&) = default;
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues() {
-        refAlbumInfo().resetUnsupportedValues();
-        refTrackInfo().resetUnsupportedValues();
-    }
-
     // Adjusts floating-point values to match their string representation
     // in file tags to account for rounding errors.
-    void normalizeBeforeExport() {
-        refAlbumInfo().normalizeBeforeExport();
-        refTrackInfo().normalizeBeforeExport();
-    }
+    void normalizeBeforeExport();
 
-    // Compares the contents with metadata that has been freshly imported
-    // from a file.
-    bool hasBeenModifiedAfterImport(const TrackMetadata& importedFromFile) const {
-        // NOTE(uklotzde): The read-only audio properties might differ after
-        // they have been updated while decoding audio data. They are read-only
-        // and must not be considered when exporting metadata.
-        return (getAlbumInfo() != importedFromFile.getAlbumInfo()) ||
-                (getTrackInfo() != importedFromFile.getTrackInfo());
-    }
+    // Returns true if the current metadata differs from the imported metadata
+    // and needs to be exported. A result of false indicates that no export
+    // is needed.
+    // NOTE: Some tag formats like ID3v1/v2 only support integer precision
+    // for storing bpm values. To avoid re-exporting unmodified track metadata
+    // with fractional bpm values over and over again the comparison of bpm
+    // values should be restricted to integer.
+    bool anyFileTagsModified(
+            const TrackMetadata& importedFromFile,
+            Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 
     // Parse an format date/time values according to ISO 8601
     static QDate parseDate(QString str) {

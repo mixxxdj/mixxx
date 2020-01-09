@@ -16,6 +16,7 @@ using namespace QKeychain;
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "util/compatibility.h"
 #include "util/xml.h"
 #include "util/memory.h"
 #include "util/logger.h"
@@ -429,7 +430,7 @@ void BroadcastProfile::setConnectionStatus(int newState) {
 }
 
 int BroadcastProfile::connectionStatus() {
-    return m_connectionStatus.load();
+    return atomicLoadRelaxed(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {

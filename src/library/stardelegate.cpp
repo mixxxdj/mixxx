@@ -82,7 +82,7 @@ void StarDelegate::setEditorData(QWidget* editor,
 void StarDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                 const QModelIndex& index) const {
     StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
-    model->setData(index, qVariantFromValue(starEditor->starRating()));
+    model->setData(index, QVariant::fromValue(starEditor->starRating()));
 }
 
 void StarDelegate::commitAndCloseEditor() {
