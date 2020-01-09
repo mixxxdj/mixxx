@@ -1263,6 +1263,7 @@ DJ505.CueLoopMode = function (deck, offset) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 1;
         this.outKey = "hotcue_" + this.number + "_enabled";
+        this.colorIdKey = "hotcue_" + this.number + "_color_id";
 
         components.Button.call(this);
     };
@@ -1326,6 +1327,44 @@ DJ505.CueLoopMode = function (deck, offset) {
                     }
                 }
             };
+        },
+        output: function(value) {
+            var outval = this.outValueScale(value);
+            // WARNING: outputColor only handles hotcueColors
+            // and there is no hotcueColor for turning the LED
+            // off. So the `send()` function is responsible for turning the
+            // actual LED off.
+            if (this.colorIdKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorIdKey));
+            } else {
+                this.send(outval);
+            }
+        },
+        outputColor: function (id) {
+            var color = this.colors[id];
+            if (color instanceof Array) {
+                if (color.length !== 3) {
+                    print("ERROR: invalid color array for id: " + id);
+                    return;
+                }
+                if (this.sendRGB === undefined) {
+                    print("ERROR: no function defined for sending RGB colors");
+                    return;
+                }
+                this.sendRGB(color);
+            } else if (typeof color === 'number') {
+                this.send(color);
+            }
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorIdKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                    if (engine.getValue(this.group,this.outKey)) {
+                        this.outputColor(id);
+                    }
+                });
+            }
         },
     });
 
