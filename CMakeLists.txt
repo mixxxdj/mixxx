@@ -765,7 +765,7 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    if(NOT STATIC_DEPS OR DEBUG)
+    if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
@@ -880,6 +880,20 @@ include(CPack)
 #
 # Tests
 #
+
+# CMake + googletest: https://crascit.com/2015/07/25/cmake-gtest/
+
+# Prevent GoogleTest from overriding our compiler/linker options
+# when building with Visual Studio
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+# Add googletest directly to our build. This adds the following targets:
+# gtest, gtest_main, gmock and gmock_main
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
+)
+
 add_executable(mixxx-test
   src/test/analyserwaveformtest.cpp
   src/test/analyzersilence_test.cpp
@@ -965,69 +979,7 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PUBLIC mixxx-lib)
-
-set(GTEST_CMAKE_ARGS "")
-set(GMOCK_CMAKE_ARGS "")
-if(MSVC)
-  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
-  # been deprecated and throws a warning. If /W3 is used, this causes an
-  # error. This suppresses the warning/error until we pull in the fixes from
-  # upstream.
-  # See this for details: https://github.com/google/googletest/issues/1111
-  set(GTEST_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-  set(GMOCK_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-
-  # Use shared CRT when linking gtest to prevent error LNK2038: mismatch
-  # detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value
-  # 'MD_DynamicRelease'
-  set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
-  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
-
-  # Work around the Release/Debug subdirectories on Windows
-  foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER "${OUTPUT_CONFIG}" OUTPUT_CONFIG)
-    set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
-    set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0")
-  endforeach()
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
-       OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_CXX_FLAGS=-Wno-deprecated-copy")
-endif()
-
-# gtest
-ExternalProject_Add(mixxx-gtest
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GTEST_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
-add_dependencies(mixxx-test mixxx-gtest)
-target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
-)
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-
-# gmock
-ExternalProject_Add(mixxx-gmock
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GMOCK_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
-add_dependencies(mixxx-test mixxx-gmock)
-target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
-)
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
 
 # Benchmark
 add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
@@ -1230,16 +1182,10 @@ endif()
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
-# gtest
-target_include_directories(mixxx-lib SYSTEM PUBLIC lib/gtest-1.7.0/include)
-if(MSVC)
-  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
-  # been deprecated and throws a warning. If /W3 is used, this causes an
-  # error. This suppresses the warning/error until we pull in the fixes from
-  # upstream.
-  # See this for details: https://github.com/google/googletest/issues/1111
-  target_compile_definitions(mixxx-lib PUBLIC _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
-endif()
+# googletest
+# Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
+# in production code
+target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 
 # LAME
 find_package(LAME REQUIRED)
