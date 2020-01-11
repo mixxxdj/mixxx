@@ -801,10 +801,10 @@ void ControlPickerMenu::addSingleControl(QString group, QString control,
         actionTitle = title;
     }
 
-    auto pAction = std::make_unique<QAction>(actionTitle, pMenu);
-    connect(pAction.get(), &QAction::triggered,
+    auto pAction = new QAction(actionTitle, pMenu);
+    connect(pAction, &QAction::triggered,
             this, [this, controlIndex] { controlChosen(controlIndex); });
-    pMenu->addAction(pAction.get());
+    pMenu->addAction(pAction);
 
     if (prefix.isEmpty()) {
         addAvailableControl(ConfigKey(group, control), title, description);
