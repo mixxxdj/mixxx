@@ -5,6 +5,9 @@
 // * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
 // * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
 //
+// Upstream MIDI spec:
+// * https://www.pioneerdj.com/-/media/pioneerdj/software-info/controller/ddj-400/ddj-400_midi_message_list_e1.pdf
+//
 //             Working:
 //                 * Mixer Section (Faders, EQ, Filter, Gain, Cue)
 //                 * Browsing and loading + Waveform zoom (shift)
