@@ -33,9 +33,9 @@ class ControlPickerMenu : public QMenu {
     void addSingleControl(QString group, QString control,
                           QString title, QString description,
                           QMenu* pMenu,
-                          QString prefix = "", QString actionTitle = "");
+                          QString prefix=QString(), QString actionTitle=QString());
     void addControl(QString group, QString control, QString title,
-                    QString helpText, QMenu* pMenu, bool addReset=false, QString prefix = "");
+                    QString helpText, QMenu* pMenu, bool addReset=false, QString prefix=QString());
     void addPlayerControl(QString control, QString title, QString helpText,
                           QMenu* pMenu, bool deckControls, bool samplerControls,
                           bool previewdeckControls, bool addReset=false);
