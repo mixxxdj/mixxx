@@ -648,30 +648,35 @@ class TestSuite(Feature):
 
         # Clone our main environment so we don't change any settings in the
         # Mixxx environment
-        test_env = build.env.Clone()
+        env = build.env.Clone()
+        SCons.Export('env')
+        SCons.Export('build')
 
         # -pthread tells GCC to do the right thing regardless of system
         if build.toolchain_is_gnu:
-            test_env.Append(CCFLAGS='-pthread')
-            test_env.Append(LINKFLAGS='-pthread')
+            env.Append(CCFLAGS='-pthread')
+            env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/googletest/googletest/include")
-        gtest_dir = test_env.Dir("lib/googletest/googletest")
-
-        env = test_env
-        SCons.Export('env')
-        SCons.Export('build')
+        # Build gtest
+        env.Append(CPPPATH="#lib/googletest/googletest/include")
+        gtest_dir = env.Dir("lib/googletest/googletest")
         env.SConscript(env.File('SConscript', gtest_dir))
+        build.env.Append(LIBPATH=gtest_dir)
+        build.env.Append(LIBS=['gtest'])
 
-        # build and configure gmock
-        test_env.Append(CPPPATH="#lib/googletest/googlemock/include")
-        gmock_dir = test_env.Dir("lib/googletest/googlemock")
+        # Build gmock
+        env.Append(CPPPATH="#lib/googletest/googlemock/include")
+        gmock_dir = env.Dir("lib/googletest/googlemock")
         env.SConscript(env.File('SConscript', gmock_dir))
+        build.env.Append(LIBPATH=gmock_dir)
+        build.env.Append(LIBS=['gmock'])
 
         # Build the benchmark library
-        test_env.Append(CPPPATH="#lib/benchmark/include")
-        benchmark_dir = test_env.Dir("lib/benchmark")
+        env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = env.Dir("lib/benchmark")
         env.SConscript(env.File('SConscript', benchmark_dir))
+        build.env.Append(LIBPATH=benchmark_dir)
+        build.env.Append(LIBS=['benchmark'])
 
         return []
 
