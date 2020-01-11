@@ -482,9 +482,10 @@ void WTrackTableView::createActions() {
         m_updateInExternalTrackCollections += updateInExternalTrackCollection;
         auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
         connect(updateInExternalTrackCollection.action, &QAction::triggered,
-                this, [=](){
-                    slotUpdateExternalTrackCollection(externalTrackCollectionPtr);});
-    }
+                this, [this, externalTrackCollectionPtr] {
+                    slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
+                });
+        }
 
     m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
