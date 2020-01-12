@@ -622,6 +622,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         return;
     }
 
+    // Note: this can be a delayed call of playerPositionChanged() where
+    // the track was playing, but is now stopped.
     bool thisDeckPlaying = thisDeck->isPlaying();
     bool otherDeckPlaying = otherDeck->isPlaying();
 
@@ -642,10 +644,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             leftDeck = otherDeck;
         }
 
+        // Note: If a playing deck has reached the end the play state is already reset
         bool leftDeckPlaying = leftDeck->isPlaying();
         bool rightDeckPlaying = rightDeck->isPlaying();
+        bool leftDeckReachesEnd = thisDeck->isLeft() && thisPlayPosition >= 1.0;
 
-        if (leftDeckPlaying || rightDeckPlaying) {
+        if (leftDeckPlaying || rightDeckPlaying || leftDeckReachesEnd) {
             // One of left and right is playing. Switch to IDLE mode and make
             // sure our thresholds are configured (by calling calculateFadeThresholds
             // for the playing deck).
@@ -911,6 +915,12 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
 
     if (m_eState != ADJ_IDLE) {
         // We don't want to recalculate a running transition
+        return;
+    }
+
+    if (thisDeck->loading) {
+        // Note: When loading a new deck this signal arrives before the
+        // playerTrackLoaded();
         return;
     }
 
@@ -1424,6 +1434,10 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
                     // Note: this seek will trigger the playerPositionChanged slot
                     // which may calls the calculateTransition() again without seek = true;
                     pDeck->setPlayPosition(pDeck->startPos);
+                }
+                if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
+                    // repeat a probably missed update
+                    playerPositionChanged(fromDeck, 1.0);
                 }
             }
         }
