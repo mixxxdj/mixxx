@@ -13,6 +13,8 @@
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
+#include "util/memory.h"
+
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
   public:
@@ -91,6 +93,7 @@ class WMainMenuBar : public QMenuBar {
     ControlObject* m_pConfigTrainingmodeEnabled;
     QSignalMapper m_loadToDeckMapper;
     QSignalMapper m_visitUrlMapper;
+    std::unique_ptr<ControlObject> m_pConfigTrainingmodeEnabled;
     QList<QAction*> m_loadToDeckActions;
     QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;

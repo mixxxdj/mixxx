@@ -3,7 +3,7 @@
 PlayCounter::PlayCounter(int timesPlayed)
         : m_iTimesPlayed(timesPlayed),
           m_bPlayed(false) {
-    m_pTrainingmodeEnabled = new ControlProxy("[TrainingMode]", "enabled");
+    m_pTrainingmodeEnabled = std::make_shared<ControlProxy>("[TrainingMode]", "enabled");
 }
 
 void PlayCounter::setPlayedAndUpdateTimesPlayed(bool bPlayed) {

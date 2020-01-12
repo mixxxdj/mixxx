@@ -363,7 +363,7 @@ void WMainMenuBar::initialize() {
 #endif
 
     // TrainingMode
-    m_pConfigTrainingmodeEnabled = new ControlObject(ConfigKey("[TrainingMode]", "enabled"));
+    m_pConfigTrainingmodeEnabled = std::make_unique<ControlObject>(ConfigKey("[TrainingMode]", "enabled"));
     QString TrainingmodeTitle = tr("Enable Training Mode");
     QString TrainingmodeText = tr("In training mode the play counter will not be increased");
     auto pOptionsTrainingmode = make_parented<QAction>(TrainingmodeTitle, this);

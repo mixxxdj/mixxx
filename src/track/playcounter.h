@@ -4,11 +4,13 @@
 #include "control/controlproxy.h"
 #include "util/assert.h"
 
+#include "util/memory.h"
+
 // Counts the total number of times a track has been played
 // and if the track has been played during the current session.
 class PlayCounter {
 public:
-  explicit PlayCounter(int timesPlayed = 0);
+    explicit PlayCounter(int timesPlayed = 0);
 
     // Sets total number of times a track has been played
     void setTimesPlayed(int iTimesPlayed) {
@@ -37,7 +39,7 @@ public:
 private:
     int m_iTimesPlayed;
     bool m_bPlayed;
-    ControlProxy* m_pTrainingmodeEnabled;
+    std::shared_ptr<ControlProxy> m_pTrainingmodeEnabled;
 };
 
 bool operator==(const PlayCounter& lhs, const PlayCounter& rhs);
