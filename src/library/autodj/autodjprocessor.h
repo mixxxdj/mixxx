@@ -50,10 +50,6 @@ class DeckAttributes : public QObject {
         return m_playPos.get();
     }
 
-    double trackTime() const;
-
-    double timeElapsed() const;
-
     void setPlayPosition(double playpos) {
         m_playPos.set(playpos);
     }
@@ -86,8 +82,8 @@ class DeckAttributes : public QObject {
         return m_sampleRate.get();
     }
 
-    double trackDuration() const {
-        return m_duration.get();
+    double trackSamples() const {
+        return m_trackSamples.get();
     }
 
     double rateRatio() const {
@@ -138,8 +134,8 @@ class DeckAttributes : public QObject {
     ControlProxy m_introEndPos;
     ControlProxy m_outroStartPos;
     ControlProxy m_outroEndPos;
+    ControlProxy m_trackSamples;
     ControlProxy m_sampleRate;
-    ControlProxy m_duration;
     ControlProxy m_rateRatio;
     BaseTrackPlayer* m_pPlayer;
 };
@@ -257,6 +253,7 @@ class AutoDJProcessor : public QObject {
     double getOutroEndPosition(DeckAttributes* pDeck);
     double getFirstSoundPosition(DeckAttributes* pDeck);
     double getLastSoundPosition(DeckAttributes* pDeck);
+    double getEndPosition(DeckAttributes* pDeck);
     double samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
