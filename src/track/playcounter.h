@@ -10,10 +10,10 @@ class PlayCounter {
 public:
   explicit PlayCounter(int timesPlayed = 0);
 
-  // Sets total number of times a track has been played
-  void setTimesPlayed(int iTimesPlayed) {
-      DEBUG_ASSERT(0 <= iTimesPlayed);
-      m_iTimesPlayed = iTimesPlayed;
+    // Sets total number of times a track has been played
+    void setTimesPlayed(int iTimesPlayed) {
+        DEBUG_ASSERT(0 <= iTimesPlayed);
+        m_iTimesPlayed = iTimesPlayed;
     }
     // Returns the total number of times a track has been played
     int getTimesPlayed() const {
