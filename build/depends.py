@@ -450,6 +450,8 @@ class Qt(Dependence):
         else:
             # GCC/Clang
             build.env.Append(CXXFLAGS='-std=c++17')
+            if build.platform_is_osx and build.compiler_is_clang:
+                build.env.Append(CXXFLAGS='-faligned-allocation')
 
 
 class TestHeaders(Dependence):
