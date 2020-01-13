@@ -2196,8 +2196,11 @@ QToolTip {
  ################### most of it was LateNight & Deere ##########
 ############ added styling for AutoDJ & Recording etc ##### */
 
+#SearchBoxContainer {
+  margin-bottom: 5px;
+}
+
 #LibMiniMaxiButton {
-  margin-bottom: 12px;
   }
   #LibMiniMaxiButton[displayValue="0"] {
     image: url(skin:/buttons/btn_lib_maxi.svg) no-repeat center top;
@@ -2711,15 +2714,18 @@ WSearchLineEdit {
   }
   /* Clear button */
   WSearchLineEdit QToolButton {
-/*  Somehow the default size is alway 19x19 px */
+  /*  Somehow the default size is alway 19x19 px */
+  /* Dummy icon
+    qproperty-icon: url(""); */
     }
     /* ToDo move this to default.qss */
-    WSearchLineEdit QToolButton:!focus {
-      qproperty-icon: url(skin:/buttons/btn_lib_clear_search.svg);
-    }
-    WSearchLineEdit QToolButton:focus {
-      qproperty-icon: url(skin:/buttons/btn_lib_clear_search_focus.svg);
-    }
+  /* Clear button */
+  WSearchLineEdit QToolButton:!focus {
+    image: url(skin:/buttons/btn_lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
+  }
 
 WLibrary QLabel,
 WLibrary QRadioButton {	/*
