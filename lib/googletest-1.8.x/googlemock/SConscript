@@ -6,14 +6,7 @@ env.Prepend(CPPPATH = ['.', '../include'])
 
 # Sources used by base library and library that includes main.
 gmock_source = 'src/gmock-all.cc'
-gmock_main_source = 'src/gmock_main.cc'
 
 # gmock.lib to be used by most apps (if you have your own main
 # function)
-gmock = env.StaticLibrary(target='gmock',
-                          source=[gmock_source])
-
-# gmock_main.lib can be used if you just want a basic main function;
-# it is also used by the tests for Google Test itself.
-gmock_main = env.StaticLibrary(target='gmock_main',
-                               source=[gmock_source, gmock_main_source])
+gmock = env.StaticLibrary(target='gmock', source=gmock_source)
