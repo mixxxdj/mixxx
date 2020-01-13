@@ -71,6 +71,9 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     QToolButton* const m_clearButton;
 
+    int m_frameWidth;
+    int m_innerHeight;
+
     QColor m_foregroundColor;
 
     QTimer m_debouncingTimer;

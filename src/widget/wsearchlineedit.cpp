@@ -63,11 +63,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     setAcceptDrops(false);
 
     m_clearButton->setCursor(Qt::ArrowCursor);
-    m_clearButton->setToolTip(tr("Clear input") + "\n" +
-            tr("Clear the search bar input field") + "\n\n" +
-
-            tr("Shortcut") + ": \n" +
-            tr("Ctrl+Backspace"));
+    m_clearButton->setObjectName("SearchClearButton");
+    // Assume the qss border is at least 1px wide
+    m_frameWidth = 1;
     m_clearButton->hide();
     connect(m_clearButton,
             SIGNAL(clicked()),
@@ -95,12 +93,10 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this,
             SLOT(triggerSearch()));
 
-    // The width of the frame for the widget based on the styling.
-    const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     QSize clearButtonSize = m_clearButton->sizeHint();
     // Ensures the text does not obscure the clear image.
     setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
-                          .arg(clearButtonSize.width() + frameWidth + 1));
+                          .arg(clearButtonSize.width() + m_frameWidth + 1));
 
     showPlaceholder();
 }
@@ -156,30 +152,41 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     pal.setBrush(backgroundRole(), backgroundColor);
     pal.setBrush(foregroundRole(), m_foregroundColor);
     setPalette(pal);
+
+    m_clearButton->setToolTip(tr("Clear input") + "\n" +
+            tr("Clear the search bar input field") + "\n\n" +
+
+            tr("Shortcut") + ": \n" +
+            tr("Ctrl+Backspace"));
+
+    setToolTip(tr("Search", "noun") + "\n" +
+            tr("Enter a string to search for") + "\n" +
+            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") + "\n" +
+            tr("For more information see User Manual > Mixxx Library") + "\n\n" +
+
+            tr("Shortcut") + ": \n" +
+            tr("Ctrl+F") + "  " + tr("Focus", "Give search bar input focus") + "\n" +
+            tr("Ctrl+Backspace") + "  " + tr("Clear input", "Clear the search bar input field") + "\n" +
+            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
-    // Assume the qss border is at least 1px wide
-    int frameWidth = 1;
-    int innerHeight = this->height() - 2 * frameWidth;
+    m_innerHeight = this->height() - 2 * m_frameWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
     // we will resize the Clear button icon only if height has changed.
-    if (m_clearButton->size().height() != innerHeight) {
-        QSize newSize = QSize(innerHeight, innerHeight);
-        m_clearButton->resize(innerHeight, innerHeight);
+    if (m_clearButton->size().height() != m_innerHeight) {
+        QSize newSize = QSize(m_innerHeight, m_innerHeight);
+        m_clearButton->resize(m_innerHeight, m_innerHeight);
         m_clearButton->setIconSize(newSize);
     }
-    int top = rect().top() + frameWidth;
+    int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {
-        m_clearButton->move(rect().right() - innerHeight - frameWidth, top);
+        m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth, top);
     } else {
-        m_clearButton->move(frameWidth, top);
+        m_clearButton->move(m_frameWidth, top);
     }
-    // Reassure the text won't be drawn behind the Clear button icon
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
-                          .arg(innerHeight + frameWidth));
 }
 
 QString WSearchLineEdit::getSearchText() const {
@@ -231,15 +238,6 @@ void WSearchLineEdit::showPlaceholder() {
     m_state = State::Inactive;
 
     setText(tr("Search...", "noun"));
-    setToolTip(tr("Search", "noun") + "\n" +
-            tr("Enter a string to search for") + "\n" +
-            tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") + "\n" +
-            tr("For more information see User Manual > Mixxx Library") + "\n\n" +
-
-            tr("Shortcut") + ": \n" +
-            tr("Ctrl+F") + "  " + tr("Focus", "Give search bar input focus") + "\n" +
-            tr("Ctrl+Backspace") + "  " + tr("Clear input", "Clear the search bar input field") + "\n" +
-            tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);
@@ -280,7 +278,16 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
 }
 
 void WSearchLineEdit::updateClearButton(const QString& text) {
-    m_clearButton->setVisible(!text.isEmpty() && (m_state == State::Active));
+    if (!text.isEmpty() && (m_state == State::Active)) {
+        m_clearButton->setVisible(true);
+        // make sure the text won't be drawn behind the Clear button icon
+        setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
+                              .arg(m_innerHeight + m_frameWidth));
+    } else {
+        m_clearButton->setVisible(false);
+        // no right padding
+        setStyleSheet(QString("QLineEdit { padding-right: 0px; } "));
+    }
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {
