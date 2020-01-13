@@ -2,7 +2,7 @@ Import('env')
 env = env.Clone()
 
 # Add root and include folders
-env.Prepend(CPPPATH = ['.', '../include'])
+env.Prepend(CPPPATH = ['.', '../include', '../../googletest/include'])
 
 # Sources used by base library and library that includes main.
 gmock_source = 'src/gmock-all.cc'
