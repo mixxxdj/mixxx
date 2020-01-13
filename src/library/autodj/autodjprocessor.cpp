@@ -246,10 +246,14 @@ void AutoDJProcessor::fadeNow() {
     pFromDeck->isFromDeck = true;
     pToDeck->isFromDeck = false;
 
-    double fromDeckEndPosition = getEndPosition(pFromDeck);
-    double toDeckEndPosition = getEndPosition(pToDeck);
-    double fromDeckCurrentPosition = fromDeckEndPosition * pFromDeck->playPosition();
-    double toDeckCurrentPosition = toDeckEndPosition * pToDeck->playPosition();
+    const double fromDeckEndPosition = getEndPosition(pFromDeck);
+    const double toDeckEndPosition = getEndPosition(pToDeck);
+    // Since the end position is measured in seconds from 0:00 it is also
+    // the track duration. Use this alias for better readability.
+    const double fromDeckDuration = fromDeckEndPosition;
+    const double toDeckDuration = toDeckEndPosition;
+    const double fromDeckCurrentPosition = fromDeckDuration * pFromDeck->playPosition();
+    const double toDeckCurrentPosition = toDeckDuration * pToDeck->playPosition();
 
     pFromDeck->fadeBeginPos = fromDeckCurrentPosition;
     // Do not seek to a calculated start point; start the to deck from wherever
@@ -1128,10 +1132,14 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    double fromTrackEndPosition = getEndPosition(pFromDeck);
-    double toTrackEndPosition = getEndPosition(pToDeck);
+    const double fromDeckEndPosition = getEndPosition(pFromDeck);
+    const double toDeckEndPosition = getEndPosition(pToDeck);
+    // Since the end position is measured in seconds from 0:00 it is also
+    // the track duration. Use this alias for better readability.
+    const double fromDeckDuration = fromDeckEndPosition;
+    const double toDeckDuration = toDeckEndPosition;
 
-    VERIFY_OR_DEBUG_ASSERT(fromTrackEndPosition > 0) {
+    VERIFY_OR_DEBUG_ASSERT(fromDeckDuration > 0) {
         // Playing Track has no duration. This should not happen, because short
         // tracks are skipped after load. Play ToDeck immediately.
         pFromDeck->fadeBeginPos = 0;
@@ -1139,7 +1147,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pToDeck->startPos = kKeepPosition;
         return;
     }
-    if (toTrackEndPosition <= 0) {
+    if (toDeckDuration <= 0) {
         // Playing Track has no duration. This should not happen, because short
         // tracks are skipped after load.
         loadNextTrackFromQueue(*pToDeck, false);
@@ -1151,10 +1159,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double outroEnd = getOutroEndPosition(pFromDeck);
     double outroStart = getOutroStartPosition(pFromDeck);
-    double fromDeckPosition = fromTrackEndPosition * pFromDeck->playPosition();
+    const double fromDeckPosition = fromDeckDuration * pFromDeck->playPosition();
 
-    VERIFY_OR_DEBUG_ASSERT(outroEnd <= fromTrackEndPosition) {
-        outroEnd = fromTrackEndPosition;
+    VERIFY_OR_DEBUG_ASSERT(outroEnd <= fromDeckEndPosition) {
+        outroEnd = fromDeckEndPosition;
     }
 
     if (fromDeckPosition > outroStart) {
@@ -1162,12 +1170,12 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // This can happen if we have just enabled auto DJ
         outroStart = fromDeckPosition;
         if (fromDeckPosition > outroEnd) {
-            outroEnd = math_min(outroStart + fabs(m_transitionTime), fromTrackEndPosition);
+            outroEnd = math_min(outroStart + fabs(m_transitionTime), fromDeckEndPosition);
         }
     }
     double outroLength = outroEnd - outroStart;
 
-    double toDeckPosition = toTrackEndPosition * pToDeck->playPosition();
+    double toDeckPosition = toDeckDuration * pToDeck->playPosition();
     // Store here a possible fadeBeginPos for the transition after next
     // This is used to check if it will be possible or a re-cue is required.
     // here it is done for FullIntroOutro and FadeAtOutroStart.
@@ -1326,7 +1334,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     case TransitionMode::FixedFullTrack:
     default: {
         double startPoint;
-        pToDeck->fadeBeginPos = toTrackEndPosition;
+        pToDeck->fadeBeginPos = toDeckEndPosition;
         if (seekToStartPoint || toDeckPosition >= pToDeck->fadeBeginPos) {
             // toDeckPosition >= pToDeck->fadeBeginPos happens when the
             // user has seeked or played the to track behind fadeBeginPos of
@@ -1336,16 +1344,16 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         } else {
             startPoint = toDeckPosition;
         }
-        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromTrackEndPosition, startPoint);
+        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
         }
     }
 
     // These are expected to be a fraction of the track length.
-    pFromDeck->fadeBeginPos /= fromTrackEndPosition;
-    pFromDeck->fadeEndPos /= fromTrackEndPosition;
-    pToDeck->startPos /= toTrackEndPosition;
-    pToDeck->fadeBeginPos /= toTrackEndPosition;
-    pToDeck->fadeEndPos /= toTrackEndPosition;
+    pFromDeck->fadeBeginPos /= fromDeckDuration;
+    pFromDeck->fadeEndPos /= fromDeckDuration;
+    pToDeck->startPos /= toDeckDuration;
+    pToDeck->fadeBeginPos /= toDeckDuration;
+    pToDeck->fadeEndPos /= toDeckDuration;
 
     pFromDeck->isFromDeck = true;
     pToDeck->isFromDeck = false;
@@ -1364,8 +1372,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
         double fromDeckPosition,
-        double endPoint,
-        double startPoint) {
+        double fadeEndPosition,
+        double toDeckStartPosition) {
     if (m_transitionTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
@@ -1374,32 +1382,32 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
             // no outro defined, the toDeck will also use the transition time
             toDeckOutroStart -= m_transitionTime;
         }
-        if (toDeckOutroStart <= startPoint) {
+        if (toDeckOutroStart <= toDeckStartPosition) {
             // we are already too late
             // Check OutroEnd as alternative, which is for all transition mode
             // better than directly default to duration()
             double end = getOutroEndPosition(pToDeck);
-            if (end <= startPoint) {
+            if (end <= toDeckStartPosition) {
                 end = getEndPosition(pToDeck);
-                VERIFY_OR_DEBUG_ASSERT(end > startPoint) {
+                VERIFY_OR_DEBUG_ASSERT(end > toDeckStartPosition) {
                     // as last resort move start point
                     // The caller makes sure that this never happens
-                    startPoint = end - 1;
+                    toDeckStartPosition = end - 1;
                 }
             }
             // use the remaining time for fading
-            toDeckOutroStart = (end - startPoint) / 2 + startPoint;
+            toDeckOutroStart = (end - toDeckStartPosition) / 2 + toDeckStartPosition;
         }
-        double transitionTime = math_min(toDeckOutroStart - startPoint,
+        double transitionTime = math_min(toDeckOutroStart - toDeckStartPosition,
                 m_transitionTime);
 
-        pFromDeck->fadeBeginPos = math_max(endPoint - transitionTime, fromDeckPosition);
-        pFromDeck->fadeEndPos = endPoint;
-        pToDeck->startPos = startPoint;
+        pFromDeck->fadeBeginPos = math_max(fadeEndPosition - transitionTime, fromDeckPosition);
+        pFromDeck->fadeEndPos = fadeEndPosition;
+        pToDeck->startPos = toDeckStartPosition;
     } else {
-        pFromDeck->fadeBeginPos = endPoint;
-        pFromDeck->fadeEndPos = endPoint;
-        pToDeck->startPos = startPoint + m_transitionTime;
+        pFromDeck->fadeBeginPos = fadeEndPosition;
+        pFromDeck->fadeEndPos = fadeEndPosition;
+        pToDeck->startPos = toDeckStartPosition + m_transitionTime;
     }
 }
 
@@ -1411,6 +1419,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
 
     pDeck->loading = false;
 
+    // Since the end position is measured in seconds from 0:00 it is also
+    // the track duration.
     double duration = getEndPosition(pDeck);
     if (duration < 0.2) {
         qWarning() << "Skip track with" << duration << "Duration"
