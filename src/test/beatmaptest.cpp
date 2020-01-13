@@ -12,7 +12,17 @@ class BeatMapTest : public testing::Test {
     BeatMapTest()
             : m_pTrack(Track::newTemporary()),
               m_iSampleRate(100),
-              m_iFrameSize(2) {
+              m_iFrameSize(2),
+              m_pMap(nullptr) {
+        const double bpm = 60.0;
+        m_pTrack->setBpm(bpm);
+        m_pTrack->setSampleRate(m_iSampleRate);
+        double beatLengthFrames = getBeatLengthFrames(bpm);
+        double startOffsetFrames = 7;
+        const int numBeats = 100;
+        // Note beats must be in frames, not samples.
+        QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+        m_pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     }
 
@@ -34,9 +44,12 @@ class BeatMapTest : public testing::Test {
         return beats;
     }
 
+
+
     TrackPointer m_pTrack;
     int m_iSampleRate;
     int m_iFrameSize;
+    std::unique_ptr<BeatMap> m_pMap;
 };
 
 TEST_F(BeatMapTest, Scale) {
@@ -292,6 +305,32 @@ TEST_F(BeatMapTest, TestBpmAround) {
     beats = createBeatVector(10, 3, getBeatLengthFrames(filebpm));
     pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
     EXPECT_DOUBLE_EQ(filebpm, pMap->getBpmAroundPosition(1 * approx_beat_length, 4));
+}
+
+TEST_F(BeatMapTest, TestSignature) {
+
+    // Undefined signature must be 4/4
+    EXPECT_TRUE(m_pMap->getSignature() == mixxx::Signature(4,4)) << "If no signature defined, signature must be 4/4";
+
+    // Add signature to the beginning
+    m_pMap->setSignature(mixxx::Signature(3,4));
+
+    // Add signature in beats not at the beginning
+    m_pMap->setSignature(mixxx::Signature(5,4), 1000);
+    m_pMap->setSignature(mixxx::Signature(5,3), 5000);
+
+    EXPECT_TRUE(m_pMap->getSignature() == mixxx::Signature(3,4)) << "Starting Signature must be 3/4";
+    EXPECT_TRUE(m_pMap->getSignature(500) == mixxx::Signature(3,4)) << "Signature at 500 must be 3/4";
+    EXPECT_TRUE(m_pMap->getSignature(1000) == mixxx::Signature(5,4)) << "Signature at 1000 must be 5/4";
+    EXPECT_TRUE(m_pMap->getSignature(5000) == mixxx::Signature(5,3)) << "Signature at 5000 must be 5/3";
+    EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::Signature(5,3)) << "Signature at 100000 must be 5/3";
+
+
+    // Add a signature past the end of the track, must have no effect, and check
+    m_pMap->setSignature(mixxx::Signature(6,4), 100000);
+    EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::Signature(5,3)) << "Signature set after the end of track must have no effect";
+
+    // Delete a signature
 }
 
 }  // namespace

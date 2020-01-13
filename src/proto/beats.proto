@@ -22,7 +22,6 @@ message Signature {
   required int32 note_value = 2;
 }
 
-// Each beat can  
 message Beat {
   optional int32 frame_position = 1;
   optional bool enabled = 2 [ default = true ];
@@ -43,5 +42,6 @@ message BeatMap {
 message BeatGrid {
   optional Bpm bpm = 1;
   optional Beat first_beat = 2;
-  repeated Beat phrase_beats = 3; 
+  // mark_beats will contain just phrase and signature information
+  repeated Beat mark_beats = 3; 
 }

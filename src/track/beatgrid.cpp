@@ -3,6 +3,7 @@
 
 #include "track/beatgrid.h"
 #include "util/math.h"
+#include "util/memory.h"
 
 static const int kFrameSize = 2;
 
@@ -370,9 +371,25 @@ void BeatGrid::setBpm(double dBpm) {
     emit(updated());
 }
 
+void BeatGrid::setSignature(mixxx::Signature sig, double dSample) {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid())
+        return;
+
+    auto offset = findPrevBeat(dSample);
+    m_grid.mutable_first_beat()->mutable_signature()->set_beats(sig.getBeats());
+    m_grid.mutable_first_beat()->mutable_signature()->set_note_value(sig.getNoteValue());
+}
+
 mixxx::Signature BeatGrid::getSignature() const {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
-        return mixxx::Signature(0,0);
-    return mixxx::Signature(m_grid.first_beat().signature().beats(),m_grid.first_beat().signature().note_value());
+        return mixxx::Signature(0, 0);
+    return mixxx::Signature(m_grid.first_beat().signature().beats(), m_grid.first_beat().signature().note_value());
+}
+
+mixxx::Signature BeatGrid::getSignature(double pos) const {
+    // BeatGrid has always the same signature
+    // TODO (jvilarroig) - FALSE!!!!
+    return getSignature();
 }

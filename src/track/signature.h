@@ -14,27 +14,31 @@ class Signature final {
     int m_noteValue;
 
   public:
-    Signature(int beats, int noteValue) {
+    inline Signature(int beats, int noteValue) {
         m_beats = beats;
         m_noteValue = noteValue;
     }
 
     virtual ~Signature() {}
 
-    void setBeats(int beats) {
+    inline void setBeats(int beats) {
         m_beats = beats;
     }
 
-    void setNoteValue(int noteValue) {
+    inline void setNoteValue(int noteValue) {
         m_noteValue = noteValue;
     }
 
-    int getBeats() {
+    inline int getBeats() {
         return m_beats;
     }
 
-    int getNoteValue() {
+    inline int getNoteValue() {
         return m_noteValue;
+    }
+
+    inline bool operator==(const Signature& signature) const {
+        return(signature.m_beats == m_beats && signature.m_noteValue == m_noteValue);
     }
 };
 

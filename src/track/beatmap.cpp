@@ -753,9 +753,53 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
 
-mixxx::Signature BeatMap::getSignature() const {
+mixxx::Signature BeatMap::getSignature(double dSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
         return mixxx::Signature(0,0);
-    return mixxx::Signature(m_beats.first().signature().beats(),m_beats.first().signature().note_value());
+
+    auto result = mixxx::Signature(4,4);
+
+    // Special case, when looking for initial Signature
+    if(dSample == 0) {
+        auto beat = m_beats.cbegin();
+        if (beat->has_signature()) {
+            result.setBeats(beat->signature().beats());
+            result.setNoteValue(beat->signature().note_value());
+        }
+    } else {
+        // Scans the list of beats to find the last signature change before the sample
+        for( auto beat = m_beats.begin() ; beat != m_beats.end() && beat->frame_position() < dSample ; beat++) {
+           if(beat->has_signature()) {
+               result.setBeats(beat->signature().beats());
+               result.setNoteValue(beat->signature().note_value());
+           }
+        }
+    }
+    return result;
+}
+
+void BeatMap::setSignature(mixxx::Signature sig, double dSample) {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid())
+        return;
+
+    // Moves to the beat before the sample
+    BeatList::iterator beat = m_beats.begin();
+    for(; beat != m_beats.end() && beat->frame_position() < dSample ; ++beat)
+        ;
+
+    // If at the end, change nothing
+    if ( beat == m_beats.end()) {
+        return;
+    }
+
+    // Adjust position if not at the first beat
+    if (beat != m_beats.begin()) {
+            beat--;
+    }
+
+    // Sets the Signature value
+    beat->mutable_signature()->set_beats(sig.getBeats());
+    beat->mutable_signature()->set_note_value(sig.getNoteValue());
 }

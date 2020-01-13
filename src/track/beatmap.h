@@ -12,10 +12,11 @@
 #include "track/track.h"
 #include "track/beats.h"
 #include "proto/beats.pb.h"
+#include "util/memory.h"
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
 
-typedef QList<mixxx::track::io::Beat> BeatList;
+using BeatList = QList<mixxx::track::io::Beat> ;
 
 class BeatMap final : public Beats {
   public:
@@ -83,7 +84,8 @@ class BeatMap final : public Beats {
     // Signature related
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual mixxx::Signature getSignature() const;
+    virtual void setSignature(mixxx::Signature, double dBeat = 0);
+    virtual mixxx::Signature getSignature(double dBeat = 0) const;
 
   private:
     BeatMap(const BeatMap& other);

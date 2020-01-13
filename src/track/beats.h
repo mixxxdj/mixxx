@@ -139,8 +139,11 @@ class Beats : public QObject {
         return kMaxBpm;
     }
 
-    // Return the initial track Signature
-    virtual mixxx::Signature getSignature() const = 0;
+    /// Sets the track signature from a specific beat on
+    virtual void setSignature( mixxx::Signature signature, double dBeat = 0) = 0;
+
+    /// Return the track signature at the given beat
+    virtual mixxx::Signature getSignature(double dBeat = 0) const = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
@@ -170,4 +173,3 @@ class Beats : public QObject {
   signals:
     void updated();
 };
-

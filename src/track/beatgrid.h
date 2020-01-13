@@ -74,7 +74,9 @@ class BeatGrid final : public Beats {
     // Signature related
     ////////////////////////////////////////////////////////////////////////////
 
+    virtual void setSignature(mixxx::Signature signature,double dSample);
     virtual mixxx::Signature getSignature() const;
+    virtual mixxx::Signature getSignature(double dSample) const;
 
   private:
     BeatGrid(const BeatGrid& other);
