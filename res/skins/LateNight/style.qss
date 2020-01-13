@@ -1041,13 +1041,6 @@ QPushButton#pushButtonAutoDJ:checked,
 #ToolbarLogo {
   image: url(skin:/style_classic/mixxx_logo_small.svg) no-repeat center center;
 }
-
-WSearchLineEdit QToolButton:!focus {
-  image: url(skin:/buttons_classic/btn__lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/buttons_classic/btn__lib_clear_search_focus.svg);
-  }
 /************** Button icons **************************************************/
 /************** Button styles *************************************************/
 
@@ -2214,20 +2207,26 @@ QScrollBar {
   margin-bottom: 3px;
   margin-left: 2px;
 }
+
 WSearchLineEdit {
   padding: 2px;
   background: #0f0f0f;
   }
   WSearchLineEdit:focus {
+    padding: 1px;
     border: 2px solid #d08e00;
   }
   /* Clear button */
-  WSearchLineEdit QToolButton:!focus {
-    image: url(skin:/buttons_classic/btn__lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/buttons_classic/btn__lib_clear_search_focus.svg);
-  }
+  #SearchClearButton {
+    background: none;
+    border: 0px solid #fff;
+    }
+    #SearchClearButton:!focus {
+      image: url(skin:/buttons_classic/btn__lib_clear_search.svg);
+    }
+    #SearchClearButton:focus {
+      image: url(skin:/buttons_classic/btn__lib_clear_search_focus.svg);
+    }
 
 /* HorizontalSplitter
   (the splitter itself is horizontal)

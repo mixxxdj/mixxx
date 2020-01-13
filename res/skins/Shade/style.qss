@@ -293,18 +293,23 @@ WSearchLineEdit {
   color: #cfcfcf;
   }
   WSearchLineEdit:focus {
+    padding: 1px;
     border: 2px solid #ff6600;
     color: #eeeeee;
     selection-color: #0f0f0f;
     selection-background-color: #d2d2d2;
   }
   /* Clear button */
-  WSearchLineEdit QToolButton:!focus {
-    image: url(skin:/btn/btn_lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/btn/btn_lib_clear_search_focus.svg);
-  }
+  #SearchClearButton {
+    background: none;
+    border: 0px solid #fff;
+    }
+    #SearchClearButton:!focus {
+      image: url(skin:/btn/btn_lib_clear_search.svg);
+    }
+    #SearchClearButton:focus {
+      image: url(skin:/btn/btn_lib_clear_search_focus.svg);
+    }
 
 QHeaderView {
   /* Note(ronso0)

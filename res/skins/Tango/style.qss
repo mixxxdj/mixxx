@@ -2708,24 +2708,21 @@ WSearchLineEdit {
   margin-bottom: 5px; */
   }
   WSearchLineEdit:focus {
+    padding: 1px;
     border: 2px solid #ff6600;
     color: #eeeeee;
-    padding: 2px;
   }
   /* Clear button */
-  WSearchLineEdit QToolButton {
-  /*  Somehow the default size is alway 19x19 px */
-  /* Dummy icon
-    qproperty-icon: url(""); */
+  #SearchClearButton {
+    background: none;
+    border: 0px solid #fff;
     }
-    /* ToDo move this to default.qss */
-  /* Clear button */
-  WSearchLineEdit QToolButton:!focus {
-    image: url(skin:/buttons/btn_lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
-  }
+    #SearchClearButton:!focus {
+      image: url(skin:/buttons/btn_lib_clear_search.svg);
+    }
+    #SearchClearButton:focus {
+      image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
+    }
 
 WLibrary QLabel,
 WLibrary QRadioButton {	/*

@@ -354,21 +354,24 @@ WSearchLineEdit {
   border: 1px solid #4B4B4B;
   background-color: #1e1e1e;
   color: #d2d2d2;
-}
-
-WSearchLineEdit:focus {
-  border: 1px solid #FF6600;
-  color: #D6D6D6;
-  selection-color: #222222;
-  selection-background-color: #d2d2d2;
-}
+  }
+  WSearchLineEdit:focus {
+    border: 1px solid #FF6600;
+    color: #D6D6D6;
+    selection-color: #222222;
+    selection-background-color: #d2d2d2;
+  }
   /* Clear button */
-  WSearchLineEdit QToolButton:!focus {
-    image: url(skin:/icon/ic_lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/icon/ic_lib_clear_search_focus.svg);
-  }
+  #SearchClearButton {
+    background: none;
+    border: 0px solid #fff;
+    }
+    #SearchClearButton:!focus {
+      image: url(skin:/icon/ic_lib_clear_search.svg);
+    }
+    #SearchClearButton:focus {
+      image: url(skin:/icon/ic_lib_clear_search_focus.svg);
+    }
 
 /* library preview deck */
 #PreviewDeck {
