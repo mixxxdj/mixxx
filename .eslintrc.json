@@ -17,6 +17,7 @@
     "sourceType": "script"
   },
   "rules": {
+    "no-unused-vars": ["error", { "vars": "all", "args": "none" }],
     "no-undef": "off",
     "no-fallthrough": "off",
     "no-mixed-spaces-and-tabs": "off",
