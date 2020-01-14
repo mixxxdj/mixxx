@@ -223,8 +223,9 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
 
 
 function sortAsc(a, b) {
+    // returns 1 if a > b, -1 if a < b, and 0 otherwise
     'use strict';
-    return a > b ? 1 : b > a ? -1 : 0;
+    return (a > b) ? 1 : (b > a ? -1 : 0);
 }
 
 PioneerDDJ400.initCuePointsAndLoops = function(group) {
