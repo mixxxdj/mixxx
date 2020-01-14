@@ -801,7 +801,7 @@ void ControlPickerMenu::addSingleControl(QString group, QString control,
         actionTitle = title;
     }
 
-    auto pAction = new QAction(actionTitle, pMenu);
+    auto pAction = make_parented<QAction>(actionTitle, pMenu);
     connect(pAction, &QAction::triggered,
             this, [this, controlIndex] { controlChosen(controlIndex); });
     pMenu->addAction(pAction);
