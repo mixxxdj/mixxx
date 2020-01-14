@@ -718,7 +718,7 @@
         }
     });
 
-    EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden, colors) {
+    var EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden, colors) {
         var eu = this;
         this.focusChooseModeActive = false;
 
