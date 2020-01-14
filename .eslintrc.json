@@ -1,19 +1,7 @@
 {
-  "env": {
-    "es6": true,
-    "node": true,
-    "browser": true,
-    "jquery": true,
-    "jasmine": true,
-    "mocha": true,
-    "qunit": true
-  },
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true,
-      "globalReturn": true
-    },
+    "ecmaVersion": 5,
     "sourceType": "script"
   },
   "rules": {
@@ -37,11 +25,10 @@
     "no-async-promise-executor": "off"
   },
   "globals": {
-    "ActiveXObject": true,
-    "XDomainRequest": true,
-    "ScriptEngine": true,
-    "WSH": true,
-    "WScript": true,
-    "DocumentTouch": true
+    "components": "readonly",
+    "engine": "readonly",
+    "midi": "readonly",
+    "print": "readonly",
+    "script": "readonly"
   }
 }
