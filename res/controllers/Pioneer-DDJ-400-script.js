@@ -249,8 +249,8 @@ PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, gro
         return;
     }
 
-    var loop_on = engine.getValue(group, 'loop_enabled');
-    if (loop_on) {
+    var loopEnabled = engine.getValue(group, 'loop_enabled');
+    if (loopEnabled) {
         // loop halve
         engine.setValue(group, 'loop_scale', 0.5);
     } else {
@@ -276,8 +276,8 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
         return; // ignore release
     }
 
-    var loop_on = engine.getValue(group, 'loop_enabled');
-    if (loop_on) {
+    var loopEnabled = engine.getValue(group, 'loop_enabled');
+    if (loopEnabled) {
         // loop double
         engine.setValue(group, 'loop_scale', 2.0);
     } else {
