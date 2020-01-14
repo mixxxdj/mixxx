@@ -2216,17 +2216,7 @@ WSearchLineEdit {
     padding: 1px;
     border: 2px solid #d08e00;
   }
-  /* Clear button */
-  #SearchClearButton {
-    background: none;
-    border: 0px solid #fff;
-    }
-    #SearchClearButton:!focus {
-      image: url(skin:/buttons_classic/btn__lib_clear_search.svg);
-    }
-    #SearchClearButton:focus {
-      image: url(skin:/buttons_classic/btn__lib_clear_search_focus.svg);
-    }
+  /* Clear button: see /skins/default.qss */
 
 /* HorizontalSplitter
   (the splitter itself is horizontal)

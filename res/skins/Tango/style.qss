@@ -2712,17 +2712,7 @@ WSearchLineEdit {
     border: 2px solid #ff6600;
     color: #eeeeee;
   }
-  /* Clear button */
-  #SearchClearButton {
-    background: none;
-    border: 0px solid #fff;
-    }
-    #SearchClearButton:!focus {
-      image: url(skin:/buttons/btn_lib_clear_search.svg);
-    }
-    #SearchClearButton:focus {
-      image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
-    }
+  /* Clear button: see /skins/default.qss */
 
 WLibrary QLabel,
 WLibrary QRadioButton {	/*
