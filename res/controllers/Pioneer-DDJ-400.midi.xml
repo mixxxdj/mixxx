@@ -1170,7 +1170,7 @@
                 </options>
             </control>
             <control>
-                <description>BEAT FX ON/OFF +SHift - press - Disable all enabled Beat FX Slots</description>
+                <description>BEAT FX ON/OFF +SHIFT - press - Disable all enabled Beat FX Slots</description>
                 <group>[EffectRack1_EffectUnit3]</group>
                 <key>PioneerDDJ400.beatFxOnOffShiftPressed</key>
                 <status>0x94</status>
@@ -1684,7 +1684,7 @@
                 <options>
                     <normal/>
                 </options>
-              </control>
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>beatjump_1_forward</key>
