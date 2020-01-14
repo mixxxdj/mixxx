@@ -16,7 +16,6 @@ IF EXIST "%WINLIBS_PATH%\%WINLIB_NAME%" (
   ENDLOCAL && EXIT /B 0
 )
 
-
 REM Install build env base dir
 IF NOT EXIST "%WINLIBS_PATH%" MKDIR "%WINLIBS_PATH%"
 
@@ -66,7 +65,6 @@ IF ERRORLEVEL 1 (
 )
 REM TODO(XXX) check fingerprint on zip file.
 
-
 echo ..unzipping %WINLIB_NAME%.zip
 IF "!ZIP!" NEQ "" (
   "!ZIP!" x %WINLIB_NAME%.zip
@@ -79,7 +77,6 @@ DEL %WINLIB_NAME%.zip
 
 ENDLOCAL
 EXIT /B 0
-
 
 :get_powershell_version
   where /q powershell

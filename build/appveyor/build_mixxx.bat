@@ -120,8 +120,6 @@ call "%BUILDTOOLS_PATH%\%BUILDTOOLS_SCRIPT%" %COMPILER_X64% -vcvars_ver=%PARAM_V
 set MACHINE_TYPE=x86_64
 )
 
-REM Now build Mixxx.
-
 if %CONFIG_RELEASE% (
 set BUILD_TYPE=release
 ) else (
@@ -134,6 +132,7 @@ rem /EHsc Do not handle SEH in try / except blocks.
 set CXXFLAGS=/MP /FS /EHsc
 set CFLAGS=/MP /FS /EHsc
 
+REM Now build Mixxx.
 set PATH=%BIN_DIR%;%PATH%
 scons.py %SCONS_NUMBER_PROCESSORS% mixxx %PARAM_INSTALLER% toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=%PARAM_OPTIMIZE% virtualize=0 test=%PARAM_TEST% qt_sqlite_plugin=0 build_number_in_title_bar=0 bundle_pdbs=0
 
@@ -174,7 +173,6 @@ FOR %%Y IN (2019,2017) DO (
 )
 REM FOR
 EXIT /B 1
-
 
 :function_has_64bit
 FOR /F %%G IN ('dir "%BUILDTOOLS_PATH%\Tools\MSVC\%PARAM_VCVARSVER%*" /b /ad-h /o-n') DO (
