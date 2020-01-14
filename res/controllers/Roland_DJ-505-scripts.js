@@ -196,11 +196,11 @@ DJ505.init = function () {
 };
 
 DJ505.autoShowDecks = function (value, group, control) {
-    var any_loaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
+    var anyLoaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
     if (!DJ505.autoShowFourDecks) {
         return;
     }
-    engine.setValue("[Master]", "show_4decks", any_loaded);
+    engine.setValue("[Master]", "show_4decks", anyLoaded);
 };
 
 DJ505.shutdown = function () {
@@ -688,9 +688,9 @@ DJ505.DeckToggleButton.prototype.input = function (channel, control, value, stat
 };
 DJ505.DeckToggleButton.prototype.trigger = function () {
     this.send(this.secondaryDeck ? this.on : this.off);
-    var new_group = "[Channel" + (this.secondaryDeck ? this.decks[1] : this.decks[0]) + "]";
-    if (this.loadTrackButton.group !== new_group) {
-        this.loadTrackButton.group = new_group;
+    var newGroup = "[Channel" + (this.secondaryDeck ? this.decks[1] : this.decks[0]) + "]";
+    if (this.loadTrackButton.group !== newGroup) {
+        this.loadTrackButton.group = newGroup;
         this.loadTrackButton.disconnect();
         this.loadTrackButton.connect();
         this.loadTrackButton.trigger();
@@ -784,8 +784,8 @@ DJ505.Sampler = function() {
             if (!(bpm >= 5 && bpm <= 800)) {
                 return;
             }
-            var bpm_value = Math.round(bpm*10);
-            midi.sendShortMsg(0xEA, bpm_value & 0x7f, (bpm_value >> 7) & 0x7f);
+            var bpmValue = Math.round(bpm*10);
+            midi.sendShortMsg(0xEA, bpmValue & 0x7f, (bpmValue >> 7) & 0x7f);
             this.syncDeck = deck;
         }
     };
@@ -1279,10 +1279,10 @@ DJ505.CueLoopMode = function (deck, offset) {
         unshift: function() {
             this.input = function (channel, control, value, status, group) {
                 if (value) {
-                    var hotcue_enabled = true;
+                    var hotcueEnabled = true;
                     if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
                         // set a new cue point and loop
-                        hotcue_enabled = false;
+                        hotcueEnabled = false;
                         script.triggerControl(group, "hotcue_" + this.number + "_activate");
                     }
                     // jump to existing cue and loop
@@ -1293,7 +1293,7 @@ DJ505.CueLoopMode = function (deck, offset) {
 
                     // disable loop if currently enabled
                     if (engine.getValue(group, "loop_enabled")) {
-                        if (hotcue_enabled &&
+                        if (hotcueEnabled &&
                                 engine.getValue(group, "loop_start_position") === startpos &&
                                 engine.getValue(group, "loop_end_position") === endpos) {
                             script.triggerControl(group, "loop_in_goto", 1);
@@ -1309,7 +1309,7 @@ DJ505.CueLoopMode = function (deck, offset) {
                     engine.setValue(group, "loop_end_position", endpos);
                     // enable loop
                     script.triggerControl(group, "reloop_toggle", 1);
-                    if (hotcue_enabled) {
+                    if (hotcueEnabled) {
                         script.triggerControl(group, "loop_in_goto", 1);
                     }
                 }
@@ -1343,7 +1343,7 @@ DJ505.CueLoopMode = function (deck, offset) {
                     return;
                 }
                 this.sendRGB(color);
-            } else if (typeof color === 'number') {
+            } else if (typeof color === "number") {
                 this.send(color);
             }
         },
@@ -1574,7 +1574,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         this.number = n + 1;
         this.on = this.color + DJ505.PadColor.DIM_MODIFIER;
         this.colors = pitchplayColors;
-        this.colorIdKey = 'hotcue_' + this.number + '_color_id';
+        this.colorIdKey = "hotcue_" + this.number + "_color_id";
         components.Button.call(this);
     };
     this.PerformancePad.prototype = new components.Button({
@@ -1644,9 +1644,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
             };
             this.input = function (channel, control, value, status, group) {
                 if (value > 0 && this.mode.cuepoint !== this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
-                    var previous_cuepoint = this.mode.cuepoint;
+                    var previousCuepoint = this.mode.cuepoint;
                     this.mode.cuepoint = this.number;
-                    this.mode.pads[previous_cuepoint - 1].trigger();
+                    this.mode.pads[previousCuepoint - 1].trigger();
                     this.outputColor(engine.getValue(this.group, this.colorIdKey));
                 }
             };
