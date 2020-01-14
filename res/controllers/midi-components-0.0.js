@@ -26,7 +26,7 @@
  * the lodash.mixxx.js file in this directory for details.
 **/
 
-;(function (global) {
+(function (global) {
     var Component = function (options) {
         if (Array.isArray(options) && typeof options[0] === 'number') {
             this.midi = options;
@@ -659,7 +659,7 @@
                     && typeof component.shutdown === 'function') {
                     component.shutdown();
                 }
-            })
+            });
         },
     };
 
