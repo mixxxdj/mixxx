@@ -8,97 +8,133 @@
     FxUnit
 -->
 <Template>
-  <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
+  <SetVariable name="FxRack_FxUnit">[EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
+  <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
-    <Layout>vertical</Layout>
-    <Size>635me,170min</Size>
+    <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>635me,0min</Size>
     <Children>
 
-      <WidgetGroup><!-- Fx Parameters -->
+      <WidgetGroup>
+        <ObjectName>FxSlotsExpanded</ObjectName>
         <SizePolicy>me,me</SizePolicy>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
         <Children>
+          <Template src="skin:fx_slot.xml">
+            <SetVariable name="FxNum">1</SetVariable>
+          </Template>
+
+          <Template src="skin:fx_slot.xml">
+            <SetVariable name="FxNum">2</SetVariable>
+          </Template>
+
+          <Template src="skin:fx_slot.xml">
+            <SetVariable name="FxNum">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
+        <ObjectName>FxUnitControlsExpanded</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+
+          <!-- Fx label + expand | mix mode + Pfl -->
           <WidgetGroup>
-            <ObjectName>EffectRows</ObjectName>
-            <SizePolicy>me,me</SizePolicy>
-            <Layout>vertical</Layout>
-            <BackPath>style/background_tile.png</BackPath>
-            <Children>
-              <Template src="skin:fx_slot.xml">
-                <SetVariable name="FxNum">1</SetVariable>
-              </Template>
-
-              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
-
-              <Template src="skin:fx_slot.xml">
-                <SetVariable name="FxNum">2</SetVariable>
-              </Template>
-
-              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
-
-              <Template src="skin:fx_slot.xml">
-                <SetVariable name="FxNum">3</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
-            <ObjectName>EffectUnitControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
 
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
-              </SingletonContainer>
-
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
-              </SingletonContainer>
-
+              <!-- Fx Pfl + Expand_Collapsed -->
               <WidgetGroup>
-                <MinimumSize>,0</MinimumSize>
-                <MaximumSize>,5</MaximumSize>
-                <SizePolicy>min,me</SizePolicy>
-              </WidgetGroup>
-
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
-              </SingletonContainer>
-
-              <WidgetGroup><!-- Super knob, optional -->
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <ObjectName></ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>,1f</Size></WidgetGroup>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="ObjectName">PflButton</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="btn_format">square</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit"/>,group_[Headphone]_enable</SetVariable>
+                  </Template>
                   <SingletonContainer>
-                    <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
                   </SingletonContainer>
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
               </WidgetGroup>
+
+              <Label>
+                <ObjectName>FxUnitLabel</ObjectName>
+                <Size>52f,20f</Size>
+                <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                <Alignment>center</Alignment>
+              </Label>
 
               <WidgetGroup>
-                <MinimumSize>,2</MinimumSize>
-                <MaximumSize>,7</MaximumSize>
-                <SizePolicy>min,me</SizePolicy>
+                <ObjectName></ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <PushButton>
+                    <TooltipId>EffectUnit_mix_mode</TooltipId>
+                    <ObjectName>MixModeButton</ObjectName>
+                    <Size>42f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_medium_active.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="FxRack_FxUnit"/>,mix_mode</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
               </WidgetGroup>
-
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
-              </SingletonContainer>
-
-              <WidgetGroup><Size>,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>3f,</Size></WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /Expand/Collapse + Mix/Super + Pfl -->
-        </Children>
-      </WidgetGroup>
+          </WidgetGroup><!-- Fx label + expand | mix mode + Pfl -->
 
+          <WidgetGroup>
+            <MinimumSize>,1</MinimumSize>
+            <MaximumSize>,15</MaximumSize>
+            <SizePolicy>min,me</SizePolicy>
+          </WidgetGroup>
+
+          <SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
+          </SingletonContainer>
+
+          <WidgetGroup><Size>,1me</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Super knob, optional -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>,1me</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /FxUnitControlsExpanded -->
     </Children>
   </WidgetGroup>
 </Template>

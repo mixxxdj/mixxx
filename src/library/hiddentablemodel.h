@@ -6,7 +6,7 @@
 class HiddenTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    HiddenTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    HiddenTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~HiddenTableModel() final;
 
     void setTableModel(int id = -1);

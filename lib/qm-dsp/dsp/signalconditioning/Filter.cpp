@@ -4,7 +4,6 @@
     QM DSP Library
 
     Centre for Digital Music, Queen Mary, University of London.
-    This file 2005-2006 Christian Landone.
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as
@@ -15,73 +14,114 @@
 
 #include "Filter.h"
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include <stdexcept>
 
-Filter::Filter( FilterConfig Config )
+using namespace std;
+
+Filter::Filter(Parameters params)
 {
-    m_ord = 0;
-    m_outBuffer = NULL;
-    m_inBuffer = NULL;
+    if (params.a.empty()) {
+        m_fir = true;
+        if (params.b.empty()) {
+            throw logic_error("Filter must have at least one pair of coefficients");
+        }
+    } else {
+        m_fir = false;
+        if (params.a.size() != params.b.size()) {
+            throw logic_error("Inconsistent numbers of filter coefficients");
+        }
+    }
+    
+    m_sz = int(params.b.size());
+    m_order = m_sz - 1;
 
-    initialise( Config );
+    m_a = params.a;
+    m_b = params.b;
+    
+    // We keep some empty space at the start of the buffer, and
+    // encroach gradually into it as we add individual sample
+    // calculations at the start. Then when we run out of space, we
+    // move the buffer back to the end and begin again. This is
+    // significantly faster than moving the whole buffer along in
+    // 1-sample steps every time.
+
+    m_offmax = 20;
+    m_offa = m_offmax;
+    m_offb = m_offmax;
+
+    if (!m_fir) {
+        m_bufa.resize(m_order + m_offmax);
+    }
+
+    m_bufb.resize(m_sz + m_offmax);
 }
 
 Filter::~Filter()
 {
-    deInitialise();
 }
 
-void Filter::initialise( FilterConfig Config )
+void
+Filter::reset()
 {
-    m_ord = Config.ord;
-    m_ACoeffs = Config.ACoeffs;
-    m_BCoeffs = Config.BCoeffs;
+    m_offb = m_offmax;
+    m_offa = m_offmax;
 
-    m_inBuffer = new double[ m_ord + 1 ];
-    m_outBuffer = new double[ m_ord + 1 ];
+    if (!m_fir) {
+        m_bufa.assign(m_bufa.size(), 0.0);
+    }
 
-    reset();
+    m_bufb.assign(m_bufb.size(), 0.0);
 }
 
-void Filter::deInitialise()
+void
+Filter::process(const double *const QM_R__ in,
+                double *const QM_R__ out,
+                const int n)
 {
-    delete[] m_inBuffer;
-    delete[] m_outBuffer;
+    for (int s = 0; s < n; ++s) {
+
+        if (m_offb > 0) {
+            --m_offb;
+        } else {
+            for (int i = m_sz - 2; i >= 0; --i) {
+                m_bufb[i + m_offmax + 1] = m_bufb[i];
+            }
+            m_offb = m_offmax;
+        }
+        m_bufb[m_offb] = in[s];
+
+        double b_sum = 0.0;
+        for (int i = 0; i < m_sz; ++i) {
+            b_sum += m_b[i] * m_bufb[i + m_offb];
+        }
+
+        double outval;
+
+        if (m_fir) {
+
+            outval = b_sum;
+
+        } else {
+
+            double a_sum = 0.0;
+            for (int i = 0; i < m_order; ++i) {
+                a_sum += m_a[i + 1] * m_bufa[i + m_offa];
+            }
+
+            outval = b_sum - a_sum;
+
+            if (m_offa > 0) {
+                --m_offa;
+            } else {
+                for (int i = m_order - 2; i >= 0; --i) {
+                    m_bufa[i + m_offmax + 1] = m_bufa[i];
+                }
+                m_offa = m_offmax;
+            }
+            m_bufa[m_offa] = outval;
+        }
+        
+        out[s] = outval;
+    }
 }
-
-void Filter::reset()
-{
-    for( unsigned int i = 0; i < m_ord+1; i++ ){ m_inBuffer[ i ] = 0.0; }
-    for(unsigned int  i = 0; i < m_ord+1; i++ ){ m_outBuffer[ i ] = 0.0; }
-}
-
-void Filter::process( double *src, double *dst, unsigned int length )
-{
-    unsigned int SP,i,j;
-
-    double xin,xout;
-
-    for (SP=0;SP<length;SP++)
-    {
-        xin=src[SP];
-        /* move buffer */
-        for ( i = 0; i < m_ord; i++) {m_inBuffer[ m_ord - i ]=m_inBuffer[ m_ord - i - 1 ];}
-        m_inBuffer[0]=xin;
-
-        xout=0.0;
-        for (j=0;j< m_ord + 1; j++)
-	    xout = xout + m_BCoeffs[ j ] * m_inBuffer[ j ];
-        for (j = 0; j < m_ord; j++)
-	    xout= xout - m_ACoeffs[ j + 1 ] * m_outBuffer[ j ];
-
-        dst[ SP ] = xout;
-        for ( i = 0; i < m_ord - 1; i++ ) { m_outBuffer[ m_ord - i - 1 ] = m_outBuffer[ m_ord - i - 2 ];}
-        m_outBuffer[0]=xout;
-
-    } /* end of SP loop */
-}
-
-
 

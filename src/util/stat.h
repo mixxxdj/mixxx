@@ -1,5 +1,4 @@
-#ifndef STAT_H
-#define STAT_H
+#pragma once
 
 #include <QMap>
 #include <QVector>
@@ -118,20 +117,27 @@ class Stat {
     double m_variance_sk;
     QMap<double, double> m_histogram;
 
-    static bool track(const QString& tag,
+    static bool track(QString tag,
                       Stat::StatType type,
                       Stat::ComputeFlags compute,
                       double value);
+
+    // Disallow to use this class with implicit converted char strings.
+    // This should not be uses to avoid unicode encoding and memory
+    // allocation at every call. Use a static tag like this:
+    // static const QString tag("TAG TEXT");
+    static bool track(const char *,
+                      Stat::StatType,
+                      Stat::ComputeFlags,
+                      double) = delete;
 };
 
 QDebug operator<<(QDebug dbg, const Stat &stat);
 
 struct StatReport {
-    char* tag;
+    QString tag;
     qint64 time;
     Stat::StatType type;
     Stat::ComputeFlags compute;
     double value;
 };
-
-#endif /* STAT_H */

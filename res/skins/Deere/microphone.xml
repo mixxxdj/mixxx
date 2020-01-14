@@ -91,7 +91,6 @@
 
           <WidgetGroup>
             <ObjectName>ButtonGrid</ObjectName>
-            <SizePolicy>min,i</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_unit_group_assignment_button.xml">
@@ -108,7 +107,6 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <SizePolicy>min,i</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_unit_group_assignment_button.xml">

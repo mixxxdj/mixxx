@@ -21,12 +21,8 @@
     COPYING included with this distribution for more information.
 */
 
-// PeakPicking.h: interface for the PeakPicking class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#ifndef PEAKPICKING_H
-#define PEAKPICKING_H
+#ifndef QM_DSP_PEAKPICKING_H
+#define QM_DSP_PEAKPICKING_H
 
 #include "maths/MathUtilities.h"
 #include "maths/MathAliases.h"
@@ -35,10 +31,10 @@
 
 struct PPWinThresh
 {
-    unsigned int pre;
-    unsigned int  post;
+    int pre;
+    int post;
 
-    PPWinThresh(unsigned int x, unsigned int y) :
+    PPWinThresh(int x, int y) :
         pre(x),
         post(y)
     {
@@ -61,16 +57,16 @@ struct QFitThresh
 
 struct PPickParams
 {
-    unsigned int length; //Detection FunctionLength
+    int length; // detection function length
     double tau; // time resolution of the detection function
-    unsigned int alpha; //alpha-norm parameter
-    double cutoff;//low-pass Filter cutoff freq
-    unsigned int LPOrd; // low-pass Filter order
-    double* LPACoeffs; //low pass Filter den coefficients
-    double* LPBCoeffs; //low pass Filter num coefficients
-    PPWinThresh WinT;//window size in frames for adaptive thresholding [pre post]:
+    int alpha; // alpha-norm parameter
+    double cutoff;// low-pass filter cutoff freq
+    int LPOrd; // low-pass filter order
+    double* LPACoeffs; // low-pass filter denominator coefficients
+    double* LPBCoeffs; // low-pass filter numerator coefficients
+    PPWinThresh WinT;// window size in frames for adaptive thresholding [pre post]:
     QFitThresh QuadThresh;
-    float delta; //delta threshold used as an offset when computing the smoothed detection function
+    float delta; // delta threshold used as an offset when computing the smoothed detection function
 
     PPickParams() :
         length(0),
@@ -92,26 +88,24 @@ class PeakPicking
 public:
     PeakPicking( PPickParams Config );
     virtual ~PeakPicking();
-	
-    void process( double* src, unsigned int len, vector<int> &onsets  );
-
+        
+    void process( double* src, int len, std::vector<int> &onsets  );
 
 private:
     void initialise( PPickParams Config  );
     void deInitialise();
-    int  quadEval( vector<double> &src, vector<int> &idx );
-	
+    int  quadEval( std::vector<double> &src, std::vector<int> &idx );
+        
     DFProcConfig m_DFProcessingParams;
 
-    unsigned int m_DFLength ;
+    int m_DFLength ;
     double Qfilta ;
     double Qfiltb;
     double Qfiltc;
 
-
     double* m_workBuffer;
-	
-    DFProcess*	m_DFSmoothing;
+        
+    DFProcess*  m_DFSmoothing;
 };
 
 #endif

@@ -18,65 +18,66 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 
-class Library;
 class TrackCollection;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(Library* parent,
+    AnalysisFeature(Library* pLibrary,
                     UserSettingsPointer pConfig);
     ~AnalysisFeature() override = default;
 
-    void stop();
+    QVariant title() override {
+        return m_title;
+    }
 
-    QVariant title();
-    QIcon getIcon();
+    QIcon getIcon() override {
+        return m_icon;
+    }
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                    KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
     void refreshLibraryModels();
 
   signals:
     void analysisActive(bool bActive);
 
   public slots:
-    void activate();
+    void activate() override;
     void analyzeTracks(QList<TrackId> trackIds);
 
     void suspendAnalysis();
     void resumeAnalysis();
+    void stopAnalysis();
 
   private slots:
     void onTrackAnalysisSchedulerProgress(AnalyzerProgress currentTrackProgress, int currentTrackNumber, int totalTracksCount);
-    void stopAnalysis();
+    void onTrackAnalysisSchedulerFinished();
 
   private:
     // Sets the title of this feature to the default name, given by
     // m_sAnalysisTitleName
-    void setTitleDefault();
+    void resetTitle();
 
     // Sets the title of this feature to the default name followed by (x / y)
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
     void setTitleProgress(int currentTrackNumber, int totalTracksCount);
 
-    Library* m_library;
+    const QString m_baseTitle;
+    const QIcon m_icon;
 
-    UserSettingsPointer m_pConfig;
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
-    // The title returned by title()
-    QVariant m_Title;
     TreeItemModel m_childModel;
-    const static QString m_sAnalysisViewName;
-    QString m_analysisTitleName;
     DlgAnalysis* m_pAnalysisView;
-    QIcon m_icon;
+
+    // The title is dynamic and reflects the current progress
+    QString m_title;
 };
 
 

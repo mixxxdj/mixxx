@@ -1,0 +1,40 @@
+<Template>
+  <PushButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <Pos><Variable name="pos"/></Pos>
+    <NumberStates>2</NumberStates>
+    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_down.png</Pressed>
+      <Unpressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>.png</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_overdown.png</Pressed>
+      <Unpressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_over.png</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey>[Channel<Variable name="channum"/>],hotcue_<Variable name="hotcue"/>_activate</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel<Variable name="channum"/>],hotcue_<Variable name="hotcue"/>_clear</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>RightButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel<Variable name="channum"/>],hotcue_<Variable name="hotcue"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Channel<Variable name="channum"/>],hotcue_<Variable name="hotcue"/>_color_id</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </PushButton>
+</Template>

@@ -33,6 +33,11 @@ MIXXX_SCONS_FLAGS += install_root=$(CURDIR)/debian/tmp/usr
 %:
 	dh $@ --parallel
 
+# dh_auto_configure will attempt to run cmake instead of scons
+# nothing needs to be done for the configure step; scons is run in the build step below
+override_dh_auto_configure:
+	:
+
 override_dh_auto_build:
 	scons $(MIXXX_SCONS_FLAGS)
 	docbook-to-man debian/mixxx.sgml > mixxx.1

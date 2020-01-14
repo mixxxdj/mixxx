@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -27,14 +26,15 @@ Chromagram::Chromagram( ChromaConfig Config ) :
 }
 
 int Chromagram::initialise( ChromaConfig Config )
-{	
-    m_FMin = Config.min;		// min freq
-    m_FMax = Config.max;		// max freq
-    m_BPO  = Config.BPO;		// bins per octave
+{       
+    m_FMin = Config.min;                // min freq
+    m_FMax = Config.max;                // max freq
+    m_BPO  = Config.BPO;                // bins per octave
     m_normalise = Config.normalise;     // if frame normalisation is required
 
-    // No. of constant Q bins, extended to a full octave
-    m_uK = m_BPO * (unsigned int)ceil(log(m_FMax/m_FMin)/log(2.0));
+    // Extend range to a full octave
+    double octaves = log(m_FMax / m_FMin) / log(2.0);
+    m_FMax = m_FMin * pow(2.0, ceil(octaves));
 
     // Create array for chroma result
     m_chromadata = new double[ m_BPO ];
@@ -49,15 +49,18 @@ int Chromagram::initialise( ChromaConfig Config )
     ConstantQConfig.max = m_FMax;
     ConstantQConfig.BPO = m_BPO;
     ConstantQConfig.CQThresh = Config.CQThresh;
-	
+        
     // Initialise ConstantQ operator
     m_ConstantQ = new ConstantQ( ConstantQConfig );
 
-    // Initialise working arrays
-    m_frameSize = m_ConstantQ->getfftlength();
-    m_hopSize = m_ConstantQ->gethop();
+    // No. of constant Q bins
+    m_uK = m_ConstantQ->getK();
 
-    // Initialise FFT object	
+    // Initialise working arrays
+    m_frameSize = m_ConstantQ->getFFTLength();
+    m_hopSize = m_ConstantQ->getHop();
+
+    // Initialise FFT object    
     m_FFT = new FFTReal(m_frameSize);
 
     m_FFTRe = new double[ m_frameSize ];
@@ -107,21 +110,18 @@ double Chromagram::kabs(double xx, double yy)
 void Chromagram::unityNormalise(double *src)
 {
     double min, max;
-
     double val = 0;
 
     MathUtilities::getFrameMinMax( src, m_BPO, & min, &max );
 
-    for( unsigned int i = 0; i < m_BPO; i++ )
-    {
-	val = src[ i ] / max;
-
-	src[ i ] = val;
+    for (int i = 0; i < m_BPO; i++) {
+        val = src[ i ] / max;
+        src[ i ] = val;
     }
 }
 
 
-double* Chromagram::process( const double *data )
+double *Chromagram::process(const double *data)
 {
     if (!m_skGenerated) {
         // Generate CQ Kernel 
@@ -134,17 +134,25 @@ double* Chromagram::process( const double *data )
         m_windowbuf = new double[m_frameSize];
     }
 
-    for (unsigned int i = 0; i < m_frameSize; ++i) {
+    for (int i = 0; i < m_frameSize; ++i) {
         m_windowbuf[i] = data[i];
     }
     m_window->cut(m_windowbuf);
+
+    // The frequency-domain version expects pre-fftshifted input - so
+    // we must do the same here
+    for (int i = 0; i < m_frameSize/2; ++i) {
+        double tmp = m_windowbuf[i];
+        m_windowbuf[i] = m_windowbuf[i + m_frameSize/2];
+        m_windowbuf[i + m_frameSize/2] = tmp;
+    }
 
     m_FFT->forward(m_windowbuf, m_FFTRe, m_FFTIm);
 
     return process(m_FFTRe, m_FFTIm);
 }
 
-double* Chromagram::process( const double *real, const double *imag )
+double *Chromagram::process(const double *real, const double *imag)
 {
     if (!m_skGenerated) {
         // Generate CQ Kernel 
@@ -153,19 +161,18 @@ double* Chromagram::process( const double *real, const double *imag )
     }
 
     // initialise chromadata to 0
-    for (unsigned i = 0; i < m_BPO; i++) m_chromadata[i] = 0;
+    for (int i = 0; i < m_BPO; i++) m_chromadata[i] = 0;
 
     // Calculate ConstantQ frame
     m_ConstantQ->process( real, imag, m_CQRe, m_CQIm );
-	
+        
     // add each octave of cq data into Chromagram
-    const unsigned octaves = m_uK / m_BPO;
-    for (unsigned octave = 0; octave < octaves; octave++)
-    {
-        unsigned firstBin = octave * m_BPO;
-        for (unsigned i = 0; i < m_BPO; i++)
-        {
-            m_chromadata[i] += kabs( m_CQRe[ firstBin + i ], m_CQIm[ firstBin + i ]);
+    const int octaves = m_uK / m_BPO;
+    for (int octave = 0; octave < octaves; octave++) {
+        int firstBin = octave*m_BPO;
+        for (int i = 0; i < m_BPO; i++) {
+            m_chromadata[i] += kabs( m_CQRe[ firstBin + i ],
+                                     m_CQIm[ firstBin + i ]);
         }
     }
 

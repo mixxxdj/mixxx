@@ -262,5 +262,5 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
         parseTokens(tokens, searchColumns, pQuery.get());
     }
 
-    return std::move(pQuery);
+    return pQuery;
 }

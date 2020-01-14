@@ -12,22 +12,34 @@
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
+  <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
 
+<!-- wrapper that allows to set an indirect top/bottom padding within the Fx unit
+    so the Fx unit controls layout is independent. -->
   <WidgetGroup>
-    <Size>-1me,52me</Size>
+    <ObjectName>FxSlotContainer</ObjectName>
+    <SizePolicy>me,min</SizePolicy>
     <Layout>stacked</Layout>
+    <!-- This allows additional styles for focused Fx slots via qss selector:
+        #FxSlotContainer[highlight="0/1"] -->
+    <Connection>
+      <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
     <Children>
 
+    <!-- transparent container. 3D border (or focus highlight border) as well as
+        background tile are set in FxSlotBorder* widgets underneath -->
       <WidgetGroup>
-        <ObjectName>EffectSlot<Variable name="FxNum"/></ObjectName>
+        <ObjectName>FxSlot<Variable name="FxNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>0min,-1min</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
               <Template src="skin:fx_parameter_button.xml">
                 <SetVariable name="FxParameter">1</SetVariable>
               </Template>
@@ -83,60 +95,68 @@
             </Connection>
           </WidgetGroup>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <MinimumSize>85,26</MinimumSize>
+          <EffectSelector>
+            <MinimumSize>65,26</MinimumSize>
             <MaximumSize>150,26</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
-            <Children>
-              <EffectSelector>
-                <MinimumSize>85,26</MinimumSize>
-                <MaximumSize>150,26</MaximumSize>
-                <SizePolicy>me,f</SizePolicy>
-                <EffectRack><Variable name="FxRack"/></EffectRack>
-                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-                <Effect><Variable name="FxNum"/></Effect>
-              </EffectSelector>
-            </Children>
-          </WidgetGroup>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+          </EffectSelector>
 
           <Template src="skin:fx_meta_knob.xml">
             <SetVariable name="group"><Variable name="FxRack_FxUnit_FxNum"/></SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="control">meta</SetVariable>
           </Template>
+          
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+            <SetVariable name="ObjectName">FxToggleButton</SetVariable>
+            <SetVariable name="btn_format">square</SetVariable>
+            <SetVariable name="Size">26f,26f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <ObjectName>AlignCenter</ObjectName>
-            <Layout>vertical</Layout>
-            <Size>30f,-1me</Size>
-            <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxToggleButton</SetVariable>
-                <SetVariable name="icon">fxToggle</SetVariable>
-                <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
-              </Template>
-
-              <Template src="skin:fx_focus_button.xml"/>
-
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:fx_focus_button.xml"/>
 
         </Children>
       </WidgetGroup>
 
+      <!-- Those style the Fx slot border, depending on focus state -->
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <ObjectName>FxSlotBorder<Variable name="FxNum"/></ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>stacked</Layout>
         <Children>
+          <!-- Fx focus highligh border -->
           <WidgetGroup>
-            <ObjectName>EffectSlot_focused</ObjectName>
-            <Layout>horizontal</Layout>
+            <ObjectName>FxSlotBorder<Variable name="FxNum"/></ObjectName>
             <SizePolicy>me,me</SizePolicy>
-            <Children>
-            </Children>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>me,me</SizePolicy>
+            <!-- Dark focus background tile. Inhibits border of parent widget... -->
+            <!--BackPath>skin:/style_<Variable name="style_scheme"/>/background_tile_fx_focus.png</BackPath-->
+            <BackPath><Variable name="BgTile"/></BackPath>
             <Connection>
               <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
               <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
@@ -145,11 +165,17 @@
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+      <!-- /Focus borders -->
+
+      <WidgetGroup><!-- Regular background tile -->
+        <SizePolicy>me,min</SizePolicy>
+        <BackPath><Variable name="BgTile"/></BackPath>
+      </WidgetGroup>
 
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- FxSlotContainer -->
 </Template>

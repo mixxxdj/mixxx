@@ -4,7 +4,7 @@ vertical layout and a side-by-side layout for two-deck mode -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
-    <SizePolicy>max,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
@@ -20,76 +20,78 @@ vertical layout and a side-by-side layout for two-deck mode -->
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <!-- Spacer when there's no 4th EQ AND no QuickEffect loaded -->
+              <!-- Spacer when there's no QuickEffect loaded -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <Size>0min,34f</Size>
                 <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Size>0min,34f</Size>
-                    <Children/>
-                    <Connection>
-                      <ConfigKey>[QuickEffectRack1_<Variable name="group"/>_Effect1],loaded</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey>[EqualizerRack1_<Variable name="group"/>_Effect1],parameter4_loaded</ConfigKey>
+                  <ConfigKey>[QuickEffectRack1_<Variable name="group"/>_Effect1],loaded</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
 
               <Template src="skin:eq_knob_left.xml">
-                <SetVariable name="FxParameter">4</SetVariable>
+                <SetVariable name="FxParameter">3</SetVariable>
+                <SetVariable name="Text">H</SetVariable>
               </Template>
 
-              <Template src="skin:eq_knob_left.xml">
-                <SetVariable name="FxParameter">3</SetVariable>
-              </Template>
+              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
               <Template src="skin:eq_knob_left.xml">
                 <SetVariable name="FxParameter">2</SetVariable>
+                <SetVariable name="Text">M</SetVariable>
               </Template>
+
+              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
               <Template src="skin:eq_knob_left.xml">
                 <SetVariable name="FxParameter">1</SetVariable>
+                <SetVariable name="Text">L</SetVariable>
               </Template>
+
+              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
               <Template src="skin:quick_effect_knob_left.xml"/>
 
               <!-- Spacer -->
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /EQs -->
 
           <WidgetGroup><!-- Gain knob + Vol fader -->
             <ObjectName>VolumeGain2Decks</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="Size">40f,34f</SetVariable>
                 <SetVariable name="Color">orange</SetVariable>
+                <SetVariable name="type">regular</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
                 <SetVariable name="TooltipId">pregain</SetVariable>
               </Template>
 
-              <!-- Spacer -->
-              <WidgetGroup><Size>1min,4me</Size></WidgetGroup>
+              <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
 
-              <SliderComposed>   <!-- Volume -->
+              <SliderComposed><!-- Volume -->
                 <TooltipId>channel_volume</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
-                <Slider>slider_volume_deck.svg</Slider>
+                <Size>46f,108f</Size>
+                <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_volume_deck.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_volume_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,volume</ConfigKey>
                 </Connection>
               </SliderComposed>
+
+              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Gain knob + Vol fader -->
 
@@ -100,52 +102,26 @@ vertical layout and a side-by-side layout for two-deck mode -->
             <Children>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
-                <SetVariable name="icon">pfl</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">26,26</SetVariable>
+                <SetVariable name="btn_format">square</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
               </Template>
 
-              <!-- Spacer -->
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Size>1min,0me</Size>
-                <Children/>
-              </WidgetGroup>
+              <WidgetGroup><Size>1min,14f</Size></WidgetGroup>
 
               <WidgetGroup>
-                <ObjectName>VUMeterBox</ObjectName>
+                <ObjectName>VuMeterChannel2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <StatusLight>
-                    <TooltipId>channel_PeakIndicator</TooltipId>
-                    <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-                    <PathBack>style/clipping_deck.png</PathBack>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                    </Connection>
-                  </StatusLight>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterChannel<Variable name="channum"/></ObjectName>
+                  </SingletonContainer>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup>
-                <ObjectName>VUMeterBox</ObjectName>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>style/volume_display_deck_over.png</PathVu>
-                    <PathBack>style/volume_display_deck.png</PathBack>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                    </Connection>
-                  </VuMeter>
-                </Children>
-              </WidgetGroup>
+              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
             </Children>
           </WidgetGroup><!-- /Pfl button + VU Meter -->
         </Children>

@@ -1,7 +1,7 @@
 #include "library/scanner/importfilestask.h"
 
 #include "library/scanner/libraryscanner.h"
-#include "track/trackref.h"
+#include "track/trackfile.h"
 #include "util/timer.h"
 
 ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
@@ -30,7 +30,7 @@ void ImportFilesTask::run() {
             return;
         }
 
-        const QString trackLocation(TrackRef::location(fileInfo));
+        const QString trackLocation(TrackFile(fileInfo).location());
         //qDebug() << "ImportFilesTask::run" << trackLocation;
 
         // If the file does not exist in the database then add it. If it

@@ -6,8 +6,6 @@
 
 class QFile;
 
-typedef void WavpackContext;
-
 namespace mixxx {
 
 class SoundSourceWV : public SoundSource {
@@ -35,7 +33,13 @@ class SoundSourceWV : public SoundSource {
             OpenMode mode,
             const OpenParams& params) override;
 
-    WavpackContext* m_wpc;
+    // A WavpackContext* type
+    // we cannot use the type directly, because it has 
+    // changing definitions with different wavpack.h versions. 
+    // wavpack.h can't be included here, bacause it has concurrent definitions 
+    // with other decoder's header.     
+    void* m_wpc;
+ 
     CSAMPLE m_sampleScaleFactor;
     QFile* m_pWVFile;
     QFile* m_pWVCFile;
@@ -48,6 +52,9 @@ class SoundSourceProviderWV : public SoundSourceProvider {
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override;
 };

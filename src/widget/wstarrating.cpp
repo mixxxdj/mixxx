@@ -21,6 +21,7 @@ void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 QSize WStarRating::sizeHint() const {

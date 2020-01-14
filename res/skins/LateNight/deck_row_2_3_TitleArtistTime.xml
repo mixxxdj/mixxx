@@ -1,95 +1,104 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckRow_2_3_ArtistTitleTime</ObjectName>
-    <Layout>vertical</Layout>
-    <SizePolicy>i,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
+      <!-- In Classic scheme this draws a line to separate
+          rate controls and artist/title -->
+      <Template src="skin:separator_artist_title.xml"/>
+
       <WidgetGroup>
-        <ObjectName>TitleGutter</ObjectName>
-        <Layout>horizontal</Layout>
+        <ObjectName>DeckRow_2_3_ArtistTitleTime</ObjectName>
+        <Layout>vertical</Layout>
         <SizePolicy>i,min</SizePolicy>
         <Children>
+
           <WidgetGroup>
-            <ObjectName>AlignLeftTop</ObjectName>
+            <ObjectName>TitleRow</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>i,min</SizePolicy>
             <Children>
-              <TrackProperty>
-                <ObjectName>TitleText</ObjectName>
-                <Alignment>Left</Alignment>
-                <TooltipId>track_title</TooltipId>
-                <Property>title</Property>
-                <Elide>right</Elide>
-                <SizePolicy>me,min</SizePolicy>
-                <Channel><Variable name="channum"/></Channel>
-              </TrackProperty>
+              <WidgetGroup>
+                <ObjectName>TitleGutter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>i,min</SizePolicy>
+                <Children>
+                  <TrackProperty>
+                    <ObjectName>TitleText</ObjectName>
+                    <Size>0me,22f</Size>
+                    <TooltipId>track_title</TooltipId>
+                    <Property>title</Property>
+                    <Alignment>Left</Alignment>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="channum"/></Channel>
+                  </TrackProperty>
+                </Children>
+              </WidgetGroup><!-- TitleGutter -->
+
+              <WidgetGroup>
+                <ObjectName>PlayPositionGutter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>p,min</SizePolicy>
+                <MinimumSize>80,</MinimumSize>
+                <Children>
+                  <NumberPos>
+                    <ObjectName>PlayPositionText</ObjectName>
+                    <TooltipId>track_time</TooltipId>
+                    <Size>0min,22f</Size>
+                    <Alignment>right</Alignment>
+                    <Channel><Variable name="channum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </NumberPos>
+                </Children>
+              </WidgetGroup><!-- PlayPositionGutter -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- TitleRow -->
 
           <WidgetGroup>
-            <ObjectName>AlignRightTop</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>p,min</SizePolicy>
-            <MinimumSize>80,</MinimumSize>
-            <Children>
-              <NumberPos>
-                <ObjectName>PlayPositionText</ObjectName>
-                <TooltipId>track_time</TooltipId>
-                <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>-1,19</MaximumSize>
-                <Alignment>right</Alignment>
-                <Channel><Variable name="channum"/></Channel>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-                </Connection>
-              </NumberPos>
-            </Children>
-          </WidgetGroup>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>ArtistRow</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>ArtistGutter</ObjectName>
+            <ObjectName>ArtistRow</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <TrackProperty>
-                <ObjectName>ArtistText</ObjectName>
-                <TooltipId>track_artist</TooltipId>
-                <Property>artist</Property>
-                <Elide>right</Elide>
+              <WidgetGroup>
+                <ObjectName>ArtistGutter</ObjectName>
+                <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
-                <Channel>
-                  <Variable name="channum"/>
-                </Channel>
-              </TrackProperty>
+                <Children>
+                  <TrackProperty>
+                    <ObjectName>ArtistText</ObjectName>
+                    <Size>0me,22f</Size>
+                    <TooltipId>track_artist</TooltipId>
+                    <Property>artist</Property>
+                    <Elide>right</Elide>
+                    <Channel>
+                      <Variable name="channum"/>
+                    </Channel>
+                  </TrackProperty>
+                </Children>
+              </WidgetGroup><!-- ArtistGutter -->
+              <WidgetGroup>
+                <ObjectName>DurationGutter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>max,min</SizePolicy>
+                <Children>
+                  <TrackProperty>
+                    <ObjectName>DurationText</ObjectName>
+                    <TooltipId>track_duration</TooltipId>
+                    <Size>0min,22f</Size>
+                    <Property>durationFormatted</Property>
+                    <Channel>
+                      <Variable name="channum"/>
+                    </Channel>
+                  </TrackProperty>
+                </Children>
+              </WidgetGroup><!-- DurationGutter -->
             </Children>
-          </WidgetGroup>
-          <WidgetGroup>
-            <ObjectName>DurationGutter</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
-            <Children>
-              <TrackProperty>
-                <ObjectName>DurationText</ObjectName>
-                <TooltipId>track_duration</TooltipId>
-                <SizePolicy>min,min</SizePolicy>
-                <MaximumSize>-1,20</MaximumSize>
-                <Property>durationFormatted</Property>
-                <Channel>
-                  <Variable name="channum"/>
-                </Channel>
-              </TrackProperty>
-            </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- ArtistRow -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- DeckRow_2_3_ArtistTitleTime -->
     </Children>
   </WidgetGroup>
 </Template>

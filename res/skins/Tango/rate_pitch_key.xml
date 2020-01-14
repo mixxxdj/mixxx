@@ -101,7 +101,7 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /Key Display/Match + Key adjust buttons -->
 
-          <WidgetGroup><!-- BPM display & invisble sync button -->
+          <WidgetGroup><!-- BPM display & invisible sync button -->
             <ObjectName>BPM</ObjectName>
             <Layout>stacked</Layout>
             <MinimumSize>50,18</MinimumSize>
@@ -126,7 +126,7 @@ Variables:
                 </Connection>
               </Number>
             </Children>
-          </WidgetGroup><!-- /BPM display & invisble sync button -->
+          </WidgetGroup><!-- /BPM display & invisible sync button -->
 
           <WidgetGroup><!-- Rate adjust buttons -->
             <Layout>horizontal</Layout>
@@ -169,7 +169,7 @@ Variables:
             <MaximumSize>50,136</MaximumSize>
             <SizePolicy>f,me</SizePolicy>
             <TooltipId>rate</TooltipId>
-            <Handle>knobs_sliders/pitch_handle.svg</Handle>
+            <Handle scalemode="STRETCH_ASPECT">knobs_sliders/pitch_handle.svg</Handle>
             <Slider scalemode="STRETCH">knobs_sliders/pitch_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>

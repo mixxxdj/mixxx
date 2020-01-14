@@ -1,331 +1,439 @@
 <Template>
-  <WidgetGroup>
-    <ObjectName>Border58</ObjectName>
-    <SizePolicy>max,min</SizePolicy>
-    <Layout>vertical</Layout>
+  <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
+  <SetVariable name="group">[Master]</SetVariable>
+  <SetVariable name="Type">master</SetVariable>
+
+  <!-- Regular Master Fx buttons 2x2 layout for
+      * 2 decks + 2 Fx, no Booth
+      * 4 decks, any configuration
+        Gain | Balance
+         [ Booth ]
+         Fx1 | Fx2
+       [ Fx3 | Fx4 ] -->
+  <SingletonDefinition>
+    <ObjectName>MasterFxbuttons2x2</ObjectName>
     <Children>
-      <!-- This container gives the Master/Headphone
-            a continuous background image -->
       <WidgetGroup>
-        <ObjectName>MasterHeadphoneMixer</ObjectName>
-        <BackPath>style/background_tile.png</BackPath>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-
-          <WidgetGroup>
-            <ObjectName>MasterControls</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
+          <WidgetGroup><!-- FX buttons 1/2 -->
+            <ObjectName>AlignHCenter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
-
-              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
-
-              <!-- Master knobs
-                  Labels are separate so knobs are spaced equally -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="Size">35f,30f</SetVariable>
-                        <SetVariable name="Color">orange</SetVariable>
-                        <SetVariable name="TooltipId">master_gain</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">gain</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="Size">35f,30f</SetVariable>
-                        <SetVariable name="Color">red</SetVariable>
-                        <SetVariable name="TooltipId">balance</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">balance</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <!-- Master knob labels -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Alignment>left</Alignment>
-                    <Text> master</Text>
-                  </Label>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>l / r</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
-
-              <WidgetGroup><!-- FX buttons 1/2 -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- /FX buttons 1/2 -->
-
-              <!-- FX buttons 3/4 -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
-                  </Template>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">35me,22f</SetVariable>
-                    <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
-                    <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /FX buttons 3/4 -->
-
-              <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="Color">orange</SetVariable>
-                    <SetVariable name="TooltipId">booth_gain</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">booth_gain</SetVariable>
-                  </Template>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>Booth</Text>
-                  </Label>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Master],booth_enabled</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>MasterVuMeter_4Decks</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-
-                  <WidgetGroup><!-- Peak indicator L + R -->
-                    <ObjectName>Spacer1e</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>max,max</SizePolicy>
-                    <Children>
-                      <StatusLight>
-                        <TooltipId>master_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-                        <PathBack>style/clipping_deck.png</PathBack>
-                        <Connection>
-                          <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
-                        </Connection>
-                      </StatusLight>
-                      <StatusLight>
-                        <TooltipId>master_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-                        <PathBack>style/clipping_deck.png</PathBack>
-                        <Connection>
-                          <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
-                        </Connection>
-                      </StatusLight>
-                    </Children>
-                  </WidgetGroup><!-- /Peak indicator L + R -->
-
-                  <WidgetGroup><!-- Level L + R -->
-                    <ObjectName>Spacer1e</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>max,max</SizePolicy>
-                    <Children>
-                      <VuMeter>
-                        <TooltipId>master_VuMeterL</TooltipId>
-                        <PathVu>style/volume_display_deck_over.png</PathVu>
-                        <PathBack>style/volume_display_deck.png</PathBack>
-                        <Horizontal>false</Horizontal>
-                        <PeakHoldSize>5</PeakHoldSize>
-                        <PeakHoldTime>500</PeakHoldTime>
-                        <PeakFallTime>50</PeakFallTime>
-                        <PeakFallStep>2</PeakFallStep>
-                        <Connection>
-                          <ConfigKey>[Master],VuMeterL</ConfigKey>
-                        </Connection>
-                      </VuMeter>
-                      <VuMeter>
-                        <TooltipId>master_VuMeterR</TooltipId>
-                        <PathVu>style/volume_display_deck_over.png</PathVu>
-                        <PathBack>style/volume_display_deck.png</PathBack>
-                        <Horizontal>false</Horizontal>
-                        <PeakHoldSize>5</PeakHoldSize>
-                        <PeakHoldTime>500</PeakHoldTime>
-                        <PeakFallTime>50</PeakFallTime>
-                        <PeakFallStep>2</PeakFallStep>
-                        <Connection>
-                          <ConfigKey>[Master],VuMeterR</ConfigKey>
-                        </Connection>
-                      </VuMeter>
-                    </Children>
-                  </WidgetGroup><!-- /Level L + R -->
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /MasterVuMeter4ch -->
-
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
             </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>MasterHeadphoneDivider</ObjectName>
-            <Size>,11f</Size>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>HeadphoneControls</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
+          </WidgetGroup><!-- /FX buttons 1/2 -->
+          <WidgetGroup><!-- FX buttons 3/4 -->
+            <ObjectName>AlignHCenter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
-
-              <!-- Headphone knobs
-                  Labels are separate so knobs are spaced equally -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="Size">35f,30f</SetVariable>
-                        <SetVariable name="Color">orange</SetVariable>
-                        <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">headGain</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="Size">35f,30f</SetVariable>
-                        <SetVariable name="Color">green</SetVariable>
-                        <SetVariable name="TooltipId">headMix</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">headMix</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Headphone knob labels -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>left</Alignment>
-                    <Text>  Head   </Text>
-                  </Label>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>CUE/MST</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <MinimumSize>0,3</MinimumSize>
-                <MaximumSize>-1,5</MaximumSize>
-                <SizePolicy>me,min</SizePolicy>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- HeadSplit button -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">headSplit</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">68f,22f</SetVariable>
-                    <SetVariable name="state_0_text">Split Cue</SetVariable>
-                    <SetVariable name="state_1_text">Split Cue</SetVariable>
-                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- /HeadSplit button -->
-
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">3</SetVariable>
+              </Template>
+              <Template src="skin:fx_assign_button.xml">
+                <SetVariable name="MaxWidth">35</SetVariable>
+                <SetVariable name="Text">FX</SetVariable>
+                <SetVariable name="FxUnit">4</SetVariable>
+              </Template>
             </Children>
-          </WidgetGroup><!-- /HeadphoneControls -->
-
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /FX buttons 3/4 -->
         </Children>
       </WidgetGroup>
     </Children>
+  </SingletonDefinition><!-- MasterFxbuttons2x2 -->
+
+
+  <!-- Compact Master controls layout for
+      * 2 decks + 4 Fx + Booth
+        Gain  | Balance
+              | Fx1
+        Booth | Fx2
+              | Fx3
+              | Fx4 -->
+  <SingletonDefinition>
+    <ObjectName>MasterFxbuttons4x1</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">28</SetVariable>
+            <SetVariable name="MaxWidth">28</SetVariable>
+            <SetVariable name="Text">FX</SetVariable>
+            <SetVariable name="FxUnit">1</SetVariable>
+          </Template>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">20</SetVariable>
+            <SetVariable name="MaxWidth">20</SetVariable>
+            <SetVariable name="FxUnit">2</SetVariable>
+          </Template>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">20</SetVariable>
+            <SetVariable name="MaxWidth">20</SetVariable>
+            <SetVariable name="FxUnit">3</SetVariable>
+          </Template>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="MinWidth">20</SetVariable>
+            <SetVariable name="MaxWidth">20</SetVariable>
+            <SetVariable name="FxUnit">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition><!-- MasterFxbuttons4x1 -->
+
+  <WidgetGroup>
+    <SizePolicy>max,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MasterHeadphoneMixerContainer</ObjectName>
+        <SizePolicy>max,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <!-- This container gives the Master/Headphone
+                a continuous background image -->
+          <WidgetGroup>
+            <ObjectName>MasterHeadphoneMixer</ObjectName>
+            <BackPath><Variable name="BgTile"/></BackPath>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>MasterControls</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                  <!-- Master knobs
+                      Labels are separate so knobs are spaced equally -->
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:knob_textless.xml">
+                            <SetVariable name="Size">35f,30f</SetVariable>
+                            <SetVariable name="type">small</SetVariable>
+                            <SetVariable name="Color">orange</SetVariable>
+                            <SetVariable name="TooltipId">master_gain</SetVariable>
+                            <SetVariable name="control">gain</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:knob_textless.xml">
+                            <SetVariable name="Size">35f,30f</SetVariable>
+                            <SetVariable name="type">small</SetVariable>
+                            <SetVariable name="Color">red</SetVariable>
+                            <SetVariable name="TooltipId">balance</SetVariable>
+                            <SetVariable name="control">balance</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+
+                  <!-- Master knob labels -->
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Label>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Alignment>left</Alignment>
+                        <Text> master&#8194;&#8194;l / r </Text>
+                      </Label>
+                      <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Booth knob -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="Color">orange</SetVariable>
+                        <SetVariable name="type">small</SetVariable>
+                        <SetVariable name="TooltipId">booth_gain</SetVariable>
+                        <SetVariable name="control">booth_gain</SetVariable>
+                      </Template>
+                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+                      <Label>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Alignment>right</Alignment>
+                        <Text>Booth</Text>
+                      </Label>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Master],booth_enabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+                  <!-- MasterFxButtons 2 decks -->
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+                      <!-- 2 decks, no Booth, 2/4 Fx -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>MasterFxbuttons2x2</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],booth_enabled</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <!-- 2 decks + Booth -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <!-- 2 decks + Booth + 2 Fx -->
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>MasterFxbuttons2x2</ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                          <!-- 2 decks + Booth + 4 Fx -->
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>MasterFxbuttons4x1</ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],booth_enabled</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- MasterFxButtons 2 decks -->
+
+                  <!-- MasterFxButtons 4 decks -->
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>MasterFxbuttons2x2</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- MasterFxButtons 4 decks -->
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>VuMeterMaster4Decks</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>VuMeterMaster</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /MasterVuMeter4ch -->
+
+                </Children>
+              </WidgetGroup><!-- MasterControls -->
+
+              <WidgetGroup>
+                <ObjectName>MasterHeadphoneSeparator</ObjectName>
+                <Size>0me,0min</Size>
+                <!-- Layout + Children let's us apply qss padding -->
+                <Layout>horizontal</Layout>
+                <Children/>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>HeadphoneControls</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                  <!-- Headphone knobs
+                      Labels are separate so knobs are spaced equally -->
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:knob_textless.xml">
+                            <SetVariable name="Size">35f,30f</SetVariable>
+                            <SetVariable name="Color">orange</SetVariable>
+                            <SetVariable name="type">small</SetVariable>
+                            <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                            <SetVariable name="group">[Master]</SetVariable>
+                            <SetVariable name="control">headGain</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <Template src="skin:knob_textless.xml">
+                            <SetVariable name="Size">35f,30f</SetVariable>
+                            <SetVariable name="Color">green</SetVariable>
+                            <SetVariable name="type">small</SetVariable>
+                            <SetVariable name="TooltipId">headMix</SetVariable>
+                            <SetVariable name="group">[Master]</SetVariable>
+                            <SetVariable name="control">headMix</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- Headphone knob labels -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Label>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Alignment>left</Alignment>
+                        <Text>  Head   </Text>
+                      </Label>
+
+                      <Label>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Alignment>right</Alignment>
+                        <Text>CUE/MST</Text>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <MinimumSize>0,3</MinimumSize>
+                    <MaximumSize>,5</MaximumSize>
+                    <SizePolicy>me,min</SizePolicy>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- HeadSplit button -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <PushButton>
+                        <TooltipId>headSplit</TooltipId>
+                        <ObjectName>SplitCueButton</ObjectName>
+                        <Size>72f,26f</Size>
+                        <NumberStates>2</NumberStates>
+                        <RightClickIsPushButton>false</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_play_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Master],headSplit</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                    </Children>
+                  </WidgetGroup><!-- /HeadSplit button -->
+
+                </Children>
+              </WidgetGroup><!-- /HeadphoneControls -->
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_master_head_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

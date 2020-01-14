@@ -16,6 +16,7 @@ using namespace QKeychain;
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "util/compatibility.h"
 #include "util/xml.h"
 #include "util/memory.h"
 #include "util/logger.h"
@@ -219,11 +220,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
 }
 
 void BroadcastProfile::adoptDefaultValues() {
-#ifdef __QTKEYCHAIN__
-    m_secureCredentials = true;
-#else
     m_secureCredentials = false;
-#endif
     m_enabled = false;
 
     m_host = QString();
@@ -433,7 +430,7 @@ void BroadcastProfile::setConnectionStatus(int newState) {
 }
 
 int BroadcastProfile::connectionStatus() {
-    return m_connectionStatus.load();
+    return atomicLoadRelaxed(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {

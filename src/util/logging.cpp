@@ -14,10 +14,7 @@
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 #include <QLoggingCategory>
-#endif
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
@@ -77,14 +74,12 @@ void MessageHandler(QtMsgType type,
                     isControllerDebug;
             shouldFlush = Logging::flushing(LogLevel::Debug);
             break;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         case QtInfoMsg:
             tag = "Info [";
             baSize += strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Info);
             shouldFlush = Logging::flushing(LogLevel::Info);
             break;
-#endif
         case QtWarningMsg:
             tag = "Warning [";
             baSize += strlen(tag);
@@ -198,7 +193,6 @@ void Logging::initialize(const QDir& settingsDir,
     // Install the Qt message handler.
     qInstallMessageHandler(MessageHandler);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     // Ugly hack around distributions disabling debugging in Qt applications.
     // This restores the default Qt behavior. It is required for getting useful
     // logs from users and for developing controller mappings.
@@ -207,7 +201,6 @@ void Logging::initialize(const QDir& settingsDir,
     // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
     QLoggingCategory::setFilterRules("*.debug=true\n"
                                      "qt.*.debug=false");
-#endif
 }
 
 // static

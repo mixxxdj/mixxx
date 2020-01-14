@@ -40,8 +40,6 @@ Description:
                 <TooltipId>skin_settings</TooltipId>
                 <ObjectName>SkinSettingsClose</ObjectName>
                 <Size>20f,24f</Size>
-                <!-- This is used to work around Bug 1795663 on OSX -->
-                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -63,7 +61,7 @@ Description:
               <SizePolicy> is very hard to handle in many places here due to
               translucent covers and submenus, defining button sizes explicitly helps.
 
-              Each categroy has a padding: top 2px, bottom 2px
+              Each category has a padding: top 2px, bottom 2px
               For every button we need to provide space (13-17px):
               MinSize = (num. of buttons/rows x 13px) + 15px + 3px padding + 3px border-bottom
               MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom +10px
@@ -117,7 +115,7 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when Hot Cues are invisble -->
+                      <WidgetGroup><!-- translucent cover when Hot Cues are invisible -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <Size>182f,13me</Size>
@@ -159,6 +157,7 @@ Description:
                 <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
               </Template>
 
+              
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
                 <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
@@ -655,7 +654,7 @@ Description:
           <WidgetGroup><!-- 2 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,26</MinimumSize>
-            <MaximumSize>200,54</MaximumSize>
+            <MaximumSize>200,62</MaximumSize>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -681,7 +680,7 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                      <WidgetGroup><!-- translucent cover when Effects are invisible -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <Size>182f,13me</Size>
@@ -727,7 +726,7 @@ Description:
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                  <WidgetGroup><!-- translucent cover when Effects are invisible -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <Size>182f,13me</Size>
