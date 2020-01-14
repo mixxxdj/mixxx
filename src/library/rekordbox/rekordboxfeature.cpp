@@ -749,7 +749,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
     rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
 
-    double sampleRateFrames = sampleRate * 2.0;
+    double sampleRateScaled = sampleRate / 1000.0;
+    double sampleRateFrames = sampleRateScaled * 2.0;
 
     double cueLoadPosition = kLongestPosition;
     QString cueLoadComment;
@@ -773,7 +774,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                beats << (sampleRate * static_cast<double>(time));
+                beats << (sampleRateScaled * static_cast<double>(time));
             }
 
             QHash<QString, QString> extraVersionInfo;
@@ -982,7 +983,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
         }
     }
 
-    double sampleRate = static_cast<double>(track->getSampleRate()) / 1000.0;
+    double sampleRate = static_cast<double>(track->getSampleRate());
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
     readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
