@@ -841,14 +841,14 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
 
-    QMenu* controlMenu = new QMenu(controlTitle, pMenu);
+    parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
 
-    QMenu* resetControlMenu = NULL;
+    parented_ptr<QMenu> resetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
     if (addReset) {
         QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        resetControlMenu = new QMenu(resetHelpText, pMenu);
+        resetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
         pMenu->addMenu(resetControlMenu);
     }
 
@@ -905,14 +905,14 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                                                    bool microphoneControls,
                                                    bool auxControls,
                                                    bool addReset) {
-    QMenu* controlMenu = new QMenu(controlTitle, pMenu);
+    parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
 
-    QMenu* resetControlMenu = NULL;
+    parented_ptr<QMenu> resetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
     if (addReset) {
         QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        resetControlMenu = new QMenu(resetHelpText, pMenu);
+        resetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
         pMenu->addMenu(resetControlMenu);
     }
 
@@ -1003,7 +1003,7 @@ QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
     if (pParent == NULL) {
         pParent = this;
     }
-    QMenu* subMenu = new QMenu(title, pParent);
+    auto subMenu = make_parented<QMenu>(title, pParent);
     pParent->addMenu(subMenu);
     return subMenu;
 }
