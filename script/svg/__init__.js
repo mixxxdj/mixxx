@@ -25,8 +25,7 @@ function isNumber(n) {
     }
 
     svg.getHooksPattern = function(){
-        var hookNames = [],
-            that = this;
+        var hookNames = [];
         for( var i in this.templateHooks )
             hookNames.push(i);
         
