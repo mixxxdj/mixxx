@@ -1,0 +1,46 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true,
+    "jquery": true,
+    "jasmine": true,
+    "mocha": true,
+    "qunit": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "globalReturn": true
+    },
+    "sourceType": "script"
+  },
+  "rules": {
+    "no-undef": "off",
+    "no-fallthrough": "off",
+    "no-mixed-spaces-and-tabs": "off",
+    "no-console": "off",
+    "indent": "off",
+    "semi": "off",
+    "no-tabs": "off",
+    "no-redeclare": "off",
+    "curly": "off",
+    "dot-location": "off",
+    "getter-return": "off",
+    "yoda": "off",
+    "require-atomic-updates": "off",
+    "no-with": "off",
+    "no-prototype-builtins": "off",
+    "no-misleading-character-class": "off",
+    "no-async-promise-executor": "off"
+  },
+  "globals": {
+    "ActiveXObject": true,
+    "XDomainRequest": true,
+    "ScriptEngine": true,
+    "WSH": true,
+    "WScript": true,
+    "DocumentTouch": true
+  }
+}
