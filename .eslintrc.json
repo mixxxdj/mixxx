@@ -23,6 +23,8 @@
     "no-async-promise-executor": "off"
   },
   "globals": {
+    "_": "readonly",
+    "color": "readonly",
     "components": "readonly",
     "engine": "readonly",
     "midi": "readonly",
