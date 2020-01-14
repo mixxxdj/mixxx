@@ -795,7 +795,15 @@ void ControlPickerMenu::addSingleControl(QString group, QString control,
                                          QString title, QString description,
                                          QMenu* pMenu, QString prefix,
                                          QString actionTitle) {
-    int controlIndex = m_controlsAvailable.size();
+    int controlIndex;
+
+    if (prefix.isEmpty()) {
+        controlIndex = addAvailableControl(ConfigKey(group, control), title, description);
+    } else {
+        QString prefixedTitle = QString("%1: %2").arg(prefix, title);
+        QString prefixedDescription = QString("%1: %2").arg(prefix, description);
+        controlIndex = addAvailableControl(ConfigKey(group, control), prefixedTitle, prefixedDescription);
+    }
 
     if (actionTitle.isEmpty()) {
         actionTitle = title;
@@ -805,14 +813,6 @@ void ControlPickerMenu::addSingleControl(QString group, QString control,
     connect(pAction, &QAction::triggered,
             this, [this, controlIndex] { controlChosen(controlIndex); });
     pMenu->addAction(pAction);
-
-    if (prefix.isEmpty()) {
-        addAvailableControl(ConfigKey(group, control), title, description);
-    } else {
-        QString prefixedTitle = QString("%1: %2").arg(prefix, title);
-        QString prefixedDescription = QString("%1: %2").arg(prefix, description);
-        addAvailableControl(ConfigKey(group, control), prefixedTitle, prefixedDescription);
-    }
 }
 
 void ControlPickerMenu::addControl(QString group, QString control, QString title,
@@ -1015,12 +1015,13 @@ void ControlPickerMenu::controlChosen(int controlIndex) {
     emit(controlPicked(m_controlsAvailable[controlIndex]));
 }
 
-void ControlPickerMenu::addAvailableControl(ConfigKey key,
-                                            QString title,
-                                            QString description) {
+int ControlPickerMenu::addAvailableControl(ConfigKey key,
+                                           QString title,
+                                           QString description) {
     m_controlsAvailable.append(key);
     m_descriptionsByKey.insert(key, description);
     m_titlesByKey.insert(key, title);
+    return m_controlsAvailable.size();
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {

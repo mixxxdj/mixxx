@@ -59,7 +59,7 @@ class ControlPickerMenu : public QMenu {
                                     bool microphoneControls, bool auxControls,
                                     bool addReset=false);
 
-    void addAvailableControl(ConfigKey key, QString title, QString description);
+    int addAvailableControl(ConfigKey key, QString title, QString description);
 
     QString m_effectMasterOutputStr;
     QString m_effectHeadphoneOutputStr;
