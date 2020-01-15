@@ -20,9 +20,9 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     ~BaseExternalLibraryFeature() override;
 
   public slots:
-    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
-    virtual void onRightClick(const QPoint& globalPos) override;
-    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   protected:
     // Must be implemented by external Libraries copied to Mixxx DB

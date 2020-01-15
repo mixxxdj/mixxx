@@ -52,7 +52,7 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
     bool isColumnHiddenByDefault(int column) override;
 
   protected:
-    virtual void initSortColumnMapping() override;
+    void initSortColumnMapping() override;
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
