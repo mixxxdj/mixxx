@@ -839,7 +839,7 @@ class LiveBroadcasting(Feature):
             # https://bugs.launchpad.net/mixxx/+bug/1833225
             if not conf.CheckForPKG('shout', '2.4.4'):
                 if conf.CheckForPKG('shout', '2.4.2'):
-                    print("System's libshout 2.4.2 suffers lp1833225, using internal shout_mixxx")
+                    print("System's libshout suffers lp1833225, using internal shout_mixxx")
                     build.flags['shoutcast_internal'] = 1
                 else:
                     print("(no) here is fine here we just don't want 2.4.2")
