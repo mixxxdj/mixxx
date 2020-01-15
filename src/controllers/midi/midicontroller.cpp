@@ -187,7 +187,7 @@ void MidiController::commitTemporaryInputMappings() {
     // in m_temporaryInputMappings. To do this, we first remove every key in
     // m_temporaryInputMappings from m_preset.inputMappings.
     for (auto it = m_temporaryInputMappings.constBegin();
-         it != m_temporaryInputMappings.end(); ++it) {
+         it != m_temporaryInputMappings.constEnd(); ++it) {
         m_preset.inputMappings.remove(it.key());
     }
 
@@ -212,7 +212,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         auto it = m_temporaryInputMappings.constFind(mappingKey.key);
         if (it != m_temporaryInputMappings.constEnd()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
             return;
