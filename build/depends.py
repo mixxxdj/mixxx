@@ -451,7 +451,9 @@ class Qt(Dependence):
             # GCC/Clang
             build.env.Append(CXXFLAGS='-std=c++17')
             if build.platform_is_osx and build.compiler_is_clang:
-                build.env.Append(CXXFLAGS='-faligned-allocation')
+                # Aligned allocation is only supported since macOS 10.13,
+                # but not for the minimum supported version macOS 10.11
+                build.env.Append(CXXFLAGS='-fno-aligned-allocation')
 
 
 class TestHeaders(Dependence):
