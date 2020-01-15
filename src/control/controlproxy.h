@@ -60,9 +60,7 @@ class ControlProxy : public QObject {
             break;
         case Qt::BlockingQueuedConnection:
             // We must not block the signal source by a blocking connection
-            DEBUG_ASSERT(false);
-            return false;
-            break;
+            [[fallthrough]];
         default:
             DEBUG_ASSERT(false);
             return false;
