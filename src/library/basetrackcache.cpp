@@ -169,7 +169,7 @@ void BaseTrackCache::slotTrackChanged(TrackId trackId) {
     }
     QSet<TrackId> trackIds;
     trackIds.insert(trackId);
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
@@ -407,7 +407,7 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
         qDebug() << "updateTracksInIndex failed!";
         return;
     }
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,

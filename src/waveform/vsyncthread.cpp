@@ -42,17 +42,17 @@ void VSyncThread::run() {
             // for benchmark only!
 
             // renders the waveform, Possible delayed due to anti tearing
-            emit(vsyncRender());
+            emit vsyncRender();
             m_semaVsyncSlot.acquire();
 
-            emit(vsyncSwap()); // swaps the new waveform to front
+            emit vsyncSwap(); // swaps the new waveform to front
             m_semaVsyncSlot.acquire();
 
             m_timer.restart();
             m_waitToSwapMicros = 1000;
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
-            emit(vsyncRender()); // renders the new waveform.
+            emit vsyncRender(); // renders the new waveform.
 
             // wait until rendering was scheduled. It might be delayed due a
             // pending swap (depends one driver vSync settings)
@@ -67,7 +67,7 @@ void VSyncThread::run() {
             }
 
             // swaps the new waveform to front in case of gl-wf
-            emit(vsyncSwap());
+            emit vsyncSwap();
 
             // wait until swap occurred. It might be delayed due to driver vSync
             // settings.

@@ -103,7 +103,7 @@ class ControlProxy : public QObject {
 
     // Called from update();
     virtual void emitValueChanged() {
-        emit(valueChanged(get()));
+        emit valueChanged(get());
     }
 
     inline bool valid() const { return m_pControl != NULL; }
@@ -172,7 +172,7 @@ class ControlProxy : public QObject {
     void slotValueChangedDirect(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
-            emit(valueChanged(v));
+            emit valueChanged(v);
         }
     }
 
@@ -180,7 +180,7 @@ class ControlProxy : public QObject {
     void slotValueChangedAuto(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
-            emit(valueChanged(v));
+            emit valueChanged(v);
         }
     }
 
@@ -188,7 +188,7 @@ class ControlProxy : public QObject {
     void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
-            emit(valueChanged(v));
+            emit valueChanged(v);
         }
     }
 

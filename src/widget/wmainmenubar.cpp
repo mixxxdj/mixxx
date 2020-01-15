@@ -85,7 +85,7 @@ void WMainMenuBar::initialize() {
         // WMainMenuBar::onNumberOfDecksChanged.
         pFileLoadSongToPlayer->setVisible(false);
         connect(pFileLoadSongToPlayer, &QAction::triggered,
-                this, [this, deck] { loadTrackToDeck(deck + 1); });
+                this, [this, deck] { emit loadTrackToDeck(deck + 1); });
 
         pFileMenu->addAction(pFileLoadSongToPlayer);
         m_loadToDeckActions.push_back(pFileLoadSongToPlayer);
@@ -309,7 +309,7 @@ void WMainMenuBar::initialize() {
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
         connect(vc_checkbox, &QAction::triggered,
-                this, [this, i] { toggleVinylControl(i); });
+                this, [this, i] { emit toggleVinylControl(i); });
         pVinylControlMenu->addAction(vc_checkbox);
     }
     pOptionsMenu->addMenu(pVinylControlMenu);
@@ -578,39 +578,39 @@ void WMainMenuBar::initialize() {
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
-    emit(internalLibraryScanActive(true));
+    emit internalLibraryScanActive(true);
 }
 
 void WMainMenuBar::onLibraryScanFinished() {
-    emit(internalLibraryScanActive(false));
+    emit internalLibraryScanActive(false);
 }
 
 void WMainMenuBar::onNewSkinLoaded() {
-    emit(internalOnNewSkinLoaded());
+    emit internalOnNewSkinLoaded();
 }
 
 void WMainMenuBar::onNewSkinAboutToLoad() {
-    emit(internalOnNewSkinAboutToLoad());
+    emit internalOnNewSkinAboutToLoad();
 }
 
 void WMainMenuBar::onRecordingStateChange(bool recording) {
-    emit(internalRecordingStateChange(recording));
+    emit internalRecordingStateChange(recording);
 }
 
 void WMainMenuBar::onBroadcastingStateChange(bool broadcasting) {
-    emit(internalBroadcastingStateChange(broadcasting));
+    emit internalBroadcastingStateChange(broadcasting);
 }
 
 void WMainMenuBar::onDeveloperToolsShown() {
-    emit(internalDeveloperToolsStateChange(true));
+    emit internalDeveloperToolsStateChange(true);
 }
 
 void WMainMenuBar::onDeveloperToolsHidden() {
-    emit(internalDeveloperToolsStateChange(false));
+    emit internalDeveloperToolsStateChange(false);
 }
 
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
-    emit(internalFullScreenStateChange(fullscreen));
+    emit internalFullScreenStateChange(fullscreen);
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {

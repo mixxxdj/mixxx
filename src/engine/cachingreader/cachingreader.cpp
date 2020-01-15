@@ -207,7 +207,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
 
     // TODO():
     // BaseTrackPlayerImpl::slotLoadTrack() distributes the new track via
-    // emit(loadingTrack(pNewTrack, pOldTrack));
+    // emit loadingTrack(pNewTrack, pOldTrack);
     // but the newTrack may change if we load a new track while the previous one
     // is still loading. This leads to inconsistent states for example a different
     // track in the Mixxx Title and the Deck label.

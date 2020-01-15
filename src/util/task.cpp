@@ -20,6 +20,6 @@ void TaskWatcher::watchTask() {
 void TaskWatcher::taskDone() {
     // Decrement m_activeTasks and if it is zero emit allTasksDone().
     if (!m_activeTasks.deref()) {
-        emit(allTasksDone());
+        emit allTasksDone();
     }
 }

@@ -34,7 +34,7 @@ QString MidiController::presetExtension() {
 
 void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
-    emit(presetLoaded(getPreset()));
+    emit presetLoaded(getPreset());
 }
 
 int MidiController::close() {
@@ -208,7 +208,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     triggerActivity();
     if (isLearning()) {
-        emit(messageReceived(status, control, value));
+        emit messageReceived(status, control, value);
 
         auto it = m_temporaryInputMappings.constFind(mappingKey.key);
         if (it != m_temporaryInputMappings.constEnd()) {
@@ -459,7 +459,7 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     // don't think this actually does anything useful.
     if (isLearning()) {
         // TODO(rryan): Fake a one value?
-        emit(messageReceived(mappingKey.status, mappingKey.control, 0x7F));
+        emit messageReceived(mappingKey.status, mappingKey.control, 0x7F);
 
         auto it = m_temporaryInputMappings.constFind(mappingKey.key);
         if (it != m_temporaryInputMappings.constEnd()) {

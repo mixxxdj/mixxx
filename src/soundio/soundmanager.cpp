@@ -254,7 +254,7 @@ void SoundManager::queryDevices() {
     queryDevicesMixxx();
 
     // now tell the prefs that we updated the device list -- bkgood
-    emit(devicesUpdated());
+    emit devicesUpdated();
 }
 
 void SoundManager::clearAndQueryDevices() {
@@ -506,7 +506,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
     // returns OK if we were able to open all the devices the user wanted
     if (devicesNotFound.isEmpty()) {
-        emit(devicesSetup());
+        emit devicesSetup();
         return SOUNDDEVICE_ERROR_OK;
     }
     m_pErrorDevice = SoundDevicePointer(
@@ -635,7 +635,7 @@ void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
     m_registeredSources.insert(output, src);
-    emit(outputRegistered(output, src));
+    emit outputRegistered(output, src);
 }
 
 void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
@@ -647,7 +647,7 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
 
     m_registeredDestinations.insertMulti(input, dest);
 
-    emit(inputRegistered(input, dest));
+    emit inputRegistered(input, dest);
 }
 
 QList<AudioOutput> SoundManager::registeredOutputs() const {

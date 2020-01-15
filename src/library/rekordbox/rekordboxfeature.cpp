@@ -1152,10 +1152,10 @@ void RekordboxFeature::activate() {
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
     //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
-    emit(featureIsLoading(this, true));
+    emit featureIsLoading(this, true);
 
-    emit(enableCoverArtDisplay(true));
-    emit(switchToView("REKORDBOXHOME"));
+    emit enableCoverArtDisplay(true);
+    emit switchToView("REKORDBOXHOME");
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {
@@ -1195,7 +1195,7 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
     } else {
         qDebug() << "Activate Rekordbox Playlist: " << playlist;
         m_pRekordboxPlaylistModel->setPlaylist(playlist);
-        emit(showTrackModel(m_pRekordboxPlaylistModel));
+        emit showTrackModel(m_pRekordboxPlaylistModel);
     }
 }
 
@@ -1266,7 +1266,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Rekordbox");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
 }
 
 void RekordboxFeature::onTracksFound() {
@@ -1278,5 +1278,5 @@ void RekordboxFeature::onTracksFound() {
     qDebug() << "Show Rekordbox Device Playlist: " << devicePlaylist;
 
     m_pRekordboxPlaylistModel->setPlaylist(devicePlaylist);
-    emit(showTrackModel(m_pRekordboxPlaylistModel));
+    emit showTrackModel(m_pRekordboxPlaylistModel);
 }

@@ -625,12 +625,12 @@ void WaveformWidgetFactory::render() {
 
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
-        emit(renderSpinnies(m_vsyncThread));
+        emit renderSpinnies(m_vsyncThread);
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
         //int t1 = m_vsyncThread->elapsed();
-        emit(waveformUpdateTick());
+        emit waveformUpdateTick();
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
@@ -638,7 +638,7 @@ void WaveformWidgetFactory::render() {
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
             m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
-            emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
+            emit waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames());
             m_frameCnt = 0.0;
         }
     }
@@ -677,7 +677,7 @@ void WaveformWidgetFactory::swap() {
         }
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Swap all the WSpinny widgets now.
-        emit(swapSpinnies());
+        emit swapSpinnies();
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
