@@ -1,11 +1,11 @@
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 
@@ -202,15 +202,16 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 }
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
-    if (pTrack) {
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Guessing cover art for"
-                    << pTrack->getFileInfo();
-        }
-        CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
-        pTrack->setCoverInfo(cover);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
     }
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Guessing cover art for"
+                << pTrack->getFileInfo();
+    }
+    pTrack->setCoverInfo(
+            CoverInfoGuesser().guessCoverInfoForTrack(*pTrack));
 }
 
 void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
@@ -218,9 +219,9 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
         kLogger.debug()
                 << "Guessing cover art for"
                 << tracks.size()
-                << "tracks";
+                << "track(s)";
     }
-    foreach (TrackPointer pTrack, tracks) {
+    for (TrackPointer pTrack : qAsConst(tracks)) {
         guessCover(pTrack);
     }
 }

@@ -166,18 +166,20 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
 
 // slots to handle signals from the context menu
 void DlgCoverArtFullSize::slotReloadCoverArt() {
-    if (m_pLoadedTrack != nullptr) {
-        auto coverInfo =
-                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-        slotCoverInfoSelected(coverInfo);
+    if (!m_pLoadedTrack) {
+        return;
     }
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
-void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    // qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
-    if (m_pLoadedTrack != nullptr) {
-        m_pLoadedTrack->setCoverInfo(coverInfo);
+void DlgCoverArtFullSize::slotCoverInfoSelected(
+        const CoverInfoRelative& coverInfo) {
+    if (!m_pLoadedTrack) {
+        return;
     }
+    m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {

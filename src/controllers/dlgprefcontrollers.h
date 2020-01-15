@@ -2,7 +2,6 @@
 #define DLGPREFCONTROLLERS_H
 
 #include <QTreeWidgetItem>
-#include <QSignalMapper>
 
 #include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
@@ -43,7 +42,6 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
-    QSignalMapper m_buttonMapper;
 };
 
 #endif /* DLGPREFCONTROLLERS_H */

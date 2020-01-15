@@ -22,7 +22,7 @@ TagFetcher::TagFetcher(QObject* parent)
             m_AcoustidClient(this),
             m_MusicbrainzClient(this) {
     connect(&m_AcoustidClient, &AcoustidClient::finished,
-            this, &TagFetcher::mbidFound);
+            this, &TagFetcher::mbRecordingIdsFound);
     connect(&m_MusicbrainzClient, &MusicBrainzClient::finished,
             this, &TagFetcher::tagsFetched);
     connect(&m_AcoustidClient, &AcoustidClient::networkError,
@@ -66,7 +66,7 @@ void TagFetcher::cancel() {
 }
 
 void TagFetcher::fingerprintFound(int index) {
-    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
+    QFutureWatcher<QString>* watcher = static_cast<QFutureWatcher<QString>*>(sender());
     if (!watcher || index >= m_tracks.count()) {
         return;
     }
@@ -84,21 +84,21 @@ void TagFetcher::fingerprintFound(int index) {
     m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
 }
 
-void TagFetcher::mbidFound(int index, const QString& mbid) {
+void TagFetcher::mbRecordingIdsFound(int index, QStringList mbRecordingIds) {
     if (index >= m_tracks.count()) {
         return;
     }
 
     const TrackPointer pTrack = m_tracks[index];
 
-    if (mbid.isEmpty()) {
+    if (mbRecordingIds.isEmpty()) {
         emit(resultAvailable(pTrack, QList<TrackPointer>()));
         return;
     }
 
     emit fetchProgress(tr("Downloading Metadata"));
     //qDebug() << "start to fetch tags from MB";
-    m_MusicbrainzClient.start(index, mbid);
+    m_MusicbrainzClient.start(index, mbRecordingIds);
 }
 
 void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& results) {

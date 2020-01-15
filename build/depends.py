@@ -274,6 +274,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
@@ -449,7 +450,7 @@ class Qt(Dependence):
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        build.env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
 
 class FidLib(Dependence):
     def sources(self, build):

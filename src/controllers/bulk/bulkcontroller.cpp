@@ -11,6 +11,7 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
+#include "util/compatibility.h"
 #include "util/trace.h"
 #include "util/time.h"
 
@@ -32,7 +33,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (m_stop.load() == 0) {
+    while (atomicLoadAcquire(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data

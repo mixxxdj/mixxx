@@ -2,7 +2,6 @@
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QMutexLocker>
-#include <QStringBuilder>
 
 #include "engine/enginebuffer.h"
 #include "engine/controls/cuecontrol.h"
@@ -47,8 +46,6 @@ CueControl::CueControl(QString group,
             this, &CueControl::quantizeChanged,
             Qt::DirectConnection);
 
-    m_pPrevBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
-    m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
 
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
@@ -200,6 +197,23 @@ CueControl::CueControl(QString group,
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
     m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
+
+    m_pHotcueFocus = new ControlObject(ConfigKey(group, "hotcue_focus"));
+    m_pHotcueFocus->set(Cue::kNoHotCue);
+
+    m_pHotcueFocusColorPrev = new ControlObject(ConfigKey(group, "hotcue_focus_color_prev"));
+    connect(m_pHotcueFocusColorPrev,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::hotcueFocusColorPrev,
+            Qt::DirectConnection);
+
+    m_pHotcueFocusColorNext = new ControlObject(ConfigKey(group, "hotcue_focus_color_next"));
+    connect(m_pHotcueFocusColorNext,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::hotcueFocusColorNext,
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -239,6 +253,9 @@ CueControl::~CueControl() {
     delete m_pOutroEndActivate;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
+    delete m_pHotcueFocus;
+    delete m_pHotcueFocusColorPrev;
+    delete m_pHotcueFocusColorNext;
     qDeleteAll(m_hotcueControls);
 }
 
@@ -317,6 +334,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
+        m_pHotcueFocus->set(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
     }
 
@@ -467,9 +485,9 @@ void CueControl::loadCuesFromTrack() {
         double startPosition = pIntroCue->getPosition();
         double endPosition = pIntroCue->getEndPosition();
 
-        m_pIntroStartPosition->set(quantizeCuePoint(startPosition, QuantizeMode::PreviousBeat));
+        m_pIntroStartPosition->set(quantizeCuePoint(startPosition));
         m_pIntroStartEnabled->forceSet(startPosition == Cue::kNoPosition ? 0.0 : 1.0);
-        m_pIntroEndPosition->set(quantizeCuePoint(endPosition, QuantizeMode::NextBeat));
+        m_pIntroEndPosition->set(quantizeCuePoint(endPosition));
         m_pIntroEndEnabled->forceSet(endPosition == Cue::kNoPosition ? 0.0 : 1.0);
     } else {
         m_pIntroStartPosition->set(Cue::kNoPosition);
@@ -482,9 +500,9 @@ void CueControl::loadCuesFromTrack() {
         double startPosition = pOutroCue->getPosition();
         double endPosition = pOutroCue->getEndPosition();
 
-        m_pOutroStartPosition->set(quantizeCuePoint(startPosition, QuantizeMode::PreviousBeat));
+        m_pOutroStartPosition->set(quantizeCuePoint(startPosition));
         m_pOutroStartEnabled->forceSet(startPosition == Cue::kNoPosition ? 0.0 : 1.0);
-        m_pOutroEndPosition->set(quantizeCuePoint(endPosition, QuantizeMode::NextBeat));
+        m_pOutroEndPosition->set(quantizeCuePoint(endPosition));
         m_pOutroEndEnabled->forceSet(endPosition == Cue::kNoPosition ? 0.0 : 1.0);
     } else {
         m_pOutroStartPosition->set(Cue::kNoPosition);
@@ -495,7 +513,7 @@ void CueControl::loadCuesFromTrack() {
 
     if (pLoadCue) {
         double position = pLoadCue->getPosition();
-        m_pCuePoint->set(quantizeCuePoint(position, QuantizeMode::ClosestBeat));
+        m_pCuePoint->set(quantizeCuePoint(position));
     } else {
         m_pCuePoint->set(Cue::kNoPosition);
     }
@@ -571,10 +589,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     hotcueClear(pControl, v);
 
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
-    double closestBeat = m_pClosestBeat->get();
-    double cuePosition =
-            (m_pQuantizeEnabled->toBool() && closestBeat != -1) ?
-                    closestBeat : getSampleOfTrack().current;
+    double cuePosition = getQuantizedCurrentPosition();
     pCue->setStartPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
@@ -715,6 +730,8 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             hotcueActivatePreview(pControl, v);
         }
     }
+
+    m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
@@ -773,6 +790,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
     }
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
+    m_pHotcueFocus->set(Cue::kNoHotCue);
 }
 
 void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
@@ -822,9 +840,8 @@ void CueControl::cueSet(double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    double closestBeat = m_pClosestBeat->get();
-    double cue = (m_pQuantizeEnabled->toBool() && closestBeat != -1) ?
-            closestBeat : getSampleOfTrack().current;
+
+    double cue = getQuantizedCurrentPosition();
     m_pCuePoint->set(cue);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
@@ -1117,9 +1134,7 @@ void CueControl::introStartSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat before current position.
-    // Fall back to nearest beat after or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::PreviousBeat);
+    double position = getQuantizedCurrentPosition();
 
     // Make sure user is not trying to place intro start cue on or after
     // other intro/outro cues.
@@ -1195,9 +1210,7 @@ void CueControl::introEndSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat after current position.
-    // Fall back to nearest beat before or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::NextBeat);
+    double position = getQuantizedCurrentPosition();
 
     // Make sure user is not trying to place intro end cue on or before
     // intro start cue, or on or after outro start/end cue.
@@ -1273,9 +1286,7 @@ void CueControl::outroStartSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat before current position.
-    // Fall back to nearest beat after or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::PreviousBeat);
+    double position = getQuantizedCurrentPosition();
 
     // Make sure user is not trying to place outro start cue on or before
     // intro end cue or on or after outro end cue.
@@ -1351,9 +1362,7 @@ void CueControl::outroEndSet(double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    // Quantize cue point to nearest beat after current position.
-    // Fall back to nearest beat before or current position.
-    double position = quantizeCurrentPosition(QuantizeMode::NextBeat);
+    double position = getQuantizedCurrentPosition();
 
     // Make sure user is not trying to place outro end cue on or before
     // other intro/outro cues.
@@ -1574,6 +1583,7 @@ void CueControl::resetIndicators() {
 
 CueControl::TrackAt CueControl::getTrackAt() const {
     SampleOfTrack sot = getSampleOfTrack();
+    // Note: current can be in the padded silence after the track end > total.
     if (sot.current >= sot.total) {
         return TrackAt::End;
     }
@@ -1584,61 +1594,39 @@ CueControl::TrackAt CueControl::getTrackAt() const {
     return TrackAt::ElseWhere;
 }
 
-double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
+double CueControl::getQuantizedCurrentPosition() {
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    const double currentPos = sampleOfTrack.current;
+    double currentPos = sampleOfTrack.current;
     const double total = sampleOfTrack.total;
+
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    currentPos = math_min(currentPos, total);
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
         return currentPos;
     }
 
-    if (mode == QuantizeMode::ClosestBeat) {
-        double closestBeat = m_pClosestBeat->get();
-        if (closestBeat != -1.0 && closestBeat <= total) {
-            return closestBeat;
-        }
-        return currentPos;
+    double closestBeat = m_pClosestBeat->get();
+    // Note: closestBeat can be an interpolated beat past the end of the track,
+    // which cannot be reached.
+    if (closestBeat != -1.0 && closestBeat <= total) {
+        return closestBeat;
     }
 
-    double prevBeat = m_pPrevBeat->get();
-    double nextBeat = m_pNextBeat->get();
-
-    if (mode == QuantizeMode::PreviousBeat) {
-        // Quantize to previous beat, fall back to next beat.
-        if (prevBeat != -1.0) {
-            return prevBeat;
-        }
-        if (nextBeat != -1.0 && nextBeat <= total) {
-            return nextBeat;
-        }
-        return currentPos;
-    }
-    if (mode == QuantizeMode::NextBeat) {
-        // use current position if we are already exactly on the grid,
-        // otherwise quantize to next beat, fall back to previous beat.
-        if (prevBeat == currentPos) {
-            return currentPos;
-        }
-        if (nextBeat != -1.0 && nextBeat <= total) {
-            return nextBeat;
-        }
-        if (prevBeat != -1.0) {
-            return prevBeat;
-        }
-        return currentPos;
-    }
-    DEBUG_ASSERT(!"PROGRAMMING ERROR: Invalid quantize mode");
     return currentPos;
 }
 
-double CueControl::quantizeCuePoint(double cuePos, QuantizeMode mode) {
+double CueControl::quantizeCuePoint(double cuePos) {
     // we need to use m_pTrackSamples here because SampleOfTrack
     // is set later by the engine and not during EngineBuffer::slotTrackLoaded
     const double total = m_pTrackSamples->get();
 
-    VERIFY_OR_DEBUG_ASSERT(cuePos <= total) {
+    if (cuePos > total) {
+        // This can happen if the track length has changed or the cue was set in the
+        // the padded silence after the track.
         cuePos = total;
     }
 
@@ -1652,42 +1640,13 @@ double CueControl::quantizeCuePoint(double cuePos, QuantizeMode mode) {
         return cuePos;
     }
 
-    if (mode == QuantizeMode::ClosestBeat) {
-        double closestBeat = pBeats->findClosestBeat(cuePos);
-        if (closestBeat != -1.0 && closestBeat <= total) {
-            return closestBeat;
-        }
-        return cuePos;
+    double closestBeat = pBeats->findClosestBeat(cuePos);
+    // The closest beat can be an unreachable  interpolated beat past the end of
+    // the track.
+    if (closestBeat != -1.0 && closestBeat <= total) {
+        return closestBeat;
     }
 
-    double prevBeat, nextBeat;
-    pBeats->findPrevNextBeats(cuePos, &prevBeat, &nextBeat);
-
-    if (mode == QuantizeMode::PreviousBeat) {
-        // Quantize to previous beat, fall back to next beat.
-        if (prevBeat != -1.0) {
-            return prevBeat;
-        }
-        if (nextBeat != -1.0 && nextBeat <= total) {
-            return nextBeat;
-        }
-        return cuePos;
-    }
-    if (mode == QuantizeMode::NextBeat) {
-        // use current cuePos if we are already exactly on the grid,
-        // otherwise quantize to next beat, fall back to previous beat.
-        if (prevBeat == cuePos) {
-            return cuePos;
-        }
-        if (nextBeat != -1.0 && nextBeat <= total) {
-            return nextBeat;
-        }
-        if (prevBeat != -1.0) {
-            return prevBeat;
-        }
-        return cuePos;
-    }
-    DEBUG_ASSERT(!"PROGRAMMING ERROR: Invalid quantize mode");
     return cuePos;
 }
 
@@ -1708,6 +1667,68 @@ SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
             static_cast<int>(SeekOnLoadMode::IntroStart));
     return static_cast<SeekOnLoadMode>(configValue);
+}
+
+void CueControl::hotcueFocusColorPrev(double v) {
+    if (!v) {
+        return;
+    }
+
+    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
+    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    if (!pControl) {
+        return;
+    }
+
+    PredefinedColorPointer pColor = pControl->getColor();
+    if (!pColor) {
+        return;
+    }
+
+    // Get previous color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) - 1;
+    if (iColorIndex <= 0) {
+        iColorIndex = Color::kPredefinedColorsSet.allColors.size() - 1;
+    }
+    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    pControl->setColor(pColor);
+}
+
+void CueControl::hotcueFocusColorNext(double v) {
+    if (!v) {
+        return;
+    }
+
+    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
+    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    if (!pControl) {
+        return;
+    }
+
+    PredefinedColorPointer pColor = pControl->getColor();
+    if (!pColor) {
+        return;
+    }
+
+    // Get next color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) + 1;
+    if (iColorIndex >= Color::kPredefinedColorsSet.allColors.size()) {
+        iColorIndex = 0;
+    }
+    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    pControl->setColor(pColor);
 }
 
 

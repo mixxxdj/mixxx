@@ -40,7 +40,7 @@ class TagFetcher : public QObject {
 
   private slots:
     void fingerprintFound(int index);
-    void mbidFound(int index, const QString& mbid);
+    void mbRecordingIdsFound(int index, QStringList mbRecordingIds);
     void tagsFetched(int index, const MusicBrainzClient::ResultList& result);
 
   private:

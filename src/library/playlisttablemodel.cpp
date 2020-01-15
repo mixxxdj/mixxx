@@ -107,9 +107,9 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
-            &PlaylistDAO::changed,
+            &PlaylistDAO::tracksChanged,
             this,
-            &PlaylistTableModel::playlistChanged);
+            &PlaylistTableModel::playlistsChanged);
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
@@ -170,7 +170,9 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId, trackPositions);
+    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeTracksFromPlaylist(
+            m_iPlaylistId,
+            std::move(trackPositions));
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -299,8 +301,8 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
-void PlaylistTableModel::playlistChanged(int playlistId) {
-    if (playlistId == m_iPlaylistId) {
+void PlaylistTableModel::playlistsChanged(QSet<int> playlistIds) {
+    if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.
     }
 }
