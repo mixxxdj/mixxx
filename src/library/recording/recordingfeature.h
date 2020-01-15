@@ -27,12 +27,12 @@ class RecordingFeature final : public LibraryFeature {
     QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+                    KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
+    void activate() override;
 
   signals:
     void setRootIndex(const QModelIndex&);

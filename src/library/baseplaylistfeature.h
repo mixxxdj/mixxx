@@ -29,18 +29,18 @@ class BasePlaylistFeature : public LibraryFeature {
                         const QString& rootViewName);
     ~BasePlaylistFeature() override = default;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+                    KeyboardEventFilter* keyboard) override;
 
   signals:
     void showPage(const QUrl& page);
     void analyzeTracks(QList<TrackId>);
 
   public slots:
-    virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    virtual void activate() override;
+    virtual void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
 

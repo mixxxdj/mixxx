@@ -74,7 +74,7 @@ class FakeDeck : public BaseTrackPlayer {
         emit playerEmpty();
     }
 
-    TrackPointer getLoadedTrack() const {
+    TrackPointer getLoadedTrack() const override {
         return loadedTrack;
     }
 
