@@ -1689,7 +1689,7 @@ WBeatSpinBox,
       }
       #MicAuxSubTitle {
         qproperty-alignment: 'AlignCenter | AlignTop';
-        margin: 0px 0px 3px 1px;
+        padding: 0px 0px 3px 1px;
       }
       #MicAuxPlayButtonBox {
         margin: 0px 0px 2px 1px;
