@@ -13,7 +13,7 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GNU is GNU GCC

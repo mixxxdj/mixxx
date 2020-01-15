@@ -27,7 +27,6 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "defs_urls.h"
-#include "util/platform.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)
@@ -349,21 +348,21 @@ void DlgPrefVinyl::VinylTypeSlotApply()
         } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[3]->set(MIXXX_VINYL_SPEED_45_NUM);
         }
-        M_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
     case 3:
         if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_33) {
             m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
         } else if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
         }
-        M_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
     case 2:
         if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_33) {
             m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
         } else if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
         }
-        M_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
     case 1:
         if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_33) {
             m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
