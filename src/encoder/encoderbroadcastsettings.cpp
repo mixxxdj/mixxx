@@ -77,7 +77,8 @@ EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
     switch(m_pProfile->getChannels()) {
         case 1: return EncoderSettings::ChannelMode::MONO;
         case 2: return EncoderSettings::ChannelMode::STEREO;
-        case 0: // fallthrough
+        case 0:
+        [[fallthrough]];
         default: return EncoderSettings::ChannelMode::AUTOMATIC;
     }
 }
