@@ -244,7 +244,7 @@ void insertTrack(
     QString year = QString::number(track->year());
     QString genre = genresMap[track->genre_id()];
     QString location = devicePath + getText(track->file_path());
-    float bpm = static_cast<float>(track->tempo()) / 100.0f;
+    float bpm = static_cast<float>(track->tempo() / 100.0);
     int bitrate = static_cast<int>(track->bitrate());
     QString key = keysMap[track->key_id()];
     int playtime = static_cast<int>(track->duration());
