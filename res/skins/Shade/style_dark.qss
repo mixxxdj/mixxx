@@ -123,9 +123,13 @@ WSearchLineEdit QToolButton:focus {
     selection-color: #000;
     selection-background-color: #aaa;
   }
-
-  WLibrary QLineEdit {
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
     border: 1px solid #666;
+  }
+  #LibraryBPMSpinBox::up-button,
+  #LibraryBPMSpinBox::down-button {
+    background-color: #666;
   }
 
 /* checkbox in library "Played" column */

@@ -559,11 +559,9 @@ WEffectSelector:open {
 #fadeModeCombobox:open {
   border-width: 2px 2px 2px 2px;
   }
-  #fadeModeCombobox,
-  #fadeModeCombobox:open {
+  #fadeModeCombobox {
     border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
   }
-  #fadeModeCombobox,
   #fadeModeCombobox:open {
     border-image: url(skin:buttons_classic/btn_embedded_library_active.svg) 2 2 2 2;
   }
