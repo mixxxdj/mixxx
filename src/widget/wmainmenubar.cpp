@@ -363,7 +363,7 @@ void WMainMenuBar::initialize() {
 #endif
 
     // PracticeMode
-    m_pConfigPracticemodeEnabled = std::make_unique<ControlObject>(ConfigKey("[PracticeMode]", "enabled"));
+    m_pConfigPracticemodeEnabled = std::make_unique<ControlObject>(ConfigKey("[Library]", "practice_mode"));
     QString PracticemodeTitle = tr("Enable Practice Mode");
     QString PracticemodeText = tr("In practice mode the play counter will not be increased");
     auto pOptionsPracticemode = make_parented<QAction>(PracticemodeTitle, this);
