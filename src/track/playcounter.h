@@ -39,7 +39,7 @@ public:
 private:
     int m_iTimesPlayed;
     bool m_bPlayed;
-    std::shared_ptr<ControlProxy> m_pTrainingmodeEnabled;
+    std::shared_ptr<ControlProxy> m_pPracticemodeEnabled;
 };
 
 bool operator==(const PlayCounter& lhs, const PlayCounter& rhs);

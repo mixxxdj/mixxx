@@ -3,14 +3,14 @@
 PlayCounter::PlayCounter(int timesPlayed)
         : m_iTimesPlayed(timesPlayed),
           m_bPlayed(false) {
-    m_pTrainingmodeEnabled = std::make_shared<ControlProxy>("[TrainingMode]", "enabled");
+    m_pPracticemodeEnabled = std::make_shared<ControlProxy>("[PracticeMode]", "enabled");
 }
 
 void PlayCounter::setPlayedAndUpdateTimesPlayed(bool bPlayed) {
-    // if we are in TrainingMode mode, the play count should not be changed
+    // if we are in PracticeMode mode, the play count should not be changed
     // so we can return here
-    bool trainingmode_enabled = m_pTrainingmodeEnabled->toBool();
-    if (trainingmode_enabled) {
+    bool practicemode_enabled = m_pPracticemodeEnabled->toBool();
+    if (practicemode_enabled) {
         m_bPlayed = bPlayed;
         return;
     }

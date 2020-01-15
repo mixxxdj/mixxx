@@ -362,17 +362,17 @@ void WMainMenuBar::initialize() {
     pOptionsMenu->addAction(pOptionsBroadcasting);
 #endif
 
-    // TrainingMode
-    m_pConfigTrainingmodeEnabled = std::make_unique<ControlObject>(ConfigKey("[TrainingMode]", "enabled"));
-    QString TrainingmodeTitle = tr("Enable Training Mode");
-    QString TrainingmodeText = tr("In training mode the play counter will not be increased");
-    auto pOptionsTrainingmode = make_parented<QAction>(TrainingmodeTitle, this);
-    pOptionsTrainingmode->setCheckable(true);
-    pOptionsTrainingmode->setChecked(false);
-    pOptionsTrainingmode->setStatusTip(TrainingmodeText);
-    pOptionsTrainingmode->setWhatsThis(buildWhatsThis(TrainingmodeTitle, TrainingmodeText));
-    connect(pOptionsTrainingmode, SIGNAL(triggered(bool)), this, SLOT(toggleTrainingmode(bool)));
-    pOptionsMenu->addAction(pOptionsTrainingmode);
+    // PracticeMode
+    m_pConfigPracticemodeEnabled = std::make_unique<ControlObject>(ConfigKey("[PracticeMode]", "enabled"));
+    QString PracticemodeTitle = tr("Enable Practice Mode");
+    QString PracticemodeText = tr("In practice mode the play counter will not be increased");
+    auto pOptionsPracticemode = make_parented<QAction>(PracticemodeTitle, this);
+    pOptionsPracticemode->setCheckable(true);
+    pOptionsPracticemode->setChecked(false);
+    pOptionsPracticemode->setStatusTip(PracticemodeText);
+    pOptionsPracticemode->setWhatsThis(buildWhatsThis(PracticemodeTitle, PracticemodeText));
+    connect(pOptionsPracticemode, SIGNAL(triggered(bool)), this, SLOT(togglePracticemode(bool)));
+    pOptionsMenu->addAction(pOptionsPracticemode);
 
     pOptionsMenu->addSeparator();
 
@@ -597,8 +597,8 @@ void WMainMenuBar::initialize() {
     addMenu(pHelpMenu);
 }
 
-void WMainMenuBar::toggleTrainingmode(bool toggle) {
-    m_pConfigTrainingmodeEnabled->set(toggle ? 1.0 : 0.0);
+void WMainMenuBar::togglePracticemode(bool toggle) {
+    m_pConfigPracticemodeEnabled->set(toggle ? 1.0 : 0.0);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
