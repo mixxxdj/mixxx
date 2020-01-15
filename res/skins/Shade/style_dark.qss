@@ -138,13 +138,21 @@ WSearchLineEdit QToolButton:focus {
 /* Scroll bars */
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 #LibraryContainer QScrollBar::add-page,
-#LibraryContainer QScrollBar::sub-page {
+#LibraryContainer QScrollBar::sub-page,
+WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   background-color: #000;
 }
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::section,
 #LibraryContainer QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::handle:horizontal,
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::section {
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   background: #3f3041;
   color: #999;
 }

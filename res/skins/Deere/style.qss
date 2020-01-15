@@ -688,14 +688,18 @@ QPushButton#pushButtonRepeatPlaylist {
 /* AutoDJ button icons */
 
 /* Scroll bars */
-#LibraryContainer QScrollBar:horizontal {
+#LibraryContainer QScrollBar:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
   background: #222222;
   padding: 3px;
 }
-#LibraryContainer QScrollBar:vertical {
+#LibraryContainer QScrollBar:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
@@ -704,23 +708,35 @@ QPushButton#pushButtonRepeatPlaylist {
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 #LibraryContainer QScrollBar::add-page,
-#LibraryContainer QScrollBar::sub-page {
+#LibraryContainer QScrollBar::sub-page,
+WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   background: none;
 }
-#LibraryContainer QScrollBar::handle:horizontal {
+#LibraryContainer QScrollBar::handle:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
   background: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
-#LibraryContainer QScrollBar::handle:vertical {
+#LibraryContainer QScrollBar::handle:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
   background: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
 #LibraryContainer QScrollBar::handle:horizontal:hover,
-#LibraryContainer QScrollBar::handle:vertical:hover {
+#LibraryContainer QScrollBar::handle:vertical:hover,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
   background: #B3B3B3;
 }
 
@@ -728,13 +744,23 @@ QPushButton#pushButtonRepeatPlaylist {
 #LibraryContainer QScrollBar::add-line:horizontal,
 #LibraryContainer QScrollBar::add-line:vertical,
 #LibraryContainer QScrollBar::sub-line:horizontal,
-#LibraryContainer QScrollBar::sub-line:vertical {
+#LibraryContainer QScrollBar::sub-line:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
   border: none;
 }
 /* Corner in between two scrollbars */
-#LibraryContainer QAbstractScrollArea::corner {
+#LibraryContainer QAbstractScrollArea::corner,
+WEffectSelector QAbstractScrollArea::corner,
+#fadeModeCombobox QAbstractScrollArea::corner {
   border-top: 1px solid #141414;
   border-left: 1px solid #141414;
 }

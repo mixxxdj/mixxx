@@ -2559,16 +2559,22 @@ WCoverArtMenu::item:!enabled,
       }
 
 /* Scroll bars */
-#LibraryContainer QScrollBar {
+#LibraryContainer QScrollBar,
+WEffectSelector QAbstractScrollArea QScrollBar,
+#fadeModeCombobox QAbstractScrollArea QScrollBar {
   padding: 1px;
 }
-#LibraryContainer QScrollBar:horizontal {
+#LibraryContainer QScrollBar:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   min-width: 12px;
   height: 10px;
   background: #000;
   border-radius: 2px;
   }
-  #LibraryContainer QScrollBar:vertical {
+  #LibraryContainer QScrollBar:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 10px;
     background: #000;
@@ -2576,40 +2582,62 @@ WCoverArtMenu::item:!enabled,
     }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
   #LibraryContainer QScrollBar::add-page,
-  #LibraryContainer QScrollBar::sub-page {
+  #LibraryContainer QScrollBar::sub-page,
+  WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+  WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
     background-color: #000;
     }
-  #LibraryContainer QScrollBar::handle:horizontal {
+  #LibraryContainer QScrollBar::handle:horizontal,
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
     min-width: 25px;
     background: #595959;
     border-radius:2px;
     }
-    #LibraryContainer QScrollBar::handle:horizontal:hover {
+    #LibraryContainer QScrollBar::handle:horizontal:hover,
+    WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+    #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover {
       background: #888;
     }
-  #LibraryContainer QScrollBar::handle:vertical {
+  #LibraryContainer QScrollBar::handle:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
     min-height: 25px;
     background: #595959;
     border-radius:2px;
     }
-    #LibraryContainer QScrollBar::handle:vertical:hover {
+    #LibraryContainer QScrollBar::handle:vertical:hover,
+    WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
+    #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
       background: #888;
     }
   /* Turn off scroll buttons */
   #LibraryContainer QScrollBar::add-line:horizontal,
-  #LibraryContainer QScrollBar::add-line:vertical {
+  #LibraryContainer QScrollBar::add-line:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
+  WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical {
     width: 0px;
     height: 0px;
   }
   #LibraryContainer QScrollBar::sub-line:horizontal,
-  #LibraryContainer QScrollBar::sub-line:vertical {
+  #LibraryContainer QScrollBar::sub-line:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
+  WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
+  #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
     width: 0px;
     height: 0px;
   }
   /* Corner in between two scrollbars */
-  #LibraryContainer QAbstractScrollArea::corner {
+  #LibraryContainer QAbstractScrollArea::corner,
+  WEffectSelector QAbstractScrollArea::corner,
+  #fadeModeCombobox QAbstractScrollArea::corner {
     background-color: #0f0f0f;
     border: 0px;
   }

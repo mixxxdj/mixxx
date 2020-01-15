@@ -550,9 +550,11 @@ WSearchLineEdit {
 #LibraryContainer QHeaderView,
 #LibraryContainer QHeaderView::section,
 #LibraryContainer QScrollBar:horizontal,
-#LibraryContainer QTreeView QScrollBar:horizontal,
 #LibraryContainer QScrollBar:vertical,
-#LibraryContainer QTreeView QScrollBar:vertical {
+WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   background-color: #626f87;
 }
 #LibraryContainer QHeaderView {
@@ -593,13 +595,15 @@ WSearchLineEdit {
 
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
-#LibraryContainer QScrollBar:horizontal {
+WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
   padding: 0px;
 }
 #LibraryContainer QScrollBar:vertical,
-#LibraryContainer QScrollBar:vertical {
+WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
   padding: 0px;
@@ -607,47 +611,58 @@ WSearchLineEdit {
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 #LibraryContainer QScrollBar::add-page,
 #LibraryContainer QScrollBar::sub-page,
-#LibraryContainer QScrollBar::add-page,
-#LibraryContainer QScrollBar::sub-page {
+WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   min-width: 14px;
   min-height: 14px;
   background-color: #191919;
 }
 #LibraryContainer QScrollBar::handle:vertical,
-#LibraryContainer QScrollBar::handle:horizontal ,
-#LibraryContainer QScrollBar::handle:vertical,
-#LibraryContainer QScrollBar::handle:horizontal {
+#LibraryContainer QScrollBar::handle:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   background: #626f87;
   border: 1px solid #1e1e1e;
   border-radius: 1px;
 }
 #LibraryContainer QScrollBar::handle:horizontal,
-#LibraryContainer QScrollBar::handle:horizontal {
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 40px;
 }
 #LibraryContainer QScrollBar::handle:vertical,
-#LibraryContainer QScrollBar::handle:vertical {
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 40px;
 }
 /* Turn off scroll buttons */
 #LibraryContainer QScrollBar::add-line:horizontal,
 #LibraryContainer QScrollBar::add-line:vertical,
-#LibraryContainer QScrollBar::add-line:horizontal,
-#LibraryContainer QScrollBar::add-line:vertical {
+WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical {
   width: 0px;
   height: 0px;
 }
 #LibraryContainer QScrollBar::sub-line:horizontal,
 #LibraryContainer QScrollBar::sub-line:vertical,
-#LibraryContainer QScrollBar::sub-line:horizontal,
-#LibraryContainer QScrollBar::sub-line:vertical {
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
 }
 
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
-#LibraryContainer QAbstractScrollArea::corner {
+WEffectSelector QAbstractScrollArea::corner,
+#fadeModeCombobox QAbstractScrollArea::corner {
   background-color: #0f0f0f;
   border-top: 1px solid #585858;
   border-left: 1px solid #585858;
