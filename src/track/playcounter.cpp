@@ -9,8 +9,7 @@ PlayCounter::PlayCounter(int timesPlayed)
 void PlayCounter::setPlayedAndUpdateTimesPlayed(bool bPlayed) {
     // if we are in PracticeMode mode, the play count should not be changed
     // so we can return here
-    bool practicemode_enabled = m_pPracticemodeEnabled->toBool();
-    if (practicemode_enabled) {
+    if (m_pPracticemodeEnabled->toBool()) {
         m_bPlayed = bPlayed;
         return;
     }
