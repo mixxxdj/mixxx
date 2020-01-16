@@ -30,9 +30,10 @@ class ControlProxy : public QObject {
         return m_key;
     }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     bool connectValueChanged(Receiver receiver,
-            Slot func, Qt::ConnectionType requestedConnectionType = Qt::AutoConnection) {
+            Slot func,
+            Qt::ConnectionType requestedConnectionType = Qt::AutoConnection) {
         if (!m_pControl) {
             return false;
         }
@@ -49,7 +50,7 @@ class ControlProxy : public QObject {
         // requested: BlockingQueued -> Assert(false)
 
         Qt::ConnectionType scoConnection;
-        switch(requestedConnectionType) {
+        switch (requestedConnectionType) {
         case Qt::AutoConnection:
         case Qt::QueuedConnection:
             scoConnection = Qt::AutoConnection;
@@ -82,18 +83,15 @@ class ControlProxy : public QObject {
         // (i.e. w/o and intermediate variable) when used with
         // Qt::UniqueConnection. Otherwise it detects a false positive and
         // throws a [-Wclazy-lambda-unique-connection] warning.
-        switch(requestedConnectionType) {
+        switch (requestedConnectionType) {
         case Qt::AutoConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged,
-                    this, &ControlProxy::slotValueChangedAuto, copConnection);
+            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedAuto, copConnection);
             break;
         case Qt::DirectConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged,
-                    this, &ControlProxy::slotValueChangedDirect, copConnection);
+            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedDirect, copConnection);
             break;
         case Qt::QueuedConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged,
-                    this, &ControlProxy::slotValueChangedQueued, copConnection);
+            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedQueued, copConnection);
             break;
         default:
             // Should be unreachable, but just to make sure ;-)
@@ -108,7 +106,9 @@ class ControlProxy : public QObject {
         emit valueChanged(get());
     }
 
-    inline bool valid() const { return m_pControl != NULL; }
+    inline bool valid() const {
+        return m_pControl != NULL;
+    }
 
     // Returns the value of the object. Thread safe, non-blocking.
     inline double get() const {
