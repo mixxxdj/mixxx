@@ -443,7 +443,7 @@ class Qt(Dependence):
         if build.platform_is_windows:
             # MSVC
             build.env.Append(CXXFLAGS='/std:c++17')
-            # Fix build of googletest 1.10.0
+            # Fix build of googletest 1.8.x
             # https://developercommunity.visualstudio.com/content/problem/225156/google-test-does-not-work-with-stdc17.html
             # https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
             build.env.Append(CXXFLAGS='/Zc:__cplusplus')
