@@ -176,7 +176,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJCJV.beatloop_activate</key>
+        <key>DJCJV.beatloopActivate</key>
         <description>Beatloop activate button</description>
         <status>0x90</status>
         <midino>0x09</midino>
@@ -640,7 +640,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJCJV.beatloop_activate</key>
+        <key>DJCJV.beatloopActivate</key>
         <description>Beatloop activate button</description>
         <status>0x91</status>
         <midino>0x09</midino>
@@ -1137,7 +1137,7 @@
       <!-- LOOP section -->
       <control>
         <group>[Channel1]</group>
-        <key>DJCJV.beatjump_size</key>
+        <key>DJCJV.beatjumpSize</key>
         <description>Loop Size</description>
         <status>0xB0</status>
         <midino>0x44</midino>
@@ -1147,7 +1147,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJCJV.beatjump_move</key>
+        <key>DJCJV.beatjumpMove</key>
         <description>Move Loop By N Beats</description>
         <status>0xB0</status>
         <midino>0x4A</midino>
@@ -1304,7 +1304,7 @@
       <!-- LOOP section -->
       <control>
         <group>[Channel2]</group>
-        <key>DJCJV.beatjump_size</key>
+        <key>DJCJV.beatjumpSize</key>
         <description>Loop Size</description>
         <status>0xB1</status>
         <midino>0x44</midino>
@@ -1314,7 +1314,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJCJV.beatjump_move</key>
+        <key>DJCJV.beatjumpMove</key>
         <description>Move Loop By N Beats</description>
         <status>0xB1</status>
         <midino>0x4A</midino>
