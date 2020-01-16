@@ -77,6 +77,11 @@ class ControlProxy : public QObject {
         // processed to avoid segfaults
         Qt::ConnectionType copConnection = static_cast<Qt::ConnectionType>(
                 requestedConnectionType | Qt::UniqueConnection);
+
+        // clazy requires us to to pass a member function to connect() directly
+        // (i.e. w/o and intermediate variable) when used with
+        // Qt::UniqueConnection. Otherwise it detects a false positive and
+        // throws a [-Wclazy-lambda-unique-connection] warning.
         switch(requestedConnectionType) {
         case Qt::AutoConnection:
             connect(m_pControl.data(), &ControlDoublePrivate::valueChanged,
