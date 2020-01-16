@@ -51,7 +51,6 @@ class ControlProxy : public QObject {
         Qt::ConnectionType scoConnection;
         switch(requestedConnectionType) {
         case Qt::AutoConnection:
-            [[fallthrough]];
         case Qt::QueuedConnection:
             scoConnection = Qt::AutoConnection;
             break;
