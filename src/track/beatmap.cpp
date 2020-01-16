@@ -802,4 +802,6 @@ void BeatMap::setSignature(mixxx::Signature sig, double dSample) {
     // Sets the Signature value
     beat->mutable_signature()->set_beats(sig.getBeats());
     beat->mutable_signature()->set_note_value(sig.getNoteValue());
+    locker.unlock();
+    emit(updated());
 }

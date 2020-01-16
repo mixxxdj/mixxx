@@ -42,6 +42,4 @@ message BeatMap {
 message BeatGrid {
   optional Bpm bpm = 1;
   optional Beat first_beat = 2;
-  // mark_beats will contain just phrase and signature information
-  repeated Beat mark_beats = 3; 
 }

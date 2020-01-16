@@ -372,24 +372,28 @@ void BeatGrid::setBpm(double dBpm) {
 }
 
 void BeatGrid::setSignature(mixxx::Signature sig, double dSample) {
+    Q_UNUSED(dSample);
     QMutexLocker locker(&m_mutex);
     if (!isValid())
         return;
 
-    auto offset = findPrevBeat(dSample);
     m_grid.mutable_first_beat()->mutable_signature()->set_beats(sig.getBeats());
     m_grid.mutable_first_beat()->mutable_signature()->set_note_value(sig.getNoteValue());
 }
 
-mixxx::Signature BeatGrid::getSignature() const {
+mixxx::Signature BeatGrid::getSignature(double dSample) const {
+    Q_UNUSED(dSample);
     QMutexLocker locker(&m_mutex);
     if (!isValid())
-        return mixxx::Signature(0, 0);
-    return mixxx::Signature(m_grid.first_beat().signature().beats(), m_grid.first_beat().signature().note_value());
-}
+        return mixxx::Signature(0,0);
 
-mixxx::Signature BeatGrid::getSignature(double pos) const {
-    // BeatGrid has always the same signature
-    // TODO (jvilarroig) - FALSE!!!!
-    return getSignature();
+    // If no signature assume 4/4
+    if (!m_grid.first_beat().has_signature()) {
+        return mixxx::Signature(4,4);
+    } else {
+        qDebug() << m_grid.first_beat().signature().beats() << m_grid.first_beat().signature().note_value();
+        return mixxx::Signature(
+                m_grid.first_beat().signature().beats(),
+                m_grid.first_beat().signature().note_value());
+    }
 }

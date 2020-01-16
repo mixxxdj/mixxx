@@ -329,8 +329,6 @@ TEST_F(BeatMapTest, TestSignature) {
     // Add a signature past the end of the track, must have no effect, and check
     m_pMap->setSignature(mixxx::Signature(6,4), 100000);
     EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::Signature(5,3)) << "Signature set after the end of track must have no effect";
-
-    // Delete a signature
 }
 
 }  // namespace

@@ -8,7 +8,30 @@ namespace {
 
 const double kMaxBeatError = 1e-9;
 
-TEST(BeatGridTest, Scale) {
+class BeatGridTest : public testing::Test {
+  protected:
+
+    BeatGridTest()
+            : m_pTrack(Track::newTemporary()),
+              m_iSampleRate(44100),
+              m_iFrameSize(2),
+              m_iBpm(60),
+              m_pGrid(nullptr) {
+
+        m_pTrack->setBpm(m_iBpm);
+        m_pTrack->setSampleRate(m_iSampleRate);
+        m_pGrid = std::make_unique<BeatGrid>(*m_pTrack, 0);
+        m_pGrid->setBpm(m_iBpm);
+    }
+
+    TrackPointer m_pTrack;
+    int m_iSampleRate;
+    int m_iFrameSize;
+    double m_iBpm;
+    std::unique_ptr<BeatGrid> m_pGrid;
+};
+
+TEST_F(BeatGridTest, Scale) {
     TrackPointer pTrack(Track::newTemporary());
 
     int sampleRate = 44100;
@@ -39,7 +62,7 @@ TEST(BeatGridTest, Scale) {
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 }
 
-TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
+TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
     TrackPointer pTrack(Track::newTemporary());
 
     int sampleRate = 44100;
@@ -75,7 +98,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     EXPECT_NEAR(position, pGrid->findPrevBeat(position), kMaxBeatError);
 }
 
-TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
+TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     TrackPointer pTrack(Track::newTemporary());
 
     int sampleRate = 44100;
@@ -113,7 +136,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     EXPECT_NEAR(kClosestBeat, pGrid->findPrevBeat(position), kMaxBeatError);
 }
 
-TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
+TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     TrackPointer pTrack(Track::newTemporary());
 
     int sampleRate = 44100;
@@ -151,7 +174,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     EXPECT_NEAR(kClosestBeat, pGrid->findPrevBeat(position), kMaxBeatError);
 }
 
-TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
+TEST_F(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     TrackPointer pTrack(Track::newTemporary());
     int sampleRate = 44100;
     double bpm = 60.1;
@@ -183,6 +206,17 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
+}
+
+TEST_F(BeatGridTest, TestSignature) {
+    // Undefined signature must be 4/4
+    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::Signature(4,4)) << "If no signature defined, signature must be 4/4";
+
+    // Add signatures and test change
+    m_pGrid->setSignature(mixxx::Signature(3,4));
+    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::Signature(3,4)) << "Signature must be 3/4";
+    m_pGrid->setSignature(mixxx::Signature(5,3));
+    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::Signature(5,3)) << "Signature must be 3/4";
 }
 
 }  // namespace
