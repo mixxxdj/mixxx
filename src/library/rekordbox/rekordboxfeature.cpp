@@ -13,6 +13,7 @@
 
 #include <mp3guessenc.h>
 
+#include "engine/engine.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -749,8 +750,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
     rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
 
-    double sampleRateScaled = sampleRate / 1000.0;
-    double sampleRateFrames = sampleRateScaled * 2.0;
+    double sampleRateKhz = sampleRate / 1000.0;
+    double samples = sampleRateKhz * mixxx::kEngineChannelCount;
 
     double cueLoadPosition = kLongestPosition;
     QString cueLoadComment;
@@ -774,7 +775,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                beats << (sampleRateScaled * static_cast<double>(time));
+                beats << (sampleRateKhz * static_cast<double>(time));
             }
 
             QHash<QString, QString> extraVersionInfo;
@@ -797,7 +798,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                double position = sampleRateFrames * static_cast<double>(time);
+                double position = samples * static_cast<double>(time);
 
                 switch (cuesTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -817,7 +818,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
+                            cueLoopEndPosition = samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -837,7 +838,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                double position = sampleRateFrames * static_cast<double>(time);
+                double position = samples * static_cast<double>(time);
 
                 switch (cuesExtendedTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -858,7 +859,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
+                            cueLoopEndPosition = samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
