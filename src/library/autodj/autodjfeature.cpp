@@ -161,9 +161,9 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit(switchToView(kViewName));
+    emit switchToView(kViewName);
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

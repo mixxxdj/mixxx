@@ -148,7 +148,7 @@ void Track::importMetadata(
             // explicitly unlock before emitting signals
             markDirtyAndUnlock(&lock);
             if (modifiedReplayGain) {
-                emit(ReplayGainUpdated(newReplayGain));
+                emit ReplayGainUpdated(newReplayGain);
             }
         }
         // implicitly unlocked when leaving scope
@@ -209,7 +209,7 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(&m_record.refMetadata().refTrackInfo().refReplayGain(), replayGain)) {
         markDirtyAndUnlock(&lock);
-        emit(ReplayGainUpdated(replayGain));
+        emit ReplayGainUpdated(replayGain);
     }
 }
 
@@ -255,7 +255,7 @@ double Track::setBpm(double bpmValue) {
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
         //qDebug() << "Track signaling BPM update to" << f;
-        emit(bpmUpdated(bpmValue));
+        emit bpmUpdated(bpmValue);
     }
 
     return bpmValue;
@@ -293,8 +293,8 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
     markDirtyAndUnlock(pLock);
-    emit(bpmUpdated(bpmValue));
-    emit(beatsUpdated());
+    emit bpmUpdated(bpmValue);
+    emit beatsUpdated();
 }
 
 BeatsPointer Track::getBeats() const {
@@ -312,8 +312,8 @@ void Track::slotBeatsUpdated() {
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
     markDirtyAndUnlock(&lock);
-    emit(bpmUpdated(bpmValue));
-    emit(beatsUpdated());
+    emit bpmUpdated(bpmValue);
+    emit beatsUpdated();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {
@@ -638,7 +638,7 @@ ConstWaveformPointer Track::getWaveform() const {
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
     m_waveform = pWaveform;
-    emit(waveformUpdated());
+    emit waveformUpdated();
 }
 
 ConstWaveformPointer Track::getWaveformSummary() const {
@@ -647,7 +647,7 @@ ConstWaveformPointer Track::getWaveformSummary() const {
 
 void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     m_waveformSummary = pWaveform;
-    emit(waveformSummaryUpdated());
+    emit waveformSummaryUpdated();
 }
 
 void Track::setCuePoint(CuePosition cue) {
@@ -678,7 +678,7 @@ void Track::setCuePoint(CuePosition cue) {
     }
 
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 CuePosition Track::getCuePoint() const {
@@ -688,7 +688,7 @@ CuePosition Track::getCuePoint() const {
 
 void Track::slotCueUpdated() {
     markDirty();
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 CuePointer Track::createAndAddCue() {
@@ -697,7 +697,7 @@ CuePointer Track::createAndAddCue() {
     connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
     return pCue;
 }
 
@@ -726,7 +726,7 @@ void Track::removeCue(const CuePointer& pCue) {
         m_record.setCuePoint(CuePosition());
     }
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 void Track::removeCuesOfType(Cue::Type type) {
@@ -747,7 +747,7 @@ void Track::removeCuesOfType(Cue::Type type) {
     }
     if (dirty) {
         markDirtyAndUnlock(&lock);
-        emit(cuesUpdated());
+        emit cuesUpdated();
     }
 }
 
@@ -773,7 +773,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
         }
     }
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 void Track::markDirty() {
@@ -800,14 +800,14 @@ void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
 
     if (dirtyChanged) {
         if (bDirty) {
-            emit(dirty(this));
+            emit dirty(this);
         } else {
-            emit(clean(this));
+            emit clean(this);
         }
     }
     if (bDirty) {
         // Emit a changed signal regardless if this attempted to set us dirty.
-        emit(changed(this));
+        emit changed(this);
     }
 }
 
@@ -845,8 +845,8 @@ void Track::afterKeysUpdated(QMutexLocker* pLock) {
     // New key might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_record.getGlobalKey();
     markDirtyAndUnlock(pLock);
-    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
-    emit(keysUpdated());
+    emit keyUpdated(KeyUtils::keyToNumericValue(newKey));
+    emit keysUpdated();
 }
 
 void Track::setKeys(const Keys& keys) {
@@ -910,7 +910,7 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(&m_record.refCoverInfo(), coverInfo)) {
         markDirtyAndUnlock(&lock);
-        emit(coverArtUpdated());
+        emit coverArtUpdated();
     }
 }
 

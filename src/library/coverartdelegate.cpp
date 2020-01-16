@@ -65,7 +65,7 @@ void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
     // were cache misses since the last time.
     if (!m_bOnlyCachedCover) {
         foreach (int row, m_cacheMissRows) {
-            emit(coverReadyForCell(row, m_iCoverColumn));
+            emit coverReadyForCell(row, m_iCoverColumn);
         }
         m_cacheMissRows.clear();
     }
@@ -79,7 +79,7 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
         //          << pixmap.size();
         QLinkedList<int> rows = m_hashToRow.take(info.hash);
         foreach(int row, rows) {
-            emit(coverReadyForCell(row, m_iCoverColumn));
+            emit coverReadyForCell(row, m_iCoverColumn);
         }
     }
 }
