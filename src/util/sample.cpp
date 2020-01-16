@@ -56,7 +56,10 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
 #elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
         std::size_t alloc_size = sizeof(CSAMPLE) * size;
         // The size (in bytes) must be an integral multiple of kAlignment
-        std::size_t aligned_alloc_size = alloc_size + (kAlignment - alloc_size % kAlignment);
+        std::size_t aligned_alloc_size = alloc_size;
+        if (alloc_size % kAlignment != 0) {
+            aligned_alloc_size += (kAlignment - alloc_size % kAlignment);
+        }
         DEBUG_ASSERT(aligned_alloc_size % kAlignment == 0);
         return static_cast<CSAMPLE*>(std::aligned_alloc(kAlignment, aligned_alloc_size));
 #else
