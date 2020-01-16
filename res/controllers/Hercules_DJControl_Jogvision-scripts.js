@@ -142,6 +142,7 @@ DJCJV.init = function(id) {
 
 // Finalization
 DJCJV.shutdown = function() {
+	print("Hercules DJControl Jogvision id: \""+id+"\" finalizing");
 	//Set all LED states to off
 	midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x7F, off);
 	midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x7F, off);
@@ -149,6 +150,7 @@ DJCJV.shutdown = function() {
 		engine.stopTimer(ledRotationTimer);
 		ledRotationTimer = 0;
 	}
+	print("Hercules DJControl Jogvision id: \""+id+"\" finalized");
 };
 
 // Beat led ACTIVATE (move)
