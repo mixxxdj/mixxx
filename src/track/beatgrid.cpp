@@ -391,7 +391,6 @@ mixxx::Signature BeatGrid::getSignature(double dSample) const {
     if (!m_grid.first_beat().has_signature()) {
         return mixxx::Signature(4,4);
     } else {
-        qDebug() << m_grid.first_beat().signature().beats() << m_grid.first_beat().signature().note_value();
         return mixxx::Signature(
                 m_grid.first_beat().signature().beats(),
                 m_grid.first_beat().signature().note_value());
