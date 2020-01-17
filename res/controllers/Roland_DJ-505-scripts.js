@@ -131,7 +131,7 @@ DJ505.init = function () {
     DJ505.sampler = new DJ505.Sampler();
 
     DJ505.effectUnit = [];
-    for(i = 0; i <= 1; i++) {
+    for (i = 0; i <= 1; i++) {
         DJ505.effectUnit[i] = new components.EffectUnit([i + 1, i + 3]);
         DJ505.effectUnit[i].sendShifted = true;
         DJ505.effectUnit[i].shiftOffset = 0x0B;
@@ -152,7 +152,7 @@ DJ505.init = function () {
                 this.inSetParameter(this.inGetParameter() - 0.05);
             }
         };
-        for(j = 1; j <= 4; j++) {
+        for (j = 1; j <= 4; j++) {
             DJ505.effectUnit[i].enableOnChannelButtons.addButton("Channel" + j);
             DJ505.effectUnit[i].enableOnChannelButtons["Channel" + j].midi = [0x98 + i, 0x04 + j];
         }
@@ -162,7 +162,7 @@ DJ505.init = function () {
             components.Button.prototype.input.apply(this, arguments);
             if (this.isPress(channel, control, value, status)) {
                 var enabled = this.inGetValue();
-                for(var j = 1; j <= 16; j++) {
+                for (var j = 1; j <= 16; j++) {
                     engine.setValue(this.group, "group_[Sampler" + j + "]_enable", enabled);
                 }
             }
@@ -305,7 +305,7 @@ DJ505.sortLibrary = function (channel, control, value, _status, _group) {
     }
 
     var sortColumn;
-    switch(control) {
+    switch (control) {
         case 0x12:  // SONG
             sortColumn = 1;
             break;
@@ -340,7 +340,7 @@ DJ505.crossfader = new components.Pot({
 });
 DJ505.crossfader.setCurve = function (channel, control, value, _status, _group) {
     // 0x00 is Picnic Bench, 0x01 is Constant Power and 0x02 is Linear
-    switch(value) {
+    switch (value) {
     case 0x00:  // Picnic Bench / Fast Cut
         engine.setValue("[Mixer Profile]", "xFaderMode", 0);
         engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
@@ -366,7 +366,7 @@ DJ505.crossfader.setReverse = function (channel, control, value, _status, _group
 DJ505.setChannelInput = function (channel, control, value, _status, _group) {
     var number = (channel === 0x00) ? 0 : 1;
     var channelgroup = "[Channel" + (number + 1) + "]";
-    switch(value) {
+    switch (value) {
     case 0x00:  // PC
         engine.setValue(channelgroup, "passthrough", 0);
         break;
@@ -1063,7 +1063,7 @@ DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototy
 
 DJ505.PadSection.prototype.controlToPadMode = function (control) {
     var mode;
-    switch(control) {
+    switch (control) {
     case DJ505.PadMode.HOTCUE:
         mode = this.modes.hotcue;
         break;
@@ -1121,7 +1121,7 @@ DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, valu
         return;
     }
     var button;
-    switch(control) {
+    switch (control) {
         case 0x2A: // PARAMETER 2 -
             if (this.currentMode.param2MinusButton) {
                 button = this.currentMode.param2MinusButton;
@@ -1351,7 +1351,7 @@ DJ505.CueLoopMode = function (deck, offset) {
             components.Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorIdKey !== undefined) {
                 this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
-                    if (engine.getValue(this.group,this.outKey)) {
+                    if (engine.getValue(this.group, this.outKey)) {
                         this.outputColor(id);
                     }
                 });
@@ -1604,7 +1604,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
             this.input = function (channel, control, value, _status, _group) {
                 if (value > 0) {
                     var pitchAdjust;
-                    switch(this.mode.range) {
+                    switch (this.mode.range) {
                     case PitchPlayRange.UP:
                         pitchAdjust = this.number + ((this.number <= 4) ? 4 : -5);
                         break;
