@@ -6,7 +6,7 @@
   },
   "rules": {
     "camelcase": "warn",
-    "dot-location": "off",
+    "dot-location": "warn",
     "eqeqeq": ["error", "always"],
     "no-unused-vars": ["error", {
         "argsIgnorePattern": "^_"
