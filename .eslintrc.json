@@ -5,7 +5,7 @@
     "sourceType": "script"
   },
   "rules": {
-    "no-unused-vars": ["error", { "vars": "all", "args": "none" }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "quotes": ["warn", "double"],
     "eqeqeq": ["error", "always"],
     "camelcase": "error",
