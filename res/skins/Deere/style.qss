@@ -1999,9 +1999,7 @@ WEffectSelector QAbstractScrollArea,
   min-width: 180px;
 }
 WEffectSelector QAbstractScrollArea,
-WEffectSelector::indicator:!checked,
 #fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::indicator:!checked,
 QToolTip,
 #LibraryContainer QMenu,
 #LibraryContainer QMenu::item,
