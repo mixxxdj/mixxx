@@ -814,7 +814,7 @@
                 index += 1;
             }
             this.setCurrentUnit(this.unitNumbers[index]);
-        }
+        };
 
         if (unitNumbers !== undefined) {
             if (Array.isArray(unitNumbers)) {
