@@ -238,11 +238,15 @@
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WBeatSpinBox,
+#LibraryBPMSpinBox {
+  selection-color: #000;
+  selection-background-color: #ccc;
+}
+WLibrary QLineEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
-  selection-color: #000;
-  selection-background-color: #ccc;
   border: 1px solid #006596;
 }
 
