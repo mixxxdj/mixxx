@@ -252,6 +252,7 @@ void AutoDJProcessor::fadeNow() {
     // the track duration. Use this alias for better readability.
     const double fromDeckDuration = fromDeckEndPosition;
     const double toDeckDuration = toDeckEndPosition;
+    // playPosition() is in the range of 0..1
     const double fromDeckCurrentPosition = fromDeckDuration * pFromDeck->playPosition();
     const double toDeckCurrentPosition = toDeckDuration * pToDeck->playPosition();
 
@@ -300,9 +301,9 @@ void AutoDJProcessor::fadeNow() {
     pFromDeck->fadeEndPos = fromDeckCurrentPosition + fadeTime;
 
     // These are expected to be a fraction of the track length.
-    pFromDeck->fadeBeginPos /= fromDeckEndPosition;
-    pFromDeck->fadeEndPos /= fromDeckEndPosition;
-    pToDeck->startPos /= toDeckEndPosition;
+    pFromDeck->fadeBeginPos /= fromDeckDuration;
+    pFromDeck->fadeEndPos /= fromDeckDuration;
+    pToDeck->startPos /= toDeckDuration;
 
     VERIFY_OR_DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1) {
         pFromDeck->fadeBeginPos = 1;
@@ -1445,6 +1446,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
                     // which may calls the calculateTransition() again without seek = true;
                     pDeck->setPlayPosition(pDeck->startPos);
                 }
+                // we are her in the relative domain 0..1
                 if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
                     // repeat a probably missed update
                     playerPositionChanged(fromDeck, 1.0);
