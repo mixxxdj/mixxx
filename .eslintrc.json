@@ -5,11 +5,13 @@
     "sourceType": "script"
   },
   "rules": {
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "quotes": ["warn", "double"],
-    "eqeqeq": ["error", "always"],
     "camelcase": "error",
     "dot-location": "off",
+    "eqeqeq": ["error", "always"],
+    "no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_"
+    }],
+    "quotes": ["warn", "double"],
     "require-atomic-updates": "error"
   },
   "globals": {
