@@ -65,11 +65,11 @@
             }
         },
         // map input in the XML file, not inValueScale
-        input: function (channel, control, value, status, group) {
+        input: function (channel, control, value, _status, _group) {
             this.inSetParameter(this.inValueScale(value));
         },
         outValueScale: function (value) {return value * this.max;},
-        output: function (value, group, control) {
+        output: function (value, _group, _control) {
             this.send(this.outValueScale(value));
         },
         outConnect: true,
@@ -176,10 +176,10 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
-        isPress: function (channel, control, value, status) {
+        isPress: function (channel, control, value, _status) {
             return value > 0;
         },
-        input: function (channel, control, value, status, group) {
+        input: function (channel, control, value, status, _group) {
             if (this.type === undefined || this.type === this.types.push) {
                 this.inSetValue(this.isPress(channel, control, value, status));
             } else if (this.type === this.types.toggle) {
@@ -251,7 +251,7 @@
     };
     SyncButton.prototype = new Button({
         unshift: function () {
-            this.input = function (channel, control, value, status, group) {
+            this.input = function (channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
@@ -369,7 +369,7 @@
     };
     SamplerButton.prototype = new Button({
         unshift: function () {
-            this.input = function (channel, control, value, status, group) {
+            this.input = function (channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "track_loaded") === 0) {
                         engine.setValue(this.group, "LoadSelectedTrack", 1);
@@ -383,7 +383,7 @@
             };
         },
         shift: function() {
-            this.input = function (channel, control, value, status, group) {
+            this.input = function (channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "play") === 1) {
                         engine.setValue(this.group, "play", 0);
@@ -397,7 +397,7 @@
                 }
             };
         },
-        output: function (value, group, control) {
+        output: function (_value, _group, _control) {
             if (engine.getValue(this.group, "track_loaded") === 1) {
                 if (this.loaded === undefined) {
                     this.send(this.on);
@@ -448,7 +448,7 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
-        input: function (channel, control, value, status, group) {
+        input: function (channel, control, value, _status, _group) {
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
             }
@@ -870,7 +870,7 @@
         this.EffectUnitKnob.prototype = new Pot({
             group: this.group,
             unshift: function () {
-                this.input = function (channel, control, value, status, group) {
+                this.input = function (channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
                         value = (this.MSB << 7) + value;
                     }
@@ -894,7 +894,7 @@
                 this.changeThreshold = Math.floor(this.max /
                     engine.getValue("[Master]", "num_effectsavailable"));
 
-                this.input = function (channel, control, value, status, group) {
+                this.input = function (channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
                         value = (this.MSB << 7) + value;
                     }
@@ -925,7 +925,7 @@
             trigger: function () {
                 this.connections[0].trigger();
             },
-            onFocusChange: function (value, group, control) {
+            onFocusChange: function (value, _group, _control) {
                 if (value === 0) {
                     this.group = "[EffectRack1_EffectUnit" +
                                   eu.currentUnitNumber + "_Effect" +
@@ -949,7 +949,7 @@
         this.EffectEnableButton.prototype = new Button({
             type: Button.prototype.types.powerWindow,
             // NOTE: This function is only connected when not in focus choosing mode.
-            onFocusChange: function (value, group, control) {
+            onFocusChange: function (value, _group, _control) {
                 if (value === 0) {
                     if (colors !== undefined) {
                         this.color = colors.unfocused;
@@ -1005,7 +1005,7 @@
                 if (colors !== undefined) {
                     this.color = colors.focusChooseMode;
                 }
-                this.input = function (channel, control, value, status, group) {
+                this.input = function (channel, control, value, status, _group) {
                     if (this.isPress(channel, control, value, status)) {
                         if (engine.getValue(eu.group, "focused_effect") === this.number) {
                             // unfocus and make knobs control metaknobs
@@ -1016,7 +1016,7 @@
                         }
                     }
                 };
-                this.output = function (value, group, control) {
+                this.output = function (value, _group, _control) {
                     this.send((value === this.number) ? this.on : this.off);
                 };
                 this.connect = function () {
@@ -1065,7 +1065,7 @@
                 }
             },
             unshift: function () {
-                this.input = function (channel, control, value, status, group) {
+                this.input = function (channel, control, value, status, _group) {
                     var showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
@@ -1105,14 +1105,14 @@
                 };
             },
             shift: function () {
-                this.input = function (channel, control, value, status, group) {
+                this.input = function (channel, control, value, status, _group) {
                     if (this.isPress(channel, control, value, status)) {
                         eu.toggle();
                     }
                 };
             },
             outKey: "focused_effect",
-            output: function (value, group, control) {
+            output: function (value, _group, _control) {
                 this.send((value > 0) ? this.on : this.off);
             },
             outConnect: false,
