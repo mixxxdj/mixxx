@@ -10,7 +10,7 @@
     "eqeqeq": ["error", "always"],
     "camelcase": "error",
     "dot-location": "off",
-    "require-atomic-updates": "off"
+    "require-atomic-updates": "error"
   },
   "globals": {
     "console": "writable",
