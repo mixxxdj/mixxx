@@ -9,12 +9,8 @@
     "quotes": ["warn", "double"],
     "eqeqeq": ["error", "always"],
     "camelcase": "error",
-    "no-redeclare": "off",
     "dot-location": "off",
-    "getter-return": "off",
-    "require-atomic-updates": "off",
-    "no-prototype-builtins": "off",
-    "no-async-promise-executor": "off"
+    "require-atomic-updates": "off"
   },
   "globals": {
     "console": "writable",
