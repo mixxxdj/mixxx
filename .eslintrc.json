@@ -5,7 +5,7 @@
     "sourceType": "script"
   },
   "rules": {
-    "camelcase": "error",
+    "camelcase": "warn",
     "dot-location": "off",
     "eqeqeq": ["error", "always"],
     "no-unused-vars": ["error", {
