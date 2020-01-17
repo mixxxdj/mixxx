@@ -528,7 +528,7 @@
             };
 
             for (var memberName in this) {
-                if (this.hasOwnProperty(memberName)) {
+                if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
             }
@@ -556,7 +556,7 @@
             };
 
             for (var memberName in this) {
-                if (this.hasOwnProperty(memberName)) {
+                if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
             }
