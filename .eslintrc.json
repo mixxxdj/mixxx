@@ -7,7 +7,9 @@
   "rules": {
     "array-bracket-spacing" : "warn",
     "block-spacing": "warn",
-    "brace-style": ["warn", "1tbs"],
+    "brace-style": ["warn", "1tbs", {
+        "allowSingleLine": true
+    }],
     "camelcase": "warn",
     "comma-spacing": "warn",
     "computed-property-spacing" : ["warn", "never", {
