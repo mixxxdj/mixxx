@@ -68,7 +68,7 @@
         input: function (channel, control, value, _status, _group) {
             this.inSetParameter(this.inValueScale(value));
         },
-        outValueScale: function (value) {return value * this.max;},
+        outValueScale: function (value) { return value * this.max; },
         output: function (value, _group, _control) {
             this.send(this.outValueScale(value));
         },
@@ -92,7 +92,7 @@
             engine.setValue(this.group, this.inKey, value);
         },
         inToggle: function () {
-            this.inSetValue( ! this.inGetValue());
+            this.inSetValue(!this.inGetValue());
         },
 
         outGetParameter: function () {
@@ -108,7 +108,7 @@
             engine.setValue(this.group, this.outKey, value);
         },
         outToggle: function () {
-            this.outSetValue( ! this.outGetValue());
+            this.outSetValue(!this.outGetValue());
         },
 
         connect: function () {
@@ -313,7 +313,7 @@
         },
         getColor: function() {
             if (this.colorIdKey !== undefined) {
-                return color.predefinedColorFromId(engine.getValue(this.group,this.colorIdKey));
+                return color.predefinedColorFromId(engine.getValue(this.group, this.colorIdKey));
             } else {
                 return null;
             }
@@ -322,7 +322,7 @@
             var outval = this.outValueScale(value);
             // WARNING: outputColor only handles hotcueColors
             // and there is no hotcueColor for turning the LED
-            // off. So the `send()` function is responsible for turning the 
+            // off. So the `send()` function is responsible for turning the
             // actual LED off.
             if (this.colorIdKey !== undefined && outval !== this.off) {
                 this.outputColor(engine.getValue(this.group, this.colorIdKey));
@@ -350,7 +350,7 @@
             Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorIdKey !== undefined) {
                 this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
-                    if (engine.getValue(this.group,this.outKey)) {
+                    if (engine.getValue(this.group, this.outKey)) {
                         this.outputColor(id);
                     }
                 });
