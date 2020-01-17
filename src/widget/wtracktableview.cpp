@@ -1742,9 +1742,9 @@ void WTrackTableView::slotPopulateCrateMenu() {
 
         m_pCrateMenu->addAction(pAction.get());
         connect(pAction.get(), &QAction::triggered,
-                this, [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+                this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
         connect(pCheckBox.get(), &QCheckBox::stateChanged,
-                this, [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+                this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
 
     }
     m_pCrateMenu->addSeparator();
