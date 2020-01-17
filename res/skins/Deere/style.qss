@@ -2054,7 +2054,6 @@ WEffectSelector,
   font: 15px;
 }
 WEffectSelector {
-  /* TODO: use a linear gradient for the background color */
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
@@ -2065,6 +2064,7 @@ WEffectSelector {
 #fadeModeCombobox {
   /* 1px is added in each dimension. 20+1+1 = 22 = button height */
   height: 20px;
+  padding: 0px 6px;
   margin: 9px 3px 6px 3px;
 }
 
