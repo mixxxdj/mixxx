@@ -129,13 +129,13 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     }
 emitAndReturn:
     if (m_inhibitSettingChanged == false) {
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 
 void DlgPrefSoundItem::channelChanged() {
     if (m_inhibitSettingChanged == false) {
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 
@@ -261,7 +261,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
         m_inhibitSettingChanged = false;
     } else {
         deviceComboBox->setCurrentIndex(0); // None
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 
@@ -281,7 +281,7 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
         m_inhibitSettingChanged = false;
     } else {
         channelComboBox->setCurrentIndex(0); // 1
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 

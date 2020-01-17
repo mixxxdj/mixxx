@@ -53,8 +53,17 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
         // boundaries.
         return static_cast<CSAMPLE*>(
                 _aligned_malloc(sizeof(CSAMPLE) * size, kAlignment));
-#elif defined(__GNUC__) && !defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
-        // On other platforms that don't support std::aligned_alloc
+#elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
+        std::size_t alloc_size = sizeof(CSAMPLE) * size;
+        // The size (in bytes) must be an integral multiple of kAlignment
+        std::size_t aligned_alloc_size = alloc_size;
+        if (alloc_size % kAlignment != 0) {
+            aligned_alloc_size += (kAlignment - alloc_size % kAlignment);
+        }
+        DEBUG_ASSERT(aligned_alloc_size % kAlignment == 0);
+        return static_cast<CSAMPLE*>(std::aligned_alloc(kAlignment, aligned_alloc_size));
+#else
+        // On other platforms that might not support std::aligned_alloc
         // yet but where long double is 8 bytes this code allocates 16 additional
         // slack bytes so we can adjust the pointer we return to the caller to be
         // 16-byte aligned. We record a pointer to the true start of the buffer
@@ -71,9 +80,6 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
         // shifted pointer.
         *((void**)(pAligned) - 1) = pUnaligned;
         return static_cast<CSAMPLE*>(pAligned);
-#else
-        return static_cast<CSAMPLE*>(
-                std::aligned_alloc(kAlignment, sizeof(CSAMPLE) * size));
 #endif
     } else {
         // Our platform already produces aligned pointers (or is an exotic target)
@@ -86,14 +92,14 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
     if (useAlignedAlloc()) {
 #if defined(_MSC_VER)
         _aligned_free(pBuffer);
-#elif defined(__GNUC__) && !defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
+#elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
+        std::free(pBuffer);
+#else
         // Pointer to the original memory is stored before pBuffer
         if (!pBuffer) {
             return;
         }
         std::free(*((void**)((void*)pBuffer) - 1));
-#else
-        std::free(pBuffer);
 #endif
     } else {
         delete[] pBuffer;

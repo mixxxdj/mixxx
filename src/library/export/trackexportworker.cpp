@@ -77,14 +77,14 @@ void TrackExportWorker::run() {
         // guarantees that we emit a sane progress before we start and after
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit progress(it->fileName(), i, copy_list.size());
         copyFile((*it).asFileInfo(), it.key());
         if (atomicLoadAcquire(m_bStop)) {
-            emit(canceled());
+            emit canceled();
             return;
         }
         ++i;
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit progress(it->fileName(), i, copy_list.size());
     }
 }
 
@@ -153,7 +153,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
             new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
 
-    emit(askOverwriteMode(filename, mode_promise.data()));
+    emit askOverwriteMode(filename, mode_promise.data());
 
     // Block until the user tells us the answer.
     mode_future.wait();

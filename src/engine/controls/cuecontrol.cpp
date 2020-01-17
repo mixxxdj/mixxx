@@ -1813,41 +1813,41 @@ HotcueControl::~HotcueControl() {
 }
 
 void HotcueControl::slotHotcueSet(double v) {
-    emit(hotcueSet(this, v));
+    emit hotcueSet(this, v);
 }
 
 void HotcueControl::slotHotcueGoto(double v) {
-    emit(hotcueGoto(this, v));
+    emit hotcueGoto(this, v);
 }
 
 void HotcueControl::slotHotcueGotoAndPlay(double v) {
-    emit(hotcueGotoAndPlay(this, v));
+    emit hotcueGotoAndPlay(this, v);
 }
 
 void HotcueControl::slotHotcueGotoAndStop(double v) {
-    emit(hotcueGotoAndStop(this, v));
+    emit hotcueGotoAndStop(this, v);
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
-    emit(hotcueActivate(this, v));
+    emit hotcueActivate(this, v);
 }
 
 void HotcueControl::slotHotcueActivatePreview(double v) {
-    emit(hotcueActivatePreview(this, v));
+    emit hotcueActivatePreview(this, v);
 }
 
 void HotcueControl::slotHotcueClear(double v) {
-    emit(hotcueClear(this, v));
+    emit hotcueClear(this, v);
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     m_hotcueEnabled->forceSet(newPosition == Cue::kNoPosition ? 0.0 : 1.0);
-    emit(hotcuePositionChanged(this, newPosition));
+    emit hotcuePositionChanged(this, newPosition);
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColorId) {
     m_pCue->setColor(Color::kPredefinedColorsSet.predefinedColorFromId(newColorId));
-    emit(hotcueColorChanged(this, newColorId));
+    emit hotcueColorChanged(this, newColorId);
 }
 
 double HotcueControl::getPosition() const {

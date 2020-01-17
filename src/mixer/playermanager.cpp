@@ -283,7 +283,7 @@ void PlayerManager::slotChangeNumDecks(double v) {
             addDeckInner();
         } while (m_decks.size() < num);
         m_pCONumDecks->setAndConfirm(m_decks.size());
-        emit(numberOfDecksChanged(m_decks.count()));
+        emit numberOfDecksChanged(m_decks.count());
     }
 }
 
@@ -613,7 +613,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
-    emit(loadLocationToPlayer(location, group));
+    emit loadLocationToPlayer(location, group);
 }
 
 void PlayerManager::slotLoadToDeck(QString location, int deck) {

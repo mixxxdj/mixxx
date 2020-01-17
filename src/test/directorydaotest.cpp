@@ -41,14 +41,16 @@ class DirectoryDAOTest : public LibraryTest {
 TEST_F(DirectoryDAOTest, addDirTest) {
     DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     // prepend dir with '/' so that QT thinks the dir starts at the root
-    QString testdir(QDir::tempPath() + "/TestDir/a");
-    QString testChild(QDir::tempPath() + "/TestDir/a/child");
-    QString testParent(QDir::tempPath() + "/TestDir");
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    QString testdir = QString(tempDir.path() + "/TestDir/a");
+    QString testChild = QString(tempDir.path() + "/TestDir/a/child");
+    QString testParent = QString(tempDir.path() + "/TestDir");
 
     //create temp dirs
-    QDir(QDir::temp()).mkpath(testParent);
-    QDir(QDir::temp()).mkpath(testdir);
-    QDir(QDir::temp()).mkpath(testChild);
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testParent));
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testdir));
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testChild));
 
     // check if directory doa adds and thinks everything is ok
     int success = m_DirectoryDao.addDirectory(testdir);

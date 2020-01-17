@@ -532,7 +532,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
     // Loading of a new track failed.
     // eject the currently loaded track (the old Track) as well
     ejectTrack();
-    emit(trackLoadFailed(pTrack, reason));
+    emit trackLoadFailed(pTrack, reason);
 }
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
@@ -1368,5 +1368,5 @@ void EngineBuffer::notifyTrackLoaded(
         pControl->trackLoaded(pNewTrack);
     }
     // Inform BaseTrackPlayer via a queued connection
-    emit(trackLoaded(pNewTrack, pOldTrack));
+    emit trackLoaded(pNewTrack, pOldTrack);
 }

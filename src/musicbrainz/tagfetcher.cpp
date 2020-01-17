@@ -48,7 +48,7 @@ void TagFetcher::startFetch(const TrackPointer track) {
     connect(m_pFingerprintWatcher, &QFutureWatcher<QString>::resultReadyAt,
             this, &TagFetcher::fingerprintFound);
 
-    emit(fetchProgress(tr("Fingerprinting track")));
+    emit fetchProgress(tr("Fingerprinting track"));
 }
 
 void TagFetcher::cancel() {
@@ -75,11 +75,11 @@ void TagFetcher::fingerprintFound(int index) {
     const TrackPointer ptrack = m_tracks[index];
 
     if (fingerprint.isEmpty()) {
-        emit(resultAvailable(ptrack, QList<TrackPointer>()));
+        emit resultAvailable(ptrack, QList<TrackPointer>());
         return;
     }
 
-    emit(fetchProgress(tr("Identifying track")));
+    emit fetchProgress(tr("Identifying track"));
     // qDebug() << "start to look up the MBID";
     m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
 }
@@ -92,7 +92,7 @@ void TagFetcher::mbRecordingIdsFound(int index, QStringList mbRecordingIds) {
     const TrackPointer pTrack = m_tracks[index];
 
     if (mbRecordingIds.isEmpty()) {
-        emit(resultAvailable(pTrack, QList<TrackPointer>()));
+        emit resultAvailable(pTrack, QList<TrackPointer>());
         return;
     }
 
@@ -121,5 +121,5 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
         track->setYear(QString::number(result.m_year));
         tracksGuessed << track;
     }
-    emit(resultAvailable(originalTrack, tracksGuessed));
+    emit resultAvailable(originalTrack, tracksGuessed);
 }

@@ -202,7 +202,7 @@ void LibraryScanner::slotStartScan() {
 
     m_scannerGlobal->startTimer();
 
-    emit(scanStarted());
+    emit scanStarted();
 
     // First, we're going to mark all the directories that we've previously
     // hashed as needing verification. As we search through the directory tree
@@ -423,12 +423,12 @@ void LibraryScanner::slotFinishUnhashedScan() {
     changeScannerState(FINISHED);
     // now we may accept new scan commands
 
-    emit(scanFinished());
+    emit scanFinished();
 }
 
 void LibraryScanner::scan() {
     if (changeScannerState(STARTING)) {
-        emit(startScan());
+        emit startScan();
     }
 }
 
@@ -531,7 +531,7 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
     } else {
         m_libraryHashDao.updateDirectoryHash(directoryPath, hash, 0);
     }
-    emit(progressHashing(directoryPath));
+    emit progressHashing(directoryPath);
 }
 
 void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
@@ -540,7 +540,7 @@ void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
     }
-    emit(progressHashing(directoryPath));
+    emit progressHashing(directoryPath);
 }
 
 void LibraryScanner::slotTrackExists(const QString& trackPath) {
@@ -566,8 +566,8 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
         }
         // Signal the main instance of TrackDAO, that there is
         // a new track in the database.
-        emit(trackAdded(pTrack));
-        emit(progressLoading(trackLocation));
+        emit trackAdded(pTrack);
+        emit progressLoading(trackLocation);
     } else {
         // Acknowledge failed track addition
         // TODO(XXX): Is it really intended to acknowledge a failed

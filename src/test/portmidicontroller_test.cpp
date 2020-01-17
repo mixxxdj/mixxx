@@ -25,7 +25,7 @@ class MockPortMidiController : public PortMidiController {
     ~MockPortMidiController() override {
     }
 
-    void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
+    void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) override {
         PortMidiController::sendShortMsg(status, byte1, byte2);
     }
 

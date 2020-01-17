@@ -34,8 +34,12 @@
 namespace {
 // Percentage of most and least played tracks to ignore [0,50)
 const int kLeastPreferredPercent = 15;
+
+// These consts are only used for DEBUG_ASSERTs
+#ifdef MIXXX_BUILD_DEBUG
 const int kLeastPreferredPercentMin = 0;
 const int kLeastPreferredPercentMax = 50;
+#endif
 } // anonymous namespace
 
 AutoDJCratesDAO::AutoDJCratesDAO(

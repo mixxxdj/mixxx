@@ -1012,7 +1012,7 @@ void ControlPickerMenu::controlChosen(int controlIndex) {
     if (controlIndex < 0 || controlIndex >= m_controlsAvailable.size()) {
         return;
     }
-    emit(controlPicked(m_controlsAvailable[controlIndex]));
+    emit controlPicked(m_controlsAvailable[controlIndex]);
 }
 
 int ControlPickerMenu::addAvailableControl(ConfigKey key,

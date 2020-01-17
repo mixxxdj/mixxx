@@ -255,7 +255,7 @@ void DlgPrefRecord::setupEncoderUI(Encoder::Format selformat)
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
-        emit(widget->deleteLater());
+        widget->deleteLater();
     }
     m_optionWidgets.clear();
     if (settings->usesOptionGroups()) {

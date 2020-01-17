@@ -28,7 +28,7 @@ void StatModel::statUpdated(const Stat& stat) {
         m_stats[row] = stat;
         QModelIndex left = index(row, 0);
         QModelIndex right = index(row, columnCount() - 1);
-        emit(dataChanged(left, right));
+        emit dataChanged(left, right);
     } else {
         beginInsertRows(QModelIndex(), m_stats.size(),
                         m_stats.size());
@@ -114,7 +114,7 @@ bool StatModel::setHeaderData(int section,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 
