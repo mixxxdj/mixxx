@@ -283,9 +283,10 @@ class SkinContext {
 
     QString variableNodeToText(const QDomElement& element) const;
 
+    UserSettingsPointer m_pConfig;
+
     QString m_xmlPath;
     QString m_skinBasePath;
-    UserSettingsPointer m_pConfig;
 
     struct SharedState final {
         SharedState() = default;

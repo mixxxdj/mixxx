@@ -11,8 +11,8 @@
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)
-        : m_xmlPath(xmlPath),
-          m_pConfig(pConfig),
+        : m_pConfig(pConfig),
+          m_xmlPath(xmlPath),
           m_pSharedState(std::make_shared<SharedState>()),
           m_scaleFactor(1.0) {
     DEBUG_ASSERT(isRoot());
@@ -35,9 +35,9 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
 }
 
 SkinContext::SkinContext(const SkinContext* parent)
-        : m_xmlPath(parent->m_xmlPath),
+        : m_pConfig(parent->m_pConfig),
+          m_xmlPath(parent->m_xmlPath),
           m_skinBasePath(parent->m_skinBasePath),
-          m_pConfig(parent->m_pConfig),
           m_pSharedState(parent->m_pSharedState),
           m_variables(parent->variables()),
           m_parentGlobal(m_pSharedState->scriptEngine.globalObject()),
