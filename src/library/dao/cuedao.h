@@ -9,6 +9,7 @@
 
 #include "track/track.h"
 #include "library/dao/dao.h"
+#include "util/color/colorpalette.h"
 
 #define CUE_TABLE "cues"
 
@@ -29,6 +30,9 @@ class CueDAO : public DAO {
     bool deleteCuesForTracks(const QList<TrackId>& trackIds);
     bool saveCue(Cue* cue);
     bool deleteCue(Cue* cue);
+
+    bool replaceSingleColor(const QColor& oldColor, const QColor& newColor);
+    bool replaceColorPalette(const ColorPalette& oldPalette, const ColorPalette& newPalette);
     // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
     // method the first parameter here won't be necessary.
     void saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList);

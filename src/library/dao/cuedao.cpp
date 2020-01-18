@@ -209,6 +209,44 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
+bool CueDAO::replaceSingleColor(const QColor& oldColor, const QColor& newColor) {
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE " CUE_TABLE "SET color = :newColor WHERE color = :oldColor");
+    query.bindValue(":newColor", newColor.rgba());
+    query.bindValue(":oldColor", oldColor.rgba());
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    return true;
+}
+
+bool CueDAO::replaceColorPalette(const ColorPalette& oldPalette, const ColorPalette& newPalette) {
+    // TODO: repeat loop until reaching max hotcue number?
+    for (int i = 0; i < newPalette.size(); ++i) {
+        if (i == oldPalette.size()) {
+            return true;
+        }
+
+        const QColor& newColor = newPalette.at(i);
+        const QColor& oldColor = oldPalette.at(i);
+        if (newColor == oldColor) {
+            continue;
+        }
+
+        QSqlQuery query(m_database);
+        query.prepare("UPDATE " CUE_TABLE "SET color = :newColor WHERE (color = :oldColor AND hotcue = :hotcue)");
+        query.bindValue(":newColor", newColor.rgba());
+        query.bindValue(":oldColor", oldColor.rgba());
+        query.bindValue(":hotcue", i);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return false;
+        }
+    }
+    return true;
+}
+
 void CueDAO::saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call

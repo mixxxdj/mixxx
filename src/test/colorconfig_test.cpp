@@ -34,7 +34,7 @@ TEST_F(ColorConfigTest, GetDefaultColorWhenNoStoredColor) {
 }
 
 TEST_F(ColorConfigTest, SaveColorPalette) {
-    HotcueColorPaletteSettings colorPaletteSettings(config());
+    ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette originalColorPalette(QList<QColor>{
             QColor("#66FF9900"),
             QColor("#FF9900"),
@@ -50,7 +50,7 @@ TEST_F(ColorConfigTest, SaveColorPalette) {
 }
 
 TEST_F(ColorConfigTest, ReplaceColorPalette) {
-    HotcueColorPaletteSettings colorPaletteSettings(config());
+    ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette colorPalette1(QList<QColor>{
             QColor("#66FF9900"),
             QColor("#FF9900"),
@@ -72,7 +72,7 @@ TEST_F(ColorConfigTest, ReplaceColorPalette) {
 }
 
 TEST_F(ColorConfigTest, DefaultColorPalette) {
-    HotcueColorPaletteSettings colorPaletteSettings(config());
+    ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
     ASSERT_EQ(ColorPalette::mixxxHotcuesPalette, colorPaletteFromConfig);

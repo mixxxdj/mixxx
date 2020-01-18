@@ -1,4 +1,4 @@
-﻿// cuecontrol.h
+// cuecontrol.h
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef CUECONTROL_H
@@ -9,7 +9,7 @@
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
@@ -198,7 +198,7 @@ class CueControl : public EngineControl {
     double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 
-    HotcueColorPaletteSettings m_colorPaletteSettings;
+    ColorPaletteSettings m_colorPaletteSettings;
     bool m_bPreviewing;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
