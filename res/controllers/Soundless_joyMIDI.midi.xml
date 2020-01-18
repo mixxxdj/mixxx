@@ -3,9 +3,9 @@
     <info>
         <name>Soundless joyMIDI</name>
         <author>Ozzy Chiu</author>
-        <description>Soundless protable MIDI controller 2019-09-04</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=????</forums>
-        <wiki>http://mixxx.org/wiki/doku.php/Soundless_joyMIDI</wiki>
+        <description>Soundless protable MIDI controller 2020-01-17</description>
+        <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=13166</forums>
+        <wiki>https://www.mixxx.org/wiki/doku.php/soundless_studio_joymidi</wiki>
     </info>
     <controller id="Soundless">
         <scriptfiles>
@@ -347,7 +347,7 @@
             </control>
             <control> <!-- hotcue1 -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue1Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x3C</midino>
                 <options>
@@ -356,7 +356,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue1Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x3C</midino>
                 <options>
@@ -365,7 +365,7 @@
             </control>
             <control> <!-- hotcue2 -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue2Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x3D</midino>
                 <options>
@@ -374,7 +374,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue2Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x3D</midino>
                 <options>
@@ -383,7 +383,7 @@
             </control>
             <control> <!-- hotcue3 -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue3Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x3E</midino>
                 <options>
@@ -392,7 +392,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue3Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x3E</midino>
                 <options>
@@ -401,7 +401,7 @@
             </control>
             <control> <!-- hotcue4 -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue4Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x3F</midino>
                 <options>
@@ -410,7 +410,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.hotcue4Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x3F</midino>
                 <options>
@@ -493,7 +493,7 @@
             </control>
             <control> <!-- 1/8 loop -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_0p125_Button</key>
+                <key>joyMIDI.loop0p125Button</key>
                 <status>0x90</status>
                 <midino>0x4C</midino>
                 <options>
@@ -502,7 +502,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_0p125_Button</key>
+                <key>joyMIDI.loop0p125Button</key>
                 <status>0x80</status>
                 <midino>0x4C</midino>
                 <options>
@@ -511,7 +511,7 @@
             </control>
             <control> <!-- 1/4 loop -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_0p25_Button</key>
+                <key>joyMIDI.loop0p25Button </key>
                 <status>0x90</status>
                 <midino>0x4D</midino>
                 <options>
@@ -520,7 +520,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_0p25_Button</key>
+                <key>joyMIDI.loop0p25Button </key>
                 <status>0x80</status>
                 <midino>0x4D</midino>
                 <options>
@@ -529,7 +529,7 @@
             </control>
             <control> <!-- 1/2 loop -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_0p5_Button</key>
+                <key>joyMIDI.loop0p5Button</key>
                 <status>0x90</status>
                 <midino>0x4E</midino>
                 <options>
@@ -538,7 +538,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_0p5_Button</key>
+                <key>joyMIDI.loop0p5Button</key>
                 <status>0x80</status>
                 <midino>0x4E</midino>
                 <options>
@@ -547,7 +547,7 @@
             </control>
             <control> <!-- 1 loop -->
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_1_Button</key>
+                <key>joyMIDI.loop1Button</key>
                 <status>0x90</status>
                 <midino>0x4F</midino>
                 <options>
@@ -556,7 +556,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>joyMIDI.loop_1_Button</key>
+                <key>joyMIDI.loop1Button</key>
                 <status>0x80</status>
                 <midino>0x4F</midino>
                 <options>
@@ -895,7 +895,7 @@
             </control>
             <control> <!-- hotcue1 -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue1Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x40</midino>
                 <options>
@@ -904,7 +904,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue1Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x40</midino>
                 <options>
@@ -913,7 +913,7 @@
             </control>
             <control> <!-- hotcue2 -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue2Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
                 <options>
@@ -922,7 +922,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue2Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x41</midino>
                 <options>
@@ -931,7 +931,7 @@
             </control>
             <control> <!-- hotcue3 -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue3Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <options>
@@ -940,7 +940,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue3Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x42</midino>
                 <options>
@@ -949,7 +949,7 @@
             </control>
             <control> <!-- hotcue4 -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue4Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x90</status>
                 <midino>0x43</midino>
                 <options>
@@ -958,7 +958,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.hotcue4Button</key>
+                <key>joyMIDI.hotcueButton</key>
                 <status>0x80</status>
                 <midino>0x43</midino>
                 <options>
@@ -1041,7 +1041,7 @@
             </control>
             <control> <!-- 1/8 loop -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_0p125_Button</key>
+                <key>joyMIDI.loop0p125Button</key>
                 <status>0x90</status>
                 <midino>0x50</midino>
                 <options>
@@ -1050,7 +1050,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_0p125_Button</key>
+                <key>joyMIDI.loop0p125Button</key>
                 <status>0x80</status>
                 <midino>0x50</midino>
                 <options>
@@ -1059,7 +1059,7 @@
             </control>
             <control> <!-- 1/4 loop -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_0p25_Button</key>
+                <key>joyMIDI.loop0p25Button </key>
                 <status>0x90</status>
                 <midino>0x51</midino>
                 <options>
@@ -1068,7 +1068,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_0p25_Button</key>
+                <key>joyMIDI.loop0p25Button </key>
                 <status>0x80</status>
                 <midino>0x51</midino>
                 <options>
@@ -1077,7 +1077,7 @@
             </control>
             <control> <!-- 1/2 loop -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_0p5_Button</key>
+                <key>joyMIDI.loop0p5Button</key>
                 <status>0x90</status>
                 <midino>0x52</midino>
                 <options>
@@ -1086,7 +1086,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_0p5_Button</key>
+                <key>joyMIDI.loop0p5Button</key>
                 <status>0x80</status>
                 <midino>0x52</midino>
                 <options>
@@ -1095,7 +1095,7 @@
             </control>
             <control> <!-- 1 loop -->
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_1_Button</key>
+                <key>joyMIDI.loop1Button</key>
                 <status>0x90</status>
                 <midino>0x53</midino>
                 <options>
@@ -1104,7 +1104,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>joyMIDI.loop_1_Button</key>
+                <key>joyMIDI.loop1Button</key>
                 <status>0x80</status>
                 <midino>0x53</midino>
                 <options>
