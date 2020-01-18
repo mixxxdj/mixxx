@@ -13,6 +13,7 @@
 
 #include <mp3guessenc.h>
 
+#include "engine/engine.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -749,7 +750,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
     rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
 
-    double sampleRateFrames = sampleRate * 2.0;
+    double sampleRateKhz = sampleRate / 1000.0;
+    double samples = sampleRateKhz * mixxx::kEngineChannelCount;
 
     double cueLoadPosition = kLongestPosition;
     QString cueLoadComment;
@@ -773,7 +775,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                beats << (sampleRate * static_cast<double>(time));
+                beats << (sampleRateKhz * static_cast<double>(time));
             }
 
             QHash<QString, QString> extraVersionInfo;
@@ -796,7 +798,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                double position = sampleRateFrames * static_cast<double>(time);
+                double position = samples * static_cast<double>(time);
 
                 switch (cuesTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -816,7 +818,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
+                            cueLoopEndPosition = samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -836,7 +838,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                double position = sampleRateFrames * static_cast<double>(time);
+                double position = samples * static_cast<double>(time);
 
                 switch (cuesExtendedTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -857,7 +859,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
+                            cueLoopEndPosition = samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -982,7 +984,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
         }
     }
 
-    double sampleRate = static_cast<double>(track->getSampleRate()) / 1000.0;
+    double sampleRate = static_cast<double>(track->getSampleRate());
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
     readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
@@ -1152,10 +1154,10 @@ void RekordboxFeature::activate() {
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
     //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
-    emit(featureIsLoading(this, true));
+    emit featureIsLoading(this, true);
 
-    emit(enableCoverArtDisplay(true));
-    emit(switchToView("REKORDBOXHOME"));
+    emit enableCoverArtDisplay(true);
+    emit switchToView("REKORDBOXHOME");
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {
@@ -1195,7 +1197,7 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
     } else {
         qDebug() << "Activate Rekordbox Playlist: " << playlist;
         m_pRekordboxPlaylistModel->setPlaylist(playlist);
-        emit(showTrackModel(m_pRekordboxPlaylistModel));
+        emit showTrackModel(m_pRekordboxPlaylistModel);
     }
 }
 
@@ -1266,7 +1268,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Rekordbox");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
 }
 
 void RekordboxFeature::onTracksFound() {
@@ -1278,5 +1280,5 @@ void RekordboxFeature::onTracksFound() {
     qDebug() << "Show Rekordbox Device Playlist: " << devicePlaylist;
 
     m_pRekordboxPlaylistModel->setPlaylist(devicePlaylist);
-    emit(showTrackModel(m_pRekordboxPlaylistModel));
+    emit showTrackModel(m_pRekordboxPlaylistModel);
 }

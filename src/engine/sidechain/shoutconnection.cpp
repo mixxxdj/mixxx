@@ -593,7 +593,7 @@ bool ShoutConnection::processConnect() {
             m_threadWaiting = true;
 
             setStatus(BroadcastProfile::STATUS_CONNECTED);
-            emit(broadcastConnected());
+            emit broadcastConnected();
 
             kLogger.debug() << "processConnect() returning true";
             return true;
@@ -634,7 +634,7 @@ bool ShoutConnection::processDisconnect() {
         shout_close(m_pShout);
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
 
-        emit(broadcastDisconnected());
+        emit broadcastDisconnected();
         disconnected = true;
     }
     // delete m_encoder calls write() check if it will be exit early
@@ -972,7 +972,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return m_threadWaiting.load();
+    return atomicLoadRelaxed(m_threadWaiting);
 }
 
 void ShoutConnection::run() {

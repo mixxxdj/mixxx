@@ -147,6 +147,9 @@ class CueControl : public EngineControl {
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
 
+    void hotcueFocusColorNext(double v);
+    void hotcueFocusColorPrev(double v);
+
     void cueSet(double v);
     void cueClear(double v);
     void cueGoto(double v);
@@ -244,6 +247,10 @@ class CueControl : public EngineControl {
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
+
+    ControlObject* m_pHotcueFocus;
+    ControlObject* m_pHotcueFocusColorNext;
+    ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 

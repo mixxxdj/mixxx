@@ -55,7 +55,7 @@ WColorPicker::WColorPicker(QWidget* parent)
         }
 
         connect(pColorButton, &QPushButton::clicked, this, [rgb, this]() {
-            emit(colorPicked(rgb));
+            emit colorPicked(rgb);
         });
     }
     setLayout(pLayout);

@@ -213,7 +213,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = m_pCOPNumDecks.load();
+    ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
         pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pCOPNumDecks->valid()) {
@@ -231,7 +231,7 @@ unsigned int PlayerManager::numDecks() {
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = m_pCOPNumSamplers.load();
+    ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
         pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
         if (!pCOPNumSamplers->valid()) {
@@ -249,7 +249,7 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = m_pCOPNumPreviewDecks.load();
+    ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
@@ -283,7 +283,7 @@ void PlayerManager::slotChangeNumDecks(double v) {
             addDeckInner();
         } while (m_decks.size() < num);
         m_pCONumDecks->setAndConfirm(m_decks.size());
-        emit(numberOfDecksChanged(m_decks.count()));
+        emit numberOfDecksChanged(m_decks.count());
     }
 }
 
@@ -613,7 +613,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
-    emit(loadLocationToPlayer(location, group));
+    emit loadLocationToPlayer(location, group);
 }
 
 void PlayerManager::slotLoadToDeck(QString location, int deck) {

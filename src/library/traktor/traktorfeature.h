@@ -42,16 +42,16 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QIcon getIcon() override;
     static bool isSupported();
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void refreshLibraryModels();
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
     TreeItem* importLibrary(QString file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);

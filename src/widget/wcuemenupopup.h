@@ -37,13 +37,13 @@ class WCueMenuPopup : public QWidget {
     }
 
     void hide() {
-        emit(aboutToHide());
+        emit aboutToHide();
         QWidget::hide();
     }
 
     void show() {
         m_pEditLabel->setFocus();
-        emit(aboutToShow());
+        emit aboutToShow();
         QWidget::show();
     }
 

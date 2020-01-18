@@ -149,11 +149,11 @@ void DlgTrackInfo::trackUpdated() {
 }
 
 void DlgTrackInfo::slotNext() {
-    emit(next());
+    emit next();
 }
 
 void DlgTrackInfo::slotPrev() {
-    emit(previous());
+    emit previous();
 }
 
 void DlgTrackInfo::populateFields(const Track& track) {
@@ -250,9 +250,9 @@ void DlgTrackInfo::slotReloadCoverArt() {
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }
-    CoverInfo coverInfo =
-            CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-    slotCoverInfoSelected(coverInfo);
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -521,5 +521,5 @@ void DlgTrackInfo::updateTrackMetadata() {
 }
 
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
-    emit(showTagFetcher(m_pLoadedTrack));
+    emit showTagFetcher(m_pLoadedTrack);
 }

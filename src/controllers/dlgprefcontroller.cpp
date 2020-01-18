@@ -148,7 +148,7 @@ void DlgPrefController::showLearningWizard() {
     connect(m_pDlgControllerLearning, SIGNAL(inputMappingsLearned(MidiInputMappings)),
             this, SLOT(midiInputMappingsLearned(MidiInputMappings)));
 
-    emit(mappingStarted());
+    emit mappingStarted();
     connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SIGNAL(mappingEnded()));
 }
@@ -332,7 +332,7 @@ void DlgPrefController::slotApply() {
         // Load the resulting preset (which has been mutated by the input/output
         // table models). The controller clones the preset so we aren't touching
         // the same preset.
-        emit(loadPreset(m_pController, m_pPreset));
+        emit loadPreset(m_pController, m_pPreset);
 
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
@@ -395,7 +395,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     // TODO(rryan): We really should not load the preset here. We should load it
     // into the preferences GUI and then load it to the actual controller once
     // the user hits apply.
-    emit(loadPreset(m_pController, pPreset));
+    emit loadPreset(m_pController, pPreset);
     slotDirty();
 }
 
@@ -546,16 +546,16 @@ void DlgPrefController::slotEnableDevice(bool enable) {
     slotDirty();
 
     // Set tree item text to normal/bold.
-    emit(controllerEnabled(this, enable));
+    emit controllerEnabled(this, enable);
 }
 
 void DlgPrefController::enableDevice() {
-    emit(openController(m_pController));
+    emit openController(m_pController);
     //TODO: Should probably check if open() actually succeeded.
 }
 
 void DlgPrefController::disableDevice() {
-    emit(closeController(m_pController));
+    emit closeController(m_pController);
     //TODO: Should probably check if close() actually succeeded.
 }
 

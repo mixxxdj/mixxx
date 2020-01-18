@@ -14,7 +14,6 @@
 #include <QModelIndex>
 #include <QPoint>
 #include <QAction>
-#include <QSignalMapper>
 #include <QPointer>
 
 #include "library/libraryfeature.h"
@@ -88,9 +87,6 @@ class AutoDJFeature : public LibraryFeature {
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;
-
-    // Used to map menu-item signals.
-    QSignalMapper m_crateMapper;
 
     QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;

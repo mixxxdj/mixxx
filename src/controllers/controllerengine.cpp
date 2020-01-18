@@ -247,7 +247,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
     connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
             this, SLOT(scriptHasChanged(QString)));
 
-    emit(initialized());
+    emit initialized();
 
     return result && m_scriptErrors.isEmpty();
 }
@@ -301,7 +301,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
-    emit(initialized());
+    emit initialized();
 }
 
 /* -------- ------------------------------------------------------
@@ -534,7 +534,7 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
                SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 
     if (button == QMessageBox::Retry) {
-        emit(resetController());
+        emit resetController();
     }
 }
 

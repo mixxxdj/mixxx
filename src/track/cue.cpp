@@ -74,7 +74,7 @@ void Cue::setId(int cueId) {
     m_iId = cueId;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 TrackId Cue::getTrackId() const {
@@ -87,7 +87,7 @@ void Cue::setTrackId(TrackId trackId) {
     m_trackId = trackId;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 Cue::Type Cue::getType() const {
@@ -100,7 +100,7 @@ void Cue::setType(Cue::Type type) {
     m_type = type;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 double Cue::getPosition() const {
@@ -113,7 +113,7 @@ void Cue::setStartPosition(double samplePosition) {
     m_sampleStartPosition = samplePosition;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void Cue::setEndPosition(double samplePosition) {
@@ -121,7 +121,7 @@ void Cue::setEndPosition(double samplePosition) {
     m_sampleEndPosition = samplePosition;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 double Cue::getLength() const {
@@ -146,7 +146,7 @@ void Cue::setHotCue(int hotCue) {
     m_iHotCue = hotCue;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 QString Cue::getLabel() const {
@@ -161,7 +161,7 @@ void Cue::setLabel(const QString label) {
     m_label = label;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 QRgb Cue::getColor() const {
@@ -200,7 +200,7 @@ void Cue::setDefaultColor(QRgb rgb) {
         m_colorIsDefault = true;
     }
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 bool Cue::isDirty() const {
