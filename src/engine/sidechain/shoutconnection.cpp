@@ -437,28 +437,10 @@ void ShoutConnection::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    EncoderBroadcastSettings broadcastSettings(m_pProfile);
-    if (m_format_is_mp3) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);
-        m_encoder->setEncoderSettings(broadcastSettings);
-    } else if (m_format_is_ov) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
-        m_encoder->setEncoderSettings(broadcastSettings);
-    }
-#ifdef __OPUS__
-    else if (m_format_is_opus) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_OPUS), m_pConfig, this);
-    }
-#endif
-    else {
-        kLogger.warning() << "**** Unknown Encoder Format";
-        setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder format error";
-        return;
-    }
+    EncoderSettingsPointer pBroadcastSettings =
+            std::make_shared<EncoderBroadcastSettings>(m_pProfile);
+    m_encoder = EncoderFactory::getFactory().createEncoder(
+                    pBroadcastSettings, this);
 
     QString errorMsg;
     if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
