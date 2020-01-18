@@ -15,6 +15,8 @@ class HotcueColorPaletteSettings {
 
     QRgb getDefaultColor(int hotcue, bool* keepDefault = nullptr) const;
 
+    QRgb offPaletteDefaultColor() const;
+
   private:
     static const QString sGroup;
 

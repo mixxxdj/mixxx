@@ -208,17 +208,18 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this,
             SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
 
+    auto colorPaletteSettings = HotcueColorPaletteSettings(m_pConfig);
+
     // This control communicates the "HotcueSkinDefaultColor" value of the current skin
     m_pControlSkinHotcueDefaultColor = new ControlObject(
             ConfigKey("[Skin]","hotcue_default_color"));
-    m_pControlSkinHotcueDefaultColor->set(0xf36100); // library icons orange
+    m_pControlSkinHotcueDefaultColor->set(colorPaletteSettings.offPaletteDefaultColor()); // library icons orange
     connect(m_pControlSkinHotcueDefaultColor,
             &ControlObject::valueChanged,
             this,
             &DlgPrefDeck::slotSkinHotcueDefaultColorChanged);
 
     // Fill ComboBox
-    auto colorPaletteSettings = HotcueColorPaletteSettings(m_pConfig);
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
 
     auto skinDefault = new ControlProxy("[Skin]","hotcue_default_color", this);
@@ -232,7 +233,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     pixmap.fill(QColor(QRgb(0)));
     comboBoxHotcueDefaultColor->setItemIcon(1, QIcon(pixmap));
     comboBoxHotcueDefaultColor->addItem(tr("Outside Palette"), -1);
-    pixmap.fill(QColor(QRgb(0xf36100)));
+    pixmap.fill(QColor(colorPaletteSettings.offPaletteDefaultColor()));
     comboBoxHotcueDefaultColor->setItemIcon(2, QIcon(pixmap));
 
     comboBoxHotcueDefaultColor->insertSeparator(3);

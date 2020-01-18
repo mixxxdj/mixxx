@@ -1,6 +1,10 @@
 #include "preferences/hotcuecolorpalettesettings.h"
 #include "control/controlobject.h"
 
+namespace {
+constexpr QRgb kOffPaletteDefault = 0xf36100; // library icons orange;
+} // anonymous namespace
+
 const QString HotcueColorPaletteSettings::sGroup = "[HotcueColorPalette]";
 
 ColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
@@ -71,10 +75,15 @@ QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue, bool* keepDefault) 
         if (keepDefault) {
             *keepDefault = true;
         }
-        return QRgb(0xf36100); // library icons orange
+        return offPaletteDefaultColor();
     }
 
     auto hotcueColorPalette = getHotcueColorPalette();
     auto colors = hotcueColorPalette.m_colorList;
     return colors.at(index % colors.count());
 }
+
+QRgb HotcueColorPaletteSettings::offPaletteDefaultColor() const {
+    return kOffPaletteDefault;
+}
+
