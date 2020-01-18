@@ -47,26 +47,33 @@ QRgb HotcueColorPaletteSettings::getDefaultColor(int hotcue, bool* keepDefault) 
         *keepDefault = false;
     }
 
+    enum class PaletteIndex {
+        SkinDefault = -3,
+        ByHotCueNumber = -2,
+        OffPalette = -1
+    };
+
 
     ConfigKey autoHotcueColorsKey("[Controls]", "HotcueDefaultColorIndex");
     //  QRgb(0xf36100) library icons orange
-    int index = m_pConfig->getValue(autoHotcueColorsKey, -3);
+    int index = m_pConfig->getValue(autoHotcueColorsKey,
+            static_cast<int>(PaletteIndex::SkinDefault));
 
-    if (index == -1) {
+    if (index == static_cast<int>(PaletteIndex::OffPalette)) {
         if (keepDefault) {
             *keepDefault = true;
         }
-        return QRgb(0xf36100); // library icons orange
+        return offPaletteDefaultColor(); // library icons orange
     }
 
-    if (index == -2) {
+    if (index == static_cast<int>(PaletteIndex::ByHotCueNumber)) {
         if (keepDefault) {
             *keepDefault = true;
         }
         index = hotcue;
     }
 
-    if (index < 0) {
+    if (index <= static_cast<int>(PaletteIndex::SkinDefault)) {
         // -3 or invalid hotcue return skin default
         double dRgb = ControlObject::get(ConfigKey("[Skin]","hotcue_default_color"));
         if (dRgb <= 0xFFFFFF && dRgb >= 0) {

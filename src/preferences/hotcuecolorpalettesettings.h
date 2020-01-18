@@ -5,6 +5,13 @@
 
 class HotcueColorPaletteSettings {
   public:
+
+    enum class PaletteIndex {
+        SkinDefault = -3,
+        ByHotCueNumber = -2,
+        OffPalette = -1
+    };
+
     explicit HotcueColorPaletteSettings(const UserSettingsPointer& pConfig)
             : m_pConfig(pConfig) {
     }
