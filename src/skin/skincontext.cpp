@@ -15,7 +15,10 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pSharedState(std::make_shared<SharedState>()),
           m_scaleFactor(1.0) {
+    DEBUG_ASSERT(isRoot());
+
     enableDebugger(true);
+
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
     importScriptExtension("console");
@@ -29,21 +32,21 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     if (!hooksPattern.isNull()) {
         m_hookRx.setPattern(hooksPattern.toString());
     }
-
-    DEBUG_ASSERT(isRoot());
 }
 
 SkinContext::SkinContext(const SkinContext* parent)
-        : m_skinBasePath(parent->m_skinBasePath),
+        : m_xmlPath(parent->m_xmlPath),
+          m_skinBasePath(parent->m_skinBasePath),
           m_pConfig(parent->m_pConfig),
           m_pSharedState(parent->m_pSharedState),
           m_variables(parent->variables()),
           m_parentGlobal(m_pSharedState->scriptEngine.globalObject()),
           m_hookRx(parent->m_hookRx),
           m_scaleFactor(parent->m_scaleFactor) {
+    DEBUG_ASSERT(!isRoot());
+
     // we generate a new global object to preserve the scope between
     // a context and its children
-    setXmlPath(parent->m_xmlPath);
     QScriptValue context = m_pSharedState->scriptEngine.pushContext()->activationObject();
     QScriptValue newGlobal = m_pSharedState->scriptEngine.newObject();
     QScriptValueIterator it(m_parentGlobal);
@@ -57,8 +60,6 @@ SkinContext::SkinContext(const SkinContext* parent)
         newGlobal.setProperty(it.key(), it.value());
     }
     m_pSharedState->scriptEngine.setGlobalObject(newGlobal);
-
-    DEBUG_ASSERT(!isRoot());
 }
 
 SkinContext::~SkinContext() {
