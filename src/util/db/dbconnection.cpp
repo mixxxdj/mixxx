@@ -82,8 +82,6 @@ void makeLatinLow(QChar* c, int count) {
     }
 }
 
-const QChar kSqlLikeEscapeDefault = '\0';
-
 // Compare two strings for equality where the first string is
 // a "LIKE" expression. Return true (1) if they are the same and
 // false (0) if they are different.
@@ -165,6 +163,12 @@ int likeCompareInner(
 }
 
 #ifdef __SQLITE3__
+
+namespace {
+
+const QChar kSqlLikeEscapeDefault = '\0';
+
+} // anonymous namespace
 
 // The collating function callback is invoked with a copy of the pArg
 // application data pointer and with two strings in the encoding specified
