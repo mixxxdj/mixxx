@@ -42,7 +42,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void retainSizeFor(QWidget* widget);
     inline void showWidget(QWidget* widget);
     inline void hideWidget(QWidget* widget);
-    void setupEncoderUI(Encoder::Format selformat);
+    void setupEncoderUI();
     void loadMetaData();
     void updateTextQuality();
     void updateTextCompression();
