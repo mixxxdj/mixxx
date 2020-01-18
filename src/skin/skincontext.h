@@ -1,7 +1,5 @@
 #pragma once
 
-// Use std::shared_ptr instead of QSharedPointer for shared
-// class members to guarantee correct move semantics!
 #include <memory>
 
 #include <QHash>
@@ -236,18 +234,18 @@ class SkinContext {
                                 int lineNumber=1) const;
     QScriptValue importScriptExtension(const QString& extensionName);
     bool hasUncaughtScriptException() const {
-        return m_pScriptEngine->hasUncaughtException();
+        return m_pSharedState->scriptEngine.hasUncaughtException();
     }
     void enableDebugger(bool state) const;
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
     void defineSingleton(QString objectName, QWidget* widget) {
-        return m_pSingletons->insertSingleton(objectName, widget);
+        return m_pSharedState->singletons.insertSingleton(objectName, widget);
     }
 
     QWidget* getSingletonWidget(QString objectName) const {
-        return m_pSingletons->getSingletonWidget(objectName);
+        return m_pSharedState->singletons.getSingletonWidget(objectName);
     }
 
     const QRegExp& getHookRegex() const {
@@ -289,16 +287,25 @@ class SkinContext {
     QString m_skinBasePath;
     UserSettingsPointer m_pConfig;
 
+    struct SharedState final {
+        SharedState() = default;
+        SharedState(const SharedState&) = delete;
+        SharedState(SharedState&&) = delete;
+
+        QScriptEngine scriptEngine;
+        QScriptEngineDebugger scriptDebugger;
+        QHash<QString, QDomElement> svgCache;
+        // The SingletonContainer map is passed to child SkinContexts, so that all
+        // templates in the tree can share a single map.
+        SingletonMap singletons;
+    };
+    // Use std::shared_ptr instead of QSharedPointer to guarantee
+    // correct move semantics!
+    std::shared_ptr<SharedState> m_pSharedState;
+
     QHash<QString, QString> m_variables;
-    std::shared_ptr<QScriptEngine> m_pScriptEngine;
-    std::shared_ptr<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
     QRegExp m_hookRx;
 
-    std::shared_ptr<QHash<QString, QDomElement>> m_pSvgCache;
-
-    // The SingletonContainer map is passed to child SkinContexts, so that all
-    // templates in the tree can share a single map.
-    std::shared_ptr<SingletonMap> m_pSingletons;
     double m_scaleFactor;
 };
