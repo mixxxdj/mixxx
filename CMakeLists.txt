@@ -908,6 +908,7 @@ add_executable(mixxx-test
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/colorconfig_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
   src/test/controllerengine_test.cpp

@@ -20,26 +20,27 @@ TEST_F(ColorConfigTest, SavingColorWithoutAlpha) {
 TEST_F(ColorConfigTest, SavingColorWithAlpha) {
     ConfigKey key("[Color]", "color");
     QColor originalColor("#66FF9900");
+    QColor expectedColor("#FF9900");
     config()->setValue(key, originalColor);
     saveAndReloadConfig();
     QColor colorFromConfig = config()->getValue(key);
-    ASSERT_EQ(originalColor, colorFromConfig);
+    ASSERT_EQ(expectedColor, colorFromConfig);
 }
 
 TEST_F(ColorConfigTest, GetDefaultColorWhenNoStoredColor) {
     ConfigKey key("[Color]", "color");
-    QColor defaultColor("#66FF9900");
+    QColor defaultColor("#FF9900");
     QColor colorFromConfig = config()->getValue(key, defaultColor);
     ASSERT_EQ(defaultColor, colorFromConfig);
 }
 
 TEST_F(ColorConfigTest, SaveColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette originalColorPalette(QList<QColor>{
-            QColor("#66FF9900"),
-            QColor("#FF9900"),
-            QColor("#00000000"),
-            QColor("#FFFFFF"),
+    ColorPalette originalColorPalette(QList<QRgb>{
+            0xFF9900,
+            0xFF9900,
+            0x000000,
+            0xFFFFFF
     });
     ConfigKey key("[ColorPalette]", "colorPalette");
     colorPaletteSettings.setHotcueColorPalette(originalColorPalette);
@@ -51,15 +52,15 @@ TEST_F(ColorConfigTest, SaveColorPalette) {
 
 TEST_F(ColorConfigTest, ReplaceColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette colorPalette1(QList<QColor>{
-            QColor("#66FF9900"),
-            QColor("#FF9900"),
-            QColor("#00000000"),
-            QColor("#FFFFFF"),
+    ColorPalette colorPalette1(QList<QRgb>{
+            0xFF9900,
+            0xFF9900,
+            0x000000,
+            0xFFFFFF
     });
-    ColorPalette colorPalette2(QList<QColor>{
-            QColor("#0000FF"),
-            QColor("#FF0000"),
+    ColorPalette colorPalette2(QList<QRgb>{
+            0x0000FF,
+            0xFF0000
     });
     ConfigKey key("[ColorPalette]", "colorPalette");
     colorPaletteSettings.setHotcueColorPalette(colorPalette1);

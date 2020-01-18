@@ -8,7 +8,9 @@ ColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(sGroup)) {
         QColor color = m_pConfig->getValue<QColor>(key);
         if (color.isValid()) {
-            colorList.append(color.rgb());
+            QRgb rgb = color.rgb() & RGB_MASK; // The mask is required for some reasons. A Qt bug?
+            DEBUG_ASSERT(rgb <= 0xFFFFFF);
+            colorList.append(rgb);
         }
     }
 
