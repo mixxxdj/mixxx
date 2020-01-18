@@ -13,7 +13,8 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
-          m_pSharedState(std::make_shared<SharedState>()) {
+          m_pSharedState(std::make_shared<SharedState>()),
+          m_scaleFactor(1.0) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
@@ -28,8 +29,6 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     if (!hooksPattern.isNull()) {
         m_hookRx.setPattern(hooksPattern.toString());
     }
-
-    m_scaleFactor = 1.0;
 
     DEBUG_ASSERT(isRoot());
 }
