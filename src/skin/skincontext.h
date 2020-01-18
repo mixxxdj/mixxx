@@ -1,5 +1,4 @@
-#ifndef SKINCONTEXT_H
-#define SKINCONTEXT_H
+#pragma once
 
 #include <QHash>
 #include <QString>
@@ -12,25 +11,34 @@
 #include <QSharedPointer>
 #include <QRegExp>
 
-#include "../util/color/predefinedcolorsrepresentation.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorsrepresentation.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
-
-class SvgParser;
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
 // evaluate skin XML nodes while loading the skin.
 class SkinContext {
   public:
-    SkinContext(UserSettingsPointer pConfig, const QString& xmlPath);
-    SkinContext(const SkinContext& parent);
+    SkinContext(
+            UserSettingsPointer pConfig,
+            const QString& xmlPath);
+    SkinContext(
+            const SkinContext* parent);
     virtual ~SkinContext();
+
+    // Not copyable
+    SkinContext(const SkinContext&) = delete;
+    SkinContext& operator=(const SkinContext&) = delete;
+
+    // Moveable
+    SkinContext(SkinContext&&) = default;
+    SkinContext& operator=(SkinContext&&) = default;
 
     // Gets a path relative to the skin path.
     QString makeSkinPath(const QString& relativePath) const {
@@ -222,7 +230,7 @@ class SkinContext {
 
     QScriptValue evaluateScript(const QString& expression,
                                 const QString& filename=QString(),
-                                int lineNumber=1);
+                                int lineNumber=1) const;
     QScriptValue importScriptExtension(const QString& extensionName);
     const QSharedPointer<QScriptEngine> getScriptEngine() const;
     void enableDebugger(bool state) const;
@@ -289,5 +297,3 @@ class SkinContext {
     QSharedPointer<SingletonMap> m_pSingletons;
     double m_scaleFactor;
 };
-
-#endif /* SKINCONTEXT_H */

@@ -33,22 +33,24 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     }
 
     m_scaleFactor = 1.0;
+
+    DEBUG_ASSERT(isRoot());
 }
 
-SkinContext::SkinContext(const SkinContext& parent)
-        : m_skinBasePath(parent.m_skinBasePath),
-          m_pConfig(parent.m_pConfig),
-          m_variables(parent.variables()),
-          m_pScriptEngine(parent.m_pScriptEngine),
-          m_pScriptDebugger(parent.m_pScriptDebugger),
+SkinContext::SkinContext(const SkinContext* parent)
+        : m_skinBasePath(parent->m_skinBasePath),
+          m_pConfig(parent->m_pConfig),
+          m_variables(parent->variables()),
+          m_pScriptEngine(parent->m_pScriptEngine),
+          m_pScriptDebugger(parent->m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
-          m_hookRx(parent.m_hookRx),
-          m_pSvgCache(parent.m_pSvgCache),
-          m_pSingletons(parent.m_pSingletons),
-          m_scaleFactor(parent.m_scaleFactor) {
+          m_hookRx(parent->m_hookRx),
+          m_pSvgCache(parent->m_pSvgCache),
+          m_pSingletons(parent->m_pSingletons),
+          m_scaleFactor(parent->m_scaleFactor) {
     // we generate a new global object to preserve the scope between
     // a context and its children
-    setXmlPath(parent.m_xmlPath);
+    setXmlPath(parent->m_xmlPath);
     QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
     QScriptValue newGlobal = m_pScriptEngine->newObject();
     QScriptValueIterator it(m_parentGlobal);
@@ -62,11 +64,15 @@ SkinContext::SkinContext(const SkinContext& parent)
         newGlobal.setProperty(it.key(), it.value());
     }
     m_pScriptEngine->setGlobalObject(newGlobal);
+
+    DEBUG_ASSERT(!isRoot());
 }
 
 SkinContext::~SkinContext() {
     // Pop the context only if we're a child.
-    if (!isRoot()) {
+    // m_pScriptEngine might be null after moving and the
+    // destructor then becomes a no-op!
+    if (m_pScriptEngine && !isRoot()) {
         m_pScriptEngine->popContext();
         m_pScriptEngine->setGlobalObject(m_parentGlobal);
     }
@@ -166,7 +172,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            SvgParser svgParser(*this);
+            SvgParser svgParser(this);
             const QByteArray rslt = svgParser.saveToQByteArray(
                     svgParser.parseSvgTree(svgNode, m_xmlPath));
             PixmapSource source;
@@ -214,7 +220,7 @@ PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
  */
 QScriptValue SkinContext::evaluateScript(const QString& expression,
                                          const QString& filename,
-                                         int lineNumber) {
+                                         int lineNumber) const {
     return m_pScriptEngine->evaluate(expression, filename, lineNumber);
 }
 
