@@ -153,7 +153,7 @@ QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
                                                    int lineNumber) const {
     QScriptValue out = m_childContext.evaluateScript(
         expression, m_currentFile, lineNumber);
-    if (m_childContext.getScriptEngine()->hasUncaughtException()) {
+    if (m_childContext.hasUncaughtScriptException()) {
         // return an empty string as replacement for the in-attribute expression
         return QScriptValue();
     } else {
