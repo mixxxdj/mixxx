@@ -99,7 +99,7 @@ void BaseExternalTrackModel::trackLoaded(QString group, TrackPointer pTrack) {
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         if (pTrack) {

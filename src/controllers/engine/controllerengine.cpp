@@ -245,7 +245,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
 
     connect(&m_scriptWatcher, &QFileSystemWatcher::fileChanged, this, &ControllerEngine::scriptHasChanged);
 
-    emit(initialized());
+    emit initialized();
 
     return scriptsEvaluatedCorrectly;
 }
@@ -300,7 +300,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
-    emit(initialized());
+    emit initialized();
 }
 
 bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList args) {

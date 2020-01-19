@@ -288,9 +288,9 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    emit(switchToView("CRATEHOME"));
+    emit switchToView("CRATEHOME");
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
@@ -299,8 +299,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
         return;
     }
     m_crateTableModel.selectCrate(crateId);
-    emit(showTrackModel(&m_crateTableModel));
-    emit(enableCoverArtDisplay(true));
+    emit showTrackModel(&m_crateTableModel);
+    emit enableCoverArtDisplay(true);
 }
 
 bool CrateFeature::activateCrate(CrateId crateId) {
@@ -314,10 +314,10 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     }
     m_lastRightClickedIndex = index;
     m_crateTableModel.selectCrate(crateId);
-    emit(showTrackModel(&m_crateTableModel));
-    emit(enableCoverArtDisplay(true));
+    emit showTrackModel(&m_crateTableModel);
+    emit enableCoverArtDisplay(true);
     // Update selection
-    emit(featureSelect(this, m_lastRightClickedIndex));
+    emit featureSelect(this, m_lastRightClickedIndex);
     activateChild(m_lastRightClickedIndex);
     return true;
 }
@@ -678,7 +678,7 @@ void CrateFeature::slotAnalyzeCrate() {
                     trackIds.append(crateTracks.trackId());
                 }
             }
-            emit(analyzeTracks(trackIds));
+            emit analyzeTracks(trackIds);
         }
     }
 }

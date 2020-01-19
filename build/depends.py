@@ -440,18 +440,26 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++14 support
+        # Mixxx requires C++17 support
         if build.platform_is_windows:
             # MSVC
-            build.env.Append(CXXFLAGS='/std:c++14')
+            build.env.Append(CXXFLAGS='/std:c++17')
+            # Fix build of googletest 1.8.x
+            # https://developercommunity.visualstudio.com/content/problem/225156/google-test-does-not-work-with-stdc17.html
+            # https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+            build.env.Append(CXXFLAGS='/Zc:__cplusplus')
         else:
             # GCC/Clang
-            build.env.Append(CXXFLAGS='-std=c++14')
+            build.env.Append(CXXFLAGS='-std=c++17')
+            if build.platform_is_osx and build.compiler_is_clang:
+                # Aligned allocation is only supported since macOS 10.13,
+                # but not for the minimum supported version macOS 10.11
+                build.env.Append(CXXFLAGS='-fno-aligned-allocation')
 
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        build.env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
 
 class FidLib(Dependence):
     def sources(self, build):
@@ -1404,11 +1412,6 @@ class MixxxCore(Feature):
                 # operators that are deprecated for classes with a user-provided copy
                 # constructor. This affects both Qt 5.12 and Mixxx.
                 build.env.Append(CXXFLAGS='-Wno-deprecated-copy')
-
-                # Disable warnings that extended alignment operator new (C++17)
-                # is not supported.
-                # TODO: Remove after switching to C++17
-                build.env.Append(CXXFLAGS='-Wno-aligned-new')
 
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override

@@ -110,7 +110,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    emit(analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler)));
+    emit analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler));
 
     libraryWidget->registerView(kViewName, m_pAnalysisView);
 }

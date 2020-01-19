@@ -155,11 +155,11 @@ void DlgTrackInfo::trackUpdated() {
 }
 
 void DlgTrackInfo::slotNext() {
-    emit(next());
+    emit next();
 }
 
 void DlgTrackInfo::slotPrev() {
-    emit(previous());
+    emit previous();
 }
 
 void DlgTrackInfo::cueActivate() {
@@ -749,5 +749,5 @@ void DlgTrackInfo::updateTrackMetadata() {
 }
 
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
-    emit(showTagFetcher(m_pLoadedTrack));
+    emit showTagFetcher(m_pLoadedTrack);
 }

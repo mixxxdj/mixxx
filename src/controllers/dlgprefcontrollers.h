@@ -2,7 +2,6 @@
 #define DLGPREFCONTROLLERS_H
 
 #include <QTreeWidgetItem>
-#include <QSignalMapper>
 
 #include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"

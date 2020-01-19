@@ -167,7 +167,7 @@ void PreviewButtonDelegate::buttonClicked() {
 
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
-        emit(loadTrackToPlayer(pTrack, group, true));
+        emit loadTrackToPlayer(pTrack, group, true);
     } else if (pTrack == pOldTrack && !playing) {
         // Since the Preview deck might be hidden
         // Starting at cue is a predictable behavior
@@ -189,7 +189,7 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
         TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(group);
         TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
         if (pTrack && pTrack == pPreviewTrack) {
-            emit(buttonSetChecked(v > 0.0));
+            emit buttonSetChecked(v > 0.0);
         }
     }
 }
