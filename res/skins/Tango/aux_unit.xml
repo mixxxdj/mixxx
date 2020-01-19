@@ -50,7 +50,7 @@ Variables:
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
             <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
             <SetVariable name="Size">28f,28f</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
