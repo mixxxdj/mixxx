@@ -801,31 +801,16 @@ double BpmControl::getBeatMatchPosition(
     qDebug() << dOtherPrevBeat << dOtherNextBeat << dOtherBeatLength << dOtherBeatFraction;
 
 
-    // seek our nearest beat to the other nearest beat
-    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
-    double thisDivSec;
-    if (this_near_next) {
-        thisDivSec = (dThisNextBeat - dThisPosition) /
-                m_pBeats->getSampleRate() /
-                m_pRateRatio->get();
-    } else {
-        thisDivSec = (dThisPrevBeat - dThisPosition) /
-                m_pBeats->getSampleRate() /
-                m_pRateRatio->get();
-    }
+    // Seek our next beat to the other next beat
+    // This is the only thing we can do if the track has different BPM,
+    // playing the next beat together.
+    double thisDivSec = (dThisNextBeat - dThisPosition)
+            / m_pBeats->getSampleRate() / m_pRateRatio->get();
 
     // dOtherBeatFraction =+ m_dUserOffset;
     bool other_near_next = dOtherBeatFraction >= 0.5;
-    double otherDivSec;
-    if (other_near_next) {
-        otherDivSec = (1 - dOtherBeatFraction) * dOtherBeatLength /
-                otherBeats->getSampleRate() /
-                pOtherEngineBuffer->getRateRatio();
-    } else {
-        otherDivSec = (-dOtherBeatFraction) * dOtherBeatLength /
-                otherBeats->getSampleRate() /
-                pOtherEngineBuffer->getRateRatio();
-    }
+    double otherDivSec = (1 - dOtherBeatFraction) * dOtherBeatLength
+            / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
 
     double dNewPlaypos = dThisPosition +
             (thisDivSec - otherDivSec) *
