@@ -11,7 +11,7 @@ var isNumber = function(n) {
 (function() {
     svg.templateHooks = {};
 
-    svg.regexpQuote = function (str, delimiter) {
+    svg.regexpQuote = function(str, delimiter) {
         return String(str).replace(
             new RegExp(
                 "[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\" + (delimiter || "") + "-]",
@@ -21,33 +21,33 @@ var isNumber = function(n) {
         );
     };
 
-    svg.getHooksPattern = function(){
+    svg.getHooksPattern = function() {
         var hookNames = [];
         for (var i in this.templateHooks)
             hookNames.push(i);
 
         // hook_name( arg1 [, arg2]... )
-        if (hookNames.length){
+        if (hookNames.length) {
             var pattern = "("+hookNames.join("|")+")\\(([^\\(\\)]+)\\)\\s*;?";
             return pattern;
         }
     };
 
     var global = this;
-    svg.templateHooks.variable = function(varName){
-        if (varName in global){
+    svg.templateHooks.variable = function(varName) {
+        if (varName in global) {
             return global[varName];
         }
         return "";
     };
 
-    svg.templateHooks.prop = function(propName, varName){
+    svg.templateHooks.prop = function(propName, varName) {
         var out = "";
 
-        if ((varName in global)){
+        if ((varName in global)) {
             var value = global[varName];
 
-            if (isNumber(value)){
+            if (isNumber(value)) {
                 out = propName + ":" + value + ";";
             } else if (value.length) {
                 out = propName + ":" + value + ";";
