@@ -24,6 +24,9 @@
     "keyword-spacing": "warn",
     "linebreak-style": ["warn", "unix"],
     "no-trailing-spaces": "warn",
+    "no-unneeded-ternary": ["warn", {
+        "defaultAssignment": false
+    }],
     "no-unused-vars": ["error", {
         "argsIgnorePattern": "^_"
     }],
@@ -32,6 +35,7 @@
     "require-atomic-updates": "error",
     "semi": "warn",
     "semi-spacing": "warn",
+    "space-before-function-paren": ["warn", "never"],
     "space-in-parens": "warn"
   },
   "globals": {
