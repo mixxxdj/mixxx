@@ -225,7 +225,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
-    emit(showTrackModel(m_pPlaylistTableModel));
+    emit showTrackModel(m_pPlaylistTableModel);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -273,7 +273,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
                     slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    emit(showTrackModel(m_pPlaylistTableModel));
+                    emit showTrackModel(m_pPlaylistTableModel);
                 }
             }
         }

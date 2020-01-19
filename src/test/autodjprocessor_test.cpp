@@ -57,7 +57,7 @@ class FakeDeck : public BaseTrackPlayer {
         loadedTrack = pTrack;
         duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
-        emit(newTrackLoaded(pTrack));
+        emit newTrackLoaded(pTrack);
     }
 
     void fakeTrackLoadFailedEvent(TrackPointer pTrack) {
@@ -69,12 +69,12 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
-        emit(loadingTrack(TrackPointer(), pTrack));
+        emit loadingTrack(TrackPointer(), pTrack);
         loadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     }
 
-    TrackPointer getLoadedTrack() const {
+    TrackPointer getLoadedTrack() const override {
         return loadedTrack;
     }
 

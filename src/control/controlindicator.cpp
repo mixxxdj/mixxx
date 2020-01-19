@@ -22,7 +22,7 @@ ControlIndicator::~ControlIndicator() {
 void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
     if (m_blinkValue != bv) {
         m_blinkValue = bv; // must be set at first, to avoid timer toggle
-        emit(blinkValueChanged());
+        emit blinkValueChanged();
     }
 }
 
@@ -35,10 +35,8 @@ void ControlIndicator::slotGuiTick50ms(double cpuTime) {
         case RATIO1TO1_250MS:
             toggle(0.25);
             break;
-        case OFF:
-            [[fallthrough]];
-        case ON:
-            [[fallthrough]];
+        case OFF: // fall through
+        case ON: // fall through
         default:
             // nothing to do
             break;

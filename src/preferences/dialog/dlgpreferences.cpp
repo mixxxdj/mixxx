@@ -383,7 +383,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
 
 void DlgPreferences::onHide() {
     // Notify children that we are about to hide.
-    emit(closeDlg());
+    emit closeDlg();
 }
 
 void DlgPreferences::onShow() {
@@ -439,7 +439,7 @@ void DlgPreferences::onShow() {
     move(newX, newY);
 
     // Notify children that we are about to show.
-    emit(showDlg());
+    emit showDlg();
 }
 
 void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
@@ -459,11 +459,11 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             }
             break;
         case QDialogButtonBox::AcceptRole:
-            emit(applyPreferences());
+            emit applyPreferences();
             accept();
             break;
         case QDialogButtonBox::RejectRole:
-            emit(cancelPreferences());
+            emit cancelPreferences();
             reject();
             break;
         default:

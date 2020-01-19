@@ -13,9 +13,9 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
 
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
-        emit(switchToWidget());
+        emit switchToWidget();
     } else {
-        emit(hideWidget());
+        emit hideWidget();
     }
 }
 

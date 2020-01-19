@@ -523,7 +523,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
-    emit(newSkinLoaded());
+    emit newSkinLoaded();
 
 
     // Wait until all other ControlObjects are set up before initializing
@@ -1286,7 +1286,7 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
         m_pDeveloperToolsDlg->show();
         m_pDeveloperToolsDlg->activateWindow();
     } else {
-        emit(closeDeveloperToolsDlgChecked(0));
+        emit closeDeveloperToolsDlgChecked(0);
     }
 }
 
@@ -1318,7 +1318,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
 #endif
         showNormal();
     }
-    emit(fullScreenChanged(toggle));
+    emit fullScreenChanged(toggle);
 }
 
 void MixxxMainWindow::slotOptionsPreferences() {
@@ -1461,7 +1461,7 @@ void MixxxMainWindow::rebootMixxxView() {
     }
 
     qDebug() << "rebootMixxxView DONE";
-    emit(newSkinLoaded());
+    emit newSkinLoaded();
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {

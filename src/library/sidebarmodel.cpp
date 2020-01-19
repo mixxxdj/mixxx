@@ -91,7 +91,7 @@ void SidebarModel::setDefaultSelection(unsigned int index) {
 void SidebarModel::activateDefaultSelection() {
     if (m_iDefaultSelectedIndex <
             static_cast<unsigned int>(m_sFeatures.size())) {
-        emit(selectIndex(getDefaultSelection()));
+        emit selectIndex(getDefaultSelection());
         // Selecting an index does not activate it.
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
@@ -411,7 +411,7 @@ void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
-    emit(dataChanged(topLeftTranslated, bottomRightTranslated));
+    emit dataChanged(topLeftTranslated, bottomRightTranslated);
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
@@ -478,7 +478,7 @@ void SidebarModel::featureRenamed(LibraryFeature* pFeature) {
     for (int i=0; i < m_sFeatures.size(); ++i) {
         if (m_sFeatures[i] == pFeature) {
             QModelIndex ind = index(i, 0);
-            emit(dataChanged(ind, ind));
+            emit dataChanged(ind, ind);
         }
     }
 }
@@ -496,5 +496,5 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex
             }
         }
     }
-    emit(selectIndex(ind));
+    emit selectIndex(ind);
 }

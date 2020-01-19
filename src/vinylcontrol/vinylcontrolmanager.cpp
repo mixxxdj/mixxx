@@ -109,7 +109,7 @@ void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
     }
 
     ControlProxy* pEnabled = m_pVcEnabled.at(deck);
-    emit(vinylControlDeckEnabled(deck, pEnabled->toBool()));
+    emit vinylControlDeckEnabled(deck, pEnabled->toBool());
 }
 
 void VinylControlManager::requestReloadConfig() {

@@ -203,41 +203,41 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 mapping.output.status = static_cast<unsigned char>(
                     MidiUtils::opCodeFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.output.status = static_cast<unsigned char>(
                     MidiUtils::channelFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_CONTROL:
                 mapping.output.control = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ON:
                 mapping.output.on = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OFF:
                 mapping.output.off = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_MIN:
                 mapping.output.min = value.toDouble();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_MAX:
                 mapping.output.max = value.toDouble();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ACTION:
                 mapping.controlKey = value.value<ConfigKey>();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_COMMENT:
                 mapping.description = value.toString();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             default:
                 return false;

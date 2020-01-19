@@ -137,9 +137,9 @@ void MusicBrainzClient::replyFinished() {
         QStringList propertyNames;
         QStringList propertyKeys;
         QString strReply = (QString)reply->readAll();
-        emit(networkError(
+        emit networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz", message, kDefaultErrorCode));
+             "MusicBrainz", message, kDefaultErrorCode);
         return;
     }
 

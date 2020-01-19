@@ -14,6 +14,7 @@
 #include "util/types.h"
 #include "preferences/usersettings.h"
 #include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encodercallback.h"
 
 class Encoder {
@@ -53,12 +54,16 @@ class EncoderFactory {
     const QList<Encoder::Format> getFormats() const;
     Encoder::Format getSelectedFormat(UserSettingsPointer pConfig) const;
     Encoder::Format getFormatFor(QString format) const;
-    EncoderPointer getNewEncoder(
-        UserSettingsPointer pConfig, EncoderCallback* pCallback) const;
-    EncoderPointer getNewEncoder(Encoder::Format format,
-        UserSettingsPointer pConfig, EncoderCallback* pCallback) const;
-    EncoderSettingsPointer getEncoderSettings(Encoder::Format format,
-        UserSettingsPointer pConfig) const;
+    EncoderPointer createRecordingEncoder(
+            Encoder::Format format,
+            UserSettingsPointer pConfig, 
+            EncoderCallback* pCallback) const;
+    EncoderPointer createEncoder(
+            EncoderSettingsPointer pSettings,
+            EncoderCallback* pCallback) const;
+    EncoderRecordingSettingsPointer getEncoderRecordingSettings(
+            Encoder::Format format,
+            UserSettingsPointer pConfig) const;
   private:
     static EncoderFactory factory;
     QList<Encoder::Format> m_formats;

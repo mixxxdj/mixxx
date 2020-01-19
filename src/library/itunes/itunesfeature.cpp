@@ -157,7 +157,7 @@ void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void ITunesFeature::activate() {
     activate(false);
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 void ITunesFeature::activate(bool forceReload) {
@@ -171,7 +171,7 @@ void ITunesFeature::activate(bool forceReload) {
         clearTable("itunes_playlists");
         transaction.commit();
 
-        emit(showTrackModel(m_pITunesTrackModel));
+        emit showTrackModel(m_pITunesTrackModel);
 
         SettingsDAO settings(m_pTrackCollection->database());
         QString dbSetting(settings.getValue(ITDB_PATH_KEY));
@@ -213,11 +213,11 @@ void ITunesFeature::activate(bool forceReload) {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit(featureIsLoading(this, true));
+        emit featureIsLoading(this, true);
     } else {
-        emit(showTrackModel(m_pITunesTrackModel));
+        emit showTrackModel(m_pITunesTrackModel);
     }
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
@@ -225,8 +225,8 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pITunesPlaylistModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(m_pITunesPlaylistModel);
+    emit enableCoverArtDisplay(false);
 }
 
 TreeItemModel* ITunesFeature::getChildModel() {
@@ -816,7 +816,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pITunesTrackModel->select();
-        emit(showTrackModel(m_pITunesTrackModel));
+        emit showTrackModel(m_pITunesTrackModel);
         qDebug() << "Itunes library loaded: success";
     } else {
         QMessageBox::warning(
@@ -827,6 +827,6 @@ void ITunesFeature::onTrackCollectionLoaded() {
     }
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("iTunes");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
     activate();
 }

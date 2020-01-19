@@ -136,7 +136,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
         return false;
     }
 
-    emit(showErrorDialog(props));
+    emit showErrorDialog(props);
     return true;
 }
 
@@ -212,7 +212,7 @@ void ErrorDialogHandler::boxClosed(QString key, QMessageBox* msgBox) {
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
-    emit(stdButtonClicked(key, whichStdButton));
+    emit stdButtonClicked(key, whichStdButton);
 
     // If the user clicks "Ignore," we leave the key in the list so the same
     // error is not displayed again for the duration of the session

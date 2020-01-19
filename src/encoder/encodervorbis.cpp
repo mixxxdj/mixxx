@@ -63,8 +63,7 @@ void EncoderVorbis::setEncoderSettings(const EncoderSettings& settings)
     switch(settings.getChannelMode()) {
         case EncoderSettings::ChannelMode::MONO:  m_channels = 1; break;
         case EncoderSettings::ChannelMode::STEREO: m_channels = 2; break;
-        case EncoderSettings::ChannelMode::AUTOMATIC:
-            [[fallthrough]];
+        case EncoderSettings::ChannelMode::AUTOMATIC: // fallthrough
         default:
             if (m_bitrate > MONO_BITRATE_THRESHOLD ) {
                 m_channels = 2;
