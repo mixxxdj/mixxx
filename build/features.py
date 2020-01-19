@@ -835,15 +835,11 @@ class LiveBroadcasting(Feature):
         build.env.Append(CPPDEFINES='__BROADCAST__')
 
         if build.platform_is_linux:
-            # Check if system lib is lower 2.4.2 or at least 2.4.4 and not suffering bug
+            # Check if system lib is lower at least 2.4.4 and not suffering bug
             # https://bugs.launchpad.net/mixxx/+bug/1833225
             if not conf.CheckForPKG('shout', '2.4.4'):
-                if conf.CheckForPKG('shout', '2.4.2'):
-                    print("System's libshout suffers lp1833225, using internal shout_mixxx")
-                    self.INTERNAL_LINK = True
-                else:
-                    print("(no) here is fine here we just don't want 2.4.2 or 2.4.3")
-
+                self.INTERNAL_LINK = True
+ 
         if not self.INTERNAL_LINK:
             self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
 
