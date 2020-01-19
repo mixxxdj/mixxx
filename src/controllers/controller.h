@@ -82,7 +82,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   // only signal them which allows us to use no locks.
   protected slots:
     // TODO(XXX) move this into the inherited classes since is not called here
-    // (vie Controller) and re-implemented anyway in most cases.
+    // (via Controller) and re-implemented anyway in most cases.
 
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
@@ -167,7 +167,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
     bool m_bLearning;
-    QTime m_userActivityInhibitTimer;
+    QElapsedTimer m_userActivityInhibitTimer;
 
     friend class ControllerJSProxy;
     // accesses lots of our stuff, but in the same thread

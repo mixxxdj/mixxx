@@ -301,7 +301,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &LibraryControl::sidebarWidgetDeleted);
 }
 
-void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget) {
         disconnect(m_pLibraryWidget, 0, this, 0);
@@ -357,7 +357,7 @@ void LibraryControl::slotAutoDjAddTop(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJTop();
+        activeView->slotAddToAutoDJTop();
     }
 }
 
@@ -370,7 +370,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJBottom();
+        activeView->slotAddToAutoDJBottom();
     }
 }
 

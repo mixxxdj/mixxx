@@ -65,6 +65,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+        m_pAutoDjEnabled(make_parented<ControlProxy>("[AutoDJ]", "enabled", this)),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
@@ -212,7 +213,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = m_pCOPNumDecks.load();
+    ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
         pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pCOPNumDecks->valid()) {
@@ -230,7 +231,7 @@ unsigned int PlayerManager::numDecks() {
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = m_pCOPNumSamplers.load();
+    ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
         pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
         if (!pCOPNumSamplers->valid()) {
@@ -248,7 +249,7 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = m_pCOPNumPreviewDecks.load();
+    ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
@@ -584,7 +585,21 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     // If not present in the config, use & set the default value
     bool cloneOnDoubleTap = m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), kDefaultCloneDeckOnLoad);
-    if (cloneOnDoubleTap && m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
+
+    // If AutoDJ is enabled, prevent it from cloning decks if the same track
+    // is in the AutoDJ queue twice in a row. This can happen when the option to
+    // repeat the AutoDJ queue is enabled and the user presses the "Skip now"
+    // button repeatedly.
+    // AutoDJProcessor is initialized after PlayerManager, so check that the
+    // ControlProxy is pointing to the real ControlObject.
+    if (!m_pAutoDjEnabled->valid()) {
+        m_pAutoDjEnabled->initialize(ConfigKey("[AutoDJ]", "enabled"));
+    }
+    bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
+
+    if (cloneOnDoubleTap && m_lastLoadedPlayer == group
+        && elapsed < mixxx::Duration::fromSeconds(0.5)
+        && !autoDjSkipClone) {
         // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
         // so clone another playing deck instead of loading the selected track
         pPlayer->slotCloneDeck();

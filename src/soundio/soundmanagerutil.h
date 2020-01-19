@@ -205,13 +205,7 @@ class SoundDeviceId {
     QString alsaHwDevice;
     int portAudioIndex;
 
-    QString debugName() const {
-        if (alsaHwDevice.isEmpty()) {
-            return name + ", " + portAudioIndex;
-        } else {
-            return name + ", " + alsaHwDevice + ", " + QString::number(portAudioIndex);
-        }
-    }
+    QString debugName() const;
 
     SoundDeviceId()
        : portAudioIndex(-1) {}

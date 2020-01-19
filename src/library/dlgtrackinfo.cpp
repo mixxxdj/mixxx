@@ -1,6 +1,5 @@
 #include <QDesktopServices>
 #include <QtDebug>
-#include <QStringBuilder>
 #include <QComboBox>
 
 #include "library/coverartcache.h"
@@ -177,7 +176,16 @@ void DlgTrackInfo::cueDelete() {
         rowsToDelete.insert(item->row());
     }
 
+    // TODO: QList<T>::fromSet(const QSet<T>&) is deprecated and should be
+    // replaced with QList<T>(set.begin(), set.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QList<int> rowsList = QList<int>(rowsToDelete.begin(), rowsToDelete.end());
+#else
     QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
+#endif
     std::sort(rowsList.begin(), rowsList.end());
 
     QListIterator<int> it(rowsList);
@@ -282,9 +290,9 @@ void DlgTrackInfo::slotReloadCoverArt() {
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }
-    CoverInfo coverInfo =
-            CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-    slotCoverInfoSelected(coverInfo);
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -315,9 +323,9 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO
-                || type == Cue::OUTRO) {
+        Cue::Type type = pCue->getType();
+        if (type == Cue::Type::HotCue || type == Cue::Type::MainCue || type == Cue::Type::Intro
+                || type == Cue::Type::Outro) {
             listPoints.push_back(pCue);
         }
     }
@@ -368,28 +376,28 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
-            case Cue::INVALID:
+            case Cue::Type::Invalid:
                 cueType = "?";
                 break;
-            case Cue::CUE:
+            case Cue::Type::HotCue:
                 cueType = "Hotcue";
                 break;
-            case Cue::LOAD:
+            case Cue::Type::MainCue:
                 cueType = "Main Cue";
                 break;
-            case Cue::BEAT:
+            case Cue::Type::Beat:
                 cueType = "Beat";
                 break;
-            case Cue::LOOP:
+            case Cue::Type::Loop:
                 cueType = "Loop";
                 break;
-            case Cue::JUMP:
+            case Cue::Type::Jump:
                 cueType = "Jump";
                 break;
-            case Cue::INTRO:
+            case Cue::Type::Intro:
                 cueType = "Intro";
                 break;
-            case Cue::OUTRO:
+            case Cue::Type::Outro:
                 cueType = "Outro";
                 break;
             default:
@@ -496,7 +504,7 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(-1);
         }
 
-        if (pCue->getType() == Cue::CUE) {
+        if (pCue->getType() == Cue::Type::HotCue) {
             auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
             if (colorComboBox) {
                 PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());

@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
+#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "waveform/sharedglcontext.h"
 #include "util/math.h"
@@ -320,9 +321,10 @@ void WSpinny::render(VSyncThread* vSyncThread) {
                 &m_dGhostAngleCurrentPlaypos);
     }
 
+    double scaleFactor = getDevicePixelRatioF(this);
+
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (m_pBgImage) {
@@ -331,8 +333,8 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width()) / 2;
-        int y = (height() - m_loadedCoverScaled.height()) / 2;
+        int x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
+        int y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
         p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
@@ -405,7 +407,10 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaled = normal.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    return scaled;
 }
 
 void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
@@ -632,8 +637,8 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
     } else {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_loadedTrack);
-        } else if (!m_pDlgCoverArt->isVisible()) {
-            m_pCoverMenu->popup(e->pos());
+        } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
+            m_pCoverMenu->popup(e->globalPos());
         }
     }
 }

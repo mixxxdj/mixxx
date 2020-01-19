@@ -1013,9 +1013,32 @@ DJ505.PadSection = function (deck, offset) {
      *   0x0A       Coral          0x1A       Coral (Dim)
      *   0x0B       Azure          0x1B       Azure (Dim)
      *   0x0C       Turquoise      0x1C       Turquoise (Dim)
-     *   0x0C       Aquamarine     0x1C       Aquamarine (Dim)
+     *   0x0D       Aquamarine     0x1D       Aquamarine (Dim)
      *   0x0E       Green          0x1E       Green (Dim)
      *   0x0F       White          0x1F       White (Dim)
+     *
+     * Serato DJ Pro maps its cue colors to MIDI values like this:
+     *
+     *   Number Default Cue  Serato Color       MIDI value Color
+     *   ------ ------------ -----------------  ---------  ----------
+     *        1            1 #CC0000 / #C02626  0x01       Red
+     *        2              #CC4400 / #DB4E27  0x0A       Coral
+     *        3            2 #CC8800 / #F8821A  0x02       Orange
+     *        4            4 #CCCC00 / #FAC313  0x04       Yellow
+     *        5              #88CC00 / #4EB648  0x0E       Green
+     *        6              #44CC00 / #006838  0x0E       Green
+     *        7            5 #00CC00 / #1FAD26  0x05       Applegreen
+     *        8              #00CC44 / #8DC63F  0x0D       Aquamarine
+     *        9              #00CC88 / #2B3673  0x0D       Aquamarine
+     *       10            7 #00CCCC / #1DBEBD  0x0C       Turquoise
+     *       11              #0088CC / #0F88CA  0x07       Celeste
+     *       12              #0044CC / #16308B  0x03       Blue
+     *       13            3 #0000CC / #173BA2  0x03       Blue
+     *       14              #4400CC / #5C3F97  0x0B       Azure
+     *       15            8 #8800CC / #6823B6  0x08       Purple
+     *       16            6 #CC00CC / #CE359E  0x06       Magenta
+     *       17              #CC0088 / #DC1D49  0x06       Magenta
+     *       18              #CC0044 / #C71136  0x01       Red
      */
     components.ComponentContainer.call(this);
     this.modes = {
@@ -1094,12 +1117,32 @@ DJ505.PadSection.prototype.padModeButtonPressed = function (channel, control, va
 };
 
 DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, value, status, group) {
-    if (this.currentMode && this.currentMode.paramPlusButton && this.currentMode.paramMinusButton) {
-        if (control & 1) {
-            this.currentMode.paramPlusButton.input(channel, control, value, status, group);
-        } else {
-            this.currentMode.paramMinusButton.input(channel, control, value, status, group);
-        }
+    if (!this.currentMode) {
+        return;
+    }
+    var button;
+    switch(control) {
+        case 0x2A: // PARAMETER 2 -
+            if (this.currentMode.param2MinusButton) {
+                button = this.currentMode.param2MinusButton;
+                break;
+            }
+            /* falls through */
+        case 0x28: // PARAMETER -
+            button = this.currentMode.paramMinusButton;
+            break;
+        case 0x2B: // PARAMETER 2 +
+            if (this.currentMode.param2PlusButton) {
+                button = this.currentMode.param2PlusButton;
+                break;
+            }
+            /* falls through */
+        case 0x29: // PARAMETER +
+            button = this.currentMode.paramPlusButton;
+            break;
+    }
+    if (button) {
+        button.input(channel, control, value, status, group);
     }
 };
 
@@ -1185,13 +1228,25 @@ DJ505.HotcueMode = function (deck, offset) {
     }
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
-        mode: this,
-        outKey: "beats_translate_earlier",
-        inKey: "beats_translate_earlier",
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
     });
     this.paramPlusButton = new components.Button({
         midi: [0x94 + offset, 0x29],
-        mode: this,
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
+    });
+    this.param2MinusButton = new components.Button({
+        midi: [0x94 + offset, 0x2A],
+        group: deck.currentDeck,
+        outKey: "beats_translate_earlier",
+        inKey: "beats_translate_earlier",
+    });
+    this.param2PlusButton = new components.Button({
+        midi: [0x94 + offset, 0x2B],
+        group: deck.currentDeck,
         outKey: "beats_translate_later",
         inKey: "beats_translate_later",
     });
@@ -1208,6 +1263,7 @@ DJ505.CueLoopMode = function (deck, offset) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 1;
         this.outKey = "hotcue_" + this.number + "_enabled";
+        this.colorIdKey = "hotcue_" + this.number + "_color_id";
 
         components.Button.call(this);
     };
@@ -1223,10 +1279,10 @@ DJ505.CueLoopMode = function (deck, offset) {
         unshift: function() {
             this.input = function (channel, control, value, status, group) {
                 if (value) {
-                    var enabled = true;
+                    var hotcue_enabled = true;
                     if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
                         // set a new cue point and loop
-                        enabled = false;
+                        hotcue_enabled = false;
                         script.triggerControl(group, "hotcue_" + this.number + "_activate");
                     }
                     // jump to existing cue and loop
@@ -1237,40 +1293,69 @@ DJ505.CueLoopMode = function (deck, offset) {
 
                     // disable loop if currently enabled
                     if (engine.getValue(group, "loop_enabled")) {
-                        script.triggerControl(group, "reloop_toggle", 1);
-                        if (enabled && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
+                        if (hotcue_enabled &&
+                                engine.getValue(group, "loop_start_position") === startpos &&
+                                engine.getValue(group, "loop_end_position") === endpos) {
+                            script.triggerControl(group, "loop_in_goto", 1);
                             return;
+                        } else {
+                            // disable active loop
+                            script.triggerControl(group, "reloop_toggle", 1);
                         }
                     }
+
                     // set start and endpoints
                     engine.setValue(group, "loop_start_position", startpos);
                     engine.setValue(group, "loop_end_position", endpos);
                     // enable loop
                     script.triggerControl(group, "reloop_toggle", 1);
-                    if (enabled) {
+                    if (hotcue_enabled) {
                         script.triggerControl(group, "loop_in_goto", 1);
                     }
                 }
             };
         },
         shift: function() {
-            this.input = function (channel, control, value, status, group) {
-                if (value) {
-                    if (engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
-                        // jump to existing cue and loop
-                        var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
-                        var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
-                        var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
-                        var endpos = startpos + loopsamples;
-
-                        if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
-                            engine.setValue(group, "reloop_toggle", 1);
-                        } else {
-                            script.triggerControl(group, "hotcue_" + this.number + "_clear");
-                        }
-                    }
+            this.inKey = "hotcue_" + this.number + "_clear";
+            this.input = components.Button.prototype.input;
+        },
+        output: function(value) {
+            var outval = this.outValueScale(value);
+            // WARNING: outputColor only handles hotcueColors
+            // and there is no hotcueColor for turning the LED
+            // off. So the `send()` function is responsible for turning the
+            // actual LED off.
+            if (this.colorIdKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorIdKey));
+            } else {
+                this.send(outval);
+            }
+        },
+        outputColor: function (id) {
+            var color = this.colors[id];
+            if (color instanceof Array) {
+                if (color.length !== 3) {
+                    print("ERROR: invalid color array for id: " + id);
+                    return;
                 }
-            };
+                if (this.sendRGB === undefined) {
+                    print("ERROR: no function defined for sending RGB colors");
+                    return;
+                }
+                this.sendRGB(color);
+            } else if (typeof color === 'number') {
+                this.send(color);
+            }
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorIdKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                    if (engine.getValue(this.group,this.outKey)) {
+                        this.outputColor(id);
+                    }
+                });
+            }
         },
     });
 
@@ -1278,6 +1363,19 @@ DJ505.CueLoopMode = function (deck, offset) {
     for (var n = 0; n <= 7; n++) {
         this.pads[n] = new this.PerformancePad(n);
     }
+
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        group: deck.currentDeck,
+        outKey: "loop_halve",
+        inKey: "loop_halve",
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        group: deck.currentDeck,
+        outKey: "loop_double",
+        inKey: "loop_double",
+    });
 };
 DJ505.CueLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 

@@ -1,10 +1,13 @@
 #include <QDesktopWidget>
+#include <QRect>
+#include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
 #include "library/dlgcoverartfullsize.h"
 #include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "util/compatibility.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
@@ -130,8 +133,16 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         // whitespace appearing on the side when resizing a window whose
         // borders touch the edges of the screen.
         QSize dialogSize = m_pixmap.size();
-        const QSize availableScreenSpace =
-            QApplication::desktop()->availableGeometry().size() * 0.9;
+
+        const QScreen* primaryScreen = getPrimaryScreen();
+        QRect availableScreenGeometry;
+        if (primaryScreen) {
+            availableScreenGeometry = primaryScreen->availableGeometry();
+        } else {
+            qWarning() << "Assuming screen size of 800x600px.";
+            availableScreenGeometry = QRect(0, 0, 800, 600);
+        }
+        const QSize availableScreenSpace = availableScreenGeometry.size() * 0.9;
         if (dialogSize.height() > availableScreenSpace.height()) {
             dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
                              Qt::KeepAspectRatio);
@@ -139,32 +150,36 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
             dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
                              Qt::KeepAspectRatio);
         }
-        QPixmap resizedPixmap = m_pixmap.scaled(size(),
+        QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
             Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
         coverArt->setPixmap(resizedPixmap);
+
         // center the window
         setGeometry(QStyle::alignedRect(
                 Qt::LeftToRight,
                 Qt::AlignCenter,
                 dialogSize,
-                QApplication::desktop()->availableGeometry()));
+                availableScreenGeometry));
     }
 }
 
 // slots to handle signals from the context menu
 void DlgCoverArtFullSize::slotReloadCoverArt() {
-    if (m_pLoadedTrack != nullptr) {
-        auto coverInfo =
-                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-        slotCoverInfoSelected(coverInfo);
+    if (!m_pLoadedTrack) {
+        return;
     }
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
-void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    // qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
-    if (m_pLoadedTrack != nullptr) {
-        m_pLoadedTrack->setCoverInfo(coverInfo);
+void DlgCoverArtFullSize::slotCoverInfoSelected(
+        const CoverInfoRelative& coverInfo) {
+    if (!m_pLoadedTrack) {
+        return;
     }
+    m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
@@ -213,8 +228,9 @@ void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
         return;
     }
     // qDebug() << "DlgCoverArtFullSize::resizeEvent" << size();
-    QPixmap resizedPixmap = m_pixmap.scaled(size(),
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
         Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
     coverArt->setPixmap(resizedPixmap);
 }
 

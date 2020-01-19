@@ -9,7 +9,7 @@
       **********************************************
       -->
       <WidgetGroup>
-        <ObjectName>Library</ObjectName>
+        <ObjectName>LibraryContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
@@ -75,6 +75,7 @@
                   <Library>
                     <BgColor>#585858</BgColor>
                     <FgColor>#eece33</FgColor>
+                    <ShowButtonText>false</ShowButtonText>
                   </Library>
                 </Children>
               </WidgetGroup>

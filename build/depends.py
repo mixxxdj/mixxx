@@ -275,6 +275,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
@@ -482,6 +483,30 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+# For Rekordbox removable device binary database file parsing
+class Kaitai(Dependence):
+
+    def sources(self, build):
+        return ["lib/kaitai/kaitaistream.cpp"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
+        build.env.Append(CPPPATH="#lib/kaitai")
+
+# For determining MP3 timing offset cases in Rekordbox library feature
+class MP3GuessEnc(Dependence):
+
+    def sources(self, build):
+        return [
+            "lib/mp3guessenc-0.27.4/mp3guessenc.c",
+            "lib/mp3guessenc-0.27.4/tags.c",
+            "lib/mp3guessenc-0.27.4/decode.c",
+            "lib/mp3guessenc-0.27.4/bit_utils.c",
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/mp3guessenc-0.27.4/')
+
 
 class Ebur128Mit(Dependence):
     INTERNAL_PATH = 'lib/libebur128'
@@ -676,6 +701,11 @@ class PortAudioRingBuffer(Dependence):
 
     def sources(self, build):
         return ['lib/portaudio/pa_ringbuffer.c']
+
+# https://github.com/rigtorp/SPSCQueue
+class RigtorpSPSCQueue(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/rigtorp/SPSCQueue/include')
 
 class Reverb(Dependence):
     def configure(self, build, conf):
@@ -895,9 +925,7 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
-                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
-                   "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -948,6 +976,8 @@ class MixxxCore(Feature):
                    "src/widget/wcoverart.cpp",
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
+                   "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
@@ -971,6 +1001,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
@@ -1037,6 +1068,10 @@ class MixxxCore(Feature):
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
 
+                   "src/library/rekordbox/rekordboxfeature.cpp",
+                   "src/library/rekordbox/rekordbox_pdb.cpp",
+                   "src/library/rekordbox/rekordbox_anlz.cpp",
+
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
 
@@ -1072,6 +1107,8 @@ class MixxxCore(Feature):
                    "src/library/parserpls.cpp",
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
+
+                   "src/library/trackloader.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 
@@ -1154,6 +1191,7 @@ class MixxxCore(Feature):
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
+                   "src/track/seratomarkers2.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
                    "src/track/trackfile.cpp",
@@ -1367,6 +1405,11 @@ class MixxxCore(Feature):
                 # constructor. This affects both Qt 5.12 and Mixxx.
                 build.env.Append(CXXFLAGS='-Wno-deprecated-copy')
 
+                # Disable warnings that extended alignment operator new (C++17)
+                # is not supported.
+                # TODO: Remove after switching to C++17
+                build.env.Append(CXXFLAGS='-Wno-aligned-new')
+
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override
                 # keyword until Qt fixes qt_metacall.
@@ -1538,7 +1581,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp]
+                QueenMaryDsp, Kaitai, MP3GuessEnc, RigtorpSPSCQueue]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

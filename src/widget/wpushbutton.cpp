@@ -222,6 +222,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WPushButton::setStates(int iStates) {
@@ -346,12 +348,12 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
         if (leftClick) {
-            if (getControlParameterLeft() == 0.0) {
-                m_clickTimer.setSingleShot(true);
-                m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
-            }
+            m_clickTimer.setSingleShot(true);
+            m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
+
+            double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+            setControlParameterLeftDown(emitValue);
             m_bPressed = true;
-            setControlParameterLeftDown(1.0);
             restyleAndRepaint();
         }
         // discharge right clicks here, because is used for latching in POWERWINDOW mode
@@ -416,7 +418,8 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
-                setControlParameterLeftUp(0.0);
+                double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+                setControlParameterLeftUp(emitValue);
             }
             m_bPressed = false;
         } else if (rightClick) {
@@ -428,7 +431,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function,
-        // due the leak of visual feedback we do not allow a toggle
+        // due the lack of visual feedback we do not allow a toggle
         // function
         m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH

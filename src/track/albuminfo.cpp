@@ -3,18 +3,6 @@
 
 namespace mixxx {
 
-void AlbumInfo::resetUnsupportedValues() {
-#if defined(__EXTRA_METADATA__)
-    setCopyright(QString());
-    setLicense(QString());
-    setMusicBrainzArtistId(QString());
-    setMusicBrainzReleaseId(QString());
-    setMusicBrainzReleaseGroupId(QString());
-    setRecordLabel(QString());
-    setReplayGain(ReplayGain());
-#endif // __EXTRA_METADATA__
-}
-
 bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs) {
     return (lhs.getArtist() == rhs.getArtist()) &&
 #if defined(__EXTRA_METADATA__)
