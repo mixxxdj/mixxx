@@ -89,7 +89,7 @@ var fsrDelay = false;
 
 
 //==== Init, Shutdown  ========================================================
-joyMIDI.init = function(id, debug) {
+joyMIDI.init = function(_id, _debug) {
     joyMIDI["[Channel1]"].connBeatIndicator = engine.makeConnection("[Channel1]", "beat_active", joyMIDI.onBeatIndicator);
     joyMIDI["[Channel2]"].connBeatIndicator = engine.makeConnection("[Channel2]", "beat_active", joyMIDI.onBeatIndicator);
 };
@@ -100,7 +100,7 @@ joyMIDI.shutdown = function() {
 };
 
 //==== Callback  ==============================================================
-joyMIDI.onBeatIndicator = function(value, group, control) {
+joyMIDI.onBeatIndicator = function(value, group, _control) {
     var fader = engine.getParameter("[Master]", "crossfader");
     if (fader < 0.5) {
         // Left
@@ -633,7 +633,7 @@ joyMIDI.wheelFx2 = function(channel, control, value, status, group) {
     }
 };
 
-joyMIDI.wheelFx = function(channel, control, value, status, group, group2, param, select) {
+joyMIDI.wheelFx = function(channel, control, value, status, group, group2, param, _select) {
     var delta    = joyMIDI.helperAccel(value - 64) * 0.01;
     var oldValue = engine.getParameter(group2, param);
     var newValue = oldValue + delta;
@@ -644,14 +644,13 @@ joyMIDI.wheelFx = function(channel, control, value, status, group, group2, param
 
 
 //==== Jojstick ============================================================
-joyMIDI.joystick = function(channel, control, value, status, group) {
+joyMIDI.joystick = function(channel, control, _value, _status, _group) {
 
     if (joystickDelay === false) {
         /* Delay a while */
         joystickDelay = true;
         engine.beginTimer(300, function() { joystickDelay = false; }, true);
 
-        var isShift = joyMIDI["[Channel1]"].btnShift === true || joyMIDI["[Channel2]"].btnShift === true;
         if (!joyMIDI["[Channel1]"].btnShift) {
             /* Joystick only */
             switch (control) {
@@ -674,7 +673,7 @@ joyMIDI.joystick = function(channel, control, value, status, group) {
 
 
 //==== FSR ============================================================
-joyMIDI.fsr = function(channel, control, value, status, group) {
+joyMIDI.fsr = function(_channel, _control, _value, _status, _group) {
 
     if (fsrDelay === false) {
         /* Delay a while */
