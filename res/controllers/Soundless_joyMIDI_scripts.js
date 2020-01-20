@@ -25,8 +25,8 @@ var joyMIDI = {
         btnKey: 0,
         btnBeatgrid: 0,
         btnVolume: 0,
-        btnFilter: { "low": 0, "middle": 0, "high": 0 },
-        btnFx: { "1": 0, "2": 0 },
+        btnFilter: {"low": 0, "middle": 0, "high": 0},
+        btnFx: {"1": 0, "2": 0},
 
         connBeatIndicator: {},
     },
@@ -39,8 +39,8 @@ var joyMIDI = {
         btnKey: 0,
         btnBeatgrid: 0,
         btnVolume: 0,
-        btnFilter: { "low": 0, "middle": 0, "high": 0 },
-        btnFx: { "1": 0, "2": 0 },
+        btnFilter: {"low": 0, "middle": 0, "high": 0},
+        btnFx: {"1": 0, "2": 0},
 
         connBeatIndicator: {},
     },
@@ -92,12 +92,12 @@ var fsrDelay = false;
 joyMIDI.init = function(id, debug) {
     joyMIDI["[Channel1]"].connBeatIndicator = engine.makeConnection("[Channel1]", "beat_active", joyMIDI.onBeatIndicator);
     joyMIDI["[Channel2]"].connBeatIndicator = engine.makeConnection("[Channel2]", "beat_active", joyMIDI.onBeatIndicator);
-}
+};
 
 joyMIDI.shutdown = function() {
     joyMIDI["[Channel1]"].connBeatIndicator.disconnect();
     joyMIDI["[Channel2]"].connBeatIndicator.disconnect();
-}
+};
 
 //==== Callback  ==============================================================
 joyMIDI.onBeatIndicator = function(value, group, control) {
@@ -113,12 +113,12 @@ joyMIDI.onBeatIndicator = function(value, group, control) {
             midi.sendShortMsg(0x92, 0x00, (value) ? 0x7F : 0x00);
         }
     }
-}
+};
 
 //==== Button  ================================================================
 joyMIDI.shiftButton = function(channel, control, value, status, group) {
     joyMIDI[group].btnShift = (value > 0) ? PRESSED : RELEASED;
-}
+};
 
 joyMIDI.syncButton = function(channel, control, value, status, group) {
     if (!joyMIDI.userSetting.knobEnable) {
@@ -169,11 +169,11 @@ joyMIDI.syncButton = function(channel, control, value, status, group) {
             joyMIDI[group].btnSync = RELEASED;
         }
     }
-}
+};
 
 joyMIDI.syncTimerHandler = function(group) {
     joyMIDI[group].syncLongPress = 1;
-}
+};
 
 joyMIDI.cueButton = function(channel, control, value, status, group) {
     var sft = joyMIDI[group].btnShift;
@@ -181,7 +181,7 @@ joyMIDI.cueButton = function(channel, control, value, status, group) {
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.playButton = function(channel, control, value, status, group) {
     var sft = joyMIDI[group].btnShift;
@@ -190,13 +190,13 @@ joyMIDI.playButton = function(channel, control, value, status, group) {
     if (value > 0) {
         script.toggleControl(group, cmd);
     }
-}
+};
 
 joyMIDI.scratchButton = function(channel, control, value, status, group) {
     if (value > 0) {
         joyMIDI[group].isScratchPermanent = !joyMIDI[group].isScratchPermanent;
     }
-}
+};
 
 joyMIDI.keyButton = function(channel, control, value, status, group) {
     if (!joyMIDI.userSetting.knobEnable) {
@@ -228,7 +228,7 @@ joyMIDI.keyButton = function(channel, control, value, status, group) {
             joyMIDI[group].btnKey = RELEASED;
         }
     }
-}
+};
 
 joyMIDI.beatgridButton = function(channel, control, value, status, group) {
     if (!joyMIDI.userSetting.knobEnable) {
@@ -262,7 +262,7 @@ joyMIDI.beatgridButton = function(channel, control, value, status, group) {
             joyMIDI[group].btnBeatgrid = RELEASED;
         }
     }
-}
+};
 
 joyMIDI.volumeButton = function(channel, control, value, status, group) {
     if (!joyMIDI.userSetting.knobEnable) {
@@ -288,22 +288,22 @@ joyMIDI.volumeButton = function(channel, control, value, status, group) {
             joyMIDI[group].btnVolume = RELEASED;
         }
     }
-}
+};
 
 joyMIDI.filterLowButton = function(channel, control, value, status, group) {
     joyMIDI.filterButton(channel, control, value, status, group,
         "[EqualizerRack1_" + group + "_Effect1]", "button_parameter1", "low");
-}
+};
 
 joyMIDI.filterMiddleButton = function(channel, control, value, status, group) {
     joyMIDI.filterButton(channel, control, value, status, group,
         "[EqualizerRack1_" + group + "_Effect1]", "button_parameter2", "middle");
-}
+};
 
 joyMIDI.filterHighButton = function(channel, control, value, status, group) {
     joyMIDI.filterButton(channel, control, value, status, group,
         "[EqualizerRack1_" + group + "_Effect1]", "button_parameter3", "high");
-}
+};
 
 joyMIDI.filterButton = function(channel, control, value, status, group, group2, param, select) {
     if (!joyMIDI.userSetting.knobEnable) {
@@ -329,7 +329,7 @@ joyMIDI.filterButton = function(channel, control, value, status, group, group2, 
             joyMIDI[group].btnFilter[select] = RELEASED;
         }
     }
-}
+};
 
 joyMIDI.hotcueButton = function(channel, control, value, status, group) {
     var num = control - ((group === "[Channel1]") ? 0x3B : 0x3F);
@@ -338,7 +338,7 @@ joyMIDI.hotcueButton = function(channel, control, value, status, group) {
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.reloopToggleButton = function(channel, control, value, status, group) {
     var usr = joyMIDI.userSetting.beatLoopRollEnable;
@@ -347,7 +347,7 @@ joyMIDI.reloopToggleButton = function(channel, control, value, status, group) {
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.loopInButton = function(channel, control, value, status, group) {
     var sft = joyMIDI[group].btnShift;
@@ -355,7 +355,7 @@ joyMIDI.loopInButton = function(channel, control, value, status, group) {
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.loopOutButton = function(channel, control, value, status, group) {
     var sft = joyMIDI[group].btnShift;
@@ -363,40 +363,40 @@ joyMIDI.loopOutButton = function(channel, control, value, status, group) {
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.loop0p125Button = function(channel, control, value, status, group) {
     joyMIDI.loopXButton(channel, control, value, status, group,
-        [ "beatloop_0.125_toggle",       "beatloop_2_toggle",
-          "beatlooproll_0.125_activate", "beatlooproll_2_activate" ]);
-}
+        ["beatloop_0.125_toggle",       "beatloop_2_toggle",
+          "beatlooproll_0.125_activate", "beatlooproll_2_activate"]);
+};
 
 joyMIDI.loop0p25Button = function(channel, control, value, status, group) {
     joyMIDI.loopXButton(channel, control, value, status, group,
-        [ "beatloop_0.25_toggle",       "beatloop_4_toggle",
-          "beatlooproll_0.25_activate", "beatlooproll_4_activate" ]);
-}
+        ["beatloop_0.25_toggle",       "beatloop_4_toggle",
+          "beatlooproll_0.25_activate", "beatlooproll_4_activate"]);
+};
 
 joyMIDI.loop0p5Button = function(channel, control, value, status, group) {
     joyMIDI.loopXButton(channel, control, value, status, group,
-        [ "beatloop_0.5_toggle",       "beatloop_8_toggle",
-          "beatlooproll_0.5_activate", "beatlooproll_8_activate" ]);
-}
+        ["beatloop_0.5_toggle",       "beatloop_8_toggle",
+          "beatlooproll_0.5_activate", "beatlooproll_8_activate"]);
+};
 
 joyMIDI.loop1Button = function(channel, control, value, status, group) {
     joyMIDI.loopXButton(channel, control, value, status, group,
-        [ "beatloop_1_toggle",       "beatloop_16_toggle",
-          "beatlooproll_1_activate", "beatlooproll_16_activate" ]);
-}
+        ["beatloop_1_toggle",       "beatloop_16_toggle",
+          "beatlooproll_1_activate", "beatlooproll_16_activate"]);
+};
 
 joyMIDI.loopXButton = function(channel, control, value, status, group, commands) {
     var usr = joyMIDI.userSetting.beatLoopRollEnable;
     var sft = joyMIDI[group].btnShift;
-    var cmd = commands[ sft + (usr?2:0) ];
+    var cmd = commands[sft + (usr?2:0)];
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.loadButton = function(channel, control, value, status, group) {
     var sft = joyMIDI[group].btnShift;
@@ -404,23 +404,23 @@ joyMIDI.loadButton = function(channel, control, value, status, group) {
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.sampler1Button = function(channel, control, value, status, group) {
     joyMIDI.samplerButton(channel, control, value, status, group, 1);
-}
+};
 
 joyMIDI.sampler2Button = function(channel, control, value, status, group) {
     joyMIDI.samplerButton(channel, control, value, status, group, 2);
-}
+};
 
 joyMIDI.sampler3Button = function(channel, control, value, status, group) {
     joyMIDI.samplerButton(channel, control, value, status, group, 3);
-}
+};
 
 joyMIDI.sampler4Button = function(channel, control, value, status, group) {
     joyMIDI.samplerButton(channel, control, value, status, group, 4);
-}
+};
 
 joyMIDI.samplerButton = function(channel, control, value, status, group, number) {
     var commands = ["start_play", "start_stop", "cue_gotoandplay", "cue_default"];
@@ -430,17 +430,17 @@ joyMIDI.samplerButton = function(channel, control, value, status, group, number)
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);
-}
+};
 
 joyMIDI.fx1Button = function(channel, control, value, status, group) {
     joyMIDI.fxButton(channel, control, value, status, group,
         "[EffectRack1_EffectUnit1]", "group_"+group+"_enable", 1);
-}
+};
 
 joyMIDI.fx2Button = function(channel, control, value, status, group) {
     joyMIDI.fxButton(channel, control, value, status, group,
         "[EffectRack1_EffectUnit2]", "group_"+group+"_enable", 2);
-}
+};
 
 joyMIDI.fxButton = function(channel, control, value, status, group, group2, param, select) {
     if (!joyMIDI.userSetting.knobEnable) {
@@ -466,7 +466,7 @@ joyMIDI.fxButton = function(channel, control, value, status, group, group2, para
             joyMIDI[group].btnFx[select] = RELEASED;
         }
     }
-}
+};
 
 //==== Wheel  ============================================================
 joyMIDI.wheel = function(channel, control, value, status, group) {
@@ -508,14 +508,14 @@ joyMIDI.wheel = function(channel, control, value, status, group) {
     } else {
         joyMIDI.wheelPitchBend(channel, control, value, status, group);
     }
-}
+};
 
 joyMIDI.wheelPitchBend = function(channel, control, value, status, group) {
     var newValue = joyMIDI.helperAccel(value - 64);
 
     engine.setValue(group, "jog", newValue);
     print(group + "jog=" + newValue);
-}
+};
 
 joyMIDI.wheelScratch = function(channel, control, value, status, group) {
     var deck = script.deckFromGroup(group);
@@ -536,12 +536,12 @@ joyMIDI.wheelScratch = function(channel, control, value, status, group) {
 
     joyMIDI[group].scratchTimerID =
         engine.beginTimer(scratchDisableTime, function() { joyMIDI.ScratchTimerHandler(deck, group); }, true);
-}
+};
 
-joyMIDI.ScratchTimerHandler = function(deck, group){
+joyMIDI.ScratchTimerHandler = function(deck, group) {
     engine.scratchDisable(deck);
     joyMIDI[group].scratchTimerID = 0;
-}
+};
 
 joyMIDI.wheelSync = function(channel, control, value, status, group) {
     var delta    = joyMIDI.helperAccel(value - 64) * 0.01;
@@ -551,7 +551,7 @@ joyMIDI.wheelSync = function(channel, control, value, status, group) {
     newValue = joyMIDI.helperLimit(newValue, 1.0, -1.0);
     engine.setValue(group, "rate", newValue);
     print(group + "rate=" + newValue);
-}
+};
 
 joyMIDI.wheelKey = function(channel, control, value, status, group) {
     var delta    = /*joyMIDI.helperAccel*/(value - 64) * 0.2;
@@ -561,7 +561,7 @@ joyMIDI.wheelKey = function(channel, control, value, status, group) {
     newValue = joyMIDI.helperLimit(newValue, 6.0, -6.0);
     engine.setValue(group, "pitch", newValue);
     print(group + "pitch=" + newValue);
-}
+};
 
 joyMIDI.wheelBeatgrid = function(channel, control, value, status, group) {
     var delta = joyMIDI.helperAccel(value - 64);
@@ -576,7 +576,7 @@ joyMIDI.wheelBeatgrid = function(channel, control, value, status, group) {
             print(group + "beats_translate_later");
         }
     }
-}
+};
 
 joyMIDI.wheelVolume = function(channel, control, value, status, group) {
     var delta    = joyMIDI.helperAccel(value - 64) * 0.01;
@@ -586,22 +586,22 @@ joyMIDI.wheelVolume = function(channel, control, value, status, group) {
     newValue = joyMIDI.helperLimit(newValue, 1.0, 0);
     engine.setValue(group, "volume", newValue);
     print(group + "volume=" + newValue);
-}
+};
 
 joyMIDI.wheelFilterLow = function(channel, control, value, status, group) {
     joyMIDI.wheelFilter(channel, control, value, status, group,
         "[EqualizerRack1_" + group + "_Effect1]", "parameter1", "low");
-}
+};
 
 joyMIDI.wheelFilterMiddle = function(channel, control, value, status, group) {
     joyMIDI.wheelFilter(channel, control, value, status, group,
         "[EqualizerRack1_" + group + "_Effect1]", "parameter2", "middle");
-}
+};
 
 joyMIDI.wheelFilterHigh = function(channel, control, value, status, group) {
     joyMIDI.wheelFilter(channel, control, value, status, group,
         "[EqualizerRack1_" + group + "_Effect1]", "parameter3", "high");
-}
+};
 
 joyMIDI.wheelFilter = function(channel, control, value, status, group, group2, param, select) {
     var delta    = joyMIDI.helperAccel(value - 64) * 0.01;
@@ -611,7 +611,7 @@ joyMIDI.wheelFilter = function(channel, control, value, status, group, group2, p
     newValue = joyMIDI.helperLimit(newValue, 1.0, 0);
     engine.setParameter(group2, param, newValue);
     print(group + "EQ_" + select + "=" + newValue);
-}
+};
 
 joyMIDI.wheelFx1 = function(channel, control, value, status, group) {
     if (group === "[Channel1]") {
@@ -621,7 +621,7 @@ joyMIDI.wheelFx1 = function(channel, control, value, status, group) {
         joyMIDI.wheelFx(channel, control, value, status, group,
             "[EffectRack1_EffectUnit2]", "mix", 1);
     }
-}
+};
 
 joyMIDI.wheelFx2 = function(channel, control, value, status, group) {
     if (group === "[Channel1]") {
@@ -631,7 +631,7 @@ joyMIDI.wheelFx2 = function(channel, control, value, status, group) {
         joyMIDI.wheelFx(channel, control, value, status, group,
             "[EffectRack1_EffectUnit2]", "super1", 2);
     }
-}
+};
 
 joyMIDI.wheelFx = function(channel, control, value, status, group, group2, param, select) {
     var delta    = joyMIDI.helperAccel(value - 64) * 0.01;
@@ -640,7 +640,7 @@ joyMIDI.wheelFx = function(channel, control, value, status, group, group2, param
 
     newValue = joyMIDI.helperLimit(newValue, 1.0, 0);
     engine.setParameter(group2, param, newValue);
-}
+};
 
 
 //==== Jojstick ============================================================
@@ -670,7 +670,7 @@ joyMIDI.joystick = function(channel, control, value, status, group) {
             }
         }
     }
-}
+};
 
 
 //==== FSR ============================================================
@@ -690,14 +690,14 @@ joyMIDI.fsr = function(channel, control, value, status, group) {
             engine.setValue("[Library]", "MoveFocusBackward", true);
         }
     }
-}
+};
 
 //==== Helper =============================================================
 joyMIDI.helperLimit = function(input, max, min) {
     input = input > max ? max : input;
     input = input < min ? min : input;
     return input;
-}
+};
 
 joyMIDI.helperAccel = function(input) {
     var acc = 0;
@@ -708,4 +708,4 @@ joyMIDI.helperAccel = function(input) {
         acc = input;
     }
     return acc;
-}
+};
