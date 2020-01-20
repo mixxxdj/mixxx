@@ -20,6 +20,7 @@
     "func-style": ["error", "expression", {
         "allowArrowFunctions": true
     }],
+    "indent": ["warn", 4],
     "key-spacing": "warn",
     "keyword-spacing": "warn",
     "linebreak-style": ["warn", "unix"],
