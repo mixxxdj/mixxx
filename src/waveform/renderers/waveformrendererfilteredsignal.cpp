@@ -51,7 +51,6 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing, false);
-    painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();

@@ -323,7 +323,6 @@ void WSpinny::render() {
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (m_pBgImage) {
