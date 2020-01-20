@@ -1,0 +1,10 @@
+{
+  "globals": {
+    "_": "readonly",
+    "color": "readonly",
+    "components": "readonly",
+    "engine": "readonly",
+    "midi": "readonly",
+    "script": "readonly"
+  }
+}
