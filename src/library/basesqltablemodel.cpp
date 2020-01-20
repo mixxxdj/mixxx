@@ -183,7 +183,7 @@ bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 
@@ -724,7 +724,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
                 if (value.canConvert(QMetaType::Int))
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                    value = QVariant::fromValue(StarRating(value.toInt()));
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
                 if (value.canConvert(QMetaType::Int))
                     value =  QString("(%1)").arg(value.toInt());
@@ -788,7 +788,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
                 if (value.canConvert(QMetaType::Int)) {
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                    value = QVariant::fromValue(StarRating(value.toInt()));
                 }
             }
             break;
@@ -951,7 +951,7 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         m_previewDeckTrackId = pTrack ? pTrack->getId() : TrackId();
@@ -970,7 +970,7 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, numColumns);
-            emit(dataChanged(left, right));
+            emit dataChanged(left, right);
         }
     }
 }
@@ -1143,7 +1143,7 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
 
 void BaseSqlTableModel::refreshCell(int row, int column) {
     QModelIndex coverIndex = index(row, column);
-    emit(dataChanged(coverIndex, coverIndex));
+    emit dataChanged(coverIndex, coverIndex);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {

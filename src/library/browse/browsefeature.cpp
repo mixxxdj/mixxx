@@ -23,7 +23,11 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
 
-const QString kQuickLinksSeparator = "-+-";
+namespace {
+
+const QString kQuickLinksSeparator = QStringLiteral("-+-");
+
+} // anonymous namespace
 
 BrowseFeature::BrowseFeature(
         Library* pLibrary,
@@ -164,7 +168,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit(requestAddDir(spath));
+    emit requestAddDir(spath);
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -180,7 +184,7 @@ void BrowseFeature::slotAddToLibrary() {
     msgBox.exec();
 
     if (msgBox.clickedButton() == scanButton) {
-        emit(scanLibrary());
+        emit scanLibrary();
     }
 }
 
@@ -233,9 +237,9 @@ void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSEHOME"));
+    emit switchToView("BROWSEHOME");
     emit disableSearch();
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -263,8 +267,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
-    emit(showTrackModel(&m_proxyModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(&m_proxyModel);
+    emit enableCoverArtDisplay(false);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -343,7 +347,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += run_media_user_dir.entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
@@ -352,10 +356,11 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         TreeItem* folder = new TreeItem(
             pFeature,
             device.fileName(),
-            device.filePath() + "/");
+            QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
-
+#else
+    Q_UNUSED(pFeature);
 #endif
     return ret;
 }
@@ -421,7 +426,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             TreeItem* folder = new TreeItem(
                 this,
                 one.fileName(),
-                one.absoluteFilePath() + "/");
+                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
             folders << folder;
         }
     }

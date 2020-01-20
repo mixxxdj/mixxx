@@ -180,7 +180,7 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
         return;
     }
     if (m_confirmRequired) {
-        emit(valueChangeRequest(value));
+        emit valueChangeRequest(value);
     } else {
         setInner(value, pSender);
     }
@@ -195,7 +195,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
         return;
     }
     m_value.setValue(value);
-    emit(valueChanged(value, pSender));
+    emit valueChanged(value, pSender);
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),

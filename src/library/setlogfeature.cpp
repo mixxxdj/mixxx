@@ -15,6 +15,7 @@
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "util/compatibility.h"
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
@@ -224,7 +225,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
-    emit(showTrackModel(m_pPlaylistTableModel));
+    emit showTrackModel(m_pPlaylistTableModel);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -272,7 +273,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
                     slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    emit(showTrackModel(m_pPlaylistTableModel));
+                    emit showTrackModel(m_pPlaylistTableModel);
                 }
             }
         }
@@ -351,21 +352,24 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
+void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     if (!m_pPlaylistTableModel) {
         return;
     }
 
-    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        updateChildModel(playlistId);
+    for (const auto playlistId : qAsConst(playlistIds)) {
+        enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+        if (type == PlaylistDAO::PLHT_SET_LOG ||
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            updateChildModel(playlistId);
+        }
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
-                                             QString /* a_strName */) {
+void SetlogFeature::slotPlaylistTableRenamed(
+        int playlistId,
+        QString newName) {
+    Q_UNUSED(newName);
     if (!m_pPlaylistTableModel) {
         return;
     }

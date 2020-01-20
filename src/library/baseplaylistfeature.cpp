@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QStandardPaths>
 
-#include "library/dao/playlistdao.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/parser.h"
@@ -46,6 +45,12 @@ BasePlaylistFeature::BasePlaylistFeature(
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJTop);
+
+    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    connect(m_pAddToAutoDJReplaceAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJReplace);
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
     connect(m_pDeletePlaylistAction,
@@ -117,7 +122,7 @@ BasePlaylistFeature::BasePlaylistFeature(
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 
     connect(&m_playlistDao,
-            &PlaylistDAO::changed,
+            &PlaylistDAO::tracksChanged,
             this,
             &BasePlaylistFeature::slotPlaylistContentChanged);
 
@@ -158,9 +163,9 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 void BasePlaylistFeature::activate() {
-    emit(switchToView(m_rootViewName));
+    emit switchToView(m_rootViewName);
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -171,8 +176,8 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-        emit(enableCoverArtDisplay(true));
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
     }
 }
 
@@ -184,10 +189,10 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-        emit(enableCoverArtDisplay(true));
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
         // Update selection
-        emit(featureSelect(this, m_lastRightClickedIndex));
+        emit featureSelect(this, m_lastRightClickedIndex);
         activateChild(m_lastRightClickedIndex);
     }
 }
@@ -593,21 +598,26 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false); // Top = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true); // bTop = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void BasePlaylistFeature::addToAutoDJ(bool bTop) {
+void BasePlaylistFeature::slotAddToAutoDJReplace() {
+    //qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
         }
     }
 }
@@ -617,7 +627,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
-            emit(analyzeTracks(ids));
+            emit analyzeTracks(ids);
         }
     }
 }

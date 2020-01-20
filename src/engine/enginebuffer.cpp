@@ -388,7 +388,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(m_iEnableSyncQueued.load());
+            static_cast<SyncRequestQueued>(atomicLoadRelaxed(m_iEnableSyncQueued));
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -416,7 +416,7 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
 }
 
 void EngineBuffer::requestClonePosition(EngineChannel* pChannel) {
-    m_pChannelToCloneFrom.store(pChannel);
+    atomicStoreRelaxed(m_pChannelToCloneFrom, pChannel);
 }
 
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
@@ -532,7 +532,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
     // Loading of a new track failed.
     // eject the currently loaded track (the old Track) as well
     ejectTrack();
-    emit(trackLoadFailed(pTrack, reason));
+    emit trackLoadFailed(pTrack, reason);
 }
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
@@ -616,10 +616,10 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && m_iTrackLoading.load() == 0) ||
-            (m_pCurrentTrack && m_iTrackLoading.load() == 0 &&
+    if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
+            (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
              m_filepos_play >= m_pTrackSamples->get() &&
-             !m_iSeekQueued.load())) {
+             !atomicLoadRelaxed(m_iSeekQueued))) {
         // play not possible
         playPossible = false;
     }
@@ -947,6 +947,10 @@ void EngineBuffer::processTrackLocked(
                     m_pReadAheadManager->getFilePlaypositionFromLog(
                             m_filepos_play, samplesRead);
         }
+        // Note: The last buffer of a track is padded with silence.
+        // This silence is played together with the last samples in the last 
+        // callback and the m_filepos_play is advanced behind the end of the track. 
+          
         if (m_bCrossfadeReady) {
            SampleUtil::linearCrossfadeBuffers(
                     pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
@@ -1028,7 +1032,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         m_iSampleRate = sample_rate;
     }
 
-    bool bTrackLoading = m_iTrackLoading.load() != 0;
+    bool bTrackLoading = atomicLoadRelaxed(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, sample_rate);
         // release the pauselock
@@ -1207,8 +1211,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    VERIFY_OR_DEBUG_ASSERT(m_trackSampleRateOld && m_tempo_ratio_old) {
-        // no track loaded, function not called in this case
+    if (!m_trackSampleRateOld) {
+        // This happens if Deck Passthrough is active but no track is loaded.
+        // We skip indicator updates.
         return;
     }
 
@@ -1216,6 +1221,14 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
+
+    double ratio = m_tempo_ratio_old;
+    if (ratio == 0.0) {
+        // In case the track is slowed done to zero we will have INF remaining seconds.
+        // We jump back to a rate of 1.0 to show a useful time.
+        ratio = 1.0;
+    }
+
     const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
             / m_trackSampleRateOld / m_tempo_ratio_old;
     if(speed > 0 && fFractionalPlaypos == 1.0) {
@@ -1355,5 +1368,5 @@ void EngineBuffer::notifyTrackLoaded(
         pControl->trackLoaded(pNewTrack);
     }
     // Inform BaseTrackPlayer via a queued connection
-    emit(trackLoaded(pNewTrack, pOldTrack));
+    emit trackLoaded(pNewTrack, pOldTrack);
 }

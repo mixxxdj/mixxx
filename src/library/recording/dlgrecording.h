@@ -28,9 +28,9 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void onShow() override;
     bool hasFocus() const override;
     void loadSelectedTrack() override;
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }

@@ -6,6 +6,7 @@
 #include <QPointer>
 
 #include "library/libraryfeature.h"
+#include "library/dao/playlistdao.h"
 
 class BaseSqlTableModel;
 class TrackCollection;
@@ -19,9 +20,9 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     ~BaseExternalLibraryFeature() override;
 
   public slots:
-    virtual void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
-    virtual void onRightClick(const QPoint& globalPos);
-    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   protected:
     // Must be implemented by external Libraries copied to Mixxx DB
@@ -35,6 +36,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
+    void slotAddToAutoDJReplace();
     void slotImportAsMixxxPlaylist();
 
   protected:
@@ -45,12 +47,13 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     TrackCollection* const m_pTrackCollection;
 
   private:
-    void addToAutoDJ(bool bTop);
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     QModelIndex m_lastRightClickedIndex;
 
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
+    QAction* m_pAddToAutoDJReplaceAction;
     QAction* m_pImportAsMixxxPlaylistAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;

@@ -59,16 +59,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false) {
 
-    connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
-            this, SLOT(loadSelectionToGroup(QString)));
-
-    connect(&m_deckMapper, SIGNAL(mapped(QString)),
-            this, SLOT(loadSelectionToGroup(QString)));
-    connect(&m_samplerMapper, SIGNAL(mapped(QString)),
-            this, SLOT(loadSelectionToGroup(QString)));
-    connect(&m_BpmMapper, SIGNAL(mapped(int)),
-            this, SLOT(slotScaleBpm(int)));
-
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -122,12 +112,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     // Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
-
-    connect(&m_playlistMapper, SIGNAL(mapped(int)),
-            this, SLOT(addSelectionToPlaylist(int)));
-
-    connect(&m_crateMapper, SIGNAL(mapped(QWidget *)),
-            this, SLOT(updateSelectionCrates(QWidget *)));
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
@@ -205,7 +189,7 @@ void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit(onlyCachedCoverArt(true));
+        emit onlyCachedCoverArt(true);
         m_loadCachedOnly = true;
     }
     m_lastUserAction = mixxx::Time::elapsed();
@@ -229,7 +213,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view and
-        // hightlights crate and playlists. Doing this in selectionChanged
+        // highlights crate and playlists. Doing this in selectionChanged
         // slows down scrolling performance so we wait until the user has
         // stopped interacting first.
         if (m_selectionChangedSinceLastGuiTick) {
@@ -240,19 +224,19 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
                 if (trackModel) {
                     TrackPointer pTrack = trackModel->getTrack(indices.first());
                     if (pTrack) {
-                        emit(trackSelected(pTrack));
+                        emit trackSelected(pTrack);
                     }
                 }
             } else {
                 // None or multiple tracks have been selected
-                emit(trackSelected(TrackPointer()));
+                emit trackSelected(TrackPointer());
             }
             m_selectionChangedSinceLastGuiTick = false;
         }
 
         // This allows CoverArtDelegate to request that we load covers from disk
         // (as opposed to only serving them from cache).
-        emit(onlyCachedCoverArt(false));
+        emit onlyCachedCoverArt(false);
         m_loadCachedOnly = false;
     }
 }
@@ -466,17 +450,17 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (Bottom)"), this);
+    m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
-            this, SLOT(slotSendToAutoDJBottom()));
+            this, SLOT(slotAddToAutoDJBottom()));
 
-    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (Top)"), this);
+    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
-            this, SLOT(slotSendToAutoDJTop()));
+            this, SLOT(slotAddToAutoDJTop()));
 
-    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (Replace)"), this);
+    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
     connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
-            this, SLOT(slotSendToAutoDJReplace()));
+            this, SLOT(slotAddToAutoDJReplace()));
 
     m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), this);
     connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
@@ -491,9 +475,6 @@ void WTrackTableView::createActions() {
             this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        if (!externalTrackCollection->isConnected()) {
-            continue; // skip
-        }
         UpdateExternalTrackCollection updateInExternalTrackCollection;
         updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
         updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), this);
@@ -501,16 +482,16 @@ void WTrackTableView::createActions() {
         m_updateInExternalTrackCollections += updateInExternalTrackCollection;
         auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
         connect(updateInExternalTrackCollection.action, &QAction::triggered,
-                [=](){
-                    slotUpdateExternalTrackCollection(externalTrackCollectionPtr);});
-    }
+                this, [this, externalTrackCollectionPtr] {
+                    slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
+                });
+        }
 
     m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
     QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-    m_deckMapper.setMapping(m_pAddToPreviewDeck, previewDeckGroup);
-    connect(m_pAddToPreviewDeck, SIGNAL(triggered()),
-            &m_deckMapper, SLOT(map()));
+    connect(m_pAddToPreviewDeck, &QAction::triggered,
+            this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
 
 
     // Clear metadata actions
@@ -574,25 +555,18 @@ void WTrackTableView::createActions() {
     m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
     m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
-    m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
-    m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
-    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
-    m_BpmMapper.setMapping(m_pBpmFourThirdsAction, Beats::FOURTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeHalvesAction, Beats::THREEHALVES);
-
-    connect(m_pBpmDoubleAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmHalveAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmTwoThirdsAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmThreeFourthsAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmFourThirdsAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
-    connect(m_pBpmThreeHalvesAction, SIGNAL(triggered()),
-            &m_BpmMapper, SLOT(map()));
+    connect(m_pBpmDoubleAction, &QAction::triggered,
+            this, [this] { slotScaleBpm(Beats::DOUBLE); });
+    connect(m_pBpmHalveAction, &QAction::triggered,
+            this, [this] { slotScaleBpm(Beats::HALVE); });
+    connect(m_pBpmTwoThirdsAction, &QAction::triggered,
+            this, [this] { slotScaleBpm(Beats::TWOTHIRDS); });
+    connect(m_pBpmThreeFourthsAction, &QAction::triggered,
+            this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
+    connect(m_pBpmFourThirdsAction, &QAction::triggered,
+            this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
+    connect(m_pBpmThreeHalvesAction, &QAction::triggered,
+            this, [this] { slotScaleBpm(Beats::THREEHALVES); });
 }
 
 // slot
@@ -616,13 +590,13 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
             return;
         }
 
-        emit(loadTrack(pTrack));
+        emit loadTrack(pTrack);
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM
         && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+        addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP
         && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
+        addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
 }
 
@@ -644,7 +618,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
         TrackPointer pTrack;
         if (trackModel &&
                 (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, group, play));
+            emit loadTrackToPlayer(pTrack, group, play);
         }
     }
 }
@@ -874,8 +848,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
-                m_deckMapper.setMapping(pAction, deckGroup);
-                connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+                connect(pAction, &QAction::triggered,
+                        this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
             }
         }
         m_pLoadToMenu->addMenu(m_pDeckMenu);
@@ -894,8 +868,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
                 m_pSamplerMenu->addAction(pAction);
-                m_samplerMapper.setMapping(pAction, samplerGroup);
-                connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+                connect(pAction, &QAction::triggered,
+                        this, [this, samplerGroup] {loadSelectionToGroup(samplerGroup); } );
+
             }
             m_pLoadToMenu->addMenu(m_pSamplerMenu);
         }
@@ -1351,12 +1326,12 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         this->selectionModel()->clear();
 
         // Add all the dropped URLs/tracks to the track model (playlist/crate)
-        QList<QFileInfo> fileList = DragAndDropHelper::supportedTracksFromUrls(
+        QList<TrackFile> trackFiles = DragAndDropHelper::supportedTracksFromUrls(
             event->mimeData()->urls(), false, true);
 
         QList<QString> fileLocationList;
-        for (const QFileInfo& fileInfo : fileList) {
-            fileLocationList.append(TrackFile(fileInfo).location());
+        for (const TrackFile& trackFile : trackFiles) {
+            fileLocationList.append(trackFile.location());
         }
 
         // Drag-and-drop from an external application
@@ -1437,17 +1412,17 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
     loadSelectionToGroup(group, play);
 }
 
-void WTrackTableView::slotSendToAutoDJBottom() {
+void WTrackTableView::slotAddToAutoDJBottom() {
     // append to auto DJ
-    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
-void WTrackTableView::slotSendToAutoDJTop() {
-    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
+void WTrackTableView::slotAddToAutoDJTop() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void WTrackTableView::slotSendToAutoDJReplace() {
-    sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+void WTrackTableView::slotAddToAutoDJReplace() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
 QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
@@ -1506,7 +1481,7 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
 }
 
 
-void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
+void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
@@ -1521,7 +1496,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 
     // TODO(XXX): Care whether the append succeeded.
     m_pTrackCollectionManager->unhideTracks(trackIds);
-    playlistDao.sendToAutoDJ(trackIds, loc);
+    playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
 void WTrackTableView::slotImportTrackMetadataFromFileTags() {
@@ -1653,15 +1628,17 @@ void WTrackTableView::slotPopulatePlaylistMenu() {
             bool locked = playlistDao.isPlaylistLocked(it.value());
             pAction->setEnabled(!locked);
             m_pPlaylistMenu->addAction(pAction);
-            m_playlistMapper.setMapping(pAction, it.value());
-            connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+            int iPlaylistId = it.value();
+            connect(pAction, &QAction::triggered,
+                    this, [this, iPlaylistId] { addSelectionToPlaylist(iPlaylistId); });
+
         }
     }
     m_pPlaylistMenu->addSeparator();
     QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
     m_pPlaylistMenu->addAction(newPlaylistAction);
-    m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
-    connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+    connect(newPlaylistAction, &QAction::triggered,
+            this, [this] { addSelectionToPlaylist(-1); });
     m_bPlaylistMenuLoaded = true;
 }
 
@@ -1763,13 +1740,11 @@ void WTrackTableView::slotPopulateCrateMenu() {
             pCheckBox->setCheckState(Qt::PartiallyChecked);
         }
 
-        m_crateMapper.setMapping(pAction.get(), pCheckBox.get());
-        m_crateMapper.setMapping(pCheckBox.get(), pCheckBox.get());
         m_pCrateMenu->addAction(pAction.get());
-        connect(pAction.get(), SIGNAL(triggered()),
-                &m_crateMapper, SLOT(map()));
-        connect(pCheckBox.get(), SIGNAL(stateChanged(int)),
-                &m_crateMapper, SLOT(map()));
+        connect(pAction.get(), &QAction::triggered,
+                this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
+        connect(pCheckBox.get(), &QCheckBox::stateChanged,
+                this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
 
     }
     m_pCrateMenu->addSeparator();
@@ -1824,7 +1799,7 @@ void WTrackTableView::addSelectionToNewCrate() {
             m_pTrackCollectionManager->internalCollection(), m_pConfig).createEmptyCrate();
 
     if (crateId.isValid()) {
-        m_pTrackCollectionManager->hideTracks(trackIds);
+        m_pTrackCollectionManager->unhideTracks(trackIds);
         m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
     }
 

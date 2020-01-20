@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QStringBuilder>
 #include <QThread>
 
 #include "library/trackcollection.h"
@@ -144,8 +143,9 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
-        const QList<QFileInfo>& files, TrackDAO::ResolveTrackIdFlags flags) {
-    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(files, flags);
+        const QList<TrackFile>& trackFiles,
+        TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(trackFiles, flags);
     if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
         unhideTracks(trackIds);
     }
@@ -154,7 +154,7 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls, bool addMissing) {
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     if (files.isEmpty()) {
         return QList<TrackId>();
     }
@@ -169,18 +169,15 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
         const QList<QString>& locations) {
-    QList<QFileInfo> fileInfoList;
-    foreach(QString fileLocation, locations) {
-        QFileInfo fileInfo(fileLocation);
-        fileInfoList.append(fileInfo);
+    QList<TrackFile> trackFiles;
+    trackFiles.reserve(locations.size());
+    for (const QString& location : locations) {
+        trackFiles.append(TrackFile(location));
     }
-    return resolveTrackIds(fileInfoList,
+    return resolveTrackIds(trackFiles,
             TrackDAO::ResolveTrackIdFlag::UnhideHidden
                     | TrackDAO::ResolveTrackIdFlag::AddMissing);
 }
-
-QList<TrackId> resolveTrackIdsFromUrls(const QList<QUrl>& urls,
-        TrackDAO::ResolveTrackIdFlags flags);
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
@@ -243,7 +240,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -270,7 +267,7 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // crate track visible again.
     QSet<CrateId> modifiedCrateSummaries =
             m_crates.collectCrateIdsOfTracks(trackIds);
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -309,7 +306,7 @@ bool TrackCollection::purgeTracks(
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -340,7 +337,7 @@ bool TrackCollection::insertCrate(
     }
 
     // Emit signals
-    emit(crateInserted(crateId));
+    emit crateInserted(crateId);
 
     if (pCrateId != nullptr) {
         *pCrateId = crateId;
@@ -365,7 +362,7 @@ bool TrackCollection::updateCrate(
     }
 
     // Emit signals
-    emit(crateUpdated(crate.getId()));
+    emit crateUpdated(crate.getId());
 
     return true;
 }
@@ -387,7 +384,7 @@ bool TrackCollection::deleteCrate(
     }
 
     // Emit signals
-    emit(crateDeleted(crateId));
+    emit crateDeleted(crateId);
 
     return true;
 }
@@ -410,7 +407,7 @@ bool TrackCollection::addCrateTracks(
     }
 
     // Emit signals
-    emit(crateTracksChanged(crateId, trackIds, QList<TrackId>()));
+    emit crateTracksChanged(crateId, trackIds, QList<TrackId>());
 
     return true;
 }
@@ -433,7 +430,7 @@ bool TrackCollection::removeCrateTracks(
     }
 
     // Emit signals
-    emit(crateTracksChanged(crateId, QList<TrackId>(), trackIds));
+    emit crateTracksChanged(crateId, QList<TrackId>(), trackIds);
 
     return true;
 }
@@ -461,26 +458,24 @@ void TrackCollection::saveTrack(Track* pTrack) {
 }
 
 TrackPointer TrackCollection::getTrackById(
-        const TrackId& trackId) const {
+        TrackId trackId) const {
     return m_trackDao.getTrackById(trackId);
+}
+
+TrackPointer TrackCollection::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return m_trackDao.getTrackByRef(trackRef);
+}
+
+TrackId TrackCollection::getTrackIdByRef(
+        const TrackRef& trackRef) const {
+    return m_trackDao.getTrackIdByRef(trackRef);
 }
 
 TrackPointer TrackCollection::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
-    TrackPointer pTrack;
-    if (trackRef.hasId()) {
-        pTrack = getTrackById(trackRef.getId());
-        if (pAlreadyInLibrary) {
-            *pAlreadyInLibrary = pTrack != nullptr;
-        }
-    }
-    if (!pTrack && trackRef.hasLocation()) {
-        pTrack = m_trackDao.getOrAddTrackByLocation(
-                trackRef.getLocation(),
-                pAlreadyInLibrary);
-    }
-    return pTrack;
+    return m_trackDao.getOrAddTrack(trackRef, pAlreadyInLibrary);
 }
 
 TrackId TrackCollection::addTrack(

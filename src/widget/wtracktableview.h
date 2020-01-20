@@ -50,9 +50,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
 
   private slots:
     void slotRemove();
@@ -107,7 +107,7 @@ class WTrackTableView : public WLibraryTableView {
   private:
     void createActions();
 
-    void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void dragMoveEvent(QDragMoveEvent * event) override;
@@ -130,8 +130,6 @@ class WTrackTableView : public WLibraryTableView {
     const UserSettingsPointer m_pConfig;
 
     TrackCollectionManager* const m_pTrackCollectionManager;
-
-    QSignalMapper m_loadTrackMapper;
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
@@ -158,7 +156,6 @@ class WTrackTableView : public WLibraryTableView {
 
 
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pImportMetadataFromFileAct;
@@ -190,7 +187,6 @@ class WTrackTableView : public WLibraryTableView {
     // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;

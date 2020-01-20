@@ -40,13 +40,13 @@ LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit(loadToGroup(m_group, false));
+        emit loadToGroup(m_group, false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit(loadToGroup(m_group, true));
+        emit loadToGroup(m_group, true);
     }
 }
 
@@ -357,7 +357,7 @@ void LibraryControl::slotAutoDjAddTop(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJTop();
+        activeView->slotAddToAutoDJTop();
     }
 }
 
@@ -370,7 +370,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJBottom();
+        activeView->slotAddToAutoDJBottom();
     }
 }
 

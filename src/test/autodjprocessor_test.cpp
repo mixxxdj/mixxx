@@ -41,6 +41,7 @@ class FakeDeck : public BaseTrackPlayer {
             : BaseTrackPlayer(NULL, group),
               duration(ConfigKey(group, "duration")),
               samplerate(ConfigKey(group, "track_samplerate")),
+              rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
@@ -56,7 +57,7 @@ class FakeDeck : public BaseTrackPlayer {
         loadedTrack = pTrack;
         duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
-        emit(newTrackLoaded(pTrack));
+        emit newTrackLoaded(pTrack);
     }
 
     void fakeTrackLoadFailedEvent(TrackPointer pTrack) {
@@ -68,12 +69,12 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
-        emit(loadingTrack(TrackPointer(), pTrack));
+        emit loadingTrack(TrackPointer(), pTrack);
         loadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     }
 
-    TrackPointer getLoadedTrack() const {
+    TrackPointer getLoadedTrack() const override {
         return loadedTrack;
     }
 
@@ -95,6 +96,7 @@ class FakeDeck : public BaseTrackPlayer {
     TrackPointer loadedTrack;
     ControlObject duration;
     ControlObject samplerate;
+    ControlObject rateratio;
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;
@@ -1021,7 +1023,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1110,7 +1112,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
     // Fake a final callback, normally in this case the engine
@@ -1210,7 +1212,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1299,7 +1301,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1419,7 +1421,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
 
     EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 
@@ -1501,7 +1503,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
 
     // Deck is still playing, because the crossfader is processed in the next audio
-    // calback.
+    // callback.
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 

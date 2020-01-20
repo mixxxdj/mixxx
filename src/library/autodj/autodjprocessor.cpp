@@ -40,9 +40,7 @@ DeckAttributes::DeckAttributes(int index,
           m_outroEndPos(group, "outro_end_position"),
           m_sampleRate(group, "track_samplerate"),
           m_duration(group, "duration"),
-          m_rateDir(group, "rate_dir"),
-          m_rateRange(group, "rateRange"),
-          m_rateSlider(group, "rate"),
+          m_rateRatio(group, "rate_ratio"),
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded,
             this, &DeckAttributes::slotTrackLoaded);
@@ -56,70 +54,60 @@ DeckAttributes::DeckAttributes(int index,
     m_introEndPos.connectValueChanged(this, &DeckAttributes::slotIntroEndPositionChanged);
     m_outroStartPos.connectValueChanged(this, &DeckAttributes::slotOutroStartPositionChanged);
     m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
-    m_rateDir.connectValueChanged(this, &DeckAttributes::slotRateChanged);
-    m_rateRange.connectValueChanged(this, &DeckAttributes::slotRateChanged);
-    m_rateSlider.connectValueChanged(this, &DeckAttributes::slotRateChanged);
+    m_rateRatio.connectValueChanged(this, &DeckAttributes::slotRateChanged);
 }
 
 DeckAttributes::~DeckAttributes() {
 }
 
 void DeckAttributes::slotPlayChanged(double v) {
-    emit(playChanged(this, v > 0.0));
+    emit playChanged(this, v > 0.0);
 }
 
 void DeckAttributes::slotPlayPosChanged(double v) {
-    emit(playPositionChanged(this, v));
+    emit playPositionChanged(this, v);
 }
 
 void DeckAttributes::slotIntroStartPositionChanged(double v) {
-    emit(introStartPositionChanged(this, v));
+    emit introStartPositionChanged(this, v);
 }
 
 void DeckAttributes::slotIntroEndPositionChanged(double v) {
-    emit(introEndPositionChanged(this, v));
+    emit introEndPositionChanged(this, v);
 }
 
 void DeckAttributes::slotOutroStartPositionChanged(double v) {
-    emit(outroStartPositionChanged(this, v));
+    emit outroStartPositionChanged(this, v);
 }
 
 void DeckAttributes::slotOutroEndPositionChanged(double v) {
-    emit(outroEndPositionChanged(this, v));
+    emit outroEndPositionChanged(this, v);
 }
 
 void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
-    emit(trackLoaded(this, pTrack));
+    emit trackLoaded(this, pTrack);
 }
 
 void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << "DeckAttributes::slotLoadingTrack";
-    emit(loadingTrack(this, pNewTrack, pOldTrack));
+    emit loadingTrack(this, pNewTrack, pOldTrack);
 }
 
 void DeckAttributes::slotPlayerEmpty() {
-    emit(playerEmpty(this));
+    emit playerEmpty(this);
 }
 
 void DeckAttributes::slotRateChanged(double v) {
     Q_UNUSED(v);
-    emit(rateChanged(this));
+    emit rateChanged(this);
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
     return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
 }
 
-double DeckAttributes::calcRateRatio() const {
-    double rateRatio = 1.0 + m_rateDir.get() * m_rateRange.get() * m_rateSlider.get();
-    if (rateRatio == 0.0) {
-        return 1.0;
-    }
-    return rateRatio;
-}
-
 double DeckAttributes::trackTime() const {
-    return trackDuration() / calcRateRatio();
+    return trackDuration() / rateRatio();
 }
 
 double DeckAttributes::timeElapsed() const {
@@ -292,7 +280,6 @@ void AutoDJProcessor::fadeNow() {
         double timeUntilOutroEnd = outroEnd - fromDeckCurrentPosition;
 
         if (toDeckCurrentPosition >= introStart &&
-                introStart >= 0 &&
                 toDeckCurrentPosition <= introEnd &&
                 introEnd >= 0) {
             double timeUntilIntroEnd = introEnd - toDeckCurrentPosition;
@@ -593,7 +580,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
         double crossfaderPosition = value * (m_pCOCrossfaderReverse->toBool() ? -1 : 1);
 
         if ((crossfaderPosition == 1.0 && fromDeck->isLeft()) ||       // crossfader right
-                (crossfaderPosition == -1.0 && fromDeck->isRight())) { // crossfader right
+                (crossfaderPosition == -1.0 && fromDeck->isRight())) { // crossfader left
             if (!toDeck->isPlaying()) {
                 // Re-cue the track if the user has seeked it to the very end
                 if (toDeck->playPosition() >= toDeck->fadeBeginPos) {
@@ -601,11 +588,11 @@ void AutoDJProcessor::crossfaderChanged(double value) {
                 }
                 toDeck->play();
             }
+            fromDeck->stop();
 
             // Now that we have started the other deck playing, remove the track
             // that was "on deck" from the top of the queue.
             removeLoadedTrackFromTopOfQueue(*toDeck);
-            fromDeck->stop();
             loadNextTrackFromQueue(*fromDeck);
         }
     }
@@ -757,13 +744,14 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     otherDeck->play();
                 }
 
-                // Now that we have started the other deck playing, remove the track
-                // that was "on deck" from the top of the queue.
-                removeLoadedTrackFromTopOfQueue(*otherDeck);
-
                 if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
                     setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
+
+                // Now that we have started the other deck playing, remove the track
+                // that was "on deck" from the top of the queue.
+                // Note: This is a DB call and takes long.
+                removeLoadedTrackFromTopOfQueue(*otherDeck);
             }
         }
 
@@ -825,7 +813,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
-        emit(randomTrackRequested(tracksToAdd));
+        emit randomTrackRequested(tracksToAdd);
     }
 
     while (true) {
@@ -912,7 +900,7 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         qDebug() << "Randomly adding tracks";
-        emit(randomTrackRequested(tracksToAdd));
+        emit randomTrackRequested(tracksToAdd);
     }
 
     return true;
@@ -1022,35 +1010,43 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
-    double introStart = samplePositionToSeconds(pDeck->introStartPosition(), pDeck);
-    if (introStart <= 0.0) {
-        introStart = getFirstSoundPosition(pDeck);
+    double introStartSample = pDeck->introStartPosition();
+    if (introStartSample == Cue::kNoPosition) {
+        return getFirstSoundPosition(pDeck);
     }
-    return introStart;
+    return samplePositionToSeconds(introStartSample, pDeck);
 }
 
 double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
-    return samplePositionToSeconds(pDeck->introEndPosition(), pDeck);
+    double introEndSample = pDeck->introEndPosition();
+    if (introEndSample == Cue::kNoPosition) {
+        // Assume a zero length intro if introEnd is not set.
+        // The introStart is automatically placed by AnalyzerSilence, so use
+        // that as a fallback if the user has not placed outroStart. If it has
+        // not been placed, getIntroStartPosition will return 0:00.
+        return getIntroStartPosition(pDeck);
+    }
+    return samplePositionToSeconds(introEndSample, pDeck);
 }
 
 double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
-    double outroStart = samplePositionToSeconds(pDeck->outroStartPosition(), pDeck);
-    if (outroStart < 0.0) {
-        // Assume a zero length outro if outroStartIsNot set.
+    double outroStartSample = pDeck->outroStartPosition();
+    if (outroStartSample == Cue::kNoPosition) {
+        // Assume a zero length outro if outroStart is not set.
         // The outroEnd is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
         // not been placed, getOutroEndPosition will return the end of the track.
-        outroStart = getOutroEndPosition(pDeck);
+        return getOutroEndPosition(pDeck);
     }
-    return outroStart;
+    return samplePositionToSeconds(outroStartSample, pDeck);
 }
 
 double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
-    double outroEnd = samplePositionToSeconds(pDeck->outroEndPosition(), pDeck);
-    if (outroEnd <= 0.0) {
-        outroEnd = getLastSoundPosition(pDeck);
+    double outroEndSample = pDeck->outroEndPosition();
+    if (outroEndSample == Cue::kNoPosition) {
+        return getLastSoundPosition(pDeck);
     }
-    return outroEnd;
+    return samplePositionToSeconds(outroEndSample, pDeck);;
 }
 
 double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
@@ -1088,16 +1084,21 @@ double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
     samplePosition /= kChannelCount;
     double sampleRate = pDeck->sampleRate();
-    if (samplePosition <= 0.0 || sampleRate <= 0.0) {
-        return -1.0;
+    if (sampleRate <= 0.0) {
+        return 0.0;
     }
-    return samplePosition / sampleRate / pDeck->calcRateRatio();
+    return samplePosition / sampleRate / pDeck->rateRatio();
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
         bool seekToStartPoint) {
     if (pFromDeck == nullptr || pToDeck == nullptr) {
+        return;
+    }
+    if (pFromDeck->loading || pToDeck->loading) {
+        // don't use halve new halve old data during
+        // changing of tracks
         return;
     }
 

@@ -387,6 +387,10 @@ public:
         m_allocatedSize = size;
     }
 
+    bool isEmpty() const {
+        return m_entries.isEmpty();
+    }
+
     const QList<std::shared_ptr<SeratoMarkers2Entry>>& getEntries() const {
         return m_entries;
     }
