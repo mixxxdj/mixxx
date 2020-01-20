@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include "util/assert.h"
+#include "util/compatibility.h"
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
@@ -76,7 +77,7 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value;
-        unsigned int index = static_cast<unsigned int>(m_readIndex.load()) % cRingSize;
+        unsigned int index = static_cast<unsigned int>(atomicLoadRelaxed(m_readIndex)) % cRingSize;
         while (!m_ring[index].tryGet(&value)) {
             // We are here if
             // 1) there are more then kMaxReaderSlots reader (get) reading the same value or

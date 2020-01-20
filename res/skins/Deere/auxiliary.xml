@@ -35,7 +35,7 @@
             <Children>
 
               <Template src="skin:knob_with_button.xml">
-                <SetVariable name="TooltipId">microphone_pregain</SetVariable>
+                <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
                 <SetVariable name="button_TooltipId">mute</SetVariable>
@@ -44,7 +44,7 @@
               </Template>
 
               <Template src="skin:vumeter.xml">
-                <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
+                <SetVariable name="TooltipId">auxiliary_VuMeter</SetVariable>
                 <SetVariable name="control">VuMeter</SetVariable>
               </Template>
             </Children>

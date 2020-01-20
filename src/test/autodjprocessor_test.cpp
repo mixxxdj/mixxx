@@ -41,6 +41,7 @@ class FakeDeck : public BaseTrackPlayer {
             : BaseTrackPlayer(NULL, group),
               duration(ConfigKey(group, "duration")),
               samplerate(ConfigKey(group, "track_samplerate")),
+              rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
@@ -56,7 +57,7 @@ class FakeDeck : public BaseTrackPlayer {
         loadedTrack = pTrack;
         duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
-        emit(newTrackLoaded(pTrack));
+        emit newTrackLoaded(pTrack);
     }
 
     void fakeTrackLoadFailedEvent(TrackPointer pTrack) {
@@ -68,12 +69,12 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
-        emit(loadingTrack(TrackPointer(), pTrack));
+        emit loadingTrack(TrackPointer(), pTrack);
         loadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     }
 
-    TrackPointer getLoadedTrack() const {
+    TrackPointer getLoadedTrack() const override {
         return loadedTrack;
     }
 
@@ -95,6 +96,7 @@ class FakeDeck : public BaseTrackPlayer {
     TrackPointer loadedTrack;
     ControlObject duration;
     ControlObject samplerate;
+    ControlObject rateratio;
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;

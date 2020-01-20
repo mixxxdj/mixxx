@@ -40,9 +40,7 @@ DeckAttributes::DeckAttributes(int index,
           m_outroEndPos(group, "outro_end_position"),
           m_sampleRate(group, "track_samplerate"),
           m_duration(group, "duration"),
-          m_rateDir(group, "rate_dir"),
-          m_rateRange(group, "rateRange"),
-          m_rateSlider(group, "rate"),
+          m_rateRatio(group, "rate_ratio"),
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded,
             this, &DeckAttributes::slotTrackLoaded);
@@ -56,70 +54,60 @@ DeckAttributes::DeckAttributes(int index,
     m_introEndPos.connectValueChanged(this, &DeckAttributes::slotIntroEndPositionChanged);
     m_outroStartPos.connectValueChanged(this, &DeckAttributes::slotOutroStartPositionChanged);
     m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
-    m_rateDir.connectValueChanged(this, &DeckAttributes::slotRateChanged);
-    m_rateRange.connectValueChanged(this, &DeckAttributes::slotRateChanged);
-    m_rateSlider.connectValueChanged(this, &DeckAttributes::slotRateChanged);
+    m_rateRatio.connectValueChanged(this, &DeckAttributes::slotRateChanged);
 }
 
 DeckAttributes::~DeckAttributes() {
 }
 
 void DeckAttributes::slotPlayChanged(double v) {
-    emit(playChanged(this, v > 0.0));
+    emit playChanged(this, v > 0.0);
 }
 
 void DeckAttributes::slotPlayPosChanged(double v) {
-    emit(playPositionChanged(this, v));
+    emit playPositionChanged(this, v);
 }
 
 void DeckAttributes::slotIntroStartPositionChanged(double v) {
-    emit(introStartPositionChanged(this, v));
+    emit introStartPositionChanged(this, v);
 }
 
 void DeckAttributes::slotIntroEndPositionChanged(double v) {
-    emit(introEndPositionChanged(this, v));
+    emit introEndPositionChanged(this, v);
 }
 
 void DeckAttributes::slotOutroStartPositionChanged(double v) {
-    emit(outroStartPositionChanged(this, v));
+    emit outroStartPositionChanged(this, v);
 }
 
 void DeckAttributes::slotOutroEndPositionChanged(double v) {
-    emit(outroEndPositionChanged(this, v));
+    emit outroEndPositionChanged(this, v);
 }
 
 void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
-    emit(trackLoaded(this, pTrack));
+    emit trackLoaded(this, pTrack);
 }
 
 void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << "DeckAttributes::slotLoadingTrack";
-    emit(loadingTrack(this, pNewTrack, pOldTrack));
+    emit loadingTrack(this, pNewTrack, pOldTrack);
 }
 
 void DeckAttributes::slotPlayerEmpty() {
-    emit(playerEmpty(this));
+    emit playerEmpty(this);
 }
 
 void DeckAttributes::slotRateChanged(double v) {
     Q_UNUSED(v);
-    emit(rateChanged(this));
+    emit rateChanged(this);
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
     return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
 }
 
-double DeckAttributes::calcRateRatio() const {
-    double rateRatio = 1.0 + m_rateDir.get() * m_rateRange.get() * m_rateSlider.get();
-    if (rateRatio == 0.0) {
-        return 1.0;
-    }
-    return rateRatio;
-}
-
 double DeckAttributes::trackTime() const {
-    return trackDuration() / calcRateRatio();
+    return trackDuration() / rateRatio();
 }
 
 double DeckAttributes::timeElapsed() const {
@@ -825,7 +813,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
-        emit(randomTrackRequested(tracksToAdd));
+        emit randomTrackRequested(tracksToAdd);
     }
 
     while (true) {
@@ -912,7 +900,7 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         qDebug() << "Randomly adding tracks";
-        emit(randomTrackRequested(tracksToAdd));
+        emit randomTrackRequested(tracksToAdd);
     }
 
     return true;
@@ -1099,7 +1087,7 @@ double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttri
     if (sampleRate <= 0.0) {
         return 0.0;
     }
-    return samplePosition / sampleRate / pDeck->calcRateRatio();
+    return samplePosition / sampleRate / pDeck->rateRatio();
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,

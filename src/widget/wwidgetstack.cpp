@@ -13,9 +13,9 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
 
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
-        emit(switchToWidget());
+        emit switchToWidget();
     } else {
-        emit(hideWidget());
+        emit hideWidget();
     }
 }
 
@@ -37,10 +37,6 @@ WWidgetStack::WWidgetStack(QWidget* pParent, const ConfigKey& nextConfigKey,
     m_nextControl.connectValueChanged(this, &WWidgetStack::onNextControlChanged);
     m_prevControl.connectValueChanged(this, &WWidgetStack::onPrevControlChanged);
     m_currentPageControl.connectValueChanged(this, &WWidgetStack::onCurrentPageControlChanged);
-    connect(&m_showMapper, SIGNAL(mapped(int)),
-            this, SLOT(showIndex(int)));
-    connect(&m_hideMapper, SIGNAL(mapped(int)),
-            this, SLOT(hideIndex(int)));
 }
 
 // override
@@ -139,19 +135,17 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
     int index = addWidget(pWidget);
     if (pControl) {
         auto pListener = new WidgetStackControlListener(this, pControl, index);
-        m_showMapper.setMapping(pListener, index);
-        m_hideMapper.setMapping(pListener, index);
         m_listeners[index] = pListener;
         if (pControl->get() > 0) {
             setCurrentIndex(count()-1);
         }
         pListener->onCurrentWidgetChanged(currentIndex());
-        connect(pListener, SIGNAL(switchToWidget()),
-                &m_showMapper, SLOT(map()));
-        connect(pListener, SIGNAL(hideWidget()),
-                &m_hideMapper, SLOT(map()));
-        connect(this, SIGNAL(currentChanged(int)),
-                pListener, SLOT(onCurrentWidgetChanged(int)));
+        connect(pListener, &WidgetStackControlListener::switchToWidget,
+                this, [this, index] { showIndex(index); });
+        connect(pListener, &WidgetStackControlListener::hideWidget,
+                this, [this, index] { hideIndex(index); });
+        connect(this, &WWidgetStack::currentChanged,
+                pListener, &WidgetStackControlListener::onCurrentWidgetChanged);
     }
 
     if (m_currentPageControl.get() == index) {

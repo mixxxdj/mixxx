@@ -90,7 +90,9 @@ class DeckAttributes : public QObject {
         return m_duration.get();
     }
 
-    double calcRateRatio() const;
+    double rateRatio() const {
+        return m_rateRatio.get();
+    }
 
     TrackPointer getLoadedTrack() const;
 
@@ -138,9 +140,7 @@ class DeckAttributes : public QObject {
     ControlProxy m_outroEndPos;
     ControlProxy m_sampleRate;
     ControlProxy m_duration;
-    ControlProxy m_rateDir;
-    ControlProxy m_rateRange;
-    ControlProxy m_rateSlider;
+    ControlProxy m_rateRatio;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -235,10 +235,10 @@ class AutoDJProcessor : public QObject {
   protected:
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
-        emit(loadTrackToPlayer(pTrack, group, play));
+        emit loadTrackToPlayer(pTrack, group, play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
-        emit(autoDJStateChanged(state));
+        emit autoDJStateChanged(state);
     }
 
   private:

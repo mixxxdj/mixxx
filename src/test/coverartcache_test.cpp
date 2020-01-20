@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <QStringBuilder>
 #include <QFileInfo>
 
 #include "library/coverartcache.h"
