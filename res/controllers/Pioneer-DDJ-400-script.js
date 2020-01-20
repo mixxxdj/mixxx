@@ -222,11 +222,11 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
 };
 
 
-function sortAsc(a, b) {
+var sortAsc = function(a, b) {
     // returns 1 if a > b, -1 if a < b, and 0 otherwise
     "use strict";
     return (a > b) ? 1 : (b > a ? -1 : 0);
-}
+};
 
 PioneerDDJ400.initCuePointsAndLoops = function(group) {
     "use strict";
@@ -588,7 +588,7 @@ PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, 
 });
 
 // Wrapper to easily ignore the function when the button is released.
-function ignoreRelease(fn) {
+var ignoreRelease = function(fn) {
     "use strict";
     return function(channel, control, value, status, group) {
         if (value === 0) { // This means the button is released.
@@ -596,11 +596,11 @@ function ignoreRelease(fn) {
         }
         return fn(channel, control, value, status, group);
     };
-}
+};
 
 var TimersPioneerDDJ400 = {};
 
-function startSampleFlicker(channel, control, group) {
+var startSampleFlicker = function(channel, control, group) {
     "use strict";
     var val = 0x7f;
 
@@ -617,9 +617,9 @@ function startSampleFlicker(channel, control, group) {
             midi.sendShortMsg(channel, control, 0x7f);
         }
     });
-}
+};
 
-function stopFlicker(channel, control) {
+var stopFlicker = function(channel, control) {
     "use strict";
     TimersPioneerDDJ400[channel] = TimersPioneerDDJ400[channel] || {};
 
@@ -627,7 +627,7 @@ function stopFlicker(channel, control) {
         engine.stopTimer(TimersPioneerDDJ400[channel][control]);
         TimersPioneerDDJ400[channel][control] = undefined;
     }
-}
+};
 
 PioneerDDJ400.shutdown = function() {
     "use strict";
