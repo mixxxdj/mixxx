@@ -8,11 +8,13 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewLMH::WOverviewLMH(const char *pGroup,
-                           UserSettingsPointer pConfig, QWidget * parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewLMH::WOverviewLMH(
+        const QString& group,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig,
+        QWidget* parent)
+        : WOverview(group, pPlayerManager, pConfig, parent) {
 }
-
 
 bool WOverviewLMH::drawNextPixmapPart() {
     ScopedTimer t("WOverviewLMH::drawNextPixmapPart");

@@ -1,5 +1,6 @@
 #include "util/timer.h"
 
+#include "moc_timer.cpp"
 #include "util/experiment.h"
 #include "util/time.h"
 #include "waveform/guitick.h"
@@ -88,7 +89,7 @@ GuiTickTimer::GuiTickTimer(QObject* pParent)
 }
 
 void GuiTickTimer::start(mixxx::Duration duration) {
-    m_pGuiTick->connectValueChanged(SLOT(slotGuiTick(double)));
+    m_pGuiTick->connectValueChanged(this, &GuiTickTimer::slotGuiTick);
     m_interval = duration;
     m_lastUpdate = mixxx::Duration::fromSeconds(0);
     m_bActive = true;
@@ -106,7 +107,7 @@ void GuiTickTimer::slotGuiTick(double) {
         auto time = mixxx::Time::elapsed();
         if (time - m_lastUpdate >= m_interval) {
             m_lastUpdate = time;
-            emit(timeout());
+            emit timeout();
         }
     }
 }

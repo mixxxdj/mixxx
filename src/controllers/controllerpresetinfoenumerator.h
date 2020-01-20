@@ -1,11 +1,4 @@
-/**
-* @file controllerpresetinfoenumerator.h
-* @author Be be.0@gmx.com
-* @date Sat Jul 18 2015
-* @brief Enumerate list of available controller mapping presets
-*/
-#ifndef CONTROLLERPRESETINFOENUMERATOR_H
-#define CONTROLLERPRESETINFOENUMERATOR_H
+#pragma once
 
 #include <QList>
 #include <QString>
@@ -13,14 +6,14 @@
 
 #include "controllers/controllerpresetinfo.h"
 
+/// Enumerate list of available controller mapping presets
 class PresetInfoEnumerator {
   public:
+    PresetInfoEnumerator(const QString& searchPath);
     PresetInfoEnumerator(const QStringList& searchPaths);
 
     // Return cached list of presets for this extension
     QList<PresetInfo> getPresetsByExtension(const QString& extension);
-
-  protected:
     void loadSupportedPresets();
 
   private:
@@ -31,5 +24,3 @@ class PresetInfoEnumerator {
     QList<PresetInfo> m_midiPresets;
     QList<PresetInfo> m_bulkPresets;
 };
-
-#endif

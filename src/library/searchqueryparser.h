@@ -1,5 +1,4 @@
-#ifndef SEARCHQUERYPARSER_H
-#define SEARCHQUERYPARSER_H
+#pragma once
 
 #include <QRegExp>
 #include <QString>
@@ -7,7 +6,6 @@
 
 #include "library/searchquery.h"
 #include "library/trackcollection.h"
-#include "track/track.h"
 #include "util/class.h"
 
 class SearchQueryParser {
@@ -40,10 +38,9 @@ class SearchQueryParser {
 
     QRegExp m_fuzzyMatcher;
     QRegExp m_textFilterMatcher;
+    QRegExp m_crateFilterMatcher;
     QRegExp m_numericFilterMatcher;
     QRegExp m_specialFilterMatcher;
 
     DISALLOW_COPY_AND_ASSIGN(SearchQueryParser);
 };
-
-#endif /* SEARCHQUERYPARSER_H */

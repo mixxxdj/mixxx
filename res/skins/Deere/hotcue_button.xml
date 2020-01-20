@@ -8,20 +8,23 @@
     SmallSquareButtonSize: the button size
 -->
 <Template>
-  <Template src="skin:left_right_display_2state_button.xml">
-    <SetVariable name="TooltipId">hotcue</SetVariable>
-    <SetVariable name="ObjectName">HotcueButton</SetVariable>
-    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-    <SetVariable name="state_0_pressed"></SetVariable>
-    <SetVariable name="state_0_unpressed"></SetVariable>
-    <SetVariable name="state_0_text"><Variable name="hotcue"/></SetVariable>
-    <SetVariable name="state_1_pressed"></SetVariable>
-    <SetVariable name="state_1_unpressed"></SetVariable>
-    <SetVariable name="state_1_text"><Variable name="hotcue"/></SetVariable>
-    <SetVariable name="left_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</SetVariable>
-    <SetVariable name="right_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</SetVariable>
-    <SetVariable name="display_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</SetVariable>
-  </Template>
+  <HotcueButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <MinimumSize>18,22</MinimumSize>
+    <MaximumSize>22,22</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <Group><Variable name="group"/></Group>
+    <Hotcue><Variable name="hotcue"/></Hotcue>
+    <Hover>true</Hover>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="hotcue"/></Text>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="hotcue"/></Text>
+    </State>
+  </HotcueButton>
 </Template>

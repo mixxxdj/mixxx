@@ -1,5 +1,4 @@
-#ifndef MIDIMESSAGE_H
-#define MIDIMESSAGE_H
+#pragma once
 
 #include <QList>
 #include <QPair>
@@ -160,11 +159,19 @@ struct MidiInputMapping {
               control(control) {
     }
 
-    // Don't use descriptions in operator== since we only use equality testing
-    // for unit tests.
+    MidiInputMapping(MidiKey key,
+            MidiOptions options,
+            const ConfigKey& control,
+            const QString& description)
+            : key(key),
+              options(options),
+              control(control),
+              description(description) {
+    }
+
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
-                control == other.control;
+                control == other.control && description == other.description;
     }
 
     MidiKey key;
@@ -185,5 +192,3 @@ struct MidiOutputMapping {
     QString description;
 };
 typedef QList<MidiOutputMapping> MidiOutputMappings;
-
-#endif

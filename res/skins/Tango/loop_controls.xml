@@ -11,10 +11,7 @@ Variables:
     <SizePolicy>max,min</SizePolicy>
     <Children>
 
-      <WidgetGroup>
-        <ObjectName>Spacer1e</ObjectName>
-        <Size>1min,2f</Size>
-      </WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1min,3f</Size></WidgetGroup>
 
       <WidgetGroup><!-- Beatloop controls -->
         <ObjectName>LoopBeatJumpContainer</ObjectName>
@@ -47,7 +44,6 @@ Variables:
               </BeatSpinBox>
             </Children>
           </WidgetGroup>
-
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 

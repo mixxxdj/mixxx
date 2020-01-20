@@ -30,8 +30,7 @@ class RecordingManager : public QObject
     Q_OBJECT
   public:
     RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
-    virtual ~RecordingManager();
-
+    ~RecordingManager() override;
 
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
@@ -49,19 +48,17 @@ class RecordingManager : public QObject
     // Emits the cumulative number of bytes currently recorded.
     void bytesRecorded(int);
     void isRecording(bool);
-    void durationRecorded(QString);
+    void durationRecorded(const QString&);
 
   public slots:
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
-
-  private slots:
     void slotSetRecording(bool recording);
-    void slotToggleRecording(double v);
+    void slotToggleRecording(double value);
 
   private:
-    QString formatDateTimeForFilename(QDateTime dateTime) const;
+    QString formatDateTimeForFilename(const QDateTime& dateTime) const;
     // slotBytesRecorded just noticed that recording must be interrupted
     // to split the file. The nth filename will follow the date/time
     // name of the first split but with a suffix.

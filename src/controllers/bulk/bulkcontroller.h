@@ -1,12 +1,4 @@
-/**
-  * @file bulkcontroller.h
-  * @author Neale Picket  neale@woozle.org
-  * @date Thu Jun 28 2012
-  * @brief USB Bulk controller backend
-  */
-
-#ifndef BULKCONTROLLER_H
-#define BULKCONTROLLER_H
+#pragma once
 
 #include <QAtomicInt>
 
@@ -19,6 +11,7 @@ struct libusb_device_handle;
 struct libusb_context;
 struct libusb_device_descriptor;
 
+/// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:
@@ -28,7 +21,7 @@ class BulkReader : public QThread {
     void stop();
 
   signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
+    void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
     void run();
@@ -42,8 +35,10 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
-    BulkController(libusb_context* context, libusb_device_handle *handle,
-                   struct libusb_device_descriptor *desc);
+    BulkController(UserSettingsPointer pConfig,
+            libusb_context* context,
+            libusb_device_handle* handle,
+            struct libusb_device_descriptor* desc);
     ~BulkController() override;
 
     QString presetExtension() override;
@@ -53,8 +48,6 @@ class BulkController : public Controller {
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
-
-    bool savePreset(const QString fileName) const override;
 
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;
@@ -81,7 +74,7 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
+    void send(const QByteArray& data) override;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
@@ -107,5 +100,3 @@ class BulkController : public Controller {
     BulkReader* m_pReader;
     HidControllerPreset m_preset;
 };
-
-#endif

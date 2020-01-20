@@ -5,7 +5,7 @@
 // > - **View me [on a static web](http://sinusoid.es/mixco/script/novation_twitch.mixco.html)**
 // > - **View me [on GitHub](https://github.com/arximboldi/mixco/blob/master/script/novation_twitch.mixco.litcoffee)**
 //
-// Mixx script file for the **Novation Twitch** controller.
+// Mixxx script file for the **Novation Twitch** controller.
 //
 // This script serves as **tutorial** for creating scripts using the
 // *Mixco* framework, but programming directly in JavaScript.  Still,

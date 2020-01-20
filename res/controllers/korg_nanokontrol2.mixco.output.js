@@ -5743,7 +5743,7 @@ string.js - Copyright (C) 2012-2014, JP Richardson <jprichardson@gmail.com>
         source += "';\n" + evaluate + "\n__p+='";
       }
 
-      // Adobe VMs need the match returned to produce the correct offest.
+      // Adobe VMs need the match returned to produce the correct offset.
       return match;
     });
     source += "';\n";

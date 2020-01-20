@@ -1,23 +1,26 @@
-#ifndef BEATS_H
-#define BEATS_H
+#pragma once
 
+#include <QObject>
 #include <QString>
 #include <QList>
 #include <QByteArray>
 #include <QSharedPointer>
 
 #include "util/memory.h"
+#include "util/types.h"
 
 namespace {
     double kMaxBpm = 500;
 }
+
+namespace mixxx {
 
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
 class BeatIterator {
   public:
-    virtual ~BeatIterator() {}
+    virtual ~BeatIterator() = default;
     virtual bool hasNext() const = 0;
     virtual double next() = 0;
 };
@@ -25,10 +28,11 @@ class BeatIterator {
 // Beats is a pure abstract base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
-class Beats {
+class Beats : public QObject {
+    Q_OBJECT
   public:
     Beats() { }
-    virtual ~Beats() { }
+    ~Beats() override = default;
 
     enum Capabilities {
         BEATSCAP_NONE          = 0x0000,
@@ -161,6 +165,11 @@ class Beats {
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
     virtual void setBpm(double dBpm) = 0;
+
+    virtual SINT getSampleRate() const = 0;
+
+  signals:
+    void updated();
 };
 
-#endif /* BEATS_H */
+} // namespace mixxx

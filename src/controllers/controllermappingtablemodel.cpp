@@ -1,9 +1,11 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include "moc_controllermappingtablemodel.cpp"
+
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
-          m_pMidiPreset(NULL),
-          m_pHidPreset(NULL) {
+          m_pMidiPreset(nullptr),
+          m_pHidPreset(nullptr) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {
@@ -54,7 +56,7 @@ bool ControllerMappingTableModel::setHeaderData(int section,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 

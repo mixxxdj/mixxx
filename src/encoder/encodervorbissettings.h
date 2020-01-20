@@ -1,55 +1,34 @@
-/**
-* @file encoderwavesettings.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for vorbis encoder
-*/
+#pragma once
 
-#ifndef ENCODERVORBISSETTINGS_H
-#define ENCODERVORBISSETTINGS_H
-
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
-class EncoderVorbisSettings : public EncoderSettings {
+/// Storage of settings for Vorbis encoder
+class EncoderVorbisSettings : public EncoderRecordingSettings {
     public:
     EncoderVorbisSettings(UserSettingsPointer pConfig);
-    virtual ~EncoderVorbisSettings();
+    ~EncoderVorbisSettings() override = default;
 
     // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override;
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
+    bool usesQualitySlider() const override {
+        return true;
+    }
 
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
-    // Sets the quality value by its value
-    void setQualityByValue(int qualityValue) override;
     // Sets the quality value by its index
     void setQualityByIndex(int qualityIndex) override;
     // Returns the current quality value
-    virtual int getQuality() const override;
-    virtual int getQualityIndex() const override;
+    int getQuality() const override;
+    int getQualityIndex() const override;
+
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_OGG;
+    }
 
   private:
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
 };
-
-
-inline bool EncoderVorbisSettings::usesQualitySlider() const
-{
-    return true;
-}
-inline bool EncoderVorbisSettings::usesCompressionSlider() const
-{
-    return false;
-}
-inline bool EncoderVorbisSettings::usesOptionGroups() const
-{
-    return false;
-}
-
-#endif // ENCODERVORBISSETTINGS_H

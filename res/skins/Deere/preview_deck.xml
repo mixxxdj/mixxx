@@ -101,6 +101,7 @@
                     <SignalRGBLowColor></SignalRGBLowColor>
                     <SignalColor>#FF8000</SignalColor>
                     <PlayPosColor>#00FF00</PlayPosColor>
+                    <ShowCueTimes>false</ShowCueTimes>
                     <DefaultMark>
                       <Align>bottom</Align>
                       <Color>#FFFFFF</Color>

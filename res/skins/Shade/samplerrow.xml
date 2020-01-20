@@ -8,16 +8,13 @@
 	  <Children>
 		<WidgetGroup>
 		  <Layout>horizontal</Layout>
-		  <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
 		  <Children>
 		<WidgetGroup>
 		  <Layout>horizontal</Layout>
-		  <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
 		  <Children>
 			<WidgetGroup>
 				<ObjectName>SamplerLeftBorder</ObjectName>
 				<Size>3f,0e</Size>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>
 			<WidgetGroup>
 				<Size>26f,43f</Size>
@@ -27,21 +24,14 @@
 						<ObjectName>EffectLeftBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 					<WidgetGroup>
 						<Size>0e,40f</Size>
-						<Style>QGroupBox { 
-							border: 0px solid green;  
-							margin: 0px 0px 0px 0px;
-						} 
-						</Style>
 						<BackPath>style/style_bg_looping.png</BackPath>
 						<Layout>horizontal</Layout>
 						<Children>
 							<PushButton>
 								<TooltipId>show_samplers</TooltipId>
-								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -55,7 +45,7 @@
 								</State>
 								<Pos>0,0</Pos>
 								<Connection>
-									<ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
@@ -64,12 +54,10 @@
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 				</Children>		
 			</WidgetGroup>	
@@ -93,20 +81,13 @@
 						<ObjectName>EffectLeftBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 					<WidgetGroup>
 						<Size>0e,40f</Size>
-						<Style>QGroupBox { 
-							border: 0px solid green;  
-							margin: 0px 0px 0px 0px;
-						} 
-						</Style>
 						<BackPath>style/style_bg_looping.png</BackPath>
 						<Children>
 							<PushButton>
 								<TooltipId>LoadSamplerBank</TooltipId>
-								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -120,7 +101,6 @@
 							</PushButton>
 							<PushButton>
 								<TooltipId>SaveSamplerBank</TooltipId>
-								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -138,18 +118,16 @@
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 				</Children>		
 			</WidgetGroup>	
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 			 <Transform>
 			   <Not/>
@@ -159,37 +137,28 @@
 
 		<WidgetGroup>
 		  <Layout>horizontal</Layout>
-		  <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
 		  <Children>
 			<WidgetGroup>
 				<ObjectName>SamplerLeftBorder</ObjectName>
 				<Size>3f,0e</Size>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>
 			<WidgetGroup>
-				<Size>26f,103f</Size>
+				<Size>26f,95f</Size>
 				<Layout>horizontal</Layout>
 				<Children>
 
 					<WidgetGroup>
 						<ObjectName>SamplerLeftBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>
 
 					<WidgetGroup>
-						<Size>0e,100f</Size>
-						<Style>QGroupBox { 
-							border: 0px solid green;  
-							margin: 0px 0px 0px 0px;
-						} 
-						</Style>
+						<Size>0e,92f</Size>
 						<BackPath>style/style_bg_sampler_right.png</BackPath>
 						<Children>
 							<PushButton>
 								<TooltipId>show_samplers</TooltipId>
-								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -203,21 +172,19 @@
 								</State>
 								<Pos>0,6</Pos>
 								<Connection>
-									<ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
 					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 				</Children>		
 			</WidgetGroup>	
@@ -234,29 +201,22 @@
 		      <SetVariable name="samplernum"><Variable name="samplernum4"/></SetVariable>
 		    </Template>
 			<WidgetGroup>
-				<Size>26f,103f</Size>
+				<Size>26f,95f</Size>
 				<Layout>horizontal</Layout>
 				<Children>
 
 					<WidgetGroup>
 						<ObjectName>SamplerLeftBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>
 
 					<WidgetGroup>
-						<Size>0e,100f</Size>
-						<Style>QGroupBox { 
-							border: 0px solid green;  
-							margin: 0px 0px 0px 0px;
-						} 
-						</Style>
+						<Size>0e,92f</Size>
 						<BackPath>style/style_bg_sampler_right.png</BackPath>
 						<Children>
 							<PushButton>
 								<TooltipId>LoadSamplerBank</TooltipId>
-								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -270,7 +230,6 @@
 							</PushButton>
 							<PushButton>
 								<TooltipId>SaveSamplerBank</TooltipId>
-								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -286,20 +245,18 @@
 					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 					</WidgetGroup>	
 				</Children>		
 			</WidgetGroup>	
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 		  </Connection>
 		</WidgetGroup>
@@ -310,12 +267,5 @@
 		  </Connection>
 		</WidgetGroup>
 	  </Children>
-	   <Connection>
-		 <ConfigKey>[Master],maximize_library</ConfigKey>
-		 <BindProperty>visible</BindProperty>
-		 <Transform>
-		   <Not/>
-		 </Transform>
-	   </Connection>
 	</WidgetGroup>
 </Template>

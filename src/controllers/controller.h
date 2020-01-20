@@ -1,16 +1,4 @@
-/**
-* @file controller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class representing a physical (or software) controller.
-*
-* This is a base class representing a physical (or software) controller.  It
-* must be inherited by a class that implements it on some API. Note that the
-* subclass' destructor should call close() at a minimum.
-*/
-
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include "controllers/controllerengine.h"
 #include "controllers/controllervisitor.h"
@@ -20,15 +8,20 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "util/duration.h"
 
+/// Base class representing a physical (or software) controller.
+///
+/// This is a base class representing a physical (or software) controller.  It
+/// must be inherited by a class that implements it on some API. Note that the
+/// subclass' destructor should call close() at a minimum.
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
-    Controller();
-    ~Controller() override;  // Subclass should call close() at minimum.
+    explicit Controller(UserSettingsPointer pConfig);
+    ~Controller() override; // Subclass should call close() at minimum.
 
-    // Returns the extension for the controller (type) preset files.  This is
-    // used by the ControllerManager to display only relevant preset files for
-    // the controller (type.)
+    /// Returns the extension for the controller (type) preset files.  This is
+    /// used by the ControllerManager to display only relevant preset files for
+    /// the controller (type.)
     virtual QString presetExtension() = 0;
 
     void setPreset(const ControllerPreset& preset) {
@@ -38,8 +31,6 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
 
     virtual void accept(ControllerVisitor* visitor) = 0;
-
-    virtual bool savePreset(const QString filename) const = 0;
 
     // Returns a clone of the Controller's loaded preset.
     virtual ControllerPresetPointer getPreset() const = 0;
@@ -71,19 +62,27 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
 
-  // Making these slots protected/private ensures that other parts of Mixxx can
-  // only signal them which allows us to use no locks.
+    /// Emitted when the controller is opened or closed.
+    void openChanged(bool bOpen);
+
+    // Making these slots protected/private ensures that other parts of Mixxx can
+    // only signal them which allows us to use no locks.
   protected slots:
     // TODO(XXX) move this into the inherited classes since is not called here
-    // (vie Controller) and re-implemented anyway in most cases.
+    // (via Controller) and re-implemented anyway in most cases.
 
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
+    virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
-    // Initializes the controller engine and returns whether it was successful.
-    virtual bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
+    /// Apply the preset to the controller.
+    /// Initializes both controller engine and static output mappings.
+    ///
+    /// @param initializeScripts Can be set to false to skip script
+    /// initialization for unit tests.
+    /// @return Returns whether it was successful.
+    virtual bool applyPreset(bool initializeScripts = true);
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -92,7 +91,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0);
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0);
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
@@ -101,17 +100,17 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
     void stopEngine();
-    
+
     // To be called when receiving events
     void triggerActivity();
 
     inline ControllerEngine* getEngine() const {
         return m_pEngine;
     }
-    inline void setDeviceName(QString deviceName) {
+    inline void setDeviceName(const QString& deviceName) {
         m_sDeviceName = deviceName;
     }
-    inline void setDeviceCategory(QString deviceCategory) {
+    inline void setDeviceCategory(const QString& deviceCategory) {
         m_sDeviceCategory = deviceCategory;
     }
     inline void setOutputDevice(bool outputDevice) {
@@ -122,6 +121,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
     inline void setOpen(bool open) {
         m_bIsOpen = open;
+        emit openChanged(m_bIsOpen);
     }
 
   private: // but used by ControllerManager
@@ -141,7 +141,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   private:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
-    virtual void send(QByteArray data) = 0;
+    virtual void send(const QByteArray& data) = 0;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
@@ -160,12 +160,12 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
     bool m_bLearning;
-    QTime m_userActivityInhibitTimer;
+    QElapsedTimer m_userActivityInhibitTimer;
+
+    UserSettingsPointer m_pConfig;
 
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;
     // For testing
     friend class ControllerPresetValidationTest;
 };
-
-#endif

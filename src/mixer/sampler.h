@@ -10,9 +10,10 @@ class Sampler : public BaseTrackPlayerImpl {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            QString group);
-    virtual ~Sampler();
+            const QString& group);
+    ~Sampler() override = default;
 };
 
 #endif /* MIXER_SAMPLER_H */

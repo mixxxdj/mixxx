@@ -33,7 +33,7 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 // the broadcast thread is not scheduled in time.
 
 const mixxx::Logger kLogger("EngineNetworkStream");
-}
+} // namespace
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
@@ -44,8 +44,7 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
       m_inputStreamStartTimeUs(-1),
       m_inputStreamFramesWritten(0),
       m_inputStreamFramesRead(0),
-      m_outputWorkers(BROADCAST_MAX_CONNECTIONS),
-      m_pInputWorker(nullptr) {
+      m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }
@@ -79,7 +78,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
     m_inputStreamStartTimeUs = getNetworkTimeUs();
     m_inputStreamFramesWritten = 0;
 
-    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }
@@ -91,7 +90,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
 void EngineNetworkStream::stopStream() {
     m_inputStreamStartTimeUs = -1;
 
-    for(NetworkOutputStreamWorkerPtr worker : m_outputWorkers) {
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }
@@ -122,7 +121,8 @@ void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
 }
 
 qint64 EngineNetworkStream::getInputStreamTimeFrames() {
-    return static_cast<double>(getInputStreamTimeUs()) * m_sampleRate / 1000000.0;
+    return static_cast<qint64>(static_cast<double>(getInputStreamTimeUs()) *
+            m_sampleRate / 1000000.0);
 }
 
 qint64 EngineNetworkStream::getInputStreamTimeUs() {
@@ -137,7 +137,6 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
     // will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;
-    qint64 t;
     // no GetSystemTimePreciseAsFileTime available, fall
     // back to GetSystemTimeAsFileTime. This happens before
     // Windows 8 and Windows Server 2012
@@ -156,11 +155,9 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
             // timer was not incremented since last call (< 15 ms)
             // Add time since last function call after last increment
             // This reduces the jitter < one call cycle which is sufficient
-            LARGE_INTEGER li;
             now += timerSinceInc.elapsed().toIntegerMicros();
         } else {
             // timer was incremented
-            LARGE_INTEGER li;
             timerSinceInc.start();
             oldNow = now;
         }

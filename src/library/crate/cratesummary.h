@@ -34,7 +34,7 @@ public:
     }
     // Returns the duration formatted as a string H:MM:SS
     QString getTrackDurationText() const {
-        return mixxx::Duration::formatSeconds(getTrackDuration(), mixxx::Duration::Precision::SECONDS);
+        return mixxx::Duration::formatTime(getTrackDuration(), mixxx::Duration::Precision::SECONDS);
     }
 
 private:

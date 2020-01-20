@@ -1,14 +1,13 @@
-#ifndef GLWAVEFORMWIDGET_H
-#define GLWAVEFORMWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
-#include "waveformwidgetabstract.h"
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
-class GLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLWaveformWidget(const char* group, QWidget* parent);
+    GLWaveformWidget(const QString& group, QWidget* parent);
     virtual ~GLWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLFilteredWaveform; }
@@ -27,5 +26,3 @@ class GLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // GLWAVEFORMWIDGET_H

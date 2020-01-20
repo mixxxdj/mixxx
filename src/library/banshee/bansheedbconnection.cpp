@@ -1,5 +1,5 @@
 #include <QtDebug>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QSettings>
 #include <QFile>
 #include <QFileInfo>
@@ -222,7 +222,7 @@ QString BansheeDbConnection::getDatabaseFile() {
     }
 
     // Legacy Banshee Application Data Path
-    dbfile = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    dbfile = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     dbfile += "/.gnome2/banshee/banshee.db";
     if (QFile::exists(dbfile)) {
         return dbfile;

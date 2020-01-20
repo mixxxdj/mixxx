@@ -1,4 +1,3 @@
-
 #include <QImageReader>
 #include <QFileInfo>
 
@@ -13,8 +12,6 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
     QFileInfo info(fileName);
     if (scaleFactor > 2.0) {
         // Try to load with @3x suffix
-        QString strNewName = info.path() + "/" + info.baseName() + "@3x."
-                + info.completeSuffix();
         QImageReader reader(info.fileName());
         QSize originalSize = reader.size();
         if (originalSize.isValid()) {
@@ -26,8 +23,6 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
     }
     if (scaleFactor > 1.0) {
         // Try to load with @2x suffix
-        QString strNewName = info.path() + "/" + info.baseName() + "@2x."
-                + info.completeSuffix();
         QImageReader reader(info.fileName());
         QSize originalSize = reader.size();
         if (originalSize.isValid()) {
@@ -54,8 +49,6 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
 
     {
         // Try to load with @2x suffix
-        QString strNewName = info.path() + "/" + info.baseName() + "@2x."
-                + info.completeSuffix();
         QImageReader reader(info.fileName());
         QSize originalSize = reader.size();
         if (originalSize.isValid()) {
@@ -68,8 +61,6 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
 
     {
         // Try to load with @3x suffix
-        QString strNewName = info.path() + "/" + info.baseName() + "@3x."
-                + info.completeSuffix();
         QImageReader reader(info.fileName());
         QSize originalSize = reader.size();
         if (originalSize.isValid()) {
@@ -82,4 +73,3 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
 
     return pImage;
 }
-

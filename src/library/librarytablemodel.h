@@ -1,12 +1,11 @@
-#ifndef LIBRARYTABLEMODEL_H
-#define LIBRARYTABLEMODEL_H
+#pragma once
 
 #include "library/basesqltablemodel.h"
 
 class LibraryTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
+    LibraryTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager,
                       const char* settingsNamespace);
     ~LibraryTableModel() override;
 
@@ -18,5 +17,3 @@ class LibraryTableModel : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     TrackModel::CapabilitiesFlags getCapabilities() const final;
 };
-
-#endif

@@ -1,9 +1,7 @@
-#ifndef WWIDGETSTACK_H
-#define WWIDGETSTACK_H
+#pragma once
 
 #include <QWidget>
 #include <QObject>
-#include <QSignalMapper>
 #include <QStackedWidget>
 #include <QEvent>
 
@@ -40,9 +38,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetStack(QWidget* pParent,
-                 ControlObject* pNextControl,
-                 ControlObject* pPrevControl,
-                 ControlObject* pCurrentPageControl);
+                 const ConfigKey& nextConfigKey,
+                 const ConfigKey& prevConfigKey,
+                 const ConfigKey& currentPageConfigKey);
 
     // We don't want to change pages until all the pages have been added,
     // so we override Init and hook up the connection there.
@@ -74,10 +72,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     void showIndex(int index);
     void hideIndex(int index);
     void showEvent(QShowEvent* event) override;
+    void slotSetIndex(int index);
 
   private:
-    QSignalMapper m_showMapper;
-    QSignalMapper m_hideMapper;
     ControlProxy m_nextControl;
     ControlProxy m_prevControl;
     ControlProxy m_currentPageControl;
@@ -88,5 +85,3 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     // A map of the individual page triggers so we can rectify state if needed.
     QMap<int, WidgetStackControlListener*> m_listeners;
 };
-
-#endif /* WWIDGETSTACK_H */

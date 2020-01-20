@@ -1,0 +1,75 @@
+/* Style the library preview button with a default image */
+#LibraryPreviewButton {
+  background: transparent; border: 0;
+}
+
+#LibraryPreviewButton:checked {
+  image: url(:/images/library/ic_library_preview_pause.svg);
+}
+
+#LibraryPreviewButton:!checked {
+  image: url(:/images/library/ic_library_preview_play.svg);
+}
+
+/* Style the library BPM Button with a default image */
+QPushButton#LibraryBPMButton {
+  background: transparent; border: 0;
+}
+
+QPushButton#LibraryBPMButton:checked {
+  image: url(:/images/library/ic_library_locked.svg);
+}
+
+QPushButton#LibraryBPMButton:!checked {
+  image: url(:/images/library/ic_library_unlocked.svg);
+}
+
+
+/* Add default icons for cue menu buttons */
+WCueMenuPopup #CueDeleteButton {
+  qproperty-icon: url(:/images/ic_delete.svg);
+}
+
+WColorPicker QPushButton[noColor="true"] {
+  background-color: black;
+}
+
+WColorPicker QPushButton[customColor="true"] {
+  /* Diagonal Rainbow Gradient */
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                    stop: 0 #FF0000,
+                                    stop: 0.2 #FFFF00,
+                                    stop: 0.4 #00FF00,
+                                    stop: 0.6 #00FFFF,
+                                    stop: 0.8 #0000FF,
+                                    stop: 1 #FF00FF)
+}
+
+WColorPicker QPushButton[checked="false"] {
+  qproperty-icon: none;
+}
+
+WColorPicker QPushButton[checked="true"] {
+  qproperty-icon: url(:/images/ic_checkmark.svg);
+}
+
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  margin-left: 4px;
+  font-family: "Open Sans";
+  font-weight: bold;
+  font-size: 18px;
+  color: #ff8800;
+}
+
+/* Clear button */
+#SearchClearButton {
+  background: none;
+  border: 0px solid #fff;
+}
+#SearchClearButton:!focus {
+  image: url(:/images/library/ic_library_cross_grey.svg)
+}
+#SearchClearButton:focus {
+  image: url(:/images/library/ic_library_cross_orange.svg)
+}

@@ -3,11 +3,11 @@
  *
  * Written by Bertrand Espern 2012
  *
- * 2012/05/11 V0.995 : first "good" version approuved and tested by me
+ * 2012/05/11 V0.995 : first "good" version approved and tested by me
  *
- * Special Thanks to the Programmers of Mixx and all the contributors
+ * Special Thanks to the Programmers of Mixxx and all the contributors
  *
- * Inspired primarily from Numark Total Control script file 
+ * Inspired primarily from Numark Total Control script file
  *
  * 4 deck support, but no loop and no cue function on deck 3/4. Later...
  *
@@ -34,7 +34,7 @@ loopin: 36, loopout: 64, autoloop: 43, pfl1: 69, pfl2: 81, pfl3: 75, pfl4: 87,
 efx1_1: 92, efx2_1: 93, efx3_1: 94, efx4_1: 95, efx1_2: 96, efx2_2: 97, efx3_2: 98, efx4_2: 99,
 autoloop_dimmer: 83};
 
-mc3000.state = {"shift1" : false, "shift2" : false, "alshift1" : false, "alshift2" : false, "pfl1" : 0, "pfl2" : 0 }; 
+mc3000.state = {"shift1" : false, "shift2" : false, "alshift1" : false, "alshift2" : false, "pfl1" : 0, "pfl2" : 0 };
 
 mc3000.vumetermaxled = [0,0,0,0];
 mc3000.vumeteroffset = [9,41,25,57];
@@ -48,13 +48,13 @@ mc3000.beta = mc3000.alpha/32;
 mc3000.jog_sensitivity = 2.0;
 mc3000.scratch_sensitivity = 1;
 
-// BeatLoop 2 4 8 16 to 1 2 3 4 
+// BeatLoop 2 4 8 16 to 1 2 3 4
 mc3000.efx2no = [4,8,16,2];
 
 // ----------   Functions    ----------
 
 // called when the MIDI device is opened & set up
-mc3000.init = function(id) {    
+mc3000.init = function(id) {
 
     mc3000.id = id;
 
@@ -101,7 +101,7 @@ mc3000.allLedOff = function () {
     // All leds off for deck 1 and 2
     for (var led in mc3000.leds) {
         mc3000.setled(1,mc3000.leds[led],0);
-        mc3000.setled(2,mc3000.leds[led],0);    
+        mc3000.setled(2,mc3000.leds[led],0);
     }
     // Pfl leds off for deck 1 and 2 are special
     mc3000.setled2(1,mc3000.leds["pfl1"],0);
@@ -116,7 +116,7 @@ mc3000.setled = function(deck,led,status) {
     var ledStatus = 75; // Default OFF
     switch (status) {
             case  0 : ledStatus = 75; break; // OFF
-        case false : ledStatus = 75; break; // OFF 
+        case false : ledStatus = 75; break; // OFF
         case true  : ledStatus = 74; break; // ON
             case  1 : ledStatus = 74; break; // ON
             case  2 : ledStatus = 76; break; // BLINK
@@ -141,7 +141,7 @@ mc3000.groupToDeck = function(group) {
 
 mc3000.loop2NoEfx = function(nbloop) {
     if (nbloop==1) nbloop=16;
-    return Math.log(nbloop)/Math.log(2); //2 4 8 16 -> 1 2 3 4    
+    return Math.log(nbloop)/Math.log(2); //2 4 8 16 -> 1 2 3 4
 }
 
 mc3000.samplesPerBeat = function(group) {
@@ -188,7 +188,7 @@ mc3000.selectKnob = function(channel, control, value, status, group) {
         if (mc3000.state["alshift2"]) mc3000.moveLoop("[Channel2]",offset);
         return;
     }
-    
+
     // SHIFT + SelectKnob ? -> MOVE CUE
     if (mc3000.state["shift1"] || mc3000.state["shift2"]) {
         if (mc3000.state["shift1"]) {
@@ -200,10 +200,10 @@ mc3000.selectKnob = function(channel, control, value, status, group) {
              engine.setValue("[Channel2]","cue_point",curpos+offset);
         }
         return;
-    } 
+    }
 
     // NORMAL MODE - NEXT/PREV TRACK
-    if (value == 0) { 
+    if (value == 0) {
         engine.setValue(group, "SelectNextTrack", 1);
     } else {
         engine.setValue(group, "SelectPrevTrack", 1);
@@ -241,7 +241,7 @@ mc3000.lfoPeriod = function(channel, control, value, status, group) {
 // === CUE AND HOTCUE ===
 mc3000.cue_default = function(channel, control, value, status, group) {
     var isPressed = (status & 0xF0)==0x90 ? 1 : 0;
-    print("cue_def - status = "+status+" group = "+group); 
+    print("cue_def - status = "+status+" group = "+group);
     engine.setValue(group,"cue_default", isPressed);
     mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["cue"],isPressed);
 }
@@ -250,7 +250,7 @@ mc3000.cue_default = function(channel, control, value, status, group) {
 mc3000.hotcueset = function(channel, control, value, status, group) {
     var deck=mc3000.groupToDeck(group);
     var nocue=mc3000.hotcues[control];
-    var is_play = engine.getValue(group,"play")==1 ? true: false;    
+    var is_play = engine.getValue(group,"play")==1 ? true: false;
 
     if ((status & 0xF0) !== 0x90) {    // Is Relesead ?
          if (mc3000.state["alshift"+deck] || mc3000.state["shift"+deck]) return; // DO NOTHING ON RELEASE IF ALSHIFT OR SHIFT
@@ -278,7 +278,7 @@ mc3000.hotcueset = function(channel, control, value, status, group) {
     if (is_play) {
         // LOOP HOTCUE OR NORMAL HOTCUE ?
         if (mc3000.loophotcue[deck-1]==nocue) {
-              mc3000.loophotcue[deck-1]=0; 
+              mc3000.loophotcue[deck-1]=0;
             engine.setValue(group, "reloop_exit", 1);
         } else {
             engine.setValue(group,"hotcue_"+nocue+"_activate",1);
@@ -296,18 +296,18 @@ mc3000.setLoopAtHotCue = function (group,nohotcue,nbbeat) {
     // Old HotCue Led Off if exist
     if (mc3000.loophotcue[deck-1]>0) mc3000.hotcueSetLed(0,group,"hotcue_"+mc3000.loophotcue[deck-1]);
 
-    // if loop set, exit from loop    
+    // if loop set, exit from loop
     if (engine.getValue(group, "loop_enabled")) engine.setValue(group, "reloop_exit", 1);
 
     // Set new loop_start
     engine.setValue(group, "loop_start_position", position);
-    // Delete loop_end    
+    // Delete loop_end
     engine.setValue(group, "loop_end_position", -1);
     // Set Loop End
     engine.setValue(group, "loop_end_position", position+(mc3000.samplesPerBeat(group)*nbbeat));
-    
-    mc3000.loophotcue[deck-1]=nohotcue;    
-    
+
+    mc3000.loophotcue[deck-1]=nohotcue;
+
     // New HotCue Led Blink
     mc3000.hotcueSetLed (2,group,"hotcue_"+nohotcue);
 }
@@ -345,13 +345,13 @@ mc3000.wheelTouch = function (channel, control, value, status, group) {
     if (mc3000.scratch[deck-1]) {
         if ((status & 0xF0)==0x90) {    // Is pressed ?
             engine.scratchEnable(deck, 100, 330, mc3000.alpha, mc3000.beta); // 128, 33+1/3 aussi
-        } else { 
+        } else {
             engine.scratchDisable(deck);
         }
         mc3000.scratchpressed[deck-1] = (status & 0xF0)==0x90 ? true : false;
     }
 }
- 
+
 // The wheel that actually controls the scratching
 mc3000.jogWheel = function (channel, control, value, status, group) {
     var deck = mc3000.groupToDeck(group);
@@ -363,7 +363,7 @@ mc3000.jogWheel = function (channel, control, value, status, group) {
             return;
         }
     }
-    
+
     var gammaInputRange = 64;    // Max jog speed
     var maxOutFraction = 0.5;    // Where on the curve it should peak; 0.5 is half-way
     var sensitivity = 0.5;        // Adjustment gamma 0.5 def
@@ -376,7 +376,7 @@ mc3000.jogWheel = function (channel, control, value, status, group) {
 mc3000.bendUp = function(channel, control, value, status, group) {
     var isPressed = (status & 0xF0)==0x90 ? 1 : 0;
     if (engine.getValue(group,"play") == 1) {
-        engine.setValue(group, "rate_temp_up", isPressed);        
+        engine.setValue(group, "rate_temp_up", isPressed);
     }else{
         if ((mc3000.state["shift"+mc3000.groupToDeck(group)]) && isPressed) {
             engine.setValue(group,"end",1);
@@ -407,7 +407,7 @@ mc3000.efx_beatLoopX = function(channel, control, value, status, group) {
     var deck = mc3000.groupToDeck(group);
     var nbbeat = mc3000.efx2no[(control-18)-((deck-1)*64)];
 
-    if (mc3000.state["alshift"+deck]) {    
+    if (mc3000.state["alshift"+deck]) {
         mc3000.setled(deck,mc3000.leds["efx"+mc3000.loop2NoEfx(mc3000.loophotcuebeatnb[deck-1])+"_"+deck],0);
         mc3000.setled(deck,mc3000.leds["efx"+mc3000.loop2NoEfx(nbbeat)+"_"+deck],2);
         mc3000.loophotcuebeatnb[deck-1]=nbbeat;
@@ -415,22 +415,22 @@ mc3000.efx_beatLoopX = function(channel, control, value, status, group) {
         engine.setValue(group, "beatloop_"+nbbeat+"_activate",1);
     }
 
-}    
+}
 
 // Shift and autoloop : delete loop point ELSE BeatLoopAtHotCue
 mc3000.autoLoop = function(channel, control, value, status, group) {
     var deck = mc3000.groupToDeck(group);
-    var i=0;    
+    var i=0;
     if ((status & 0xF0)==0x90) {
         // LIGHT LED EFX + CUE  EN MODE CUE LOOP
         // EFX = BEATLOOP NB
         for (i=1;i<=4;i++) mc3000.setled(deck,mc3000.leds["efx"+i+"_"+deck],0);
         mc3000.setled(deck,mc3000.leds["efx"+mc3000.loop2NoEfx(mc3000.loophotcuebeatnb[deck-1])+"_"+deck],2);
-        
+
         for (i=1;i<=8;i++) mc3000.hotcueSetLed(0,group,"hotcue_"+i);
         if (mc3000.loophotcue[deck-1] > 0) mc3000.hotcueSetLed(2,group,"hotcue_"+mc3000.loophotcue[deck-1]);
         print ("hotcue_"+mc3000.loophotcue[deck-1]);
-        
+
         // DELETE LOOP POINTS IF SHIFT
         if (mc3000.state["shift"+deck]) {
             engine.setValue(group, "reloop_exit", 1);
@@ -448,7 +448,7 @@ mc3000.autoLoop = function(channel, control, value, status, group) {
              mc3000.setled(deck,mc3000.leds["efx"+i+"_"+deck],engine.getValue(group,"beatloop_"+beatp+"_enabled"));
         }
         for (i=1;i<=8;i++) {
-            if (engine.getValue(group,"hotcue_"+i+"_enabled")) { 
+            if (engine.getValue(group,"hotcue_"+i+"_enabled")) {
                 mc3000.hotcueSetLed(1,group,"hotcue_"+i);
             } else {
                 mc3000.hotcueSetLed(0,group,"hotcue_"+i);
@@ -459,7 +459,7 @@ mc3000.autoLoop = function(channel, control, value, status, group) {
         if (mc3000.oldloopstart[deck-1] != engine.getValue(group, "loop_start_position")) {
             engine.setValue(group, "reloop_exit", 1);
         }
-                
+
     }
 
     mc3000.state["alshift"+deck] = (status & 0xF0)==0x90 ? true : false ; // true if pressed
@@ -497,7 +497,7 @@ mc3000.loopOut = function(channel, control, value, status, group) {
 
 
 // === EXPERIMENTAL ===
-// CF MODE for test 
+// CF MODE for test
 mc3000.cfMode = function(channel, control, value, status, group) {
     // BACKLOOP de -4 ?
     print ("BackLoop ?");
@@ -544,7 +544,7 @@ mc3000.loopEnableSetLed = function(value, group, control) {
 }
 
 mc3000.beatLoopXSetLed = function(value, group, control) {
-    var deck = mc3000.groupToDeck(group);    
+    var deck = mc3000.groupToDeck(group);
     mc3000.setled(deck,mc3000.leds["efx"+mc3000.loop2NoEfx(control[9])+"_"+deck],value);
 }
 
@@ -561,7 +561,7 @@ mc3000.vuMeterSetLeds = function (value,group){
     var maxled = Math.round ((value-0.07)*7);
     var curled = mc3000.vumetermaxled[deck-1];
     if (maxled !== curled) {
-        var i=0; 
+        var i=0;
         var offset = mc3000.vumeteroffset[deck-1];
         if (maxled > curled) {
             for (i=curled+1;i<=maxled;i++) midi.sendShortMsg(0xB0+mc3000.deck2ch[deck-1], 80, i+offset);
@@ -569,7 +569,7 @@ mc3000.vuMeterSetLeds = function (value,group){
             for (i=maxled+1;i<=curled;i++) midi.sendShortMsg(0xB0+mc3000.deck2ch[deck-1], 81, i+offset);
         }
         mc3000.vumetermaxled[deck-1] = maxled;
-    }         
+    }
 }
 
 mc3000.playPositionSetLed = function (playposition, group) {
@@ -577,7 +577,7 @@ mc3000.playPositionSetLed = function (playposition, group) {
 
     if (playposition < 0.80) nearEnd = 0;
     if (playposition > 0.80) nearEnd = 2;  // The song is going to end
-    if (playposition == 1)   nearEnd = 0;    
+    if (playposition == 1)   nearEnd = 0;
 
     if (nearEnd !== mc3000.nearEnd[mc3000.groupToDeck(group)-1]) {
         mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["sync"],nearEnd);

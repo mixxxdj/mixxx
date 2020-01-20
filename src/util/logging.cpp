@@ -1,23 +1,21 @@
 #include "util/logging.h"
 
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include <QByteArray>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
-#include <QLoggingCategory>
-#endif
+#include <cstring>
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
@@ -56,16 +54,51 @@ inline void writeToLog(const QByteArray& message, bool shouldPrint,
     }
 }
 
+/// Rotate existing logfiles and get the file path of the log file to write to.
+/// May return an invalid/empty QString if the log directory does not exist.
+inline QString rotateLogFilesAndGetFilePath(const QString& logDirPath) {
+    if (logDirPath.isEmpty()) {
+        fprintf(stderr, "No log directory specified!\n");
+        return QString();
+    }
+
+    QDir logDir(logDirPath);
+    if (!logDir.exists()) {
+        fprintf(stderr,
+                "Log directory %s does not exist!\n",
+                logDir.absolutePath().toLocal8Bit().constData());
+        return QString();
+    }
+
+    QString logFilePath;
+    // Rotate old logfiles.
+    for (int i = 9; i >= 0; --i) {
+        const QString logFileName = (i == 0) ? QString("mixxx.log")
+                                             : QString("mixxx.log.%1").arg(i);
+        logFilePath = logDir.absoluteFilePath(logFileName);
+        if (QFileInfo::exists(logFilePath)) {
+            QString olderLogFilePath =
+                    logDir.absoluteFilePath(QString("mixxx.log.%1").arg(i + 1));
+            // This should only happen with number 10
+            if (QFileInfo::exists(olderLogFilePath)) {
+                QFile::remove(olderLogFilePath);
+            }
+            if (!QFile::rename(logFilePath, olderLogFilePath)) {
+                fprintf(stderr,
+                        "Error rolling over logfile %s\n",
+                        logFilePath.toLocal8Bit().constData());
+            }
+        }
+    }
+    return logFilePath;
+}
+
 // Debug message handler which outputs to stderr and a logfile, prepending the
 // thread name and log level.
 void MessageHandler(QtMsgType type,
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                    const char* input) {
-#else
                     const QMessageLogContext&, const QString& input) {
-#endif
     // For "]: " and '\n'.
-    size_t baSize = 4;
+    std::size_t baSize = 4;
     const char* tag = nullptr;
     bool shouldPrint = true;
     bool shouldFlush = false;
@@ -74,51 +107,39 @@ void MessageHandler(QtMsgType type,
     switch (type) {
         case QtDebugMsg:
             tag = "Debug [";
-            baSize += strlen(tag);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            isControllerDebug = strncmp(input, ControllerDebug::kLogMessagePrefix,
-                                        strlen(ControllerDebug::kLogMessagePrefix)) == 0;
-#else
+            baSize += std::strlen(tag);
             isControllerDebug = input.startsWith(QLatin1String(
                 ControllerDebug::kLogMessagePrefix));
-#endif
             shouldPrint = Logging::enabled(LogLevel::Debug) ||
                     isControllerDebug;
             shouldFlush = Logging::flushing(LogLevel::Debug);
             break;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         case QtInfoMsg:
             tag = "Info [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Info);
             shouldFlush = Logging::flushing(LogLevel::Info);
             break;
-#endif
         case QtWarningMsg:
             tag = "Warning [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Warning);
             shouldFlush = Logging::flushing(LogLevel::Warning);
             break;
         case QtCriticalMsg:
             tag = "Critical [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldFlush = true;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            isDebugAssert = strncmp(input, kDebugAssertPrefix,
-                                    strlen(kDebugAssertPrefix)) == 0;
-#else
             isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
-#endif
             break;
         case QtFatalMsg:
             tag = "Fatal [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldFlush = true;
             break;
         default:
             tag = "Unknown [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
     }
 
     // qthread.cpp contains a Q_ASSERT that currentThread does not return
@@ -127,33 +148,21 @@ void MessageHandler(QtMsgType type,
             ->objectName().toLocal8Bit();
     baSize += threadName.length();
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    const char* inputOffset = input;
-    if (isControllerDebug) {
-        inputOffset += strlen(ControllerDebug::kLogMessagePrefix) + 1;
-    }
-    baSize += strlen(inputOffset);
-#else
     QByteArray input8Bit;
     if (isControllerDebug) {
-        input8Bit = input.mid(strlen(ControllerDebug::kLogMessagePrefix) + 1).toLocal8Bit();
+        input8Bit = input.mid(ControllerDebug::kLogMessagePrefixLength + 1).toLocal8Bit();
     } else {
         input8Bit = input.toLocal8Bit();
     }
     baSize += input8Bit.size();
-#endif
 
     QByteArray ba;
-    ba.reserve(baSize);
+    ba.reserve(static_cast<int>(baSize));
 
     ba += tag;
     ba += threadName;
     ba += "]: ";
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    ba += inputOffset;
-#else
     ba += input8Bit;
-#endif
     ba += '\n';
 
     if (isDebugAssert) {
@@ -167,13 +176,8 @@ void MessageHandler(QtMsgType type,
         // writeToLog case below.
 #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
         // re-send as fatal.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        // The "%s" is intentional. See -Werror=format-security.
-        qFatal("%s", input);
-#else
         // The "%s" is intentional. See -Werror=format-security.
         qFatal("%s", input8Bit.constData());
-#endif // QT_VERSION
         return;
 #endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
@@ -184,75 +188,61 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-void Logging::initialize(const QDir& settingsDir,
-                         LogLevel logLevel,
-                         LogLevel logFlushLevel,
-                         bool debugAssertBreak) {
+void Logging::initialize(
+        const QString& logDirPath,
+        LogLevel logLevel,
+        LogLevel logFlushLevel,
+        LogFlags flags) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
     }
 
-    g_logLevel = logLevel;
-    g_logFlushLevel = logFlushLevel;
+    setLogLevel(logLevel);
 
-    QString logFileName;
-
-    // Rotate old logfiles.
-    for (int i = 9; i >= 0; --i) {
-        if (i == 0) {
-            logFileName = settingsDir.filePath("mixxx.log");
-        } else {
-            logFileName = settingsDir.filePath(QString("mixxx.log.%1").arg(i));
-        }
-        QFileInfo logbackup(logFileName);
-        if (logbackup.exists()) {
-            QString olderlogname =
-                    settingsDir.filePath(QString("mixxx.log.%1").arg(i + 1));
-            // This should only happen with number 10
-            if (QFileInfo(olderlogname).exists()) {
-                QFile::remove(olderlogname);
-            }
-            if (!QFile::rename(logFileName, olderlogname)) {
-                fprintf(stderr, "Error rolling over logfile %s",
-                        logFileName.toLocal8Bit().constData());
-            }
-        }
+    QString logFilePath;
+    if (flags.testFlag(LogFlag::LogToFile)) {
+        logFilePath = rotateLogFilesAndGetFilePath(logDirPath);
     }
 
-    // Since the message handler is not installed yet, we can touch g_logfile
-    // without the lock.
-    g_logfile.setFileName(logFileName);
-    g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-    g_debugAssertBreak = debugAssertBreak;
+    if (logFilePath.isEmpty()) {
+        // No need to flush anything
+        g_logFlushLevel = LogLevel::Critical;
+    } else {
+        // Since the message handler is not installed yet, we can touch s_logfile
+        // without the lock.
+        g_logfile.setFileName(logFilePath);
+        g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+        g_logFlushLevel = logFlushLevel;
+    }
+
+    g_debugAssertBreak = flags.testFlag(LogFlag::DebugAssertBreak);
 
     // Install the Qt message handler.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    qInstallMsgHandler(MessageHandler);
-#else
     qInstallMessageHandler(MessageHandler);
-#endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     // Ugly hack around distributions disabling debugging in Qt applications.
     // This restores the default Qt behavior. It is required for getting useful
     // logs from users and for developing controller mappings.
     // Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1227295
     // Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=886437
     // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
+    // Somehow this causes a segfault on macOS though?? https://bugs.launchpad.net/mixxx/+bug/1871238
+#ifdef __LINUX__
     QLoggingCategory::setFilterRules("*.debug=true\n"
                                      "qt.*.debug=false");
 #endif
 }
 
 // static
+void Logging::setLogLevel(LogLevel logLevel) {
+    g_logLevel = logLevel;
+}
+
+// static
 void Logging::shutdown() {
     // Reset the Qt message handler to default.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    qInstallMsgHandler(nullptr);
-#else
     qInstallMessageHandler(nullptr);
-#endif
 
     // Even though we uninstalled the message handler, other threads may have
     // already entered it.

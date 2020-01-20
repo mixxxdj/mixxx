@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffectselector.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -27,12 +28,18 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pChainSlot);
 
     if (m_pEffectSlot != nullptr) {
-        connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
-                this, SLOT(populate()));
-        connect(m_pEffectSlot.data(), SIGNAL(updated()),
-                this, SLOT(slotEffectUpdated()));
-        connect(this, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotEffectSelected(int)));
+        connect(m_pEffectsManager,
+                &EffectsManager::visibleEffectsUpdated,
+                this,
+                &WEffectSelector::populate);
+        connect(m_pEffectSlot.data(),
+                &EffectSlot::updated,
+                this,
+                &WEffectSelector::slotEffectUpdated);
+        connect(this,
+                QOverload<int>::of(&WEffectSelector::currentIndexChanged),
+                this,
+                &WEffectSelector::slotEffectSelected);
     } else {
         SKIN_WARNING(node, context)
                 << "EffectSelector node could not attach to effect slot.";
@@ -57,19 +64,15 @@ void WEffectSelector::populate() {
                                                        width() - 2);
         addItem(elidedDisplayName, QVariant(pManifest->id()));
 
-        // NOTE(Be): Using \n instead of : as the separator does not work in
-        // QComboBox item tooltips.
-        // TODO(Be): Check if this is also the case with Qt5.
-        //: %1 = effect name; %2 = effect description
-        QString description = tr("%1: %2").arg(pManifest->name(),
-                                               pManifest->description());
-        // The <span/> is a hack to get Qt to treat the string as rich text so
-        // it automatically wraps long lines.
-        setItemData(i, QVariant("<span/>" + description), Qt::ToolTipRole);
+        QString name = pManifest->name();
+        QString description = pManifest->description();
+        // <b> makes the effect name bold. Also, like <span> it serves as hack
+        // to get Qt to treat the string as rich text so it automatically wraps long lines.
+        setItemData(i, QVariant(QStringLiteral("<b>") + name + QStringLiteral("</b><br/>") +
+                description), Qt::ToolTipRole);
     }
-
-    //: Displayed when no effect is loaded
-    addItem(tr("None"), QVariant());
+    // Add empty item, no effect
+    addItem(EffectsManager::kNoEffectString);
     setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
                 Qt::ToolTipRole);
 
@@ -119,10 +122,14 @@ bool WEffectSelector::event(QEvent* pEvent) {
         // resetting the font to the original css values.
         // Only scale pixel size fonts, point size fonts are scaled by the OS
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
         // repopulate to add text according to the new font measures
         populate();
+    } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
+        // don't change effect by scrolling hovered effect selector
+        return true;
     }
 
     return QComboBox::event(pEvent);

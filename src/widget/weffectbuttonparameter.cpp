@@ -1,7 +1,9 @@
+#include "widget/weffectbuttonparameter.h"
+
 #include <QtDebug>
 
-#include "widget/weffectbuttonparameter.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectbuttonparameter.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectButtonParameter::WEffectButtonParameter(QWidget* pParent, EffectsManager* pEffectsManager)

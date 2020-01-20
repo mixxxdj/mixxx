@@ -4,17 +4,18 @@
 #include <map>
 #include <unordered_map>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "track/trackref.h"
-
+#include "util/sandbox.h"
 
 // forward declaration(s)
 class GlobalTrackCache;
 
 enum class GlobalTrackCacheLookupResult {
-    NONE,
-    HIT,
-    MISS
+    None,
+    Hit,
+    Miss,
+    ConflictCanonicalLocation
 };
 
 // Find the updated location of a track in the database when
@@ -24,19 +25,19 @@ private:
     friend class GlobalTrackCache;
     // Try to determine and return the relocated file info
     // or otherwise return just the provided file info.
-    virtual QFileInfo relocateCachedTrack(
+    virtual TrackFile relocateCachedTrack(
             TrackId trackId,
-            QFileInfo fileInfo) = 0;
+            TrackFile fileInfo) = 0;
 
 protected:
-    virtual ~GlobalTrackCacheRelocator() {}
+  virtual ~GlobalTrackCacheRelocator() = default;
 };
 
 typedef void (*deleteTrackFn_t)(Track*);
 
 class GlobalTrackCacheEntry final {
     // We need to hold two shared pointers, the deletingPtr is
-    // responsible for the lifetime of the Track object itselfe.
+    // responsible for the lifetime of the Track object itself.
     // The second one counts the references outside Mixxx, if it
     // is not longer referenced, the track is saved and evicted
     // from the cache.
@@ -112,8 +113,9 @@ public:
             const TrackId& trackId) const;
     TrackPointer lookupTrackByRef(
             const TrackRef& trackRef) const;
+    QSet<TrackId> getCachedTrackIds() const;
 
-private:
+  private:
     friend class GlobalTrackCache;
 
     void lockCache();
@@ -131,24 +133,14 @@ protected:
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheResolver(
-                QFileInfo fileInfo,
+                TrackFile fileInfo,
                 SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     GlobalTrackCacheResolver(
-                QFileInfo fileInfo,
+                TrackFile fileInfo,
                 TrackId trackId,
                 SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
-#if !defined(_MSC_VER) && (_MSC_VER > 1900)
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
-#else
-    // Visual Studio 2015 does not support default generated move constructors
-    GlobalTrackCacheResolver(GlobalTrackCacheResolver&& moveable)
-        : GlobalTrackCacheLocker(std::move(moveable)),
-          m_lookupResult(std::move(moveable.m_lookupResult)),
-          m_strongPtr(std::move(moveable.m_strongPtr)),
-          m_trackRef(std::move(moveable.m_trackRef)) {
-    }
-#endif
 
     GlobalTrackCacheLookupResult getLookupResult() const {
         return m_lookupResult;
@@ -183,19 +175,40 @@ private:
     TrackRef m_trackRef;
 };
 
+/// Callback interface for pre-delete actions
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveEvictedTrack(Track* pEvictedTrack) noexcept = 0;
 
-protected:
-    virtual ~GlobalTrackCacheSaver() {}
+    /// Perform actions that are necessary to save any pending
+    /// modifications of a Track object before it finally gets
+    /// deleted.
+    ///
+    /// GlobalTrackCache ensures that the given pointer is valid
+    /// and the last and only reference to this Track object.
+    /// While invoked the GlobalTrackCache is locked to ensure
+    /// that this particular track is not accessible while
+    /// saving the Track object, e.g. by updating the database
+    /// and exporting file tags.
+    ///
+    /// This callback method will always be invoked from the
+    /// event loop thread of the owning GlobalTrackCache instance.
+    /// Typically the GlobalTrackCache lives on the main thread
+    /// that also controls access to the database.
+    /// NOTE(2020-06-06): If these assumptions about thread affinity
+    /// are no longer valid the design decisions need to be revisited
+    /// carefully!
+    virtual void saveEvictedTrack(
+            Track* pEvictedTrack) noexcept = 0;
+
+  protected:
+    virtual ~GlobalTrackCacheSaver() = default;
 };
 
 class GlobalTrackCache : public QObject {
     Q_OBJECT
 
-public:
+  public:
     static void createInstance(
             GlobalTrackCacheSaver* pSaver,
             // A custom deleter is only needed for tests without an event loop!
@@ -211,37 +224,46 @@ public:
     // Deleter callbacks for the smart-pointer
     static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
-private slots:
-    void evictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
+  private slots:
+    void slotEvictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
-private:
+  private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
     GlobalTrackCache(
             GlobalTrackCacheSaver* pSaver,
             deleteTrackFn_t deleteTrackFn);
-    ~GlobalTrackCache();
+    ~GlobalTrackCache() override;
 
     void relocateTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
 
     TrackPointer lookupById(
             const TrackId& trackId);
+    TrackPointer lookupByCanonicalLocation(
+            const QString& canonicalLocation);
+
+    /// Lookup the track either by id (primary) or by
+    /// canonical location (secondary). The id of the
+    /// returned track might differ from the requested
+    /// id due to file system aliasing!!
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
+
+    QSet<TrackId> getCachedTrackIds() const;
 
     TrackPointer revive(GlobalTrackCacheEntryPointer entryPtr);
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-            QFileInfo /*in*/ fileInfo,
+            TrackFile /*in*/ fileInfo,
             TrackId /*in*/ trackId,
             SecurityTokenPointer /*in*/ pSecurityToken);
 
     TrackRef initTrackId(
             const TrackPointer& strongPtr,
-            TrackRef trackRef,
+            const TrackRef& trackRef,
             TrackId trackId);
 
     void purgeTrackId(TrackId trackId);

@@ -21,6 +21,40 @@ Description:
             <SizePolicy>min,me</SizePolicy>
           </WidgetGroup>
 
+          <WidgetGroup><!-- Intro + Outro -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>64,24</MinimumSize>
+            <MaximumSize>96,24</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">intro_start</SetVariable>
+                <SetVariable name="label">|&#9698;</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">intro_end</SetVariable>
+                <SetVariable name="label">&#9698;|</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">outro_start</SetVariable>
+                <SetVariable name="label">|&#9699;</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">outro_end</SetVariable>
+                <SetVariable name="label">&#9699;|</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
           <WidgetGroup><!-- 4 -->
             <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
@@ -46,7 +80,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -93,7 +127,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /8 -->

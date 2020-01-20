@@ -1,12 +1,4 @@
-/**
-  * @file hidcontroller.h
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  */
-
-#ifndef HIDCONTROLLER_H
-#define HIDCONTROLLER_H
+#pragma once
 
 #include <hidapi.h>
 
@@ -17,31 +9,11 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 #include "util/duration.h"
 
-class HidReader : public QThread {
+/// HID controller backend
+class HidController final : public Controller {
     Q_OBJECT
   public:
-    HidReader(hid_device* device);
-    virtual ~HidReader();
-
-    void stop() {
-        m_stop = 1;
-    }
-
-  signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
-
-  protected:
-    void run();
-
-  private:
-    hid_device* m_pHidDevice;
-    QAtomicInt m_stop;
-};
-
-class HidController : public Controller {
-    Q_OBJECT
-  public:
-    HidController(const hid_device_info deviceInfo);
+    HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig);
     ~HidController() override;
 
     QString presetExtension() override;
@@ -51,8 +23,6 @@ class HidController : public Controller {
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
-
-    bool savePreset(const QString fileName) const override;
 
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;
@@ -78,10 +48,14 @@ class HidController : public Controller {
     int open() override;
     int close() override;
 
+    bool poll() override;
+
   private:
+    bool isPolling() const override;
+
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
+    void send(const QByteArray& data) override;
     void virtual send(QByteArray data, unsigned int reportID);
 
     // Returns a pointer to the currently loaded controller preset. For internal
@@ -107,8 +81,11 @@ class HidController : public Controller {
 
     QString m_sUID;
     hid_device* m_pHidDevice;
-    HidReader* m_pReader;
     HidControllerPreset m_preset;
-};
 
-#endif
+    static constexpr int kNumBuffers = 2;
+    static constexpr int kBufferSize = 255;
+    unsigned char m_pPollData[kNumBuffers][kBufferSize];
+    int m_iLastPollSize;
+    int m_iPollingBufferIndex;
+};

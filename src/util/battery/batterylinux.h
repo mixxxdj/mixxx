@@ -1,15 +1,15 @@
-#ifndef UTIL_BATTERY_BATTERYLINUX_H
-#define UTIL_BATTERY_BATTERYLINUX_H
+#pragma once
 
 #include "util/battery/battery.h"
 
 class BatteryLinux : public Battery {
   public:
-    BatteryLinux(QObject* pParent=nullptr);
-    virtual ~BatteryLinux();
+    explicit BatteryLinux(QObject* pParent=nullptr);
+    ~BatteryLinux() override;
 
   protected:
     void read() override;
-};
 
-#endif /* UTIL_BATTERY_BATTERYLINUX_H */
+  private:
+    void* m_client;
+};

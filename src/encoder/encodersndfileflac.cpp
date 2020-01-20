@@ -1,10 +1,3 @@
-/**
-* @file encodersndfileflac.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief encoder for flac using libsndfile
-*/
-
 #include <QtDebug>
 
 #include "encoder/encodersndfileflac.h"
@@ -13,9 +6,6 @@
 
 EncoderSndfileFlac::EncoderSndfileFlac(EncoderCallback* pCallback)
     :EncoderWave(pCallback) {
-}
-
-EncoderSndfileFlac::~EncoderSndfileFlac() {
 }
 
 void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
@@ -32,11 +22,11 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
             break;
         default:
             m_sfInfo.format |= SF_FORMAT_PCM_16;
-            qWarning() << " Unexpected radio index on setEncoderSettings: " 
-                    << radio << ". reverting to Flac 16bits";
+            qWarning() << " Unexpected radio index on setEncoderSettings: "
+                       << radio << ". reverting to Flac 16bits";
             break;
     }
-    
+
     m_compression = static_cast<double>(settings.getCompression()) / 8.0;
 }
 

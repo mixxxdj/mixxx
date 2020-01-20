@@ -1,48 +1,51 @@
-#include <QtDebug>
-#include <QMenu>
-#include <QFile>
-#include <QFileInfo>
-
 #include "library/playlistfeature.h"
 
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "library/trackcollection.h"
-#include "library/playlisttablemodel.h"
-#include "library/treeitem.h"
-#include "library/queryutil.h"
-#include "library/parser.h"
+#include <QFile>
+#include <QMenu>
+#include <QtDebug>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
+#include "library/parser.h"
+#include "library/playlisttablemodel.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
 #include "util/dnd.h"
 #include "util/duration.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
 QString createPlaylistLabel(
-        QString name,
+        const QString& name,
         int count,
         int duration) {
-    return QString("%1 (%2) %3").arg(name, QString::number(count),
-            mixxx::Duration::formatSeconds(duration));
+    return QString("%1 (%2) %3").arg(name, QString::number(count), mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS));
 }
 
 } // anonymous namespace
 
-
-PlaylistFeature::PlaylistFeature(QObject* parent,
-                                 TrackCollection* pTrackCollection,
-                                 UserSettingsPointer pConfig)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "PLAYLISTHOME"),
-          m_icon(":/images/library/ic_library_playlist.svg") {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.playlist");
-
-    //construct child model
-    auto pRootItem = std::make_unique<TreeItem>(this);
+PlaylistFeature::PlaylistFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BasePlaylistFeature(
+                  pLibrary,
+                  pConfig,
+                  new PlaylistTableModel(
+                          nullptr,
+                          pLibrary->trackCollections(),
+                          "mixxx.db.model.playlist"),
+                  QStringLiteral("PLAYLISTHOME")),
+          m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
+    // construct child model
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 }
@@ -58,18 +61,21 @@ QIcon PlaylistFeature::getIcon() {
     return m_icon;
 }
 
+void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
-
-    //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
 
-void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void PlaylistFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
@@ -80,17 +86,17 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-    //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
-    menu.addSeparator();
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pAddToAutoDJAction);
+    menu.addAction(m_pAddToAutoDJTopAction);
+    menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
     menu.addAction(m_pAnalyzePlaylistAction);
     menu.addSeparator();
@@ -100,8 +106,8 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QObject* pSource) {
+bool PlaylistFeature::dropAcceptChild(
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return false;
@@ -111,7 +117,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+    QList<TrackId> trackIds = m_pLibrary->trackCollections()->internalCollection()->resolveTrackIdsFromUrls(urls,
             !pSource);
     if (!trackIds.size()) {
         return false;
@@ -121,7 +127,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
@@ -131,29 +137,31 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
+    QSqlDatabase database = m_pLibrary->trackCollections()->internalCollection()->database();
+
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-        "AS SELECT "
-        "  Playlists.id AS id, "
-        "  Playlists.name AS name, "
-        "  LOWER(Playlists.name) AS sort_name, "
-        "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
-        "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
-        "FROM Playlists "
-        "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
-        "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
-        "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id");
+            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "AS SELECT "
+            "  Playlists.id AS id, "
+            "  Playlists.name AS name, "
+            "  LOWER(Playlists.name) AS sort_name, "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
+            "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+            "WHERE Playlists.hidden = 0 "
+            "GROUP BY Playlists.id");
     queryString.append(mixxx::DbConnection::collateLexicographically(
             " ORDER BY sort_name"));
-    QSqlQuery query(m_pTrackCollection->database());
+    QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable("PlaylistsCountsDurations");
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
@@ -167,15 +175,19 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
-                playlistTableModel.index(row, idColumn)).toInt();
+                                           playlistTableModel.index(row, idColumn))
+                         .toInt();
         QString name = playlistTableModel.data(
-                playlistTableModel.index(row, nameColumn)).toString();
+                                                 playlistTableModel.index(row, nameColumn))
+                               .toString();
         int count = playlistTableModel.data(
-                playlistTableModel.index(row, countColumn)).toInt();
+                                              playlistTableModel.index(row, countColumn))
+                            .toInt();
         int duration = playlistTableModel.data(
-                playlistTableModel.index(row, durationColumn)).toInt();
+                                                 playlistTableModel.index(row, durationColumn))
+                               .toInt();
         BasePlaylistFeature::IdAndLabel idAndLabel;
-        idAndLabel.id = id; 
+        idAndLabel.id = id;
         idAndLabel.label = createPlaylistLabel(name, count, duration);
         playlistLabels.append(idAndLabel);
     }
@@ -184,7 +196,8 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlDatabase database = m_pLibrary->trackCollections()->internalCollection()->database();
+    QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable("PlaylistsCountsDurations");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
@@ -200,11 +213,14 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
     if (playlistTableModel.rowCount() > 0) {
         QString name = playlistTableModel.data(
-                playlistTableModel.index(0, nameColumn)).toString();
+                                                 playlistTableModel.index(0, nameColumn))
+                               .toString();
         int count = playlistTableModel.data(
-                playlistTableModel.index(0, countColumn)).toInt();
+                                              playlistTableModel.index(0, countColumn))
+                            .toInt();
         int duration = playlistTableModel.data(
-                playlistTableModel.index(0, durationColumn)).toInt();
+                                                 playlistTableModel.index(0, durationColumn))
+                               .toInt();
         return createPlaylistLabel(name, count, duration);
     }
     return QString();
@@ -219,28 +235,20 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
 
 void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     for (const auto playlistId : qAsConst(playlistIds)) {
         enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
             updateChildModel(playlistId);
         }
     }
@@ -248,16 +256,12 @@ void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
 
 void PlaylistFeature::slotPlaylistTableRenamed(
         int playlistId,
-        QString newName) {
+        const QString& newName) {
     Q_UNUSED(newName);
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
@@ -278,9 +282,8 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
     html.append(QString("<p>%1</p>").arg(playlistsSummary));
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
-    html.append(QString("<p>%1<br>%2</p>").arg(playlistsSummary3,
-                                            playlistsSummary4));
+    html.append(QString("<p>%1<br>%2</p>").arg(playlistsSummary3, playlistsSummary4));
     html.append(QString("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
-                .arg(createPlaylistLink));
+                        .arg(createPlaylistLink));
     return html;
 }

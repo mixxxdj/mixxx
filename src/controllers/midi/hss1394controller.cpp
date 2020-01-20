@@ -1,13 +1,8 @@
-/**
-  * @file hss1394controller.cpp
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Thu 15 Mar 2012
-  * @brief HSS1394-based MIDI backend
-  */
-
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/hss1394controller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_hss1394controller.cpp"
 #include "util/time.h"
 
 DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)
@@ -40,7 +35,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 if (i + 2 < uBufferSize) {
                     note = pBuffer[i+1];
                     velocity = pBuffer[i+2];
-                    emit(incomingData(status, note, velocity, timestamp));
+                    emit incomingData(status, note, velocity, timestamp);
                 } else {
                     qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
                 }
@@ -49,7 +44,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             default:
                 // Handle platter messages and any others that are not 3 bytes
                 QByteArray outArray((char*)pBuffer,uBufferSize);
-                emit(incomingData(outArray, timestamp));
+                emit incomingData(outArray, timestamp);
                 i = uBufferSize;
                 break;
         }
@@ -64,9 +59,11 @@ void DeviceChannelListener::Reconnected() {
     qDebug() << "HSS1394 device" << m_sName << "re-connected";
 }
 
-Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
-                                     int deviceIndex)
-        : MidiController(),
+Hss1394Controller::Hss1394Controller(
+        const hss1394::TNodeInfo& deviceInfo,
+        int deviceIndex,
+        UserSettingsPointer pConfig)
+        : MidiController(pConfig),
           m_deviceInfo(deviceInfo),
           m_iDeviceIndex(deviceIndex) {
     // Note: We prepend the input stream's index to the device's name to prevent
@@ -108,10 +105,20 @@ int Hss1394Controller::open() {
     }
 
     m_pChannelListener = new DeviceChannelListener(this, getName());
-    connect(m_pChannelListener, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-            this, SLOT(receive(QByteArray, mixxx::Duration)));
-    connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char, mixxx::Duration)),
-            this, SLOT(receive(unsigned char, unsigned char, unsigned char, mixxx::Duration)));
+    connect(m_pChannelListener,
+            QOverload<unsigned char,
+                    unsigned char,
+                    unsigned char,
+                    mixxx::Duration>::of(&DeviceChannelListener::incomingData),
+            this,
+            QOverload<unsigned char,
+                    unsigned char,
+                    unsigned char,
+                    mixxx::Duration>::of(&Hss1394Controller::receive));
+    connect(m_pChannelListener,
+            QOverload<const QByteArray&, mixxx::Duration>::of(&DeviceChannelListener::incomingData),
+            this,
+            QOverload<const QByteArray&, mixxx::Duration>::of(&Hss1394Controller::receive));
 
     if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << getName();
@@ -146,10 +153,20 @@ int Hss1394Controller::close() {
         return -1;
     }
 
-    disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-               this, SLOT(receive(QByteArray, mixxx::Duration)));
-    disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char, mixxx::Duration)),
-               this, SLOT(receive(unsigned char, unsigned char, unsigned char, mixxx::Duration)));
+    disconnect(m_pChannelListener,
+            QOverload<unsigned char,
+                    unsigned char,
+                    unsigned char,
+                    mixxx::Duration>::of(&DeviceChannelListener::incomingData),
+            this,
+            QOverload<unsigned char,
+                    unsigned char,
+                    unsigned char,
+                    mixxx::Duration>::of(&Hss1394Controller::receive));
+    disconnect(m_pChannelListener,
+            QOverload<const QByteArray&, mixxx::Duration>::of(&DeviceChannelListener::incomingData),
+            this,
+            QOverload<const QByteArray&, mixxx::Duration>::of(&Hss1394Controller::receive));
 
     stopEngine();
     MidiController::close();
@@ -185,7 +202,7 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
     //}
 }
 
-void Hss1394Controller::send(QByteArray data) {
+void Hss1394Controller::send(const QByteArray& data) {
     int bytesSent = m_pChannel->SendChannelBytes(
         (unsigned char*)data.constData(), data.size());
 

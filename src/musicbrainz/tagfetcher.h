@@ -1,59 +1,80 @@
-/*****************************************************************************
- *  Copyright © 2012 John Maguire <john.maguire@gmail.com>                   *
- *                   David Sansome <me@davidsansome.com>                     *
- *  This work is free. You can redistribute it and/or modify it under the    *
- *  terms of the Do What The Fuck You Want To Public License, Version 2,     *
- *  as published by Sam Hocevar.                                             *
- *  See http://www.wtfpl.net/ for more details.                              *
- *****************************************************************************/
-
-#ifndef TAGFETCHER_H
-#define TAGFETCHER_H
+#pragma once
 
 #include <QFutureWatcher>
 #include <QObject>
 
-#include "musicbrainz/musicbrainzclient.h"
-#include "musicbrainz/acoustidclient.h"
-#include "track/track.h"
-
+#include "musicbrainz/web/acoustidlookuptask.h"
+#include "musicbrainz/web/musicbrainzrecordingstask.h"
+#include "track/track_decl.h"
+#include "util/parented_ptr.h"
 
 class TagFetcher : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-  // High level interface to Fingerprinter, AcoustidClient and
-  // MusicBrainzClient.
+    // Implements retrieval of metadata in 3 subsequent stages:
+    //   1. Chromaprint -> AcoustID fingerprint
+    //   2. AcoustID -> MusicBrainz recording UUIDs
+    //   3. MusicBrainz -> MusicBrainz track releases
 
   public:
-    TagFetcher(QObject* parent = 0);
+    explicit TagFetcher(
+            QObject* parent = nullptr);
+    ~TagFetcher() override = default;
 
-    void startFetch(const TrackPointer track);
+    void startFetch(
+            TrackPointer pTrack);
 
   public slots:
     void cancel();
 
   signals:
-    void resultAvailable(const TrackPointer originalTrack,
-                         const QList<TrackPointer>& tracksGuessed);
-    void fetchProgress(QString);
-    void networkError(int,QString);
+    void resultAvailable(
+            TrackPointer pTrack,
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
+    void fetchProgress(
+            const QString& message);
+    void networkError(
+            int httpStatus,
+            const QString& app,
+            const QString& message,
+            int code);
 
   private slots:
-    void fingerprintFound(int index);
-    void mbidFound(int index, const QString& mbid);
-    void tagsFetched(int index, const MusicBrainzClient::ResultList& result);
+    void slotFingerprintReady();
+
+    void slotAcoustIdTaskSucceeded(
+            QList<QUuid> recordingIds);
+    void slotAcoustIdTaskFailed(
+            const mixxx::network::JsonWebResponse& response);
+    void slotAcoustIdTaskAborted();
+    void slotAcoustIdTaskNetworkError(
+            QNetworkReply::NetworkError errorCode,
+            const QString& errorString,
+            const mixxx::network::WebResponseWithContent& responseWithContent);
+
+    void slotMusicBrainzTaskSucceeded(
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
+    void slotMusicBrainzTaskFailed(
+            const mixxx::network::WebResponse& response,
+            int errorCode,
+            const QString& errorMessage);
+    void slotMusicBrainzTaskAborted();
+    void slotMusicBrainzTaskNetworkError(
+            QNetworkReply::NetworkError errorCode,
+            const QString& errorString,
+            const mixxx::network::WebResponseWithContent& responseWithContent);
 
   private:
-    // has to be static so we can call it with QtConcurrent and have a nice
-    // responsive UI while the fingerprint is calculated
-    static QString getFingerprint(const TrackPointer tio);
+    bool onAcoustIdTaskTerminated();
+    bool onMusicBrainzTaskTerminated();
 
-    QFutureWatcher<QString>* m_pFingerprintWatcher;
-    AcoustidClient m_AcoustidClient;
-    MusicBrainzClient m_MusicbrainzClient;
+    QNetworkAccessManager m_network;
 
-    // Code can already be run on an arbitrary number of input tracks
-    QList<TrackPointer> m_tracks;
+    QFutureWatcher<QString> m_fingerprintWatcher;
+
+    parented_ptr<mixxx::AcoustIdLookupTask> m_pAcoustIdTask;
+
+    parented_ptr<mixxx::MusicBrainzRecordingsTask> m_pMusicBrainzTask;
+
+    TrackPointer m_pTrack;
 };
-
-#endif // TAGFETCHER_H

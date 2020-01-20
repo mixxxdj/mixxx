@@ -12,16 +12,12 @@
 //
 
 #include <QtDebug>
+#include <QDir>
 #include <QFile>
 #include <QIODevice>
 #include <QUrl>
 
 #include "library/parser.h"
-
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
-
 
 Parser::Parser() {
 }
@@ -37,7 +33,7 @@ long Parser::countParsed() {
     return (long)m_sLocations.count();
 }
 
-bool Parser::isBinary(QString filename) {
+bool Parser::isBinary(const QString& filename) {
     char firstByte;
     QFile file(filename);
     if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {
@@ -48,12 +44,12 @@ bool Parser::isBinary(QString filename) {
             return false;
         }
         // Check for UTF-8 BOM
-        if (firstByte == static_cast<char>(0xEF)) {
+        if (firstByte == '\xEF') {
             char nextChar;
             if (file.getChar(&nextChar) &&
-                    nextChar == static_cast<char>(0xBB) &&
+                    nextChar == '\xBB' &&
                     file.getChar(&nextChar) &&
-                    nextChar == static_cast<char>(0xBF)) {
+                    nextChar == '\xBF') {
                 // UTF-8 text file
                 return false;
             }
@@ -146,11 +142,19 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-QString Parser::playlistEntrytoLocalFile(const QString& playlistEntry) {
+TrackFile Parser::playlistEntryToTrackFile(
+        const QString& playlistEntry,
+        const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
-        return QUrl(playlistEntry).toLocalFile();
+        // URLs are always absolute
+        return TrackFile::fromUrl(QUrl(playlistEntry));
     }
-
-    return QString(playlistEntry).replace('\\', '/');
+    auto filePath = QString(playlistEntry).replace('\\', '/');
+    auto trackFile = TrackFile(filePath);
+    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+        return trackFile;
+    } else {
+        // Fallback: Relative to base path
+        return TrackFile(QDir(basePath), filePath);
+    }
 }
-

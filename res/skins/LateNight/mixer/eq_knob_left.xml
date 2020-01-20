@@ -1,0 +1,103 @@
+<!DOCTYPE template>
+<Template>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>ChannelMixer_KnobContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>EQKillButtonBox</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>18f,34f</Size>
+            <Children>
+              <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+              <EffectPushButton>
+                <TooltipId>filter<Variable name="EqRange"/>Kill</TooltipId>
+                <ObjectName>EQKillButton_<Variable name="EqRange"/></ObjectName>
+                <Size>18f,18f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="EqEffect"/>,button_parameter<Variable name="EqParameter"/></ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </EffectPushButton>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- EQKillButtonBox -->
+
+          <WidgetGroup><!-- EQ knob + Kill status dot -->
+            <Size>40f,34f</Size>
+            <Children>
+              <EffectParameterKnobComposed>
+                <Pos>0,0</Pos>
+                <Size>40f,34f</Size>
+                <TooltipId>filter<Variable name="EqRange"/></TooltipId>
+                <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_regular_<Variable name="KnobColorEq"/>.svg</Knob>
+                <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_regular.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
+                <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+                <ArcColor><Variable name="ArcColorEq"/></ArcColor>
+                <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+                <KnobCenterYOffset>1.998</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/></ConfigKey>
+                </Connection>
+              </EffectParameterKnobComposed>
+              <PushButton>
+                <TooltipId>filter<Variable name="EqRange"/>Kill</TooltipId>
+                <ObjectName>EQKillDot</ObjectName>
+                <Pos>0,27</Pos>
+                <Size><Variable name="EqKillDotSize"/></Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>false</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="EqEffect"/>,button_parameter<Variable name="EqParameter"/></ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup><!-- EQ knob + Kill status dot -->
+
+        </Children>
+      </WidgetGroup><!-- ChannelMixer_KnobContainer -->
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

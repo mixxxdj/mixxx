@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_TRANSLATIONS_H
-#define MIXXX_UTIL_TRANSLATIONS_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QLocale>
@@ -78,11 +77,13 @@ class Translations {
     }
 
   private:
-    static bool loadTranslations(const QLocale& systemLocale, QString userLocale,
-                                 const QString& translation, const QString& prefix,
-                                 const QString& translationPath, QTranslator* pTranslator) {
+    static bool loadTranslations(const QLocale& systemLocale,
+            const QString& userLocale,
+            const QString& translation,
+            const QString& prefix,
+            const QString& translationPath,
+            QTranslator* pTranslator) {
         if (userLocale.size() == 0) {
-#if QT_VERSION >= 0x040800
             QStringList uiLanguages = systemLocale.uiLanguages();
             if (uiLanguages.size() > 0 && uiLanguages.first() == "en") {
                 // Don't bother loading a translation if the first ui-langauge is
@@ -93,9 +94,6 @@ class Translations {
                 return false;
             }
             return pTranslator->load(systemLocale, translation, prefix, translationPath);
-#else
-            userLocale = systemLocale.name();
-#endif  // QT_VERSION
         }
         return pTranslator->load(translation + prefix + userLocale, translationPath);
     }
@@ -104,6 +102,3 @@ class Translations {
 };
 
 }  // namespace mixxx
-
-
-#endif /* MIXXX_UTIL_TRANSLATIONS_H */

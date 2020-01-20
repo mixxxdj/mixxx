@@ -5,6 +5,7 @@
         <author>Midiparse</author>
         <description>Novation Launchpad mapping for Mixxx</description>
         <forums>https://github.com/szdavid92/mixxx-launchpad</forums>
+        <manual>novation_launchpad_mk1</manual>
     </info>
     <controller id="Novation Launchpad">
         <scriptfiles>

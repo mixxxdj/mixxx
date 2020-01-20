@@ -1,5 +1,4 @@
-#ifndef ENGINENETWORKSTREAM_H_
-#define ENGINENETWORKSTREAM_H_
+#pragma once
 
 #include <engine/sidechain/networkoutputstreamworker.h>
 #include <engine/sidechain/networkinputstreamworker.h>
@@ -61,7 +60,4 @@ class EngineNetworkStream {
     // the workers are then performed on thread-safe QSharedPointers and not
     // onto the thread-unsafe QVector
     QVector<NetworkOutputStreamWorkerPtr> m_outputWorkers;
-    NetworkInputStreamWorker* m_pInputWorker;
 };
-
-#endif /* ENGINENETWORKSTREAM_H_ */

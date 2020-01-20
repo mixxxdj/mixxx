@@ -1,0 +1,77 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>Deck<Variable name="ChanNum"/></ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>DeckRows12345</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <Template src="skin:/decks/row_1_keyVinylFx.xml"/>
+
+              <WidgetGroup>
+                <ObjectName>DeckRows234</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName>SpinnyCoverContainer_Big</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[LateNight],show_big_spinny_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- SpinnyCoverContainer_Big -->
+
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:/decks/row_2_3_TitleArtistTime.xml" />
+                      <Template src="skin:/decks/row_4_overviewSpinny.xml" />
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup><!-- DeckRows234 -->
+
+              <Template src="skin:/decks/row_5_transportLoopJump.xml" />
+
+            </Children>
+          </WidgetGroup><!-- DeckRows12345 -->
+
+          <WidgetGroup>
+            <ObjectName>DeckRateSpacer</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Children/>
+            <!-- this is sized and styled in css -->
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skin:/decks/rate_controls.xml"/>
+        </Children>
+      </WidgetGroup><!-- DeckN -->
+    </Children>
+  </WidgetGroup>
+</Template>

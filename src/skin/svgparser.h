@@ -1,10 +1,8 @@
-#ifndef SVGPARSER_H
-#define SVGPARSER_H
+#pragma once
 
 #include <QString>
 #include <QDomNode>
 #include <QDomElement>
-#include <QScopedPointer>
 
 #include "skin/skincontext.h"
 
@@ -13,8 +11,8 @@
 class SvgParser {
   public:
     // Assumes SkinContext lives for the lifetime of SvgParser.
-    SvgParser(const SkinContext& parent);
-    virtual ~SvgParser();
+    explicit SvgParser(const SkinContext* pParentContext);
+    virtual ~SvgParser() = default;
 
     QDomNode parseSvgTree(const QDomNode& svgSkinNode,
                           const QString& sourcePath);
@@ -27,9 +25,7 @@ class SvgParser {
     QScriptValue evaluateTemplateExpression(
             const QString& expression, int lineNumber) const;
 
-    const SkinContext& m_parentContext;
-    QScopedPointer<SkinContext> m_pChildContext;
+    const SkinContext* m_pParentContext;
+    SkinContext m_childContext;
     QString m_currentFile;
 };
-
-#endif /* SVGPARSER_H */

@@ -1,11 +1,10 @@
-#ifndef DLGPREFWAVEFORM_H
-#define DLGPREFWAVEFORM_H
+#pragma once
 
 #include <QWidget>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
 class Library;
@@ -18,9 +17,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     virtual ~DlgPrefWaveform();
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
     void slotSetWaveformEndRender(int endTime);
 
   private slots:
@@ -42,11 +41,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
+    void notifyRebootNecessary();
 
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     MixxxMainWindow* m_pMixxx;
 };
-
-
-#endif /* DLGPREFWAVEFORM_H */

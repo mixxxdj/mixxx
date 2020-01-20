@@ -26,9 +26,9 @@ class WWidgetStackTest : public MixxxTest {
                 new ControlPushButton(ConfigKey(m_pGroup, "next")));
         m_pCurPageControl.reset(
                 new ControlObject(ConfigKey(m_pGroup, "page")));
-        m_pStack.reset(new WWidgetStack(NULL, m_pNextControl.data(),
-                                        m_pPrevControl.data(),
-                                        m_pCurPageControl.data()));
+        m_pStack.reset(new WWidgetStack(NULL, m_pNextControl->getKey(),
+                                        m_pPrevControl->getKey(),
+                                        m_pCurPageControl->getKey()));
 
         // 0-based index
         m_pCurPageControl->set(1);
@@ -111,9 +111,9 @@ TEST_F(WWidgetStackTest, MaintainPageControlValue) {
             new ControlObject(ConfigKey(m_pGroup,
                                         "MaintainPageControlValue-page")));
     QScopedPointer<WWidgetStack> stack(
-            new WWidgetStack(NULL, m_pNextControl.data(),
-                             m_pPrevControl.data(),
-                             m_pCurPageControl.data()));
+            new WWidgetStack(NULL, m_pNextControl->getKey(),
+                             m_pPrevControl->getKey(),
+                             m_pCurPageControl->getKey()));
 
     QWidget page0;
     QWidget page1;

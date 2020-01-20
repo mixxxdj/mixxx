@@ -1,39 +1,9 @@
-#ifndef FILE_H
-#define FILE_H
+#pragma once
 
 #include <QFile>
 #include <QDir>
 
 #include "util/sandbox.h"
-
-class MFile {
-  public:
-    MFile();
-    MFile(const QString& name);
-    MFile(const MFile& other);
-    virtual ~MFile();
-
-    QFile& file() {
-        return m_file;
-    }
-
-    const QFile& file() const {
-        return m_file;
-    }
-
-    SecurityTokenPointer token() {
-        return m_pSecurityToken;
-    }
-
-    bool canAccess();
-
-    MFile& operator=(const MFile& other);
-
-  private:
-    QString m_fileName;
-    QFile m_file;
-    SecurityTokenPointer m_pSecurityToken;
-};
 
 class MDir {
   public:
@@ -63,5 +33,3 @@ class MDir {
     QDir m_dir;
     SecurityTokenPointer m_pSecurityToken;
 };
-
-#endif /* FILE_H */

@@ -1,26 +1,30 @@
 #include "glrgbwaveformwidget.h"
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "moc_glrgbwaveformwidget.cpp"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glwaveformrendererrgb.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/sharedglcontext.h"
 
-#include "util/performancetimer.h"
-
-GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
+        : GLWaveformWidgetAbstract(group, parent) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    addRenderer<GLWaveformRendererRGB>();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+    m_pGlRenderer = addRenderer<GLWaveformRendererRGB>();
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
@@ -29,12 +33,6 @@ GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
 
     setAutoBufferSwap(false);
 
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -43,7 +41,7 @@ GLRGBWaveformWidget::~GLRGBWaveformWidget() {
 }
 
 void GLRGBWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {
@@ -59,7 +57,7 @@ mixxx::Duration GLRGBWaveformWidget::render() {
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
-    draw(&painter, NULL);
+    draw(&painter, nullptr);
     //t2 = timer.restart();
     //qDebug() << "GLRGBWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup

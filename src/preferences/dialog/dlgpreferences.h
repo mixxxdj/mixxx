@@ -1,33 +1,16 @@
-/***************************************************************************
-                          dlgpreferences.h  -  description
-                             -------------------
-    begin                : Sun Jun 30 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFERENCES_H
-#define DLGPREFERENCES_H
+#pragma once
 
 #include <QDialog>
+#include <QDir>
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -40,6 +23,7 @@ class DlgPrefNoVinyl;
 class DlgPrefInterface;
 class DlgPrefWaveform;
 class DlgPrefDeck;
+class DlgPrefColors;
 class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
@@ -66,20 +50,28 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
-                   PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, LV2Backend* pLV2Backend, 
-                   EffectsManager* pEffectsManager,
-                   SettingsManager* pSettingsManager, Library *pLibrary);
+    DlgPreferences(MixxxMainWindow* pMixxx,
+            SkinLoader* pSkinLoader,
+            SoundManager* pSoundManager,
+            PlayerManager* pPlayerManager,
+            ControllerManager* pControllerManager,
+            VinylControlManager* pVCManager,
+            LV2Backend* pLV2Backend,
+            EffectsManager* pEffectsManager,
+            SettingsManager* pSettingsManager,
+            Library* pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(DlgPreferencePage* pWidget);
+    void addPageWidget(DlgPreferencePage* pWidget,
+            QTreeWidgetItem* pTreeItem,
+            const QString& pageTitle,
+            const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:
-    void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
@@ -100,7 +92,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   private:
     DlgPreferencePage* currentPage();
-    void createIcons();
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
@@ -110,11 +101,15 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefSound* m_soundPage;
     DlgPrefLibrary* m_libraryPage;
     DlgPrefControllers *m_controllersPage;
+#ifdef __VINYLCONTROL__
     DlgPrefVinyl* m_vinylControlPage;
+#else /* __VINYLCONTROL__ */
     DlgPrefNoVinyl* m_noVinylControlPage;
+#endif
     DlgPrefInterface* m_interfacePage;
     DlgPrefWaveform* m_waveformPage;
     DlgPrefDeck* m_deckPage;
+    DlgPrefColors* m_colorsPage;
     DlgPrefEQ* m_equalizerPage;
     DlgPrefCrossfader* m_crossfaderPage;
     DlgPrefEffects* m_effectsPage;
@@ -129,22 +124,22 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 #endif /* __LILV__ */
 #ifdef __MODPLUG__
     DlgPrefModplug* m_modplugPage;
-#endif
+#endif /* __MODPLUG__ */
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
-    QTreeWidgetItem* m_pControllerTreeItem;
+    QTreeWidgetItem* m_pControllersRootButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pInterfaceButton;
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pDecksButton;
+    QTreeWidgetItem* m_pColorsButton;
     QTreeWidgetItem* m_pEqButton;
 #ifdef __LILV__
     QTreeWidgetItem* m_pLV2Button;
 #endif /* __LILV__ */
     QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
-    //QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pAutoDJButton;
     QTreeWidgetItem* m_pBroadcastButton;
     QTreeWidgetItem* m_pRecordingButton;
@@ -153,11 +148,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pReplayGainButton;
 #ifdef __MODPLUG__
     QTreeWidgetItem* m_pModplugButton;
-#endif
+#endif /* __MODPLUG__ */
 
     QSize m_pageSizeHint;
 
-    ControlPushButton m_preferencesUpdated;
+    QDir m_iconsPath;
 };
-
-#endif

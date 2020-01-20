@@ -1,11 +1,10 @@
-#ifndef ENGINECOMPRESSOR_H
-#define ENGINECOMPRESSOR_H
+#pragma once
 
 #include "util/types.h"
 
 class EngineSideChainCompressor {
   public:
-    EngineSideChainCompressor(const char* group);
+    EngineSideChainCompressor(const QString& group);
     virtual ~EngineSideChainCompressor() { };
 
     void setParameters(CSAMPLE threshold, CSAMPLE strength,
@@ -40,10 +39,8 @@ class EngineSideChainCompressor {
         calculateRates();
     }
 
-
-    // Before calling processKey on multiple channels, first call clearKeys to
-    // clear state from the last round of compressor gain calculation.
-    void clearKeys();
+    /// Forces the above threshold flag to the given value without calculations
+    void setAboveThreshold(bool value);
 
     // Every loop, before calling process, first call processKey to feed
     // the compressor the input key signal.  It is safe to call this function
@@ -83,5 +80,3 @@ class EngineSideChainCompressor {
     CSAMPLE m_attackPerFrame;
     CSAMPLE m_decayPerFrame;
 };
-
-#endif

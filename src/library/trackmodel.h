@@ -1,13 +1,14 @@
-#ifndef TRACKMODEL_H
-#define TRACKMODEL_H
+#pragma once
 
-#include <QList>
-#include <QLinkedList>
 #include <QItemDelegate>
+#include <QList>
+#include <QVector>
 #include <QtSql>
 
-#include "track/track.h"
+#include "library/coverart.h"
 #include "library/dao/settingsdao.h"
+#include "track/track_decl.h"
+#include "track/trackref.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -16,8 +17,8 @@ class TrackModel {
     static const int kHeaderWidthRole = Qt::UserRole + 0;
     static const int kHeaderNameRole = Qt::UserRole + 1;
 
-    TrackModel(QSqlDatabase db,
-               const char* settingsNamespace)
+    TrackModel(const QSqlDatabase& db,
+            const char* settingsNamespace)
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
@@ -49,9 +50,54 @@ class TrackModel {
     };
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
-    // Deserialize and return the track at the given QModelIndex in this result
-    // set.
+    // Note that these enum values are used literally by controller scripts and must never be changed!
+    // Both reordering or insertion of new enum variants is strictly forbidden!
+    // New variants must always be inserted between the last valid and before the terminating variant IdMax!
+    enum class SortColumnId : int {
+        Invalid = -1,
+        CurrentIndex = 0, // Column with the cursor on it
+        Artist = 1,
+        Title = 2,
+        Album = 3,
+        AlbumArtist = 4,
+        Year = 5,
+        Genre = 6,
+        Composer = 7,
+        Grouping = 8,
+        TrackNumber = 9,
+        FileType = 10,
+        NativeLocation = 11,
+        Comment = 12,
+        Duration = 13,
+        BitRate = 14,
+        Bpm = 15,
+        ReplayGain = 16,
+        DateTimeAdded = 17,
+        TimesPlayed = 18,
+        Rating = 19,
+        Key = 20,
+        Preview = 21,
+        CoverArt = 22,
+        Position = 23,
+        PlaylistId = 24,
+        Location = 25,
+        Filename = 26,
+        FileModifiedTime = 27,
+        FileCreationTime = 28,
+        SampleRate = 29,
+        Color = 30,
+
+        // IdMax terminates the list of columns, it must be always after the last item
+        IdMax,
+
+        IdMin = Artist,
+        NumOfIds = (IdMax - IdMin) + 1
+    };
+
+    // Deserialize and return the track at the given QModelIndex
+    // or TrackRef in this result set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
+    virtual TrackPointer getTrackByRef(const TrackRef& trackRef) const = 0;
 
     // Gets the on-disk location of the track at the given location
     // with Qt separator "/".
@@ -61,9 +107,11 @@ class TrackModel {
     // Gets the track ID of the track at the given QModelIndex
     virtual TrackId getTrackId(const QModelIndex& index) const = 0;
 
+    virtual CoverInfo getCoverInfo(const QModelIndex& index) const = 0;
+
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
-    virtual const QLinkedList<int> getTrackRows(TrackId trackId) const = 0;
+    virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
@@ -108,13 +156,16 @@ class TrackModel {
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
     }
-    virtual QString getModelSetting(QString name) {
+    /*non-virtual*/ bool hasCapabilities(TrackModel::CapabilitiesFlags caps) const {
+        return (getCapabilities() & caps) == caps;
+    }
+    virtual QString getModelSetting(const QString& name) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.getValue(key);
     }
 
-    virtual bool setModelSetting(QString name, QVariant value) {
+    virtual bool setModelSetting(const QString& name, const QVariant& value) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.setValue(key, value);
@@ -133,10 +184,14 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
-    virtual bool isColumnSortable(int column) {
+    virtual bool isColumnSortable(int column) const {
         Q_UNUSED(column);
         return true;
     }
+
+    virtual SortColumnId sortColumnIdFromColumnIndex(int index) const = 0;
+
+    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const = 0;
 
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);
@@ -153,5 +208,3 @@ class TrackModel {
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
 };
-
-#endif

@@ -1,28 +1,12 @@
-/***************************************************************************
-                          wdisplay.cpp  -  description
-                             -------------------
-    begin                : Fri Jun 21 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wdisplay.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
 #include <QPaintEvent>
-#include <QtDebug>
 #include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
+#include "moc_wdisplay.cpp"
 #include "widget/wpixmapstore.h"
 
 WDisplay::WDisplay(QWidget * parent)
@@ -98,9 +82,9 @@ void WDisplay::resetPositions() {
     m_disabledPixmaps.resize(0);
 }
 
-void WDisplay::setPixmapBackground(PixmapSource source,
-                                   Paintable::DrawMode mode,
-                                   double scaleFactor) {
+void WDisplay::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()

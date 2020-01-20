@@ -1,29 +1,11 @@
-/***************************************************************************
-                          dlgprefcontrols.h  -  description
-                             -------------------
-    begin                : Sat Jul 5 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFCONTROLS_H
-#define DLGPREFCONTROLS_H
+#pragma once
 
 #include <QWidget>
 
 #include "preferences/constants.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefinterfacedlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -32,23 +14,20 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:
     DlgPrefInterface(QWidget *parent, MixxxMainWindow *mixxx,
                     SkinLoader* pSkinLoader, UserSettingsPointer pConfig);
-    virtual ~DlgPrefInterface();
+    ~DlgPrefInterface() override = default;
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
     void slotSetTooltips();
+    void slotSetSkinDescription(const QString& skin);
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
@@ -58,13 +37,13 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
   private:
     void notifyRebootNecessary();
     void loadTooltipPreferenceFromConfig();
-    bool checkSkinResolution(QString skin);
 
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item
     // that has the corresponding userData. If the userdata is not in the list,
     // returns zero.
     int cueDefaultIndexByData(int userData) const;
+    QScreen* getScreen() const;
 
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
@@ -85,5 +64,3 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
     bool m_bRebootMixxxView;
 };
-
-#endif

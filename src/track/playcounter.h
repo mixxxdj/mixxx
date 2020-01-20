@@ -1,5 +1,4 @@
-#ifndef MIXXX_PLAYCOUNTER_H
-#define MIXXX_PLAYCOUNTER_H
+#pragma once
 
 #include "util/assert.h"
 
@@ -53,4 +52,3 @@ inline
 QDebug operator<<(QDebug dbg, const PlayCounter& arg) {
     return dbg << "played =" << arg.isPlayed() << "/" << "count =" << arg.getTimesPlayed();
 }
-#endif // MIXXX_PLAYCOUNTER_H

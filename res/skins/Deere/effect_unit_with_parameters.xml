@@ -10,78 +10,31 @@ Variables:
   <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
-    <Layout>vertical</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
     <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
-    <MinimumSize>-1,150</MinimumSize>
+    <MinimumSize>446,120</MinimumSize>
     <MaximumSize>-1,190</MaximumSize>
     <Children>
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <ObjectName>EffectUnitEffects</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
-          <WidgetGroup>
-            <ObjectName>EffectUnitEffects</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
 
-              <Template src="skin:effect_single_with_parameters.xml">
-                <SetVariable name="Effect">1</SetVariable>
-              </Template>
+          <Template src="skin:effect_single_with_parameters.xml">
+            <SetVariable name="Effect">1</SetVariable>
+          </Template>
 
-              <Template src="skin:effect_single_with_parameters.xml">
-                <SetVariable name="Effect">2</SetVariable>
-              </Template>
+          <Template src="skin:effect_single_with_parameters.xml">
+            <SetVariable name="Effect">2</SetVariable>
+          </Template>
 
-              <Template src="skin:effect_single_with_parameters.xml">
-                <SetVariable name="Effect">3</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:effect_single_with_parameters.xml">
+            <SetVariable name="Effect">3</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <ObjectName>EffectUnitControls</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-
-              <Template src="skin:knob.xml">
-                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                <SetVariable name="control">mix</SetVariable>
-                <SetVariable name="color">purple_gapless</SetVariable>
-              </Template>
-
-              <Template src="skin:left_2state_button.xml">
-                <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
-                <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-                <SetVariable name="MinimumSize">40,20</SetVariable>
-                <SetVariable name="MaximumSize">40,20</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_fx_mixmode_d-w.svg</SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_fx_mixmode_d-w.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,mix_mode</SetVariable>
-              </Template>
-
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,max</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-                <Children>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                    <SetVariable name="control">super1</SetVariable>
-                    <SetVariable name="color">blue_gapless</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-            </Children>
-          </WidgetGroup>
         </Children>
       </WidgetGroup>
 

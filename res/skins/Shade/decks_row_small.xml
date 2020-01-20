@@ -1,0 +1,31 @@
+<Template>
+  <WidgetGroup>
+    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>DeckRowSmall</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="channum">1</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>4f,40f</Size></WidgetGroup>
+
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="channum">2</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
+

@@ -1,5 +1,4 @@
-#ifndef GUITICK_H
-#define GUITICK_H
+#pragma once
 
 #include <QObject>
 
@@ -10,10 +9,9 @@
 
 // A helper class that manages the "guiTickTime" COs, that drive updates of the
 // GUI from the VsyncThread at the user's configured FPS (possibly downsampled).
-class GuiTick : public QObject {
-    Q_OBJECT
+class GuiTick {
   public:
-    GuiTick(QObject* pParent = NULL);
+    GuiTick();
     void process();
 
   private:
@@ -23,5 +21,3 @@ class GuiTick : public QObject {
     mixxx::Duration m_lastUpdateTime;
     mixxx::Duration m_cpuTimeLastTick;
 };
-
-#endif // GUITICK_H

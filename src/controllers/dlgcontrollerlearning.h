@@ -1,12 +1,4 @@
-/**
-* @file dlgcontrollerlearning.h
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
-#ifndef DLGCONTROLLERLEARNING_H
-#define DLGCONTROLLERLEARNING_H
+#pragma once
 
 #include <QDialog>
 #include <QList>
@@ -29,6 +21,7 @@ class ControllerPreset;
 
 //#define CONTROLLERLESSTESTING
 
+/// The controller mapping learning wizard
 class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
                               public Ui::DlgControllerLearning {
@@ -58,7 +51,7 @@ class DlgControllerLearning : public QDialog,
 
   public slots:
     // Triggered when the user picks a control from the menu.
-    void controlPicked(ConfigKey control);
+    void controlPicked(const ConfigKey& control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
     void comboboxIndexChanged(int index);
@@ -83,7 +76,7 @@ class DlgControllerLearning : public QDialog,
 #endif
 
   private:
-    void loadControl(const ConfigKey& key, QString title, QString description);
+    void loadControl(const ConfigKey& key, const QString& title, QString description);
     void startListening();
     void commitMapping();
     void resetWizard(bool keepCurrentControl = false);
@@ -99,5 +92,3 @@ class DlgControllerLearning : public QDialog,
     QList<QPair<MidiKey, unsigned char> > m_messages;
     MidiInputMappings m_mappings;
 };
-
-#endif

@@ -1,20 +1,4 @@
-/**
- * @file soundmanagerconfig.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100709
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDMANAGERCONFIG_H
-#define SOUNDMANAGERCONFIG_H
+#pragma once
 
 #ifndef SOUNDMANAGERCONFIG_FILENAME
 #define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
@@ -41,6 +25,7 @@ public:
     };
     static const unsigned int kMaxAudioBufferSizeIndex;
     static const QString kDefaultAPI;
+    static const QString kEmptyComboBox;
     static const unsigned int kFallbackSampleRate;
     static const unsigned int kDefaultDeckCount;
     static const int kDefaultAudioBufferSizeIndex;
@@ -103,4 +88,3 @@ private:
     bool m_bExternalRecordBroadcastConnected;
     SoundManager* m_pSoundManager;
 };
-#endif

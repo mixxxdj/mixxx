@@ -47,6 +47,35 @@
       <number>0</number>
      </property>
      <item>
+      <widget class="QPushButton" name="btnSelect">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Selects all tracks in the table below.</string>
+       </property>
+       <property name="text">
+        <string>Select All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnPurge">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Purge selected tracks from the library.</string>
+       </property>
+       <property name="text">
+        <string>Purge</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -58,29 +87,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnSelect">
-       <property name="toolTip">
-        <string>Selects all tracks in the table below.</string>
-       </property>
-       <property name="text">
-        <string>Select All</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnPurge">
-       <property name="toolTip">
-        <string>Purge selected tracks from the library.</string>
-       </property>
-       <property name="text">
-        <string>Purge</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

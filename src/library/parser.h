@@ -11,8 +11,7 @@
 //
 //
 
-#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
 /**Developer Information:
 This is the rootclass for all parser classes for the Importer class.
@@ -25,7 +24,7 @@ it afterwards for proper functioning
 #include <QString>
 #include <QList>
 
-#include <gtest/gtest.h>
+#include "track/trackfile.h"
 
 class Parser : public QObject {
   public:
@@ -42,10 +41,9 @@ class Parser : public QObject {
     Note for developers:
     This function should return an empty PtrList
      or 0 in order for the trackimporter to function**/
-    virtual QList<QString> parse(QString) = 0;
+    virtual QList<QString> parse(const QString&) = 0;
 
-
-protected:
+  protected:
     // Pointer to the parsed Filelocations
     QList<QString> m_sLocations;
     // Returns the number of parsed locations
@@ -53,13 +51,11 @@ protected:
     // Clears m_psLocations
     void clearLocations();
     // Checks if the file does contain binary content
-    bool isBinary(QString);
+    bool isBinary(const QString&);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
-    // reads URLs an plain Parth and retuns a local file path
-    QString playlistEntrytoLocalFile(const QString& playlistEntry);
-
-    FRIEND_TEST(PlaylistTest, Normalize);
+    // Resolve an absolute or relative file path
+    TrackFile playlistEntryToTrackFile(
+            const QString& playlistEntry,
+            const QString& basePath = QString());
 };
-
-#endif

@@ -1,15 +1,4 @@
-/***************************************************************************
-                     encoderffmpegcore.h  -  core code for ffmpeg encoders
-                             -------------------
-    copyright            : (C) 2012-2013 by Tuukka Pasanen
-                           (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) ???? Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-
-#ifndef ENCODERFFMPEGCORE_H
-#define ENCODERFFMPEGCORE_H
+#pragma once
 
 #include <encoder/encoderffmpegresample.h>
 
@@ -30,17 +19,20 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-#include <QByteArray>
 #include <QBuffer>
-
+#include <QByteArray>
 #include <QLibrary>
 
-#include "util/types.h"
 #include "encoder/encoder.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class EncoderCallback;
 
+/// FFmpeg encoder class
+///
+/// Supports what FFmpeg is compiled to support and provides the same
+/// interface for all codecs.
 class EncoderFfmpegCore : public Encoder {
 public:
 #if LIBAVCODEC_VERSION_INT > 3544932
@@ -114,5 +106,3 @@ private:
     EncoderFfmpegResample *m_pResample;
     AVStream *m_pStream;
 };
-
-#endif

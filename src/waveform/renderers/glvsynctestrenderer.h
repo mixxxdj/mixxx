@@ -1,19 +1,23 @@
-#ifndef GLVSYNCTESTRENDERER_H
-#define GLVSYNCTESTRENDERER_H
+#pragma once
 
-#include "waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class ControlObject;
 
-class GLVSyncTestRenderer : public WaveformRendererSignalBase {
+class GLVSyncTestRenderer : public WaveformRendererSignalBase,
+                            public GLWaveformRenderer {
   public:
-    explicit GLVSyncTestRenderer(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLVSyncTestRenderer(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLVSyncTestRenderer();
 
     virtual void onSetup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
-  private:
+private:
     int m_drawcount;
 };
 
-#endif // GLVSYNCTESTRENDERER_H
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

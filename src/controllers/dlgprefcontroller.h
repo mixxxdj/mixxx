@@ -1,12 +1,4 @@
-/**
-* @file dlgprefcontroller.h
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Mon May 2 2011
-* @brief Configuration dialog for a DJ controller
-*/
-
-#ifndef DLGPREFCONTROLLER_H
-#define DLGPREFCONTROLLER_H
+#pragma once
 
 #include <QHash>
 #include <QSortFilterProxyModel>
@@ -17,13 +9,15 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
 class Controller;
 class ControllerManager;
+class PresetInfoEnumerator;
 
+/// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
@@ -32,31 +26,27 @@ class DlgPrefController : public DlgPreferencePage {
                       UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
+    QUrl helpUrl() const override;
+
   public slots:
-    // Called when we should apply / save our changes.
-    void slotApply();
-    // Called when we should cancel the changes made.
-    void slotCancel();
-    // Called when preference dialog (not this dialog) is displayed.
-    void slotUpdate();
-    // Called when the user toggles the enabled checkbox.
-    void slotEnableDevice(bool enable);
-    // Called when the user selects a preset from the combobox.
-    void slotLoadPreset(int index);
-    // Mark that we need to apply the settings.
-    void slotDirty();
+    /// Called when the preference dialog (not this page) is shown to the user.
+    void slotUpdate() override;
+    /// Called when the user clicks the global "Apply" button.
+    void slotApply() override;
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults() override;
 
   signals:
-    void controllerEnabled(DlgPrefController*, bool);
-    void openController(Controller* pController);
-    void closeController(Controller* pController);
-    void loadPreset(Controller* pController, QString controllerName);
-    void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
+    void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
     void mappingStarted();
     void mappingEnded();
 
   private slots:
-    void slotPresetLoaded(ControllerPresetPointer preset);
+    /// Called when the user selects another preset in the combobox
+    void slotPresetSelected(int index);
+    /// Used to selected the current preset in the combobox and display the
+    /// preset information.
+    void slotShowPreset(ControllerPresetPointer preset);
 
     // Input mappings
     void addInputMapping();
@@ -69,11 +59,6 @@ class DlgPrefController : public DlgPreferencePage {
     void removeOutputMappings();
     void clearAllOutputMappings();
 
-    // Scripts
-    void addScript();
-    void removeScript();
-    void openScript();
-
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
@@ -81,28 +66,52 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetName(const ControllerPresetPointer pPreset) const;
     QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
-    QString presetForumLink(const ControllerPresetPointer pPreset) const;
-    QString presetWikiLink(const ControllerPresetPointer pPreset) const;
-    void savePreset(QString path);
+    QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
+    QString presetFileLinks(const ControllerPresetPointer pPreset) const;
+    void applyPresetChanges();
+    void savePreset();
     void initTableView(QTableView* pTable);
 
-    // Reload the mappings in the dropdown dialog
-    void enumeratePresets();
+    /// Set dirty state (i.e. changes have been made).
+    ///
+    /// When this preferences page is marked as "dirty", changes have occurred
+    /// that can be applied or discarded.
+    ///
+    /// @param bDirty The new dialog's dirty state.
+    void setDirty(bool bDirty) {
+        m_bDirty = bDirty;
+    }
+
+    /// Set dirty state (i.e. changes have been made).
+    ///
+    /// When this preferences page is marked as "dirty", changes have occurred
+    /// that can be applied or discarded.
+    ///
+    /// @param bDirty The new dialog's dirty state.
+    bool isDirty() {
+        return m_bDirty;
+    }
+
+    /// Reload the mappings in the dropdown dialog
+    void enumeratePresets(const QString& selectedPresetPath);
+    PresetInfo enumeratePresetsFromEnumerator(
+            QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
+            const QIcon& icon = QIcon());
 
     void enableDevice();
     void disableDevice();
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
+    const QString m_pUserDir;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
+    QMap<QString, bool> m_pOverwritePresets;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };
-
-#endif /*DLGPREFCONTROLLER_H*/

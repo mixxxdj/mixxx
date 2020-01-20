@@ -1,18 +1,19 @@
 #include "effects/effectsmanager.h"
 
 #include <QMetaType>
-#include <QtAlgorithms>
-
 #include <algorithm>
 
-#include "engine/effects/engineeffectsmanager.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/engineeffectsmanager.h"
+#include "moc_effectsmanager.cpp"
 #include "util/assert.h"
+
+const QString EffectsManager::kNoEffectString = QStringLiteral("---");
 
 namespace {
 const QString kEffectGroupSeparator = "_";
@@ -20,20 +21,20 @@ const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent,
+        UserSettingsPointer pConfig,
+        ChannelHandleFactoryPointer pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
-          m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL),
+          m_pLoEqFreq(nullptr),
+          m_pHiEqFreq(nullptr),
           m_underDestruction(false) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize, false, false);
+                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize);
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
@@ -89,14 +90,18 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 
-    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
+    std::sort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
-            this, SLOT(slotBackendRegisteredEffect(EffectManifestPointer)));
+    connect(pBackend,
+            &EffectsBackend::effectRegistered,
+            this,
+            &EffectsManager::slotBackendRegisteredEffect);
 
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
-            this, SIGNAL(availableEffectsUpdated(EffectManifestPointer)));
+    connect(pBackend,
+            &EffectsBackend::effectRegistered,
+            this,
+            &EffectsManager::availableEffectsUpdated);
 }
 
 void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
@@ -205,7 +210,7 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     if (effectId.isEmpty()) {
         return EffectPointer();
     }
-    for (const auto& pBackend: m_effectsBackends) {
+    for (const auto& pBackend : qAsConst(m_effectsBackends)) {
         if (pBackend->canInstantiateEffect(effectId)) {
             return pBackend->instantiateEffect(this, effectId);
         }
@@ -322,10 +327,10 @@ void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool v
                                                 m_visibleEffectManifests.end(),
                                                 pManifest, alphabetizeEffectManifests);
         m_visibleEffectManifests.insert(insertion_point, pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     } else if (!visible) {
         m_visibleEffectManifests.removeOne(pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     }
 }
 
@@ -428,7 +433,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
+    if (m_pRequestPipe->writeMessage(request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
@@ -442,7 +447,7 @@ void EffectsManager::processEffectsResponses() {
     }
 
     EffectsResponse response;
-    while (m_pRequestPipe->readMessages(&response, 1) == 1) {
+    while (m_pRequestPipe->readMessage(&response)) {
         QHash<qint64, EffectsRequest*>::iterator it =
                 m_activeRequests.find(response.request_id);
 

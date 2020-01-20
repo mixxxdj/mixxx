@@ -67,6 +67,7 @@ public:
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
+    virtual ~AudioPath() = default;
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
     unsigned char getIndex() const;
@@ -106,13 +107,13 @@ class AudioOutput : public AudioPath {
     AudioOutput(AudioPathType type, unsigned char channelBase,
                 unsigned char channels,
                 unsigned char index = 0);
-    virtual ~AudioOutput();
+    ~AudioOutput() override = default;
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
     bool isHidden();
   protected:
-    void setType(AudioPathType type);
+    void setType(AudioPathType type) override;
 };
 
 // This class is required to add the buffer, without changing the hash used as ID
@@ -143,7 +144,7 @@ class AudioInput : public AudioPath {
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
   protected:
-    void setType(AudioPathType type);
+    void setType(AudioPathType type) override;
 };
 
 // This class is required to add the buffer, without changing the hash used as
@@ -163,17 +164,21 @@ class AudioInputBuffer : public AudioInput {
 
 class AudioSource {
 public:
-    virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+  virtual const CSAMPLE* buffer(const AudioOutput& output) const = 0;
 
-    // This is called by SoundManager whenever an output is connected for this
-    // source. When this is called it is guaranteed that no callback is
-    // active.
-    virtual void onOutputConnected(AudioOutput output) { Q_UNUSED(output); };
+  // This is called by SoundManager whenever an output is connected for this
+  // source. When this is called it is guaranteed that no callback is
+  // active.
+  virtual void onOutputConnected(const AudioOutput& output) {
+      Q_UNUSED(output);
+  };
 
     // This is called by SoundManager whenever an output is disconnected for
     // this source. When this is called it is guaranteed that no callback is
     // active.
-    virtual void onOutputDisconnected(AudioOutput output) { Q_UNUSED(output); };
+  virtual void onOutputDisconnected(const AudioOutput& output) {
+      Q_UNUSED(output);
+  };
 };
 
 class AudioDestination {
@@ -181,18 +186,23 @@ public:
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the clock reference
     // callback thread
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int iNumFrames) = 0;
+  virtual void receiveBuffer(const AudioInput& input,
+          const CSAMPLE* pBuffer,
+          unsigned int iNumFrames) = 0;
 
-    // This is called by SoundManager whenever an input is configured for this
-    // destination. When this is called it is guaranteed that no callback is
-    // active.
-    virtual void onInputConfigured(AudioInput input) { Q_UNUSED(input); };
+  // This is called by SoundManager whenever an input is configured for this
+  // destination. When this is called it is guaranteed that no callback is
+  // active.
+  virtual void onInputConfigured(const AudioInput& input) {
+      Q_UNUSED(input);
+  };
 
     // This is called by SoundManager whenever an input is unconfigured for this
     // destination. When this is called it is guaranteed that no callback is
     // active.
-    virtual void onInputUnconfigured(AudioInput input) { Q_UNUSED(input); };
+  virtual void onInputUnconfigured(const AudioInput& input) {
+      Q_UNUSED(input);
+  };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;
@@ -205,13 +215,7 @@ class SoundDeviceId {
     QString alsaHwDevice;
     int portAudioIndex;
 
-    QString debugName() const {
-        if (alsaHwDevice.isEmpty()) {
-            return name + ", " + portAudioIndex;
-        } else {
-            return name + ", " + alsaHwDevice + ", " + QString::number(portAudioIndex);
-        }
-    }
+    QString debugName() const;
 
     SoundDeviceId()
        : portAudioIndex(-1) {}

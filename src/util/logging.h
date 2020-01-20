@@ -1,8 +1,7 @@
 #ifndef MIXXX_UTIL_LOGGING_H
 #define MIXXX_UTIL_LOGGING_H
 
-#include <QDir>
-
+#include <QFlags>
 
 namespace mixxx {
 
@@ -13,6 +12,14 @@ enum class LogLevel {
     Debug = 3,
     Trace = 4, // for profiling etc.
 };
+
+enum class LogFlag {
+    None = 0,
+    LogToFile = 1,
+    DebugAssertBreak = 1 << 1,
+};
+Q_DECLARE_FLAGS(LogFlags, LogFlag);
+Q_DECLARE_OPERATORS_FOR_FLAGS(LogFlags);
 
 constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
 constexpr LogLevel kLogFlushLevelDefault = LogLevel::Critical;
@@ -27,10 +34,15 @@ extern LogLevel g_logFlushLevel;
 class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
-    static void initialize(const QDir& settingsDir,
-                           LogLevel logLevel,
-                           LogLevel logFlushLevel,
-                           bool debugAssertBreak);
+    static void initialize(
+            const QString& logDirPath,
+            LogLevel logLevel,
+            LogLevel logFlushLevel,
+            LogFlags flags);
+
+    // Sets only the loglevel without the on-disk settings.  Used by mixxx-test.
+    static void setLogLevel(LogLevel logLevel);
+
     static void shutdown();
 
     static void flushLogFile();

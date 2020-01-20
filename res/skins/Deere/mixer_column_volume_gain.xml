@@ -1,0 +1,46 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer_Column2</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,me</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>40f,-1</Size>
+        <MinimumSize>40,34</MinimumSize>
+        <MaximumSize>40,46</MaximumSize>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">green</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <SliderComposed>
+        <TooltipId>channel_volume</TooltipId>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>40,50</MinimumSize>
+        <MaximumSize>40,150</MaximumSize>
+        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
+        <Horizontal>false</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+      </SliderComposed>
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_faders</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

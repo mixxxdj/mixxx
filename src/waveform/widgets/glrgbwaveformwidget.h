@@ -1,14 +1,11 @@
-#ifndef GLRGBWAVEFORMWIDGET_H
-#define GLRGBWAVEFORMWIDGET_H
+#pragma once
 
-#include <QGLWidget>
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class GLRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLRGBWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLRGBWaveformWidget(const char* group, QWidget* parent);
+    GLRGBWaveformWidget(const QString& group, QWidget* parent);
     virtual ~GLRGBWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLRGBWaveform; }
@@ -27,5 +24,3 @@ class GLRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // GLRGBWAVEFORMWIDGET_H

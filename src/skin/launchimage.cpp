@@ -1,11 +1,13 @@
-#include <skin/launchimage.h>
+#include "skin/launchimage.h"
 
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QLabel>
+#include <QPainter>
 #include <QProgressBar>
 #include <QStyleOption>
-#include <QPainter>
+#include <QVBoxLayout>
+
+#include "moc_launchimage.cpp"
 
 LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         : QWidget(pParent) {
@@ -65,4 +67,3 @@ void LaunchImage::paintEvent(QPaintEvent *)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
-
