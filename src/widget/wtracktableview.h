@@ -131,8 +131,6 @@ class WTrackTableView : public WLibraryTableView {
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-    QSignalMapper m_loadTrackMapper;
-
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
 
@@ -158,7 +156,6 @@ class WTrackTableView : public WLibraryTableView {
 
 
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pImportMetadataFromFileAct;
@@ -190,7 +187,6 @@ class WTrackTableView : public WLibraryTableView {
     // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;

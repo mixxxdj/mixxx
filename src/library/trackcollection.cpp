@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QStringBuilder>
 #include <QThread>
 
 #include "library/trackcollection.h"
@@ -241,7 +240,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -268,7 +267,7 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // crate track visible again.
     QSet<CrateId> modifiedCrateSummaries =
             m_crates.collectCrateIdsOfTracks(trackIds);
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -307,7 +306,7 @@ bool TrackCollection::purgeTracks(
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -338,7 +337,7 @@ bool TrackCollection::insertCrate(
     }
 
     // Emit signals
-    emit(crateInserted(crateId));
+    emit crateInserted(crateId);
 
     if (pCrateId != nullptr) {
         *pCrateId = crateId;
@@ -363,7 +362,7 @@ bool TrackCollection::updateCrate(
     }
 
     // Emit signals
-    emit(crateUpdated(crate.getId()));
+    emit crateUpdated(crate.getId());
 
     return true;
 }
@@ -385,7 +384,7 @@ bool TrackCollection::deleteCrate(
     }
 
     // Emit signals
-    emit(crateDeleted(crateId));
+    emit crateDeleted(crateId);
 
     return true;
 }
@@ -408,7 +407,7 @@ bool TrackCollection::addCrateTracks(
     }
 
     // Emit signals
-    emit(crateTracksChanged(crateId, trackIds, QList<TrackId>()));
+    emit crateTracksChanged(crateId, trackIds, QList<TrackId>());
 
     return true;
 }
@@ -431,7 +430,7 @@ bool TrackCollection::removeCrateTracks(
     }
 
     // Emit signals
-    emit(crateTracksChanged(crateId, QList<TrackId>(), trackIds));
+    emit crateTracksChanged(crateId, QList<TrackId>(), trackIds);
 
     return true;
 }

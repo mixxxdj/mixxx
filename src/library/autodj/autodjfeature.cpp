@@ -94,10 +94,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
-    connect(&m_crateMapper,
-            QOverload<int>::of(&QSignalMapper::mapped),
-            this,
-            &AutoDJFeature::slotAddCrateToAutoDj);
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj,
             &QAction::triggered,
@@ -165,9 +161,9 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit(switchToView(kViewName));
+    emit switchToView(kViewName);
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
@@ -305,10 +301,9 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
-            m_crateMapper.setMapping(pAction.get(), crate.getId().value());
-            connect(pAction.get(),
-                    &QAction::triggered,
-                    [=](bool) { m_crateMapper.map(); });
+            int iCrateId = crate.getId().value();
+            connect(pAction.get(), &QAction::triggered,
+                    this, [this, iCrateId] { slotAddCrateToAutoDj(iCrateId); });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }

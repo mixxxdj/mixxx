@@ -127,7 +127,7 @@ void BrowseThread::populateModel() {
     // remove all rows
     // This is a blocking operation
     // see signal/slot connection in BrowseTableModel
-    emit(clearModel(thisModelObserver));
+    emit clearModel(thisModelObserver);
 
     QList< QList<QStandardItem*> > rows;
 
@@ -274,13 +274,13 @@ void BrowseThread::populateModel() {
         // Will limit GUI freezing
         if (row % 10 == 0) {
             // this is a blocking operation
-            emit(rowsAppended(rows, thisModelObserver));
+            emit rowsAppended(rows, thisModelObserver);
             qDebug() << "Append " << rows.count() << " from " << filepath;
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
-    emit(rowsAppended(rows, thisModelObserver));
+    emit rowsAppended(rows, thisModelObserver);
     qDebug() << "Append last " << rows.count();
 }

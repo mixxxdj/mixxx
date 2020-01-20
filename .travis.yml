@@ -55,8 +55,10 @@ jobs:
       # Ubuntu Xenial build prerequisites
       env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
       before_install:
-        - sudo apt-get install -y cmake
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+        - export CTEST_PARALLEL_LEVEL="$(nproc)"
+        - export PATH="$HOME/.local/bin:$PATH"
+        - pip install --user cmake
         - cmake --version
         - ccache -s
       install:
@@ -64,10 +66,10 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
         - cmake --build .
-        - sudo cmake --build . --target install
+        - sudo env "PATH=$PATH" cmake --build . --target install
       script:
         # Run tests and benchmarks
-        - cmake --build . --target test
+        - ctest
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
@@ -122,6 +124,7 @@ jobs:
         CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
         DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
+        CTEST_PARALLEL_LEVEL=1
       before_install:
         - brew install ccache
         - export PATH="/usr/local/opt/ccache/bin:$PATH"
@@ -135,7 +138,7 @@ jobs:
         - sudo cmake --build . --target install
       script:
         # Run tests and benchmarks
-        - cmake --build . --target test
+        - ctest
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth

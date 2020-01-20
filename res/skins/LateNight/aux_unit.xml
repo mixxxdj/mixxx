@@ -40,7 +40,7 @@
                       </Template>
                       <WidgetGroup><Size>8f,0min</Size></WidgetGroup>
                       <Template src="skin:knob_textless.xml">
-                        <SetVariable name="TooltipId">pregain</SetVariable>
+                        <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="type">small</SetVariable>

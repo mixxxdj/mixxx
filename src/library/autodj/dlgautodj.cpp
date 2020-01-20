@@ -82,30 +82,41 @@ DlgAutoDJ::DlgAutoDJ(
 
     connect(pushButtonAutoDJ, &QPushButton::toggled, this, &DlgAutoDJ::toggleAutoDJButton);
 
-    setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
-    setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
-    setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton, tr("Random"));
     setupActionButton(pushButtonFadeNow, &DlgAutoDJ::fadeNowButton, tr("Fade"));
+    setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
+    setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
+    setupActionButton(pushButtonAddRandom, &DlgAutoDJ::addRandomButton, tr("Random"));
 
-    connect(spinBoxTransition,
-            QOverload<int>::of(&QSpinBox::valueChanged),
-            this,
-            &DlgAutoDJ::transitionSliderChanged);
-
-    fadeModeCombobox->addItem(tr("Full Intro + Outro"),
-            static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
-    fadeModeCombobox->addItem(tr("Fade At Outro Start"),
-            static_cast<int>(AutoDJProcessor::TransitionMode::FadeAtOutroStart));
-    fadeModeCombobox->addItem(tr("Full Track"),
-            static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
-    fadeModeCombobox->addItem(tr("Skip Silence"),
-            static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
-    fadeModeCombobox->setCurrentIndex(
-            fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
-    connect(fadeModeCombobox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgAutoDJ::slotTransitionModeChanged);
+    m_enableBtnTooltip = tr(
+            "Enable Auto DJ\n"
+            "\n"
+            "Shortcut: Shift+F12");
+    m_disableBtnTooltip = tr(
+            "Disable Auto DJ\n"
+            "\n"
+            "Shortcut: Shift+F12");
+    QString fadeBtnTooltip = tr(
+            "Trigger the transition to the next track\n"
+            "\n"
+            "Shortcut: Shift+F11");
+    QString skipBtnTooltip = tr(
+            "Skip the next track in the Auto DJ queue\n"
+            "\n"
+            "Shortcut: Shift+F10");
+    QString shuffleBtnTooltip = tr(
+            "Shuffle the content of the Auto DJ queue\n"
+            "\n"
+            "Shortcut: Shift+F9");
+    QString addRandomBtnTooltip = tr(
+            "Adds a random track from track sources (crates) to the Auto DJ queue.\n"
+            "If no track sources are configured, the track is added from the library instead.");
+    QString repeatBtnTooltip = tr(
+            "Repeat the playlist");
+    QString spinBoxTransitionTooltip = tr(
+            "Determines the duration of the transition");
+    QString labelTransitionTooltip = tr(
+            // "sec" as in seconds
+            "Seconds");
     QString fadeModeTooltip = tr(
             "Auto DJ Fade Modes\n"
             "\n"
@@ -129,7 +140,35 @@ DlgAutoDJ::DlgAutoDJ(
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
             "last sound.");
+
+    pushButtonFadeNow->setToolTip(fadeBtnTooltip);
+    pushButtonSkipNext->setToolTip(skipBtnTooltip);
+    pushButtonShuffle->setToolTip(shuffleBtnTooltip);
+    pushButtonAddRandom->setToolTip(addRandomBtnTooltip);
+    pushButtonRepeatPlaylist->setToolTip(repeatBtnTooltip);
+    spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
+    labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
+
+    connect(spinBoxTransition,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgAutoDJ::transitionSliderChanged);
+
+    fadeModeCombobox->addItem(tr("Full Intro + Outro"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FullIntroOutro));
+    fadeModeCombobox->addItem(tr("Fade At Outro Start"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FadeAtOutroStart));
+    fadeModeCombobox->addItem(tr("Full Track"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
+    fadeModeCombobox->addItem(tr("Skip Silence"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
+    fadeModeCombobox->setCurrentIndex(
+            fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
+    connect(fadeModeCombobox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgAutoDJ::slotTransitionModeChanged);
 
     connect(pushButtonRepeatPlaylist,
             &QPushButton::toggled,
@@ -251,7 +290,7 @@ void DlgAutoDJ::transitionSliderChanged(int value) {
 void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     if (state == AutoDJProcessor::ADJ_DISABLED) {
         pushButtonAutoDJ->setChecked(false);
-        pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
+        pushButtonAutoDJ->setToolTip(m_enableBtnTooltip);
         if (m_bShowButtonText) {
             pushButtonAutoDJ->setText(tr("Enable"));
         }
@@ -260,7 +299,7 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     } else {
         // No matter the mode, you can always disable once it is enabled.
         pushButtonAutoDJ->setChecked(true);
-        pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
+        pushButtonAutoDJ->setToolTip(m_disableBtnTooltip);
         if (m_bShowButtonText) {
             pushButtonAutoDJ->setText(tr("Disable"));
         }
