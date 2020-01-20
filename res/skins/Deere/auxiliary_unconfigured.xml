@@ -45,6 +45,7 @@
                 <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,master</SetVariable>
+                <SetVariable name="TooltipId">configure_input</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

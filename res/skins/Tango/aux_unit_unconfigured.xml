@@ -38,6 +38,7 @@ Variables:
             <Size>20f,28f</Size>
             <Children>
               <Template src="skin:button_1state.xml">
+                <SetVariable name="TooltipId">configure_input</SetVariable>
                 <SetVariable name="ObjectName">MicAuxAdd</SetVariable>
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_text">+</SetVariable>
