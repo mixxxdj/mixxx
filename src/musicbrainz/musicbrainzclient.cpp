@@ -136,7 +136,6 @@ void MusicBrainzClient::replyFinished() {
         QString message = jsonObject["error"].toString();
         QStringList propertyNames;
         QStringList propertyKeys;
-        QString strReply = (QString)reply->readAll();
         emit networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
              "MusicBrainz", message, kDefaultErrorCode);
