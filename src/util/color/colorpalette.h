@@ -5,7 +5,7 @@
 #pragma once
 
 #include <QColor>
-#include "QList"
+#include <QList>
 
 class ColorPalette {
   public:

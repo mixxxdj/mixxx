@@ -2,10 +2,15 @@
 #include "control/controlobject.h"
 
 namespace {
-constexpr QRgb kOffPaletteDefault = 0xf36100; // library icons orange;
-} // anonymous namespace
 
-const QString HotcueColorPaletteSettings::sGroup = "[HotcueColorPalette]";
+const QString sGroup = QStringLitheral("[HotcueColorPalette]");
+constexpr QRgb kOffPaletteDefault = 0xf36100; // library icons orange;
+
+ConfigKey keyForIndex(int index) {
+    return ConfigKey(sGroup, QString::number(index));
+}
+
+} // anonymous namespace
 
 ColorPalette HotcueColorPaletteSettings::getHotcueColorPalette() const {
     QList<QRgb> colorList;

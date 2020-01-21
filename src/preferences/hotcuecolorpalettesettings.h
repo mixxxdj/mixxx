@@ -25,13 +25,6 @@ class HotcueColorPaletteSettings {
     QRgb offPaletteDefaultColor() const;
 
   private:
-    static const QString sGroup;
-
     void removePalette();
-
-    ConfigKey keyForIndex(int index) {
-        return ConfigKey(sGroup, QString::number(index));
-    }
-
     UserSettingsPointer m_pConfig;
 };

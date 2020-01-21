@@ -28,7 +28,7 @@ Cue::Cue(TrackId trackId)
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(0),
+          m_color(kDefaultDbColorValue),
           m_colorIsDefault(true) {
     DEBUG_ASSERT(!m_label.isNull());
 }
@@ -62,7 +62,9 @@ Cue::Cue(int id,
         m_sampleEndPosition = Cue::kNoPosition;
     }
 
-    DEBUG_ASSERT(m_color);
+    // We don't want to see the database default for 
+    // cues with no color here.
+    DEBUG_ASSERT(m_color != kDefaultDbColorValue);
 }
 int Cue::getId() const {
     QMutexLocker lock(&m_mutex);
@@ -187,7 +189,7 @@ void Cue::setColor(QRgb rgb) {
     m_bDirty = true;
     m_colorIsDefault = false;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void Cue::setDefaultColor(QRgb rgb) {

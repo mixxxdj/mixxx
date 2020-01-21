@@ -390,8 +390,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
     const QString hotcueSkinDefaultColor = m_pContext->variable("HotcueSkinDefaultColor");
     if (!hotcueSkinDefaultColor.isNull()) {
-        QColor color;
-        color.setNamedColor(hotcueSkinDefaultColor);
+        QColor color(hotcueSkinDefaultColor);
         QRgb rgb = color.rgb() & RGB_MASK; // The mask is required for some reasons. A Qt bug?
         DEBUG_ASSERT(rgb <= 0xFFFFFF);
         ControlObject::set(ConfigKey("[Skin]","hotcue_default_color"), rgb);
