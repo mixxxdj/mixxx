@@ -183,7 +183,6 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         }
 
         const MidiInputMapping& mapping = m_midiInputMappings.at(row);
-        QString value;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);

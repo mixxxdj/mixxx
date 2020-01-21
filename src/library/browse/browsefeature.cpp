@@ -359,7 +359,8 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
             QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
-
+#else
+    Q_UNUSED(pFeature);
 #endif
     return ret;
 }

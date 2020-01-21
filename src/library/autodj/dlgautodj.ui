@@ -54,9 +54,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="toolTip">
-        <string>Turn Auto DJ on or off.</string>
-       </property>
        <property name="checkable">
         <bool>true</bool>
        </property>
@@ -86,9 +83,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="toolTip">
-        <string>Trigger the transition to the next track.</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -98,9 +92,6 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Skip the next track in the Auto DJ queue.</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -118,9 +109,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="toolTip">
-        <string>Determines the duration of the transition.</string>
-       </property>
        <property name="frame">
         <bool>false</bool>
        </property>
@@ -134,9 +122,6 @@
      </item>
      <item>
       <widget class="QLabel" name="labelTransitionAppendix">
-       <property name="toolTip">
-        <string comment="&quot;sec.&quot; as in seconds">Seconds</string>
-       </property>
        <property name="text">
         <string>sec.</string>
        </property>
@@ -166,9 +151,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="toolTip">
-        <string>Shuffle the content of the Auto DJ queue.</string>
-       </property>
        <property name="checkable">
         <bool>false</bool>
        </property>
@@ -182,10 +164,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="toolTip">
-        <string>Adds a random track from track sources (crates) to the Auto DJ queue.
-If no track sources are configured, the track is added from the library instead.</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -195,9 +173,6 @@ If no track sources are configured, the track is added from the library instead.
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Repeat playlist</string>
        </property>
        <property name="checkable">
         <bool>true</bool>

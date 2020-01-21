@@ -63,18 +63,6 @@ QList<int> EncoderMp3Settings::getVBRQualityValues() const
     return m_qualVBRList;
 }
 
-// Sets the value
-void EncoderMp3Settings::setQualityByValue(int qualityValue) 
-{
-    if (m_qualList.contains(qualityValue)) {
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), 
-                ConfigValue(m_qualList.indexOf(qualityValue)));
-    } else {
-        qWarning() << "Invalid qualityValue given to EncoderMp3Settings: " 
-            << qualityValue << ". Ignoring it";
-    }
-}
-
 void EncoderMp3Settings::setQualityByIndex(int qualityIndex)
 {
     if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {

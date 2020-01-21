@@ -1,2 +1,6 @@
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg id="svg2" width="40" height="162" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect id="rect4167" x="12.633" y="1.25" width="14.734" height="159.5" rx="1" ry="1" fill="none" stroke="#555" stroke-linecap="round" stroke-width="1.5"/><path id="path4175" transform="translate(0,-9)" d="m18.062 15.688v148.62h3.875v-148.62h-3.875z" fill="#222" stroke="#222" stroke-linecap="round" stroke-width="2.5"/></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40" height="162" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <style/>
+ <rect x="12.75" y="1.75" width="14.5" height="158.5" rx="1" ry="1" fill="none" stroke="#555" stroke-linecap="round" stroke-width="1.5"/>
+ <path d="m20 156v-150z" fill="none" stroke="#222" stroke-width="6"/>
+</svg>

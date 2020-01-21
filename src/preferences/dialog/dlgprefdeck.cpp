@@ -118,7 +118,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this,
             &DlgPrefDeck::slotTimeFormatChanged);
 
-    QLocale locale;
     // Track Display model
     comboBoxTimeFormat->clear();
 
