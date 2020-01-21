@@ -127,6 +127,45 @@ RDJ2.ScratchButton.prototype = new components.Button({
     }
 });
 
+RDJ2.ShiftButton = function (options) {
+    this.state = false;
+    this.connectedContainers = [];
+    components.Button.call(this, options);
+};
+RDJ2.ShiftButton.prototype = new components.Button({
+    input: function (channel, control, value) {
+        //update shift state
+        this.state = RDJ2.isButtonPressed(value);
+        this.send(this.outValueScale(this.state));
+
+        //call shift()/unshift() for each connected container
+        if (this.state) {
+            //RDJ2.logDebug("Shifting containers");
+            this.connectedContainers.forEach(function (container) {
+                container.shift();
+            });
+        } else {
+            //RDJ2.logDebug("Unshifting containers");
+            this.connectedContainers.forEach(function (container) {
+                container.unshift();
+            });
+        }
+    },
+    isActive: function () {
+        return this.state;
+    },
+    connectContainer: function (container) {
+        if (container instanceof components.ComponentContainer === false) {
+            RDJ2.logError("Container type mismatch");
+        }
+        else
+        {
+            RDJ2.logDebug("Connecting container to shift button");
+            this.connectedContainers.push(container);
+        }
+    }
+});
+
 
 ////////////////////////////////////////////////////////////////////////
 // Controls                                                           //
@@ -378,10 +417,17 @@ RDJ2.init = function (id, debug) {
     
     RDJ2.logInfo("Initializing controller");
 
-    // left deck
+    //left and right shift buttons
+    RDJ2.leftShiftButton = new RDJ2.ShiftButton([0x90, 0x0A]);
+    RDJ2.rightShiftButton = new RDJ2.ShiftButton([0x90, 0x46]);
+    
+    // left and right deck
     RDJ2.leftDeck = new RDJ2.Deck(1);
-    // right deck
     RDJ2.rightDeck = new RDJ2.Deck(2);
+
+    //connect decks to shift buttons
+    RDJ2.leftShiftButton.connectContainer(RDJ2.leftDeck);
+    RDJ2.rightShiftButton.connectContainer(RDJ2.rightDeck);
 };
 
 RDJ2.shutdown = function () {

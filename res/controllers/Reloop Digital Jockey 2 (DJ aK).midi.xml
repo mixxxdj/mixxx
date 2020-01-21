@@ -63,6 +63,15 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>   <!-- shifted -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.playButton.input</key>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>RDJ2.leftDeck.cueButton.input</key>
@@ -72,11 +81,29 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>   <!-- shifted -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.cueButton.input</key>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>RDJ2.leftDeck.syncButton.input</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- shifted -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.syncButton.input</key>
+                <status>0x90</status>
+                <midino>0x1F</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -224,6 +251,15 @@
                     <normal/>
                 </options>
             </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftShiftButton.input</key>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
 
         <!-- Right Deck -->
             <control>
@@ -231,6 +267,15 @@
                 <key>RDJ2.rightDeck.playButton.input</key>
                 <status>0x90</status>
                 <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- shifted -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.playButton.input</key>
+                <status>0x90</status>
+                <midino>0x73</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -244,11 +289,29 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>   <!-- shifted -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.cueButton.input</key>
+                <status>0x90</status>
+                <midino>0x72</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel2]</group>
                 <key>RDJ2.rightDeck.syncButton.input</key>
                 <status>0x90</status>
                 <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- shifted -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.syncButton.input</key>
+                <status>0x90</status>
+                <midino>0x5B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -394,6 +457,15 @@
                 <midino>0x41</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightShiftButton.input</key>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
         </controls>
