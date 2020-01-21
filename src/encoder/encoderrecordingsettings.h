@@ -28,7 +28,7 @@ class EncoderRecordingSettings : public EncoderSettings {
     }
 
     // Sets the compression level
-    virtual void setCompression(int compression) {
+    void setCompression(int compression) override {
         Q_UNUSED(compression);
         DEBUG_ASSERT(!"unimplemented");
     }

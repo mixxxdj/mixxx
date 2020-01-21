@@ -50,7 +50,6 @@ class CoverArtUtilTest : public LibraryTest, public CoverArtCache {
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
-    QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
 
