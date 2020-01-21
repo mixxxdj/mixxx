@@ -617,10 +617,9 @@ void DlgPrefDeck::slotHotcueDefaultColorCombobox(int index) {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Information);
     msgBox.setWindowTitle(tr("Hotcue Defaut Color Changed"));
-    msgBox.setText(tr("The default color is used for new and legacy Hotcues. "
-                      "If you select one of the palette colors (recomended), "
-                      "the selected color is adopted and stored for all legacy "
-                      "cues of a track  once it is loaded. "
+    msgBox.setText(tr("New and imported Hotcues without a color, are displayed with the default color. "
+                      "If you select here one of the palette colors (recomended), "
+                      "it is also stored for all cues without a color of a track, during loading. "
                       "Hotcues of already loaded tracks are not updated."));
     msgBox.exec();
 }
