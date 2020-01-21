@@ -2,7 +2,6 @@
 Description:
   VUMeter embedded in channel mixer.
 Variables:
-  group   : [ChannelN]
   chanNum : channel number
   
 Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
@@ -12,61 +11,11 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
   <WidgetGroup>
     <ObjectName>VUMeterMixer</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><!-- VU Left -->
-        <Layout>stacked</Layout>
-        <Size>4f,1me</Size>
-        <Children>
-          <StatusLight>
-            <TooltipId>channel_VuMeterL</TooltipId>
-            <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
-            <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
-            </Connection>
-          </StatusLight>
-          <VuMeter>
-            <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
-            <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
-            <Horizontal>false</Horizontal>
-            <PeakHoldSize>4</PeakHoldSize>
-            <PeakHoldTime>800</PeakHoldTime>
-            <PeakFallTime>200</PeakFallTime>
-            <PeakFallStep>5</PeakFallStep>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
-            </Connection>
-          </VuMeter>
-        </Children>
-      </WidgetGroup><!-- /VU Left -->
-
-      <WidgetGroup><!-- VU Right -->
-        <Layout>stacked</Layout>
-        <Size>4f,1me</Size>
-        <Children>
-          <StatusLight>
-            <TooltipId>channel_VuMeterR</TooltipId>
-            <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
-            <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
-            </Connection>
-          </StatusLight>
-          <VuMeter>
-            <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
-            <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
-            <Horizontal>false</Horizontal>
-            <PeakHoldSize>4</PeakHoldSize>
-            <PeakHoldTime>800</PeakHoldTime>
-            <PeakFallTime>200</PeakFallTime>
-            <PeakFallStep>5</PeakFallStep>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
-            </Connection>
-          </VuMeter>
-        </Children>
-      </WidgetGroup><!-- /VU Right -->
+      <SingletonContainer>
+        <ObjectName>VUMeterDeck<Variable name="chanNum"/></ObjectName>
+      </SingletonContainer>
     </Children>
   </WidgetGroup>
 </Template>

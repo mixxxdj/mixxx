@@ -14,10 +14,11 @@
    <string>Key Notation Format Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+
    <item>
     <widget class="QCheckBox" name="banalyzerenabled">
      <property name="toolTip">
-      <string>When key detection is enabled, Mixxx detects the musical key of your tracks 
+      <string>When key detection is enabled, Mixxx detects the musical key of your tracks
 and allows you to pitch adjust them for harmonic mixing.</string>
      </property>
      <property name="text">
@@ -25,6 +26,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
      </property>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupPlugin">
      <property name="title">
@@ -78,6 +80,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupOptions">
      <property name="title">
@@ -101,6 +104,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupNotation">
      <property name="minimumSize">
@@ -113,8 +117,9 @@ and allows you to pitch adjust them for harmonic mixing.</string>
       <string>Key Notation</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
+
       <item>
-       <layout class="QHBoxLayout" name="notationChoice">
+       <layout class="QHBoxLayout" name="notationChoice1">
         <item>
          <widget class="QRadioButton" name="radioNotationLancelot">
           <property name="text">
@@ -123,9 +128,28 @@ and allows you to pitch adjust them for harmonic mixing.</string>
          </widget>
         </item>
         <item>
+         <widget class="QRadioButton" name="radioNotationLancelotAndTraditional">
+          <property name="text">
+            <string>Lancelot/Traditional</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QRadioButton" name="radioNotationOpenKey">
           <property name="text">
            <string>OpenKey</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+
+      <item>
+       <layout class="QHBoxLayout" name="notationChoice2">
+        <item>
+         <widget class="QRadioButton" name="radioNotationOpenKeyAndTraditional">
+          <property name="text">
+            <string>OpenKey/Traditional</string>
           </property>
          </widget>
         </item>
@@ -145,6 +169,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
         </item>
        </layout>
       </item>
+
       <item>
        <layout class="QGridLayout" name="customNotation">
         <item row="0" column="0">

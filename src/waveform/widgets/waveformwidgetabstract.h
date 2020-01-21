@@ -1,13 +1,11 @@
-#ifndef WAVEFORMWIDGETABSTRACT_H
-#define WAVEFORMWIDGETABSTRACT_H
+#pragma once
 
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
+#include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
-#include "track/track.h"
-#include "util/duration.h"
 
 class VSyncThread;
 
@@ -18,7 +16,7 @@ class VSyncThread;
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
   public:
-    WaveformWidgetAbstract(const char* group);
+    WaveformWidgetAbstract(const QString& group);
     virtual ~WaveformWidgetAbstract();
 
     //Type is use by the factory to safely up-cast waveform widgets
@@ -43,5 +41,3 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     friend class WaveformWidgetFactory;
 };
-
-#endif // WAVEFORMWIDGETABSTRACT_H

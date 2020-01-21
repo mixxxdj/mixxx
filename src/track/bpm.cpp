@@ -57,4 +57,4 @@ double Bpm::normalizeValue(double value) {
     }
 }
 
-} //namespace mixxx
+} // namespace mixxx

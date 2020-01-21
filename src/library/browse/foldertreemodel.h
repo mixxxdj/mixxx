@@ -1,5 +1,4 @@
-#ifndef FOLDER_TREE_MODEL
-#define FOLDER_TREE_MODEL
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -27,5 +26,3 @@ class FolderTreeModel : public TreeItemModel {
     // Used for memoizing the results of directoryHasChildren
     mutable QHash<QString, bool> m_directoryCache;
 };
-
-#endif

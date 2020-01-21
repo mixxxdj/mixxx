@@ -1,9 +1,3 @@
-/**
-* @file controllerpresetinfoenumerator.cpp
-* @author Be be.0@gmx.com
-* @date Sat Jul 18 2015
-* @brief Enumerate list of available controller mapping presets
-*/
 #include "controllers/controllerpresetinfoenumerator.h"
 
 #include <QDirIterator>
@@ -27,6 +21,10 @@ bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
         return a.getDirPath() < b.getDirPath();
     }
 }
+} // namespace
+
+PresetInfoEnumerator::PresetInfoEnumerator(const QString& searchPath)
+        : PresetInfoEnumerator(QList<QString>{searchPath}) {
 }
 
 PresetInfoEnumerator::PresetInfoEnumerator(const QStringList& searchPaths)
@@ -48,7 +46,11 @@ QList<PresetInfo> PresetInfoEnumerator::getPresetsByExtension(const QString& ext
 }
 
 void PresetInfoEnumerator::loadSupportedPresets() {
-    for (const QString& dirPath : m_controllerDirPaths) {
+    m_midiPresets.clear();
+    m_hidPresets.clear();
+    m_bulkPresets.clear();
+
+    for (const QString& dirPath : qAsConst(m_controllerDirPaths)) {
         QDirIterator it(dirPath);
         while (it.hasNext()) {
             it.next();
@@ -64,9 +66,9 @@ void PresetInfoEnumerator::loadSupportedPresets() {
         }
     }
 
-    qSort(m_midiPresets.begin(), m_midiPresets.end(), presetInfoNameComparator);
-    qSort(m_hidPresets.begin(), m_hidPresets.end(), presetInfoNameComparator);
-    qSort(m_bulkPresets.begin(), m_bulkPresets.end(), presetInfoNameComparator);
+    std::sort(m_midiPresets.begin(), m_midiPresets.end(), presetInfoNameComparator);
+    std::sort(m_hidPresets.begin(), m_hidPresets.end(), presetInfoNameComparator);
+    std::sort(m_bulkPresets.begin(), m_bulkPresets.end(), presetInfoNameComparator);
 
     qDebug() << "Extension" << MIDI_PRESET_EXTENSION << "total"
              << m_midiPresets.length() << "presets";

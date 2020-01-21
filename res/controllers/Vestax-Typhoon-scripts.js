@@ -19,17 +19,17 @@ VestaxTyphoon = new function(){
 }
 
 VestaxTyphoon.init = function(id){
-	
+
 	VestaxTyphoon.filter = {
 		"[Channel1]": false,
 		"[Channel2]": false,
 	}
-	
+
 	VestaxTyphoon.filterUsed = {
 		"[Channel1]": false,
 		"[Channel2]": false,
-	}	
-	
+	}
+
 	VestaxTyphoon.alt = {
 		"[Channel1]": false,
 		"[Channel2]": false,
@@ -53,7 +53,7 @@ VestaxTyphoon.init = function(id){
 	VestaxTyphoon.groupToMidiChanOffset = {
 		"[Channel1]": 0,
 		"[Channel2]": 1,
-	}	
+	}
 
 	VestaxTyphoon.shift = false;
 
@@ -75,20 +75,20 @@ VestaxTyphoon.init = function(id){
 	VestaxTyphoon.jogTouch["[Channel2]"]=false;
 
 	VestaxTyphoon.loops.pressed==false;
-	
+
 	/*Makes that the sync buttons flash to the beatgrid. Deactivated by default because the author think that this is annoying but want to keep the code for those who like flashing consoles. ;-)
 	Remove the double backslahes in the next line to activate it by uncommenting the lines*/
-	
+
 	engine.connectControl("[Channel1]","sync_enabled","VestaxTyphoon.hookMasterSyncCh1");
 	engine.connectControl("[Channel2]","sync_enabled","VestaxTyphoon.hookMasterSyncCh2");
 
 	engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu");
 	engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu");
-	
+
 	engine.connectControl("[Channel1]","play_indicator","VestaxTyphoon.ch1_playing");
 	engine.connectControl("[Channel2]","play_indicator","VestaxTyphoon.ch2_playing");
 	engine.connectControl("[Channel1]","cue_indicator","VestaxTyphoon.ch1_cue");
-	engine.connectControl("[Channel2]","cue_indicator","VestaxTyphoon.ch2_cue");		
+	engine.connectControl("[Channel2]","cue_indicator","VestaxTyphoon.ch2_cue");
 
 	engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]","parameter1",true);
 	engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]","parameter2",true);
@@ -297,7 +297,7 @@ VestaxTyphoon.slipShift = function (channel, control, value, status, group) {
 		engine.setValue("[Channel2]","slip_enabled",false);
 		midi.sendShortMsg(0x92, 0x26, 0x00);
 		engine.connectControl("[Channel1]","quantize","VestaxTyphoon.hookMasterSyncCh1",true);
-		engine.connectControl("[Channel2]","quantize","VestaxTyphoon.hookMasterSyncCh2",true);		
+		engine.connectControl("[Channel2]","quantize","VestaxTyphoon.hookMasterSyncCh2",true);
 		VestaxTyphoon.hookMasterSyncCh1(engine.getValue("[Channel1]","sync_enabled"));
 		VestaxTyphoon.hookMasterSyncCh2(engine.getValue("[Channel2]","sync_enabled"));
 		engine.connectControl("[Channel1]","sync_enabled","VestaxTyphoon.hookMasterSyncCh1");
@@ -312,8 +312,8 @@ VestaxTyphoon.changeMode = function (channel, control, value, status, group) {
 		}else{
 			VestaxTyphoon.filter[group] = false;
 			if(VestaxTyphoon.filterUsed[group]) {
-				VestaxTyphoon.filterUsed[group] = false;		
-			} else {		
+				VestaxTyphoon.filterUsed[group] = false;
+			} else {
 				if (VestaxTyphoon.alt[group] == true) {
 					VestaxTyphoon.alt[group] = false;
 					VestaxTyphoon.setTransportLights(group);
@@ -335,7 +335,7 @@ VestaxTyphoon.changeMode = function (channel, control, value, status, group) {
 						engine.connectControl("[Channel2]","cue_indicator","VestaxTyphoon.ch2_cue",true);
 					}
 				}
-				
+
 			}
 			midi.sendShortMsg(0x90 + channel, control, VestaxTyphoon.alt[group] ? 0x7f : 0x00);
 		}
@@ -552,9 +552,9 @@ VestaxTyphoon.relPitch = function(channel, control, value, status, group) {
 		}else{
 			if(VestaxTyphoon.shift){
 				engine.setValue(group,"beats_adjust_slower",true);
-			}else{			
+			}else{
 				VestaxTyphoon.pitchParams[group+"Offset"]=engine.getValue(group,"rate")+0.1-1/135; //offset failure correction
-				VestaxTyphoon.pitchParams[group+"Factor"]=-0.2; //Relative Sensivity
+				VestaxTyphoon.pitchParams[group+"Factor"]=-0.2; //Relative Sensitivity
 			}
 		}
 	}else if(control == "0x23") {
@@ -584,35 +584,35 @@ VestaxTyphoon.setSync = function(channel, control, value, status, group) {
 		if(value == 0x00){
 			if(VestaxTyphoon.shift){
 				if(engine.getValue(group,"quantize") == true){
-					engine.setValue(group,"quantize",false);	
+					engine.setValue(group,"quantize",false);
 				}else{
-					engine.setValue(group,"quantize",true);	
-				}				
-			}else{				
+					engine.setValue(group,"quantize",true);
+				}
+			}else{
 				if(engine.getValue(group,"sync_enabled") == true){
-					engine.setValue(group,"sync_enabled",false);	
+					engine.setValue(group,"sync_enabled",false);
 				}else{
-					engine.setValue(group,"sync_enabled",true);	
+					engine.setValue(group,"sync_enabled",true);
 				}
 			}
-		}		
+		}
 }
 
 VestaxTyphoon.setSyncSimple = function(channel, control, value, status, group) {
-		if(value == 0x7f){			
+		if(value == 0x7f){
 			if(engine.getValue(group,"sync_enabled") == true){
-				engine.setValue(group,"sync_enabled",false);	
+				engine.setValue(group,"sync_enabled",false);
 			}else{
-				engine.setValue(group,"sync_enabled",true);	
+				engine.setValue(group,"sync_enabled",true);
 			}
-		}		
+		}
 }
 
 VestaxTyphoon.hookMasterSyncCh1 = function(value) {
 	if(value == true){
 		midi.sendShortMsg(0x90, 0x46, 0x7f);
 	}else{
-		midi.sendShortMsg(0x90, 0x46, 0x00);	
+		midi.sendShortMsg(0x90, 0x46, 0x00);
 	}
 }
 
@@ -620,20 +620,20 @@ VestaxTyphoon.hookMasterSyncCh2 = function(value) {
 	if(value == true){
 		midi.sendShortMsg(0x91, 0x46, 0x7f);
 	}else{
-		midi.sendShortMsg(0x91, 0x46, 0x00);	
+		midi.sendShortMsg(0x91, 0x46, 0x00);
 	}
 }
 
 VestaxTyphoon.wheelTouch = function(channel, control, value, status, group){
 	if(VestaxTyphoon.filter[group]){
 		if(value == 0x00){
-			engine.setValue("[QuickEffectRack1_"+group+"]", "super1", 0.5);	
+			engine.setValue("[QuickEffectRack1_"+group+"]", "super1", 0.5);
 			midi.sendShortMsg(0x90 + channel, 0x24, engine.getValue("[QuickEffectRack1_"+group+"]", "super1") != 0.5 ? 0x7f : 0x00);
 			VestaxTyphoon.filterUsed[group] = true;
 		}
 		VestaxTyphoon.filterUsed[group] = true;
 	}else{
-		if(value == 0x7f){	
+		if(value == 0x7f){
 			if(VestaxTyphoon.loopJog[group]==0){
 				engine.scratchEnable(VestaxTyphoon.groupToDeck[group],300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
 			}
@@ -642,13 +642,13 @@ VestaxTyphoon.wheelTouch = function(channel, control, value, status, group){
 			engine.scratchDisable(VestaxTyphoon.groupToDeck[group]);
 			VestaxTyphoon.jogTouch[group]=false;
 		}
-	}	
+	}
 }
 
 VestaxTyphoon.wheelTurn = function(channel, control, value, status, group){
     if (VestaxTyphoon.jogTouch[group]) {
 		switch(VestaxTyphoon.loopJog[group]){
-			case 0:	
+			case 0:
 				engine.scratchTick(VestaxTyphoon.groupToDeck[group], value - 0x40);
 				break;
 			case 1:
@@ -674,10 +674,10 @@ VestaxTyphoon.wheelTurn = function(channel, control, value, status, group){
 					engine.setValue(group, "jog", value - 0x40);
 				}
 				break;
-			case 1:	
+			case 1:
 				engine.setValue(group, "loop_start_position", engine.getValue(group,"loop_start_position") + 5*(value -0x40));
 				break;
-			case 2:	
+			case 2:
 				engine.setValue(group, "loop_end_position", engine.getValue(group,"loop_end_position") + 5*(value - 0x40));
 				break;
 			case 3:

@@ -1,5 +1,4 @@
-#ifndef LIBRARYHASHDAO_H
-#define LIBRARYHASHDAO_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
@@ -7,20 +6,17 @@
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
+#include "util/cache.h"
 
 class LibraryHashDAO : public DAO {
   public:
-    ~LibraryHashDAO() override {}
+    ~LibraryHashDAO() override = default;
 
-    void initialize(const QSqlDatabase& database) {
-        m_database = database;
-    };
-
-    QHash<QString, int> getDirectoryHashes();
-    int getDirectoryHash(const QString& dirPath);
-    void saveDirectoryHash(const QString& dirPath, const int hash);
-    void updateDirectoryHash(const QString& dirPath, const int newHash,
-                             const int dir_deleted);
+    QHash<QString, mixxx::cache_key_t> getDirectoryHashes();
+    mixxx::cache_key_t getDirectoryHash(const QString& dirPath);
+    void saveDirectoryHash(const QString& dirPath, mixxx::cache_key_t hash);
+    void updateDirectoryHash(const QString& dirPath, mixxx::cache_key_t newHash,
+                             int dir_deleted);
     void markAsExisting(const QString& dirPath);
     void invalidateAllDirectories();
     void markUnverifiedDirectoriesAsDeleted();
@@ -28,9 +24,4 @@ class LibraryHashDAO : public DAO {
     void updateDirectoryStatuses(const QStringList& dirPaths,
                                  const bool deleted, const bool verified);
     QStringList getDeletedDirectories();
-
-  private:
-    QSqlDatabase m_database;
 };
-
-#endif //LIBRARYHASHDAO_H

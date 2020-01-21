@@ -1,0 +1,18 @@
+<svg width="26" height="26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<defs>
+				<linearGradient id="c" x1="2" x2="22" y1="2" y2="22" gradientTransform="matrix(1.0476191 0 0 1.0476191 .92857134 .92856947)" gradientUnits="userSpaceOnUse">
+						<stop offset="0"/>
+						<stop offset=".5"/>
+						<stop stop-color="#333" stop-opacity=".97474748" offset=".5"/>
+						<stop stop-color="#333" offset="1"/>
+				</linearGradient>
+				<linearGradient id="b" x1="-1" x2="-1" y1="2" y2="25" gradientTransform="translate(2.50005 -.507121)" gradientUnits="userSpaceOnUse">
+						<stop stop-color="#393939" offset="0"/>
+						<stop stop-color="#393939" offset=".30102351"/>
+						<stop stop-color="#141414" offset="1"/>
+				</linearGradient>
+		</defs>
+		<rect x=".75" y=".75" width="24.5" height="24.5" rx=".30000007" ry=".30000007" fill="none" stroke="#000001" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="paint-order:fill markers stroke"/>
+		<path d="m24 1-22.5-.0078125c-.2761309 2.761e-5-.4999724.2238691-.5.5v23.5000005h1v-23.0000005h22" color="#000001" color-rendering="auto" dominant-baseline="auto" fill="url(#b)" image-rendering="auto" shape-rendering="auto" solid-color="#000001" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000001;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+		<rect x="2.5" y="2.4999981" width="22" height="22.000002" fill="none" stroke="url(#c)" stroke-linecap="square" style="paint-order:fill markers stroke"/>
+</svg>

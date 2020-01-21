@@ -47,20 +47,10 @@
       <number>0</number>
      </property>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="QPushButton" name="btnSelect">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="toolTip">
         <string>Selects all tracks in the table below.</string>
        </property>
@@ -71,6 +61,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnPurge">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="toolTip">
         <string>Purge selected tracks from the library.</string>
        </property>
@@ -84,6 +77,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnUnhide">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="toolTip">
         <string>Unhide selected tracks from the library.</string>
        </property>
@@ -97,6 +93,19 @@
         <bool>false</bool>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

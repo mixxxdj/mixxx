@@ -1,60 +1,50 @@
-/***************************************************************************
-                          controlobject.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QtDebug>
-#include <QHash>
-#include <QSet>
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
+
+#include <QHash>
+#include <QMutexLocker>
+#include <QSet>
+#include <QtDebug>
+
 #include "control/control.h"
+#include "moc_controlobject.cpp"
 #include "util/stat.h"
 #include "util/timer.h"
 
 ControlObject::ControlObject() {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             bool bPersist, double defaultValue) {
-    initialize(key, bIgnoreNops, bTrack, bPersist, defaultValue);
-}
-
-ControlObject::~ControlObject() {
-    if (m_pControl) {
-        m_pControl->removeCreatorCO();
-    }
-}
-
-void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                               bool bPersist, double defaultValue) {
-    m_key = key;
-
-    // Don't bother looking up the control if key is NULL. Prevents log spew.
-    if (!m_key.isNull()) {
-        m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                      bIgnoreNops, bTrack,
-                                                      bPersist, defaultValue);
+ControlObject::ControlObject(const ConfigKey& key,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
+        : m_key(key) {
+    // Don't bother looking up the control if key is invalid. Prevents log spew.
+    if (m_key.isValid()) {
+        m_pControl = ControlDoublePrivate::getControl(m_key,
+                ControlFlag::None,
+                this,
+                bIgnoreNops,
+                bTrack,
+                bPersist,
+                defaultValue);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
     if (m_pControl) {
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(privateValueChanged(double, QObject*)),
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObject::privateValueChanged,
                 Qt::DirectConnection);
+    }
+}
+
+ControlObject::~ControlObject() {
+    if (m_pControl) {
+        const bool success = m_pControl->resetCreatorCO(this);
+        Q_UNUSED(success);
+        DEBUG_ASSERT(success);
     }
 }
 
@@ -62,20 +52,18 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
 void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSender != this) {
-        emit(valueChanged(dValue));
-    } else {
-        emit(valueChangedFromEngine(dValue));
+        emit valueChanged(dValue);
     }
 }
 
 // static
-ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
+ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flags) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, warn);
+    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, flags);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
-    return NULL;
+    return nullptr;
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
@@ -122,22 +110,12 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 void ControlObject::set(const ConfigKey& key, const double& value) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     if (pCop) {
-        pCop->set(value, NULL);
+        pCop->set(value, nullptr);
     }
-}
-
-bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-                                              const char* method,
-                                              Qt::ConnectionType type) {
-    bool ret = false;
-    if (m_pControl) {
-        ret = m_pControl->connectValueChangeRequest(receiver, method, type);
-    }
-    return ret;
 }
 
 void ControlObject::setReadOnly() {
-    connectValueChangeRequest(this, SLOT(readOnlyHandler(double)),
+    connectValueChangeRequest(this, &ControlObject::readOnlyHandler,
                               Qt::DirectConnection);
 }
 

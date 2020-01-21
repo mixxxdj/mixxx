@@ -1,20 +1,13 @@
-/***************************************************************************
-                          enginerecord.cpp  -  class to record the mix
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-    copyright            : (C) 2010 by Tobias Rafreider
-    email                :
-***************************************************************************/
-
 #include "engine/sidechain/enginerecord.h"
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
-
 #include "mixer/playerinfo.h"
+#include "moc_enginerecord.cpp"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
+#include "track/track.h"
 #include "util/event.h"
 
 const int kMetaDataLifeTimeout = 16;
@@ -29,7 +22,7 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
 
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_pSamplerate = new ControlProxy("[Master]", "samplerate", this);
-    m_sampleRate = m_pSamplerate->get();
+    m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 }
 
 EngineRecord::~EngineRecord() {
@@ -50,7 +43,7 @@ void EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
-    m_sampleRate = m_pSamplerate->get();
+    m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
@@ -58,8 +51,9 @@ void EngineRecord::updateFromPreferences() {
     }
     Encoder::Format format = EncoderFactory::getFactory().getSelectedFormat(m_pConfig);
     m_encoding = format.internalName;
-    m_pEncoder = EncoderFactory::getFactory().getNewEncoder(format,  m_pConfig, this);
-    m_pEncoder->updateMetaData(m_baAuthor,m_baTitle,m_baAlbum);
+    m_pEncoder = EncoderFactory::getFactory().createRecordingEncoder(
+            format, m_pConfig, this);
+    m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
 
     QString errorMsg;
     if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
@@ -107,36 +101,36 @@ bool EngineRecord::metaDataHasChanged()
 }
 
 void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-
-    float recordingStatus = m_pRecReady->get();
+    const auto recordingStatus = static_cast<int>(m_pRecReady->get());
+    static const QString tag("EngineRecord recording");
 
     if (recordingStatus == RECORD_OFF) {
         //qDebug("Setting record flag to: OFF");
         if (fileOpen()) {
-            Event::end("EngineRecord recording");
+            Event::end(tag);
             closeFile();  // Close file and free encoder.
             if (m_bCueIsEnabled) {
                 closeCueFile();
             }
-            emit(isRecording(false, false));
+            emit isRecording(false, false);
         }
     } else if (recordingStatus == RECORD_READY) {
         // If we are ready for recording, i.e, the output file has been selected, we
         // open a new file.
         updateFromPreferences();  // Update file location from preferences.
         if (openFile()) {
-            Event::start("EngineRecord recording");
+            Event::start(tag);
             qDebug("Setting record flag to: ON");
             m_pRecReady->set(RECORD_ON);
-            emit(isRecording(true, false));  // will notify the RecordingManager
+            emit isRecording(true, false);  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
             m_pCurrentTrack.reset();
 
-            // clean frames couting and get current sample rate.
+            // clean frames counting and get current sample rate.
             m_frames = 0;
-            m_sampleRate = m_pSamplerate->get();
+            m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -147,7 +141,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             qDebug("Setting record flag to: OFF");
             m_pRecReady->slotSet(RECORD_OFF);
             // An error occurred.
-            emit(isRecording(false, true));
+            emit isRecording(false, true);
         }
     } else if (recordingStatus == RECORD_SPLIT_CONTINUE) {
         if (fileOpen()) {
@@ -160,7 +154,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (openFile()) {
             qDebug() << "Splitting to a new file: "<< m_fileName;
             m_pRecReady->set(RECORD_ON);
-            emit(isRecording(true, false));  // will notify the RecordingManager
+            emit isRecording(true, false);  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
@@ -168,7 +162,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // clean frames counting and get current sample rate.
             m_frames = 0;
-            m_sampleRate = m_pSamplerate->get();
+            m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
             m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
@@ -177,11 +171,11 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
         } else {  // Maybe the encoder could not be initialized
             qDebug() << "Could not open" << m_fileName << "for writing.";
-            Event::end("EngineRecord recording");
+            Event::end(tag);
             qDebug("Setting record flag to: OFF");
             m_pRecReady->slotSet(RECORD_OFF);
             // An error occurred.
-            emit(isRecording(false, true));
+            emit isRecording(false, true);
         }
     }
 
@@ -191,7 +185,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // Compress audio. Encoder will call method 'write()' below to
         // write a file stream and emit bytesRecorded.
         m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
-        
+
         //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.
         if (m_bCueIsEnabled && metaDataHasChanged()) {
@@ -208,7 +202,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // gets recorded duration and emit signal that will be used
         // by RecordingManager to update the label besides start/stop button
         if (lastDuration != m_recordedDuration) {
-            emit(durationRecorded(m_recordedDuration));
+            emit durationRecorded(m_recordedDuration);
         }
     }
 }
@@ -230,20 +224,23 @@ void EngineRecord::writeCueLine() {
                                     % 75);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
-                    .arg((double)m_cueTrack, 2, 'f', 0, '0')
-                    .toLatin1());
+                            .arg((double)m_cueTrack, 2, 'f', 0, '0')
+                            .toUtf8());
 
     m_cueFile.write(QString("    TITLE \"%1\"\n")
-        .arg(m_pCurrentTrack->getTitle()).toLatin1());
+                            .arg(m_pCurrentTrack->getTitle())
+                            .toUtf8());
     m_cueFile.write(QString("    PERFORMER \"%1\"\n")
-        .arg(m_pCurrentTrack->getArtist()).toLatin1());
+                            .arg(m_pCurrentTrack->getArtist())
+                            .toUtf8());
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
     // for the track detection code.
     m_cueFile.write(QString("    INDEX 01 %1:%2\n")
-                    .arg(getRecordedDurationStr())
-                    .arg((double)cueFrame, 2, 'f', 0, '0').toLatin1());
+                            .arg(getRecordedDurationStr())
+                            .arg(static_cast<double>(cueFrame), 2, 'f', 0, '0')
+                            .toUtf8());
 }
 
 // Encoder calls this method to write compressed audio
@@ -258,7 +255,7 @@ void EngineRecord::write(const unsigned char *header, const unsigned char *body,
     }
     // Always write body
     m_dataStream.writeRawData((const char*) body, bodyLen);
-    emit(bytesRecorded((headerLen+bodyLen)));
+    emit bytesRecorded((headerLen+bodyLen));
 
 }
 // Encoder calls this method to write compressed audio
@@ -321,23 +318,29 @@ bool EngineRecord::openCueFile() {
 
     if (m_baAuthor.length() > 0) {
         m_cueFile.write(QString("PERFORMER \"%1\"\n")
-                        .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
-                        .toLatin1());
+                                .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
+                                .toUtf8());
     }
 
     if (m_baTitle.length() > 0) {
         m_cueFile.write(QString("TITLE \"%1\"\n")
-                        .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
-                        .toLatin1());
+                                .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
+                                .toUtf8());
     }
 
-    m_cueFile.write(QString("FILE \"%1\" %2\n").arg(
-            QFileInfo(m_fileName).fileName() //strip path
-                .replace(QString("\""), QString("\\\"")), // escape doublequote
-            (m_encoding == ENCODING_MP3) ? ENCODING_MP3  :
-            (m_encoding == ENCODING_AIFF) ? ENCODING_AIFF :
-            "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
-        ).toLatin1());
+    m_cueFile.write(
+            QString("FILE \"%1\" %2\n")
+                    .arg(QFileInfo(m_fileName)
+                                    .fileName() //strip path
+                                    .replace(QString("\""),
+                                            QString("\\\"")), // escape doublequote
+                            (m_encoding == ENCODING_MP3)
+                                    ? ENCODING_MP3
+                                    : (m_encoding == ENCODING_AIFF)
+                                            ? ENCODING_AIFF
+                                            : "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
+                            )
+                    .toUtf8());
     return true;
 }
 

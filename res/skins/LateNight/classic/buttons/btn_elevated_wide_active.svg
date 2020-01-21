@@ -1,0 +1,10 @@
+<svg width="52" height="26" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="a" x1="-24.500031" x2="-1.5000305" y1="-13" y2="-13" gradientTransform="matrix(1,0,0,2.1304348,26.50003,2.1956522)" gradientUnits="userSpaceOnUse">
+			<stop stop-opacity=".39215687" offset="0"/>
+			<stop stop-opacity="0" offset=".50727087"/>
+			<stop stop-opacity=".0047619" offset="1"/>
+		</linearGradient>
+	</defs>
+	<rect transform="rotate(90)" x="2" y="-50" width="22" height="48" rx="1" ry="1" color="#000000" fill="url(#a)"/>
+</svg>

@@ -1,26 +1,20 @@
-/**
- * @file midicontrollerpresetfilehandler.h
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Mon 9 Apr 2012
- * @brief Handles loading and saving of MIDI controller presets.
- */
-
-#ifndef MIDICONTROLLERPRESETFILEHANDLER_H
-#define MIDICONTROLLERPRESETFILEHANDLER_H
+#pragma once
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/midi/midicontrollerpreset.h"
 
+/// Handles loading and saving of MIDI controller presets.
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:
     MidiControllerPresetFileHandler() {};
     virtual ~MidiControllerPresetFileHandler() {};
 
-    bool save(const MidiControllerPreset& preset,
-              const QString deviceName, const QString fileName) const;
+    bool save(const MidiControllerPreset& preset, const QString& fileName) const;
 
   private:
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName);
+    virtual ControllerPresetPointer load(const QDomElement& root,
+            const QString& filePath,
+            const QDir& systemPresetPath);
 
     void addControlsToDocument(const MidiControllerPreset& preset,
                                QDomDocument* doc) const;
@@ -35,5 +29,3 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
     QDomElement outputMappingToXML(QDomDocument* doc,
                                    const MidiOutputMapping& mapping) const;
 };
-
-#endif

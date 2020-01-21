@@ -331,7 +331,7 @@ PioneerCDJHID.incomingData = function(data,length) {
 PioneerCDJHID.registerCallbacks = function() {
     var controller = PioneerCDJHID.controller;
 
-    HIDDebug("Registring controls and callbacks");
+    HIDDebug("Registering controls and callbacks");
 
     // Play/cue/reverse buttons
     controller.linkControl("hid","play","deck","play");

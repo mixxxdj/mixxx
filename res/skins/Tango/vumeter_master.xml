@@ -6,22 +6,12 @@ Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
 Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
 -->
 <Template>
-  <SingletonDefinition>
-    <ObjectName>VuMeterMaster</ObjectName>
-    <Children>
-      <Template src="skin:vumeter_floating.xml">
-        <SetVariable name="group">[Master]</SetVariable>
-        <SetVariable name="Label">Master</SetVariable>
-      </Template>
-    </Children>
-  </SingletonDefinition>
-
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>max,min</SizePolicy>
     <Children>
 
-      <!-- Master VU when mixer is hidden but permament level meters are shown -->
+      <!-- Master VU when mixer is hidden but permanent level meters are shown -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -47,7 +37,7 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <!-- /Master VU when mixer is hidden but permament level meters are shown -->
+      <!-- /Master VU when mixer is hidden but permanent level meters are shown -->
 
       <WidgetGroup><!-- Master VU when mixer is shown -->
         <Layout>horizontal</Layout>

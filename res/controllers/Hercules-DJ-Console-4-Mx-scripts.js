@@ -5,9 +5,9 @@
 //=====================================================
 // Author: josepma@gmail.com
 //
-// Version 2015-12-12: 
+// Version 2015-12-12:
 //        Initial version. 4 decks, jog wheel and scratch, autodj, navigation and effects.
-// Version 2015-12-19: 
+// Version 2015-12-19:
 //        Improvements from https://github.com/mixxxdj/mixxx/pull/810
 //        Beat flashing can be configurd on pitch reset led, jog led, sync button or disabled completely.
 //        Option to switch automatically to scratch crossfader curve on scratch mode.
@@ -18,13 +18,13 @@
 //        Automatically setup some internal values, like 4 decks mode
 //        Support speed sensor on jog wheel and Fx knob. They need to be moved really fast, so it's rarely useful.
 // Version 2016-09-26
-//        Beatgrid editing mode enabled with shift+sync. Allows to correct the beatgrid from the controller. 
+//        Beatgrid editing mode enabled with shift+sync. Allows to correct the beatgrid from the controller.
 //          (For when you're in the middle of a mix and something is not properly aligned)
 //        Brake effect (power unplug) with shift+stop, backward playing moved to shift+play and forward and rewind by beats.
 //        Keylock, quantize and master sync (shift pitch scale up, shift pitch scale down and sync pressed for 400ms respectively).
 //        Improvements and fixes on sync button and navigation.
 //        Corrections in soft takeover, and initialization of control values from their physical positions on Mixxx startup.
-//        Audio vu meters on the kill/source buttons that switches between master and decks on pfl. Can be switched 
+//        Audio vu meters on the kill/source buttons that switches between master and decks on pfl. Can be switched
 //          off on userSettings. If kill or source buttons are activated, the vu on that channel is deactivated.
 //        Reimplemented the actions for Fx buttons. It now allows to have personalized mappings, and comes already with three:
 //          Manual/VirtualDJ setup, Mixxx 2.0 setup and a new setup that adds more functionality, like playing 4 samplers.
@@ -48,7 +48,7 @@
 //        Single JogWheel mode hack (One of my jog wheels got broken.. this is a workaround).
 // Usage:
 // ------
-// Check the dedicated controller wiki page at: 
+// Check the dedicated controller wiki page at:
 //    http://mixxx.org/wiki/doku.php/hercules_dj_console_4-mx
 //
 // Variables on Hercules4Mx.userSettings can be modified by users to suit their preferences.
@@ -348,7 +348,7 @@ Hercules4Mx.init = function(id, debugging) {
 //timer-called (delayed) setup.
 Hercules4Mx.doDelayedSetup = function() {
     var i;
-    // Activate soft takeover for the relevant controls. 
+    // Activate soft takeover for the relevant controls.
     // Important: Previous to 2.1, engine.softTakeover only works when scripted with setValue!!
     for (i = 1; i <= 4; i++) {
         engine.softTakeover("[Channel" + i + "]", "rate", true);
@@ -555,7 +555,7 @@ Hercules4Mx.onAutoDJ = function(value, group, control) {
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3C, (value) ? 0x7F : 0x00);
 };
 
-// AutoDJ fade to next is pressed. (seems it isn't called when the fading is triggered 
+// AutoDJ fade to next is pressed. (seems it isn't called when the fading is triggered
 // automatically by AutoDJ compared to pressing the button in Mixxx/controller)
 Hercules4Mx.onAutoDJFade = function(value, group, control) {
     //Flashing led to indicate fading
@@ -766,7 +766,7 @@ Hercules4Mx.stopButton = function(midichan, control, value, status, groupInitial
 //Play button is pressed in a deck.
 Hercules4Mx.playButton = function(midichan, control, value, status, groupInitial) {
     var group = (Hercules4Mx.previewOnDeck[groupInitial] === true) ? '[PreviewDeck1]' : groupInitial;
-   
+
     if (Hercules4Mx.shiftStatus.pressed || Hercules4Mx.shiftStatus.reversing) { //Shifting: Do backward playback effect.
         if (engine.getValue(group, "slip_enabled") !== 0) {
             engine.setValue(group, "reverseroll", (value) ? 1 : 0);
@@ -783,7 +783,7 @@ Hercules4Mx.playButton = function(midichan, control, value, status, groupInitial
 // Forward button is pressed in a deck.
 Hercules4Mx.forwardButton = function(midichan, control, value, status, groupInitial) {
     var group = (Hercules4Mx.previewOnDeck[groupInitial] === true) ? '[PreviewDeck1]' : groupInitial;
-    
+
     if (Hercules4Mx.shiftStatus.pressed) { //Shifting: Jump 1 beat forward.
         if (value) {
             engine.setValue(group, "beatjump_1_forward", 1);
@@ -1059,7 +1059,7 @@ Hercules4Mx.doSyncHoldAction = function() {
     Hercules4Mx.syncEnabledStatus.triggered = 1;
 };
 
-//Advanced navigation mode. 
+//Advanced navigation mode.
 Hercules4Mx.navigationFiles = function(midichan, control, value, status, group) {
     if (value) {
         if (Hercules4Mx.navigationStatus.sidebar === false &&
@@ -1265,16 +1265,16 @@ Hercules4Mx.FxSamplerPush = function(group, fxbutton, value, extraparam) {
     }
 };
 /*
- button 1: loop start and loop editing functionality -> 
+ button 1: loop start and loop editing functionality ->
         loop enabled and is not one of the two preconfigured: button led is on
-        click: sets loop start (all 6 buttons start blinking). 
+        click: sets loop start (all 6 buttons start blinking).
             If loop was already enabled, moves the start to the current position but does not disable the playing loop
         click again on button 1: forget start pos (discard loop) (stops blinking and no led is on).
         click on button 2: set loop end and enable looping (stops blinking and sets led on buttons 1 and 2 to on).
         click on any of the other 4 buttons: set loop to 2, 8, 16, 32 beats (user configurable)(stops blinking and sets led on button 1 to on).
         click with shift pressed:  Same as clic, but this will be a rolling loop
         click when a loop is present and active: release loop
-        button held down while loop is active and move knob: double or halve the loop. 
+        button held down while loop is active and move knob: double or halve the loop.
         If the knob is moved while the loop edit mode is active, then move the loop forward or backward.
 
  button 2: loop end, reloop functionality ->
@@ -1377,7 +1377,7 @@ Hercules4Mx.LoopButtonPush = function(group, fxbutton, value, extraparam) {
 };
 
 // Any of the FX buttons has been pressed
-// There are 6 physical buttons present per deck, and also a "shift" button used by the controller 
+// There are 6 physical buttons present per deck, and also a "shift" button used by the controller
 // itself to switch between messages 1 to 6 and messages 7 to 12, depending if it is enabled or not.
 // Since the shift button also sends a message when it is pressed and when it is released,
 // I've been able to setup up to 24 different actions per deck.
@@ -1428,7 +1428,7 @@ Hercules4Mx.jogWheel = function(midichan, control, value, status, groupInitial) 
         Hercules4Mx.doNavigateAction();
     } else {
         var group = (Hercules4Mx.previewOnDeck[groupInitial]) ? '[PreviewDeck1]' : groupInitial;
-        if (Hercules4Mx.userSettings.useSingleJogWheelHack === true 
+        if (Hercules4Mx.userSettings.useSingleJogWheelHack === true
                 && Hercules4Mx.swapJogWheel === true) {
             group = Hercules4Mx.rightJogWheelGroup;
         }

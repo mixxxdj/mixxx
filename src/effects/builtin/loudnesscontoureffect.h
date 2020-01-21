@@ -1,12 +1,11 @@
-#ifndef LOUDNESSCONTOUREFFECT_H
-#define LOUDNESSCONTOUREFFECT_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -25,10 +24,10 @@ class LoudnessContourEffectGroupState final : public EffectState {
     CSAMPLE* m_pBuf;
     double m_oldGainKnob;
     double m_oldLoudness;
-    double m_oldGain;
+    CSAMPLE_GAIN m_oldGain;
     double m_oldFilterGainDb;
     bool m_oldUseGain;
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class LoudnessContourEffect
@@ -47,7 +46,7 @@ class LoudnessContourEffect
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+                        const GroupFeatureState& groupFeatureState) override;
 
   private:
     LoudnessContourEffect(const LoudnessContourEffect&) = delete;
@@ -60,5 +59,3 @@ class LoudnessContourEffect
     EngineEffectParameter* m_pLoudness;
     EngineEffectParameter* m_pUseGain;
 };
-
-#endif // LOUDNESSCONTOUREFFECT_H

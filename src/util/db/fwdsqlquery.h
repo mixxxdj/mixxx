@@ -1,5 +1,4 @@
-#ifndef MIXXX_FWDSQLQUERY_H
-#define MIXXX_FWDSQLQUERY_H
+#pragma once
 
 
 #include <QSqlQuery>
@@ -37,7 +36,7 @@ class FwdSqlQuery: protected QSqlQuery {
 
   public:
     FwdSqlQuery(
-            QSqlDatabase database,
+            const QSqlDatabase& database,
             const QString& statement);
 
     bool isPrepared() const {
@@ -45,20 +44,15 @@ class FwdSqlQuery: protected QSqlQuery {
     }
 
     bool hasError() const {
-        return lastError().isValid() && (lastError().type() != QSqlError::NoError);
+        return lastError().isValid() &&
+                (lastError().type() != QSqlError::NoError);
+    }
+    QSqlError lastError() const {
+        return QSqlQuery::lastError();
     }
 
-    static const int BOOLEAN_FALSE = 0;
-    static const int BOOLEAN_TRUE = 1;
-
-    // Generic function for type QVariant
     void bindValue(const QString& placeholder, const QVariant& value) {
         QSqlQuery::bindValue(placeholder, value);
-    }
-
-    // Overloaded function for type bool
-    void bindValue(const QString& placeholder, bool value) {
-        bindValue(placeholder, value ? QVariant(BOOLEAN_TRUE) : QVariant(BOOLEAN_FALSE));
     }
 
     // Overloaded function for type DbId
@@ -112,6 +106,3 @@ class FwdSqlQuery: protected QSqlQuery {
 
     bool m_prepared;
 };
-
-
-#endif // MIXXX_FWDSQLQUERY_H

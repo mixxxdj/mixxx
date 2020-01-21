@@ -39,7 +39,7 @@ v1.11.0.13  (16/02/2013)
 v1.11.0.12  (20/01/2013)
 * Feature: Add <PlayPosColor> to improve visibility of play position marker. Part of lp:1099182 & lp:1094791
 * Fix: Correct <Size> attributes and margins in sampler decks so they don't break the layout on skin change
-  anymore and the library's scrollbar stay visible at the buttom.
+  anymore and the library's scrollbar stay visible at the bottom.
 * Fix: Remove deprecated <CueColor> key, Set empty <BeatHighlightColor> to reduce "on-beat" flicker in waveform
 
 v1.11.0.11  (19/01/2013)

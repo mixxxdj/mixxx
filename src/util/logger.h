@@ -1,6 +1,4 @@
-#ifndef MIXXX_UTIL_LOGGER_H
-#define MIXXX_UTIL_LOGGER_H
-
+#pragma once
 
 #include <QByteArray>
 #include <QLatin1String>
@@ -55,12 +53,7 @@ public:
     }
 
     QDebug info() const {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         return log(qInfo());
-#else
-        // Qt4 does not support log level Info, use Debug instead
-        return debug();
-#endif
     }
 
     bool infoEnabled() const {
@@ -80,6 +73,3 @@ private:
 };
 
 }  // namespace mixxx
-
-
-#endif /* MIXXX_UTIL_LOGGER_H */

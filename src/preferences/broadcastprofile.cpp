@@ -1,6 +1,3 @@
-// broadcastprofile.cpp
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
@@ -15,69 +12,72 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
-#include "defs_urls.h"
-#include "util/compatibility.h"
-#include "util/xml.h"
-#include "util/memory.h"
-#include "util/logger.h"
-
 #include "broadcastprofile.h"
+#include "defs_urls.h"
+#include "moc_broadcastprofile.cpp"
+#include "recording/defs_recording.h"
+#include "util/compatibility.h"
+#include "util/logger.h"
+#include "util/memory.h"
+#include "util/xml.h"
 
 namespace {
-const char* kDoctype = "broadcastprofile";
-const char* kDocumentRoot = "BroadcastProfile";
-const char* kSecureCredentials = "SecureCredentialsStorage";
-const char* kBitrate = "Bitrate";
-const char* kChannels = "Channels";
-const char* kCustomArtist = "CustomArtist";
-const char* kCustomTitle = "CustomTitle";
-const char* kEnableMetadata = "EnableMetadata";
-const char* kEnableReconnect = "EnableReconnect";
-const char* kEnabled = "Enabled";
-const char* kFormat = "Format";
-const char* kHost = "Host";
-const char* kLimitReconnects = "LimitReconnects";
-const char* kLogin = "Login";
-const char* kMaximumRetries = "MaximumRetries";
-const char* kMetadataCharset = "MetadataCharset";
-const char* kMetadataFormat = "MetadataFormat";
-const char* kMountPoint = "Mountpoint";
-const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
-const char* kOggDynamicUpdate = "OggDynamicUpdate";
-const char* kPassword = "Password";
-const char* kPort = "Port";
-const char* kReconnectFirstDelay = "ReconnectFirstDelay";
-const char* kReconnectPeriod = "ReconnectPeriod";
-const char* kServertype = "Servertype";
-const char* kStreamDesc = "StreamDesc";
-const char* kStreamGenre = "StreamGenre";
-const char* kStreamName = "StreamName";
-const char* kStreamIRC = "StreamIRC";
-const char* kStreamAIM = "StreamAIM";
-const char* kStreamICQ = "StreamICQ";
-const char* kStreamPublic = "StreamPublic";
-const char* kStreamWebsite = "StreamWebsite";
+constexpr const char* kDoctype = "broadcastprofile";
+constexpr const char* kDocumentRoot = "BroadcastProfile";
+constexpr const char* kSecureCredentials = "SecureCredentialsStorage";
+constexpr const char* kBitrate = "Bitrate";
+constexpr const char* kChannels = "Channels";
+constexpr const char* kCustomArtist = "CustomArtist";
+constexpr const char* kCustomTitle = "CustomTitle";
+constexpr const char* kEnableMetadata = "EnableMetadata";
+constexpr const char* kEnableReconnect = "EnableReconnect";
+constexpr const char* kEnabled = "Enabled";
+constexpr const char* kFormat = "Format";
+constexpr const char* kHost = "Host";
+constexpr const char* kLimitReconnects = "LimitReconnects";
+constexpr const char* kLogin = "Login";
+constexpr const char* kMaximumRetries = "MaximumRetries";
+constexpr const char* kMetadataCharset = "MetadataCharset";
+constexpr const char* kMetadataFormat = "MetadataFormat";
+constexpr const char* kMountPoint = "Mountpoint";
+constexpr const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
+constexpr const char* kOggDynamicUpdate = "OggDynamicUpdate";
+constexpr const char* kPassword = "Password";
+constexpr const char* kPort = "Port";
+constexpr const char* kProfileName = "ProfileName";
+constexpr const char* kReconnectFirstDelay = "ReconnectFirstDelay";
+constexpr const char* kReconnectPeriod = "ReconnectPeriod";
+constexpr const char* kServertype = "Servertype";
+constexpr const char* kStreamDesc = "StreamDesc";
+constexpr const char* kStreamGenre = "StreamGenre";
+constexpr const char* kStreamName = "StreamName";
+constexpr const char* kStreamIRC = "StreamIRC";
+constexpr const char* kStreamAIM = "StreamAIM";
+constexpr const char* kStreamICQ = "StreamICQ";
+constexpr const char* kStreamPublic = "StreamPublic";
+constexpr const char* kStreamWebsite = "StreamWebsite";
 
 #ifdef __QTKEYCHAIN__
-const char* kKeychainPrefix = "Mixxx - ";
+constexpr const char* kKeychainPrefix = "Mixxx - ";
 #endif
 
-const double kDefaultBitrate = 128;
-const int kDefaultChannels = 2;
-const bool kDefaultEnableMetadata = false;
-const bool kDefaultEnableReconnect = true;
-const bool kDefaultLimitReconnects = true;
-const int kDefaultMaximumRetries = 10;
+constexpr int kDefaultBitrate = 128;
+constexpr int kDefaultChannels = 2;
+constexpr bool kDefaultEnableMetadata = false;
+constexpr bool kDefaultEnableReconnect = true;
+constexpr bool kDefaultLimitReconnects = true;
+constexpr int kDefaultMaximumRetries = 10;
 // No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
 const QString kDefaultMetadataFormat("$artist - $title");
-const bool kDefaultNoDelayFirstReconnect = true;
-const bool kDefaultOggDynamicupdate = false;
-double kDefaultReconnectFirstDelay = 0.0;
-double kDefaultReconnectPeriod = 5.0;
+constexpr bool kDefaultNoDelayFirstReconnect = true;
+constexpr bool kDefaultOggDynamicupdate = false;
+constexpr double kDefaultReconnectFirstDelay = 0.0;
+constexpr double kDefaultReconnectPeriod = 5.0;
+const QString kDefaultStreamName = QStringLiteral("Mixxx");
 const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
-const bool kDefaultStreamPublic = false;
+constexpr bool kDefaultStreamPublic = false;
 
 const QRegExp kForbiddenChars =
         QRegExp("[<>:\"\\/|?*\\\\]|(\\.\\.)"
@@ -108,8 +108,9 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
 BroadcastProfilePtr BroadcastProfile::loadFromFile(
         const QString& filename) {
     QFileInfo xmlFile(filename);
-    if (!xmlFile.exists())
+    if (!xmlFile.exists()) {
         return BroadcastProfilePtr(nullptr);
+    }
 
     QString profileFilename = xmlFile.baseName();
     // The profile filename (without extension) is used to create the instance
@@ -119,6 +120,10 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
     BroadcastProfilePtr profile(new BroadcastProfile(profileFilename));
     profile->loadValues(filename);
     return profile;
+}
+
+QString BroadcastProfile::getLastFilename() const {
+    return m_filename;
 }
 
 bool BroadcastProfile::equals(BroadcastProfilePtr other) {
@@ -231,7 +236,7 @@ void BroadcastProfile::adoptDefaultValues() {
     m_mountpoint = QString();
     m_streamDesc = kDefaultStreamDesc;
     m_streamGenre = kDefaultStreamGenre;
-    m_streamName = QString();
+    m_streamName = kDefaultStreamName;
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
     m_streamIRC.clear();
@@ -256,15 +261,28 @@ void BroadcastProfile::adoptDefaultValues() {
 
 bool BroadcastProfile::loadValues(const QString& filename) {
     QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
-    if (doc.childNodes().size() < 1)
+    if (doc.childNodes().size() < 1) {
         return false;
+    }
 
+    m_filename = filename;
+
+#ifdef __QTKEYCHAIN__
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
-#ifndef __QTKEYCHAIN__
+#else
     // Secure credentials storage can't be enabled nor disabled from the UI,
     // so force it to disabled to avoid issues if enabled.
     m_secureCredentials = false;
 #endif
+
+    // ProfileName is special because it was not previously saved in the file.
+    // When loading old files, we need to use the file name (set in the
+    // constructor) as the profile name and only load it if present in the
+    // file.
+    QDomNode node = XmlParse::selectNode(doc, kProfileName);
+    if (!node.isNull()) {
+        m_profileName = node.toElement().text();
+    }
 
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
@@ -305,6 +323,10 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
 
     m_format = XmlParse::selectNodeQString(doc, kFormat);
+    if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
+        // Upgrade to have the same codec name than the recording define.
+        m_format = ENCODING_OGG;
+    }
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
     m_channels = XmlParse::selectNodeInt(doc, kChannels);
 
@@ -322,6 +344,8 @@ bool BroadcastProfile::loadValues(const QString& filename) {
 bool BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDoctype);
     QDomElement docRoot = doc.createElement(kDocumentRoot);
+
+    XmlParse::addElement(doc, docRoot, kProfileName, m_profileName);
 
     XmlParse::addElement(doc, docRoot,
                          kSecureCredentials, QString::number((int)m_secureCredentials));
@@ -384,6 +408,7 @@ bool BroadcastProfile::save(const QString& filename) {
 
     QFile xmlFile(filename);
     if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        m_filename = filename;
         QTextStream fileStream(&xmlFile);
         doc.save(fileStream, 4);
         xmlFile.close();
@@ -397,7 +422,7 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
     m_profileName = QString(profileName);
 
-    emit(profileNameChanged(oldName, m_profileName));
+    emit profileNameChanged(oldName, m_profileName);
 }
 
 QString BroadcastProfile::getProfileName() const {
@@ -406,11 +431,11 @@ QString BroadcastProfile::getProfileName() const {
 
 void BroadcastProfile::setConnectionStatus(int newState) {
     m_connectionStatus = newState;
-    emit(connectionStatusChanged(connectionStatus()));
+    emit connectionStatusChanged(connectionStatus());
 }
 
 int BroadcastProfile::connectionStatus() {
-    return load_atomic(m_connectionStatus);
+    return atomicLoadRelaxed(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
@@ -431,8 +456,7 @@ bool BroadcastProfile::setSecurePassword(const QString& login, const QString& pa
     writeJob.setTextData(password);
 
     QEventLoop loop;
-    writeJob.connect(&writeJob, SIGNAL(finished(QKeychain::Job*)),
-                     &loop, SLOT(quit()));
+    writeJob.connect(&writeJob, &WritePasswordJob::finished, &loop, &QEventLoop::quit);
     writeJob.start();
     loop.exec();
 
@@ -462,8 +486,7 @@ QString BroadcastProfile::getSecurePassword(const QString& login) {
     readJob.setKey(login);
 
     QEventLoop loop;
-    readJob.connect(&readJob, SIGNAL(finished(QKeychain::Job*)),
-                    &loop, SLOT(quit()));
+    readJob.connect(&readJob, &ReadPasswordJob::finished, &loop, &QEventLoop::quit);
     readJob.start();
     loop.exec();
 
@@ -513,7 +536,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
-    emit(statusChanged(m_enabled));
+    emit statusChanged(m_enabled);
 }
 
 QString BroadcastProfile::getHost() const {

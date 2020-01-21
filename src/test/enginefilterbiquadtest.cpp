@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 
 namespace {
 
@@ -19,4 +19,4 @@ TEST_F(EngineFilterBiquadTest, fidspecLengthIsLongEnough) {
     ASSERT_TRUE(FIDSPEC_LENGTH > strlen("LsBq/1.2200000000/-12.0000000000"));
 }
 
-}
+} // namespace

@@ -1,10 +1,12 @@
-#include <QtDebug>
+#include "controllers/delegates/midioptionsdelegate.h"
+
 #include <QComboBox>
 #include <QTableView>
+#include <QtDebug>
 
-#include "controllers/delegates/midioptionsdelegate.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_midioptionsdelegate.cpp"
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {
@@ -50,7 +52,7 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
 QString MidiOptionsDelegate::displayText(const QVariant& value,
                                          const QLocale& locale) const {
     Q_UNUSED(locale);
-    MidiOptions options = qVariantValue<MidiOptions>(value);
+    MidiOptions options = value.value<MidiOptions>();
     QStringList optionStrs;
     MidiOption option = static_cast<MidiOption>(1);
     while (option < MIDI_OPTION_MASK) {
@@ -64,10 +66,10 @@ QString MidiOptionsDelegate::displayText(const QVariant& value,
 
 void MidiOptionsDelegate::setEditorData(QWidget* editor,
                                         const QModelIndex& index) const {
-    MidiOptions options = qVariantValue<MidiOptions>(index.data(Qt::EditRole));
+    MidiOptions options = index.data(Qt::EditRole).value<MidiOptions>();
 
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
+    if (pComboBox == nullptr) {
         return;
     }
     for (int i = 0; i < pComboBox->count(); ++i) {
@@ -83,9 +85,9 @@ void MidiOptionsDelegate::setModelData(QWidget* editor,
                                        const QModelIndex& index) const {
     MidiOptions options;
     QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    if (pComboBox == nullptr) {
         return;
     }
     options.all = pComboBox->itemData(pComboBox->currentIndex()).toInt();
-    model->setData(index, qVariantFromValue(options), Qt::EditRole);
+    model->setData(index, QVariant::fromValue(options), Qt::EditRole);
 }

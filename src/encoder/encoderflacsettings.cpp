@@ -1,11 +1,3 @@
-/**
-* @file encoderflacsettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for flac encoder
-*/
-
-
 #include "encoder/encoderflacsettings.h"
 #include "recording/defs_recording.h"
 #include <sndfile.h>
@@ -14,7 +6,6 @@ const int EncoderFlacSettings::DEFAULT_QUALITY_VALUE = 5;
 const QString EncoderFlacSettings::BITS_GROUP = "FLAC_BITS";
 const QString EncoderFlacSettings::GROUP_COMPRESSION = "FLAC_COMPRESSION";
 
- 
 EncoderFlacSettings::EncoderFlacSettings(UserSettingsPointer pConfig)
 {
     m_pConfig = pConfig;
@@ -23,7 +14,7 @@ EncoderFlacSettings::EncoderFlacSettings(UserSettingsPointer pConfig)
     names.append(QObject::tr("16 bits"));
     names.append(QObject::tr("24 bits"));
     m_radioList.append(OptionsGroup(QObject::tr("Bit depth"), BITS_GROUP, names));
-    
+
     m_qualList.append(0);
     m_qualList.append(1);
     m_qualList.append(2);
@@ -33,10 +24,6 @@ EncoderFlacSettings::EncoderFlacSettings(UserSettingsPointer pConfig)
     m_qualList.append(6);
     m_qualList.append(7);
     m_qualList.append(8);
-}
-EncoderFlacSettings::~EncoderFlacSettings()
-{
-    
 }
 
 bool EncoderFlacSettings::usesCompressionSlider() const
@@ -64,11 +51,11 @@ void EncoderFlacSettings::setCompression(int compression) {
 }
 int EncoderFlacSettings::getCompression() const
 {
-    int value = m_pConfig->getValue(ConfigKey(RECORDING_PREF_KEY, GROUP_COMPRESSION), 
-        DEFAULT_QUALITY_VALUE);
+    int value = m_pConfig->getValue(ConfigKey(RECORDING_PREF_KEY, GROUP_COMPRESSION),
+            DEFAULT_QUALITY_VALUE);
     if (!m_qualList.contains(value)) {
-        qWarning() << "Value saved for compression on preferences is out of range " 
-            << value << ". Returning default compression";
+        qWarning() << "Value saved for compression on preferences is out of range "
+                   << value << ". Returning default compression";
         value=DEFAULT_QUALITY_VALUE;
     }
     return value;
@@ -81,20 +68,19 @@ QList<EncoderSettings::OptionsGroup> EncoderFlacSettings::getOptionGroups() cons
     return m_radioList;
 }
 
-// Selects the option by its index. If it is a single-element option, 
+// Selects the option by its index. If it is a single-element option,
 // index 0 means disabled and 1 enabled.
-void EncoderFlacSettings::setGroupOption(QString groupCode, int optionIndex) 
-{
+void EncoderFlacSettings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found=false;
-    for (const auto& group : m_radioList) {
+    for (const auto& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
             found=true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
                 m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, groupCode),
                     ConfigValue(optionIndex));
             } else {
-                qWarning() << "Received an index out of range for: " 
-                    << groupCode << ", index: " << optionIndex;
+                qWarning() << "Received an index out of range for: "
+                           << groupCode << ", index: " << optionIndex;
             }
         }
     }
@@ -102,18 +88,18 @@ void EncoderFlacSettings::setGroupOption(QString groupCode, int optionIndex)
         qWarning() << "Received an unknown groupCode on setGroupOption: " << groupCode;
     }
 }
-// Return the selected option of the group. If it is a single-element option, 
+// Return the selected option of the group. If it is a single-element option,
 // 0 means disabled and 1 enabled.
-int EncoderFlacSettings::getSelectedOption(QString groupCode) const 
-{
+int EncoderFlacSettings::getSelectedOption(const QString& groupCode) const {
     bool found=false;
     int value = m_pConfig->getValue(ConfigKey(RECORDING_PREF_KEY, groupCode), 0);
     for (const auto&  group : m_radioList) {
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {
-                qWarning() << "Value saved for " << groupCode << 
-                    " on preferences is out of range " << value << ". Returning 0";
+                qWarning() << "Value saved for " << groupCode
+                           << " on preferences is out of range " << value
+                           << ". Returning 0";
                 value=0;
             }
         }

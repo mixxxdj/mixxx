@@ -5,7 +5,12 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformSignalColors::WaveformSignalColors() {
+namespace {
+constexpr int kDefaultDimBrightThreshold = 127;
+} // namespace
+
+WaveformSignalColors::WaveformSignalColors()
+        : m_dimBrightThreshold(kDefaultDimBrightThreshold) {
 }
 
 bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& context) {
@@ -62,11 +67,25 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
         m_playedOverlayColor = Qt::transparent;
     }
 
+    // This color is used to draw an overlay over the entire overview-waveforms
+    // if vinyl passthrough is enabled
+    m_passthroughOverlayColor = context.selectColor(node, "PassthroughOverlayColor");
+    m_passthroughOverlayColor = WSkinColor::getCorrectColor(m_passthroughOverlayColor).toRgb();
+    if (!m_passthroughOverlayColor.isValid()) {
+        m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(0, 0, 0, 187)).toRgb();
+    }
+
     m_bgColor = context.selectColor(node, "BgColor");
     if (!m_bgColor.isValid()) {
         m_bgColor = Qt::transparent;
     }
     m_bgColor = WSkinColor::getCorrectColor(m_bgColor).toRgb();
+
+    bool okay;
+    m_dimBrightThreshold = context.selectInt(node, QStringLiteral("DimBrightThreshold"), &okay);
+    if (!okay) {
+        m_dimBrightThreshold = kDefaultDimBrightThreshold;
+    }
 
     bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() && m_highColor.isValid();
 
@@ -133,8 +152,8 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 }
 
 void WaveformSignalColors::fallBackDefaultColor() {
-    qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+    qWarning() << "WaveformSignalColors::fallBackDefaultColor - "
+                  "Skin does not provide valid signal colors, using default color...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();
@@ -142,6 +161,6 @@ void WaveformSignalColors::fallBackDefaultColor() {
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !
-float WaveformSignalColors::stableHue(float hue) const {
+double WaveformSignalColors::stableHue(double hue) const {
     return hue < 0.0 ? hue + 1.0 : hue > 1.0 ? hue - 1.0 : hue;
 }

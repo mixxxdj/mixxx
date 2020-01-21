@@ -1,8 +1,4 @@
-// broadcastprofile.h
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
-#ifndef BROADCASTPROFILE_H
-#define BROADCASTPROFILE_H
+#pragma once
 
 #include <QSharedPointer>
 #include <QObject>
@@ -36,6 +32,8 @@ class BroadcastProfile : public QObject {
     static BroadcastProfilePtr loadFromFile(const QString& filename);
     static bool validName(const QString& str);
     static QString stripForbiddenChars(const QString& str);
+
+    QString getLastFilename() const;
 
     void setConnectionStatus(int newState);
     int connectionStatus();
@@ -137,7 +135,7 @@ class BroadcastProfile : public QObject {
     void setOggDynamicUpdate(bool value);
 
   signals:
-    void profileNameChanged(QString oldName, QString newName);
+    void profileNameChanged(const QString& oldName, const QString& newName);
     void statusChanged(bool newStatus);
     void connectionStatusChanged(int newConnectionStatus);
 
@@ -155,6 +153,8 @@ class BroadcastProfile : public QObject {
     void errorDialog(const QString& text, const QString& detailedError);
 
     bool m_secureCredentials;
+
+    QString m_filename;
 
     QString m_profileName;
     bool m_enabled;
@@ -195,5 +195,3 @@ class BroadcastProfile : public QObject {
 
     QAtomicInt m_connectionStatus;
 };
-
-#endif // BROADCASTPROFILE_H

@@ -35,6 +35,7 @@ var TraktorS2MK3 = new function () {
     this.syncPressedTimer = { "[Channel1]": 0, "[Channel2]": 0 }; // Timer to distinguish between short and long press
 
     // Jog wheels
+    this.pitchBendMultiplier = 1.1;
     this.lastTickVal = [0, 0];
     this.lastTickTime = [0.0, 0.0];
 
@@ -531,22 +532,19 @@ TraktorS2MK3.jogTouchHandler = function (field) {
 
 TraktorS2MK3.jogHandler = function (field) {
     var deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
+    var deltas = TraktorS2MK3.wheelDeltas(deckNumber, field.value);
+    var tickDelta = deltas[0];
+    var timeDelta = deltas[1];
 
-    // Jog wheel control is based on the S4MK2 mapping, might need some more review
     if (engine.isScratching(deckNumber)) {
-        var deltas = TraktorS2MK3.wheelDeltas(field.group, field.value);
-        var tickDelta = deltas[0];
-        var timeDelta = deltas[1];
-
-        var velocity = (tickDelta / timeDelta) / 3;
+        engine.scratchTick(deckNumber, tickDelta);
+    } else {
+        var velocity = (tickDelta / timeDelta) * TraktorS2MK3.pitchBendMultiplier;
         engine.setValue(field.group, "jog", velocity);
-        if (engine.getValue(field.group, "scratch2_enable")) {
-            engine.scratchTick(deckNumber, tickDelta);
-        }
     }
 };
 
-TraktorS2MK3.wheelDeltas = function (group, value) {
+TraktorS2MK3.wheelDeltas = function (deckNumber, value) {
     // When the wheel is touched, four bytes change, but only the first behaves predictably.
     // It looks like the wheel is 1024 ticks per revolution.
     var tickval = value & 0xFF;
@@ -554,17 +552,11 @@ TraktorS2MK3.wheelDeltas = function (group, value) {
     var prevTick = 0;
     var prevTime = 0;
 
-    if (group[8] === "1" || group[8] === "3") {
-        prevTick = this.lastTickVal[0];
-        prevTime = this.lastTickTime[0];
-        this.lastTickVal[0] = tickval;
-        this.lastTickTime[0] = timeval;
-    } else {
-        prevTick = this.lastTickVal[1];
-        prevTime = this.lastTickTime[1];
-        this.lastTickVal[1] = tickval;
-        this.lastTickTime[1] = timeval;
-    }
+    // Group 1 and 2 -> Array index 0 and 1
+    prevTick = this.lastTickVal[deckNumber - 1];
+    prevTime = this.lastTickTime[deckNumber - 1];
+    this.lastTickVal[deckNumber - 1] = tickval;
+    this.lastTickTime[deckNumber - 1] = timeval;
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.

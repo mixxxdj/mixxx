@@ -31,17 +31,17 @@ class TrackRefTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    static void verifyFileInfo(const TrackRef& actual, const QFileInfo& fileInfo) {
+    static void verifyFileInfo(const TrackRef& actual, const TrackFile& trackFile) {
         EXPECT_TRUE(actual.hasLocation());
-        EXPECT_EQ(TrackRef::location(fileInfo), actual.getLocation());
+        EXPECT_EQ(trackFile.location(), actual.getLocation());
         EXPECT_TRUE(actual.hasCanonicalLocation());
-        EXPECT_EQ(TrackRef::canonicalLocation(fileInfo), actual.getCanonicalLocation());
+        EXPECT_EQ(trackFile.canonicalLocation(), actual.getCanonicalLocation());
     }
 
     const QTemporaryFile m_tempFile;
     const QDir m_tempFileDir;
     const QString m_tempFileName;
-    const QFileInfo m_tempFileInfo;
+    const TrackFile m_tempFileInfo;
     const TrackId m_validTrackId;
     const TrackId m_invalidTrackId;
 };

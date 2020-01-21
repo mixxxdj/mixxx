@@ -47,6 +47,28 @@
       <number>0</number>
      </property>
      <item>
+      <widget class="QPushButton" name="pushButtonRecording">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="text">
+        <string>Start Recording</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelRecPrefix"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelRecFilename"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelRecStatistics"/>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -58,23 +80,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Status:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonRecording">
-       <property name="text">
-        <string>Start Recording</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

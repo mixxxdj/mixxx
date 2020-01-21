@@ -1,0 +1,8 @@
+todo list:
+ - put the core functions into a library and make mp3guessenc a simple frontend/sample application
+   able to call library functions and get results into `streaminfo' and `detectioninfo' data structures
+ - add a README file ?
+ - add an AUTHORS file ?
+ - handling of more mpeg files provided on the same command line (WON'T DO)
+ - add support for SEEK feature in ID3tagV2.4.0 (lowest priority)
+

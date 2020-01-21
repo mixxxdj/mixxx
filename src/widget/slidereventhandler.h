@@ -1,5 +1,4 @@
-#ifndef SLIDEREVENTHANDLER_H
-#define SLIDEREVENTHANDLER_H
+#pragma once
 
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -105,7 +104,7 @@ class SliderEventHandler {
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
-        double wheelAdjustment = (e)->delta() / (120.0 * 127.0);
+        double wheelAdjustment = (e)->angleDelta().y() / (120.0 * 127.0);
         double newParameter = pWidget->getControlParameter() + wheelAdjustment;
 
         // Clamp to [0.0, 1.0]
@@ -203,5 +202,3 @@ class SliderEventHandler {
     // Is true if events is emitted while the slider is dragged
     bool m_bEventWhileDrag;
 };
-
-#endif /* SLIDEREVENTHANDLER_H */

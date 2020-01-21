@@ -1,12 +1,12 @@
-#ifndef AUTODJCRATESDAO_H
-#define AUTODJCRATESDAO_H
+#pragma once
 
 #include <QObject>
 #include <QSqlDatabase>
 
-#include "preferences/usersettings.h"
 #include "library/crate/crateid.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
 
 class TrackCollection;
@@ -92,8 +92,8 @@ class AutoDJCratesDAO : public QObject {
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
-    void slotPlayerInfoTrackLoaded(QString group, TrackPointer pTrack);
-    void slotPlayerInfoTrackUnloaded(QString group, TrackPointer pTrack);
+    void slotPlayerInfoTrackLoaded(const QString& group, TrackPointer pTrack);
+    void slotPlayerInfoTrackUnloaded(const QString& group, TrackPointer pTrack);
 
   private:
     void updateAutoDjCrate(CrateId crateId);
@@ -120,5 +120,3 @@ class AutoDJCratesDAO : public QObject {
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;
 };
-
-#endif // AUTODJCRATESDAO_H

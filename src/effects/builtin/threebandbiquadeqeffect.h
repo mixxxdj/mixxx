@@ -1,12 +1,11 @@
-#ifndef THREEBANDBIQUADEQEFFECT_H
-#define THREEBANDBIQUADEQEFFECT_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -39,7 +38,7 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
     double m_loFreqCorner;
     double m_highFreqCorner;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {
@@ -58,7 +57,7 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+                        const GroupFeatureState& groupFeatureState) override;
 
   private:
     ThreeBandBiquadEQEffect(const ThreeBandBiquadEQEffect&) = delete;
@@ -79,5 +78,3 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
-
-#endif // THREEBANDBIQUADEQEFFECT_H

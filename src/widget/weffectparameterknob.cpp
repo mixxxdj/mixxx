@@ -1,5 +1,7 @@
-#include "widget/effectwidgetutils.h"
 #include "widget/weffectparameterknob.h"
+
+#include "moc_weffectparameterknob.cpp"
+#include "widget/effectwidgetutils.h"
 
 void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectParameterSlotPointer pParameterSlot =
@@ -10,14 +12,17 @@ void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) 
         return;
     }
     setEffectParameterSlot(pParameterSlot);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WEffectParameterKnob::setEffectParameterSlot(
         EffectParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
+        connect(m_pEffectParameterSlot.data(),
+                &EffectParameterSlot::updated,
+                this,
+                &WEffectParameterKnob::parameterUpdated);
     }
     parameterUpdated();
 }

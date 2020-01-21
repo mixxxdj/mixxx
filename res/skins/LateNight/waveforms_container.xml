@@ -1,0 +1,108 @@
+<Template>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>WaveformsContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>100me,40me</Size>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:waveform.xml">
+                    <SetVariable name="ChanNum">3</SetVariable>
+                    <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:waveform.xml">
+                    <SetVariable name="ChanNum">1</SetVariable>
+                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:waveform.xml">
+                    <SetVariable name="ChanNum">2</SetVariable>
+                    <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:waveform.xml">
+                    <SetVariable name="ChanNum">4</SetVariable>
+                    <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+                    <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_beatgrid_controls</SetVariable>
+            <SetVariable name="ObjectName">BeatgridControlsToggle</SetVariable>
+            <SetVariable name="Size">26f,52f</SetVariable>
+            <SetVariable name="BtnSize"></SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_beatgrid_controls</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <Size>2f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],skin_settings</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- WaveformsContainer -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,23 +1,26 @@
-#ifndef GLWAVEFORMRENDERERSIGNALSHADER_H
-#define GLWAVEFORMRENDERERSIGNALSHADER_H
+#pragma once
 
-#include <QGLFramebufferObject>
-#include <QGLShaderProgram>
-#include <QtOpenGL>
+#include "waveform/renderers/glwaveformrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignalBase {
+QT_FORWARD_DECLARE_CLASS(QGLFramebufferObject)
+QT_FORWARD_DECLARE_CLASS(QGLShaderProgram)
+
+class GLSLWaveformRendererSignal : public QObject,
+                                   public WaveformRendererSignalBase,
+                                   public GLWaveformRenderer {
     Q_OBJECT
   public:
     GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
                                bool rgbShader);
     ~GLSLWaveformRendererSignal() override;
 
-    bool onInit() override;
     void onSetup(const QDomNode& node) override;
+    void onInitializeGL() override;
     void draw(QPainter* painter, QPaintEvent* event) override;
 
     void onSetTrack() override;
@@ -51,12 +54,14 @@ class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignal
     std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
 };
 
-class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
-  public:
+class GLSLWaveformRendererFilteredSignal: public GLSLWaveformRendererSignal {
+public:
     GLSLWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {}
-    ~GLSLWaveformRendererFilteredSignal() override {}
+            WaveformWidgetRenderer* waveformWidgetRenderer) :
+            GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {
+    }
+    ~GLSLWaveformRendererFilteredSignal() override {
+    }
 };
 
 class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
@@ -67,4 +72,4 @@ class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
     ~GLSLWaveformRendererRGBSignal() override {}
 };
 
-#endif // GLWAVEFORMRENDERERSIGNALSHADER_H
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

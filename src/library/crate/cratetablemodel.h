@@ -6,12 +6,11 @@
 
 #include "library/crate/crateid.h"
 
-
-class CrateTableModel : public BaseSqlTableModel {
+class CrateTableModel final : public BaseSqlTableModel {
     Q_OBJECT
 
   public:
-    CrateTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    CrateTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~CrateTableModel() final;
 
     void selectCrate(
@@ -20,7 +19,7 @@ class CrateTableModel : public BaseSqlTableModel {
         return m_selectedCrate;
     }
 
-    bool addTrack(const QModelIndex &index, QString location);
+    bool addTrack(const QModelIndex& index, const QString& location);
 
     // From TrackModel
     bool isColumnInternal(int column) final;
@@ -32,6 +31,5 @@ class CrateTableModel : public BaseSqlTableModel {
   private:
     CrateId m_selectedCrate;
 };
-
 
 #endif // MIXXX_CRATETABLEMODEL_H

@@ -3,11 +3,11 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-
 #include "widget/wskincolor.h"
 #include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -39,13 +39,13 @@ void WaveformRendererHSV::draw(QPainter* painter,
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHints(QPainter::Antialiasing, false);
-    painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
@@ -65,7 +65,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
             (double)m_waveformRenderer->getLength();
 
     float allGain(1.0);
-    getGains(&allGain, NULL, NULL, NULL);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get
@@ -80,16 +80,16 @@ void WaveformRendererHSV::draw(QPainter* painter,
 
     QPen pen;
     pen.setCapStyle(Qt::FlatCap);
-    pen.setWidth(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
+    pen.setWidthF(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
 
     const int breadth = m_waveformRenderer->getBreadth();
-    const float halfBreadth = (float)breadth / 2.0;
+    const float halfBreadth = static_cast<float>(breadth) / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth / 255.0;
+    const float heightFactor = allGain * halfBreadth / 255.0f;
 
     //draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
+    painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
 
     for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
         // Width of the x position in visual indices.
@@ -144,7 +144,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
         if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
+                            maxHigh[0] + maxHigh[1]) *
+                    1.2f;
 
             // prevent division by zero
             if (total > 0)
@@ -152,9 +154,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
                 // Normalize low and high (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
-            }
-            else
+            } else {
                 lo = hi = 0.0;
+            }
 
             // Set color
             color.setHsvF(h, 1.0-hi, 1.0-lo);
@@ -182,6 +184,4 @@ void WaveformRendererHSV::draw(QPainter* painter,
             }
         }
     }
-
-    painter->restore();
 }

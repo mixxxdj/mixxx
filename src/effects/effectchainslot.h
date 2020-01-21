@@ -1,10 +1,8 @@
-#ifndef EFFECTCHAINSLOT_H
-#define EFFECTCHAINSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
 #include <QList>
-#include <QSignalMapper>
 
 #include "engine/channelhandle.h"
 #include "util/class.h"
@@ -95,7 +93,7 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
-    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
+    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit);
     void slotChainNameChanged(const QString& name);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
@@ -109,7 +107,7 @@ class EffectChainSlot : public QObject {
     void slotControlClear(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
-    void slotControlChainSuperParameter(double v, bool force = false);
+    void slotControlChainSuperParameter(double v, bool force);
     void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
@@ -148,6 +146,7 @@ class EffectChainSlot : public QObject {
       object than the mapping.
     **/
     ControlPushButton* m_pControlChainShowFocus;
+    ControlPushButton* m_pControlChainHasControllerFocus;
     ControlPushButton* m_pControlChainShowParameters;
     ControlPushButton* m_pControlChainFocusedEffect;
 
@@ -167,10 +166,6 @@ class EffectChainSlot : public QObject {
     QMap<QString, ChannelInfo*> m_channelInfoByName;
 
     QList<EffectSlotPointer> m_slots;
-    QSignalMapper m_channelStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
-
-
-#endif /* EFFECTCHAINSLOT_H */

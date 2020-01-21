@@ -1,29 +1,33 @@
-#ifndef SOUNDSOURCECOREAUDIO_H
-#define SOUNDSOURCECOREAUDIO_H
+#pragma once
 
-#include "sources/soundsourceprovider.h"
-
-#include "sources/v1/legacyaudiosourceadapter.h"
+#include <vector>
 
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
 #include "CAStreamBasicDescription.h"
 
 #if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
-#include <CoreServices/CoreServices.h>
-#include <CoreAudio/CoreAudioTypes.h>
 #include <AudioToolbox/AudioFile.h>
 #include <AudioToolbox/AudioFormat.h>
+#include <CoreAudio/CoreAudioTypes.h>
+#include <CoreServices/CoreServices.h>
 #else
-#include "CoreAudioTypes.h"
 #include "AudioFile.h"
 #include "AudioFormat.h"
+#include "CoreAudioTypes.h"
 #endif
+
+#include "sources/soundsourceprovider.h"
+
+#include "sources/v1/legacyaudiosourceadapter.h"
 
 namespace mixxx {
 
-class SoundSourceCoreAudio: public SoundSource, public virtual /*implements*/ LegacyAudioSource, public LegacyAudioSourceAdapter {
-public:
+class SoundSourceCoreAudio
+        : public SoundSource,
+          public virtual /*implements*/ LegacyAudioSource,
+          public LegacyAudioSourceAdapter {
+  public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio() override;
 
@@ -34,7 +38,7 @@ public:
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const OpenParams& params) override;
@@ -43,20 +47,30 @@ private:
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;
     CAStreamBasicDescription m_outputFormat;
-    SInt64 m_headerFrames;
+    SINT m_leadingFrames;
+    SINT m_seekPrefetchFrames;
+    std::vector<CSAMPLE> m_seekPrefetchBuffer;
 };
 
-class SoundSourceProviderCoreAudio: public SoundSourceProvider {
-public:
-    QString getName() const override;
+class SoundSourceProviderCoreAudio : public SoundSourceProvider {
+  public:
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceCoreAudio>(url);
     }
 };
 
-}  // namespace mixxx
-
-#endif // SOUNDSOURCECOREAUDIO_H
+} // namespace mixxx

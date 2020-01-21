@@ -1,8 +1,6 @@
-#ifndef MIXXX_LEGACYAUDIOSOURCE_H
-#define MIXXX_LEGACYAUDIOSOURCE_H
+#pragma once
 
 #include "util/types.h"
-
 
 namespace mixxx {
 
@@ -37,6 +35,3 @@ class LegacyAudioSource {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_LEGACYAUDIOSOURCE_H

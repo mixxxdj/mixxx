@@ -105,7 +105,7 @@ TEST_F(SoftTakeoverTest, DISABLED_SuperFastNotSame) {
 }
 
 /* The meat of the tests
- * (See decscription in SoftTakeover::ignore() )
+ * (See description in SoftTakeover::ignore() )
  *
  * The test matrix is given in the accompanying CSV file.
  * There are 32 possible cases due to five binary possibilities:

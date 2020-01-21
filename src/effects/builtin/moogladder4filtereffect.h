@@ -1,11 +1,10 @@
-#ifndef MOOGLADDER4FILTEREFFECT_H
-#define MOOGLADDER4FILTEREFFECT_H
+#pragma once
 
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefiltermoogladder4.h"
+#include "engine/filters/enginefiltermoogladder4.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -54,5 +53,3 @@ class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGrou
 
     DISALLOW_COPY_AND_ASSIGN(MoogLadder4FilterEffect);
 };
-
-#endif /* MOOGLADDER4FILTEREFFECT_H */

@@ -28,7 +28,7 @@
             <SetVariable name="state_1_pressed"></SetVariable>
             <SetVariable name="state_1_unpressed"></SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_phase</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
 
           <WidgetGroup>

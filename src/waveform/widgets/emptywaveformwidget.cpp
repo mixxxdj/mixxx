@@ -1,11 +1,12 @@
-#include <QPainter>
-
 #include "waveform/widgets/emptywaveformwidget.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include <QPainter>
 
-EmptyWaveformWidget::EmptyWaveformWidget(const char* group, QWidget* parent)
+#include "moc_emptywaveformwidget.cpp"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+
+EmptyWaveformWidget::EmptyWaveformWidget(const QString& group, QWidget* parent)
         : QWidget(parent),
           WaveformWidgetAbstract(group) {
     //Empty means just a background ;)
@@ -21,7 +22,7 @@ EmptyWaveformWidget::~EmptyWaveformWidget() {
 }
 
 void EmptyWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(this);
+    m_widget = this;
 }
 
 void EmptyWaveformWidget::paintEvent(QPaintEvent* event) {

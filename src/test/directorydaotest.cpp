@@ -1,31 +1,23 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include <QtDebug>
-#include <QtSql>
-#include <QString>
-#include <QStringBuilder>
 #include <QDir>
 #include <QFileInfo>
-#include <QtAlgorithms>
+#include <QString>
+#include <QtDebug>
+#include <QtSql>
 
-#include "sources/soundsourceproxy.h"
-#include "preferences/usersettings.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
-
+#include "preferences/usersettings.h"
+#include "sources/soundsourceproxy.h"
 #include "test/librarytest.h"
+#include "track/track.h"
 
-using ::testing::ElementsAre;
-
-namespace {
+using ::testing::UnorderedElementsAre;
 
 class DirectoryDAOTest : public LibraryTest {
   protected:
-    void SetUp() override {
-        m_supportedFileExt = "." % SoundSourceProxy::getSupportedFileExtensions().first();
-    }
-
     void TearDown() override {
         // make sure we clean up the db
         QSqlQuery query(dbConnection());
@@ -37,20 +29,29 @@ class DirectoryDAOTest : public LibraryTest {
         query.exec();
     }
 
-    QString m_supportedFileExt;
+    static QString getSupportedFileExt() {
+        const auto defaultFileExt = QStringLiteral("mp3");
+        if (SoundSourceProxy::isFileExtensionSupported(defaultFileExt)) {
+            return defaultFileExt;
+        } else {
+            return SoundSourceProxy::getSupportedFileExtensions().constFirst();
+        }
+    }
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
-    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     // prepend dir with '/' so that QT thinks the dir starts at the root
-    QString testdir(QDir::tempPath() + "/TestDir/a");
-    QString testChild(QDir::tempPath() + "/TestDir/a/child");
-    QString testParent(QDir::tempPath() + "/TestDir");
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    QString testdir = QString(tempDir.path() + "/TestDir/a");
+    QString testChild = QString(tempDir.path() + "/TestDir/a/child");
+    QString testParent = QString(tempDir.path() + "/TestDir");
 
     //create temp dirs
-    QDir(QDir::temp()).mkpath(testParent);
-    QDir(QDir::temp()).mkpath(testdir);
-    QDir(QDir::temp()).mkpath(testChild);
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testParent));
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testdir));
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testChild));
 
     // check if directory doa adds and thinks everything is ok
     int success = m_DirectoryDao.addDirectory(testdir);
@@ -76,6 +77,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
+    ASSERT_TRUE(success);
 
     // we do not trust what directory dao thinks and better check up on it
     QStringList dirs;
@@ -89,7 +91,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, removeDirTest) {
-    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     QString testdir = getTestDataDir().path();
 
     // check if directory doa adds and thinks everything is ok
@@ -102,6 +104,8 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
+    ASSERT_TRUE(success);
+
     QStringList dirs;
     while (query.next()) {
         dirs << query.value(0).toString();
@@ -112,7 +116,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, getDirTest) {
-    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     QString testdir = "/a/c";
     QString testdir2 = "b/d";
 
@@ -126,33 +130,57 @@ TEST_F(DirectoryDAOTest, getDirTest) {
     EXPECT_QSTRING_EQ(testdir2, dirs.at(1));
 }
 
-TEST_F(DirectoryDAOTest, relocateDirTest) {
-    DirectoryDAO &directoryDao = collection()->getDirectoryDAO();
+TEST_F(DirectoryDAOTest, relocateDirectory) {
+    // Test with 2 independent root directories for relocation
+    const QTemporaryDir tempDir1;
+    ASSERT_TRUE(tempDir1.isValid());
+    const QTemporaryDir tempDir2;
+    ASSERT_TRUE(tempDir2.isValid());
 
-    // use a temp dir so that we always use a real existing system path
-    QString testdir(QDir::tempPath() + "/TestDir");
-    QString test2(QDir::tempPath() + "/TestDir2");
-    QString testnew(QDir::tempPath() + "/TestDirNew");
+    //create temp dirs
+    QString testdir(tempDir1.filePath("TestDir"));
+    ASSERT_TRUE(QDir(tempDir1.path()).mkpath(testdir));
+    QString test2(tempDir2.filePath("TestDir2"));
+    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(test2));
+    QString testnew(tempDir2.filePath("TestDirNew"));
+    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(testnew));
 
-    directoryDao.addDirectory(testdir);
-    directoryDao.addDirectory(test2);
+    const DirectoryDAO& dao = internalCollection()->getDirectoryDAO();
 
-    TrackDAO &trackDAO = collection()->getTrackDAO();
+    ASSERT_EQ(ALL_FINE, dao.addDirectory(testdir));
+    ASSERT_EQ(ALL_FINE, dao.addDirectory(test2));
+
     // ok now lets create some tracks here
-    trackDAO.addTracksPrepare();
-    trackDAO.addTracksAddTrack(Track::newTemporary(testdir + "/a" + m_supportedFileExt), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(testdir + "/b" + m_supportedFileExt), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(test2 + "/c" + m_supportedFileExt), false);
-    trackDAO.addTracksAddTrack(Track::newTemporary(test2 + "/d" + m_supportedFileExt), false);
-    trackDAO.addTracksFinish(false);
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(testdir, "a." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(testdir, "b." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(test2, "c." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(test2, "d." + getSupportedFileExt())),
+                                false)
+                        .isValid());
 
-    QSet<TrackId> ids = directoryDao.relocateDirectory(testdir, testnew);
-    EXPECT_EQ(2, ids.size());
+    QList<RelocatedTrack> relocatedTracks =
+            dao.relocateDirectory(testdir, testnew);
+    EXPECT_EQ(2, relocatedTracks.size());
 
-    QStringList dirs = directoryDao.getDirs();
-    EXPECT_EQ(2, dirs.size());
-    qSort(dirs);
-    EXPECT_THAT(dirs, ElementsAre(test2, testnew));
+    const QStringList allDirs = dao.getDirs();
+    EXPECT_EQ(2, allDirs.size());
+    EXPECT_THAT(allDirs, UnorderedElementsAre(test2, testnew));
 }
-
-}  // namespace

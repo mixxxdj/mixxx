@@ -1,277 +1,71 @@
 <Template>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+
   <WidgetGroup>
-    <ObjectName>Mixer</ObjectName>
     <SizePolicy>max,me</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
       <WidgetGroup>
-        <ObjectName>MixerChannelControls</ObjectName>
+        <ObjectName>MixerContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>2f,min</Size>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>MixerContainer</ObjectName>
+            <ObjectName>MixerDecks</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- Channel controls -->
-                <ObjectName>AlignHCenter</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <SizePolicy>max,min</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:mixer_channel_4decks.xml">
-                        <SetVariable name="channum">3</SetVariable>
-                        <SetVariable name="deckSide">Left</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:mixer_channel_left.xml">
-                    <SetVariable name="channum">1</SetVariable>
-                    <SetVariable name="deckSide">Left</SetVariable>
-                  </Template>
-
-                  <WidgetGroup>
-                    <ObjectName>MasterVuMeter_2Decks</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>max,me</SizePolicy>
-                    <Children>
-                      <!-- Spacer -->
-                      <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1min,0me</Size>
-                        <Children/>
-                      </WidgetGroup>
-
-                      <WidgetGroup><!-- Peak indicator L +R -->
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Children>
-                          <StatusLight>
-                            <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                            <PathBack>style/clipping_deck.svg</PathBack>
-                            <Connection>
-                              <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                          <StatusLight>
-                            <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                            <PathBack>style/clipping_deck.svg</PathBack>
-                            <Connection>
-                              <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                        </Children>
-                      </WidgetGroup><!-- /Peak indicator L +R -->
-
-                      <WidgetGroup><!-- Level L +R -->
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Children>
-                          <VuMeter>
-                            <TooltipId>master_VuMeterL</TooltipId>
-                            <PathVu>style/volume_display_deck_over.png</PathVu>
-                            <PathBack>style/volume_display_deck.png</PathBack>
-                            <Horizontal>false</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Master],VuMeterL</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                          <VuMeter>
-                            <TooltipId>master_VuMeterR</TooltipId>
-                            <PathVu>style/volume_display_deck_over.png</PathVu>
-                            <PathBack>style/volume_display_deck.png</PathBack>
-                            <Horizontal>false</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Master],VuMeterR</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                        </Children>
-                      </WidgetGroup><!-- /Level L +R -->
-
-                      <!-- Spacer -->
-                      <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1min,5f</Size>
-                        <Children/>
-                      </WidgetGroup>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Invert/><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:mixer_channel_right.xml">
-                    <SetVariable name="channum">2</SetVariable>
-                    <SetVariable name="deckSide">Right</SetVariable>
-                  </Template>
-
-                  <WidgetGroup>
-                    <SizePolicy>max,min</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:mixer_channel_4decks.xml">
-                        <SetVariable name="channum">4</SetVariable>
-                        <SetVariable name="deckSide">Right</SetVariable>
-                      </Template>
-                      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup><!-- /Channel controls -->
-
-              <WidgetGroup><!-- Crossfader + Channel1/2 assign switches -->
-                <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
-                <Layout>horizontal</Layout>
-                <Children>
-
-                  <!-- Channel1 xfader switch:
-                      visible if deck is NOT assigned to left side of xFader -->
-                  <WidgetGroup>
-                    <ObjectName>AlignCenterTop</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children>
-                      <WidgetGroup>
-                        <ObjectName>AlignCenterTop</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>min,me</SizePolicy>
-                        <Children>
-
-                          <Template src="skin:button_3state.xml">
-                            <SetVariable name="TooltipId">orientation</SetVariable>
-                            <SetVariable name="Size">34f,15f</SetVariable>
-                            <SetVariable name="state_0">orientation_deckLeft_left</SetVariable>
-                            <SetVariable name="state_1">orientation_deck_master</SetVariable>
-                            <SetVariable name="state_2">orientation_deckLeft_right</SetVariable>
-                            <SetVariable name="ConfigKey">[Channel1],orientation</SetVariable>
-                          </Template>
-
-                          <WidgetGroup><Size>min,me</Size></WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey>[Channel1],orientation</ConfigKey>
-                          <Transform><IsEqual>0</IsEqual><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Channel1 xfader switch -->
-
-                  <WidgetGroup>
-                    <ObjectName>Crossfader</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <SliderComposed>
-                        <TooltipId>crossfader</TooltipId>
-                        <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
-                        <Slider>slider_crossfader.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],crossfader</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <!-- Channel2 xfader switch:
-                      visible if deck is NOT assigned to right side of xFader -->
-                  <WidgetGroup>
-                    <ObjectName>AlignCenterTop</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children>
-                      <WidgetGroup>
-                        <ObjectName>AlignCenterTop</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>min,me</SizePolicy>
-                        <Children>
-
-                          <Template src="skin:button_3state.xml">
-                            <SetVariable name="TooltipId">orientation</SetVariable>
-                            <SetVariable name="Size">34f,15f</SetVariable>
-                            <SetVariable name="state_0">orientation_deckRight_left</SetVariable>
-                            <SetVariable name="state_1">orientation_deck_master</SetVariable>
-                            <SetVariable name="state_2">orientation_deckRight_right</SetVariable>
-                            <SetVariable name="ConfigKey">[Channel2],orientation</SetVariable>
-                          </Template>
-
-                          <WidgetGroup><Size>min,me</Size></WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey>[Channel2],orientation</ConfigKey>
-                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Channel2 xfader switch -->
-
-                </Children>
-              </WidgetGroup><!-- /Crossfader + Channel1/2 assign switches -->
-
+              <Template src="skin:/mixer/mixer_2decks.xml"/>
+              <Template src="skin:/mixer/mixer_4decks.xml"/>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
           </WidgetGroup>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>2f,min</Size>
-          </WidgetGroup>
+          <Template src="skin:/mixer/mixer_main_headphone.xml"/>
+
         </Children>
-      </WidgetGroup>
-
-      <!-- Master & Headphone Controls -->
-      <Template src="skin:mixer_master_headphone.xml"/>
+      </WidgetGroup><!-- MixerContainer -->
 
     </Children>
     <Connection>
       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <SizePolicy>max,me</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup><!--  width set in qss  -->
+            <ObjectName>CompactDecksCenterSpacer</ObjectName>
+          </WidgetGroup>
+
+          <Template src="skin:/mixer/vumeters_compact.xml"/>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

@@ -1,0 +1,109 @@
+<Template>
+  <SetVariable name="ChannelType">channel</SetVariable>
+  <SetVariable name="VuSize">deck</SetVariable>
+  <SetVariable name="VuColor">light</SetVariable>
+
+  <WidgetGroup>
+    <SizePolicy>min,me</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup><!-- 1 / Master / 2 -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>VuMeterDeck1_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel1]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterMaster_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterMaster_Light</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterDeck2_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel2]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- 1 / Master / 2 -->
+
+      <WidgetGroup><!-- 3 / (Main) / 4 -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>VuMeterDeck3_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel3]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterMaster_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>14f,96f</Size>
+                <Children>
+                  <WidgetGroup>
+                    <!-- <TooltipId>master_VuMeter</TooltipId> -->
+                    <ObjectName>VuMasterCover</ObjectName>
+                  </WidgetGroup>
+                  <!-- Unfortnately we can load a Singleton only once,
+                      so we need a separate vu meter instance -->
+                  <Template src="skin:/mixer/vumeter_master.xml"/>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterDeck4_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel4]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- 3 / (Main) / 4 -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_vumeters_compact</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

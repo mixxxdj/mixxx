@@ -13,16 +13,18 @@ Variables:
   <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <MinimumSize>43,47</MinimumSize>
-    <MaximumSize>52,47</MaximumSize>
-    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>43,</MinimumSize>
+    <MaximumSize>52,</MaximumSize>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
       <WidgetGroup><!-- Parameter knob + parameter name -->
         <Layout>vertical</Layout>
-        <MinimumSize>42,33</MinimumSize>
-        <MaximumSize>51,33</MaximumSize>
-        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>42,</MinimumSize>
+        <MaximumSize>51,</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- Effect parameter knob -->
@@ -47,8 +49,8 @@ Variables:
           </WidgetGroup>
 
           <WidgetGroup><!-- Name of parameter -->
-            <MinimumSize>42,11</MinimumSize>
-            <MaximumSize>51,11</MaximumSize>
+            <MinimumSize>42,12</MinimumSize>
+            <MaximumSize>51,12</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
@@ -69,23 +71,39 @@ Variables:
         </Children>
       </WidgetGroup><!-- Parameter knob + parameter name -->
 
-      <!-- Meta knob link button -->
-      <Template src="skin:button_5state.xml">
-        <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
-        <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
-        <SetVariable name="Size">42me,5f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_type</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <ObjectName>AlignHCenter</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>FxSuperLinkButtonBox</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>39,</MinimumSize>
+            <MaximumSize>51,</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <!-- Meta knob link invert button -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
+                <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
+                <SetVariable name="Size">10f,5f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
+              </Template>
 
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
-      <!-- Meta knob link invert button -->
-      <Template src="skin:button_2state.xml">
-        <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
-        <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
-        <SetVariable name="Size">42me,5f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
-      </Template>
+              <!-- Meta knob link button -->
+              <Template src="skin:button_5state.xml">
+                <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+                <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
+                <SetVariable name="Size">25me,5f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_type</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 

@@ -46,24 +46,28 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
     // Pointers returned by malloc are aligned for the largest scalar type. On
     // most platforms the largest scalar type is long double (16 bytes).
     // However, on MSVC x86 long double is 8 bytes.
-    // This can be tested via
-    // alignof(std::max_align_t)
-    //
-    // On MSVC, we use _aligned_malloc to handle aligning pointers to 16-byte
-    // boundaries. On other platforms where long double is 8 bytes this code
-    // allocates 16 additional slack bytes so we can adjust the pointer we
-    // return to the caller to be 16-byte aligned. We record a pointer to the
-    // true start of the buffer in the slack space as well so that we can free
-    // it correctly.
-    // TODO(XXX): Replace with C++17 aligned_alloc.
+    // This can be tested via alignof(std::max_align_t)
     if (useAlignedAlloc()) {
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
+        // On MSVC, we use _aligned_malloc to handle aligning pointers to 16-byte
+        // boundaries.
         return static_cast<CSAMPLE*>(
                 _aligned_malloc(sizeof(CSAMPLE) * size, kAlignment));
+#elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
+        std::size_t alloc_size = sizeof(CSAMPLE) * size;
+        // The size (in bytes) must be an integral multiple of kAlignment
+        std::size_t aligned_alloc_size = alloc_size;
+        if (alloc_size % kAlignment != 0) {
+            aligned_alloc_size += (kAlignment - alloc_size % kAlignment);
+        }
+        DEBUG_ASSERT(aligned_alloc_size % kAlignment == 0);
+        return static_cast<CSAMPLE*>(std::aligned_alloc(kAlignment, aligned_alloc_size));
 #else
-        // This block will be only used on non-Windows platforms that don't
-        // produce 16-byte aligned pointers via malloc. We allocate 16 bytes of
-        // slack space so that we can align the pointer we return to the caller.
+        // On other platforms that might not support std::aligned_alloc
+        // yet but where long double is 8 bytes this code allocates 16 additional
+        // slack bytes so we can adjust the pointer we return to the caller to be
+        // 16-byte aligned. We record a pointer to the true start of the buffer
+        // in the slack space as well so that we can free it correctly.
         const size_t alignment = kAlignment;
         const size_t unaligned_size = sizeof(CSAMPLE[size]) + alignment;
         void* pUnaligned = std::malloc(unaligned_size);
@@ -86,13 +90,15 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
 void SampleUtil::free(CSAMPLE* pBuffer) {
     // See SampleUtil::alloc() for details
     if (useAlignedAlloc()) {
-        if (pBuffer == NULL) {
-            return;
-        }
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
         _aligned_free(pBuffer);
+#elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
+        std::free(pBuffer);
 #else
         // Pointer to the original memory is stored before pBuffer
+        if (!pBuffer) {
+            return;
+        }
         std::free(*((void**)((void*)pBuffer) - 1));
 #endif
     } else {
@@ -103,8 +109,9 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         SINT numSamples) {
-    if (gain == CSAMPLE_GAIN_ONE)
+    if (gain == CSAMPLE_GAIN_ONE) {
         return;
+    }
     if (gain == CSAMPLE_GAIN_ZERO) {
         clear(pBuffer, numSamples);
         return;
@@ -129,7 +136,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain_delta) {
+    if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -151,7 +158,8 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
         CSAMPLE gain2, SINT numSamples) {
     // This handles gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE as well.
     if (gain1 == gain2) {
-        return applyGain(pBuffer, gain1, numSamples);
+        applyGain(pBuffer, gain1, numSamples);
+        return;
     }
 
     // note: LOOP VECTORIZED.
@@ -172,7 +180,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
 
     const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain1Delta) {
+    if (gain1Delta != 0) {
         const CSAMPLE_GAIN start_gain = gain1Old + gain1Delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -188,7 +196,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
 
     const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain2Delta) {
+    if (gain2Delta != 0) {
         const CSAMPLE_GAIN start_gain = gain2Old + gain2Delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -237,7 +245,7 @@ void SampleUtil::addWithRampingGain(CSAMPLE* M_RESTRICT pDest,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain_delta) {
+    if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -259,9 +267,11 @@ void SampleUtil::add2WithGain(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
         SINT numSamples) {
     if (gain1 == CSAMPLE_GAIN_ZERO) {
-        return addWithGain(pDest, pSrc2, gain2, numSamples);
+        addWithGain(pDest, pSrc2, gain2, numSamples);
+        return;
     } else if (gain2 == CSAMPLE_GAIN_ZERO) {
-        return addWithGain(pDest, pSrc1, gain1, numSamples);
+        addWithGain(pDest, pSrc1, gain1, numSamples);
+        return;
     }
 
     // note: LOOP VECTORIZED.
@@ -277,11 +287,14 @@ void SampleUtil::add3WithGain(CSAMPLE* pDest,
         const CSAMPLE* M_RESTRICT pSrc3, CSAMPLE_GAIN gain3,
         SINT numSamples) {
     if (gain1 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, numSamples);
+        add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, numSamples);
+        return;
     } else if (gain2 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, numSamples);
+        add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, numSamples);
+        return;
     } else if (gain3 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, numSamples);
+        add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, numSamples);
+        return;
     }
 
     // note: LOOP VECTORIZED.
@@ -330,7 +343,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* M_RESTRICT pDest,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(numSamples / 2);
-    if (gain_delta) {
+    if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED only with "int i"
         for (int i = 0; i < numSamples / 2; ++i) {
@@ -440,19 +453,37 @@ void SampleUtil::deinterleaveBuffer(CSAMPLE* M_RESTRICT pDest1,
 }
 
 // static
-void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
-        const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
+void SampleUtil::linearCrossfadeBuffersOut(
+        CSAMPLE* pDestSrcFadeOut,
+        const CSAMPLE* pSrcFadeIn,
         SINT numSamples) {
+    // M_RESTRICT unoptimizes the function for some reason.
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE
             / CSAMPLE_GAIN(numSamples / 2);
     // note: LOOP VECTORIZED. only with "int i"
     for (int i = 0; i < numSamples / 2; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
-        pDest[i * 2] = pSrcFadeIn[i * 2] * cross_mix
-                + pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
-        pDest[i * 2 + 1] = pSrcFadeIn[i * 2 + 1] * cross_mix
-                + pSrcFadeOut[i * 2 + 1] * (CSAMPLE_GAIN_ONE - cross_mix);
+        pDestSrcFadeOut[i * 2] *= (CSAMPLE_GAIN_ONE - cross_mix);
+        pDestSrcFadeOut[i * 2] += pSrcFadeIn[i * 2] * cross_mix;
+        pDestSrcFadeOut[i * 2 + 1] *= (CSAMPLE_GAIN_ONE - cross_mix);
+        pDestSrcFadeOut[i * 2 + 1] += pSrcFadeIn[i * 2 + 1] * cross_mix;
+    }
+}
 
+// static
+void SampleUtil::linearCrossfadeBuffersIn(
+        CSAMPLE* pDestSrcFadeIn,
+        const CSAMPLE* pSrcFadeOut,
+        SINT numSamples) {
+    // M_RESTRICT unoptimizes the function for some reason.
+    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / 2);
+    // note: LOOP VECTORIZED. only with "int i"
+    for (int i = 0; i < numSamples / 2; ++i) {
+        const CSAMPLE_GAIN cross_mix = cross_inc * i;
+        pDestSrcFadeIn[i * 2] *= cross_mix;
+        pDestSrcFadeIn[i * 2] += pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
+        pDestSrcFadeIn[i * 2 + 1] *= cross_mix;
+        pDestSrcFadeIn[i * 2 + 1] += pSrcFadeOut[i * 2 + 1] * (CSAMPLE_GAIN_ONE - cross_mix);
     }
 }
 

@@ -40,7 +40,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -85,7 +85,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- 8 -->

@@ -3,93 +3,35 @@ Description:
   Floating VUMeter next to big CoverArt/Spinny in decks.
   Visible when mixer is hidden and Permanent Level Meters are enabled.
 Variables:
-  group   : [ChannelN]
-
+  chanNum   : N in [ChannelN]
+  Label     : deck number that's printed below the level meter
 
 Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
 Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
 -->
 <Template>
-  <WidgetGroup><!-- VU incl. Label + spacer -->
+  <WidgetGroup>
     <Layout>vertical</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
       <WidgetGroup><!-- VU incl. Label -->
         <ObjectName>VUMeterFloating</ObjectName>
         <Layout>vertical</Layout>
-        <MaximumSize>-1,136</MaximumSize>
         <SizePolicy>min,me</SizePolicy>
+        <MaximumSize>-1,136</MaximumSize>
         <Children>
-          <WidgetGroup><!-- VU -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <WidgetGroup><!-- VU Left -->
-                <Layout>stacked</Layout>
-                <Size>4f,-1min</Size>
-                <Children>
-                  <StatusLight>
-                    <TooltipId>master_VuMeterL</TooltipId>
-                    <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
-                    <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
-                    </Connection>
-                  </StatusLight>
-                  <VuMeter>
-                    <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                    <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>4</PeakHoldSize>
-                    <PeakHoldTime>800</PeakHoldTime>
-                    <PeakFallTime>200</PeakFallTime>
-                    <PeakFallStep>5</PeakFallStep>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
-                    </Connection>
-                  </VuMeter>
-                </Children>
-              </WidgetGroup><!-- /VU Left VU -->
-
-              <WidgetGroup><!-- Right -->
-                <Layout>stacked</Layout>
-                <Size>4f,-1min</Size>
-                <Children>
-                  <StatusLight>
-                    <TooltipId>master_VuMeterR</TooltipId>
-                    <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
-                    <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
-                    </Connection>
-                  </StatusLight>
-                  <VuMeter>
-                    <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                    <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>4</PeakHoldSize>
-                    <PeakHoldTime>800</PeakHoldTime>
-                    <PeakFallTime>200</PeakFallTime>
-                    <PeakFallStep>5</PeakFallStep>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
-                    </Connection>
-                  </VuMeter>
-                </Children>
-              </WidgetGroup><!-- /VU Right -->
-            </Children>
-          </WidgetGroup><!-- /VU -->
-
-          <WidgetGroup><Size>0f,4f</Size></WidgetGroup>
-
+          <SingletonContainer>
+            <ObjectName>VUMeterDeck<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
           <WidgetGroup>
             <ObjectName>VUMeterLabel<Variable name="Label"/></ObjectName>
             <Size>16f,20f</Size>
           </WidgetGroup>
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
         </Children>
-      </WidgetGroup>
-
-      <WidgetGroup><Size>0f,1me</Size></WidgetGroup>
+      </WidgetGroup><!-- VU incl. Label -->
+      <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

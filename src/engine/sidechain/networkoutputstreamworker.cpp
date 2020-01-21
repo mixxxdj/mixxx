@@ -6,7 +6,7 @@
 
 namespace {
 const mixxx::Logger kLogger("NetworkStreamWorker");
-}
+} // namespace
 
 NetworkOutputStreamWorker::NetworkOutputStreamWorker()
     : m_sampleRate(0),
@@ -18,9 +18,6 @@ NetworkOutputStreamWorker::NetworkOutputStreamWorker()
       m_streamFramesWritten(0),
       m_writeOverflowCount(0),
       m_outputDrift(false) {
-}
-
-NetworkOutputStreamWorker::~NetworkOutputStreamWorker() {
 }
 
 void NetworkOutputStreamWorker::outputAvailable() {
@@ -54,7 +51,7 @@ bool NetworkOutputStreamWorker::threadWaiting() {
 }
 
 qint64 NetworkOutputStreamWorker::getStreamTimeFrames() {
-    return static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0;
+    return static_cast<qint64>(static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0);
 }
 
 qint64 NetworkOutputStreamWorker::getStreamTimeUs() {

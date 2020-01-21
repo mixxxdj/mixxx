@@ -4,15 +4,17 @@
 #ifndef MIXER_PLAYERMANAGER_H
 #define MIXER_PLAYERMANAGER_H
 
-#include <QObject>
 #include <QList>
 #include <QMap>
 #include <QMutex>
+#include <QObject>
 
+#include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/parented_ptr.h"
+#include "util/performancetimer.h"
 
-class AnalyzerQueue;
 class Auxiliary;
 class BaseTrackPlayer;
 class ControlObject;
@@ -25,14 +27,16 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
+class VisualsManager;
+class ControlProxy;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
   public:
-    virtual ~PlayerManagerInterface() {};
+    virtual ~PlayerManagerInterface() = default;
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
+    virtual BaseTrackPlayer* getPlayer(const QString& group) const = 0;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -60,10 +64,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
                   SoundManager* pSoundManager,
                   EffectsManager* pEffectsManager,
+                  VisualsManager* pVisualsManager,
                   EngineMaster* pEngine);
-    virtual ~PlayerManager();
+    ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
+    // (currently unused, kept for consistency with other types)
     void addDeck();
 
     // Add number of decks according to configuration.
@@ -87,7 +93,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
-    unsigned int numberOfDecks() const {
+    unsigned int numberOfDecks() const override {
         return numDecks();
     }
 
@@ -106,28 +112,28 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Return the number of samplers. Thread-safe.
     static unsigned int numSamplers();
 
-    unsigned int numberOfSamplers() const {
+    unsigned int numberOfSamplers() const override {
         return numSamplers();
     }
 
     // Return the number of preview decks. Thread-safe.
     static unsigned int numPreviewDecks();
 
-    unsigned int numberOfPreviewDecks() const {
+    unsigned int numberOfPreviewDecks() const override {
         return numPreviewDecks();
     }
 
     // Get a BaseTrackPlayer (i.e. a Deck, Sampler or PreviewDeck) by its
     // group. Auxiliaries and microphones are not players.
-    BaseTrackPlayer* getPlayer(QString group) const;
+    BaseTrackPlayer* getPlayer(const QString& group) const override;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
-    Deck* getDeck(unsigned int player) const;
+    Deck* getDeck(unsigned int player) const override;
 
-    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const;
+    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const override;
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
-    Sampler* getSampler(unsigned int sampler) const;
+    Sampler* getSampler(unsigned int sampler) const override;
 
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
@@ -135,40 +141,45 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Get the auxiliary by its number. Auxiliaries are numbered starting with 1.
     Auxiliary* getAuxiliary(unsigned int auxiliary) const;
 
-    // Binds signals between PlayerManager and Library. Does not store a pointer
-    // to the Library.
+    // Binds signals between PlayerManager and Library. The library
+    // must exist at least for the lifetime of this instance.
     void bindToLibrary(Library* pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i+1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Sampler") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i+1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i+1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
     static QString groupForMicrophone(int i) {
+        DEBUG_ASSERT(i >= 0);
         // Before Mixxx had multiple microphone support the first microphone had
         // the group [Microphone]. For backwards compatibility we keep it that
         // way.
-        QString group("[Microphone]");
         if (i > 0) {
-            group = QString("[Microphone%1]").arg(i + 1);
+            return QStringLiteral("[Microphone") + QString::number(i + 1) + ']';
+        } else {
+            return QStringLiteral("[Microphone]");
         }
-        return group;
     }
 
     // Returns the group for the ith Auxiliary where i is zero indexed
     static QString groupForAuxiliary(int i) {
-        return QString("[Auxiliary%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
     }
 
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
@@ -177,33 +188,44 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void slotLoadToPlayer(QString location, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void slotLoadToPlayer(const QString& location, const QString& group);
+    void slotCloneDeck(const QString& source_group, const QString& target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
     // Loads the location to the deck. deckNumber is 1-indexed
-    void slotLoadToDeck(QString location, int deckNumber);
+    void slotLoadToDeck(const QString& location, int deckNumber);
 
     // Loads the location to the preview deck. previewDeckNumber is 1-indexed
-    void slotLoadToPreviewDeck(QString location, int previewDeckNumber);
+    void slotLoadToPreviewDeck(const QString& location, int previewDeckNumber);
     // Slots for loading tracks to samplers
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
     // Loads the location to the sampler. samplerNumber is 1-indexed
-    void slotLoadToSampler(QString location, int samplerNumber);
+    void slotLoadToSampler(const QString& location, int samplerNumber);
 
-    void slotNumDecksControlChanged(double v);
-    void slotNumSamplersControlChanged(double v);
-    void slotNumPreviewDecksControlChanged(double v);
-    void slotNumMicrophonesControlChanged(double v);
-    void slotNumAuxiliariesControlChanged(double v);
+    void slotChangeNumDecks(double v);
+    void slotChangeNumSamplers(double v);
+    void slotChangeNumPreviewDecks(double v);
+    void slotChangeNumMicrophones(double v);
+    void slotChangeNumAuxiliaries(double v);
+
+  private slots:
+    void slotAnalyzeTrack(TrackPointer track);
+
+    void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalysisFinished();
 
   signals:
-    void loadLocationToPlayer(QString location, QString group);
+    void loadLocationToPlayer(const QString& location, const QString& group);
 
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.
     void noMicrophoneInputConfigured();
+
+    // Emitted when the user tries to enable an auxiliary master control when
+    // there is no input configured.
+    void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no
     // input configured.
@@ -215,6 +237,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Emitted when the number of decks changes.
     void numberOfDecksChanged(int decks);
+
+    void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void trackAnalyzerIdle();
 
   private:
     TrackPointer lookupTrack(QString location);
@@ -237,17 +262,23 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
 
+    PerformanceTimer m_cloneTimer;
+    QString m_lastLoadedPlayer;
+
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
+    VisualsManager* m_pVisualsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
-    AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
+    parented_ptr<ControlProxy> m_pAutoDjEnabled;
+
+    TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

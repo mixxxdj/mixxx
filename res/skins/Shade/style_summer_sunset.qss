@@ -1,0 +1,161 @@
+/* Summer Sunset */
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:!checked,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox::item,
+#fadeModeCombobox::indicator:!checked,
+QToolTip,
+WBeatSpinBox,
+WBeatSpinBox QMenu,
+#LibraryContainer QMenu,
+#LibraryContainer QMenu::item,
+#LibraryContainer QMenu QCheckBox,
+WTrackMenu,
+WTrackMenu::item,
+WTrackMenu QCheckBox,
+WTrackMenu QMenu,
+WTrackMenu QMenu::item,
+WTrackMenu QMenu QCheckBox,
+WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCueMenuPopup QMenu::item,
+WCoverArtMenu,
+WCoverArtMenu::item {
+	color: #101307;
+  background-color: #ad9e4f;
+  }
+  #spinBoxTransition,
+  #fadeModeCombobox,
+  #fadeModeCombobox::down-arrow {
+    color: #060613;
+    background-color: #998A3C;
+    border: 0px;
+  }
+  WBeatSpinBox QMenu::separator,
+  #LibraryContainer QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  WCueMenuPopup QMenu::separator,
+  WCoverArtMenu::separator {
+    border-top: 1px solid #222;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected,
+  #fadeModeCombobox::item:selected,
+  WEffectSelector::indicator:selected,
+  #fadeModeCombobox::indicator:selected,
+  WBeatSpinBox QMenu::item:selected,
+  #LibraryContainer QMenu::item:selected,
+  WTrackMenu::item:selected,
+  WTrackMenu QMenu::item:selected,
+  WCueMenuPopup QMenu::item:selected,
+  WCoverArtMenu::item:selected,
+  #LibraryContainer QMenu QCheckBox:selected,
+  #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
+  #LibraryContainer QMenu QCheckBox:hover, /* mouse hover */
+  WTrackMenu QCheckBox:selected,
+  WTrackMenu QCheckBox:focus,
+  WTrackMenu QCheckBox:hover,
+  WTrackMenu QMenu QCheckBox:selected,
+  WTrackMenu QMenu QCheckBox:focus,
+  WTrackMenu QMenu QCheckBox:hover {
+    background-color: #d9c663;
+  }
+
+  /* hover over checked effect */
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
+    background-color: #887a35;
+  }
+  /* unchecked menu checkbox */
+  #LibraryContainer QMenu QCheckBox::indicator:enabled:!checked,
+  #LibraryContainer QMenu::indicator:!checked,
+  WTrackMenu QCheckBox::indicator:enabled:!checked,
+  WTrackMenu::indicator:!checked,
+  WTrackMenu QMenu QCheckBox::indicator:enabled:!checked,
+  WTrackMenu QMenu::indicator:!checked {
+    border-color: #222;
+  }
+
+  /* checked effect and menu checkbox */
+  #LibraryContainer QMenu QCheckBox::indicator:enabled:checked,
+  WTrackMenu QCheckBox::indicator:enabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:enabled:checked,
+  /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
+  #LibraryContainer QMenu::indicator:checked,
+  WTrackMenu::indicator:checked,
+  WTrackMenu QMenu::indicator:checked,
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    border-color: #222;
+    background-color: #4bcf09;
+  }
+  /* disabled checked box */
+  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
+  WTrackMenu QCheckBox::indicator:!enabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked {
+    border-color: #666;
+    background-color: #888;
+  }
+
+#EffectSelectorGroup[highlight="1"]{
+	border: 1px solid #f8ba54;
+}
+#EffectSelectorGroup[highlight="0"]{
+	border: 0px solid #f8ba54;
+}
+
+#CueDeleteButton {
+  background-color: #cdbb5d;
+}
+#CueLabelEdit {
+  background-color: #706633;
+}
+
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  color: #FF9900;
+}
+
+#DlgMissing > QPushButton:enabled,
+#DlgHidden > QPushButton:enabled,
+#DlgAutoDJ > QPushButton:enabled,
+#DlgRecording > QPushButton:enabled,
+#DlgAnalysis > QPushButton:enabled {
+  background-color: #998A3C;
+  border: 1px solid #998A3C;
+  }
+  #DlgMissing > QPushButton:!enabled,
+  #DlgHidden > QPushButton:!enabled,
+  #DlgAutoDJ > QPushButton:!enabled,
+  #DlgRecording > QPushButton:!enabled,
+  #DlgAnalysis > QPushButton:!enabled {
+    background-color: #706633;
+    border: 1px solid #706633;
+    }
+  WLibrary QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  #DlgMissing > QPushButton:checked,
+  #DlgHidden > QPushButton:checked,
+  #DlgAutoDJ > QPushButton:checked,
+  #DlgRecording > QPushButton:checked,
+  #DlgAnalysis > QPushButton:checked {
+    color: #000;
+    background-color: #52F904;
+    border: 1px solid #52F904;
+    }
+
+WLibrary QRadioButton::indicator:checked {
+  image: url(skin:/btn/btn_lib_radio_button_on_neongreen.svg) center center;
+}
+
+/* 'Enable AutoDJ' button	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover {
+   border: 1px solid #52F904;
+  }

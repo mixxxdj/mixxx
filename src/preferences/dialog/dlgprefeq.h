@@ -1,42 +1,23 @@
-/***************************************************************************
-                          dlgprefeq.h  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFEQ_H
-#define DLGPREFEQ_H
-
-#include <QWidget>
 #include <QComboBox>
+#include <QWidget>
 
+#include "control/controlproxy.h"
+#include "effects/effectrack.h"
+#include "effects/effectsmanager.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeqdlg.h"
 #include "preferences/usersettings.h"
-#include "control/controlproxy.h"
-#include "preferences/dlgpreferencepage.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectrack.h"
 
-/**
-  *@author John Sully
-  */
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
     DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
               UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
+
+    QUrl helpUrl() const override;
 
     QString getEQEffectGroupForDeck(int deck) const;
     QString getQuickEffectGroupForDeck(int deck) const;
@@ -53,9 +34,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Update Lo EQ
     void slotUpdateLoEQ();
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
@@ -67,7 +48,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   signals:
     void apply(const QString &);
-    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
+    void effectOnChainSlot(const unsigned int, const unsigned int, const QString&);
 
   private:
     void loadSettings();
@@ -107,5 +88,3 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
 };
-
-#endif

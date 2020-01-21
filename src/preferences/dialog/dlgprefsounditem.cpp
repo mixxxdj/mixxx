@@ -1,21 +1,8 @@
-/**
- * @file dlgprefsounditem.cpp
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100704
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "preferences/dialog/dlgprefsounditem.h"
 
 #include <QPoint>
 
-#include "preferences/dialog/dlgprefsounditem.h"
+#include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/compatibility.h"
@@ -29,9 +16,12 @@
  * @param isInput true if this is representing an AudioInput, false otherwise
  * @param index the index of the represented AudioPath, if applicable
  */
-DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
-                                   const QList<SoundDevicePointer>& devices, bool isInput,
-                                   unsigned int index)
+DlgPrefSoundItem::DlgPrefSoundItem(
+        QWidget* parent,
+        AudioPathType type,
+        const QList<SoundDevicePointer>& devices,
+        bool isInput,
+        unsigned int index)
         : QWidget(parent),
           m_type(type),
           m_index(index),
@@ -40,16 +30,44 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
-    deviceComboBox->addItem(tr("None"), QVariant::fromValue(SoundDeviceId()));
-    connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(deviceChanged(int)));
-    connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(channelChanged()));
+    deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
+            QVariant::fromValue(SoundDeviceId()));
+
+    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
+    // connect them to the custom event filter below so they don't accept focus
+    // when we scroll the preferences page.
+    deviceComboBox->setFocusPolicy(Qt::StrongFocus);
+    deviceComboBox->installEventFilter(this);
+    channelComboBox->setFocusPolicy(Qt::StrongFocus);
+    channelComboBox->installEventFilter(this);
+
+    connect(deviceComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSoundItem::deviceChanged);
+    connect(channelComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefSoundItem::channelChanged);
     refreshDevices(devices);
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
 
+}
+
+// Catch scroll events over comboboxes and pass them to the scroll area instead.
+bool DlgPrefSoundItem::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::Wheel) {
+        // Reject scrolling only if widget is unfocused.
+        // Object to widget cast is needed to check the focus state.
+        QComboBox* combo = qobject_cast<QComboBox*>(obj);
+        if (combo && !combo->hasFocus()) {
+            QApplication::sendEvent(this->parentWidget(), e);
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, e);
 }
 
 /**
@@ -66,7 +84,9 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     for (const auto& pDevice: qAsConst(m_devices)) {
-        if (!hasSufficientChannels(*pDevice)) continue;
+        if (!hasSufficientChannels(*pDevice)) {
+            continue;
+        }
         deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
     }
     int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
@@ -129,13 +149,13 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     }
 emitAndReturn:
     if (m_inhibitSettingChanged == false) {
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 
 void DlgPrefSoundItem::channelChanged() {
     if (m_inhibitSettingChanged == false) {
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 
@@ -261,7 +281,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
         m_inhibitSettingChanged = false;
     } else {
         deviceComboBox->setCurrentIndex(0); // None
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 
@@ -281,7 +301,7 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
         m_inhibitSettingChanged = false;
     } else {
         channelComboBox->setCurrentIndex(0); // 1
-        emit(settingChanged());
+        emit settingChanged();
     }
 }
 

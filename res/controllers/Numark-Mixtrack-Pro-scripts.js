@@ -27,7 +27,7 @@
 //
 //	Effect:	Flanger. 1st and 2nd knob modify Depth and Delay.
 //
-//	Cue: 	Don't set Cue accidentally at the end of the song (return to the lastest cue).
+//	Cue: 	Don't set Cue accidentally at the end of the song (return to the latest cue).
 //		LED ON when stopped. LED OFF when playing.
 //		LED Blink at Beat time in the ultimates 30 seconds of song.
 //
@@ -49,7 +49,7 @@
 //	In Stop mode, with Scratch OFF or ON: 	Scratch at touch, and Stop moving when the wheel stop moving.
 //	In Play mode, with Scratch OFF: 	Only Pitch bend.
 // 	In Play mode, with Scratch ON: 		Scratch at touch and, in Backwards Stop Scratch when the wheel stop moving for 20ms -> BACKSPIN EFFECT!!!!.
-//						In Fordward Stop Scratch when the touch is released > Play Inmediatly (without breaks for well mix).
+//						In Fordward Stop Scratch when the touch is released > Play Immediately (without breaks for well mix).
 //						Border of the wheels: Pitch Bend.
 //
 
