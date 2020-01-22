@@ -32,7 +32,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
-    emit(rightClicked(event->globalPos(), clickedItem));
+    emit rightClicked(event->globalPos(), clickedItem);
     //}
 }
 
@@ -147,7 +147,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                 }
             }
         }
-        //emit(trackDropped(name));
+        //emit trackDropped(name);
         //repaintEverything();
     } else {
         event->ignore();
@@ -160,7 +160,7 @@ void WLibrarySidebar::toggleSelectedItem() {
     if (selectedIndices.size() > 0) {
         QModelIndex index = selectedIndices.at(0);
         // Activate the item so its content shows in the main library.
-        emit(pressed(index));
+        emit pressed(index);
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
     }
@@ -197,7 +197,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
-            emit(pressed(index));
+            emit pressed(index);
         }
         return;
     //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {

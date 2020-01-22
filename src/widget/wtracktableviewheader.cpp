@@ -101,10 +101,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
         : QHeaderView(orientation, parent),
-          m_menu(tr("Show or hide columns."), this),
-          m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(int)),
-            this, SLOT(showOrHideColumn(int)));
+          m_menu(tr("Show or hide columns."), this) {
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -173,11 +170,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
             action->setChecked(!isSectionHidden(i));
         }
 
-        // Map this action's signals via our QSignalMapper
-        m_signalMapper.setMapping(action, i);
+        // Map this action's signals
         m_columnActions.insert(i, action);
-        connect(action, SIGNAL(triggered()),
-                &m_signalMapper, SLOT(map()));
+        connect(action, &QAction::triggered,
+                this, [this, i] { showOrHideColumn(i); });
         m_menu.addAction(action);
 
         // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE

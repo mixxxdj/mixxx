@@ -312,7 +312,7 @@ void TrackDAO::saveTrack(Track* pTrack) {
                 // not receive any signals that are usually forwarded to
                 // BaseTrackCache.
                 DEBUG_ASSERT(!pTrack->isDirty());
-                emit(trackClean(trackId));
+                emit trackClean(trackId);
             }
         }
     }
@@ -334,7 +334,7 @@ void TrackDAO::slotTrackDirty(Track* pTrack) {
     // from.
     TrackId trackId(pTrack->getId());
     if (trackId.isValid()) {
-        emit(trackDirty(trackId));
+        emit trackDirty(trackId);
     }
 }
 
@@ -354,7 +354,7 @@ void TrackDAO::slotTrackClean(Track* pTrack) {
     // runs in whatever thread the track was cleaned from.
     TrackId trackId(pTrack->getId());
     if (trackId.isValid()) {
-        emit(trackClean(trackId));
+        emit trackClean(trackId);
     }
 }
 
@@ -416,7 +416,7 @@ void TrackDAO::slotTrackChanged(Track* pTrack) {
     // this method runs in whatever thread the track was changed from.
     TrackId trackId(pTrack->getId());
     if (trackId.isValid()) {
-        emit(trackChanged(trackId));
+        emit trackChanged(trackId);
     }
 }
 
@@ -490,7 +490,7 @@ void TrackDAO::addTracksFinish(bool rollback) {
     m_pQueryLibrarySelect.reset();
     m_pTransaction.reset();
 
-    emit(tracksAdded(m_tracksAddedSet));
+    emit tracksAdded(m_tracksAddedSet);
     m_tracksAddedSet.clear();
 }
 
@@ -821,9 +821,9 @@ void TrackDAO::afterHidingTracks(
     // 5.14. Until the minimum required Qt version of Mixx is increased,
     // we need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    emit(tracksRemoved(QSet<TrackId>(trackIds.begin(), trackIds.end())));
+    emit tracksRemoved(QSet<TrackId>(trackIds.begin(), trackIds.end()));
 #else
-    emit(tracksRemoved(QSet<TrackId>::fromList(trackIds)));
+    emit tracksRemoved(QSet<TrackId>::fromList(trackIds));
 #endif
 }
 
@@ -854,9 +854,9 @@ void TrackDAO::afterUnhidingTracks(
     // 5.14. Until the minimum required Qt version of Mixx is increased,
     // we need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    emit(tracksAdded(QSet<TrackId>(trackIds.begin(), trackIds.end())));
+    emit tracksAdded(QSet<TrackId>(trackIds.begin(), trackIds.end()));
 #else
-    emit(tracksAdded(QSet<TrackId>::fromList(trackIds)));
+    emit tracksAdded(QSet<TrackId>::fromList(trackIds));
 #endif
 }
 
@@ -973,9 +973,9 @@ void TrackDAO::afterPurgingTracks(
 #else
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
 #endif
-    emit(tracksRemoved(tracksRemovedSet));
+    emit tracksRemoved(tracksRemovedSet);
     // notify trackmodels that they should update their cache as well.
-    emit(forceModelUpdate());
+    emit forceModelUpdate();
 }
 
 namespace {
@@ -1394,9 +1394,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // track modifications above have been sent before the TrackDAO has been
     // connected to the track's signals and need to be replayed manually.
     if (pTrack->isDirty()) {
-        emit(trackDirty(trackId));
+        emit trackDirty(trackId);
     } else {
-        emit(trackClean(trackId));
+        emit trackClean(trackId);
     }
 
     return pTrack;
@@ -1585,7 +1585,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     while (query.next()) {
         trackIds.insert(TrackId(query.value(query.record().indexOf("id"))));
     }
-    emit(tracksRemoved(trackIds));
+    emit tracksRemoved(trackIds);
     query.prepare("UPDATE track_locations "
                   "SET fs_deleted=1, needs_verification=0 "
                   "WHERE needs_verification=1");
@@ -1861,7 +1861,7 @@ bool TrackDAO::verifyRemainingTracks(
         if (!query2.exec()) {
             LOG_FAILED_QUERY(query2);
         }
-        emit(progressVerifyTracksOutside(trackLocation));
+        emit progressVerifyTracksOutside(trackLocation);
         if (*pCancel) {
             return false;
         }
@@ -1949,7 +1949,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         }
 
         //qDebug() << "Searching for cover art for" << trackLocation;
-        emit(progressCoverArt(track.trackLocation));
+        emit progressCoverArt(track.trackLocation);
 
         TrackFile trackFile(track.trackLocation);
         if (!trackFile.checkFileExists()) {

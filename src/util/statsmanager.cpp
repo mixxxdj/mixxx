@@ -206,7 +206,7 @@ void StatsManager::processIncomingStatReports() {
             info.m_type = report.type;
             info.m_compute = report.compute;
             info.processReport(report);
-            emit(statUpdated(info));
+            emit statUpdated(info);
 
             if (report.compute & Stat::STATS_EXPERIMENT) {
                 Stat& experiment = m_experimentStats[tag];
@@ -249,7 +249,7 @@ void StatsManager::run() {
         if (atomicLoadAcquire(m_emitAllStats) == 1) {
             for (auto it = m_stats.constBegin();
                  it != m_stats.constEnd(); ++it) {
-                emit(statUpdated(it.value()));
+                emit statUpdated(it.value());
             }
             m_emitAllStats = 0;
         }

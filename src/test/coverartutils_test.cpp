@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <QFileInfo>
+#include <QTemporaryDir>
 
 #include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
@@ -49,7 +50,6 @@ class CoverArtUtilTest : public LibraryTest, public CoverArtCache {
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
-    QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
 
@@ -110,9 +110,9 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
 TEST_F(CoverArtUtilTest, searchImage) {
     // creating a temp track directory
-    QString trackdir(QDir::tempPath() % "/TrackDir");
-    ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
-    ASSERT_TRUE(QDir().mkpath(trackdir));
+    QTemporaryDir tempTrackDir;
+    ASSERT_TRUE(tempTrackDir.isValid());
+    QString trackdir = QString(tempTrackDir.path());
 
     const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
@@ -311,5 +311,4 @@ TEST_F(CoverArtUtilTest, searchImage) {
     foreach (QString loc, extraCovers) {
         QFile::remove(loc);
     }
-    EXPECT_TRUE(QDir(trackdir).rmdir(trackdir));
 }

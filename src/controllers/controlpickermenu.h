@@ -3,7 +3,6 @@
 
 #include <QMenu>
 #include <QObject>
-#include <QSignalMapper>
 
 #include "preferences/usersettings.h"
 
@@ -31,8 +30,12 @@ class ControlPickerMenu : public QMenu {
 
   private:
     QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
+    void addSingleControl(QString group, QString control,
+                          QString title, QString description,
+                          QMenu* pMenu,
+                          QString prefix=QString(), QString actionTitle=QString());
     void addControl(QString group, QString control, QString title,
-                    QString helpText, QMenu* pMenu, bool addReset=false);
+                    QString helpText, QMenu* pMenu, bool addReset=false, QString prefix=QString());
     void addPlayerControl(QString control, QString title, QString helpText,
                           QMenu* pMenu, bool deckControls, bool samplerControls,
                           bool previewdeckControls, bool addReset=false);
@@ -55,11 +58,8 @@ class ControlPickerMenu : public QMenu {
                                     QString helpText, QMenu* pMenu,
                                     bool microphoneControls, bool auxControls,
                                     bool addReset=false);
-    void addPrefixedControl(QString group, QString control, QString title,
-                            QString menuDescription, QString descriptionPrefix,
-                            QMenu* pMenu, bool addReset=false);
 
-    void addAvailableControl(ConfigKey key, QString title, QString description);
+    int addAvailableControl(ConfigKey key, QString title, QString description);
 
     QString m_effectMasterOutputStr;
     QString m_effectHeadphoneOutputStr;
@@ -75,7 +75,6 @@ class ControlPickerMenu : public QMenu {
     QString m_parameterStr;
     QString m_libraryStr;
 
-    QSignalMapper m_actionMapper;
     QList<ConfigKey> m_controlsAvailable;
     QHash<ConfigKey, QString> m_descriptionsByKey;
     QHash<ConfigKey, QString> m_titlesByKey;

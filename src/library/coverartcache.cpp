@@ -58,8 +58,8 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     if (requestInfo.type == CoverInfo::NONE) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestInfo,
-                            QPixmap(), true));
+            emit coverFound(pRequestor, requestInfo,
+                            QPixmap(), true);
         }
         return QPixmap();
     }
@@ -84,7 +84,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
             kLogger.debug() << "CoverArtCache::requestCover cover found in cache" << requestInfo << signalWhenDone;
         }
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestInfo, pixmap, true));
+            emit coverFound(pRequestor, requestInfo, pixmap, true);
         }
         return pixmap;
     }
@@ -189,7 +189,7 @@ void CoverArtCache::coverLoaded() {
     m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.hash));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.cover, pixmap, false));
+        emit coverFound(res.pRequestor, res.cover, pixmap, false);
     }
 }
 

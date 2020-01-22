@@ -11,9 +11,6 @@
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
-    connect(&m_actionMapper, SIGNAL(mapped(int)),
-            this, SLOT(controlChosen(int)));
-
     m_effectMasterOutputStr = tr("Master Output");
     m_effectHeadphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
@@ -169,18 +166,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         iRackNumber, 0, QString("[Channel%1]").arg(deck));
                 QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
                 QString control = "parameter%1";
-                addPrefixedControl(group, control.arg(effect+1),
-                                   tr("Adjust %1").arg(eqNames[effect]),
-                                   tr("Adjust %1").arg(eqNames[effect]),
-                                   tr("Deck %1").arg(deck),
-                                   bandMenu, true);
+                addControl(group, control.arg(effect+1),
+                           tr("Adjust %1").arg(eqNames[effect]),
+                           tr("Adjust %1").arg(eqNames[effect]),
+                           bandMenu, true, tr("Deck %1").arg(deck));
 
                 control = "button_parameter%1";
-                addPrefixedControl(group, control.arg(effect+1),
-                                   tr("Kill %1").arg(eqNames[effect]),
-                                   tr("Kill %1").arg(eqNames[effect]),
-                                   tr("Deck %1").arg(deck),
-                                   bandMenu, false);
+                addControl(group, control.arg(effect+1),
+                           tr("Kill %1").arg(eqNames[effect]),
+                           tr("Kill %1").arg(eqNames[effect]),
+                           bandMenu, false, tr("Deck %1").arg(deck));
             }
         }
     }
@@ -367,70 +362,70 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
-    addPrefixedControl("[Library]", "MoveUp",
-                       tr("Move up"),
-                       tr("Equivalent to pressing the UP key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveDown",
-                       tr("Move down"),
-                       tr("Equivalent to pressing the DOWN key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveVertical",
-                       tr("Move up/down"),
-                       tr("Move vertically in either direction using a knob, as if pressing UP/DOWN keys"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "ScrollUp",
-                       tr("Scroll Up"),
-                       tr("Equivalent to pressing the PAGE UP key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "ScrollDown",
-                       tr("Scroll Down"),
-                       tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "ScrollVertical",
-                       tr("Scroll up/down"),
-                       tr("Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveLeft",
-                       tr("Move left"),
-                       tr("Equivalent to pressing the LEFT key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveRight",
-                       tr("Move right"),
-                       tr("Equivalent to pressing the RIGHT key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveHorizontal",
-                       tr("Move left/right"),
-                       tr("Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveFocusForward",
-                       tr("Move focus to right pane"),
-                       tr("Equivalent to pressing the TAB key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveFocusBackward",
-                       tr("Move focus to left pane"),
-                       tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "MoveFocus",
-                       tr("Move focus to right/left pane"),
-                       tr("Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "GoToItem",
-                       tr("Go to the currently selected item"),
-                       tr("Choose the currently selected item and advance forward one pane if appropriate"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "AutoDjAddBottom",
-                       tr("Add to Auto DJ Queue (bottom)"),
-                       tr("Append the selected track to the Auto DJ Queue"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "AutoDjAddTop",
-                       tr("Add to Auto DJ Queue (top)"),
-                       tr("Prepend selected track to the Auto DJ Queue"),
-                       m_libraryStr, libraryMenu);
-    addPrefixedControl("[Library]", "AutoDjAddReplace",
-                       tr("Add to Auto DJ Queue (replace)"),
-                       tr("Replace Auto DJ Queue with selected tracks"),
-                       m_libraryStr, libraryMenu);
+    addControl("[Library]", "MoveUp",
+               tr("Move up"),
+               tr("Equivalent to pressing the UP key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveDown",
+               tr("Move down"),
+               tr("Equivalent to pressing the DOWN key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveVertical",
+               tr("Move up/down"),
+               tr("Move vertically in either direction using a knob, as if pressing UP/DOWN keys"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "ScrollUp",
+               tr("Scroll Up"),
+               tr("Equivalent to pressing the PAGE UP key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "ScrollDown",
+               tr("Scroll Down"),
+               tr("Equivalent to pressing the PAGE DOWN key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "ScrollVertical",
+               tr("Scroll up/down"),
+               tr("Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveLeft",
+               tr("Move left"),
+               tr("Equivalent to pressing the LEFT key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveRight",
+               tr("Move right"),
+               tr("Equivalent to pressing the RIGHT key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveHorizontal",
+               tr("Move left/right"),
+               tr("Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveFocusForward",
+               tr("Move focus to right pane"),
+               tr("Equivalent to pressing the TAB key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveFocusBackward",
+               tr("Move focus to left pane"),
+               tr("Equivalent to pressing the SHIFT+TAB key on the keyboard"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "MoveFocus",
+               tr("Move focus to right/left pane"),
+               tr("Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "GoToItem",
+               tr("Go to the currently selected item"),
+               tr("Choose the currently selected item and advance forward one pane if appropriate"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "AutoDjAddBottom",
+               tr("Add to Auto DJ Queue (bottom)"),
+               tr("Append the selected track to the Auto DJ Queue"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "AutoDjAddTop",
+               tr("Add to Auto DJ Queue (top)"),
+               tr("Prepend selected track to the Auto DJ Queue"),
+               libraryMenu, false, m_libraryStr);
+    addControl("[Library]", "AutoDjAddReplace",
+               tr("Add to Auto DJ Queue (replace)"),
+               tr("Replace Auto DJ Queue with selected tracks"),
+               libraryMenu, false, m_libraryStr);
 
 
     // Load track (these can be loaded into any channel)
@@ -440,10 +435,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Track Load and Play"),
                                            tr("Load selected track and play"), libraryMenu);
 
-    addPrefixedControl("[Recording]", "toggle_recording",
-                       tr("Record Mix"),
-                       tr("Toggle mix recording"),
-                       m_libraryStr, libraryMenu);
+    addControl("[Recording]", "toggle_recording",
+               tr("Record Mix"),
+               tr("Toggle mix recording"),
+               libraryMenu, false, m_libraryStr);
 
     // Effect Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
@@ -451,18 +446,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Quick Effect Rack COs
     QMenu* quickEffectMenu = addSubmenu(tr("Quick Effects"), effectsMenu);
     for (int i = 1; i <= iNumDecks; ++i) {
-        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i),
-                           "super1",
-                           tr("Deck %1 Quick Effect Super Knob").arg(i),
-                           tr("Quick Effect Super Knob (control linked effect parameters)"),
-                           tr("Quick Effect"),
-                           quickEffectMenu);
-        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i),
-                           "enabled",
-                           tr("Deck %1 Quick Effect Enable Button").arg(i),
-                           tr("Quick Effect Enable Button"),
-                           tr("Quick Effect"),
-                           quickEffectMenu);
+        addControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i), "super1",
+                   tr("Deck %1 Quick Effect Super Knob").arg(i),
+                   tr("Quick Effect Super Knob (control linked effect parameters)"),
+                   quickEffectMenu, false, tr("Quick Effect"));
+        addControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i), "enabled",
+                   tr("Deck %1 Quick Effect Enable Button").arg(i),
+                   tr("Quick Effect Enable Button"),
+                   quickEffectMenu, false, tr("Quick Effect"));
     }
 
     const int kNumEffectRacks = 1;
@@ -472,9 +463,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(iRackNumber), effectsMenu);
         QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
 
-        addPrefixedControl(rackGroup, "clear",
-                           tr("Clear Effect Rack"), tr("Clear effect rack"),
-                           descriptionPrefix, rackMenu);
+        addControl(rackGroup, "clear",
+                   tr("Clear Effect Rack"), tr("Clear effect rack"),
+                   rackMenu, false, descriptionPrefix);
 
         const int numEffectUnits = ControlObject::get(
             ConfigKey(rackGroup, "num_effectunits"));
@@ -489,44 +480,42 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
             QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
                                                rackMenu);
-            addPrefixedControl(effectUnitGroup, "clear",
-                               tr("Clear Unit"),
-                               tr("Clear effect unit"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "enabled",
-                               tr("Toggle Unit"),
-                               tr("Enable or disable effect processing"), descriptionPrefix,
-                               effectUnitMenu, false);
-            addPrefixedControl(effectUnitGroup, "mix",
-                               tr("Dry/Wet"),
-                               tr("Adjust the balance between the original (dry) and processed (wet) signal."), descriptionPrefix,
-                               effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "super1",
-                               tr("Super Knob"),
-                               tr("Super Knob (control effects' Meta Knobs)"),
-                               descriptionPrefix,
-                               effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "Mix Mode",
-                               tr("Mix Mode Toggle"),
-                               tr("Toggle effect unit between D/W and D+W modes"),
-                               descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "next_chain",
-                               tr("Next Chain"),
-                               tr("Next chain preset"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "prev_chain",
-                               tr("Previous Chain"),
-                               tr("Previous chain preset"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "chain_selector",
-                               tr("Next/Previous Chain"),
-                               tr("Next or previous chain preset"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "show_parameters",
-                               tr("Show Effect Parameters"),
-                               tr("Show Effect Parameters"), descriptionPrefix,
-                               effectUnitMenu);
+            addControl(effectUnitGroup, "clear",
+                       tr("Clear Unit"),
+                       tr("Clear effect unit"),
+                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup, "enabled",
+                       tr("Toggle Unit"),
+                       tr("Enable or disable effect processing"),
+                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup, "mix",
+                       tr("Dry/Wet"),
+                       tr("Adjust the balance between the original (dry) and processed (wet) signal."),
+                       effectUnitMenu, true, descriptionPrefix);
+            addControl(effectUnitGroup, "super1",
+                       tr("Super Knob"),
+                       tr("Super Knob (control effects' Meta Knobs)"),
+                       effectUnitMenu, true, descriptionPrefix);
+            addControl(effectUnitGroup, "Mix Mode",
+                       tr("Mix Mode Toggle"),
+                       tr("Toggle effect unit between D/W and D+W modes"),
+                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup, "next_chain",
+                       tr("Next Chain"),
+                       tr("Next chain preset"),
+                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup, "prev_chain",
+                       tr("Previous Chain"),
+                       tr("Previous chain preset"),
+                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup, "chain_selector",
+                       tr("Next/Previous Chain"),
+                       tr("Next or previous chain preset"),
+                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup, "show_parameters",
+                       tr("Show Effect Parameters"),
+                       tr("Show Effect Parameters"),
+                       effectUnitMenu, false, descriptionPrefix);
 
             QString enableOn = tr("Toggle Effect Unit");
             QMenu* effectUnitGroups = addSubmenu(enableOn,
@@ -537,14 +526,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     m_effectUnitStr.arg(iEffectUnitNumber),
                     enableOn);
 
-            addPrefixedControl(effectUnitGroup, "group_[Master]_enable",
-                               m_effectMasterOutputStr,
-                               m_effectMasterOutputStr, groupDescriptionPrefix,
-                               effectUnitGroups);
-            addPrefixedControl(effectUnitGroup, "group_[Headphone]_enable",
-                               m_effectHeadphoneOutputStr,
-                               m_effectHeadphoneOutputStr, groupDescriptionPrefix,
-                               effectUnitGroups);
+            addControl(effectUnitGroup, "group_[Master]_enable",
+                       m_effectMasterOutputStr,
+                       m_effectMasterOutputStr,
+                       effectUnitGroups, false, groupDescriptionPrefix);
+            addControl(effectUnitGroup, "group_[Headphone]_enable",
+                       m_effectHeadphoneOutputStr,
+                       m_effectHeadphoneOutputStr,
+                       effectUnitGroups, false, groupDescriptionPrefix);
 
             const int iNumDecks = ControlObject::get(
                     ConfigKey("[Master]", "num_decks"));
@@ -552,12 +541,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
                 // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(playerGroup),
-                                   tr("Assign ") + m_deckStr.arg(iDeckNumber),
-                                   tr("Assign ") + m_deckStr.arg(iDeckNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
+                addControl(effectUnitGroup,
+                           QString("group_%1_enable").arg(playerGroup),
+                           tr("Assign ") + m_deckStr.arg(iDeckNumber),
+                           tr("Assign ") + m_deckStr.arg(iDeckNumber),
+                           effectUnitGroups, false, groupDescriptionPrefix);
             }
 
             const int iNumSamplers = ControlObject::get(
@@ -567,12 +555,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 // PlayerManager::groupForSampler is 0-indexed.
                 QString playerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
                 // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(playerGroup),
-                                   tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
-                                   tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
+                addControl(effectUnitGroup,
+                           QString("group_%1_enable").arg(playerGroup),
+                           tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
+                           tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
+                           effectUnitGroups, false, groupDescriptionPrefix);
 
             }
 
@@ -582,12 +569,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                  ++iMicrophoneNumber) {
                 QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
                 // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(micGroup),
-                                   tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
-                                   tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
+                addControl(effectUnitGroup,
+                           QString("group_%1_enable").arg(micGroup),
+                           tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
+                           tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
+                           effectUnitGroups, false, groupDescriptionPrefix);
             }
 
             const int iNumAuxiliaries = ControlObject::get(
@@ -596,12 +582,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                  ++iAuxiliaryNumber) {
                 QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
                 // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(auxGroup),
-                                   tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
-                                   tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
+                addControl(effectUnitGroup,
+                           QString("group_%1_enable").arg(auxGroup),
+                           tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
+                           tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
+                           effectUnitGroups, false, groupDescriptionPrefix);
             }
 
             const int numEffectSlots = ControlObject::get(
@@ -620,31 +605,25 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         QString("%1, %2").arg(descriptionPrefix,
                                               m_effectStr.arg(iEffectSlotNumber));
 
-                addPrefixedControl(effectSlotGroup, "clear",
-                                   tr("Clear"), tr("Clear the current effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "meta",
-                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "enabled",
-                                   tr("Toggle"), tr("Toggle the current effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "next_effect",
-                                   tr("Next"), tr("Switch to next effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "prev_effect",
-                                   tr("Previous"), tr("Switch to the previous effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "effect_selector",
-                                   tr("Next or Previous"),
-                                   tr("Switch to either next or previous effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
+                addControl(effectSlotGroup, "clear",
+                           tr("Clear"), tr("Clear the current effect"),
+                           effectSlotMenu, false, slotDescriptionPrefix);
+                addControl(effectSlotGroup, "meta",
+                           tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
+                           effectSlotMenu, false, slotDescriptionPrefix);
+                addControl(effectSlotGroup, "enabled",
+                           tr("Toggle"), tr("Toggle the current effect"),
+                           effectSlotMenu, false, slotDescriptionPrefix);
+                addControl(effectSlotGroup, "next_effect",
+                           tr("Next"), tr("Switch to next effect"),
+                           effectSlotMenu, false, slotDescriptionPrefix);
+                addControl(effectSlotGroup, "prev_effect",
+                           tr("Previous"), tr("Switch to the previous effect"),
+                           effectSlotMenu, false, slotDescriptionPrefix);
+                addControl(effectSlotGroup, "effect_selector",
+                           tr("Next or Previous"),
+                           tr("Switch to either next or previous effect"),
+                           effectSlotMenu, false, slotDescriptionPrefix);
 
                 const int numParameterSlots = ControlObject::get(
                         ConfigKey(effectSlotGroup, "num_parameterslots"));
@@ -667,22 +646,21 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                                   m_parameterStr.arg(iParameterSlotNumber));
 
                     // Likely to change soon.
-                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix,
-                                       tr("Parameter Value"),
-                                       tr("Parameter Value"),
-                                       parameterDescriptionPrefix,
-                                       parameterSlotMenu, true);
-
-                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
-                                       tr("Meta Knob Mode"),
-                                       tr("Set how linked effect parameters change when turning the Meta Knob."),
-                                       parameterDescriptionPrefix,
-                                       parameterSlotMenu);
-                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_inverse",
-                                       tr("Meta Knob Mode Invert"),
-                                       tr("Invert how linked effect parameters change when turning the Meta Knob."),
-                                       parameterDescriptionPrefix,
-                                       parameterSlotMenu);
+                    addControl(parameterSlotGroup, parameterSlotItemPrefix,
+                               tr("Parameter Value"),
+                               tr("Parameter Value"),
+                               parameterSlotMenu, true,
+                               parameterDescriptionPrefix);
+                    addControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
+                               tr("Meta Knob Mode"),
+                               tr("Set how linked effect parameters change when turning the Meta Knob."),
+                               parameterSlotMenu, false,
+                               parameterDescriptionPrefix);
+                    addControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_inverse",
+                               tr("Meta Knob Mode Invert"),
+                               tr("Invert how linked effect parameters change when turning the Meta Knob."),
+                               parameterSlotMenu, false,
+                               parameterDescriptionPrefix);
 
                 }
             }
@@ -813,52 +791,43 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 ControlPickerMenu::~ControlPickerMenu() {
 }
 
+void ControlPickerMenu::addSingleControl(QString group, QString control,
+                                         QString title, QString description,
+                                         QMenu* pMenu, QString prefix,
+                                         QString actionTitle) {
+    int controlIndex;
+
+    if (prefix.isEmpty()) {
+        controlIndex = addAvailableControl(ConfigKey(group, control), title, description);
+    } else {
+        QString prefixedTitle = QString("%1: %2").arg(prefix, title);
+        QString prefixedDescription = QString("%1: %2").arg(prefix, description);
+        controlIndex = addAvailableControl(ConfigKey(group, control), prefixedTitle, prefixedDescription);
+    }
+
+    if (actionTitle.isEmpty()) {
+        actionTitle = title;
+    }
+
+    auto pAction = make_parented<QAction>(actionTitle, pMenu);
+    connect(pAction, &QAction::triggered,
+            this, [this, controlIndex] { controlChosen(controlIndex); });
+    pMenu->addAction(pAction);
+}
+
 void ControlPickerMenu::addControl(QString group, QString control, QString title,
                                    QString description,
                                    QMenu* pMenu,
-                                   bool addReset) {
-    QAction* pAction = pMenu->addAction(title, &m_actionMapper,
-                                        SLOT(map()));
-    m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-    addAvailableControl(ConfigKey(group, control), title, description);
+                                   bool addReset,
+                                   QString prefix) {
+    addSingleControl(group, control, title, description, pMenu, prefix);
 
     if (addReset) {
-        QString resetDescription = QString("%1 (%2)").arg(title,
-                                                          m_resetStr);
+        QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
+        QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
         QString resetControl = QString("%1_set_default").arg(control);
-        QAction* pResetAction = pMenu->addAction(resetDescription,
-                                                 &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-        addAvailableControl(ConfigKey(group, resetControl),
-                            resetDescription, resetDescription);
-    }
-}
 
-void ControlPickerMenu::addPrefixedControl(QString group, QString control,
-                                           QString controlTitle,
-                                           QString controlDescription, QString descriptionPrefix,
-                                           QMenu* pMenu, bool addReset) {
-    QAction* pAction = pMenu->addAction(controlTitle, &m_actionMapper, SLOT(map()));
-    m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-
-    QString title = QString("%1: %2").arg(descriptionPrefix, controlTitle);
-    QString description = QString("%1: %2").arg(descriptionPrefix,
-                                                controlDescription);
-    addAvailableControl(ConfigKey(group, control), title, description);
-
-    if (addReset) {
-        QString resetMenuTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        QString resetMenuDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-        QString resetControl = QString("%1_set_default").arg(control);
-        QAction* pResetAction = pMenu->addAction(resetMenuTitle,
-                                                 &m_actionMapper, SLOT(map()));
-        QString resetTitle = QString("%1: %2").arg(descriptionPrefix,
-                                                   resetMenuTitle);
-        QString resetDescription = QString("%1: %2").arg(descriptionPrefix,
-                                                         resetMenuDescription);
-        m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-        addAvailableControl(ConfigKey(group, resetControl),
-                            resetTitle, resetDescription);
+        addSingleControl(group, resetControl, resetTitle, resetDescription, pMenu, prefix);
     }
 }
 
@@ -872,74 +841,59 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
 
-    QMenu* controlMenu = new QMenu(controlTitle, pMenu);
+    parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
 
-    QMenu* resetControlMenu = NULL;
+    parented_ptr<QMenu> resetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
     if (addReset) {
         QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        resetControlMenu = new QMenu(resetHelpText, pMenu);
+        resetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
         pMenu->addMenu(resetControlMenu);
     }
 
     for (int i = 1; deckControls && i <= iNumDecks; ++i) {
         // PlayerManager::groupForDeck is 0-indexed.
+        QString prefix = m_deckStr.arg(i);
         QString group = PlayerManager::groupForDeck(i - 1);
-        QString title = QString("%1: %2").arg(
-            m_deckStr.arg(QString::number(i)), controlTitle);
-        QString description = QString("%1: %2").arg(
-            m_deckStr.arg(QString::number(i)), controlDescription);
-        QAction* pAction = controlMenu->addAction(m_deckStr.arg(i), &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-        addAvailableControl(ConfigKey(group, control), title, description);
+        addSingleControl(group, control, controlTitle, controlDescription,
+                         controlMenu, prefix, prefix);
 
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-            QAction* pResetAction = resetControlMenu->addAction(m_deckStr.arg(i), &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-            addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+            addSingleControl(group, resetControl, resetTitle, resetDescription,
+                             controlMenu, prefix, prefix);
         }
     }
 
     for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
         // PlayerManager::groupForPreviewDeck is 0-indexed.
+        QString prefix = m_previewdeckStr.arg(i);
         QString group = PlayerManager::groupForPreviewDeck(i - 1);
-        QString title = QString("%1: %2").arg(
-            m_previewdeckStr.arg(QString::number(i)), controlTitle);
-        QString description = QString("%1: %2").arg(
-            m_previewdeckStr.arg(QString::number(i)), controlDescription);
-        QAction* pAction = controlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-        addAvailableControl(ConfigKey(group, control), title, description);
+        addSingleControl(group, control, controlTitle, controlDescription,
+                         controlMenu, prefix, prefix);
 
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-            QAction* pResetAction = resetControlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-            addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+            addSingleControl(group, resetControl, resetTitle, resetDescription,
+                             controlMenu, prefix, prefix);
         }
     }
 
     for (int i = 1; samplerControls && i <= iNumSamplers; ++i) {
         // PlayerManager::groupForSampler is 0-indexed.
+        QString prefix = m_samplerStr.arg(i);
         QString group = PlayerManager::groupForSampler(i - 1);
-        QString title = QString("%1: %2").arg(
-            m_samplerStr.arg(QString::number(i)), controlTitle);
-        QString description = QString("%1: %2").arg(
-            m_samplerStr.arg(QString::number(i)), controlDescription);
-        QAction* pAction = controlMenu->addAction(m_samplerStr.arg(i), &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-        addAvailableControl(ConfigKey(group, control), title, description);
+        addSingleControl(group, control, controlTitle, controlDescription,
+                         controlMenu, prefix, prefix);
 
         if (resetControlMenu) {
-            QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-            QAction* pResetAction = resetControlMenu->addAction(m_samplerStr.arg(i), &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-            addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+            QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+            addSingleControl(group, resetControl, resetTitle, resetDescription,
+                             controlMenu, prefix, prefix);
         }
     }
 }
@@ -951,37 +905,30 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                                                    bool microphoneControls,
                                                    bool auxControls,
                                                    bool addReset) {
-    QMenu* controlMenu = new QMenu(controlTitle, pMenu);
+    parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
 
-    QMenu* resetControlMenu = NULL;
+    parented_ptr<QMenu> resetControlMenu = nullptr;
     QString resetControl = QString("%1_set_default").arg(control);
     if (addReset) {
         QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        resetControlMenu = new QMenu(resetHelpText, pMenu);
+        resetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
         pMenu->addMenu(resetControlMenu);
     }
 
     if (microphoneControls) {
         const int kNumMicrophones = ControlObject::get(ConfigKey("[Master]", "num_microphones"));
         for (int i = 1; i <= kNumMicrophones; ++i) {
+            QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
-            QString title = QString("%1: %2").arg(
-                m_microphoneStr.arg(QString::number(i)), controlTitle);
-            QString description = QString("%1: %2").arg(
-                m_microphoneStr.arg(QString::number(i)), controlDescription);
-            QAction* pAction = controlMenu->addAction(m_microphoneStr.arg(i),
-                                                      &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-            addAvailableControl(ConfigKey(group, control), title, description);
+            addSingleControl(group, control, controlTitle, controlDescription,
+                             controlMenu, prefix, prefix);
 
-            if (addReset) {
-                QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
+            if (resetControlMenu) {
+                QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-                QAction* pResetAction = resetControlMenu->addAction(
-                    m_microphoneStr.arg(i), &m_actionMapper, SLOT(map()));
-                m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-                addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+                addSingleControl(group, resetControl, resetTitle, resetDescription,
+                                 controlMenu, prefix, prefix);
             }
         }
     }
@@ -989,23 +936,16 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     const int kNumAuxiliaries = ControlObject::get(ConfigKey("[Master]", "num_auxiliaries"));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
+            QString prefix = m_auxStr.arg(i);
             QString group = PlayerManager::groupForAuxiliary(i - 1);
-            QString title = QString("%1: %2").arg(
-                m_auxStr.arg(QString::number(i)), controlTitle);
-            QString description = QString("%1: %2").arg(
-                m_auxStr.arg(QString::number(i)), controlDescription);
-            QAction* pAction = controlMenu->addAction(m_auxStr.arg(i),
-                                                      &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-            addAvailableControl(ConfigKey(group, control), title, description);
+            addSingleControl(group, control, controlTitle, controlDescription,
+                             controlMenu, prefix, prefix);
 
-            if (addReset) {
-                QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
-                QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-                QAction* pResetAction = resetControlMenu->addAction(
-                    m_auxStr.arg(i), &m_actionMapper, SLOT(map()));
-                m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-                addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
+            if (resetControlMenu) {
+                QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+                QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+                addSingleControl(group, resetControl, resetTitle, resetDescription,
+                                 controlMenu, prefix, prefix);
             }
         }
     }
@@ -1063,7 +1003,7 @@ QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
     if (pParent == NULL) {
         pParent = this;
     }
-    QMenu* subMenu = new QMenu(title, pParent);
+    auto subMenu = make_parented<QMenu>(title, pParent);
     pParent->addMenu(subMenu);
     return subMenu;
 }
@@ -1072,15 +1012,16 @@ void ControlPickerMenu::controlChosen(int controlIndex) {
     if (controlIndex < 0 || controlIndex >= m_controlsAvailable.size()) {
         return;
     }
-    emit(controlPicked(m_controlsAvailable[controlIndex]));
+    emit controlPicked(m_controlsAvailable[controlIndex]);
 }
 
-void ControlPickerMenu::addAvailableControl(ConfigKey key,
-                                            QString title,
-                                            QString description) {
+int ControlPickerMenu::addAvailableControl(ConfigKey key,
+                                           QString title,
+                                           QString description) {
     m_controlsAvailable.append(key);
     m_descriptionsByKey.insert(key, description);
     m_titlesByKey.insert(key, title);
+    return m_controlsAvailable.size();
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {

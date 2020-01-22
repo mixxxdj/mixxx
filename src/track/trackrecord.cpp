@@ -51,6 +51,7 @@ bool TrackRecord::updateGlobalKeyText(
 
 namespace {
 
+#if defined(__EXTRA_METADATA__)
 void mergeReplayGainMetadataProperty(
         ReplayGain& mergedReplayGain,
         const ReplayGain& importedReplayGain) {
@@ -63,6 +64,7 @@ void mergeReplayGainMetadataProperty(
         mergedReplayGain.setPeak(importedReplayGain.getPeak());
     }
 }
+#endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.

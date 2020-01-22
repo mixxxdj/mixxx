@@ -53,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, mixxx::Time::elapsed()));
+            emit incomingData(outData, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";
@@ -113,7 +113,7 @@ void BulkController::visit(const MidiControllerPreset* preset) {
 void BulkController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
+    emit presetLoaded(getPreset());
 }
 
 bool BulkController::savePreset(const QString fileName) const {
