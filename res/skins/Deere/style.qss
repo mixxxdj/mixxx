@@ -337,23 +337,13 @@ QPushButton#LibraryPreviewButton:checked:hover {
 
 #LibraryContainer QHeaderView::section {
   font-size: 12px/14px;
-  font-weight: normal;
+  font-weight: bold;
   padding: 2px;
   background: #1A1A1A;
   border-top: none;
   border-left: none;
   border-bottom: 1px solid #141414;
   border-right: 1px solid #141414;
-}
-
-#LibraryContainer QHeaderView::section:selected {
-  font-size: 12px/14px;
-  font-weight: bold;
-  padding: 2px;
-  background: #1A1A1A;
-  border-top: none;
-  border-bottom: 1px solid #141414;
-  border-right: none;
 }
 
 #LibraryContainer QHeaderView::up-arrow,
