@@ -2012,6 +2012,7 @@ WBeatSpinBox QMenu,
 WBeatSpinBox QMenu::item,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
 WCueMenuPopup QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item {
