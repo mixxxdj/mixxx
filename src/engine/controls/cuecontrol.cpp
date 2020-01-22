@@ -197,6 +197,23 @@ CueControl::CueControl(QString group,
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
     m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
+
+    m_pHotcueFocus = new ControlObject(ConfigKey(group, "hotcue_focus"));
+    m_pHotcueFocus->set(Cue::kNoHotCue);
+
+    m_pHotcueFocusColorPrev = new ControlObject(ConfigKey(group, "hotcue_focus_color_prev"));
+    connect(m_pHotcueFocusColorPrev,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::hotcueFocusColorPrev,
+            Qt::DirectConnection);
+
+    m_pHotcueFocusColorNext = new ControlObject(ConfigKey(group, "hotcue_focus_color_next"));
+    connect(m_pHotcueFocusColorNext,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::hotcueFocusColorNext,
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -236,6 +253,9 @@ CueControl::~CueControl() {
     delete m_pOutroEndActivate;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
+    delete m_pHotcueFocus;
+    delete m_pHotcueFocusColorPrev;
+    delete m_pHotcueFocusColorNext;
     qDeleteAll(m_hotcueControls);
 }
 
@@ -314,6 +334,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
+        m_pHotcueFocus->set(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
     }
 
@@ -709,6 +730,8 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             hotcueActivatePreview(pControl, v);
         }
     }
+
+    m_pHotcueFocus->set(pControl->getHotcueNumber());
 }
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
@@ -767,6 +790,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
     }
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
+    m_pHotcueFocus->set(Cue::kNoHotCue);
 }
 
 void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
@@ -1559,6 +1583,7 @@ void CueControl::resetIndicators() {
 
 CueControl::TrackAt CueControl::getTrackAt() const {
     SampleOfTrack sot = getSampleOfTrack();
+    // Note: current can be in the padded silence after the track end > total.
     if (sot.current >= sot.total) {
         return TrackAt::End;
     }
@@ -1571,8 +1596,13 @@ CueControl::TrackAt CueControl::getTrackAt() const {
 
 double CueControl::getQuantizedCurrentPosition() {
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    const double currentPos = sampleOfTrack.current;
+    double currentPos = sampleOfTrack.current;
     const double total = sampleOfTrack.total;
+
+    // Note: currentPos can be past the end of the track, in the padded
+    // silence of the last buffer. This position might be not reachable in
+    // a future runs, depending on the buffering.
+    currentPos = math_min(currentPos, total);
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
@@ -1580,6 +1610,8 @@ double CueControl::getQuantizedCurrentPosition() {
     }
 
     double closestBeat = m_pClosestBeat->get();
+    // Note: closestBeat can be an interpolated beat past the end of the track,
+    // which cannot be reached.
     if (closestBeat != -1.0 && closestBeat <= total) {
         return closestBeat;
     }
@@ -1592,7 +1624,9 @@ double CueControl::quantizeCuePoint(double cuePos) {
     // is set later by the engine and not during EngineBuffer::slotTrackLoaded
     const double total = m_pTrackSamples->get();
 
-    VERIFY_OR_DEBUG_ASSERT(cuePos <= total) {
+    if (cuePos > total) {
+        // This can happen if the track length has changed or the cue was set in the
+        // the padded silence after the track.
         cuePos = total;
     }
 
@@ -1607,6 +1641,8 @@ double CueControl::quantizeCuePoint(double cuePos) {
     }
 
     double closestBeat = pBeats->findClosestBeat(cuePos);
+    // The closest beat can be an unreachable  interpolated beat past the end of
+    // the track.
     if (closestBeat != -1.0 && closestBeat <= total) {
         return closestBeat;
     }
@@ -1631,6 +1667,68 @@ SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
             static_cast<int>(SeekOnLoadMode::IntroStart));
     return static_cast<SeekOnLoadMode>(configValue);
+}
+
+void CueControl::hotcueFocusColorPrev(double v) {
+    if (!v) {
+        return;
+    }
+
+    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
+    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    if (!pControl) {
+        return;
+    }
+
+    PredefinedColorPointer pColor = pControl->getColor();
+    if (!pColor) {
+        return;
+    }
+
+    // Get previous color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) - 1;
+    if (iColorIndex <= 0) {
+        iColorIndex = Color::kPredefinedColorsSet.allColors.size() - 1;
+    }
+    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    pControl->setColor(pColor);
+}
+
+void CueControl::hotcueFocusColorNext(double v) {
+    if (!v) {
+        return;
+    }
+
+    int hotcueNumber = static_cast<int>(m_pHotcueFocus->get());
+    if (hotcueNumber < 0 || hotcueNumber >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueNumber);
+    if (!pControl) {
+        return;
+    }
+
+    PredefinedColorPointer pColor = pControl->getColor();
+    if (!pColor) {
+        return;
+    }
+
+    // Get next color in color set
+    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) + 1;
+    if (iColorIndex >= Color::kPredefinedColorsSet.allColors.size()) {
+        iColorIndex = 0;
+    }
+    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
+    DEBUG_ASSERT(pColor != nullptr);
+
+    pControl->setColor(pColor);
 }
 
 
@@ -1715,41 +1813,41 @@ HotcueControl::~HotcueControl() {
 }
 
 void HotcueControl::slotHotcueSet(double v) {
-    emit(hotcueSet(this, v));
+    emit hotcueSet(this, v);
 }
 
 void HotcueControl::slotHotcueGoto(double v) {
-    emit(hotcueGoto(this, v));
+    emit hotcueGoto(this, v);
 }
 
 void HotcueControl::slotHotcueGotoAndPlay(double v) {
-    emit(hotcueGotoAndPlay(this, v));
+    emit hotcueGotoAndPlay(this, v);
 }
 
 void HotcueControl::slotHotcueGotoAndStop(double v) {
-    emit(hotcueGotoAndStop(this, v));
+    emit hotcueGotoAndStop(this, v);
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
-    emit(hotcueActivate(this, v));
+    emit hotcueActivate(this, v);
 }
 
 void HotcueControl::slotHotcueActivatePreview(double v) {
-    emit(hotcueActivatePreview(this, v));
+    emit hotcueActivatePreview(this, v);
 }
 
 void HotcueControl::slotHotcueClear(double v) {
-    emit(hotcueClear(this, v));
+    emit hotcueClear(this, v);
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     m_hotcueEnabled->forceSet(newPosition == Cue::kNoPosition ? 0.0 : 1.0);
-    emit(hotcuePositionChanged(this, newPosition));
+    emit hotcuePositionChanged(this, newPosition);
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColorId) {
     m_pCue->setColor(Color::kPredefinedColorsSet.predefinedColorFromId(newColorId));
-    emit(hotcueColorChanged(this, newColorId));
+    emit hotcueColorChanged(this, newColorId);
 }
 
 double HotcueControl::getPosition() const {

@@ -298,7 +298,6 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
     // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    QString track_location = getTrackLocation(index);
     int column = index.column();
 
     switch (column) {

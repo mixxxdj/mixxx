@@ -102,7 +102,7 @@ void DlgRecording::onSearch(const QString& text) {
 }
 
 void DlgRecording::slotRestoreSearch() {
-    emit(restoreSearch(currentSearch()));
+    emit restoreSearch(currentSearch());
 }
 
 void DlgRecording::loadSelectedTrack() {

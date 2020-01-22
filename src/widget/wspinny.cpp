@@ -325,7 +325,6 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (m_pBgImage) {

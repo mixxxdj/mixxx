@@ -168,7 +168,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit(requestAddDir(spath));
+    emit requestAddDir(spath);
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -184,7 +184,7 @@ void BrowseFeature::slotAddToLibrary() {
     msgBox.exec();
 
     if (msgBox.clickedButton() == scanButton) {
-        emit(scanLibrary());
+        emit scanLibrary();
     }
 }
 
@@ -237,9 +237,9 @@ void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSEHOME"));
+    emit switchToView("BROWSEHOME");
     emit disableSearch();
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -267,8 +267,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
-    emit(showTrackModel(&m_proxyModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(&m_proxyModel);
+    emit enableCoverArtDisplay(false);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -359,7 +359,8 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
             QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
-
+#else
+    Q_UNUSED(pFeature);
 #endif
     return ret;
 }

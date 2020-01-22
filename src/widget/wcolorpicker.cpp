@@ -60,7 +60,7 @@ WColorPicker::WColorPicker(QWidget* parent)
         }
 
         connect(pColorButton, &QPushButton::clicked, this, [pColor, this]() {
-            emit(colorPicked(pColor));
+            emit colorPicked(pColor);
         });
     }
     setLayout(pLayout);
@@ -68,7 +68,7 @@ WColorPicker::WColorPicker(QWidget* parent)
 
 void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
     if (m_pSelectedColor) {
-        QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(m_pSelectedColor);
+        auto it = m_pColorButtons.constFind(m_pSelectedColor);
         if (it != m_pColorButtons.constEnd()) {
             it.value()->setChecked(false);
             // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
@@ -78,7 +78,7 @@ void WColorPicker::setSelectedColor(PredefinedColorPointer pColor) {
     }
 
     if (pColor) {
-        QMap<PredefinedColorPointer, QPushButton*>::const_iterator it = m_pColorButtons.find(pColor);
+        auto it = m_pColorButtons.constFind(pColor);
         if (it != m_pColorButtons.constEnd()) {
             it.value()->setChecked(true);
             // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
