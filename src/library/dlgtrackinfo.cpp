@@ -155,11 +155,11 @@ void DlgTrackInfo::trackUpdated() {
 }
 
 void DlgTrackInfo::slotNext() {
-    emit(next());
+    emit next();
 }
 
 void DlgTrackInfo::slotPrev() {
-    emit(previous());
+    emit previous();
 }
 
 void DlgTrackInfo::cueActivate() {
@@ -176,7 +176,16 @@ void DlgTrackInfo::cueDelete() {
         rowsToDelete.insert(item->row());
     }
 
+    // TODO: QList<T>::fromSet(const QSet<T>&) is deprecated and should be
+    // replaced with QList<T>(set.begin(), set.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QList<int> rowsList = QList<int>(rowsToDelete.begin(), rowsToDelete.end());
+#else
     QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
+#endif
     std::sort(rowsList.begin(), rowsList.end());
 
     QListIterator<int> it(rowsList);
@@ -281,9 +290,9 @@ void DlgTrackInfo::slotReloadCoverArt() {
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }
-    CoverInfo coverInfo =
-            CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-    slotCoverInfoSelected(coverInfo);
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -740,5 +749,5 @@ void DlgTrackInfo::updateTrackMetadata() {
 }
 
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
-    emit(showTagFetcher(m_pLoadedTrack));
+    emit showTagFetcher(m_pLoadedTrack);
 }

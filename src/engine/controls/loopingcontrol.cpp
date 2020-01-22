@@ -856,7 +856,7 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
-    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop.load();
+    BeatLoopingControl* pActiveBeatLoop = atomicLoadRelaxed(m_pActiveBeatLoop);
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
             pActiveBeatLoop->activate();
@@ -1332,13 +1332,13 @@ BeatJumpControl::~BeatJumpControl() {
 
 void BeatJumpControl::slotJumpBackward(double pressed) {
     if (pressed > 0) {
-        emit(beatJump(-m_dBeatJumpSize));
+        emit beatJump(-m_dBeatJumpSize);
     }
 }
 
 void BeatJumpControl::slotJumpForward(double pressed) {
     if (pressed > 0) {
-        emit(beatJump(m_dBeatJumpSize));
+        emit beatJump(m_dBeatJumpSize);
     }
 }
 
@@ -1363,13 +1363,13 @@ LoopMoveControl::~LoopMoveControl() {
 
 void LoopMoveControl::slotMoveBackward(double v) {
     if (v > 0) {
-        emit(loopMove(-m_dLoopMoveSize));
+        emit loopMove(-m_dLoopMoveSize);
     }
 }
 
 void LoopMoveControl::slotMoveForward(double v) {
     if (v > 0) {
-        emit(loopMove(m_dLoopMoveSize));
+        emit loopMove(m_dLoopMoveSize);
     }
 }
 
@@ -1437,9 +1437,9 @@ void BeatLoopingControl::activate() {
 void BeatLoopingControl::slotLegacy(double v) {
     //qDebug() << "slotLegacy" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
-        emit(activateBeatLoop(this));
+        emit activateBeatLoop(this);
     } else {
-        emit(deactivateBeatLoop(this));
+        emit deactivateBeatLoop(this);
     }
 }
 
@@ -1448,15 +1448,15 @@ void BeatLoopingControl::slotActivate(double v) {
     if (!v) {
         return;
     }
-    emit(activateBeatLoop(this));
+    emit activateBeatLoop(this);
 }
 
 void BeatLoopingControl::slotActivateRoll(double v) {
     //qDebug() << "slotActivateRoll" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
-        emit(activateBeatLoopRoll(this));
+        emit activateBeatLoopRoll(this);
     } else {
-        emit(deactivateBeatLoopRoll(this));
+        emit deactivateBeatLoopRoll(this);
     }
 }
 
@@ -1466,8 +1466,8 @@ void BeatLoopingControl::slotToggle(double v) {
         return;
     }
     if (m_bActive) {
-        emit(deactivateBeatLoop(this));
+        emit deactivateBeatLoop(this);
     } else {
-        emit(activateBeatLoop(this));
+        emit activateBeatLoop(this);
     }
 }

@@ -25,7 +25,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         return;
     }
 
-    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().toList();
+    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().values();
     // Display them alphabetically
     std::sort(allPlugins.begin(), allPlugins.end());
 

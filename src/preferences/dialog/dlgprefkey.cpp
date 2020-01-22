@@ -213,7 +213,7 @@ void DlgPrefKey::slotApply() {
         notation_name = KEY_NOTATION_CUSTOM;
         notation_type = KeyUtils::KeyNotation::Custom;
         for (auto it = m_keyLineEdits.constBegin();
-                it != m_keyLineEdits.end(); ++it) {
+                it != m_keyLineEdits.constEnd(); ++it) {
             notation[it.key()] = it.value()->text();
             m_keySettings.setCustomKeyNotation(it.key(), it.value()->text());
         }

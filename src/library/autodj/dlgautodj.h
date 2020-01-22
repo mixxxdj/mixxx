@@ -64,6 +64,9 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     const bool m_bShowButtonText;
 
     PlaylistTableModel* m_pAutoDJTableModel;
+
+    QString m_enableBtnTooltip;
+    QString m_disableBtnTooltip;
 };
 
 #endif //DLGAUTODJ_H

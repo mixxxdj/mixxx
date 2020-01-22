@@ -41,7 +41,7 @@ void ImportFilesTask::run() {
             // If the track is in the database, mark it as existing. This code gets
             // executed when other files in the same directory have changed (the
             // directory hash has changed).
-            emit(trackExists(trackLocation));
+            emit trackExists(trackLocation);
         } else {
             if (!fileInfo.exists()) {
                 qWarning() << "ImportFilesTask: Skipping inaccessible file"
@@ -50,10 +50,10 @@ void ImportFilesTask::run() {
             }
             qDebug() << "Importing track" << trackLocation;
 
-            emit(addNewTrack(trackLocation));
+            emit addNewTrack(trackLocation);
         }
     }
     // Insert or update the hash in the database.
-    emit(directoryHashedAndScanned(m_dirPath, !m_prevHashExists, m_newHash));
+    emit directoryHashedAndScanned(m_dirPath, !m_prevHashExists, m_newHash);
     setSuccess(true);
 }

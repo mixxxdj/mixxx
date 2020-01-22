@@ -147,19 +147,19 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
-    emit(showTrackModel(m_pLibraryTableModel));
-    emit(enableCoverArtDisplay(true));
+    emit showTrackModel(m_pLibraryTableModel);
+    emit enableCoverArtDisplay(true);
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
-    emit(switchToView(itemName));
+    emit switchToView(itemName);
     if (m_pMissingView && itemName == kMissingTitle) {
-        emit(restoreSearch(m_pMissingView->currentSearch()));
+        emit restoreSearch(m_pMissingView->currentSearch());
     } else if (m_pHiddenView && itemName == kHiddenTitle) {
-        emit(restoreSearch(m_pHiddenView->currentSearch()));
+        emit restoreSearch(m_pHiddenView->currentSearch());
     }
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
