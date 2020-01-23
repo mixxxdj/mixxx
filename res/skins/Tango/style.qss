@@ -2297,6 +2297,7 @@ WCoverArtMenu::item:!enabled,
 #CueLabelEdit {
   border: 1px solid #ff6600;
   border-radius: 0px;
+  color: #ccc;
   background-color: #000;
   selection-color: #000;
   selection-background-color: #ccc;
