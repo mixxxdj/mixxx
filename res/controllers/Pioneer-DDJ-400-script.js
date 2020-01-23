@@ -144,6 +144,9 @@ PioneerDDJ400.init = function() {
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
+    // poll the controller for current control positions on startup
+    // note that for some reason, the tempo sliders are always reported to be in their center positions, regardless of the current physical position of the slider
+    midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
 };
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
@@ -634,4 +637,19 @@ PioneerDDJ400.shutdown = function() {
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
+    // housekeeping
+    // turn off all Sampler LEDs
+    for (i = 0; i <= 7; ++i) {
+        midi.sendShortMsg(0x97, 0x30 + i, 0x00);	// Deck 1 pads
+        midi.sendShortMsg(0x98, 0x30 + i, 0x00);	// Deck 1 pads with SHIFT
+        midi.sendShortMsg(0x99, 0x30 + i, 0x00);	// Deck 2 pads
+        midi.sendShortMsg(0x9A, 0x30 + i, 0x00);	// Deck 2 pads with SHIFT
+    }
+    // turn off all Hotcue LEDs 
+    for (i = 0; i <= 7; ++i) {
+        midi.sendShortMsg(0x97, 0x00 + i, 0x00);	// Deck 1 pads
+        midi.sendShortMsg(0x98, 0x00 + i, 0x00);	// Deck 1 pads with SHIFT
+        midi.sendShortMsg(0x99, 0x00 + i, 0x00);	// Deck 2 pads
+        midi.sendShortMsg(0x9A, 0x00 + i, 0x00);	// Deck 2 pads with SHIFT
+    }
 };
