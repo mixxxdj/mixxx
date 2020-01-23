@@ -83,7 +83,7 @@ WWidgetGroup {
     color: #aaa;
     }
     #UnconfiguredHeadphoneTopbar {
-      background-color: rgba(30, 30, 30, 220);
+      background-color: #333;
       padding-left: 5px;
     }
     #UnconfiguredHeadphonePrevDeck {
