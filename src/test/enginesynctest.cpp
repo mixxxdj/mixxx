@@ -1143,7 +1143,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
               m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
-    for (int i=0; i<50; ++i) {
+    for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
         // The beat distances are NOT as simple as x2 or /2.  Use the built-in functions
         // to do the proper conversion.
@@ -1200,7 +1200,19 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
 
     EXPECT_FLOAT_EQ(175.0,
-                ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(87.5,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(175.0,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    EXPECT_FLOAT_EQ(87.5 / 80,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "rate_ratio"))->get());
+    EXPECT_FLOAT_EQ(1,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "rate_ratio"))->get());
+    EXPECT_FLOAT_EQ(80,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))->get());
+    EXPECT_FLOAT_EQ(175.0,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "local_bpm"))->get());
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -1222,10 +1234,30 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
     pButtonSyncEnabled1->slotSet(0.0);
     pButtonSyncEnabled2->slotSet(0.0);
+    ProcessBuffer();
     pButtonSyncEnabled2->slotSet(1.0);
     pButtonSyncEnabled1->slotSet(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    EXPECT_FLOAT_EQ(87.5 / 80,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "rate_ratio"))->get());
+    EXPECT_FLOAT_EQ(1,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "rate_ratio"))->get());
+
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ((m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
+               (m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance()));
+
+    ProcessBuffer();
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(87.5,
+                ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    EXPECT_FLOAT_EQ((m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
+              (m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance()));
 
     ProcessBuffer();
     ProcessBuffer();

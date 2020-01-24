@@ -41,8 +41,7 @@ BpmControl::BpmControl(QString group,
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
-          m_dLastSyncAdjustment(1.0),
-          m_sGroup(group) {
+          m_dLastSyncAdjustment(1.0) {
     m_dSyncTargetBeatDistance.setValue(0.0);
     m_dUserOffset.setValue(0.0);
 
@@ -380,7 +379,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
     }
 }
 
-double BpmControl::calcSyncedRate(double userTweak) {
+double BpmControl::calcSyncedRate(double userTweak, double dThisPosition) {
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
     if (m_pLocalBpm->get() != 0.0) {
@@ -397,7 +396,6 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now we need to get our beat distance so we can figure out how
     // out of phase we are.
-    double dThisPosition = getSampleOfTrack().current;
     double dBeatLength;
     double my_percentage;
     if (!BpmControl::getBeatContextNoLookup(dThisPosition,
@@ -446,11 +444,11 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*qDebug() << m_sGroup << m_dUserOffset;
-    qDebug() << "master beat distance:" << master_percentage;
-    qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << "error               :" << (shortest_distance - m_dUserOffset);
-    qDebug() << "user offset         :" << m_dUserOffset;*/
+    // qDebug() << m_group << "****************";
+    // qDebug() << "master beat distance:" << master_percentage;
+    // qDebug() << "my     beat distance:" << my_percentage;
+    // qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
+    // qDebug() << "user offset         :" << m_dUserOffset.getValue();
 
     double adjustment = 1.0;
 
@@ -797,27 +795,22 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
-    qDebug() << dThisPrevBeat << dThisNextBeat << dThisBeatLength << dThisPosition;
-    qDebug() << dOtherPrevBeat << dOtherNextBeat << dOtherBeatLength << dOtherBeatFraction;
-
+    double dThisSampleRate = m_pBeats->getSampleRate();
+    double dThisRateRatio = m_pRateRatio->get();
 
     // Seek our next beat to the other next beat
     // This is the only thing we can do if the track has different BPM,
     // playing the next beat together.
     double thisDivSec = (dThisNextBeat - dThisPosition)
-            / m_pBeats->getSampleRate() / m_pRateRatio->get();
+            / dThisSampleRate / dThisRateRatio;
 
     // dOtherBeatFraction =+ m_dUserOffset;
-    bool other_near_next = dOtherBeatFraction >= 0.5;
     double otherDivSec = (1 - dOtherBeatFraction) * dOtherBeatLength
             / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
 
     double dNewPlaypos = dThisPosition +
             (thisDivSec - otherDivSec) *
-            m_pBeats->getSampleRate() *
-            m_pRateRatio->get();
-
-    qDebug() << otherDivSec << thisDivSec << dOtherBeatFraction << dNewPlaypos;
+            dThisSampleRate * dThisRateRatio;
 
     if (respectLoops) {
         // We might be seeking outside the loop.

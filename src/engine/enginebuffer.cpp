@@ -741,7 +741,7 @@ void EngineBuffer::processTrackLocked(
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
     double speed = m_pRateControl->calculateSpeed(
-            baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
+            baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse, m_filepos_play);
 
     bool useIndependentPitchAndTempoScaling = false;
 

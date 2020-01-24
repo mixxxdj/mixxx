@@ -56,7 +56,7 @@ public:
     // disable keylock.
     double calculateSpeed(double baserate, double speed, bool paused,
                          int iSamplesPerBuffer, bool* pReportScratching,
-                         bool* pReportReverse);
+                         bool* pReportReverse, double filepos_play);
 
     // Set rate change when temp rate button is pressed
     static void setTemporaryRateChangeCoarseAmount(double v);

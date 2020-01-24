@@ -31,7 +31,7 @@ class BpmControl : public EngineControl {
     // that value is added to the rate by bpmcontrol.  The rate may be
     // further adjusted if bpmcontrol discovers that the tracks have fallen
     // out of sync.
-    double calcSyncedRate(double userTweak);
+    double calcSyncedRate(double userTweak, double dThisPosition);
     // Get the phase offset from the specified position.
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
@@ -161,8 +161,6 @@ class BpmControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
-
-    const QString m_sGroup;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
 };
