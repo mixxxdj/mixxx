@@ -10,132 +10,187 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>Spacer0f</ObjectName>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <Size>-1max,50f</Size>
     <Children>
 
-      <WidgetGroup>
-        <Size>1min,1f</Size>
-        <Connection>
-          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <!-- Vinyl / Passthrough -->
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+      <WidgetGroup><!-- Vinyl Controls expand toggle -->
+        <Size>15f,50f</Size>
+        <Layout>vertical</Layout>
         <Children>
-
-          <WidgetGroup><!-- Toggle Vinyl Control, statuslight underneath -->
-            <Layout>stacked</Layout>
-            <SizePolicy>min,min</SizePolicy>
+          <WidgetGroup><!-- with passthrough ON -->
+            <Size>15f,50f</Size>
+            <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
-                <SetVariable name="ObjectName">VinylControlButton</SetVariable>
-                <SetVariable name="Size">40f,27f</SetVariable>
-                <SetVariable name="state_0_text">VINYL</SetVariable>
-                <SetVariable name="state_1_text">VINYL</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
-              </Template>
-
-              <Template src="skin:statuslight_4state.xml">
-                <SetVariable name="ObjectName">VinylControlStatus</SetVariable>
-                <SetVariable name="Size">40f,27f</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
+                <SetVariable name="ObjectName">VinylTogglerRightPassthrough</SetVariable>
+                <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                <SetVariable name="Size">15f,50f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
               </Template>
             </Children>
-          </WidgetGroup><!-- /Toggle Vinyl Control, statuslight underneath -->
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
-            <SetVariable name="ObjectName">PassthroughButton</SetVariable>
-            <SetVariable name="Size">40f,27f</SetVariable>
-            <SetVariable name="state_0_text">PASS</SetVariable>
-            <SetVariable name="state_1_text">PASS</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
+          <WidgetGroup><!-- with passthrough OFF -->
+            <Size>15f,50f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
+                <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                <SetVariable name="Size">15f,50f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- Vinyl / Passthrough -->
+      </WidgetGroup><!-- /Vinyl Controls expand toggle -->
 
-      <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-      <!-- Vinyl mode / Cue mode -->
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>Spacer0f</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>-1max,50f</Size>
         <Children>
 
-          <Template src="skin:button_3state_persist.xml">
-            <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
-            <SetVariable name="ObjectName">VinylModeButton</SetVariable>
-            <SetVariable name="Size">40f,21f</SetVariable>
-            <SetVariable name="state_0_text">ABS</SetVariable>
-            <SetVariable name="state_1_text">REL</SetVariable>
-            <SetVariable name="state_2_text">CONST</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Size>1min,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- Vinyl / Passthrough -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><!-- Toggle Vinyl Control, statuslight underneath -->
+                <Layout>stacked</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
+                    <SetVariable name="ObjectName">VinylControlButton</SetVariable>
+                    <SetVariable name="Size">40f,27f</SetVariable>
+                    <SetVariable name="state_0_text">VINYL</SetVariable>
+                    <SetVariable name="state_1_text">VINYL</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
+                  </Template>
+
+                  <Template src="skin:statuslight_4state.xml">
+                    <SetVariable name="ObjectName">VinylControlStatus</SetVariable>
+                    <SetVariable name="Size">40f,27f</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Toggle Vinyl Control, statuslight underneath -->
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+                <SetVariable name="ObjectName">PassthroughButton</SetVariable>
+                <SetVariable name="Size">40f,27f</SetVariable>
+                <SetVariable name="state_0_text">PASS</SetVariable>
+                <SetVariable name="state_1_text">PASS</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- Vinyl / Passthrough -->
 
           <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
 
-          <WidgetGroup><!-- Cue mode button with translucent cover -->
-            <Layout>stacked</Layout>
-            <Size>40f,21f</Size>
+          <!-- Vinyl mode / Cue mode -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-              <!-- Block mouse when Vinyl control is not in RELATIVE mode -->
-              <WidgetGroup>
-                <TooltipId>vinylcontrol_cueing</TooltipId>
-                <ObjectName>SubmenuCover</ObjectName>
-                <Layout>vertical</Layout>
-                <Size>40f,21f</Size>
-                <Connection>
-                  <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
-                  <Transform><IsEqual>1</IsEqual><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
 
               <Template src="skin:button_3state_persist.xml">
-                <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+                <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
                 <SetVariable name="Size">40f,21f</SetVariable>
-                <SetVariable name="state_0_text">CUE</SetVariable>
-                <SetVariable name="state_1_text">CUE</SetVariable>
-                <SetVariable name="state_2_text">HOT</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
+                <SetVariable name="state_0_text">ABS</SetVariable>
+                <SetVariable name="state_1_text">REL</SetVariable>
+                <SetVariable name="state_2_text">CONST</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
               </Template>
-            </Children>
-          </WidgetGroup><!-- /Cue mode button with translucent covers -->
 
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
+
+              <WidgetGroup><!-- Cue mode button with translucent cover -->
+                <Layout>stacked</Layout>
+                <Size>40f,21f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <!-- Block mouse when Vinyl control is not in RELATIVE mode -->
+                  <WidgetGroup>
+                    <TooltipId>vinylcontrol_cueing</TooltipId>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>40f,21f</Size>
+                    <Connection>
+                      <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
+                      <Transform><IsEqual>1</IsEqual><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:button_3state_persist.xml">
+                    <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+                    <SetVariable name="ObjectName">VinylModeButton</SetVariable>
+                    <SetVariable name="Size">40f,21f</SetVariable>
+                    <SetVariable name="state_0_text">CUE</SetVariable>
+                    <SetVariable name="state_1_text">CUE</SetVariable>
+                    <SetVariable name="state_2_text">HOT</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Cue mode button with translucent covers -->
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup> <!-- /Vinyl mode / Cue mode -->
+
+          <WidgetGroup>
+            <Size>1min,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
         </Children>
-      </WidgetGroup> <!-- /Vinyl mode / Cue mode -->
-
-      <WidgetGroup>
-        <Size>1min,1f</Size>
         <Connection>
-          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="chanNum"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="chanNum"/></ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
