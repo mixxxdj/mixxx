@@ -1,0 +1,53 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+  - id: check-case-conflict
+  - id: check-byte-order-marker
+  - id: check-yaml
+  - id: check-json
+  - id: check-xml
+  - id: mixed-line-ending
+  - id: end-of-file-fixer
+    stages:
+    - commit
+    - manual
+  - id: trailing-whitespace
+    stages:
+    - commit
+    - manual
+  - id: no-commit-to-branch
+- repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v6.8.0
+  hooks:
+  - id: eslint
+    args: [--fix]
+    additional_dependencies:
+    - eslint@6.8.0
+    stages:
+    - commit
+    - manual
+- repo: git://github.com/doublify/pre-commit-clang-format
+  rev: master
+  hooks:
+  - id: clang-format
+    stages:
+    - commit
+    - manual
+- repo: local
+  hooks:
+  - id: qsscheck
+    name: qsscheck
+    description: Run qsscheck to detect broken QSS.
+    entry: ./scripts/qsscheck.py
+    args: [.]
+    pass_filenames: false
+    language: python
+    additional_dependencies:
+    - tinycss==0.4
+    types: [text]
+    files: ^.*\.qss$
+    stages:
+    - commit
+    - push
+    - manual
