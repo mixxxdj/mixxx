@@ -7,7 +7,6 @@ import os.path
 import re
 import sys
 import tinycss.css21
-import PyQt5.QtWidgets
 
 
 RE_CPP_CLASSNAME = re.compile(r'^\s*class\s+([\w_]+)')
@@ -18,6 +17,28 @@ RE_XML_OBJNAME_SETVAR = re.compile(
     r'<SetVariable\s+name="ObjectName">(.*)</SetVariable>')
 RE_CLASSNAME = re.compile(r'^[A-Z]\w+$')
 RE_OBJNAME_VARTAG = re.compile(r'<.*>')
+
+# List of Qt Widgets, generated with:
+# python -c 'import inspect, PyQt5.QtWidgets; print([k for k, v in PyQt5.QtWidgets.__dict__.items() if inspect.isclass(v) and issubclass(v, PyQt5.QtWidgets.QWidget)])'
+QTWIDGETS = [
+    'QWidget', 'QAbstractButton', 'QFrame', 'QAbstractScrollArea',
+    'QAbstractItemView', 'QAbstractSlider', 'QAbstractSpinBox',
+    'QCalendarWidget', 'QCheckBox', 'QDialog', 'QColorDialog', 'QColumnView',
+    'QComboBox', 'QPushButton', 'QCommandLinkButton', 'QDateTimeEdit',
+    'QDateEdit', 'QDesktopWidget', 'QDial', 'QDialogButtonBox', 'QDockWidget',
+    'QDoubleSpinBox', 'QErrorMessage', 'QFileDialog', 'QFocusFrame',
+    'QFontComboBox', 'QFontDialog', 'QGraphicsView', 'QGroupBox',
+    'QHeaderView', 'QInputDialog', 'QKeySequenceEdit', 'QLCDNumber', 'QLabel',
+    'QLineEdit', 'QListView', 'QListWidget', 'QMainWindow', 'QMdiArea',
+    'QMdiSubWindow', 'QMenu', 'QMenuBar', 'QMessageBox', 'QOpenGLWidget',
+    'QPlainTextEdit', 'QProgressBar', 'QProgressDialog', 'QRadioButton',
+    'QRubberBand', 'QScrollArea', 'QScrollBar', 'QSizeGrip', 'QSlider',
+    'QSpinBox', 'QSplashScreen', 'QSplitter', 'QSplitterHandle',
+    'QStackedWidget', 'QStatusBar', 'QTabBar', 'QTabWidget', 'QTableView',
+    'QTableWidget', 'QTextEdit', 'QTextBrowser', 'QTimeEdit', 'QToolBar',
+    'QToolBox', 'QToolButton', 'QTreeView', 'QTreeWidget', 'QUndoView',
+    'QWizard', 'QWizardPage',
+]
 
 
 def get_skins(path):
@@ -88,7 +109,7 @@ def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
                     continue
                 if token.value in classnames:
                     continue
-                if token.value in dir(PyQt5.QtWidgets):
+                if token.value in QTWIDGETS:
                     continue
                 yield (token, 'Unknown widget class "%s"' % token.value)
 
