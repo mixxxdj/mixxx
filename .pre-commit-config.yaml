@@ -3,18 +3,18 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
   hooks:
-  - id: check-case-conflict
   - id: check-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
-  - id: check-merge-conflict
-  - id: check-yaml
+  - id: check-case-conflict
   - id: check-json
+  - id: check-merge-conflict
   - id: check-xml
-  - id: mixed-line-ending
+  - id: check-yaml
   - id: end-of-file-fixer
     stages:
     - commit
     - manual
+  - id: mixed-line-ending
   - id: trailing-whitespace
     stages:
     - commit
