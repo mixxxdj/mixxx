@@ -22,7 +22,7 @@ repos:
   rev: v6.8.0
   hooks:
   - id: eslint
-    args: [--fix]
+    args: [--fix, --report-unused-disable-directives]
     stages:
     - commit
     - manual
