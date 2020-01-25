@@ -25,7 +25,7 @@ jobs:
       before_install:
         - pip3 install pre-commit
       script:
-        - pre-commit run --origin HEAD --source origin/HEAD
+        - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
       addons:
         apt:
           packages:
