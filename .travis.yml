@@ -16,13 +16,16 @@ env:
 
 jobs:
   include:
-    - name: qsscheck
+    - name: pre-commit
       os: linux
       dist: xenial
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
       before_install:
-        - pip3 install tinycss
+        - pip3 install pre-commit
       script:
-        - ./scripts/qsscheck.py .
+        - pre-commit run --origin HEAD --source origin/HEAD
       addons:
         apt:
           packages:
