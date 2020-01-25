@@ -4,6 +4,7 @@ repos:
   hooks:
   - id: check-case-conflict
   - id: check-byte-order-marker
+  - id: check-merge-conflict
   - id: check-yaml
   - id: check-json
   - id: check-xml
