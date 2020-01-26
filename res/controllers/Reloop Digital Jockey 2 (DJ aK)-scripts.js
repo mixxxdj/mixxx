@@ -41,6 +41,7 @@ RDJ2.JOG_RESOLUTION = 128; // measured/estimated
 RDJ2.MIDI_JOG_DELTA_BIAS = 0x40; // center value of relative movements
 RDJ2.MIDI_JOG_DELTA_RANGE = 0x3F; // both forward (= positive) and reverse (= negative)
 
+
 // Mixxx constants
 RDJ2.MIXXX_JOG_RANGE = 3.0;
 
@@ -166,6 +167,36 @@ RDJ2.ShiftButton.prototype = new components.Button({
     }
 });
 
+////////////////////////////////////////////////////////////////////////
+// Knobs                                                              //
+////////////////////////////////////////////////////////////////////////
+
+RDJ2.MIDI_KNOB_INC = 0x41;
+RDJ2.MIDI_KNOB_DEC = 0x3F;
+RDJ2.MIDI_KNOB_DELTA_BIAS = 0x40; // center value of relative movements
+RDJ2.MIDI_KNOB_STEPS = 20;
+
+//currently RDJ2.getKnobDeltaOld is not used
+RDJ2.getKnobDeltaOld = function (midiValue) {
+    switch (midiValue) {
+        case RDJ2.MIDI_KNOB_INC:
+            return 1;
+        case RDJ2.MIDI_KNOB_DEC:
+            return -1;
+        default:
+            RDJ2.logError("Unexpected MIDI knob value: " + midiValue);
+            return 0;
+    }
+};
+
+RDJ2.getKnobDelta = function (midiValue) {
+        return midiValue - RDJ2.MIDI_KNOB_DELTA_BIAS;
+};
+
+RDJ2.knobInput = function (channel, control, value, status, group) {
+        var knobDelta = RDJ2.getKnobDelta(value);
+        this.inSetParameter(this.inGetParameter() + knobDelta / RDJ2.MIDI_KNOB_STEPS);
+};
 
 ////////////////////////////////////////////////////////////////////////
 // Controls                                                           //
@@ -367,6 +398,27 @@ RDJ2.Deck.prototype.recvScratchButton = function (channel, control, value) {
     this.onScratchButton(RDJ2.isButtonPressed(value));
 };
 
+////////////////////////////////////////////////////////////////////////
+// Effects                                                            //
+////////////////////////////////////////////////////////////////////////
+
+//function for overriding default unshift/shift functions of efx unit knobs
+RDJ2.efxUnitKnobUnshift = function () {
+    this.input = function (channel, control, value, status, group) {
+        var knobDelta = RDJ2.getKnobDelta(value);
+        this.inSetParameter(this.inGetParameter() + knobDelta / RDJ2.MIDI_KNOB_STEPS);
+
+        if (this.previousValueReceived === undefined) {
+            var effect = '[EffectRack1_EffectUnit' + this.eu.currentUnitNumber +
+                        '_Effect' + this.number + ']';
+            engine.softTakeover(effect, 'meta', true);
+            engine.softTakeover(effect, 'parameter1', true);
+            engine.softTakeover(effect, 'parameter2', true);
+            engine.softTakeover(effect, 'parameter3', true);
+        }
+        this.previousValueReceived = value;
+    };
+};
 
 ////////////////////////////////////////////////////////////////////////
 // Controller functions                                               //
@@ -425,8 +477,31 @@ RDJ2.init = function (id, debug) {
     RDJ2.leftDeck = new RDJ2.Deck(1);
     RDJ2.rightDeck = new RDJ2.Deck(2);
 
-    //connect decks to shift buttons
+    //efx unit
+    RDJ2.fx1 = new components.EffectUnit(1);
+    RDJ2.fx1.EffectUnitKnob.prototype.unshift = RDJ2.efxUnitKnobUnshift;
+    RDJ2.fx1.EffectUnitKnob.prototype.eu = RDJ2.fx1;    //hack for use by reimplemented unshift/shift
+    RDJ2.fx1.enableButtons[1].midi = [0x90, 0x07];
+    RDJ2.fx1.enableButtons[2].midi = [0x90, 0x0C];
+    RDJ2.fx1.enableButtons[3].midi = [0x90, 0x09];
+    RDJ2.fx1.knobs[1].midi = [0xB0, 0x07];
+    RDJ2.fx1.knobs[2].midi = [0xB0, 0x08];
+    RDJ2.fx1.knobs[3].midi = [0xB0, 0x09];
+    RDJ2.fx1.dryWetKnob.midi = [0xB0, 0x0A];
+    RDJ2.fx1.dryWetKnob.input = RDJ2.knobInput;
+    RDJ2.fx1.effectFocusButton.midi = [0x90, 0x0E];
+    // We need to call unshift() again for each EffectUnitKnob as we
+    // swapped its implementation after fx object construction (when 
+    // it is called automatically)
+    for (var n = 1; n <= 3; n++) {
+        RDJ2.fx1.knobs[n].unshift();
+    }
+    // Now init the fx unit
+    RDJ2.fx1.init();
+
+    //connect decks and efx units to shift buttons
     RDJ2.leftShiftButton.connectContainer(RDJ2.leftDeck);
+    RDJ2.leftShiftButton.connectContainer(RDJ2.fx1);
     RDJ2.rightShiftButton.connectContainer(RDJ2.rightDeck);
 };
 
