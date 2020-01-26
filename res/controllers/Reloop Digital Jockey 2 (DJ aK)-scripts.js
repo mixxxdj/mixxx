@@ -402,21 +402,20 @@ RDJ2.Deck.prototype.recvScratchButton = function (channel, control, value) {
 // Effects                                                            //
 ////////////////////////////////////////////////////////////////////////
 
-//function for overriding default unshift/shift functions of efx unit knobs
+//functions for overriding default unshift/shift functions of efx unit knobs
 RDJ2.efxUnitKnobUnshift = function () {
     this.input = function (channel, control, value, status, group) {
         var knobDelta = RDJ2.getKnobDelta(value);
         this.inSetParameter(this.inGetParameter() + knobDelta / RDJ2.MIDI_KNOB_STEPS);
-
-        if (this.previousValueReceived === undefined) {
-            var effect = '[EffectRack1_EffectUnit' + this.eu.currentUnitNumber +
-                        '_Effect' + this.number + ']';
-            engine.softTakeover(effect, 'meta', true);
-            engine.softTakeover(effect, 'parameter1', true);
-            engine.softTakeover(effect, 'parameter2', true);
-            engine.softTakeover(effect, 'parameter3', true);
-        }
-        this.previousValueReceived = value;
+    };
+};
+RDJ2.efxUnitKnobShift = function () {
+    this.input = function (channel, control, value, status, group) {
+        var knobDelta = RDJ2.getKnobDelta(value);
+        var effectGroup = '[EffectRack1_EffectUnit' +
+                            this.eu.currentUnitNumber + '_Effect' +
+                            this.number + ']';
+        engine.setValue(effectGroup, 'effect_selector', knobDelta);
     };
 };
 
@@ -480,6 +479,7 @@ RDJ2.init = function (id, debug) {
     //efx unit
     RDJ2.fx1 = new components.EffectUnit(1);
     RDJ2.fx1.EffectUnitKnob.prototype.unshift = RDJ2.efxUnitKnobUnshift;
+    RDJ2.fx1.EffectUnitKnob.prototype.shift = RDJ2.efxUnitKnobShift;
     RDJ2.fx1.EffectUnitKnob.prototype.eu = RDJ2.fx1;    //hack for use by reimplemented unshift/shift
     RDJ2.fx1.enableButtons[1].midi = [0x90, 0x07];
     RDJ2.fx1.enableButtons[2].midi = [0x90, 0x0C];
