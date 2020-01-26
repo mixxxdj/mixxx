@@ -126,10 +126,11 @@ void MusicBrainzClient::replyFinished() {
     const QByteArray body(reply->readAll());
     QXmlStreamReader reader(body);
 
-    // MusicBrainz returns 404 when the MBID is not in their database. We treat
-    // a status of 404 the same as a 200 but it will produce an empty list of
-    // results.
-    if (status != 200 && status != 404) {
+    // HTTP status of successful results:
+    // 200: Found
+    // 301: Found, but UUID moved permanently in database
+    // 404: Not found in database, i.e. empty result
+    if (status != 200 && status != 301 && status != 404) {
         qDebug()
                 << "MusicBrainzClient GET reply"
                 << "status:" << status
