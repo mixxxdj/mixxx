@@ -1,14 +1,20 @@
 /****************************************************************
- *      Reloop Terminal Mix MIDI controller script v1.01        *
- *          Copyright (C) 2012-2013, Sean M. Pappalardo         *
- *      but feel free to tweak this to your heart's content!    *
- *      For Mixxx version 1.11.x                                *
- ****************************************************************/
+*       Reloop Terminal Mix MIDI controller script v2.1         *
+*           Copyright (C) 2012-2013, Sean M. Pappalardo         *
+*                         2018, ronso0 (2.1 update)             *
+*       but feel free to tweak this to your heart's content!    *
+*       For Mixxx version 2.1.x                                 *
+*                                                               *
+*       Documentation in the Mixxx wiki:                        *
+*       https://mixxx.org/wiki/doku.php/reloop_terminal_mix     *
+****************************************************************/
 
 function TerminalMix() {}
 
 // ----------   Customization variables ----------
-//      See http://mixxx.org/wiki/doku.php/reloop_terminalmix4_user_guide  for details
+// Push the 'RANGE' button at the top edge of the pitch fader to
+// cycle through the following pitch ranges. Edit the array to choose
+// the ranges you need. For example '0.08' means +/-8%
 TerminalMix.pitchRanges = [ 0.08, 0.12, 0.25, 0.5, 1.0 ];
 
 // ----------   Other global variables    ----------
@@ -18,6 +24,11 @@ TerminalMix.faderStart = [];
 TerminalMix.lastFader = [];   // Last value of each channel/cross fader
 TerminalMix.lastEQs = [[]];
 TerminalMix.traxKnobMode = "tracks";
+TerminalMix.shifted = false;
+TerminalMix.shiftedL = false;
+TerminalMix.shiftedR = false;
+TerminalMix.loopMovePressedL = false;
+TerminalMix.loopMovePressedR = false;
 
 // ----------   Functions   ----------
 
@@ -30,6 +41,46 @@ TerminalMix.init = function (id,debug) {
             midi.sendShortMsg(0x90+i,j,0x00);
         }
     }
+
+    // New mapping of FX units using midi-components-0.0.js
+    // EffectUnits 1 & 3. Usage:
+    // new components.EffectUnit([int list EffUnit numbers], bool allowFocusWhenParametersHidden)
+    TerminalMix.effectUnit13 = new components.EffectUnit([1,3]);
+    TerminalMix.effectUnit13.enableButtons[1].midi = [0x90, 0x07];
+    TerminalMix.effectUnit13.enableButtons[2].midi = [0x90, 0x08];
+    TerminalMix.effectUnit13.enableButtons[3].midi = [0x90, 0x09];
+    TerminalMix.effectUnit13.knobs[1].midi = [0xB0, 0x03];
+    TerminalMix.effectUnit13.knobs[2].midi = [0xB0, 0x04];
+    TerminalMix.effectUnit13.knobs[3].midi = [0xB0, 0x05];
+    TerminalMix.effectUnit13.dryWetKnob.midi = [0xB0, 0x06];
+    TerminalMix.effectUnit13.dryWetKnob.input = function (channel, control, value, status, group) {
+        if (value === 63) {
+          this.inSetParameter(this.inGetParameter() - .07);
+        } else if (value === 65) {
+          this.inSetParameter(this.inGetParameter() + .07);
+        }
+    };
+    TerminalMix.effectUnit13.effectFocusButton.midi = [0x90, 0x0A];
+    TerminalMix.effectUnit13.init();
+
+    // EffectUnits 2 & 4
+    TerminalMix.effectUnit24 = new components.EffectUnit([2,4]);
+    TerminalMix.effectUnit24.enableButtons[1].midi = [0x91, 0x07];
+    TerminalMix.effectUnit24.enableButtons[2].midi = [0x91, 0x08];
+    TerminalMix.effectUnit24.enableButtons[3].midi = [0x91, 0x09];
+    TerminalMix.effectUnit24.knobs[1].midi = [0xB1, 0x03];
+    TerminalMix.effectUnit24.knobs[2].midi = [0xB1, 0x04];
+    TerminalMix.effectUnit24.knobs[3].midi = [0xB1, 0x05];
+    TerminalMix.effectUnit24.dryWetKnob.midi = [0xB1, 0x06];
+    TerminalMix.effectUnit24.dryWetKnob.input = function (channel, control, value, status, group) {
+        if (value === 63) {
+          this.inSetParameter(this.inGetParameter() - .07);
+        } else if (value === 65) {
+          this.inSetParameter(this.inGetParameter() + .07);
+        }
+    };
+    TerminalMix.effectUnit24.effectFocusButton.midi = [0x91, 0x0A];
+    TerminalMix.effectUnit24.init();
 
     // Enable four decks in v1.11.x
     engine.setValue("[Master]", "num_decks", 4);
@@ -155,25 +206,117 @@ TerminalMix.crossfaderCurve = function (channel, control, value, status, group) 
     script.crossfaderCurve(value);
 }
 
-TerminalMix.loopLengthKnob = function (channel, control, value, status, group) {
-    if ((value-64)>0) {
-        engine.setValue(group,"loop_double",1);
-        engine.setValue(group,"loop_double",0);
+TerminalMix.loopLengthPress = function (channel, control, value, status, group) {
+  if (value) {
+    if (engine.getValue(group,"loop_enabled") === 0) {
+      script.triggerControl(group,"beatloop_activate",100);
+    } else {
+      script.triggerControl(group,"reloop_toggle",100);
     }
-    else {
-        engine.setValue(group,"loop_halve",1);
-        engine.setValue(group,"loop_halve",0);
+  }
+}
+
+TerminalMix.shiftedLoopLengthPress = function (channel, control, value, status, group) {
+  if (value) {
+    script.triggerControl(group,"reloop_toggle",100);
+  }
+}
+
+TerminalMix.loopLengthTurn = function (channel, control, value, status, group) {
+    if (value === 65) {
+        script.triggerControl(group,"loop_double",100);
+    }
+    else if (value === 63) {
+        script.triggerControl(group,"loop_halve",100);
     }
 }
 
-TerminalMix.loopMoveKnob = function (channel, control, value, status, group) {
-    // numberOfBeats not defined, uses default 0.5 beats
-    script.loopMove(group,value-64);
+TerminalMix.loopMovePress = function (channel, control, value, status, group) {
+  /* Press the Move encoder to switch between two layers:
+  a turn knob to jump X beats back or forth, or move any active loop by Y beats
+  b Press & turn to adjust the beatjump/loopmove size
+  This function stores the <pressed>/<unpressed> state because the knob sends
+  the same signals independent from the pushbutton state, and we can't
+  set 'dynamic variables' like ``bool loopMovePressed[channel number]``. */
+  /* Left decks */
+  if (channel === 1 || channel === 3) {
+    if (value) {
+      TerminalMix.loopMovePressedL = true;
+    } else {
+      TerminalMix.loopMovePressedL = false;
+    }
+  /* Right decks */
+  } else {
+    if (value) {
+      TerminalMix.loopMovePressedR = true;
+    } else {
+      TerminalMix.loopMovePressedR = false;
+    }
+  }
 }
 
-TerminalMix.tinyLoopMoveKnob = function (channel, control, value, status, group) {
-    // do smaller steps (1/8 beat) with [Shift]+LoopMove knob
-    script.loopMove(group,value-64,0.125);
+TerminalMix.loopMoveTurn = function (channel, control, value, status, group) {
+  if (channel === 1 || channel === 3) {
+    /* If loopmove encoder is pressed while we turn it, we change beatjump_size */
+    if (TerminalMix.loopMovePressedL) {
+      TerminalMix.setBeatjumpSize(channel, control, value, status, group);
+    /* Else we move the loop or make the play position jump */
+    } else {
+      TerminalMix.loopMove(channel, control, value, status, group);
+    }
+  /* Right decks */
+  } else {
+    if (TerminalMix.loopMovePressedR) {
+      TerminalMix.setBeatjumpSize(channel, control, value, status, group);
+    } else {
+      TerminalMix.loopMove(channel, control, value, status, group);
+    }
+  }
+}
+
+TerminalMix.shiftedLoopMoveTurn = function (channel, control, value, status, group) {
+  if (value === 65) {
+    script.triggerControl(group,"beatjump_forward",100);
+  }
+  else if (value === 63) {
+    script.triggerControl(group,"beatjump_backward",100);
+  }
+}
+
+
+
+TerminalMix.loopMove = function (channel, control, value, status, group) {
+  /* Loop enabled */
+  if (engine.getValue(group,"loop_enabled") === 1) {
+    if (engine.getValue(group,"quantize") === 1) {
+    /* With 'quantize' enabled the loop_in marker might not snap to the beat
+      we want the loop to start at, but to the next or previous beat.
+      So we move the loop by one beat. */
+      script.loopMove(group,value-64,1);
+    } else {
+    /* With 'quantize' OFF we might have missed the sweet spot, so we probably
+      want to move the loop only by a fraction of a beat. Default = 1/8th beat */
+      script.loopMove(group,value-64,0.125);
+    }
+  /* Loop disabled */
+  } else {
+    // jump by 'beatjump_size' beats
+    if (value === 65) {
+      script.triggerControl(group,"beatjump_forward",100);
+    }
+    else if (value === 63) {
+      script.triggerControl(group,"beatjump_backward",100);
+    }
+  }
+}
+
+TerminalMix.setBeatjumpSize = function (channel, control, value, status, group) {
+    if (value === 65) {
+      engine.setValue(group,"beatjump_size",engine.getValue(group,"beatjump_size")*2);
+    }
+    else if (value === 63) {
+      engine.setValue(group,"beatjump_size",engine.getValue(group,"beatjump_size")/2);
+    }
 }
 
 TerminalMix.cfAssignL = function (channel, control, value, status, group) {
@@ -277,13 +420,15 @@ TerminalMix.channelFader = function (channel, control, value, status, group) {
     if (TerminalMix.lastFader[group]==value) return;
 
     if (value==0 && engine.getValue(group,"play")==1) {
-        engine.setValue(group,"cue_default",1);
-        engine.setValue(group,"cue_default",0);
+        script.triggerControl(group,"cue_default",100);
     }
     if (TerminalMix.lastFader[group]==0) engine.setValue(group,"play",1);
 
     TerminalMix.lastFader[group]=value;
 }
+
+
+
 
 TerminalMix.crossFader = function (channel, control, value, status, group) {
     var cfValue = script.absoluteNonLin(value,-1,0,1);
@@ -301,8 +446,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==2
                 && engine.getValue(group,"play")==1) {
-                    engine.setValue(group,"cue_default",1);
-                    engine.setValue(group,"cue_default",0);
+                    script.triggerControl(group,"cue_default",100);
             }
         }
     }
@@ -314,8 +458,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==0
                 && engine.getValue(group,"play")==1) {
-                    engine.setValue(group,"cue_default",1);
-                    engine.setValue(group,"cue_default",0);
+                    script.triggerControl(group,"cue_default",100);
             }
         }
     }
@@ -345,32 +488,56 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
     TerminalMix.lastFader["crossfader"] = cfValue;
 }
 
+// Move cursor vertically with Trax knob, scroll with Shift pressed
 TerminalMix.traxKnobTurn = function (channel, control, value, status, group) {
-    var newValue = (value-64);
-    if (TerminalMix.traxKnobMode == "tracks") {
-        engine.setValue(group,"SelectTrackKnob", newValue);
+  if (TerminalMix.shifted) {
+      engine.setValue(group,"ScrollVertical", value-64);
     } else {
-        engine.setValue(group, "SelectPlaylist", newValue);
+      engine.setValue(group,"MoveVertical", value-64);
     }
 }
 
-TerminalMix.traxKnobPress = function (channel, control, value, status, group) {
-    if (value>0) {
-        if (TerminalMix.traxKnobMode == "tracks") {
-            engine.setValue(group,"LoadSelectedIntoFirstStopped",1);
-            engine.setValue(group,"LoadSelectedIntoFirstStopped",0);
-        } else {
-            TerminalMix.traxKnobMode = "tracks";
-            midi.sendShortMsg(0x90,0x37,0x7F);
-        }
-    }
-}
-
+// Move focus right between tracks table and side panel.
+// Shift moves the focus to the left. Right now there are only two possible
+// focus regions (panel + tracks table) so left/right have the same result,
+// but the redesigned Library yet to come may have more regions.
 TerminalMix.backButton = function (channel, control, value, status, group) {
     if (value>0) {
-        TerminalMix.traxKnobMode = "sections";
-        midi.sendShortMsg(0x90,0x37,0);
+      if (TerminalMix.shifted) {
+      engine.setValue(group,"MoveFocus",-1);
+    } else {
+      engine.setValue(group,"MoveFocus",1);
     }
+  }
+}
+
+// Left shift button
+TerminalMix.shiftButtonL = function (channel, control, value, status, group) {
+  if (value === 127) {
+    TerminalMix.effectUnit13.shift();
+    TerminalMix.effectUnit24.shift();
+    TerminalMix.shifted = true;
+    TerminalMix.shiftedL = true;
+  } else {
+    TerminalMix.effectUnit13.unshift();
+    TerminalMix.effectUnit24.unshift();
+    TerminalMix.shifted = false;
+    TerminalMix.shiftedL = false;
+  }
+};
+// Right shift button
+TerminalMix.shiftButtonR = function (channel, control, value, status, group) {
+  if (value === 127) {
+    TerminalMix.effectUnit13.shift();
+    TerminalMix.effectUnit24.shift();
+    TerminalMix.shifted = true;
+    TerminalMix.shiftedR = true;
+  } else {
+    TerminalMix.effectUnit13.unshift();
+    TerminalMix.effectUnit24.unshift();
+    TerminalMix.shifted = false;
+    TerminalMix.shiftedR = false;
+  }
 }
 
 // ----------- LED Output functions -------------

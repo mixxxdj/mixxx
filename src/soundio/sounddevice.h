@@ -21,14 +21,17 @@
 #include <QString>
 #include <QList>
 
-#include "soundio/soundmanager.h"
+#include "util/types.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
+#include "soundio/soundmanagerutil.h"
 
-//Forward declarations
 class SoundDevice;
 class SoundManager;
 class AudioOutput;
 class AudioInput;
+class AudioOutputBuffer;
+class AudioInputBuffer;
 
 const QString kNetworkDeviceInternalName = "Network stream";
 
@@ -37,8 +40,8 @@ class SoundDevice {
     SoundDevice(UserSettingsPointer config, SoundManager* sm);
     virtual ~SoundDevice();
 
-    inline const QString& getInternalName() const {
-        return m_strInternalName;
+    inline const SoundDeviceId& getDeviceId() const {
+        return m_deviceId;
     }
     inline const QString& getDisplayName() const {
         return m_strDisplayName;
@@ -73,23 +76,22 @@ class SoundDevice {
 
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
-                             const unsigned int iFramesPerBuffer,
-                             const unsigned int readOffset,
-                             const unsigned int iFrameSize);
+                             const SINT iFramesPerBuffer,
+                             const SINT readOffset,
+                             const int iFrameSize);
 
     void composeInputBuffer(const CSAMPLE* inputBuffer,
-                            const unsigned int framesToPush,
-                            const unsigned int framesWriteOffset,
-                            const unsigned int iFrameSize);
+                            const SINT framesToPush,
+                            const SINT framesWriteOffset,
+                            const int iFrameSize);
 
-    void clearInputBuffer(const unsigned int framesToPush,
-                          const unsigned int framesWriteOffset);
+    void clearInputBuffer(const SINT framesToPush,
+                          const SINT framesWriteOffset);
 
+    SoundDeviceId m_deviceId;
     UserSettingsPointer m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
     SoundManager* m_pSoundManager;
-    // The name of the soundcard, used internally (may include the device ID)
-    QString m_strInternalName;
     // The name of the soundcard, as displayed to the user
     QString m_strDisplayName;
     // The number of output channels that the soundcard has
@@ -100,9 +102,11 @@ class SoundDevice {
     double m_dSampleRate;
     // The name of the audio API used by this device.
     QString m_hostAPI;
-    unsigned int m_framesPerBuffer;
+    SINT m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
 };
+
+typedef QSharedPointer<SoundDevice> SoundDevicePointer;
 
 #endif

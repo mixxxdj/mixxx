@@ -28,11 +28,9 @@ class MetadataTest : public testing::Test {
     }
 
     void normalizeBpm(double normalizedValue) {
-        mixxx::Bpm normalizedBpm(normalizedValue);
-        normalizedBpm.normalizeValue(); // re-normalize
         // Expected: Re-normalization does not change the value
         // that should already be normalized.
-        EXPECT_EQ(normalizedBpm.getValue(), normalizedValue);
+        EXPECT_EQ(normalizedValue, mixxx::Bpm::normalizeValue(normalizedValue));
     }
     
     void readBPMFromId3(const char* inputValue, double expectedValue) {
@@ -48,9 +46,9 @@ class MetadataTest : public testing::Test {
         pFrame.release();
 
         mixxx::TrackMetadata trackMetadata;
-        mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
+        mixxx::taglib::importTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
 
-        EXPECT_DOUBLE_EQ(expectedValue,trackMetadata.getBpm().getValue());
+        EXPECT_DOUBLE_EQ(expectedValue, trackMetadata.getTrackInfo().getBpm().getValue());
     }
 };
 
@@ -126,14 +124,14 @@ TEST_F(MetadataTest, ID3v2Year) {
             tag.header()->setMajorVersion(majorVersion);
             {
                 mixxx::TrackMetadata trackMetadata;
-                trackMetadata.setYear(year);
-                mixxx::taglib::writeTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
+                trackMetadata.refTrackInfo().setYear(year);
+                mixxx::taglib::exportTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
             }
             mixxx::TrackMetadata trackMetadata;
-            mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);
+            mixxx::taglib::importTrackMetadataFromID3v2Tag(&trackMetadata, tag);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
-                const QString actualYear(trackMetadata.getYear());
+                const QString actualYear(trackMetadata.getTrackInfo().getYear());
                 const QDate expectedDate(mixxx::TrackMetadata::parseDate(year));
                 if (expectedDate.isValid()) {
                     // Only the date part can be stored in an ID3v2.3.0 tag
@@ -144,7 +142,7 @@ TEST_F(MetadataTest, ID3v2Year) {
                 }
             } else {
                 // ID3v2.4.0: currently unverified/unmodified
-                EXPECT_EQ(year, trackMetadata.getYear());
+                EXPECT_EQ(year, trackMetadata.getTrackInfo().getYear());
             }
         }
     }

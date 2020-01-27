@@ -13,19 +13,17 @@ SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
           m_pPlayerManager(pPlayerManager) {
     DEBUG_ASSERT(m_pPlayerManager);
-    m_pCOLoadBank = new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
-    connect(m_pCOLoadBank, SIGNAL(valueChanged(double)),
+    m_pCOLoadBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "LoadSamplerBank"), this);
+    connect(m_pCOLoadBank.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSamplerBank(double)));
-    m_pCOSaveBank = new ControlPushButton(ConfigKey("[Sampler]", "SaveSamplerBank"));
-    connect(m_pCOSaveBank, SIGNAL(valueChanged(double)),
+    m_pCOSaveBank = std::make_unique<ControlPushButton>(ConfigKey("[Sampler]", "SaveSamplerBank"), this);
+    connect(m_pCOSaveBank.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotSaveSamplerBank(double)));
 
-    m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+    m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"), this);
 }
 
 SamplerBank::~SamplerBank() {
-    delete m_pCOLoadBank;
-    delete m_pCOSaveBank;
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {

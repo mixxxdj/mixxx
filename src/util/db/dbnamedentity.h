@@ -30,7 +30,6 @@ class DbNamedEntity: public DbEntity<T> {
         DEBUG_ASSERT(!hasName());
     }
     bool parseName(const QString& name) {
-        QString normalizedName(normalizeName(name));
         if (name.isEmpty()) {
             return false;
         } else {

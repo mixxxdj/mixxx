@@ -1,68 +1,97 @@
 <Template>
-    <WidgetGroup>
-		<ObjectName>Library</ObjectName>
-		<SizePolicy>me,me</SizePolicy>
-		<MinimumSize>1280,50</MinimumSize>
-		<Layout>vertical</Layout>
-		<Children>
-			<!--
-			**********************************************
-			Library / Preview Deck / Search / Tree view
-			**********************************************
-			-->
-			<WidgetGroup>
-				<Layout>horizontal</Layout>
-				<Children>
-					<Splitter>
-                        <ObjectName>LibrarySplitter</ObjectName>
-						<Size>me,me</Size>
-						<SplitSizes>1,12</SplitSizes>
-                        <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
-						<Children>
-							<WidgetGroup>
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<!--Search Input Field-->
-									<SearchBox></SearchBox>
-                                    <Splitter>
-                                        <ObjectName>CoverArtSplitter</ObjectName>
-                                        <Size>me,me</Size>
-                                        <SplitSizes>1,1</SplitSizes>
-                                        <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
-                                        <Orientation>vertical</Orientation>
-                                        <Collapsible>0,0</Collapsible>
-                                        <Children>
-                                            <!--Library Tree View-->
-                                            <LibrarySidebar></LibrarySidebar>
-                                            <!--Cover Art-->
-                                            <CoverArt>
-                                                <SizePolicy>me,me</SizePolicy>
-                                                <MinimumSize>40,40</MinimumSize>
-                                                <Connection>
-                                                    <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                                                    <BindProperty>visible</BindProperty>
-                                                </Connection>
-                                            </CoverArt>
-                                        </Children>
-                                    </Splitter>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<!-- Library Table-->
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<Library>
-										<BgColor>#585858</BgColor>
-										<FgColor>#eece33</FgColor>
-									</Library>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</Splitter>
-				</Children>
-			</WidgetGroup>
-		</Children>
-	</WidgetGroup>
+  <WidgetGroup>
+    <SizePolicy>me,i</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <!--
+      **********************************************
+      Library / Preview Deck / Search / Tree view
+      **********************************************
+      -->
+      <WidgetGroup>
+        <ObjectName>LibraryContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+          <Splitter>
+            <ObjectName>VerticalSplitter</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizes>1,10</SplitSizes>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+            <Collapsible>1,0</Collapsible>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>100,</MinimumSize>
+                <Children>
+
+                  <Template src="skin:preview_deck.xml"/>
+
+                  <!--Search Input Field-->
+                  <WidgetGroup>
+                    <ObjectName>SearchLineBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <SearchBox></SearchBox>
+                    </Children>
+                  </WidgetGroup>
+
+                  <Splitter>
+                    <ObjectName>HorizontalSplitter</ObjectName>
+                    <Size>me,me</Size>
+                    <SplitSizes>1,1</SplitSizes>
+                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                    <Orientation>vertical</Orientation>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <!--Library Tree View-->
+                      <WidgetGroup>
+                        <ObjectName>SidebarBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <LibrarySidebar></LibrarySidebar>
+                        </Children>
+                      </WidgetGroup>
+                      <!--Cover Art-->
+                      <CoverArt>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>40,40</MinimumSize>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
+
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <!-- Library Table-->
+                <Layout>vertical</Layout>
+                <Children>
+                  <Library>
+                    <BgColor>#585858</BgColor>
+                    <FgColor>#eece33</FgColor>
+                    <ShowButtonText>false</ShowButtonText>
+                  </Library>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </Splitter>
+
+          <WidgetGroup>
+            <Size>5f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>

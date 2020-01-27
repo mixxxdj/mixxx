@@ -6,19 +6,19 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "library/coverart.h"
-#include "library/dlgtagfetcher.h"
-#include "library/libraryview.h"
-#include "library/trackcollection.h"
+#include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
 
 class ControlProxy;
+class DlgTagFetcher;
 class DlgTrackInfo;
-class TrackCollection;
+class TrackCollectionManager;
 class WCoverArtMenu;
+
+class ExternalTrackCollection;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
@@ -27,8 +27,11 @@ const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) f
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
-    WTrackTableView(QWidget* parent, UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection, bool sorting = true);
+    WTrackTableView(
+            QWidget* parent,
+            UserSettingsPointer pConfig,
+            TrackCollectionManager* pTrackCollectionManager,
+            bool sorting);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
@@ -37,17 +40,19 @@ class WTrackTableView : public WLibraryTableView {
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
+    QList<TrackId> getSelectedTrackIds() const;
+    void setSelectedTracks(const QList<TrackId>& tracks);
+    void saveCurrentVScrollBarPos();
+    void restoreCurrentVScrollBarPos();
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void onSearchStarting();
-    void onSearchCleared();
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
 
   private slots:
     void slotRemove();
@@ -60,33 +65,51 @@ class WTrackTableView : public WLibraryTableView {
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotReloadTrackMetadata();
-    void slotResetPlayed();
+    void slotImportTrackMetadataFromFileTags();
+    void slotExportTrackMetadataIntoFileTags();
+    void slotUpdateExternalTrackCollection(ExternalTrackCollection*);
+    void slotPopulatePlaylistMenu();
     void addSelectionToPlaylist(int iPlaylistId);
-    void addSelectionToCrate(int iCrateId);
+    void updateSelectionCrates(QWidget* qc);
+    void slotPopulateCrateMenu();
+    void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
-    void doSortByColumn(int headerSection);
+    void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
+    void applySortingIfVisible();
+    void applySorting();
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
+
     void slotClearBeats();
+    void slotClearPlayCount();
+    void slotClearMainCue();
+    void slotClearHotCues();
+    void slotClearIntroCue();
+    void slotClearOutroCue();
+    void slotClearLoop();
+    void slotClearKey();
+    void slotClearReplayGain();
     void slotClearWaveform();
-    void slotReplayGainReset();
+    void slotClearAllMetadata();
+
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
-    void slotCoverInfoSelected(const CoverInfo& coverInfo);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
     void slotTrackInfoClosed();
     void slotTagFetcherClosed();
+    void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void keyNotationChanged();
 
   private:
+    void createActions();
 
-    void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
-    void createActions();
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
@@ -104,31 +127,42 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
 
-    QList<TrackId> getSelectedTrackIds() const;
+    const UserSettingsPointer m_pConfig;
 
-    UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
-
-    QSignalMapper m_loadTrackMapper;
+    TrackCollectionManager* const m_pTrackCollectionManager;
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
 
     QModelIndex currentTrackInfoIndex;
 
-
     ControlProxy* m_pNumSamplers;
     ControlProxy* m_pNumDecks;
     ControlProxy* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    QMenu *m_pMenu;
+
+    QMenu *m_pLoadToMenu;
+    QMenu *m_pDeckMenu;
+    QMenu *m_pSamplerMenu;
+
+    QMenu *m_pPlaylistMenu;
+    QMenu *m_pCrateMenu;
+    QMenu *m_pMetadataMenu;
+    QMenu *m_pMetadataUpdateExternalCollectionsMenu;
+    QMenu *m_pClearMetadataMenu;
+    QMenu *m_pBPMMenu;
+
+
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
-    QAction *m_pReloadMetadataAct;
-    QAction *m_pReloadMetadataFromMusicBrainzAct;
+    QAction *m_pImportMetadataFromFileAct;
+    QAction *m_pImportMetadataFromMusicBrainzAct;
+
+    // Save Track Metadata Action:
+    QAction *m_pExportMetadataAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;
@@ -140,12 +174,11 @@ class WTrackTableView : public WLibraryTableView {
 
     // Remove from table
     QAction *m_pRemoveAct;
+    QAction *m_pRemovePlaylistAct;
+    QAction *m_pRemoveCrateAct;
     QAction *m_pHideAct;
     QAction *m_pUnhideAct;
     QAction *m_pPurgeAct;
-
-    // Reset the played count of selected track or tracks
-    QAction* m_pResetPlayedAct;
 
     // Show track-editor action
     QAction *m_pPropertiesAct;
@@ -154,7 +187,6 @@ class WTrackTableView : public WLibraryTableView {
     // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
@@ -162,14 +194,24 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmFourThirdsAction;
     QAction *m_pBpmThreeHalvesAction;
 
-    // Clear track beats
+    // Clear track metadata actions
     QAction* m_pClearBeatsAction;
-
-    // Clear track waveform
+    QAction* m_pClearPlayCountAction;
+    QAction* m_pClearMainCueAction;
+    QAction* m_pClearHotCuesAction;
+    QAction* m_pClearIntroCueAction;
+    QAction* m_pClearOutroCueAction;
+    QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
+    QAction* m_pClearKeyAction;
+    QAction* m_pClearReplayGainAction;
+    QAction* m_pClearAllMetadataAction;
 
-    // Replay Gain feature
-    QAction *m_pReplayGainResetAction;
+    struct UpdateExternalTrackCollection {
+        QPointer<ExternalTrackCollection> externalTrackCollection;
+        QAction* action;
+    };
+    QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
     bool m_sorting;
 
@@ -185,7 +227,12 @@ class WTrackTableView : public WLibraryTableView {
     mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
+    bool m_bPlaylistMenuLoaded;
+    bool m_bCrateMenuLoaded;
     ControlProxy* m_pCOTGuiTick;
+    ControlProxy* m_pKeyNotation;
+    ControlProxy* m_pSortColumn;
+    ControlProxy* m_pSortOrder;
 };
 
 #endif

@@ -1,11 +1,10 @@
 <!--
 Description:
-  A simple indicator for usage in decks' artist/duration row,
-  showing if an effect unit is assigned to parent deck.
-  Visible only if assigned.
+  A button to assign an effect unit to parent deck,
+  used in decks' artist/duration row.
 Variables:
-  fxUnit : [EffectRack1_EffectUnitN]
-  group : [ChannelN]
+  FxUnit_FxNum: [EffectRack1_EffectUnitN]
+  group:  [ChannelN]
 -->
 <Template>
   <PushButton>
@@ -13,23 +12,18 @@ Variables:
     <ObjectName>FxAssignButton</ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text><Variable name="labelText"/></Text>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
-      <Text><Variable name="labelText"/></Text>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
     </State>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="fxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
+      <ConfigKey>[EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

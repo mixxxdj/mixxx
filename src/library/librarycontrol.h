@@ -3,12 +3,14 @@
 
 #include <QObject>
 
+#include "control/controlencoder.h"
 #include "control/controlproxy.h"
 #include "util/memory.h"
 
 class ControlObject;
 class ControlPushButton;
 class Library;
+class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
 class KeyboardEventFilter;
@@ -16,7 +18,7 @@ class KeyboardEventFilter;
 class LoadToGroupController : public QObject {
     Q_OBJECT
   public:
-    LoadToGroupController(QObject* pParent, const QString& group);
+    LoadToGroupController(LibraryControl* pParent, const QString& group);
     virtual ~LoadToGroupController();
 
   signals:
@@ -38,8 +40,12 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
+    void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+
+  public slots:
+    // Deprecated navigation slots
+    void slotLoadSelectedTrackToGroup(QString group, bool play);
 
   private slots:
     void libraryWidgetDeleted();
@@ -57,10 +63,9 @@ class LibraryControl : public QObject {
     void slotMoveFocusForward(double);
     void slotMoveFocusBackward(double);
     void slotMoveFocus(double);
-    void slotChooseItem(double v);
+    void slotGoToItem(double v);
 
     // Deprecated navigation slots
-    void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
     void slotSelectTrack(double v);
@@ -77,6 +82,9 @@ class LibraryControl : public QObject {
     void slotNumSamplersChanged(double v);
     void slotNumPreviewDecksChanged(double v);
 
+    void slotSortColumn(double v);
+    void slotSortColumnToggle(double v);
+
     void slotFontSize(double v);
     void slotIncrementFontSize(double v);
     void slotDecrementFontSize(double v);
@@ -92,29 +100,34 @@ class LibraryControl : public QObject {
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
     std::unique_ptr<ControlPushButton> m_pMoveDown;
-    std::unique_ptr<ControlObject> m_pMoveVertical;
+    std::unique_ptr<ControlEncoder> m_pMoveVertical;
 
     // Controls to QUICKLY navigate vertically within currently focused widget (pageup/pagedown buttons)
     std::unique_ptr<ControlPushButton> m_pScrollUp;
     std::unique_ptr<ControlPushButton> m_pScrollDown;
-    std::unique_ptr<ControlObject> m_pScrollVertical;
+    std::unique_ptr<ControlEncoder> m_pScrollVertical;
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     std::unique_ptr<ControlPushButton> m_pMoveLeft;
     std::unique_ptr<ControlPushButton> m_pMoveRight;
-    std::unique_ptr<ControlObject> m_pMoveHorizontal;
+    std::unique_ptr<ControlEncoder> m_pMoveHorizontal;
 
     // Controls to navigate between widgets (tab/shit+tab button)
     std::unique_ptr<ControlPushButton> m_pMoveFocusForward;
     std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
-    std::unique_ptr<ControlObject> m_pMoveFocus;
+    std::unique_ptr<ControlEncoder> m_pMoveFocus;
 
     // Control to choose the currently selected item in focused widget (double click)
-    std::unique_ptr<ControlObject> m_pChooseItem;
+    std::unique_ptr<ControlObject> m_pGoToItem;
 
     // Add to Auto-Dj Cueue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;
     std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
+
+    // Controls to sort the track view
+    std::unique_ptr<ControlEncoder> m_pSortColumn;
+    std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
+    std::unique_ptr<ControlPushButton> m_pSortOrder;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;

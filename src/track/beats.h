@@ -1,6 +1,7 @@
 #ifndef BEATS_H
 #define BEATS_H
 
+#include <QObject>
 #include <QString>
 #include <QList>
 #include <QByteArray>
@@ -25,7 +26,8 @@ class BeatIterator {
 // Beats is a pure abstract base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
-class Beats {
+class Beats : public QObject {
+    Q_OBJECT
   public:
     Beats() { }
     virtual ~Beats() { }
@@ -104,47 +106,14 @@ class Beats {
     // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
-    inline int numBeatsInRange(double dStartSample, double dEndSample) {
-        double dLastCountedBeat = 0.0;
-        int iBeatsCounter;
-        for (iBeatsCounter = 1; dLastCountedBeat < dEndSample; iBeatsCounter++) {
-            dLastCountedBeat = findNthBeat(dStartSample, iBeatsCounter);
-            if (dLastCountedBeat == -1) {
-                break;
-            }
-        }
-        return iBeatsCounter - 2;
-    };
+    int numBeatsInRange(double dStartSample, double dEndSample);
 
     // Find the sample N beats away from dSample. The number of beats may be
     // negative and does not need to be an integer.
-    inline double findNBeatsFromSample(double dSample, double beats) const {
-        double endSample = dSample;
-        double thisBeat = 0.0, nthBeat = 0.0;
-        int fullBeats = static_cast<int>(beats);
-        // Add the length between this beat and the fullbeats'th beat
-        // to the end position
-        if (beats > 0) {
-            thisBeat = findNthBeat(dSample, 1);
-            nthBeat = findNthBeat(dSample, fullBeats + 1);
-        } else if (beats < 0) {
-            thisBeat = findNthBeat(dSample, -1);
-            nthBeat = findNthBeat(dSample, fullBeats - 1);
-        }
-        endSample += nthBeat - thisBeat;
+    double findNBeatsFromSample(double fromSample, double beats) const;
 
-        // Add the fraction of the beat
-        double fractionBeats = beats - static_cast<double>(fullBeats);
-        if (fractionBeats != 0) {
-            double endNextBeat, endPrevBeat;
-            findPrevNextBeats(endSample, &endPrevBeat, &endNextBeat);
-            endSample += (endNextBeat - endPrevBeat) * fractionBeats;
-        }
 
-        return endSample;
-    };
-
-    // Adds to pBeatsList the position in samples of every beat occuring between
+    // Adds to pBeatsList the position in samples of every beat occurring between
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats
     // object is not deleted. Caller takes ownership of the returned BeatIterator;
@@ -194,6 +163,9 @@ class Beats {
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
     virtual void setBpm(double dBpm) = 0;
+
+  signals:
+    void updated();
 };
 
 #endif /* BEATS_H */

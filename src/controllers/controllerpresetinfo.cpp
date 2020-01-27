@@ -29,7 +29,9 @@ PresetInfo::PresetInfo(const QString& preset_path)
     // info.forums      Link to mixxx forum discussion for the preset
     // info.wiki        Link to mixxx wiki for the preset
     // info.devices.product List of device matches, specific to device type
-    m_path = QFileInfo(preset_path).absoluteFilePath();
+    QFileInfo fileInfo(preset_path);
+    m_path = fileInfo.absoluteFilePath();
+    m_dirPath = fileInfo.dir().absolutePath();
     m_name = "";
     m_author = "";
     m_description = "";
@@ -50,7 +52,11 @@ PresetInfo::PresetInfo(const QString& preset_path)
     m_valid = true;
 
     QDomElement dom_name = info.firstChildElement("name");
-    if (!dom_name.isNull()) m_name = dom_name.text();
+    if (!dom_name.isNull()) {
+        m_name = dom_name.text();
+    } else {
+        m_name = fileInfo.baseName();
+    }
 
     QDomElement dom_author = info.firstChildElement("author");
     if (!dom_author.isNull()) m_author = dom_author.text();

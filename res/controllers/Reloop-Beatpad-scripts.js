@@ -26,7 +26,7 @@ var scriptpause = 5;
  * Beatpad jog wheel is 800 intervals per revolution.
  * but the value has to be multiplied by 2 because
  * the scratch takes into account the track_samples in background
- * wich is multiplied by 2 when the track is stereo
+ * which is multiplied by 2 when the track is stereo
  ***************************/
 var intervalsPerRev = 1600,
     rpm = 33 + 1 / 3,  //Like a real vinyl !!! :)
@@ -74,11 +74,11 @@ var bendConst = 1/4; // Adjust to suit.
  *            - More comment in code
  *            - Moved scratching constants with the global constants
  *            - Fixed Jog Bending and fast search
- *            - Sysex identification of the conttroller (nice print out in midiDebug). 
- *              
+ *            - Sysex identification of the controller (nice print out in midiDebug).
+ *
  * 2016-01-12 - Fixed FX effect selection on deck 2 (was selecting the entire chain instead (SHIFT+FX Select)
  *            - Fixed SHIFT+PFL on the right deck
- * 2016-01-13 - removed a few unused variables,a useless retun statement, correced typos,
+ * 2016-01-13 - removed a few unused variables, a useless return statement, corrected typos,
  *            - modified "Jogger" object
  *                  --> Autocut feature (made it more "reusable")
  *                  --> model "A" and model "B" controller parameter
@@ -158,7 +158,7 @@ var ON = 0x7F,
     // ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7],
 
     // This Sysex message asks the controller (it's very generic and works
-    // for a lot of MIDI controllers). Sending this to te controller will
+    // for a lot of MIDI controllers). Sending this to the controller will
     // be followed by a Sysex sent by the controllers giving some
     // values that permits to identify it (have a look far at the end
     // of this mapping script
@@ -268,7 +268,7 @@ ReloopBeatpad.MIDI = {
     // Jog modes
     Vinyl: 0x45,
     iScratch: 0x46,
-    // Pitch+FX switchs
+    // Pitch+FX switches
     Loop: 0x44,
     Loop_size_push: 0x43,
     FX_ON: 0x47,
@@ -497,9 +497,9 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
-// DoublePressTimeOut : delay in ms above wich a second press on the
+// DoublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).
 var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
@@ -554,7 +554,7 @@ SingleDoubleBtn.prototype.ButtonDecide = function() {
 //                      and the kind of press event affecting your button (eventkind)
 //                      This callback will be called once you release the button
 //                      (Value will be equal to UP). You must provide this parameter.
-// LongPressThreshold : delay in ms above which a firts press on the
+// LongPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
 //                      This parameter is optional.
 // CallBackOKLongPress : This callback will give you the same values than the first one
@@ -629,11 +629,11 @@ LongShortBtn.prototype.ButtonUp = function() {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
-// LongPressThreshold : delay in ms above which a firts press on the
+// LongPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
-// DoublePressTimeOut : delay in ms above wich a second press on the
+// DoublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).
 var LongShortDoubleBtn = function(Callback, LongPressThreshold, DoublePressTimeOut) {
@@ -729,7 +729,7 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, stat
         // 2nd press
         this.ButtonCount = 2;
 
-        // ...and take action immediatly
+        // ...and take action immediately
         this.ButtonDecide();
     } // else :
         // 2nd press after short timer's out, this cannot happen,
@@ -791,7 +791,7 @@ LongShortDoubleBtn.prototype.ButtonDecide = function() {
 //      the crossfader closes, when the jog wheel is turned forward the crossfader
 //      will open."
 // In Practice : DJAY software is closing/opening the crossfader
-//      quicly without taking into account the direction of the whheel.
+//      quickly without taking into account the direction of the wheel.
 //      Here I am trying to stick with the reloop explanation :
 //      it is the "as it is supposed to be done"
 var AutoCut = function (deckNum) {
@@ -952,19 +952,19 @@ Jogger.prototype.onWheelMove = function(value, Do_iCut) {
 // ******************************************************************
 // RGB Jog Leds management
 // *********
-// Some explanation about this part wich control the lights (colors, flashing effect, and so forth)
+// Some explanation about this part which control the lights (colors, flashing effect, and so forth)
 // of the jog wheels. It is based on the generic LED object code above.
 // It is a layered structure like layers in paint programs.
 // The lowest level (0) is the background and the highest is the foreground (show 6)
 // Each of the layer permits to act like a mask for the lower ones.
-// Each show corresponds to a light show to indicate wether you apply an effect, the lp/hp filter , loops, etc
+// Each show corresponds to a light show to indicate whether you apply an effect, the lp/hp filter , loops, etc
 // The jogwheel has 4 RGB leds , so there is 4 slots for each show.
 // let's that we have toggle an Effect of the effect rack (show 1), the jog wheel
 // will illuminate magenta, yellow, cyan or green depending of the effect.
 // If above that we turn the lp/hp filter button to the right (High passs),
 // the right part will illuminate white (show 2), leaving the left part with the color of the effect.
 // The left part of (slots 1 and 2), set to "null", will be considered as being transparent for the layer show n°2,
-// leaving the correponding slots below (show1) in order to be displayed.
+// leaving the corresponding slots below (show1) in order to be displayed.
 // Shows 5 and 6 are reserved for temporary blinking : blinking off can be transparent or full black
 // This technique prevents throwing too many messages to the controller to lit on or off the leds.
 ReloopBeatpad.rgbLEDs = function(control, deckID) {
@@ -1251,7 +1251,7 @@ ReloopBeatpad.rgbLEDs.prototype.loops = function(value) {
     ReloopBeatpad.decks[this.deckID].leds.RimBlue.onOff((activate) ? 0x7F : 0);
 };
 
-// Ligth show n°4 to indicate when a deck is not loaded with a track
+// Light show n°4 to indicate when a deck is not loaded with a track
 ReloopBeatpad.rgbLEDs.prototype.notloaded = function(value) {
     var RGBColor = (value) ? ReloopBeatpad.RGB.red : null;
     this.setshow("show4", RGBColor);
@@ -1850,7 +1850,7 @@ ReloopBeatpad.WheelSeekTouch = function(channel, control, value, status, group) 
         // Hand on the Jog wheel, fast seek activated
         deck.seekingfast = true;
     } else {
-        // Hand off the Jog wheel, desactivate fast seek
+        // Hand off the Jog wheel, deactivate fast seek
         deck.seekingfast = false;
     }
 };
@@ -2135,7 +2135,7 @@ ReloopBeatpad.FXSelectPush = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
     // quick button for the current fx
 
-    // desactivate previous pending effect
+    // deactivate previous pending effect
     if (value == DOWN) {
         deck.controls["FXPad" + deck.CurrentEffectRack].onOff(ON);
         deck.leds.FX_ON.onOff(ON);
@@ -2160,7 +2160,7 @@ ReloopBeatpad.FXSelectPush = function(channel, control, value, status, group) {
 ReloopBeatpad.sFXSelectPush = function(channel, control, value, status, group) {
     // quick button for Instant fx : ENABLE/DISABLE
 
-    // desactivate previous pending effect
+    // deactivate previous pending effect
     if (value == DOWN) {
         toggleValue("[QuickEffectRack1_" + group + "_Effect1]", "enabled");
     }
@@ -2177,7 +2177,7 @@ ReloopBeatpad.InstantFXPad = function(channel, control, value, status, group) {
             deck.SelectEffectRack(padindex);
         }
     } else {
-        // desactivate previous pending effect
+        // deactivate previous pending effect
         deck.controls["FXPad" + deck.CurrentEffectRack].onOff(OFF);
         if (value == DOWN) {
             deck.controls["FXPad" + padindex].onOff(ON);
@@ -2582,7 +2582,7 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
                         ledindex = Math.floor(needle) + 1;
                         deck.leds.RimRed.onOff(ledindex);
                     } else if (deck.JogSeekStatus) { // Track position
-                        // Track position/ellapsed time
+                        // Track position/elapsed time
                         ledindex = Math.round(24.0 * value);
                         if (ledindex !== 0) {
                             ledindex += 24;

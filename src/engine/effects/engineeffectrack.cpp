@@ -1,9 +1,12 @@
 #include "engine/effects/engineeffectrack.h"
-
 #include "engine/effects/engineeffectchain.h"
+#include "util/defs.h"
+#include "util/sample.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
-        : m_iRackNumber(iRackNumber) {
+        : m_iRackNumber(iRackNumber),
+          m_buffer1(MAX_BUFFER_LEN),
+          m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
     m_chains.reserve(256);
 }
@@ -12,7 +15,7 @@ EngineEffectRack::~EngineEffectRack() {
     //qDebug() << "EngineEffectRack::~EngineEffectRack()" << this;
 }
 
-bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
+bool EngineEffectRack::processEffectsRequest(EffectsRequest& message,
                                              EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
@@ -37,20 +40,58 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessages(&response, 1);
+    pResponsePipe->writeMessage(response);
     return true;
 }
 
-void EngineEffectRack::process(const ChannelHandle& handle,
-                               CSAMPLE* pInOut,
+bool EngineEffectRack::process(const ChannelHandle& inputHandle,
+                               const ChannelHandle& outputHandle,
+                               CSAMPLE* pIn, CSAMPLE* pOut,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
-    foreach (EngineEffectChain* pChain, m_chains) {
-        if (pChain != NULL) {
-            pChain->process(handle, pInOut, numSamples, sampleRate, groupFeatures);
+    bool processingOccured = false;
+    if (pIn == pOut) {
+        // Effects are applied to the buffer in place
+        for (EngineEffectChain* pChain : m_chains) {
+            if (pChain != nullptr) {
+                if (pChain->process(inputHandle, outputHandle,
+                                    pIn, pOut,
+                                    numSamples, sampleRate, groupFeatures)) {
+                    processingOccured = true;
+                }
+            }
+        }
+    } else {
+        // Do not modify the input buffer; only fill the output buffer.
+        CSAMPLE* pIntermediateInput = pIn;
+        CSAMPLE* pIntermediateOutput;
+
+        for (EngineEffectChain* pChain : m_chains) {
+            if (pChain != nullptr) {
+                // Select an unused intermediate buffer for the next output
+                if (pIntermediateInput == m_buffer1.data()) {
+                    pIntermediateOutput = m_buffer2.data();
+                } else {
+                    pIntermediateOutput = m_buffer1.data();
+                }
+
+                if (pChain->process(inputHandle, outputHandle,
+                                    pIntermediateInput, pIntermediateOutput,
+                                    numSamples, sampleRate, groupFeatures)) {
+                    processingOccured = true;
+                    // Output of this chain becomes the input of the next chain.
+                    pIntermediateInput = pIntermediateOutput;
+                }
+            }
+        }
+        // pIntermediateInput is the output of the last processed chain. It would be the
+        // intermediate input of the next chain if there was one.
+        if (processingOccured) {
+            SampleUtil::copy(pOut, pIntermediateInput, numSamples);
         }
     }
+    return processingOccured;
 }
 
 bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {

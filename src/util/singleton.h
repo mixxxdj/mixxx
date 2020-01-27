@@ -6,7 +6,7 @@
 template<class T>
 class Singleton {
   public:
-    static T* create() {
+    static T* createInstance() {
         if (!m_instance) {
             m_instance = new T();
         }

@@ -4,19 +4,15 @@
 #include <QObject>
 #include <QMap>
 #include <QList>
-#include <QSignalMapper>
 
-#include "effects/effect.h"
-#include "effects/effectslot.h"
-#include "effects/effectchain.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
+#include "effects/effectchain.h"
 
 class ControlObject;
 class ControlPushButton;
+class ControlEncoder;
 class EffectChainSlot;
-class EffectRack;
-typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
@@ -33,11 +29,12 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void loadEffectChain(EffectChainPointer pEffectChain);
+    void loadEffectChainToSlot(EffectChainPointer pEffectChain);
+    void updateRoutingSwitches();
     EffectChainPointer getEffectChain() const;
     EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
 
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
@@ -101,7 +98,7 @@ class EffectChainSlot : public QObject {
     void slotChainNameChanged(const QString& name);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
-    void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
+    void slotChainMixModeChanged(EffectChainMixMode mixMode);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
@@ -112,7 +109,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
-    void slotControlChainInsertionType(double v);
+    void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
@@ -136,8 +133,8 @@ class EffectChainSlot : public QObject {
     ControlPushButton* m_pControlChainEnabled;
     ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainSuperParameter;
-    ControlPushButton* m_pControlChainInsertionType;
-    ControlObject* m_pControlChainSelector;
+    ControlPushButton* m_pControlChainMixMode;
+    ControlEncoder* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
 
@@ -151,7 +148,7 @@ class EffectChainSlot : public QObject {
     **/
     ControlPushButton* m_pControlChainShowFocus;
     ControlPushButton* m_pControlChainShowParameters;
-    ControlObject* m_pControlChainFocusedEffect;
+    ControlPushButton* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.
@@ -169,7 +166,6 @@ class EffectChainSlot : public QObject {
     QMap<QString, ChannelInfo*> m_channelInfoByName;
 
     QList<EffectSlotPointer> m_slots;
-    QSignalMapper m_channelStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

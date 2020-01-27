@@ -113,10 +113,8 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                                 int numberOfArgs) {
     QScriptValue wrappedFunction;
 
-    QHash<QString, QScriptValue>::const_iterator i =
-            m_scriptWrappedFunctionCache.find(codeSnippet);
-
-    if (i != m_scriptWrappedFunctionCache.end()) {
+    auto i = m_scriptWrappedFunctionCache.constFind(codeSnippet);
+    if (i != m_scriptWrappedFunctionCache.constEnd()) {
         wrappedFunction = i.value();
     } else {
         QStringList wrapperArgList;
@@ -187,6 +185,7 @@ void ControllerEngine::gracefulShutdown() {
         ++it;
     }
 
+    m_pColorJSProxy.reset();
     delete m_pBaClass;
     m_pBaClass = nullptr;
 }
@@ -213,6 +212,9 @@ void ControllerEngine::initializeScriptEngine() {
         // ...under the legacy name as well
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
+
+    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
+    engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
@@ -242,7 +244,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
     connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
             this, SLOT(scriptHasChanged(QString)));
 
-    emit(initialized());
+    emit initialized();
 
     return result && m_scriptErrors.isEmpty();
 }
@@ -296,7 +298,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
-    emit(initialized());
+    emit initialized();
 }
 
 /* -------- ------------------------------------------------------
@@ -529,7 +531,7 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
                SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 
     if (button == QMessageBox::Retry) {
-        emit(resetController());
+        emit resetController();
     }
 }
 
@@ -762,19 +764,22 @@ void ScriptConnection::executeCallback(double value) const {
    Purpose: (Dis)connects a ScriptConnection
    Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
     if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
+        return false;
     }
 
-    coScript->removeScriptConnection(connection);
+    return coScript->removeScriptConnection(connection);
 }
 
-void ScriptConnectionInvokableWrapper::disconnect() {
-    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+bool ScriptConnectionInvokableWrapper::disconnect() {
+    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
+    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    m_isConnected = !success;
+    return success;
 }
 
 /* -------- ------------------------------------------------------
@@ -1104,8 +1109,8 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    QHash<int, TimerInfo>::const_iterator it = m_timers.find(timerId);
-    if (it == m_timers.end()) {
+    auto it = m_timers.constFind(timerId);
+    if (it == m_timers.constEnd()) {
         qWarning() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
     }
@@ -1129,21 +1134,10 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
 
 double ControllerEngine::getDeckRate(const QString& group) {
     double rate = 0.0;
-    ControlObjectScript* pRate = getControlObjectScript(group, "rate");
-    if (pRate != nullptr) {
-        rate = pRate->get();
+    ControlObjectScript* pRateRatio = getControlObjectScript(group, "rate_ratio");
+    if (pRateRatio != nullptr) {
+        rate = pRateRatio->get();
     }
-    ControlObjectScript* pRateDir = getControlObjectScript(group, "rate_dir");
-    if (pRateDir != nullptr) {
-        rate *= pRateDir->get();
-    }
-    ControlObjectScript* pRateRange = getControlObjectScript(group, "rateRange");
-    if (pRateRange != nullptr) {
-        rate *= pRateRange->get();
-    }
-
-    // Add 1 since the deck is playing
-    rate += 1.0;
 
     // See if we're in reverse play
     ControlObjectScript* pReverse = getControlObjectScript(group, "reverse");
@@ -1283,7 +1277,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
-        // pretend we have moved by (finalRate*default distance)
+        // pretend we have moved by (desired rate*default distance)
         filter->observation(m_rampTo[deck]*kAlphaBetaDt);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
@@ -1303,13 +1297,14 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
-    // If we're ramping and the current rate is really close to the rampTo value
-    // or we're in brake or softStart mode and have crossed over the desired value,
-    // end scratching
+    // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
+        // or if we brake or softStart and have crossed over the desired value,
         ((m_brakeActive[deck] || m_softStartActive[deck]) && (
             (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
-            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck])))) {
+            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck]))) ||
+        // or if the deck was stopped manually during brake or softStart
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
@@ -1378,8 +1373,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
 bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-    // Don't report that we are scratching if we're ramping.
-    return getValue(group, "scratch2_enable") > 0 && !m_ramp[deck];
+    return getValue(group, "scratch2_enable") > 0;
 }
 
 /*  -------- ------------------------------------------------------
@@ -1456,12 +1450,14 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampTo[deck] = 0.0;
         if (initRate == 1.0) {// then rate is really 1.0 or was set to default
-            // so check for real value taking pitch into account
+            // in /res/common-controller-scripts.js so check for real value,
+            // taking pitch into account
             initRate = getDeckRate(group);
         }
-        // if softStart()ing, stop it
+        // stop ramping at a rate which doesn't produce any audible output anymore
+        m_rampTo[deck] = 0.01;
+        // if we are currently softStart()ing, stop it
         if (m_softStartActive[deck]) {
             m_softStartActive[deck] = false;
             AlphaBetaFilter* filter = m_scratchFilters[deck];
@@ -1498,11 +1494,10 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables softStart effect for the channel
-    Input:   deck, activate/deactivate, factor (optional),
-             rate (optiona)
+    Input:   deck, activate/deactivate, factor (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::softStart(int deck, bool activate, double factor, double finalRate) {
+void ControllerEngine::softStart(int deck, bool activate, double factor) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -1522,12 +1517,8 @@ void ControllerEngine::softStart(int deck, bool activate, double factor, double 
     double initRate = 0.0;
 
     if (activate) {
-        // store the new values for this spinback/brake effect
-        if (finalRate == 1.0) {// then rate is really 1.0 or was set to default
-            // so check for real value taking pitch into account
-            finalRate = getDeckRate(group);
-        }
-        m_rampTo[deck] = finalRate;
+        // acquire deck rate
+        m_rampTo[deck] = getDeckRate(group);
 
         // if brake()ing, get current rate from filter
         if (m_brakeActive[deck]) {

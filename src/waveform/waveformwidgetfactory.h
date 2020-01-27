@@ -17,6 +17,7 @@ class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
 class GuiTick;
+class VisualsManager;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -24,10 +25,8 @@ class WaveformWidgetAbstractHandle {
 
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
-    bool isActive() const { return m_active;}
 
   private:
-    bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
 
@@ -72,7 +71,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
-    bool isOpenGLAvailable() const { return m_openGLAvailable;}
+    bool isOpenGlAvailable() const { return m_openGlAvailable;}
+    bool isOpenGlesAvailable() const { return m_openGlesAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
@@ -81,14 +81,14 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
-    void setDefaultZoom(int zoom);
-    int getDefaultZoom() const { return m_defaultZoom;}
+    void setDefaultZoom(double zoom);
+    double getDefaultZoom() const { return m_defaultZoom;}
 
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
-    void setDisplayBeatGrid(bool sync);
-    bool isBeatGridEnabled() const { return m_beatGridEnabled; }
+    void setDisplayBeatGridAlpha(int alpha);
+    int beatGridAlpha() const { return m_beatGridAlpha; }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
@@ -102,9 +102,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(GuiTick* pGuiTick);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
     int getVSyncType();
+
+    void setPlayMarkerPosition(double position);
+    double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
@@ -113,6 +116,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
+    void renderSpinnies(VSyncThread*);
+    void swapSpinnies();
 
   protected:
     WaveformWidgetFactory();
@@ -143,23 +148,27 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_skipRender;
     int m_frameRate;
     int m_endOfTrackWarningTime;
-    int m_defaultZoom;
+    double m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
-    bool m_openGLAvailable;
+    bool m_openGlAvailable;
+    bool m_openGlesAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
-    bool m_beatGridEnabled;
+    int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
+    GuiTick* m_pGuiTick;  // not owned
+    VisualsManager* m_pVisualsManager;  // not owned
 
     //Debug
     PerformanceTimer m_time;
     float m_frameCnt;
     double m_actualFrameRate;
     int m_vSyncType;
+    double m_playMarkerPosition;
 };
 
 #endif // WAVEFORMWIDGETFACTORY_H

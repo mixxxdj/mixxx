@@ -11,23 +11,23 @@ Variables:
   <WidgetGroup>
     <ObjectName>FocusableEffect</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <ObjectName>EffectHighlightable</ObjectName>
         <Layout>vertical</Layout>
-        <Size>-1max,70f</Size>
+        <Size>-1max,65f</Size>
         <Children>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-
-              <Template src="skin:effect_buttons.xml"/>
-
+              <Template src="skin:effect_buttons.xml">
+                <SetVariable name="SizePolicy">min,max</SetVariable>
+                <SetVariable name="EnableButtonMaxSize">60,22</SetVariable>
+              </Template>
               <Template src="skin:effect_meta_knob.xml"/>
-
             </Children>
           </WidgetGroup>
 
@@ -35,6 +35,9 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
+            <MinimumSize>90,20</MinimumSize>
+            <MaximumSize>120,-1</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
           </EffectSelector>
 
         </Children>
@@ -56,25 +59,24 @@ Variables:
 
   <WidgetGroup>
     <ObjectName>NotFocusableEffect</ObjectName>
+    <SizePolicy>max,max</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
       <WidgetGroup>
         <ObjectName>EffectNotHighlightable</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,f</SizePolicy>
-        <MinimumSize>-1,65</MinimumSize>
-        <MaximumSize>-1,65</MaximumSize>
+        <Size>-1me,65f</Size>
         <Children>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-
-              <Template src="skin:effect_buttons.xml"/>
-
+              <Template src="skin:effect_buttons.xml">
+                <SetVariable name="SizePolicy">min,max</SetVariable>
+                <SetVariable name="EnableButtonMaxSize">60,22</SetVariable>
+              </Template>
               <Template src="skin:effect_meta_knob.xml"/>
-
             </Children>
           </WidgetGroup>
 
@@ -82,6 +84,9 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
+            <MinimumSize>90,20</MinimumSize>
+            <MaximumSize>120,-1</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
           </EffectSelector>
 
         </Children>

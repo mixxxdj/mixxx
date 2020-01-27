@@ -1,6 +1,7 @@
 #ifndef DLGPREFBROADCAST_H
 #define DLGPREFBROADCAST_H
 
+#include <QModelIndex>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
@@ -9,13 +10,15 @@
 #include "broadcast/defs_broadcast.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/broadcastsettings.h"
+#include "preferences/broadcastsettingsmodel.h"
 
 class ControlProxy;
 
 class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDlg  {
     Q_OBJECT
   public:
-    DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config);
+    DlgPrefBroadcast(QWidget *parent,
+                     BroadcastSettingsPointer pBroadcastSettings);
     virtual ~DlgPrefBroadcast();
 
   public slots:
@@ -27,13 +30,30 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
     void enableCustomMetadataChanged(int value);
+    void connectionListItemSelected(const QModelIndex& selected);
 
   signals:
     void apply(const QString &);
 
+  private slots:
+    void btnCreateConnectionClicked();
+    void btnRenameConnectionClicked();
+    void btnRemoveConnectionClicked();
+    void btnDisconnectAllClicked();
+    void onSectionResized();
+
   private:
-    BroadcastSettings m_settings;
+    void applyModel();
+    void updateModel();
+    void selectConnectionRow(int row);
+    void selectConnectionRowByName(QString rowName);
+    void getValuesFromProfile(BroadcastProfilePtr profile);
+    void setValuesToProfile(BroadcastProfilePtr profile);
+
+    BroadcastSettingsPointer m_pBroadcastSettings;
+    BroadcastSettingsModel* m_pSettingsModel;
     ControlProxy* m_pBroadcastEnabled;
+    BroadcastProfilePtr m_pProfileListSelection;
 };
 
 #endif

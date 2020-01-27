@@ -21,44 +21,47 @@
 
 class DlgHidden;
 class DlgMissing;
-class Library;
 class BaseTrackCache;
 class LibraryTableModel;
 class TrackCollection;
 
-class MixxxLibraryFeature : public LibraryFeature {
+class MixxxLibraryFeature final : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     MixxxLibraryFeature(Library* pLibrary,
-                        TrackCollection* pTrackCollection,
                         UserSettingsPointer pConfig);
-    virtual ~MixxxLibraryFeature();
+    ~MixxxLibraryFeature() override = default;
 
-    QVariant title();
-    QIcon getIcon();
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
-    TreeItemModel* getChildModel();
-    void bindWidget(WLibrary* pLibrary,
-                    KeyboardEventFilter* pKeyboard);
+    QVariant title() override;
+    QIcon getIcon() override;
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
+    TreeItemModel* getChildModel() override;
+    void bindLibraryWidget(WLibrary* pLibrary,
+                    KeyboardEventFilter* pKeyboard) override;
+
+    bool hasTrackTable() override {
+        return true;
+    }
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void refreshLibraryModels();
 
   private:
     const QString kMissingTitle;
     const QString kHiddenTitle;
-    Library* m_pLibrary;
+    const QIcon m_icon;
+    TrackCollection* const m_pTrackCollection;
+
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
+
+    TreeItemModel m_childModel;
+
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
-    TreeItemModel m_childModel;
-    TrackDAO& m_trackDao;
-    UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

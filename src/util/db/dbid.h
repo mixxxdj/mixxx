@@ -1,7 +1,7 @@
-#ifndef MIXXX_DBID_H
-#define MIXXX_DBID_H
+#pragma once
 
 
+#include <functional>
 #include <ostream>
 #include <utility>
 
@@ -25,14 +25,12 @@
 // only needed for type-safety.
 class DbId {
 protected:
-    // Alias for the corresponding native type. This typedef
-    // should actually not be needed by users of this class,
-    // but it keeps the implementation of this class flexible
-    // if we ever gonna need to change it from 'int' to 'long'
-    // or any other type.
+public:
+    // Alias for the corresponding native type. It keeps the
+    // implementation of this class flexible if we ever gonna
+    // need to change it from 'int' to 'long' or any other type.
     typedef int value_type;
 
-public:
     DbId()
         : m_value(kInvalidValue) {
         DEBUG_ASSERT(!isValid());
@@ -49,12 +47,17 @@ public:
         return isValidValue(m_value);
     }
 
-    // This function is needed for backward compatibility and
-    // should only be used within legacy code. It can be deleted
-    // after all integer IDs have been replaced by their type-safe
-    // counterparts.
-    int toInt() const {
+    value_type value() const {
         return m_value;
+    }
+
+    std::size_t hash() const {
+        return std::hash<value_type>()(m_value);
+    }
+
+    typedef std::function<std::size_t (const DbId& dbid)> hash_fun_t;
+    static std::size_t hash_fun(const DbId& dbid) {
+        return dbid.hash();
     }
 
     // This function should be used for value binding in DB queries
@@ -119,6 +122,3 @@ private:
 
 Q_DECLARE_TYPEINFO(DbId, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(DbId)
-
-
-#endif // MIXXX_DBID_H

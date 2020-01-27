@@ -5,8 +5,11 @@
 #include <QString>
 #include <QtDebug>
 
-#include "util/math.h"
 #include "skin/imgloader.h"
+
+#include "util/math.h"
+#include "util/memory.h"
+#include "util/painterscope.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -50,14 +53,24 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
     if (!source.isSVG()) {
         m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
     } else {
-        m_pSvg.reset(new QSvgRenderer());
-        if (source.getData().isEmpty()) {
-            m_pSvg->load(source.getPath());
+        auto pSvg = std::make_unique<QSvgRenderer>();
+        if (!source.getSvgSourceData().isEmpty()) {
+            // Call here the different overload for svg content
+            if (!pSvg->load(source.getSvgSourceData())) {
+                // The above line already logs a warning
+                return;
+            }
+        } else if (!source.getPath().isEmpty()) {
+            if (!pSvg->load(source.getPath())) {
+                // The above line already logs a warning
+                return;
+            }
         } else {
-            m_pSvg->load(source.getData());
+            return;
         }
+        m_pSvg.reset(pSvg.release());
 #ifdef __APPLE__
-        // Apple does Retina scaling behind the sceens, so we also pass a
+        // Apple does Retina scaling behind the scenes, so we also pass a
         // Paintable::FIXED image. On the other targets, it is better to
         // cache the pixmap. We do not do this for TILE and color schemas.
         // which can result in a correct but possibly blurry picture at a
@@ -233,12 +246,11 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             // entire SVG to the painter. We save/restore the QPainter in case
             // there is an existing clip region (I don't know of any Mixxx code
             // that uses one but we may in the future).
-            pPainter->save();
+            PainterScope PainterScope(pPainter);
             pPainter->setClipping(true);
             pPainter->setClipRect(targetRect);
             m_pSvg->setViewBox(sourceRect);
             m_pSvg->render(pPainter, targetRect);
-            pPainter->restore();
         }
     }
 }
@@ -252,7 +264,7 @@ QString Paintable::getAltFileName(const QString& fileName) {
         return fileName;
     }
 
-    QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
+    QString newFileName = temp[0] + QLatin1String("@2x.") + temp[1];
     QFile file(newFileName);
     if (QFileInfo(file).exists()) {
         return newFileName;

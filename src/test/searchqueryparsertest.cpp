@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <QtDebug>
 #include <QDir>
-#include <QTemporaryFile>
 
 #include "test/librarytest.h"
 
@@ -11,14 +10,15 @@
 class SearchQueryParserTest : public LibraryTest {
   protected:
     SearchQueryParserTest()
-            : m_parser(collection()) {
+            : m_parser(internalCollection()) {
     }
 
     virtual ~SearchQueryParserTest() {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack(collection()->getTrackDAO().addSingleTrack(trackLocation, false));
+        TrackPointer pTrack = internalCollection()->getOrAddTrack(
+                TrackRef::fromFileInfo(trackLocation));
         return pTrack ? pTrack->getId() : TrackId();
     }
 
@@ -261,6 +261,78 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
         qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, TextFilterQuotes) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    auto pQuery(
+        m_parser.parseQuery("comment:\"asdf ewe\"", searchColumns, ""));
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF ewetest");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("comment LIKE '%asdf ewe%'")),
+        qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, TextFilterDecoration) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    auto pQuery(
+        m_parser.parseQuery(QString::fromUtf8("comment:\"asdf\xC2\xB0 ewe\""), searchColumns, ""));  // with ˚
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF  ewetest");
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    pTrack->setComment(QString::fromUtf8("comment:\"asdf\xC2\xB0 ewe\""));
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    qDebug() << pQuery->toSql();
+
+    EXPECT_STREQ(
+        qPrintable(QString::fromUtf8("comment LIKE '%asdf\xC2\xB0 ewe%'")),
+        qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, TextFilterTrailingSpace) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    auto pQuery(
+        m_parser.parseQuery("comment:\"asdf \"", searchColumns, ""));
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF test");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("comment LIKE '%asdf _%'")),
+        qPrintable(pQuery->toSql()));
+
+    // We allow to search for two consequitve spaces
+    auto pQuery2(
+        m_parser.parseQuery("comment:\"  \"", searchColumns, ""));
+
+    EXPECT_FALSE(pQuery2->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("comment LIKE '%  _%'")),
+        qPrintable(pQuery2->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, TextFilterNegation) {
     QStringList searchColumns;
     searchColumns << "artist"
@@ -448,7 +520,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     EXPECT_STREQ(
         qPrintable(QString("((bpm >= 127.12) AND (bpm <= 129)) AND "
                            "((artist LIKE '%com truise%') OR (album_artist LIKE '%com truise%')) AND "
-                           "((artist LIKE '%Colorvision%') OR (title LIKE '%Colorvision%'))")),
+                           "((artist LIKE '%colorvision%') OR (title LIKE '%colorvision%'))")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -689,7 +761,7 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the track in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -700,7 +772,7 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -709,6 +781,53 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
                  qPrintable(m_crateFilterQuery.arg(searchTerm)),
                  qPrintable(pQuery->toSql()));
 }
+
+TEST_F(SearchQueryParserTest, ShortCrateFilter) {
+    // User's search term
+    QString crateName = "somecrate";
+    QString searchTerm = "ecrat";
+    QStringList searchColumns;
+    searchColumns << "crate"
+                  << "artist"
+                  << "comment";
+
+    // Parse the user query
+    auto pQuery(m_parser.parseQuery(QString("%1").arg(searchTerm),
+                                    searchColumns, ""));
+
+    // locations for test tracks
+    const QString kTrackALocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-jpg.mp3");
+    const QString kTrackBLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-png.mp3");
+    const QString kTrackCLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/artist.mp3");
+
+    // Create new crate and add it to the collection
+    Crate testCrate;
+    testCrate.setName(crateName);
+    CrateId testCrateId;
+    internalCollection()->insertCrate(testCrate, &testCrateId);
+
+    // Add the track in the collection
+    TrackId trackAId = addTrackToCollection(kTrackALocationTest);
+    TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
+    TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
+    TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
+    TrackId trackCId = addTrackToCollection(kTrackCLocationTest);
+    TrackPointer pTrackC(Track::newDummy(kTrackCLocationTest, trackCId));
+    pTrackC->setComment("garbage somecrate garbage");
+
+    // Add track A to the newly created crate
+    QList<TrackId> trackIds;
+    trackIds << trackAId;
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
+
+    EXPECT_TRUE(pQuery->match(pTrackA));
+    EXPECT_FALSE(pQuery->match(pTrackB));
+    EXPECT_TRUE(pQuery->match(pTrackC));
+}
+
 
 TEST_F(SearchQueryParserTest, CrateFilterEmpty) {
     // Empty should match everything
@@ -742,7 +861,7 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -753,7 +872,7 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     // Add track A to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
@@ -786,7 +905,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     Crate testCrate;
     testCrate.setName(searchTerm);
     CrateId testCrateId;
-    collection()->insertCrate(testCrate, &testCrateId);
+    internalCollection()->insertCrate(testCrate, &testCrateId);
 
     // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -797,7 +916,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     // Add trackA to the newly created crate
     QList<TrackId> trackIds;
     trackIds << trackAId;
-    collection()->addCrateTracks(testCrateId, trackIds);
+    internalCollection()->addCrateTracks(testCrateId, trackIds);
 
     pTrackA->setArtist("asdf");
     pTrackB->setArtist("asdf");
@@ -813,7 +932,8 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
 
 TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // User's search term
-    QString searchTermA = "testA";
+    QString searchTermA = "testA'1"; // Also a test if "'" is escaped lp1789728
+    QString searchTermAEsc = "testA''1";
     QString searchTermB = "testB";
 
     // Parse the user query
@@ -830,11 +950,11 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     Crate testCrateA;
     testCrateA.setName(searchTermA);
     CrateId testCrateAId;
-    collection()->insertCrate(testCrateA, &testCrateAId);
+    internalCollection()->insertCrate(testCrateA, &testCrateAId);
     Crate testCrateB;
     testCrateB.setName(searchTermB);
     CrateId testCrateBId;
-    collection()->insertCrate(testCrateB, &testCrateBId);
+    internalCollection()->insertCrate(testCrateB, &testCrateBId);
 
     // Add the tracks in the collection
     TrackId trackAId = addTrackToCollection(kTrackALocationTest);
@@ -845,18 +965,18 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // Add trackA and trackB to crate A
     QList<TrackId> trackIdsA;
     trackIdsA << trackAId << trackBId;
-    collection()->addCrateTracks(testCrateAId, trackIdsA);
+    internalCollection()->addCrateTracks(testCrateAId, trackIdsA);
 
     // Add trackA to crate B
     QList<TrackId> trackIdsB;
     trackIdsB << trackAId;
-    collection()->addCrateTracks(testCrateBId, trackIdsB);
+    internalCollection()->addCrateTracks(testCrateBId, trackIdsB);
 
     EXPECT_TRUE(pQueryA->match(pTrackA));
     EXPECT_FALSE(pQueryA->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (" + m_crateFilterQuery.arg(searchTermB) + ")"),
                  qPrintable(pQueryA->toSql()));
 
@@ -868,7 +988,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_TRUE(pQueryB->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
                  qPrintable(pQueryB->toSql()));
 }

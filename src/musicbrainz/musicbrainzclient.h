@@ -68,7 +68,7 @@ class MusicBrainzClient : public QObject {
 
     // Starts a request and returns immediately.  finished() will be emitted
     // later with the same ID.
-    void start(int id, const QString& mbid);
+    void start(int id, QStringList recordingIds);
     static void consumeCurrentElement(QXmlStreamReader& reader);
 
     // Cancels the request with the given ID.  Finished() will never be emitted
@@ -82,10 +82,10 @@ class MusicBrainzClient : public QObject {
   signals:
     // Finished signal emitted when fechting songs tags
     void finished(int id, const MusicBrainzClient::ResultList& result);
-    void networkError(int, QString);
+    void networkError(int httpStatus, QString app, QString message, int code);
 
   private slots:
-    void requestFinished();
+    void replyFinished();
 
   private:
     struct Release {
@@ -110,13 +110,25 @@ class MusicBrainzClient : public QObject {
     static ResultList uniqueResults(const ResultList& results);
 
   private:
-    static const QString m_TrackUrl;
-    static const QString m_DateRegex;
-    static const int m_DefaultTimeout;
+    struct Request final {
+        Request() = default;
+        Request(const Request&) = default;
+        Request(Request&&) = default;
+        Request& operator=(const Request&) = default;
+        Request& operator=(Request&&) = default;
+        explicit Request(QStringList recordingIds)
+                : recordingIds(recordingIds) {
+        }
+        QStringList recordingIds;
+        ResultList results;
+    };
+
+    void nextRequest(int id, Request request);
 
     QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
-    QMap<QNetworkReply*, int> m_requests;
+    QMap<int, Request> m_requests;
+    QMap<QNetworkReply*, int> m_replies;
 };
 
 inline uint qHash(const MusicBrainzClient::Result& result) {

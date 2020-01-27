@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <QStandardPaths>
+
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
@@ -13,14 +15,15 @@ CmdlineArgs::CmdlineArgs()
       m_safeMode(false),
       m_debugAssertBreak(false),
       m_settingsPathSet(false),
-      m_logLevel(mixxx::LogLevel::Default),
+      m_logLevel(mixxx::kLogLevelDefault),
+      m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
     m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
 #else
     // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
     // to QDir::filePath elsewhere in the code. This is candidate for removal.
-    m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
+    m_settingsPath(QStandardPaths::writableLocation(QStandardPaths::DataLocation).append("/")) {
 #endif
 }
 
@@ -73,6 +76,23 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
 warnings and errors to the console unless this is set properly.\n", stdout);
             }
             i++;
+        } else if (argv[i] == QString("--logFlushLevel") && i+1 < argc) {
+            auto level = QLatin1String(argv[i+1]);
+            if (level == "trace") {
+                m_logFlushLevel = mixxx::LogLevel::Trace;
+            } else if (level == "debug") {
+                m_logFlushLevel = mixxx::LogLevel::Debug;
+            } else if (level == "info") {
+                m_logFlushLevel = mixxx::LogLevel::Info;
+            } else if (level == "warning") {
+                m_logFlushLevel = mixxx::LogLevel::Warning;
+            } else if (level == "critical") {
+                m_logFlushLevel = mixxx::LogLevel::Critical;
+            } else {
+                fputs("\nlogFushLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only flush messages to mixxx.log\n\
+when a critical error occurs unless this is set properly.\n", stdout);
+            }
+            i++;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
                    QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
             m_midiDebug = true;
@@ -103,15 +123,9 @@ void CmdlineArgs::printUsage() {
     fputs(" - Command line options", stdout);
     fputs("\n(These are case-sensitive.)\n\n\
 [FILE]                  Load the specified music file(s) at start-up.\n\
-                        Each must be one of the following file types:\n\
-                        ", stdout);
-
-    fputs(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")
-          .toLocal8Bit().constData(), stdout);
-    fputs("\n\n", stdout);
-    fputs("\
                         Each file you specify will be loaded into the\n\
-                        next virtual deck.\n\
+                        next virtual deck.\n", stdout);
+    fputs("\
 \n\
 --resourcePath PATH     Top-level directory where Mixxx should look\n\
                         for its resource files such as MIDI mappings,\n\
@@ -148,6 +162,10 @@ void CmdlineArgs::printUsage() {
                         info     - Above + Informational messages\n\
                         debug    - Above + Debug/Developer messages\n\
                         trace    - Above + Profiling messages\n\
+\n\
+--logFlushLevel LEVEL   Sets the the logging level at which the log buffer\n\
+                        is flushed to mixxx.log. LEVEL is one of the values\n\
+                        defined at --logLevel above.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
 "\

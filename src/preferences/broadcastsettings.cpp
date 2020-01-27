@@ -1,417 +1,238 @@
-#include "preferences/broadcastsettings.h"
+#include <QDir>
+#include <QStringList>
+#include <QFileInfoList>
+#include <QFileInfo>
+
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "preferences/broadcastsettings.h"
+#include "util/logger.h"
+#include "util/memory.h"
 
 namespace {
-const char* kConfigKey = "[Shoutcast]";
-
-const char* kBitrate = "bitrate";
-const char* kChannels = "channels";
-const char* kCustomArtist = "custom_artist";
-const char* kCustomTitle = "custom_title";
-const char* kEnableMetadata = "enable_metadata";
-const char* kEnableReconnect = "enable_reconnect";
-const char* kEnabled = "enabled";
-const char* kFormat = "format";
-const char* kHost = "host";
-const char* kLimitReconnects = "limit_reconnects";
-const char* kLogin = "login";
-const char* kMaximumRetries = "maximum_retries";
-const char* kMetadataCharset = "metadata_charset";
-const char* kMetadataFormat = "metadata_format";
-const char* kMountPoint = "mountpoint";
-const char* kNoDelayFirstReconnect = "no_delay_first_reconnect";
-const char* kOggDynamicUpdate = "ogg_dynamicupdate";
-const char* kPassword = "password";
-const char* kPort = "port";
-const char* kReconnectFirstDelay = "reconnect_first_delay";
-const char* kReconnectPeriod = "reconnect_period";
-const char* kServertype = "servertype";
-const char* kStreamDesc = "stream_desc";
-const char* kStreamGenre = "stream_genre";
-const char* kStreamName = "stream_name";
-const char* kStreamPublic = "stream_public";
-const char* kStreamWebsite = "stream_website";
-
-const double kDefaultBitrate = 128;
-const int kDefaultChannels = 2;
-const bool kDefaultEnableMetadata = false;
-const bool kDefaultEnableReconnect = true;
-const bool kDefaultLimitReconnects = true;
-const int kDefaultMaximumRetries = 10;
-// No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
-const QString kDefaultMetadataFormat("$artist - $title");
-const bool kDefaultNoDelayFirstReconnect = true;
-const bool kDefaultOggDynamicupdate = false;
-double kDefaultReconnectFirstDelay = 0.0;
-double kDefaultReconnectPeriod = 5.0;
-const QString kDefaultStreamDesc = QObject::tr("This stream is online for testing purposes!");
-const QString kDefaultStreamGenre = QObject::tr("Live Mix");
-const bool kDefaultStreamPublic = false;
+const char* kProfilesSubfolder = "broadcast_profiles";
+const char* kDefaultProfile = "Connection 1"; // Must be used only when initializing profiles
+const mixxx::Logger kLogger("BroadcastSettings");
 } // anonymous namespace
 
-BroadcastSettings::BroadcastSettings(UserSettingsPointer pConfig)
-    : m_pConfig(pConfig) {
+BroadcastSettings::BroadcastSettings(
+        UserSettingsPointer pConfig, QObject* parent)
+    : QObject(parent),
+      m_pConfig(pConfig),
+      m_profiles() {
+    loadProfiles();
 }
 
-int BroadcastSettings::getBitrate() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kBitrate), getDefaultBitrate());
-}
-
-void BroadcastSettings::setBitrate(int value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kBitrate), value);
-}
-
-int BroadcastSettings::getDefaultBitrate() const {
-    return kDefaultBitrate;
-}
-
-int BroadcastSettings::getChannels() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kChannels), getDefaultChannels());
-}
-
-void BroadcastSettings::setChannels(int value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kChannels), value);
-}
-
-int BroadcastSettings::getDefaultChannels() const {
-    return kDefaultChannels;
-}
-
-QString BroadcastSettings::getCustomArtist() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kCustomArtist), getDefaultCustomArtist());
-
-}
-
-void BroadcastSettings::setCustomArtist(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kCustomArtist), value);
-}
-
-QString BroadcastSettings::getDefaultCustomArtist() const {
-    return QString();
-}
-
-QString BroadcastSettings::getCustomTitle() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kCustomTitle), getDefaultCustomTitle());
-}
-
-void BroadcastSettings::setCustomTitle(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kCustomTitle), value);
-}
-
-QString BroadcastSettings::getDefaultCustomTitle() const {
-    return QString();
-}
-
-bool BroadcastSettings::getEnableMetadata() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kEnableMetadata), getDefaultEnableMetadata());
-}
-
-void BroadcastSettings::setEnableMetadata(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kEnableMetadata), value);
-}
-
-bool BroadcastSettings::getDefaultEnableMetadata() const {
-    return kDefaultEnableMetadata;
-}
-
-bool BroadcastSettings::getEnableReconnect() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kEnableReconnect), getDefaultEnableReconnect());
-}
-
-void BroadcastSettings::setEnableReconnect(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kEnableReconnect), value);
-}
-
-bool BroadcastSettings::getDefaultEnableReconnect() const {
-    return kDefaultEnableReconnect;
-}
-
-// Unused, but we keep this to reserve the name
-bool BroadcastSettings::getEnabled() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kEnabled), true);
-}
-
-void BroadcastSettings::setEnabled(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kEnabled), value);
-}
-
-QString BroadcastSettings::getFormat() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kFormat), getDefaultFormat());
-}
-
-void BroadcastSettings::setFormat(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kFormat), value);
-}
-
-QString BroadcastSettings::getDefaultFormat() const {
-    return QString();
-}
-
-QString BroadcastSettings::getHost() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kHost), getDefaultHost());
-}
-
-void BroadcastSettings::setHost(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kHost), value);
-}
-
-QString BroadcastSettings::getDefaultHost() const {
-    return QString();
-}
-
-bool BroadcastSettings::getLimitReconnects() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kLimitReconnects), getDefaultLimitReconnects());
-}
-
-void BroadcastSettings::setLimitReconnects(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kLimitReconnects), value);
-}
-
-bool BroadcastSettings::getDefaultLimitReconnects() const {
-    return kDefaultLimitReconnects;
-}
-
-QString BroadcastSettings::getLogin() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kLogin), getDefaultLogin());
-}
-
-void BroadcastSettings::setLogin(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kLogin), value);
-}
-
-QString BroadcastSettings::getDefaultLogin() const {
-    return QString();
-}
-
-int BroadcastSettings::getMaximumRetries() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kMaximumRetries), getDefaultMaximumRetries());
-}
-
-void BroadcastSettings::setMaximumRetries(int value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kMaximumRetries), value);
-}
-
-int BroadcastSettings::getDefaultMaximumRetries() const {
-    return kDefaultMaximumRetries;
-}
-
-QString BroadcastSettings::getMetadataCharset() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kMetadataCharset));
-}
-
-void BroadcastSettings::setMetadataCharset(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kMetadataCharset), value);
-}
-
-QString BroadcastSettings::getDefaultMetadataCharset() const {
-    return QString();
-}
-
-QString BroadcastSettings::getMetadataFormat() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kMetadataFormat), getDefaultMetadataFormat());
-}
-
-void BroadcastSettings::setMetadataFormat(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kMetadataFormat), value);
-}
-
-QString BroadcastSettings::getDefaultMetadataFormat() const {
-    return kDefaultMetadataFormat;
-}
-
-QString BroadcastSettings::getMountpoint() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kMountPoint));
-}
-
-void BroadcastSettings::setMountPoint(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kMountPoint), value);
-}
-
-QString BroadcastSettings::getDefaultMountpoint() const {
-    return QString();
-}
-
-bool BroadcastSettings::getNoDelayFirstReconnect() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kNoDelayFirstReconnect),
-            getDefaultNoDelayFirstReconnect());
-}
-
-void BroadcastSettings::setNoDelayFirstReconnect(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kNoDelayFirstReconnect), value);
-}
-
-bool BroadcastSettings::getDefaultNoDelayFirstReconnect() const {
-    return kDefaultNoDelayFirstReconnect;
-}
-
-bool BroadcastSettings::getOggDynamicUpdate() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kOggDynamicUpdate),
-            getDefaultOggDynamicUpdate());
-}
-
-void BroadcastSettings::setOggDynamicUpdate(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kOggDynamicUpdate), value);
-}
-
-bool BroadcastSettings::getDefaultOggDynamicUpdate() const {
-    return kDefaultOggDynamicupdate;
-}
-
-QString BroadcastSettings::getPassword() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kPassword), getDefaultPassword());
-}
-
-void BroadcastSettings::setPassword(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kPassword), value);
-}
-
-QString BroadcastSettings::getDefaultPassword() const {
-    return QString();
-}
-
-int BroadcastSettings::getPort() const {
-    // Valid port numbers are 0 .. 65535 (16 bit unsigned)
-    int port =  m_pConfig->getValue(
-            ConfigKey(kConfigKey, kPort), getDefaultPort());
-    if (port < 0 || port > 0xFFFF) {
-        return getDefaultPort();
+void BroadcastSettings::loadProfiles() {
+    QDir profilesFolder(getProfilesFolder());
+    if (!profilesFolder.exists()) {
+        kLogger.info() << "Profiles folder doesn't exist. Creating it.";
+        profilesFolder.mkpath(profilesFolder.absolutePath());
     }
-    return port;
+
+    QStringList nameFilters("*.bcp.xml");
+    QFileInfoList files =
+            profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
+
+    // If *.bcp.xml files exist in the profiles subfolder, those will be loaded
+    // and instantiated in the class' internal profile list for other by it and
+    // Mixxx subsystems related to Live Broadcasting.
+    // If that directory is empty (common reasons: it has been created by the
+    // code at the beginning, or all profiles were deleted) then a default
+    // profile with default values is created. That case could also mean that
+    // Mixxx has just been upgraded to a new version, so "legacy format" values
+    // has fetched from mixxx.cfg and loaded into the fresh default profile.
+    // It's important to take into account that the "legacy" settings are left
+    // in mixxx.cfg for retro-compatibility during alpha and beta testing.
+
+    if (files.size() > 0) {
+        kLogger.info() << "Found" << files.size() << "profile(s)";
+
+        // Load profiles from filesystem
+        for(QFileInfo fileInfo : files) {
+            BroadcastProfilePtr profile =
+                    BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
+
+            if (profile)
+                addProfile(profile);
+        }
+    } else {
+        kLogger.info() << "No profiles found. Creating default profile.";
+
+        BroadcastProfilePtr defaultProfile(
+                    new BroadcastProfile(kDefaultProfile));
+        // Upgrade from mixxx.cfg format to XML (if required)
+        loadLegacySettings(defaultProfile);
+
+        addProfile(defaultProfile);
+        saveProfile(defaultProfile);
+    }
 }
 
-void BroadcastSettings::setPort(int value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kPort), value);
+bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
+    if (!profile)
+        return false;
+
+    if (m_profiles.size() >= BROADCAST_MAX_CONNECTIONS) {
+        kLogger.warning() << "addProfile: connection limit reached."
+                 << "can't add more than" << QString::number(BROADCAST_MAX_CONNECTIONS)
+                 << "connections.";
+        return false;
+    }
+
+    // It is best to avoid using QSharedPointer::data(), especially when
+    // passing it to another function, as it puts the associated pointer
+    // at risk of being manually deleted.
+    // However it's fine with Qt's connect because it can be trusted that
+    // it won't delete the pointer.
+    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
+            this, SLOT(onProfileNameChanged(QString,QString)));
+    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
+            this, SLOT(onConnectionStatusChanged(int)));
+    m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
+
+    emit profileAdded(profile);
+    return true;
 }
 
-int BroadcastSettings::getDefaultPort() const {
-    return BROADCAST_DEFAULT_PORT;
+bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
+    if (!profile)
+        return false;
+
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // there was no previous filename, find an unused filename
+        for (int index = 0;; ++index) {
+            if (index > 0) {
+                // add an index to the file name to make it unique
+                filename = filePathForProfile(profile->getProfileName() + QString::number(index));
+            } else {
+                filename = filePathForProfile(profile->getProfileName());
+            }
+
+            QFileInfo fileInfo(filename);
+            if (!fileInfo.exists()) {
+                break;
+            }
+        }
+    }
+
+    return profile->save(filename);
 }
 
-double BroadcastSettings::getReconnectFirstDelay() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kReconnectFirstDelay),
-            getDefaultReconnectFirstDelay());
+QString BroadcastSettings::filePathForProfile(const QString& profileName) {
+    QString filename = profileName + ".bcp.xml";
+    filename = BroadcastProfile::stripForbiddenChars(filename);
+    return QDir(getProfilesFolder()).absoluteFilePath(filename);
 }
 
-void BroadcastSettings::setReconnectFirstDelay(double value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kReconnectFirstDelay), value);
+QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
+    if (!profile)
+        return QString();
+
+    return filePathForProfile(profile->getProfileName());
 }
 
-double BroadcastSettings::getDefaultReconnectFirstDelay() const {
-    return kDefaultReconnectFirstDelay;
+bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
+    if (!profile)
+        return false;
+
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // no file was saved, there is no file to delete
+        return false;
+    }
+
+    QFileInfo xmlFile(filename);
+    if (xmlFile.exists()) {
+        return QFile::remove(xmlFile.absoluteFilePath());
+    }
+    return false;
 }
 
-double BroadcastSettings::getReconnectPeriod() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kReconnectPeriod),
-            getDefaultReconnectPeriod());
+QString BroadcastSettings::getProfilesFolder() {
+    QString profilesPath(m_pConfig->getSettingsPath());
+    profilesPath.append(QDir::separator() + QString(kProfilesSubfolder));
+    return profilesPath;
 }
 
-void BroadcastSettings::setReconnectPeriod(double value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kReconnectPeriod), value);
+void BroadcastSettings::saveAll() {
+    for (const auto& kv : m_profiles) {
+        saveProfile(kv);
+    }
+    emit profilesChanged();
 }
 
-double BroadcastSettings::getDefaultReconnectPeriod() const {
-    return kDefaultReconnectPeriod;
+void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
+    if (!m_profiles.contains(oldName))
+        return;
+
+    BroadcastProfilePtr profile = m_profiles.take(oldName);
+    if (profile) {
+        m_profiles.insert(newName, profile);
+        emit profileRenamed(oldName, profile);
+
+        deleteFileForProfile(profile);
+        saveProfile(profile);
+    }
 }
 
-QString BroadcastSettings::getServertype() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kServertype), getDefaultServertype());
+void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
+    Q_UNUSED(newStatus);
 }
 
-void BroadcastSettings::setServertype(const QString& value) {
-    m_pConfig->set(ConfigKey(kConfigKey, kServertype),
-            ConfigValue(value));
+BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
+    auto it = m_profiles.begin() + index;
+    return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
 }
 
-QString BroadcastSettings::getDefaultServertype() const {
-    return QString();
+QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
+    return m_profiles.values();
 }
 
-QString BroadcastSettings::getStreamDesc() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kStreamDesc),
-            getDefaultStreamDesc());
-}
+void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
+    if (!pModel) {
+        return;
+    }
+    // TODO(Palakis): lock both lists against modifications while syncing
 
-void BroadcastSettings::setStreamDesc(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kStreamDesc), value);
-}
+    // Step 1: find profiles to delete from the settings
+    for (auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+        QString profileName = (*profileIter)->getProfileName();
+        if (!pModel->getProfileByName(profileName)) {
+            // If profile exists in settings but not in the model,
+            // remove the profile from the settings
+            const auto removedProfile = *profileIter;
+            deleteFileForProfile(removedProfile);
+            profileIter = m_profiles.erase(profileIter);
+            emit profileRemoved(removedProfile);
+        } else {
+            ++profileIter;
+        }
+    }
 
-QString BroadcastSettings::getDefaultStreamDesc() const {
-    return kDefaultStreamDesc;
-}
+    // Step 2: add new profiles
+    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+        // Check if profile already exists in settings
+        BroadcastProfilePtr existingProfile =
+                m_profiles.value(profileCopy->getProfileName());
+        if (!existingProfile) {
+            // If no profile with the same name exists, add the new
+            // profile to the settings.
+            // The BroadcastProfile instance is a copy to separate it
+            // from its existence in the model
+            addProfile(profileCopy->valuesCopy());
+        }
+    }
 
-QString BroadcastSettings::getStreamGenre() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kStreamGenre),
-            getDefaultStreamGenre());
-}
+    // Step 3: update existing profiles
+    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+        BroadcastProfilePtr actualProfile =
+                m_profiles.value(profileCopy->getProfileName());
+        if (actualProfile) {
+            profileCopy->copyValuesTo(actualProfile);
+        }
+    }
 
-void BroadcastSettings::setStreamGenre(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kStreamGenre), value);
-}
-
-QString BroadcastSettings::getDefaultStreamGenre() const {
-    return kDefaultStreamGenre;
-}
-
-QString BroadcastSettings::getStreamName() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kStreamName),
-            getDefaultStreamName());
-}
-
-void BroadcastSettings::setStreamName(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kStreamName), value);
-}
-
-QString BroadcastSettings::getDefaultStreamName() const {
-    return QString();
-}
-
-bool BroadcastSettings::getStreamPublic() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kStreamPublic), getDefaultStreamPublic());
-}
-
-void BroadcastSettings::setStreamPublic(bool value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kStreamPublic), value);
-}
-
-bool BroadcastSettings::getDefaultStreamPublic() const {
-    return kDefaultStreamPublic;
-}
-
-QString BroadcastSettings::getStreamWebsite() const {
-    return m_pConfig->getValue(
-            ConfigKey(kConfigKey, kStreamWebsite), getDefaultStreamWebsite());
-}
-
-void BroadcastSettings::setStreamWebsite(const QString& value) {
-    m_pConfig->setValue(ConfigKey(kConfigKey, kStreamWebsite), value);
-}
-
-QString BroadcastSettings::getDefaultStreamWebsite() const {
-    return MIXXX_WEBSITE_URL;
+    saveAll();
 }

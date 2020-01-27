@@ -2,6 +2,7 @@
 
 #include "mixxx.h"
 #include "library/library.h"
+#include "library/dao/analysisdao.h"
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -42,6 +43,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetFrameRate(int)));
     connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetWaveformEndRender(int)));
+    connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetBeatGridAlpha(int)));
     connect(frameRateSlider, SIGNAL(valueChanged(int)),
             frameRateSpinBox, SLOT(setValue(int)));
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
@@ -50,6 +53,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             endOfTrackWarningTimeSpinBox, SLOT(setValue(int)));
     connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
             endOfTrackWarningTimeSlider, SLOT(setValue(int)));
+    connect(beatGridAlphaSlider, SIGNAL(valueChanged(int)),
+            beatGridAlphaSpinBox, SLOT(setValue(int)));
+    connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
+            beatGridAlphaSlider, SLOT(setValue(int)));
 
     connect(waveformTypeComboBox, SIGNAL(activated(int)),
             this, SLOT(slotSetWaveformType(int)));
@@ -67,14 +74,14 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetNormalizeOverview(bool)));
-    connect(beatGridLinesCheckBox, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetGridLines(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetWaveformOverviewType(int)));
     connect(clearCachedWaveforms, SIGNAL(clicked()),
             this, SLOT(slotClearCachedWaveforms()));
+    connect(playMarkerPositionSlider, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetPlayMarkerPosition(int)));
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -83,10 +90,10 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    if (factory->isOpenGLAvailable()) {
+    if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
         openGlStatusIcon->setText(factory->getOpenGLVersion());
     } else {
-        openGlStatusIcon->setText(tr("OpenGL not available"));
+        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
 
     WaveformWidgetType::Type currentType = factory->getType();
@@ -105,8 +112,11 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-    defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
-    beatGridLinesCheckBox->setChecked(factory->isBeatGridEnabled());
+    // Round zoom to int to get a default zoom index.
+    defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
+    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
+    beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->beatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -165,8 +175,12 @@ void DlgPrefWaveform::slotResetToDefaults() {
     enableWaveformCaching->setChecked(true);
     enableWaveformGenerationWithAnalysis->setChecked(false);
 
-    // Beat grid lines on waveform is default
-    beatGridLinesCheckBox->setChecked(true);
+    // Beat grid alpha default is 90
+    beatGridAlphaSlider->setValue(90);
+    beatGridAlphaSpinBox->setValue(90);
+
+    // 50 (center) is default
+    playMarkerPositionSlider->setValue(50);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -232,8 +246,15 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
     calculateCachedWaveformDiskUsage();
 }
 
-void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
-    WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
+void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
+    m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridAlpha"), alpha);
+    WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
+}
+
+void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
+    // QSlider works with integer values, so divide the percentage given by the
+    // slider value by 100 to get a fraction of the waveform width.
+    WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

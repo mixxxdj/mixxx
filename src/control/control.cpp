@@ -84,9 +84,8 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
     MMutexLocker locker(&s_qCOHashMutex);
 
-    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it =
-            s_qCOHash.find(key);
-    if (it == s_qCOHash.end()) {
+    auto it = s_qCOHash.constFind(key);
+    if (it == s_qCOHash.constEnd()) {
         qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
         return;
     }
@@ -118,9 +117,8 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     // Scope for MMutexLocker.
     {
         MMutexLocker locker(&s_qCOHashMutex);
-        QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
-
-        if (it != s_qCOHash.end()) {
+        auto it = s_qCOHash.constFind(key);
+        if (it != s_qCOHash.constEnd()) {
             if (pCreatorCO) {
                 if (warn) {
                     qDebug() << "ControlObject" << key.group << key.item << "already created";
@@ -152,8 +150,7 @@ void ControlDoublePrivate::getControls(
         QList<QSharedPointer<ControlDoublePrivate> >* pControlList) {
     s_qCOHashMutex.lock();
     pControlList->clear();
-    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.begin();
-             it != s_qCOHash.end(); ++it) {
+    for (auto it = s_qCOHash.constBegin(); it != s_qCOHash.constEnd(); ++it) {
         QSharedPointer<ControlDoublePrivate> pControl = it.value();
         if (!pControl.isNull()) {
             pControlList->push_back(pControl);
@@ -183,7 +180,7 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
         return;
     }
     if (m_confirmRequired) {
-        emit(valueChangeRequest(value));
+        emit valueChangeRequest(value);
     } else {
         setInner(value, pSender);
     }
@@ -198,7 +195,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
         return;
     }
     m_value.setValue(value);
-    emit(valueChanged(value, pSender));
+    emit valueChanged(value, pSender);
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
@@ -233,36 +230,29 @@ double ControlDoublePrivate::getParameterForValue(double value) const {
     return value;
 }
 
-double ControlDoublePrivate::getParameterForMidiValue(double midiValue) const {
+double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    if (!pBehavior.isNull()) {
-        return pBehavior->midiValueToParameter(midiValue);
+    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
+        qWarning() << "Cannot set" << m_key << "by Midi";
+        return 0;
     }
-    return midiValue;
+    return pBehavior->midiToParameter(midiParam);
 }
 
-void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
+void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    if (!pBehavior.isNull()) {
-        pBehavior->setValueFromMidiParameter(opcode, dParam, this);
-    } else {
-        set(dParam, NULL);
+    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
+        qWarning() << "Cannot set" << m_key << "by Midi";
+        return;
     }
+    pBehavior->setValueFromMidi(opcode, midiParam, this);
 }
 
 double ControlDoublePrivate::getMidiParameter() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    double value = get();
-    if (!pBehavior.isNull()) {
-        value = pBehavior->valueToMidiParameter(value);
+    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
+        qWarning() << "Cannot get" << m_key << "by Midi";
+        return 0;
     }
-    return value;
-}
-
-bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
-    // confirmation is only required if connect was successful
-    m_confirmRequired = connect(this, SIGNAL(valueChangeRequest(double)),
-                receiver, method, type);
-    return m_confirmRequired;
+    return pBehavior->valueToMidiParameter(get());
 }

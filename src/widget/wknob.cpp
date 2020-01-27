@@ -19,10 +19,16 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include "util/duration.h"
 #include "widget/wknob.h"
 
 WKnob::WKnob(QWidget* pParent)
-        : WDisplay(pParent) {
+        : WDisplay(pParent),
+          m_renderTimer(mixxx::Duration::fromMillis(20),
+                        mixxx::Duration::fromSeconds(1)) {
+    connect(&m_renderTimer, SIGNAL(update()),
+            this, SLOT(update()));
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WKnob::mouseMoveEvent(QMouseEvent* e) {
@@ -39,4 +45,12 @@ void WKnob::mouseReleaseEvent(QMouseEvent* e) {
 
 void WKnob::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
+}
+
+void WKnob::inputActivity() {
+#ifdef __APPLE__
+    m_renderTimer.activity();
+#else
+    update();
+#endif
 }

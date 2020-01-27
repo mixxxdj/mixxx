@@ -27,11 +27,11 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "errordialoghandler.h"
 
 // Automatic thresholds for switching the encoder to mono
-// They have been choosen by testing and to keep the same number
+// They have been chosen by testing and to keep the same number
 // of values for the slider.
 // The threshold of bitrate at which the encoder
 // with switch to mono encoding
-const int EncoderVorbis::MONO_BITRATE_TRESHOLD = 70;
+const int EncoderVorbis::MONO_BITRATE_THRESHOLD = 70;
 
 
 EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
@@ -64,8 +64,8 @@ void EncoderVorbis::setEncoderSettings(const EncoderSettings& settings)
         case EncoderSettings::ChannelMode::MONO:  m_channels = 1; break;
         case EncoderSettings::ChannelMode::STEREO: m_channels = 2; break;
         case EncoderSettings::ChannelMode::AUTOMATIC: // fallthrough
-        default: 
-            if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
+        default:
+            if (m_bitrate > MONO_BITRATE_THRESHOLD ) {
                 m_channels = 2;
             }
             else {
@@ -211,7 +211,7 @@ void EncoderVorbis::initStream() {
     ogg_stream_packetin(&m_oggs, &headerComment);
     ogg_stream_packetin(&m_oggs, &headerCode);
 
-    // The encoder is now inialized. The encode method will start streaming by
+    // The encoder is now initialized. The encode method will start streaming by
     // sending the header first.
     m_header_write = true;
     m_bStreamInitialized = true;

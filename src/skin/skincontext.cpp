@@ -32,17 +32,11 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
         m_hookRx.setPattern(hooksPattern.toString());
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    // Load the config option once, here, rather than in setupSize.
-    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
-#else
     m_scaleFactor = 1.0;
-#endif
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
-        : m_xmlPath(parent.m_xmlPath),
-          m_skinBasePath(parent.m_skinBasePath),
+        : m_skinBasePath(parent.m_skinBasePath),
           m_pConfig(parent.m_pConfig),
           m_variables(parent.variables()),
           m_pScriptEngine(parent.m_pScriptEngine),
@@ -54,6 +48,7 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_scaleFactor(parent.m_scaleFactor) {
     // we generate a new global object to preserve the scope between
     // a context and its children
+    setXmlPath(parent.m_xmlPath);
     QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
     QScriptValue newGlobal = m_pScriptEngine->newObject();
     QScriptValueIterator it(m_parentGlobal);
@@ -62,8 +57,8 @@ SkinContext::SkinContext(const SkinContext& parent)
         newGlobal.setProperty(it.name(), it.value());
     }
 
-    for (QHash<QString, QString>::const_iterator it = m_variables.begin();
-         it != m_variables.end(); ++it) {
+    for (auto it = m_variables.constBegin();
+         it != m_variables.constEnd(); ++it) {
         newGlobal.setProperty(it.key(), it.value());
     }
     m_pScriptEngine->setGlobalObject(newGlobal);
@@ -167,16 +162,16 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 }
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
-    const SvgParser svgParser(*this);
-
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
+            SvgParser svgParser(*this);
             const QByteArray rslt = svgParser.saveToQByteArray(
                     svgParser.parseSvgTree(svgNode, m_xmlPath));
             PixmapSource source;
             source.setSVG(rslt);
+            return source;
         } else {
             // filename.
             return getPixmapSourceInner(nodeToString(pixmapNode));
@@ -208,7 +203,7 @@ QDomElement SkinContext::loadSvg(const QString& filename) const {
 
 PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
     if (!filename.isEmpty()) {
-        return PixmapSource(getSkinPath(filename));
+        return PixmapSource(makeSkinPath(filename));
     }
     return PixmapSource();
 }

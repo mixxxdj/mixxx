@@ -21,7 +21,7 @@ class BaseExternalPlaylistModel;
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    RhythmboxFeature(QObject* parent, TrackCollection*);
+    RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~RhythmboxFeature();
     static bool isSupported();
 
@@ -51,7 +51,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     BaseExternalTrackModel* m_pRhythmboxTrackModel;
     BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;
 
-    TrackCollection* m_pTrackCollection;
     // new DB object because of threads
     QSqlDatabase m_database;
     bool m_isActivated;
@@ -63,6 +62,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;
+    QIcon m_icon;
 };
 
 #endif // RHYTHMBOXFEATURE_H

@@ -33,7 +33,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (load_atomic(m_stop) == 0) {
+    while (atomicLoadAcquire(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -53,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, mixxx::Time::elapsed()));
+            emit incomingData(outData, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";
@@ -66,7 +66,7 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
         libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
     }
 
-    return QString::fromAscii((char*)buf);
+    return QString::fromLatin1((char*)buf);
 }
 
 
@@ -113,7 +113,7 @@ void BulkController::visit(const MidiControllerPreset* preset) {
 void BulkController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
+    emit presetLoaded(getPreset());
 }
 
 bool BulkController::savePreset(const QString fileName) const {
@@ -220,7 +220,7 @@ int BulkController::close() {
     }
 
     // Stop controller engine here to ensure it's done before the device is
-    // closed incase it has any final parting messages
+    // closed in case it has any final parting messages
     stopEngine();
 
     // Close device

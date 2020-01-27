@@ -2,11 +2,13 @@
 #define ANALYSISDAO_H
 
 #include <QObject>
+#include <QDir>
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "track/track.h"
+#include "track/trackid.h"
+#include "waveform/waveform.h"
 
 class AnalysisDao : public DAO {
   public:
@@ -55,14 +57,12 @@ class AnalysisDao : public DAO {
     void deleteAnalyses(const QList<TrackId>& trackIds);
     bool deleteAnalysesForTrack(TrackId trackId);
 
-    void saveTrackAnalyses(const Track& track);
+    void saveTrackAnalyses(
+            TrackId trackId,
+            ConstWaveformPointer pWaveform,
+            ConstWaveformPointer pWaveSummary);
 
   private:
-    bool saveWaveform(const Track& tio,
-                      const Waveform& waveform,
-                      AnalysisType type);
-    bool loadWaveform(const Track& tio,
-                      Waveform* waveform, AnalysisType type);
     QDir getAnalysisStoragePath() const;
     QByteArray loadDataFromFile(const QString& fileName) const;
     bool saveDataToFile(const QString& fileName, const QByteArray& data) const;

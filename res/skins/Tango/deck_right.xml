@@ -13,127 +13,169 @@ Variables:
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+
+  <SingletonDefinition>
+    <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
+    <Children>
+      <Template src="skin:deck_row_overview_right.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><!-- Symmetric Artist + Time -->
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:loop_indicator.xml"/>
+              <Template src="skin:deck_row_text_right.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Parallel Artist + Time -->
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:loop_indicator.xml"/>
+              <Template src="skin:deck_row_text_left.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>504me,136min</Size>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
-        <Layout>vertical</Layout>
+      <WidgetGroup><!-- VUMeter -->
+        <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
-            <Layout>horizontal</Layout>
+
+          <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:vumeter_floating.xml">
+                <SetVariable name="Label">Deck<Variable name="chanNum"/></SetVariable>
+              </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /VUMeter -->
+
+      <!-- Pitch slider & Key controls -->
+      <Template src="skin:rate_pitch_key.xml"/>
+
+      <WidgetGroup>
+        <Size>3f,1min</Size>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <!-- /Pitch slider & Key controls -->
+
+      <WidgetGroup><!-- Spinny/Cover -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <!-- Spinny/Cover if BIG spinny is enabled -->
+          <WidgetGroup>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>horizontal</Layout>
             <Children>
 
-              <!-- Pitch slider & Key controls -->
-              <Template src="skin:rate_pitch_key.xml"/>
-			
+              <Template src="skin:spinny_cover_maxi.xml"/>
+
+              <!-- 3px margin to main deck -->
               <WidgetGroup>
-                <Size>3f,1me</Size>
-                <Children/>
+                <Size>3f,1min</Size>
                 <Connection>
-                  <ConfigKey>[Tango],pitch_fader</ConfigKey>
+                  <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-              <!-- /Pitch slider & Key controls -->
-              
-              <!-- Mixer / Spinny/Cover/none + VUMeter ] -->
-              <WidgetStack currentpage="[Tango],mixer_spinnyCover" persist="true">
-                <ObjectName>MixerCoverStack</ObjectName>
-                <SizePolicy>f,min</SizePolicy>
-                <Children>
-                
-                  <!-- Mixer -->
-                  <WidgetGroup trigger="[Tango],channel_mixer" persist="true" on-hide-select="1">
-                    <Layout>vertical</Layout>
-                    <SizePolicy>f,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:mixer_channel_right.xml"/>
 
-                      <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1me,25f</Size>
-                        <Children>
-                          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-                          <WidgetGroup><ObjectName>Spacer25</ObjectName><Size>1me,22f</Size></WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
-                    </Children>
-                  </WidgetGroup><!-- /Mixer -->
-                  
-                  <WidgetGroup><!-- Spinny/Cover/none + VUMeter -->
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Children>
-                      
-                      <Template src="skin:vumeter_floating.xml"/>
-			
-                      <WidgetGroup>
-                        <Size>3f,1me</Size>
-                        <Children/>
-                        <Connection>
-                          <ConfigKey>[Tango],vumeter</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
-                    
-                      <WidgetGroup><!-- Spinny/Cover/none -->
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Children>
-                          <WidgetGroup>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>min,min</SizePolicy>
-                            <Children>
-                              <Template src="skin:spinnyCover.xml"/>
-                              <WidgetGroup><Size>3f,1min</Size><Children/></WidgetGroup>
-                            </Children>
-                            <Connection>
-                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup><!-- /Spinny/Cover/none -->
-                        
-                    </Children>
-                  </WidgetGroup><!-- /Spinny/Cover/none + VUMeter -->
-                    
-                </Children>
-              </WidgetStack><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] -->
-            
             </Children>
-          </WidgetGroup><!-- /Mixer / [ Spinny/Cover/none + VUMeter ] + Pitch -->
-          
-          <!-- Expanding spacer, necessary because obviously WidgetStack breaks
-          qproperty-layoutAlignment of parent Widget -->
-          <WidgetGroup><SizePolicy>min,me</SizePolicy><Children/></WidgetGroup>
-          
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Spinny/Cover if BIG spinny is enabled -->
+
         </Children>
-      </WidgetGroup><!-- /Mixer / Spinny/Cover/none + VUMeter ] + Pitch + spacer -->
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spinny/Cover -->
+
+      <WidgetGroup><!-- Mixer -->
+        <Layout>vertical</Layout>
+        <SizePolicy>f,min</SizePolicy>
+        <Children>
+          <Template src="skin:mixer_channel_right.xml"/>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,i</SizePolicy>
+            <Children>
+              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,i</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1me</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Mixer -->
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
-        <Size>250me,136min</Size>
+        <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-        
-          <!-- Packed Waveform & ArtistTitle into a fixed-size container,
+
+          <!-- Packed Overview & ArtistTitle into a fixed-size container,
           so Deck stays steady while Comment and LoopBeatjump controls can be toggled.
           Symmetrical decks [Waveforn/Artist/Deckbuttons] can be enabled in skin settings.
           1 Waveform
@@ -145,25 +187,44 @@ Variables:
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_overview_right.xml"/>
-              <Template src="skin:deck_comment_right.xml"/>
-              <Template src="skin:deck_artist_title_right.xml"/>
+              <SingletonContainer>
+                <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:deck_row_comment_fx_right.xml"/>
+
+              <SingletonContainer>
+                <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
 
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+          </WidgetGroup><!-- /Symmetric Overviews, ArtistTitle, Comment -->
 
-          <WidgetGroup><!-- ArtistTitle, Overview, Comment -->
+          <WidgetGroup><!-- Stacked Overviews, ArtistTitle, Comment -->
             <Layout>vertical</Layout>
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_artist_title_right.xml"/>
-              <Template src="skin:deck_comment_right.xml"/>
-              <Template src="skin:deck_overview_right.xml"/>
+              <SingletonContainer>
+                <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+
+              <Template src="skin:deck_row_comment_fx_right.xml"/>
+
+              <WidgetGroup><!--
+                <ObjectName>DeckOverviewBox<Variable name="chanNum"/></ObjectName> -->
+                <Layout>horizontal</Layout>
+                <Size>0me,50f</Size>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
 
             </Children>
             <Connection>
@@ -171,23 +232,17 @@ Variables:
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->
+          </WidgetGroup><!-- /Stacked Overviews, ArtistTitle, Comment -->
 
-          <Template src="skin:deck_buttons_right.xml" />
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
 
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Size>1me,25f</Size>
-            <Children>
-              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <Template src="skin:loop_controls_right.xml"/>
-            </Children>
-            <Connection>
-              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-          
+          <Template src="skin:deck_row_transport_right.xml" />
+
+          <Template src="skin:deck_row_loop_jump.xml">
+            <SetVariable name="SpaceLeft">70</SetVariable>
+            <SetVariable name="SpaceRight">-1</SetVariable>
+          </Template>
+
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
     </Children>

@@ -82,7 +82,6 @@ class Translations {
                                  const QString& translation, const QString& prefix,
                                  const QString& translationPath, QTranslator* pTranslator) {
         if (userLocale.size() == 0) {
-#if QT_VERSION >= 0x040800
             QStringList uiLanguages = systemLocale.uiLanguages();
             if (uiLanguages.size() > 0 && uiLanguages.first() == "en") {
                 // Don't bother loading a translation if the first ui-langauge is
@@ -93,9 +92,6 @@ class Translations {
                 return false;
             }
             return pTranslator->load(systemLocale, translation, prefix, translationPath);
-#else
-            userLocale = systemLocale.name();
-#endif  // QT_VERSION
         }
         return pTranslator->load(translation + prefix + userLocale, translationPath);
     }

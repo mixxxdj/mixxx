@@ -12,8 +12,10 @@
 #include <QSharedPointer>
 #include <QRegExp>
 
+#include "../util/color/predefinedcolorsrepresentation.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
+#include "util/color/color.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
@@ -31,13 +33,28 @@ class SkinContext {
     virtual ~SkinContext();
 
     // Gets a path relative to the skin path.
-    QString getSkinPath(const QString& relativePath) const {
-        return m_skinBasePath.filePath(relativePath);
+    QString makeSkinPath(const QString& relativePath) const {
+        if (relativePath.isEmpty() || relativePath.startsWith("/")
+                || relativePath.contains(":")) {
+            // This is already an absolute path start with the root folder "/"
+            // a windows drive letter e.g. "C:" or a qt search path prefix
+            return relativePath;
+        }
+        return QString("skin:").append(relativePath);
     }
 
     // Sets the base path used by getSkinPath.
     void setSkinBasePath(const QString& skinBasePath) {
-        m_skinBasePath = QDir(skinBasePath);
+        QStringList skinPaths(skinBasePath);
+        QDir::setSearchPaths("skin", skinPaths);
+        m_skinBasePath = skinBasePath;
+    }
+
+    // Sets the base path used by getSkinPath.
+    void setSkinTemplatePath(const QString& skinTemplatePath) {
+        QStringList skinPaths(m_skinBasePath);
+        skinPaths.append(skinTemplatePath);
+        QDir::setSearchPaths("skin", skinPaths);
     }
 
     // Variable lookup and modification methods.
@@ -55,7 +72,7 @@ class SkinContext {
     // Updates the SkinContext with 'element', a <SetVariable> node.
     void updateVariable(const QDomElement& element);
 
-    inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) const {
+    static inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) {
         QDomNode child = node.firstChild();
         while (!child.isNull()) {
             if (child.nodeName() == nodeName) {
@@ -66,7 +83,7 @@ class SkinContext {
         return QDomNode();
     }
 
-    inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) const {
+    static inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) {
         QDomNode child = selectNode(node, nodeName);
         return child.toElement();
     }
@@ -99,29 +116,8 @@ class SkinContext {
     }
 
     inline QColor selectColor(const QDomNode& node, const QString& nodeName) const {
-        // Takes a string with format #AARRGGBB and returns the corresponding QColor with alpha-channel set
-        // QT5.2 parses such strings by default in QColor::setNamedColor()
-        // TODO(MK): remove that logic once QT > 5.2 is the default
-
-        QColor color;
         QString sColorString = nodeToString(selectElement(node, nodeName));
-        if (sColorString.startsWith('#') && sColorString.length() == 9) {
-            // first extract the #RRGGBB part and parse the color from that
-            QString sRgbHex = sColorString.mid(3, 6).prepend("#");
-            color.setNamedColor(sRgbHex);
-
-            // now extract the alpha-value
-            QString sAlphaHex = sColorString.mid(1, 2);
-            bool bAlphaValueTransformed;
-            int iAlpha = sAlphaHex.toUInt(&bAlphaValueTransformed, 16);
-            if (bAlphaValueTransformed) {
-                color.setAlpha(iAlpha);
-            }
-        } else {
-            // if the given string is not in #AARRGGBB format, fall back to default QT behaviour
-            color.setNamedColor(sColorString);
-        }
-        return color;
+        return QColor(sColorString);
     }
 
     inline bool selectBool(const QDomNode& node, const QString& nodeName,
@@ -251,6 +247,20 @@ class SkinContext {
         return m_scaleFactor;
     }
 
+    PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
+        PredefinedColorsRepresentation colorRepresentation = Color::kPredefinedColorsSet.defaultRepresentation();
+        for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
+            QString sColorName(color->m_sName);
+            QColor skinRgba = selectColor(node, "Cue" + sColorName);
+            if (skinRgba.isValid()) {
+                PredefinedColorPointer originalColor = Color::kPredefinedColorsSet.predefinedColorFromName(sColorName);
+                colorRepresentation.setCustomRgba(originalColor, skinRgba);
+            }
+        }
+        colorRepresentation.setCustomRgba(Color::kPredefinedColorsSet.noColor, defaultColor);
+        return colorRepresentation;
+    }
+
   private:
     PixmapSource getPixmapSourceInner(const QString& filename) const;
 
@@ -263,7 +273,7 @@ class SkinContext {
     QString variableNodeToText(const QDomElement& element) const;
 
     QString m_xmlPath;
-    QDir m_skinBasePath;
+    QString m_skinBasePath;
     UserSettingsPointer m_pConfig;
 
     QHash<QString, QString> m_variables;

@@ -125,7 +125,6 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
             "VALUES (:trackId,:type,:description,:version,:data_checksum)")
                       .arg(s_analysisTableName));
 
-        QByteArray waveformBytes;
         query.bindValue(":trackId", info->trackId.toVariant());
         query.bindValue(":type", info->type);
         query.bindValue(":description", info->description);
@@ -305,7 +304,10 @@ bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data
     return true;
 }
 
-void AnalysisDao::saveTrackAnalyses(const Track& track) {
+void AnalysisDao::saveTrackAnalyses(
+        TrackId trackId,
+        ConstWaveformPointer pWaveform,
+        ConstWaveformPointer pWaveSummary) {
     // The only analyses we have at the moment are waveform analyses so we have
     // nothing to do if it is disabled.
     WaveformSettings waveformSettings(m_pConfig);
@@ -313,16 +315,11 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
         return;
     }
 
-    ConstWaveformPointer pWaveform = track.getWaveform();
-    ConstWaveformPointer pWaveSummary = track.getWaveformSummary();
-
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->saveState() != Waveform::SaveState::SavePending ||
         !pWaveSummary || pWaveSummary->saveState() != Waveform::SaveState::SavePending) {
         return;
     }
-
-    TrackId trackId(track.getId());
 
     AnalysisDao::AnalysisInfo analysis;
     analysis.trackId = trackId;

@@ -3,7 +3,7 @@
     <info>
         <name>Hercules DJ Console 4-Mx</name>
         <author>josepma</author>
-        <description>Hercules DJ Console 4-Mx 2016-11-06</description>
+        <description>Hercules DJ Console 4-Mx 2017-12-16</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
         <wiki>http://mixxx.org/wiki/doku.php/hercules_dj_console_4-mx</wiki>
     </info>
@@ -19,7 +19,7 @@
                 <status>0x90</status>
                 <midino>0x53</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -359,7 +359,7 @@
                 <status>0x90</status>
                 <midino>0x36</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -369,7 +369,7 @@
                 <status>0x91</status>
                 <midino>0x36</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -439,7 +439,7 @@
                 <status>0x90</status>
                 <midino>0x32</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -659,7 +659,7 @@
                 <status>0xB0</status>
                 <midino>0x46</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -999,7 +999,7 @@
                 <status>0x90</status>
                 <midino>0x16</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1009,7 +1009,7 @@
                 <status>0x91</status>
                 <midino>0x16</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1079,7 +1079,7 @@
                 <status>0x90</status>
                 <midino>0x12</midino>
                 <options>
-                    <button/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1514,7 +1514,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>volume</key>
+                <key>gain</key>
                 <description>Vol Main</description>
                 <status>0xB0</status>
                 <midino>0x21</midino>

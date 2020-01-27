@@ -3,32 +3,37 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wanalysislibrarytableview.h"
+#include "analyzer/analyzerprogress.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/dlganalysis.h"
+#include "library/library.h"
 #include "util/assert.h"
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
                        UserSettingsPointer pConfig,
-                       TrackCollection* pTrackCollection)
+                       Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_bAnalysisActive(false),
-          m_tracksInQueue(0),
-          m_currentTrack(0) {
+          m_bAnalysisActive(false) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pTrackCollection);
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pLibrary->trackCollections());
+    connect(m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::loadTrack,
+            this,
+            &DlgAnalysis::loadTrack);
+    connect(m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::loadTrackToPlayer,
+            this,
+            &DlgAnalysis::loadTrackToPlayer);
 
-    connect(m_pAnalysisLibraryTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::trackSelected,
+            this,
+            &DlgAnalysis::trackSelected);
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
@@ -38,33 +43,51 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pLibrary->trackCollections());
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
-    connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
-            this,  SLOT(showRecentSongs()));
-    connect(radioButtonAllSongs, SIGNAL(clicked()),
-            this,  SLOT(showAllSongs()));
+    connect(radioButtonRecentlyAdded,
+            &QRadioButton::clicked,
+            this,
+            &DlgAnalysis::showRecentSongs);
+    connect(radioButtonAllSongs,
+            &QRadioButton::clicked,
+            this,
+            &DlgAnalysis::showAllSongs);
 
     // TODO(rryan): This triggers a library search before the UI has even
     // started up. Accounts for 0.2% of skin creation time. Get rid of this!
     radioButtonRecentlyAdded->click();
 
-    labelProgress->setText("");
-    pushButtonAnalyze->setEnabled(false);
-    connect(pushButtonAnalyze, SIGNAL(clicked()),
-            this, SLOT(analyze()));
+    connect(pushButtonAnalyze,
+            &QPushButton::clicked,
+            this,
+            &DlgAnalysis::analyze);
 
-    connect(pushButtonSelectAll, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+    connect(pushButtonSelectAll,
+            &QPushButton::clicked,
+            this,
+            &DlgAnalysis::selectAll);
 
     connect(m_pAnalysisLibraryTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
+            &QItemSelectionModel::selectionChanged,
             this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
-}
+            &DlgAnalysis::tableSelectionChanged);
 
-DlgAnalysis::~DlgAnalysis() {
+    connect(pLibrary,
+            &Library::setTrackTableFont,
+            m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::setTrackTableFont);
+    connect(pLibrary,
+            &Library::setTrackTableRowHeight,
+            m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::setTrackTableRowHeight);
+    connect(pLibrary,
+            &Library::setSelectedClick,
+            m_pAnalysisLibraryTableView,
+            &WAnalysisLibraryTableView::setSelectedClick);
+
+    slotAnalysisActive(m_bAnalysisActive);
 }
 
 void DlgAnalysis::onShow() {
@@ -89,17 +112,17 @@ void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
-void DlgAnalysis::slotSendToAutoDJBottom() {
+void DlgAnalysis::slotAddToAutoDJBottom() {
     // append to auto DJ
-    m_pAnalysisLibraryTableView->slotSendToAutoDJBottom();
+    m_pAnalysisLibraryTableView->slotAddToAutoDJBottom();
 }
 
-void DlgAnalysis::slotSendToAutoDJTop() {
-    m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
+void DlgAnalysis::slotAddToAutoDJTop() {
+    m_pAnalysisLibraryTableView->slotAddToAutoDJTop();
 }
 
-void DlgAnalysis::slotSendToAutoDJReplace() {
-    m_pAnalysisLibraryTableView->slotSendToAutoDJReplace();
+void DlgAnalysis::slotAddToAutoDJReplace() {
+    m_pAnalysisLibraryTableView->slotAddToAutoDJReplace();
 }
 
 void DlgAnalysis::moveSelection(int delta) {
@@ -121,7 +144,7 @@ void DlgAnalysis::selectAll() {
 void DlgAnalysis::analyze() {
     //qDebug() << this << "analyze()";
     if (m_bAnalysisActive) {
-        emit(stopAnalysis());
+        emit stopAnalysis();
     } else {
         QList<TrackId> trackIds;
 
@@ -134,13 +157,12 @@ void DlgAnalysis::analyze() {
                 trackIds.append(trackId);
             }
         }
-        m_currentTrack = 1;
-        emit(analyzeTracks(trackIds));
+        emit analyzeTracks(trackIds);
     }
 }
 
-void DlgAnalysis::analysisActive(bool bActive) {
-    qDebug() << this << "analysisActive" << bActive;
+void DlgAnalysis::slotAnalysisActive(bool bActive) {
+    //qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
         pushButtonAnalyze->setEnabled(true);
@@ -153,31 +175,30 @@ void DlgAnalysis::analysisActive(bool bActive) {
     }
 }
 
-// slot
-void DlgAnalysis::trackAnalysisFinished(int size) {
-    qDebug() << "Analysis finished" << size << "tracks left";
-    if (size > 0) {
-        m_currentTrack = m_tracksInQueue - size + 1;
+void DlgAnalysis::onTrackAnalysisSchedulerProgress(
+        AnalyzerProgress analyzerProgress, int finishedCount, int totalCount) {
+    //qDebug() << this << "onTrackAnalysisSchedulerProgress" << analyzerProgress << finishedCount << totalCount;
+    if (labelProgress->isEnabled()) {
+        QString progressText;
+        if (analyzerProgress >= kAnalyzerProgressNone) {
+            QString progressPercent = QString::number(
+                    analyzerProgressPercent(analyzerProgress));
+            progressText = tr("Analyzing %1% %2/%3").arg(
+                    progressPercent,
+                    QString::number(finishedCount),
+                    QString::number(totalCount));
+        } else {
+            // Omit to display any percentage
+            progressText = tr("Analyzing %1/%2").arg(
+                    QString::number(finishedCount),
+                    QString::number(totalCount));
+        }
+        labelProgress->setText(progressText);
     }
 }
 
-// slot
-void DlgAnalysis::trackAnalysisProgress(int progress) {
-    if (m_bAnalysisActive) {
-        QString text = tr("Analyzing %1/%2 %3%").arg(
-                QString::number(m_currentTrack),
-                QString::number(m_tracksInQueue),
-                QString::number(progress));
-        labelProgress->setText(text);
-    }
-}
-
-int DlgAnalysis::getNumTracks() {
-    return m_tracksInQueue;
-}
-
-void DlgAnalysis::trackAnalysisStarted(int size) {
-    m_tracksInQueue = size;
+void DlgAnalysis::onTrackAnalysisSchedulerFinished() {
+    slotAnalysisActive(false);
 }
 
 void DlgAnalysis::showRecentSongs() {

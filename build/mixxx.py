@@ -3,16 +3,18 @@
 from __future__ import with_statement
 
 import logging
-import platform
-import sys
 import os
+import platform
 import re
+import shlex
 import shutil
+import subprocess
+import sys
 
 import SCons
 from SCons import Script
 
-import util
+from . import util
 
 
 class MixxxBuild(object):
@@ -46,7 +48,7 @@ class MixxxBuild(object):
             raise Exception("invalid target platform")
 
         if machine.lower() not in ['x86_64', 'x86', 'i686', 'i586',
-                                   'alpha', 'hppa', 'mips', 'mipsel', 's390',
+                                   'alpha', 'hppa', 's390',
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
                                    'armv5tel', 'armv5tejl', 'armv6l', 'armv6hl',
                                    'armv7l', 'armv7hl', 'armv7hnl',
@@ -55,8 +57,11 @@ class MixxxBuild(object):
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el', 'ppc64le', 'm68k', 'mips64',
-                                   'mips64el', 'mipsn32', 'mipsn32el',
+                                   'ppc64el', 'ppc64le', 'm68k', 
+                                   'mips', 'mipsel', 'mipsr6', 'mipsr6el',
+                                   'mips64', 'mips64r6', 'mips64el', 'mips64r6el', 
+                                   'mipsn32', 'mipsn32el', 'mipsn32r6', 'mipsn32r6el',
+                                   'mipsisa32r6', 'mipsisa32r6el', 'mipsisa64r6', 'mipsisa64r6el',
                                    'aarch64']:
             raise Exception("invalid machine type")
 
@@ -120,6 +125,15 @@ class MixxxBuild(object):
         self.bundle_pdbs = self.platform_is_windows and (
             self.build_is_debug or Script.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
 
+        self.scons_version = (
+            'unknown' if SCons.__version__.startswith('__VERSION')
+            else '%s (%s, %s)' % (
+                SCons.__version__,
+                SCons.__build__,
+                SCons.__date__,
+        ))
+        logging.info("SCons version: %s" % self.scons_version)
+        logging.info("Python version: %s" % sys.version.replace('\n', ''))
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
         logging.info("Build: %s" % self.build)
@@ -142,50 +156,44 @@ class MixxxBuild(object):
             raise Exception(
                 'Cross-compiling on a non-Linux host not currently supported')
 
-        tools = ['default']
+        tools = ['default', 'qt5', 'protoc']
         toolpath = ['#build/']
         extra_arguments = {}
-        import depends
-        if int(Script.ARGUMENTS.get('qt5', 0)):
-            tools.append('qt5')
-            if self.machine_is_64bit:
-                default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(
-                    self.platform, '')
-            else:
-                default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(
-                    self.platform, '')
+        from . import depends
+        if self.machine_is_64bit:
+            default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(self.platform, '')
         else:
-            tools.append('qt4')
-            default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
-        tools.append('protoc')
+            default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(self.platform, '')
 
         # Try fallback to pkg-config on Linux
         if not os.path.isdir(default_qtdir) and self.platform == 'linux':
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
-                finally:
-                    pass
+            pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
+            try:
+                output = subprocess.check_output(pkg_config_cmd)
+            except OSError:
+                # pkg-config is not installed
+                pass
+            except subprocess.CalledProcessError:
+                # pkg-config failed to find Qt5Core
+                pass
+            else:
+                default_qtdir = output.decode('utf-8').rstrip()
 
         # Ugly hack to check the qtdir argument
-        qtdir = Script.ARGUMENTS.get('qtdir',
-                                     os.environ.get('QTDIR', default_qtdir))
+        qtdir = Script.ARGUMENTS.get(
+            'qtdir', os.environ.get('QTDIR', default_qtdir)).rstrip()
 
         # Validate the specified qtdir exists
         if not os.path.isdir(qtdir):
-            logging.error("QT path does not exist or QT4 is not installed.")
+            logging.error("Qt path (%s) does not exist or Qt is not installed." % qtdir)
             logging.error(
-                "Please specify your QT path by running 'scons qtdir=[path]'")
+                "Please specify your Qt path by running 'scons qtdir=[path]'")
             Script.Exit(1)
-        # And that it doesn't contain qt3
-        elif qtdir.find("qt3") != -1 or qtdir.find("qt/3") != -1:
-            logging.error("Mixxx now requires QT4 instead of QT3 - please use your QT4 path with the qtdir build flag.")
+        # And that it doesn't contain qt3 or qt4
+        elif 'qt3' in qtdir or 'qt/3' in qtdir or 'qt4' in qtdir:
+            logging.error("Mixxx now requires Qt 5. Please set the qtdir build flag to the path to your Qt 5 installation.")
             Script.Exit(1)
         logging.info("Qt path: %s" % qtdir)
-
-        # Previously this wasn't done for OSX, but I'm not sure why
-        # -- rryan 6/8/2011
         extra_arguments['QTDIR'] = qtdir
 
         if self.platform_is_osx:
@@ -196,7 +204,8 @@ class MixxxBuild(object):
             # support x64.
             # In SConscript.env we use the MSVS tool to let you generate a
             # Visual Studio solution. Consider removing this.
-            tools.extend(['msvs'])
+            tools.extend(['msvs', 'signtool'])
+            toolpath.append('#/build/windows/')
             # SCons's built-in Qt tool attempts to link 'qt' into your binary if
             # you don't do this.
             extra_arguments['QT_LIB'] = ''
@@ -218,8 +227,25 @@ class MixxxBuild(object):
         self.read_environment_variables()
 
         # Now that environment variables have been read, we can detect the compiler.
-        self.compiler_is_gcc = 'gcc' in self.env['CC']
-        self.compiler_is_clang = 'clang' in self.env['CC']
+        if self.toolchain_is_msvs:
+            self.compiler_is_gcc = False
+            self.compiler_is_clang = False
+        else:
+            cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
+            cc_version = subprocess.check_output(cc_version_cmd).decode('utf-8')
+            self.compiler_is_gcc = 'gcc' in cc_version.lower()
+            self.compiler_is_clang = 'clang' in cc_version.lower()
+
+            # Determine the major compiler version (only GCC)
+            if self.compiler_is_gcc:
+                self.gcc_major_version = None
+                gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
+                gcc_version = subprocess.check_output(gcc_version_cmd).decode('utf-8')
+                # If match is None we don't know the version.
+                if not gcc_version is None:
+                    version_split = gcc_version.split('.')
+                    if version_split:
+                        self.gcc_major_version = int(version_split[0])
 
         self.virtualize_build_dir()
 
@@ -247,7 +273,7 @@ class MixxxBuild(object):
             crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
 
             if crosscompile_root == '':
-                print "Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required."
+                print("Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required.")
                 Script.Exit(1)
 
             crosscompile_root = os.path.abspath(crosscompile_root)
@@ -263,9 +289,9 @@ class MixxxBuild(object):
         # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
         if 'bsd' in sys.platform:
             return 'bsd'
-        if sys.platform in ['linux2', 'linux3']:
+        if sys.platform.startswith('linux'):
             return 'linux'
-        if sys.platform == 'darwin':
+        if sys.platform.startswith('darwin'):
             return 'osx'
         logging.error("Couldn't determine platform. os.name: %s sys.platform: %s"
                       % (os.name, sys.platform))
@@ -283,8 +309,8 @@ class MixxxBuild(object):
     def setup_windows_platform_sdk(self):
         mssdk_dir = Script.ARGUMENTS.get('mssdk_dir', None)
         if mssdk_dir is None:
-            print 'Skipping Windows SDK setup because no SDK path was specified.'
-            print 'Specify the path to your platform SDK with mssdk_dir.'
+            print("Skipping Windows SDK setup because no SDK path was specified.")
+            print("Specify the path to your platform SDK with mssdk_dir.")
             return
         env_update_tuples = []
         include_path = os.path.join(mssdk_dir, 'Include')
@@ -327,10 +353,10 @@ class MixxxBuild(object):
         # we pick one automatically on is OS X.
         if self.platform_is_osx:
             if '-isysroot' in self.env['CXXFLAGS'] or '-isysroot' in self.env['CFLAGS']:
-                print 'Skipping OS X automatic sysroot selection because -isysroot is in your CCFLAGS.'
+                print("Skipping OS X automatic sysroot selection because -isysroot is in your CCFLAGS.")
                 return
 
-            print 'Automatically detecting Mac OS X SDK.'
+            print("Automatically detecting Mac OS X SDK.")
 
 
             # Returns a version like "10.8.0". We strip off the last ".0".
@@ -339,7 +365,7 @@ class MixxxBuild(object):
             osx_min_version = osx_min_version[:len(osx_min_version) - 2]
             osx_stdlib = 'libc++'
 
-            print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
+            print("XCode developer directory:" + os.popen('xcode-select -p').readline().strip())
 
             available_sdks = []
             macosx_matcher = re.compile(r'^MacOSX\d+\.\d+\.sdk.*\((.*)\)$')
@@ -348,7 +374,7 @@ class MixxxBuild(object):
                 if not match:
                     continue
                 version = match.group(1)
-                print "Found OS X SDK:", version
+                print("Found OS X SDK:"+ version)
                 available_sdks.append(version)
 
             def version_sorter(version):
@@ -361,7 +387,7 @@ class MixxxBuild(object):
                 sdk_path = os.popen(
                     'xcodebuild -version -sdk %s Path' % sdk).readline().strip()
                 if sdk_path:
-                    print "Automatically selected OS X SDK:", sdk_path
+                    print("Automatically selected OS X SDK:" + sdk_path)
 
                     common_flags = ['-isysroot', sdk_path,
                                     '-mmacosx-version-min=%s' % osx_min_version,
@@ -373,10 +399,10 @@ class MixxxBuild(object):
                     self.env.Append(LINKFLAGS=common_flags + link_flags)
                     return
 
-            print 'Could not find a supported Mac OS X SDK.'
-            print ('Make sure that XCode is installed, you have installed '
-                   'the command line tools, and have selected an SDK path with '
-                   'xcode-select.')
+                print("Could not find a supported Mac OS X SDK.")
+                print("Make sure that XCode is installed, you have installed "
+                      "the command line tools, and have selected an SDK path with "
+                      "xcode-select.")
 
     def read_environment_variables(self):
         # Import environment variables from the terminal. Note that some
@@ -385,7 +411,7 @@ class MixxxBuild(object):
         if 'CC' in os.environ:
             self.env['CC'] = os.environ['CC']
         if 'CFLAGS' in os.environ:
-            self.env['CFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
+            self.env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
         if 'CXX' in os.environ:
             self.env['CXX'] = os.environ['CXX']
         if 'CXXFLAGS' in os.environ:
@@ -395,11 +421,11 @@ class MixxxBuild(object):
 
         # Allow installation directories to be specified.
         prefix = Script.ARGUMENTS.get('prefix', '/usr/local')
-        if os.environ.has_key('LIBDIR'):
+        if 'LIBDIR' in os.environ:
             self.env['LIBDIR'] = os.path.relpath(os.environ['LIBDIR'], prefix)
-        if os.environ.has_key('BINDIR'):
+        if 'BINDIR' in os.environ:
             self.env['BINDIR'] = os.path.relpath(os.environ['BINDIR'], prefix)
-        if os.environ.has_key('SHAREDIR'):
+        if 'SHAREDIR' in os.environ:
             self.env['SHAREDIR'] = \
                 os.path.relpath(os.environ['SHAREDIR'], prefix)
 
@@ -432,7 +458,7 @@ class MixxxBuild(object):
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('virtualize',
                  'Dynamically swap out the build directory when switching Git branches.', 1)
-        vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
+        vars.Add('qtdir', 'Set to your Qt 5 directory', '/usr/share/qt5')
         vars.Add('qt_sqlite_plugin', 'Set to 1 to package the Qt SQLite plugin.'
                  '\n           Set to 0 if SQLite support is compiled into QtSQL.', 0)
         vars.Add('target',
@@ -487,19 +513,23 @@ class MixxxBuild(object):
         virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
         virtual_sconsign_file = os.path.join(
             branch_build_dir, 'sconsign.dblite')
+        virtual_sconf_temp_dir = os.path.join(
+            branch_build_dir, 'sconf_temp')
         virtual_custom_file = os.path.join(branch_build_dir, 'custom.py')
         old_branch_build_dir = ''
         old_virtual_build_dir = ''
         old_virtual_sconsign_file = ''
+        old_virtual_sconf_temp_dir = ''
         old_virtual_custom_file = ''
 
         # Clean up symlinks from our original method of virtualizing.
         if os.path.islink(self.build_dir):
-            print "os.unlink", self.build_dir
+            print("os.unlink " + self.build_dir)
             os.unlink(self.build_dir)
 
         sconsign_file = '.sconsign.dblite'
         sconsign_branch_file = '.sconsign.branch'  # contains the branch name of last build
+        sconf_temp_dir = '.sconf_temp'  # contains the configure test files
         custom_file = 'cache/custom.py'  # contains custom build flags
         sconsign_branch = ''
         is_branch_different = True
@@ -515,7 +545,7 @@ class MixxxBuild(object):
             # nothing to do
             return
 
-        print "branch has changed", sconsign_branch, "->", branch_name
+        print("branch has changed %s -> %s" % (sconsign_branch, branch_name))
 
         if sconsign_branch:
             old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
@@ -523,25 +553,32 @@ class MixxxBuild(object):
                 old_branch_build_dir, self.build_dir)
             old_virtual_sconsign_file = os.path.join(
                 old_branch_build_dir, 'sconsign.dblite')
+            old_virtual_sconf_temp_dir = os.path.join(
+                old_branch_build_dir, 'sconf_temp')
             old_virtual_custom_file = os.path.join(
                 old_branch_build_dir, 'custom.py')
             if os.path.isdir(self.build_dir):
                 if os.path.isdir(old_virtual_build_dir):
-                    raise Exception('%s already exists. '
-                                    'build virtualization cannot continue. Please '
-                                    'move or delete it.' % old_virtual_build_dir)
-                print "shutil.move", self.build_dir, old_virtual_build_dir
+                    raise Exception("%s already exists. "
+                                    "build virtualization cannot continue. Please "
+                                    "move or delete it." % old_virtual_build_dir)
+                print("shutil.move %s -> %s" % (self.build_dir, old_virtual_build_dir))
                 # move build dir from last build to cache, named with the old
                 # branch name
                 shutil.move(self.build_dir, old_virtual_build_dir)
 
             if os.path.isfile(sconsign_file):
-                print "shutil.move", sconsign_file, old_virtual_sconsign_file
-                # move sconsdign-dblite as well
+                print("shutil.move %s -> %s" % (sconsign_file, old_virtual_sconsign_file))
+                # move sconsdign.dblite as well
                 shutil.move(sconsign_file, old_virtual_sconsign_file)
 
+            if os.path.isdir(sconf_temp_dir):
+                print("shutil.move %s -> %s" % (sconf_temp_dir, old_virtual_sconf_temp_dir))
+                # move sconf_temp dir as well
+                shutil.move(sconf_temp_dir, old_virtual_sconf_temp_dir)
+
             if os.path.isfile(custom_file):
-                print "shutil.move", custom_file, old_virtual_custom_file
+                print("shutil.move %s -> %s" % (custom_file, old_virtual_custom_file))
                 # and move custom.py
                 shutil.move(custom_file, old_virtual_custom_file)
 
@@ -549,7 +586,8 @@ class MixxxBuild(object):
             # to avoid a new copy after an exception below
             os.remove(sconsign_branch_file)
 
-        # Now there should be no folder self.build_dir or file sconsign_file.
+        # Now there should be no folder self.build_dir, .sconsign.dblite, or
+        # .sconf_temp directory.
         if os.path.isdir(branch_build_dir):
             if os.path.isdir(virtual_build_dir):
                 # found a build_dir in cache from a previous build
@@ -557,21 +595,28 @@ class MixxxBuild(object):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % self.build_dir)
-                print "shutil.move", virtual_build_dir, self.build_dir
+                print("shutil.move %s -> %s" % (virtual_build_dir, self.build_dir))
                 shutil.move(virtual_build_dir, self.build_dir)
             if os.path.isfile(virtual_sconsign_file):
                 if os.path.isfile(sconsign_file):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % sconsign_file)
-                print "shutil.move", virtual_sconsign_file, sconsign_file
+                print("shutil.move %s -> %s" % (virtual_sconsign_file, sconsign_file))
                 shutil.move(virtual_sconsign_file, sconsign_file)
+            if os.path.isdir(virtual_sconf_temp_dir):
+                if os.path.isdir(sconf_temp_dir):
+                    raise Exception('%s exists without a .sconsign.branch file so '
+                                    'build virtualization cannot continue. Please '
+                                    'move or delete it.' % sconf_temp_dir)
+                print("shutil.move %s -> %s" % (virtual_sconf_temp_dir, sconf_temp_dir))
+                shutil.move(virtual_sconf_temp_dir, sconf_temp_dir)
             if os.path.isfile(virtual_custom_file):
                 if os.path.isfile(custom_file):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % custom_file)
-                print "shutil.move", virtual_custom_file, custom_file
+                print("shutil.move %s -> %s" % (virtual_custom_file, custom_file))
                 shutil.move(virtual_custom_file, custom_file)
         else:
             # no cached build dir found, assume this is a branch from the old branch
@@ -583,29 +628,36 @@ class MixxxBuild(object):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % self.build_dir)
-                    print "shutil.copytree", old_virtual_build_dir, self.build_dir
+                    print("shutil.copytree %s -> %s" % (old_virtual_build_dir, self.build_dir))
                     shutil.copytree(old_virtual_build_dir, self.build_dir)
                 if os.path.isfile(old_virtual_sconsign_file):
                     if os.path.isfile(sconsign_file):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % sconsign_file)
-                    print "shutil.copy", virtual_sconsign_file, sconsign_file
+                    print("shutil.copy %s -> %s" % (old_virtual_sconsign_file, sconsign_file))
                     shutil.copy(old_virtual_sconsign_file, sconsign_file)
+                if os.path.isdir(old_virtual_sconf_temp_dir):
+                    if os.path.isdir(sconf_temp_dir):
+                        raise Exception('%s exists without a .sconsign.branch file so '
+                                        'build virtualization cannot continue. Please '
+                                        'move or delete it.' % sconf_temp_dir)
+                    print("shutil.copytree %s -> %s" % (old_virtual_sconf_temp_dir, sconf_temp_dir))
+                    shutil.copytree(old_virtual_sconf_temp_dir, sconf_temp_dir)
                 if os.path.isfile(old_virtual_custom_file):
                     if os.path.isfile(custom_file):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % custom_file)
-                    print "shutil.copy", virtual_custom_file, custom_file
+                    print("shutil.copy %s -> %s" % (old_virtual_custom_file, custom_file))
                     shutil.copy(old_virtual_custom_file, custom_file)
 
             # create build dir in cache folder for later move
-            print "os.makedirs", branch_build_dir
+            print("os.makedirs" + branch_build_dir)
             os.makedirs(branch_build_dir)
 
         with open(sconsign_branch_file, 'w+') as f:
-            print 'touch', sconsign_branch_file
+            print("touch" + sconsign_branch_file)
             f.write(branch_name)
 
     def get_features(self):

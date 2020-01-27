@@ -5,13 +5,41 @@
 #include <QTemporaryFile>
 #include <QtDebug>
 
-#include "track/trackmetadatataglib.h"
+#include "sources/metadatasourcetaglib.h"
 
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-class TagLibTest : public testing::Test {};
+class TagLibTest : public testing::Test {
+  protected:
+    static QString generateTemporaryFileName(const QString& fileNameTemplate) {
+        QTemporaryFile tmpFile(fileNameTemplate);
+        tmpFile.setAutoRemove(true);
+        tmpFile.open();
+        DEBUG_ASSERT(tmpFile.exists());
+        const QString tmpFileName = tmpFile.fileName();
+        return tmpFileName;
+    }
+
+    static bool copyFile(const QString& srcFileName, const QString& dstFileName) {
+        QFile srcFile(srcFileName);
+        DEBUG_ASSERT(srcFile.exists());
+        if (!srcFile.copy(dstFileName)) {
+            qWarning()
+                    << srcFile.errorString()
+                    << "- Failed to copy file"
+                    << srcFileName
+                    << "->"
+                    << dstFileName;
+            return false;
+        }
+        QFile dstFile(dstFileName);
+        DEBUG_ASSERT(dstFile.exists());
+        DEBUG_ASSERT(srcFile.size() == dstFile.size());
+        return true;
+    }
+};
 
 class FileRemover final {
 public:
@@ -25,33 +53,11 @@ private:
     QString m_fileName;
 };
 
-QString generateTemporaryFileName(const QString& fileNameTemplate) {
-    QTemporaryFile tmpFile(fileNameTemplate);
-    tmpFile.open();
-    DEBUG_ASSERT(tmpFile.exists());
-    const QString tmpFileName(tmpFile.fileName());
-    FileRemover tmpFileRemover(tmpFileName);
-    return tmpFileName;
-}
-
-void copyFile(const QString& srcFileName, const QString& dstFileName) {
-    QFile srcFile(srcFileName);
-    DEBUG_ASSERT(srcFile.exists());
-    qDebug() << "Copying file"
-            << srcFileName
-            << "->"
-            <<dstFileName;
-    srcFile.copy(dstFileName);
-    QFile dstFile(dstFileName);
-    DEBUG_ASSERT(dstFile.exists());
-    DEBUG_ASSERT(srcFile.size() == dstFile.size());
-}
-
 TEST_F(TagLibTest, WriteID3v2Tag) {
     // Generate a file name for the temporary file
     const QString tmpFileName = generateTemporaryFileName("no_id3v1_mp3");
 
-    // Create the temporary file by copying an exiting file
+    // Create the temporary file by copying an existing file
     copyFile(kTestDir.absoluteFilePath("empty.mp3"), tmpFileName);
 
     // Ensure that the temporary file is removed after the test
@@ -66,11 +72,16 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
         EXPECT_FALSE(mixxx::taglib::hasAPETag(mpegFile));
     }
 
+    qDebug() << "Setting track title";
+
     // Write metadata -> only an ID3v2 tag should be added
     mixxx::TrackMetadata trackMetadata;
-    trackMetadata.setTitle("title");
-    ASSERT_EQ(OK, mixxx::taglib::writeTrackMetadataIntoFile(
-            trackMetadata, tmpFileName, mixxx::taglib::FileType::MP3));
+    trackMetadata.refTrackInfo().setTitle("title");
+    const auto exported =
+            mixxx::MetadataSourceTagLib(
+                    tmpFileName, mixxx::taglib::FileType::MP3).exportTrackMetadata(trackMetadata);
+    ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded, exported.first);
+    ASSERT_FALSE(exported.second.isNull());
 
     // Check that the file only has an ID3v2 tag after writing metadata
     {
@@ -81,10 +92,15 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
         EXPECT_FALSE(mixxx::taglib::hasAPETag(mpegFile));
     }
 
+    qDebug() << "Updating track title";
+
     // Write metadata again -> only the ID3v2 tag should be modified
-    trackMetadata.setTitle("title2");
-    ASSERT_EQ(OK, mixxx::taglib::writeTrackMetadataIntoFile(
-            trackMetadata, tmpFileName, mixxx::taglib::FileType::MP3));
+    trackMetadata.refTrackInfo().setTitle("title2");
+    const auto exported2 =
+            mixxx::MetadataSourceTagLib(
+                    tmpFileName, mixxx::taglib::FileType::MP3).exportTrackMetadata(trackMetadata);
+    ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded, exported.first);
+    ASSERT_FALSE(exported.second.isNull());
 
     // Check that the file (still) only has an ID3v2 tag after writing metadata
     {

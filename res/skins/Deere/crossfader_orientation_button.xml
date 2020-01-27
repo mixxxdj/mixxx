@@ -1,7 +1,7 @@
 <Template>
   <Template src="skin:left_3state_button.xml">
     <SetVariable name="TooltipId">orientation</SetVariable>
-    <SetVariable name="ObjectName">OrientationButton</SetVariable>
+    <SetVariable name="ObjectName">OrientationButton<Variable name="Unit"/></SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
     <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>

@@ -5,6 +5,7 @@
  *      Author: vittorio
  */
 
+#include <algorithm>
 #include <QtDebug>
 #include <QString>
 #include <QList>
@@ -18,7 +19,7 @@
 #define BPM_ERROR 0.05
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
-// computed. Tweaked from 8 to 12 which improves the BPM accurancy for 'problem songs'.
+// computed. Tweaked from 8 to 12 which improves the BPM accuracy for 'problem songs'.
 #define N 12
 
 static bool sDebug = false;
@@ -164,7 +165,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      * to count N beats (in seconds)>
      *
      * Although beat tracking through QM is promising, the local average BPM of
-     * 4 beats varies frequently by +-2 BPM.  Somtimes there N subsequent beats
+     * 4 beats varies frequently by +-2 BPM.  Sometimes there N subsequent beats
      * in the grid that are computed wrongly by QM.
      *
      * Their local BPMs can be considered as outliers which would influence the
@@ -191,11 +192,11 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
         beats, N, 1, SampleRate, &frequency_table);
 
     // Get the median BPM.
-    qSort(average_bpm_list);
+    std::sort(average_bpm_list.begin(), average_bpm_list.end());
     const double median = computeSampleMedian(average_bpm_list);
 
     /*
-     * Okay, let's consider the median an estimation of the BPM To not soley
+     * Okay, let's consider the median an estimation of the BPM To not solely
      * rely on the median, we build the average weighted value of all bpm values
      * being at most +-1 BPM from the median away.  Please note, this has
      * improved the BPM: While relying on median only we may have a deviation of
@@ -316,7 +317,7 @@ double BeatUtils::calculateOffset(
     const QVector<double> beats2, const int SampleRate) {
     /*
      * Here we compare to beats vector and try to determine the best offset
-     * based on the occurences, i.e. by assuming that the almost correct beats
+     * based on the occurrences, i.e. by assuming that the almost correct beats
      * are more than the "false" ones.
      */
     const double beatlength1 = (60.0 * SampleRate / bpm1);
@@ -331,8 +332,8 @@ double BeatUtils::calculateOffset(
         int freq = 0;
         for (int i = 0; i < beats2.size(); i += 4) {
             double beats2_beat = beats2.at(i);
-            QVector<double>::const_iterator it = qUpperBound(
-                beats1.begin(), beats1.end(), beats2_beat);
+            QVector<double>::const_iterator it = std::upper_bound(
+                beats1.constBegin(), beats1.constEnd(), beats2_beat);
             if (fabs(*it - beats2_beat - offset) <= beatLength1Epsilon) {
                 freq++;
             }

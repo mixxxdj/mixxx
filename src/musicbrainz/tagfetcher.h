@@ -36,11 +36,11 @@ class TagFetcher : public QObject {
     void resultAvailable(const TrackPointer originalTrack,
                          const QList<TrackPointer>& tracksGuessed);
     void fetchProgress(QString);
-    void networkError(int,QString);
+    void networkError(int httpStatus, QString app, QString message, int code);
 
   private slots:
     void fingerprintFound(int index);
-    void mbidFound(int index, const QString& mbid);
+    void mbRecordingIdsFound(int index, QStringList mbRecordingIds);
     void tagsFetched(int index, const MusicBrainzClient::ResultList& result);
 
   private:

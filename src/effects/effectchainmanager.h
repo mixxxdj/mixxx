@@ -24,9 +24,14 @@ class EffectChainManager : public QObject {
                        EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredChannels() const {
-        return m_registeredChannels;
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const {
+        return m_registeredInputChannels;
+    }
+
+    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const {
+        return m_registeredOutputChannels;
     }
 
     StandardEffectRackPointer addStandardEffectRack();
@@ -37,6 +42,9 @@ class EffectChainManager : public QObject {
 
     QuickEffectRackPointer addQuickEffectRack();
     QuickEffectRackPointer getQuickEffectRack(int rack);
+
+    OutputEffectRackPointer addOutputsEffectRack();
+    OutputEffectRackPointer getMasterEffectRack();
 
     EffectRackPointer getEffectRack(const QString& group);
 
@@ -51,11 +59,14 @@ class EffectChainManager : public QObject {
     EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
 
     bool saveEffectChains();
-    void loadEffectChains(
-            StandardEffectRack* pRack);
+    void loadEffectChains();
 
-    static const int kNumEffectsPerUnit = 4;
+    // Reloads all effect to the slots to update parameter assignments
+    void refeshAllRacks();
+
     static const int kNumStandardEffectChains = 4;
+
+    bool isAdoptMetaknobValueEnabled() const;
 
   private:
     QString debugString() const {
@@ -67,9 +78,11 @@ class EffectChainManager : public QObject {
     QList<StandardEffectRackPointer> m_standardEffectRacks;
     QList<EqualizerRackPointer> m_equalizerEffectRacks;
     QList<QuickEffectRackPointer> m_quickEffectRacks;
+    OutputEffectRackPointer m_pOutputEffectRack;
     QHash<QString, EffectRackPointer> m_effectRacksByGroup;
     QList<EffectChainPointer> m_effectChains;
-    QSet<ChannelHandleAndGroup> m_registeredChannels;
+    QSet<ChannelHandleAndGroup> m_registeredInputChannels;
+    QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
 

@@ -14,7 +14,7 @@ import SCons.Defaults
 import SCons.Node.FS
 import SCons.Util
 
-from SCons.Script import File, Dir
+from SCons.Script import Dir
  
 import os.path
 protocs = 'protoc'
@@ -51,8 +51,8 @@ def ProtocEmitter(target, source, env):
     except KeyError:
         pass
 
-    #~ print "PROTOC SOURCE:", [str(s) for s in source]
-    #~ print "PROTOC TARGET:", [str(s) for s in target]
+    #~ print("PROTOC SOURCE:", [str(s) for s in source])
+    #~ print("PROTOC TARGET:", [str(s) for s in target])
 
     return target, source
 

@@ -9,6 +9,7 @@
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "util/painterscope.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
   : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -25,28 +26,34 @@ void WaveformRendererPreroll::setup(
 
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(event);
+
     const TrackPointer track = m_waveformRenderer->getTrackInfo();
     if (!track) {
         return;
     }
 
+    double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition(); 
     double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     double numberOfSamples = m_waveformRenderer->getLength() * samplesPerPixel;
 
     int currentPosition = m_waveformRenderer->getPlayPosVSample();
     //qDebug() << "currentPosition" << currentPosition
     //         << "samplesPerPixel" << samplesPerPixel
-    //         << "numberOfSamples" << numberOfSamples;
+    //         << "numberOfSamples" << numberOfSamples
+    //         << "WaveformRendererPreroll::playMarkerPosition=" << playMarkerPosition;
+
 
     // Some of the pre-roll is on screen. Draw little triangles to indicate
     // where the pre-roll is located.
-    if (currentPosition < numberOfSamples / 2.0) {
-        int index = static_cast<int>(numberOfSamples / 2.0 - currentPosition);
+    if (currentPosition < numberOfSamples * playMarkerPosition) {
+        int index = static_cast<int>(numberOfSamples * playMarkerPosition - currentPosition);
         const int polyLength = static_cast<int>(40.0 / samplesPerPixel);
+
         const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0;
         const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0;
 
-        painter->save();
+        PainterScope PainterScope(painter);
+
         painter->setRenderHint(QPainter::Antialiasing);
         //painter->setRenderHint(QPainter::HighQualityAntialiasing);
         //painter->setBackgroundMode(Qt::TransparentMode);
@@ -76,7 +83,5 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
             polygon.translate(-(polyLength + 1), 0);
             index -= (polyLength + 1) * samplesPerPixel;
         }
-
-        painter->restore();
     }
 }

@@ -11,13 +11,13 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.18, 06/13/2017
+	Version: 		1.19, 05/01/2018
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
-    
-    Copyright (c) 2017 DJMaxergy, licensed under GPL version 2 or later
+
+    Copyright (c) 2018 DJMaxergy, licensed under GPL version 2 or later
     Copyright (c) 2014-2015 various contributors, base for this mapping, licensed under MIT license
-    
+
     Contributors:
     - Michael Stahl (DG3NEC): original DDJ-SB2 mapping for Mixxx 2.0
     - Sophia Herzog: midiAutoDJ-scripts
@@ -26,31 +26,31 @@ var PioneerDDJSX = function() {};
       https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB
     - Hilton Rudham: Pioneer DDJ-SR mapping
       https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR
-      
+
     GPL license notice for current version:
     This program is free software; you can redistribute it and/or modify it under the terms of the
     GNU General Public License as published by the Free Software Foundation; either version 2
     of the License, or (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
     the GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License along with this program; if
     not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-    
-    
+
+
     MIT License for earlier versions:
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software
     and associated documentation files (the "Software"), to deal in the Software without
     restriction, including without limitation the rights to use, copy, modify, merge, publish,
     distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
     Software is furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in all copies or
     substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
     BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -62,8 +62,8 @@ var PioneerDDJSX = function() {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
-// Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
-PioneerDDJSX.jogwheelSensivity = 1;
+// Sets the jogwheels sensitivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
+PioneerDDJSX.jogwheelSensitivity = 1;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift (default: 10).
@@ -71,7 +71,7 @@ PioneerDDJSX.jogwheelShiftMultiplier = 10;
 
 // If true, vu meters twinkle if AutoDJ is enabled (default: true).
 PioneerDDJSX.twinkleVumeterAutodjOn = true;
-// If true, selected track will be added to AutoDJ queue-top on pressing rotary selector,
+// If true, selected track will be added to AutoDJ queue-top on pressing shift + rotary selector,
 // else track will be added to AutoDJ queue-bottom (default: false).
 PioneerDDJSX.autoDJAddTop = false;
 // Sets the duration of sleeping between AutoDJ actions if AutoDJ is enabled [ms] (default: 1000).
@@ -79,26 +79,22 @@ PioneerDDJSX.autoDJTickInterval = 1000;
 // Sets the maximum adjustment of BPM allowed for beats to sync if AutoDJ is enabled [BPM] (default: 10).
 PioneerDDJSX.autoDJMaxBpmAdjustment = 10;
 // If true, AutoDJ queue is being shuffled after skipping a track (default: false).
-// When using a fixed set of tracks without manual intervention, some tracks may be unreachable, 
+// When using a fixed set of tracks without manual intervention, some tracks may be unreachable,
 // due to having an unfortunate place in the queue ordering. This solves the issue.
 PioneerDDJSX.autoDJShuffleAfterSkip = false;
 
-// If true, by releasing rotary selector, 
+// If true, by releasing rotary selector,
 // track in preview player jumps forward to "jumpPreviewPosition"
-// (default: jumpPreviewEnabled = true, jumpPreviewPosition = 0.3). 
+// (default: jumpPreviewEnabled = true, jumpPreviewPosition = 0.3).
 PioneerDDJSX.jumpPreviewEnabled = true;
 PioneerDDJSX.jumpPreviewPosition = 0.3;
 
-// If true, pad press in SAMPLER-PAD-MODE repeatedly causes sampler to play 
+// If true, pad press in SAMPLER-PAD-MODE repeatedly causes sampler to play
 // loaded track from cue-point, else it causes to play loaded track from the beginning (default: false).
 PioneerDDJSX.samplerCueGotoAndPlay = false;
 
 // If true, PFL / Cue (headphone) is being activated by loading a track into certain deck (default: true).
 PioneerDDJSX.autoPFL = true;
-
-// If true, new in Mixxx 2.1 introduced library controls will be used,
-// else old playlist controls will be used (default: false).
-PioneerDDJSX.useNewLibraryControls = false;
 
 
 ///////////////////////////////////////////////////////////////
@@ -118,6 +114,7 @@ PioneerDDJSX.chFaderStart = [null, null, null, null];
 PioneerDDJSX.toggledBrake = [false, false, false, false];
 PioneerDDJSX.scratchMode = [true, true, true, true];
 PioneerDDJSX.wheelLedsBlinkStatus = [0, 0, 0, 0];
+PioneerDDJSX.wheelLedsPosition = [0, 0, 0, 0];
 PioneerDDJSX.setUpSpeedSliderRange = [0.08, 0.08, 0.08, 0.08];
 
 // PAD mode storage:
@@ -951,16 +948,16 @@ PioneerDDJSX.playButton = function(channel, control, value, status, group) {
         playing = engine.getValue(group, "play");
 
     if (value) {
-        if (!PioneerDDJSX.toggledBrake[deck]) {
-            script.toggleControl(group, "play");
-        }
         if (playing) {
             script.brake(channel, control, value, status, group);
             PioneerDDJSX.toggledBrake[deck] = true;
+        } else {
+            script.toggleControl(group, "play");
         }
     } else {
         if (PioneerDDJSX.toggledBrake[deck]) {
             script.brake(channel, control, value, status, group);
+            script.toggleControl(group, "play");
             PioneerDDJSX.toggledBrake[deck] = false;
         }
     }
@@ -1390,10 +1387,10 @@ PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, grou
 
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftKeyLock, value);
 
-    if (range === 1.00) {
+    if (range === 0.90) {
         range = PioneerDDJSX.setUpSpeedSliderRange[deck];
-    } else if ((range * 2) > 1.00) {
-        range = 1.00;
+    } else if ((range * 2) > 0.90) {
+        range = 0.90;
     } else {
         range = range * 2;
     }
@@ -1574,7 +1571,7 @@ PioneerDDJSX.panelSelectButton = function(channel, control, value, status, group
 PioneerDDJSX.shiftPanelSelectButton = function(channel, control, value, status, group) {
     var channelGroup;
     PioneerDDJSX.shiftPanelSelectPressed = value ? true : false;
-    
+
     for (var index in PioneerDDJSX.fxUnitGroups) {
         if (PioneerDDJSX.fxUnitGroups.hasOwnProperty(index)) {
             if (PioneerDDJSX.fxUnitGroups[index] < 2) {
@@ -1850,7 +1847,13 @@ PioneerDDJSX.wheelLeds = function(value, group, control) {
         }
         PioneerDDJSX.wheelLedsBlinkStatus[deck]++;
     }
-    PioneerDDJSX.wheelLedControl(group, wheelPos);
+    wheelPos = parseInt(wheelPos);
+    // Only send midi message when the position is actually updated.
+    // Otherwise, the amount of messages may exceed the maximum rate at high position update rates.
+    if (PioneerDDJSX.wheelLedsPosition[deck] !== wheelPos) {
+      PioneerDDJSX.wheelLedControl(group, wheelPos);
+    }
+    PioneerDDJSX.wheelLedsPosition[deck] = wheelPos;
 };
 
 PioneerDDJSX.cueLed = function(value, group, control) {
@@ -2168,7 +2171,7 @@ PioneerDDJSX.triggerVinylLed = function(deck) {
 };
 
 PioneerDDJSX.pitchBendFromJog = function(group, movement) {
-    engine.setValue(group, "jog", movement / 5 * PioneerDDJSX.jogwheelSensivity);
+    engine.setValue(group, "jog", movement / 5 * PioneerDDJSX.jogwheelSensitivity);
 };
 
 
@@ -2198,11 +2201,7 @@ PioneerDDJSX.loadPrepareButton = function(channel, control, value, status) {
 };
 
 PioneerDDJSX.backButton = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "MoveFocusBackward");
-    } else {
-        script.toggleControl("AutoDJ", "skip_next");
-    }
+    script.toggleControl("[Library]", "MoveFocusBackward");
 };
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
@@ -2224,43 +2223,26 @@ PioneerDDJSX.getRotaryDelta = function(value) {
 PioneerDDJSX.rotarySelector = function(channel, control, value, status) {
     var delta = PioneerDDJSX.getRotaryDelta(value);
 
-    if (PioneerDDJSX.useNewLibraryControls) {
-        engine.setValue("[Library]", "MoveVertical", delta);
-        PioneerDDJSX.rotarySelectorChanged = true;
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", delta);
-        PioneerDDJSX.rotarySelectorChanged = true;
-    }
+    engine.setValue("[Library]", "MoveVertical", delta);
+    PioneerDDJSX.rotarySelectorChanged = true;
 };
 
 PioneerDDJSX.rotarySelectorShifted = function(channel, control, value, status) {
     var delta = PioneerDDJSX.getRotaryDelta(value),
         f = (delta > 0 ? "SelectNextPlaylist" : "SelectPrevPlaylist");
 
-    if (PioneerDDJSX.useNewLibraryControls) {
-        engine.setValue("[Library]", "MoveHorizontal", delta);
-    } else {
-        engine.setValue("[Playlist]", f, Math.abs(delta));
-    }
+    engine.setValue("[Library]", "MoveHorizontal", delta);
 };
 
 PioneerDDJSX.rotarySelectorClick = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "MoveFocusForward");
-    } else {
-        if (PioneerDDJSX.autoDJAddTop) {
-            script.toggleControl("[Library]", "AutoDjAddTop");
-        } else {
-            script.toggleControl("[Library]", "AutoDjAddBottom");
-        }
-    }
+    script.toggleControl("[Library]", "GoToItem");
 };
 
 PioneerDDJSX.rotarySelectorShiftedClick = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "ChooseItem");
+    if (PioneerDDJSX.autoDJAddTop) {
+        script.toggleControl("[Library]", "AutoDjAddTop");
     } else {
-        script.toggleControl("[Playlist]", "ToggleSelectedSidebarItem");
+        script.toggleControl("[Library]", "AutoDjAddBottom");
     }
 };
 
@@ -2343,7 +2325,6 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
             }
         }
     } else {
-        engine.setValue(group, "slip_enabled", false);
         PioneerDDJSX.slicerAlreadyJumped[deck] = false;
         PioneerDDJSX.slicerPreviousBeatsPassed[deck] = 0;
         PioneerDDJSX.slicerActive[deck] = false;

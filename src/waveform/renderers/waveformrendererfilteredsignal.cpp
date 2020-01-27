@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -49,9 +50,9 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHints(QPainter::Antialiasing, false);
-    painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
@@ -221,18 +222,18 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         }
     }
 
-    painter->setPen(QPen(QBrush(m_pColors->getLowColor()), 1));
+    double lineThickness = math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel());
+
+    painter->setPen(QPen(QBrush(m_pColors->getLowColor()), lineThickness, Qt::SolidLine, Qt::FlatCap));
     if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 0.0) {
        painter->drawLines(&m_lowLines[0], actualLowLineNumber);
     }
-    painter->setPen(QPen(QBrush(m_pColors->getMidColor()), 1));
+    painter->setPen(QPen(QBrush(m_pColors->getMidColor()), lineThickness, Qt::SolidLine, Qt::FlatCap));
     if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 0.0) {
         painter->drawLines(&m_midLines[0], actualMidLineNumber);
     }
-    painter->setPen(QPen(QBrush(m_pColors->getHighColor()), 1));
+    painter->setPen(QPen(QBrush(m_pColors->getHighColor()), lineThickness, Qt::SolidLine, Qt::FlatCap));
     if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 0.0) {
         painter->drawLines(&m_highLines[0], actualHighLineNumber);
     }
-
-    painter->restore();
 }

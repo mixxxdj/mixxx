@@ -143,7 +143,7 @@ VestaxVCI400.Button.prototype.handleEvent = function(value) {
    this.handler(value);
 };
 
-//Calling this method will illuminate the button depening on if value is true or false
+//Calling this method will illuminate the button depending on if value is true or false
 VestaxVCI400.Button.prototype.illuminate = function(value) {
    if(value ==true){
         midi.sendShortMsg(this.statusByte, this.midiNo, VestaxVCI400.ButtonLedState.on);
@@ -678,17 +678,31 @@ VestaxVCI400.Deck.prototype.onWheelMove = function(value) {
     }
 };
 
-VestaxVCI400.brake = function (channel, control, value, status, group) {
-    try{
-        if (value == 0) {
-            return;
-        }
-        var deck = VestaxVCI400.GetDeck(group).deckNumber;
-        engine.brake(deck, true, .1, .9);
+// The play button usually does play/pause as normal, but if shift is held
+// we do a braking stop.
+VestaxVCI400.playButton = function (channel, control, value, status, group) {
+    if (value === 0) {
+        return;
     }
-    catch(ex) {
-        VestaxVCI400.printError(ex);
-   }
+    var playing = engine.getValue(group, "play");
+    if (playing && VestaxVCI400.shiftActive) {
+        script.brake(channel, control, value, status, group, 100.0);
+        return;
+    }
+
+    script.toggleControl(group, "play");
+};
+
+// The censor button usually does a reverse roll, but if shift is held
+// we do a backspin stop.
+VestaxVCI400.censorButton = function (channel, control, value, status, group) {
+    var playing = engine.getValue(group, "play");
+    if (playing && VestaxVCI400.shiftActive && value !== 0) {
+        script.spinback(channel, control, value, status, group, 30.0, -10.0);
+        return;
+    }
+
+    engine.setValue(group, "reverseroll", value);
 };
 
 VestaxVCI400.vinylButton = function (channel, control, value, status, group) {

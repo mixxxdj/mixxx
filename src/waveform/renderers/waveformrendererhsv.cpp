@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -43,9 +44,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHints(QPainter::Antialiasing, false);
-    painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
@@ -77,6 +78,10 @@ void WaveformRendererHSV::draw(QPainter* painter,
 
     QColor color;
     float lo, hi, total;
+
+    QPen pen;
+    pen.setCapStyle(Qt::FlatCap);
+    pen.setWidth(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
 
     const int breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = (float)breadth / 2.0;
@@ -155,7 +160,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
             // Set color
             color.setHsvF(h, 1.0-hi, 1.0-lo);
 
-            painter->setPen(color);
+            pen.setColor(color);
+
+            painter->setPen(pen);
             switch (m_alignment) {
                 case Qt::AlignBottom :
                 case Qt::AlignRight :
@@ -176,6 +183,4 @@ void WaveformRendererHSV::draw(QPainter* painter,
             }
         }
     }
-
-    painter->restore();
 }

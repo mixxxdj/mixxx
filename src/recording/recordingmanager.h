@@ -55,9 +55,9 @@ class RecordingManager : public QObject
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
+    void slotSetRecording(bool recording);
 
   private slots:
-    void slotSetRecording(bool recording);
     void slotToggleRecording(double v);
 
   private:
@@ -66,12 +66,14 @@ class RecordingManager : public QObject
     // to split the file. The nth filename will follow the date/time
     // name of the first split but with a suffix.
     void splitContinueRecording();
+    void warnFreespace();
     ControlProxy* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
 
     quint64 getFileSplitSize();
     unsigned int getFileSplitSeconds();
+    qint64 getFreeSpace();
 
     UserSettingsPointer m_pConfig;
     QString m_recordingDir;
@@ -83,6 +85,9 @@ class RecordingManager : public QObject
     QString m_recordingLocation;
 
     bool m_bRecording;
+    bool m_dfSilence;
+    qint64 m_dfCounter;
+
     // will be a very large number
     quint64 m_iNumberOfBytesRecorded;
     quint64 m_iNumberOfBytesRecordedSplit;

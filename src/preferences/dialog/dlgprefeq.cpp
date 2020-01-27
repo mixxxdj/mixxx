@@ -20,9 +20,10 @@
 #include <QHBoxLayout>
 
 #include "preferences/dialog/dlgprefeq.h"
-#include "effects/native/biquadfullkilleqeffect.h"
-#include "effects/native/filtereffect.h"
-#include "engine/enginefilterbessel4.h"
+#include "effects/builtin/biquadfullkilleqeffect.h"
+#include "effects/builtin/filtereffect.h"
+#include "effects/effectslot.h"
+#include "engine/filters/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
@@ -56,6 +57,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_bGainAutoReset(false) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
     m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    m_pOutputEffectRack = m_pEffectsManager->getOutputsEffectRack();
 
     setupUi(this);
     // Connection
@@ -80,7 +82,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_pNumDecks->connectValueChanged(this, &DlgPrefEQ::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
     setUpMasterEQ();
@@ -176,17 +178,17 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 }
 
-static bool isMixingEQ(const EffectManifest& pManifest) {
-    return pManifest.isMixingEQ();
+static bool isMixingEQ(EffectManifest* pManifest) {
+    return pManifest->isMixingEQ();
 }
 
-static bool isMasterEQ(const EffectManifest& pManifest) {
-    return pManifest.isMasterEQ();
+static bool isMasterEQ(EffectManifest* pManifest) {
+    return pManifest->isMasterEQ();
 }
 
-static bool hasSuperKnobLinking(const EffectManifest& pManifest) {
-    for (const auto& pParameterManifest : pManifest.parameters()) {
-        if (pParameterManifest.defaultLinkType() !=
+static bool hasSuperKnobLinking(EffectManifest* pManifest) {
+    for (const auto& pParameterManifest : pManifest->parameters()) {
+        if (pParameterManifest->defaultLinkType() !=
             EffectManifestParameter::LinkType::NONE) {
             return true;
         }
@@ -206,9 +208,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         filterEQ = nullptr; // take all
     }
 
-    const QList<EffectManifest> availableEQEffects =
+    const QList<EffectManifestPointer> availableEQEffects =
         m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
-    const QList<EffectManifest> availableQuickEffects =
+    const QList<EffectManifestPointer> availableQuickEffects =
         m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
 
     for (QComboBox* box : m_deckEqEffectSelectors) {
@@ -221,18 +223,17 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
 
         int i;
         for (i = 0; i < availableEQEffects.size(); ++i) {
-            const EffectManifest& manifest = availableEQEffects.at(i);
-            box->addItem(manifest.name(), QVariant(manifest.id()));
-            if (selectedEffectId == manifest.id()) {
+            EffectManifestPointer pManifest = availableEQEffects.at(i);
+            box->addItem(pManifest->name(), QVariant(pManifest->id()));
+            if (selectedEffectId == pManifest->id()) {
                 currentIndex = i;
             }
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant());
-        if (selectedEffectId.isNull()) {
+        box->addItem(tr("None"), QVariant(QString("")));
+        if (selectedEffectId.isEmpty()) {
             currentIndex = availableEQEffects.size(); // selects "None"
-        }
-        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
+        } else if (currentIndex < 0 && !selectedEffectName.isEmpty() ) {
             // current selection is not part of the new list
             // So we need to add it
             box->addItem(selectedEffectName, QVariant(selectedEffectId));
@@ -251,18 +252,17 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
 
         int i;
         for (i = 0; i < availableQuickEffects.size(); ++i) {
-            const EffectManifest& manifest = availableQuickEffects.at(i);
-            box->addItem(manifest.name(), QVariant(manifest.id()));
-            if (selectedEffectId == manifest.id()) {
+            EffectManifestPointer pManifest = availableQuickEffects.at(i);
+            box->addItem(pManifest->name(), QVariant(pManifest->id()));
+            if (selectedEffectId == pManifest->id()) {
                 currentIndex = i;
             }
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant());
-        if (selectedEffectId.isNull()) {
+        box->addItem(tr("None"), QVariant(QString("")));
+        if (selectedEffectId.isEmpty()) {
             currentIndex = availableQuickEffects.size(); // selects "None"
-        }
-        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
+        } else if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
             // So we need to add it
             box->addItem(selectedEffectName, QVariant(selectedEffectId));
@@ -370,13 +370,13 @@ void DlgPrefEQ::slotResetToDefaults() {
                pCombo->findData(kDefaultQuickEffectId));
     }
     loadSettings();
-    CheckBoxBypass->setChecked(Qt::Unchecked);
-    CheckBoxEqOnly->setChecked(Qt::Checked);
-    CheckBoxSingleEqEffect->setChecked(Qt::Checked);
+    CheckBoxBypass->setChecked(false);
+    CheckBoxEqOnly->setChecked(true);
+    CheckBoxSingleEqEffect->setChecked(true);
     m_bEqAutoReset = false;
-    CheckBoxEqAutoReset->setChecked(Qt::Unchecked);
+    CheckBoxEqAutoReset->setChecked(false);
     m_bGainAutoReset = false;
-    CheckBoxGainAutoReset->setChecked(Qt::Unchecked);
+    CheckBoxGainAutoReset->setChecked(false);
     slotUpdate();
     slotApply();
 }
@@ -460,7 +460,7 @@ void DlgPrefEQ::applySelections() {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
                 if (effectpointer &&
-                        effectpointer->getManifest().id() == effectId) {
+                        effectpointer->getManifest()->id() == effectId) {
                     need_load = false;
                 }
             }
@@ -492,15 +492,34 @@ void DlgPrefEQ::applySelections() {
             box->setCurrentIndex(firstEffectIndex);
         }
 
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
+        // Only apply the effect if it changed -- so first interrogate the
+        // loaded effect if any.
+        bool need_load = true;
+        if (m_pQuickEffectRack->numEffectChainSlots() > deck) {
+            // It's not correct to get a chainslot by index number -- get by
+            // group name instead.
+            EffectChainSlotPointer chainslot =
+                    m_pQuickEffectRack->getGroupEffectChainSlot(group);
+            if (chainslot && chainslot->numSlots()) {
+                EffectPointer effectpointer =
+                        chainslot->getEffectSlot(0)->getEffect();
+                if (effectpointer &&
+                        effectpointer->getManifest()->id() == effectId) {
+                    need_load = false;
+                }
+            }
+        }
+        if (need_load) {
+            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+            m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
 
-        m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
-                ConfigValue(effectId));
+            m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
+                    ConfigValue(effectId));
 
-        // This is required to remove a previous selected effect that does not
-        // fit to the current ShowAllEffects checkbox
-        slotPopulateDeckEffectSelectors();
+            // This is required to remove a previous selected effect that does not
+            // fit to the current ShowAllEffects checkbox
+            slotPopulateDeckEffectSelectors();
+        }
         ++deck;
     }
 }
@@ -647,11 +666,11 @@ void DlgPrefEQ::setUpMasterEQ() {
     QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
 
-    const QList<EffectManifest> availableMasterEQEffects =
+    const QList<EffectManifestPointer> availableMasterEQEffects =
         m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
-    for (const auto& manifest : availableMasterEQEffects) {
-        comboBoxMasterEq->addItem(manifest.name(), QVariant(manifest.id()));
+    for (const auto& pManifest : availableMasterEQEffects) {
+        comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->id()));
     }
     //: Displayed when no effect is selected
     comboBoxMasterEq->addItem(tr("None"), QVariant());
@@ -661,7 +680,6 @@ void DlgPrefEQ::setUpMasterEQ() {
         masterEqIndex = availableMasterEQEffects.size(); // selects "None"
     }
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
-    slotMasterEqEffectChanged(masterEqIndex);
 
     // Load parameters from preferences:
     EffectPointer effect(m_pEffectMasterEQ);
@@ -699,18 +717,18 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         pbResetMasterEq->show();
     }
 
-    EffectChainSlotPointer pChainSlot =
-            m_pEQEffectRack->getGroupEffectChainSlot("[Master]");
+    EffectChainSlotPointer pChainSlot = m_pOutputEffectRack->getEffectChainSlot(0);
 
     if (pChainSlot) {
-        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        VERIFY_OR_DEBUG_ASSERT(pChain) {
+            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);
 
-        QString group = m_pEQEffectRack->formatEffectSlotGroupString(0, "[Master]");
-        ControlObject::set(ConfigKey(group, "enabled"), 1);
-
         if (pEffect) {
+            pEffect->setEnabled(true);
             m_pEffectMasterEQ = pEffect;
 
             int knobNum = pEffect->numKnobParameters();
@@ -722,7 +740,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                 if (param) {
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
-                    QString labelText = param->manifest().name();
+                    QString labelText = param->manifest()->name();
                     m_masterEQLabels.append(centerFreqLabel);
                     centerFreqLabel->setText(labelText);
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);

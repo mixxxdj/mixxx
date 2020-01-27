@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include <QString>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -16,7 +17,7 @@
 
 class EffectSlot;
 class ControlProxy;
-typedef QSharedPointer<EffectSlot> EffectSlotPointer;
+
 
 class EffectSlot : public QObject {
     Q_OBJECT
@@ -30,6 +31,10 @@ class EffectSlot : public QObject {
     // returns a null EffectPointer.
     EffectPointer getEffect() const;
 
+    inline bool getEnableState() const {
+        return m_pControlEnabled->toBool();
+    }
+
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;
     }
@@ -37,6 +42,7 @@ class EffectSlot : public QObject {
     unsigned int numParameterSlots() const;
     EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
+    EffectParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
     inline const QList<EffectParameterSlotPointer>& getEffectParameterSlots() const {
         return m_parameters;
     };
@@ -66,7 +72,7 @@ class EffectSlot : public QObject {
 
   public slots:
     // Request that this EffectSlot load the given Effect
-    void loadEffect(EffectPointer pEffect);
+    void loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition);
     void setMetaParameter(double v, bool force = false);
 
     void slotEnabled(double v);
@@ -108,6 +114,7 @@ class EffectSlot : public QObject {
     const unsigned int m_iChainNumber;
     const unsigned int m_iEffectNumber;
     const QString m_group;
+    UserSettingsPointer m_pConfig;
     EffectPointer m_pEffect;
 
     ControlObject* m_pControlLoaded;
@@ -118,7 +125,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlNumButtonParameterSlots;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
-    ControlObject* m_pControlEffectSelector;
+    ControlEncoder* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;

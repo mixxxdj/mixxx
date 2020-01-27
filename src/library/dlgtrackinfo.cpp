@@ -1,26 +1,28 @@
 #include <QDesktopServices>
 #include <QtDebug>
-#include <QStringBuilder>
+#include <QComboBox>
 
-#include "library/dlgtrackinfo.h"
-#include "sources/soundsourceproxy.h"
-#include "track/track.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/dao/cue.h"
+#include "library/dlgtrackinfo.h"
+#include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
+#include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "util/color/color.h"
+#include "util/compatibility.h"
+#include "util/desktophelper.h"
 #include "util/duration.h"
 
 const int kFilterLength = 80;
 const int kMinBpm = 30;
+
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent)
             : QDialog(parent),
-              m_pLoadedTrack(NULL),
               m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
               m_dLastTapedBpm(-1.),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
@@ -37,70 +39,101 @@ void DlgTrackInfo::init() {
     cueTable->hideColumn(0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
-    // It is essential to make the QPlainTextEdit transparent.
-    // Without this, the background is always solid (white by default).
-    txtLocation->viewport()->setAutoFillBackground(false);
+    connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
+    connect(btnPrev, &QPushButton::clicked, this, &DlgTrackInfo::slotPrev);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTrackInfo::apply);
+    connect(btnOK, &QPushButton::clicked, this, &DlgTrackInfo::OK);
+    connect(btnCancel, &QPushButton::clicked, this, &DlgTrackInfo::cancel);
 
-    connect(btnNext, SIGNAL(clicked()),
-            this, SLOT(slotNext()));
-    connect(btnPrev, SIGNAL(clicked()),
-            this, SLOT(slotPrev()));
-    connect(btnApply, SIGNAL(clicked()),
-            this, SLOT(apply()));
-    connect(btnOK, SIGNAL(clicked()),
-            this, SLOT(OK()));
-    connect(btnCancel, SIGNAL(clicked()),
-            this, SLOT(cancel()));
+    connect(bpmDouble,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmDouble);
+    connect(bpmHalve,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmHalve);
+    connect(bpmTwoThirds,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmTwoThirds);
+    connect(bpmThreeFourth,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmThreeFourth);
+    connect(bpmFourThirds,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmFourThirds);
+    connect(bpmThreeHalves,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmThreeHalves);
+    connect(bpmClear,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmClear);
 
-    connect(btnFetchTag, SIGNAL(clicked()),
-            this, SLOT(fetchTag()));
+    connect(bpmConst,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgTrackInfo::slotBpmConstChanged);
 
-    connect(bpmDouble, SIGNAL(clicked()),
-            this, SLOT(slotBpmDouble()));
-    connect(bpmHalve, SIGNAL(clicked()),
-            this, SLOT(slotBpmHalve()));
-    connect(bpmTwoThirds, SIGNAL(clicked()),
-            this, SLOT(slotBpmTwoThirds()));
-    connect(bpmThreeFourth, SIGNAL(clicked()),
-            this, SLOT(slotBpmThreeFourth()));
-    connect(bpmFourThirds, SIGNAL(clicked()),
-            this, SLOT(slotBpmFourThirds()));
-    connect(bpmThreeHalves, SIGNAL(clicked()),
-            this, SLOT(slotBpmThreeHalves()));
-    connect(bpmClear, SIGNAL(clicked()),
-            this, SLOT(slotBpmClear()));
+    connect(spinBpm,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotSpinBpmValueChanged);
 
-    connect(bpmConst, SIGNAL(stateChanged(int)),
-            this, SLOT(slotBpmConstChanged(int)));
+    connect(txtKey,
+            &QLineEdit::editingFinished,
+            this,
+            &DlgTrackInfo::slotKeyTextChanged);
 
-    connect(spinBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSpinBpmValueChanged(double)));
+    connect(btnCueActivate,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::cueActivate);
+    connect(btnCueDelete,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::cueDelete);
+    connect(bpmTap,
+            &QPushButton::pressed,
+            m_pTapFilter.data(),
+            &TapFilter::tap);
+    connect(m_pTapFilter.data(),
+            &TapFilter::tapped,
+            this,
+            &DlgTrackInfo::slotBpmTap);
 
-    connect(txtKey, SIGNAL(editingFinished()),
-            this, SLOT(slotKeyTextChanged()));
-
-    connect(btnCueActivate, SIGNAL(clicked()),
-            this, SLOT(cueActivate()));
-    connect(btnCueDelete, SIGNAL(clicked()),
-            this, SLOT(cueDelete()));
-    connect(bpmTap, SIGNAL(pressed()),
-            m_pTapFilter.data(), SLOT(tap()));
-    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
-            this, SLOT(slotBpmTap(double, int)));
-    connect(btnReloadFromFile, SIGNAL(clicked()),
-            this, SLOT(reloadTrackMetadata()));
-    connect(btnOpenFileBrowser, SIGNAL(clicked()),
-            this, SLOT(slotOpenInFileBrowser()));
+    connect(btnImportMetadataFromFile,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotImportMetadataFromFile);
+    connect(btnImportMetadataFromMusicBrainz,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotImportMetadataFromMusicBrainz);
+    connect(btnOpenFileBrowser,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotOpenInFileBrowser);
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap, bool)));
+    if (pCache != nullptr) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgTrackInfo::slotCoverFound);
     }
-    connect(m_pWCoverArtLabel, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
-    connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(m_pWCoverArtLabel,
+            &WCoverArtLabel::coverInfoSelected,
+            this,
+            &DlgTrackInfo::slotCoverInfoSelected);
+    connect(m_pWCoverArtLabel,
+            &WCoverArtLabel::reloadCoverArt,
+            this,
+            &DlgTrackInfo::slotReloadCoverArt);
 }
 
 void DlgTrackInfo::OK() {
@@ -122,11 +155,11 @@ void DlgTrackInfo::trackUpdated() {
 }
 
 void DlgTrackInfo::slotNext() {
-    emit(next());
+    emit next();
 }
 
 void DlgTrackInfo::slotPrev() {
-    emit(previous());
+    emit previous();
 }
 
 void DlgTrackInfo::cueActivate() {
@@ -143,8 +176,17 @@ void DlgTrackInfo::cueDelete() {
         rowsToDelete.insert(item->row());
     }
 
+    // TODO: QList<T>::fromSet(const QSet<T>&) is deprecated and should be
+    // replaced with QList<T>(set.begin(), set.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QList<int> rowsList = QList<int>(rowsToDelete.begin(), rowsToDelete.end());
+#else
     QList<int> rowsList = QList<int>::fromSet(rowsToDelete);
-    qSort(rowsList);
+#endif
+    std::sort(rowsList.begin(), rowsList.end());
 
     QListIterator<int> it(rowsList);
     it.toBack();
@@ -170,9 +212,9 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     // Non-editable fields
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtLocation->setPlainText(QDir::toNativeSeparators(track.getLocation()));
+    txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
-    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
+    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr(mixxx::AudioSource::Bitrate::unit()));
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
     txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
@@ -181,7 +223,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_loadedCoverInfo = track.getCoverInfo();
+    m_loadedCoverInfo = track.getCoverInfoWithLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -222,15 +264,18 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(*m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+    m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
-    connect(pTrack.get(), SIGNAL(changed(Track*)),
-            this, SLOT(updateTrackMetadata()));
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
-                                  const CoverInfo& info,
+                                  const CoverInfoRelative& info,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
@@ -242,18 +287,22 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
 }
 
 void DlgTrackInfo::slotReloadCoverArt() {
-    if (m_pLoadedTrack) {
-        CoverInfo coverInfo =
-                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-        slotCoverInfoSelected(coverInfo);
+    VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
+        return;
     }
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
-void DlgTrackInfo::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     qDebug() << "DlgTrackInfo::slotCoverInfoSelected" << coverInfo;
-    m_loadedCoverInfo = coverInfo;
+    VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
+        return;
+    }
+    m_loadedCoverInfo = CoverInfo(coverInfo, m_pLoadedTrack->getLocation());
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
+    if (pCache) {
         pCache->requestCover(m_loadedCoverInfo, this, 0, false, true);
     }
 }
@@ -263,22 +312,7 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
         return;
     }
 
-    QDir dir;
-    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
-    do {
-        dir = QDir(splittedPath.join("/"));
-        splittedPath.removeLast();
-    } while (!dir.exists() && splittedPath.size());
-
-    // This function does not work for a non-existent directory!
-    // so it is essential that in the worst case it try opening
-    // a valid directory, in this case, 'QDir::home()'.
-    // Otherwise nothing would happen...
-    if (!dir.exists()) {
-        // it ensures a valid dir for any OS (Windows)
-        dir = QDir::home();
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
+    mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -289,7 +323,9 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        if (pCue->getType() == Cue::CUE || pCue->getType() == Cue::LOAD) {
+        Cue::Type type = pCue->getType();
+        if (type == Cue::Type::HotCue || type == Cue::Type::MainCue || type == Cue::Type::Intro
+                || type == Cue::Type::Outro) {
             listPoints.push_back(pCue);
         }
     }
@@ -306,25 +342,29 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // them to the user as 1-indexex. Add 1 here. rryan 9/2010
         int iHotcue = pCue->getHotCue() + 1;
         QString hotcue = "";
-        if (iHotcue != -1) {
-            hotcue = QString("%1").arg(iHotcue);
-        }
-
-        int position = pCue->getPosition();
-        double totalSeconds;
-        if (position == -1)
+        hotcue = QString("%1").arg(iHotcue);
+        double position = pCue->getPosition();
+        if (position == -1) {
             continue;
-        else {
-            totalSeconds = float(position) / float(sampleRate) / 2.0;
         }
 
-        int fraction = 100*(totalSeconds - floor(totalSeconds));
-        int seconds = int(totalSeconds) % 60;
-        int mins = int(totalSeconds) / 60;
+        double totalSeconds = position / sampleRate / 2.0;
+
+        bool negative = false;
+        if (totalSeconds < 0) {
+            totalSeconds *= -1;
+            negative = true;
+        }
+
+        int iTotalSeconds = static_cast<int>(totalSeconds);
+        int fraction = 100 * (totalSeconds - iTotalSeconds);
+        int seconds = iTotalSeconds % 60;
+        int mins = iTotalSeconds / 60;
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(
+        QString duration = QString("%1%2:%3.%4").arg(
+            negative ? QString("-") : QString(),
             QString::number(mins),
             QString("%1").arg(seconds, 2, 10, QChar('0')),
             QString("%1").arg(fraction, 2, 10, QChar('0')));
@@ -333,16 +373,70 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
 
+        // Decode cue type to display text
+        QString cueType;
+        switch (pCue->getType()) {
+            case Cue::Type::Invalid:
+                cueType = "?";
+                break;
+            case Cue::Type::HotCue:
+                cueType = "Hotcue";
+                break;
+            case Cue::Type::MainCue:
+                cueType = "Main Cue";
+                break;
+            case Cue::Type::Beat:
+                cueType = "Beat";
+                break;
+            case Cue::Type::Loop:
+                cueType = "Loop";
+                break;
+            case Cue::Type::Jump:
+                cueType = "Jump";
+                break;
+            case Cue::Type::Intro:
+                cueType = "Intro";
+                break;
+            case Cue::Type::Outro:
+                cueType = "Outro";
+                break;
+            default:
+                break;
+        }
+
+        QTableWidgetItem* typeItem = new QTableWidgetItem(cueType);
+        // Make the type read only
+        typeItem->setFlags(Qt::NoItemFlags);
+
+        QComboBox* colorComboBox = new QComboBox();
+        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
+        for (int i = 0; i < predefinedColors.count(); i++) {
+            PredefinedColorPointer color = predefinedColors.at(i);
+            QColor defaultRgba = color->m_defaultRgba;
+            colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
+            if (*color != *Color::kPredefinedColorsSet.noColor) {
+                QPixmap pixmap(80, 80);
+                pixmap.fill(defaultRgba);
+                QIcon icon(pixmap);
+                colorComboBox->setItemIcon(i, icon);
+            }
+        }
+        PredefinedColorPointer cueColor = pCue->getColor();
+        colorComboBox->setCurrentIndex(Color::kPredefinedColorsSet.predefinedColorIndex(cueColor));
+
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
-        cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
-        cueTable->setItem(row, 3, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setItem(row, 2, typeItem);
+        cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
+        cueTable->setCellWidget(row, 4, colorComboBox);
+        cueTable->setItem(row, 5, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
     cueTable->setSortingEnabled(true);
     cueTable->horizontalHeader()->setStretchLastSection(true);
+    cueTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
 }
 
 void DlgTrackInfo::saveTrack() {
@@ -351,8 +445,10 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
-               this, SLOT(updateTrackMetadata()));
+    disconnect(m_pLoadedTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
     m_pLoadedTrack->setArtist(txtArtist->text());
@@ -381,29 +477,41 @@ void DlgTrackInfo::saveTrack() {
     QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
-        QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-        QTableWidgetItem* labelItem = cueTable->item(row, 3);
+        QTableWidgetItem* hotcueItem = cueTable->item(row, 3);
+        QWidget* colorWidget = cueTable->cellWidget(row, 4);
+        QTableWidgetItem* labelItem = cueTable->item(row, 5);
 
-        if (!rowItem || !hotcueItem || !labelItem)
+        VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorWidget && labelItem) {
+            qWarning() << "unable to retrieve cells from cueTable row";
             continue;
+        }
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
         CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
         if (!pCue) {
             continue;
         }
-
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert<int>()) {
-            int iTableHotcue = vHotcue.toInt();
+        bool ok;
+        int iTableHotcue = vHotcue.toInt(&ok);
+        if (ok) {
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1
             pCue->setHotCue(iTableHotcue - 1);
         } else {
             pCue->setHotCue(-1);
         }
+
+        if (pCue->getType() == Cue::Type::HotCue) {
+            auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
+            if (colorComboBox) {
+                PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
+                pCue->setColor(color);
+            }
+        }
+        // do nothing for now.
 
         QString label = labelItem->data(Qt::DisplayRole).toString();
         pCue->setLabel(label);
@@ -429,8 +537,10 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
-    connect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
-            this, SLOT(updateTrackMetadata()));
+    connect(m_pLoadedTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -445,8 +555,10 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-
-    disconnect(this, SLOT(updateTrackMetadata()));
+    disconnect(m_pLoadedTrack.get(),
+            &Track::changed,
+            this,
+            &DlgTrackInfo::updateTrackMetadata);
     m_pLoadedTrack.reset();
 
     txtTrackName->setText("");
@@ -465,7 +577,7 @@ void DlgTrackInfo::clear() {
 
     txtDuration->setText("");
     txtType->setText("");
-    txtLocation->setPlainText("");
+    txtLocation->setText("");
     txtBitrate->setText("");
     txtBpm->setText("");
     txtKey->setText("");
@@ -541,9 +653,9 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // almost all cases.
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
-            double cue = m_pLoadedTrack->getCuePoint();
+            CuePosition cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = BeatFactory::makeBeatGrid(
-                    *m_pLoadedTrack, spinBpm->value(), cue);
+                    *m_pLoadedTrack, spinBpm->value(), cue.getPosition());
         } else {
             m_pBeatsClone.clear();
         }
@@ -575,9 +687,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        double cue = m_pLoadedTrack->getCuePoint();
+        CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = BeatFactory::makeBeatGrid(
-                *m_pLoadedTrack, value, cue);
+                *m_pLoadedTrack, value, cue.getPosition());
     }
 
     double oldValue = m_pBeatsClone->getBpm();
@@ -616,19 +728,17 @@ void DlgTrackInfo::slotKeyTextChanged() {
     m_keysClone = newKeys;
 }
 
-void DlgTrackInfo::reloadTrackMetadata() {
+void DlgTrackInfo::slotImportMetadataFromFile() {
     if (m_pLoadedTrack) {
         // Allocate a temporary track object for reading the metadata.
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack = Track::newTemporary(
+        TrackPointer pTrack = SoundSourceProxy::importTemporaryTrack(
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken());
-        if (pTrack) {
-            SoundSourceProxy(pTrack).updateTrack();
-            populateFields(*pTrack);
-        }
+        DEBUG_ASSERT(pTrack);
+        populateFields(*pTrack);
     }
 }
 
@@ -638,6 +748,6 @@ void DlgTrackInfo::updateTrackMetadata() {
     }
 }
 
-void DlgTrackInfo::fetchTag() {
-    emit(showTagFetcher(m_pLoadedTrack));
+void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
+    emit showTagFetcher(m_pLoadedTrack);
 }

@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -42,9 +43,9 @@ void WaveformRendererRGB::draw(QPainter* painter,
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHints(QPainter::Antialiasing, false);
-    painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
@@ -68,6 +69,10 @@ void WaveformRendererRGB::draw(QPainter* painter,
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     QColor color;
+
+    QPen pen;
+    pen.setCapStyle(Qt::FlatCap);
+    pen.setWidthF(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
 
     const int breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = (float)breadth / 2.0;
@@ -149,7 +154,9 @@ void WaveformRendererRGB::draw(QPainter* painter,
             // Set color
             color.setRgbF(red / max, green / max, blue / max);
 
-            painter->setPen(color);
+            pen.setColor(color);
+
+            painter->setPen(pen);
             switch (m_alignment) {
                 case Qt::AlignBottom:
                 case Qt::AlignRight:
@@ -170,6 +177,4 @@ void WaveformRendererRGB::draw(QPainter* painter,
             }
         }
     }
-
-    painter->restore();
 }

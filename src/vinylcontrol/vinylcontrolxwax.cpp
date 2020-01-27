@@ -136,8 +136,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, QString group)
         speed = 1.35;
     }
 
-    double latency = ControlObject::getControl(
-            ConfigKey("[Master]", "latency"))->get();
+    double latency = ControlObject::get(
+            ConfigKey("[Master]", "latency"));
     if (latency <= 0 || latency > 200) {
         qDebug() << "Failed to get sane latency, assuming 20 as a reasonable value";
         latency = 20;
@@ -444,7 +444,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         // now we just either set scratch val to 0 (stops playback)
         // or 1 (plays back at that rate)
 
-        double newScratch = reportedPlayButton ? calcRateRatio() : 0.0;
+        double newScratch = reportedPlayButton ? m_pRateRatio->get() : 0.0;
         m_pVCRate->set(newScratch);
 
         // is there any reason we'd need to do anything else?
@@ -496,7 +496,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 if (uiUpdateTime(filePosition)) {
-                    m_pRateSlider->set(m_pRateDir->get() * (fabs(dVinylPitch) - 1.0) / m_pRateRange->get());
+                    m_pRateRatio->set(fabs(dVinylPitch));
                 }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                        (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
@@ -614,11 +614,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             }
             // Don't show extremely high or low speeds in the UI.
             if (reportedPlayButton && !scratching->get() &&
-                    m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
-                m_pRateSlider->set(m_pRateDir->get() *
-                                   (m_dDisplayPitch - 1.0) / m_pRateRange->get());
+                        m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
+                m_pRateRatio->set(m_dDisplayPitch);
             } else {
-                m_pRateSlider->set(0.0);
+                m_pRateRatio->set(1.0);
             }
             m_dUiUpdateTime = filePosition;
         }
@@ -633,7 +632,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //if it hasn't been long,
         //let the track play a wee bit more before deciding we've stopped
 
-        m_pRateSlider->set(0.0);
+        m_pRateRatio->set(1.0);
 
         if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                 fabs(m_dVinylPosition - filePosition) >= 0.1) {
@@ -673,7 +672,7 @@ void VinylControlXwax::enableConstantMode() {
     mode->slotSet((double)m_iVCMode);
     togglePlayButton(true);
     double rate = m_pVCRate->get();
-    m_pRateSlider->set(m_pRateDir->get() * (fabs(rate) - 1.0) / m_pRateRange->get());
+    m_pRateRatio->set(fabs(rate));
     m_pVCRate->set(rate);
 }
 
@@ -682,7 +681,7 @@ void VinylControlXwax::enableConstantMode(double rate) {
     m_iVCMode = MIXXX_VCMODE_CONSTANT;
     mode->slotSet((double)m_iVCMode);
     togglePlayButton(true);
-    m_pRateSlider->set(m_pRateDir->get() * (fabs(rate) - 1.0) / m_pRateRange->get());
+    m_pRateRatio->set(fabs(rate));
     m_pVCRate->set(rate);
 }
 
@@ -780,17 +779,18 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
     }
 
     if (was != is) {
-        //we reset the scratch value, but we don't reset the rate slider.
-        //This means if we are playing, and we disable vinyl control,
-        //the track will keep playing at the previous rate.
-        //This allows for single-deck control, dj handoffs, etc.
+        // we reset the scratch value, but we don't reset the rate slider.
+        // This means if we are playing, and we disable vinyl control,
+        // the track will keep playing at the previous rate.
+        // This allows for single-deck control, dj handoffs, etc.
 
         togglePlayButton(playButton->get() || fabs(m_pVCRate->get()) > 0.05);
-        m_pVCRate->set(calcRateRatio());
+        m_pVCRate->set(m_pRateRatio->get());
         resetSteadyPitch(0.0, 0.0);
         m_bForceResync = true;
-        if (!was)
+        if (!was) {
             m_dOldFilePos = 0.0;
+        }
         m_iVCMode = mode->get();
         m_bAtRecordEnd = false;
     }
@@ -839,10 +839,4 @@ float VinylControlXwax::getAngle() {
     float rps = timecoder_revs_per_sec(&timecoder);
     // Invert angle to make vinyl spin direction correct.
     return 360 - (static_cast<int>(pos / 1000.0 * 360.0 * rps) % 360);
-}
-
-double VinylControlXwax::calcRateRatio() const {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
-            m_pRateSlider->get();
-    return rateRatio;
 }

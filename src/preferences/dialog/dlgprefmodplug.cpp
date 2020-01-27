@@ -128,8 +128,8 @@ void DlgPrefModplug::applySettings() {
     settings.mChannels = mixxx::SoundSourceModPlug::kChannelCount;
     // Bits per sample - 8, 16, or 32
     settings.mBits = mixxx::SoundSourceModPlug::kBitsPerSample;
-    // Sampling rate - 11025, 22050, or 44100
-    settings.mFrequency = mixxx::SoundSourceModPlug::kSamplingRate;
+    // Sample rate - 11025, 22050, or 44100
+    settings.mFrequency = mixxx::SoundSourceModPlug::kSampleRate;
 
     // enabled features flags
     settings.mFlags = 0;

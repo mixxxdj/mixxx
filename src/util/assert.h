@@ -1,7 +1,7 @@
-#ifndef ASSERT_H
-#define ASSERT_H
+#pragma once
 
 #include <QtDebug>
+
 
 static constexpr const char* kDebugAssertPrefix = "DEBUG ASSERT";
 
@@ -58,5 +58,3 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 #endif
 
 #define VERIFY_OR_DEBUG_ASSERT(cond) if ((!(cond)) && mixxx_maybe_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
-
-#endif /* ASSERT_H */

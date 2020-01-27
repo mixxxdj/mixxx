@@ -386,7 +386,7 @@ METADATA
   <revision version="24" min_compatible="3">
     <description>
       Add cover art support. Default source is UNKNOWN and default type is NONE.
-      See library/coverart.h.
+      <!-- See library/coverart.h. -->
     </description>
     <sql>
       ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
@@ -419,11 +419,66 @@ METADATA
   <revision version="27" min_compatible="3">
     <description>
       Add cue color support. Default color is #FF0000.
-      See library/dao/cue.h.
+      <!-- See track/cue.h. -->
     </description>
     <sql>
       <!-- Default color is #FFFF0000 (in base 10) -->
       ALTER TABLE cues ADD COLUMN color INTEGER DEFAULT 4294901760 NOT NULL;
     </sql>
   </revision>
+  <revision version="28" min_compatible="3">
+    <description>
+      Reset replay gain info for all FLAC files after fixing a decoding bug in version 2.1.0.
+      <!-- The value of 'replaygain_peak' is not yet calculated by any Mixxx analyzer, -->
+      <!-- so we should leave it untouched and don't need to reset it here!            -->
+      <!-- See also: https://bugs.launchpad.net/mixxx/+bug/1766042                     -->
+    </description>
+    <sql>
+      <!-- Reset replay gain to default value -->
+      UPDATE library SET replaygain=0.0 WHERE filetype='flac' COLLATE NOCASE;
+    </sql>
+  </revision>
+  <revision version="29" min_compatible="3">
+    <description>
+      This was used in the development of 2.3 to track whether cues were placed
+      manually or automatically. However, this turned out to be unnecessary.
+      This version is left as a placeholder so users who were using the master
+      branch will have their database updated correctly for the subsequent
+      schema change.
+    </description>
+    <sql/>
+  </revision>
+  <revision version="30" min_compatible="3">
+    <description>
+      Tables for Rekordbox library feature
+    </description>
+    <sql>
+     CREATE TABLE IF NOT EXISTS rekordbox_library (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rb_id INTEGER,
+        artist TEXT, title TEXT,
+        album TEXT, year TEXT,
+        genre TEXT, tracknumber TEXT,
+        location TEXT UNIQUE,
+        comment TEXT,
+        duration INTEGER,
+        bitrate INTEGER,
+        bpm FLOAT,
+        key TEXT,
+        rating INTEGER,
+        analyze_path TEXT UNIQUE,
+        device TEXT
+        );
+      CREATE TABLE IF NOT EXISTS rekordbox_playlists (
+        id INTEGER PRIMARY KEY,
+        name TEXT UNIQUE
+        );
+      CREATE TABLE IF NOT EXISTS rekordbox_playlist_tracks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        playlist_id INTEGER REFERENCES rekordbox_playlists(id),
+        track_id INTEGER REFERENCES rekordbox_library(id),
+        position INTEGER
+        );
+    </sql>
+  </revision>  
 </schema>

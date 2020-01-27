@@ -82,7 +82,7 @@ public:
         m_peak = peak;
     }
     void resetPeak() {
-        m_peak = CSAMPLE_PEAK;
+        m_peak = kPeakUndefined;
     }
 
     // Parsing and formatting of peak amplitude values according to
@@ -91,6 +91,13 @@ public:
     static QString peakToString(CSAMPLE peak);
 
     static CSAMPLE normalizePeak(CSAMPLE peak);
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        m_ratio = normalizeRatio(m_ratio);
+        m_peak = normalizePeak(m_peak);
+    }
 
 private:
     double m_ratio;
@@ -105,6 +112,11 @@ bool operator==(const ReplayGain& lhs, const ReplayGain& rhs) {
 inline
 bool operator!=(const ReplayGain& lhs, const ReplayGain& rhs) {
     return !(lhs == rhs);
+}
+
+inline
+QDebug operator<<(QDebug dbg, const ReplayGain& arg) {
+    return dbg << "ratio =" << arg.getRatio() << "/" << "peak =" << arg.getPeak();
 }
 
 }

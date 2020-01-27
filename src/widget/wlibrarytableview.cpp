@@ -6,6 +6,7 @@
 #include <QScrollBar>
 #include <QFontMetrics>
 
+#include "library/trackmodel.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"
@@ -18,10 +19,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
+    loadVScrollBarPosState();
+
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
-    setEditTriggers(QAbstractItemView::SelectedClicked);
+    setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -42,8 +45,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    loadVScrollBarPosState();
-
     connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SIGNAL(scrollValueChanged(int)));
 
@@ -51,7 +52,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-    saveVScrollBarPosState();
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {
@@ -59,20 +59,22 @@ void WLibraryTableView::loadVScrollBarPosState() {
     // position across restarts of Mixxx. Now that we have different views for
     // each mode, the views should just maintain their scrollbar position when
     // you switch views. We should discuss this.
-    m_iSavedVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
+    m_noSearchVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
 }
 
-void WLibraryTableView::restoreVScrollBarPos() {
-    //Restore the scrollbar's position (scroll to that spot)
-    //when the search has been cleared
+void WLibraryTableView::restoreNoSearchVScrollBarPos() {
+    // Restore the scrollbar's position (scroll to that spot)
+    // when the search has been cleared
+    //qDebug() << "restoreNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
     updateGeometries();
-    verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
+    verticalScrollBar()->setValue(m_noSearchVScrollBarPos);
 }
 
-void WLibraryTableView::saveVScrollBarPos() {
-    //Save the scrollbar's position so we can return here after
-    //a search is cleared.
-    m_iSavedVScrollBarPos = verticalScrollBar()->value();
+void WLibraryTableView::saveNoSearchVScrollBarPos() {
+    // Save the scrollbar's position so we can return here after
+    // a search is cleared.
+    //qDebug() << "saveNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
+    m_noSearchVScrollBarPos = verticalScrollBar()->value();
 }
 
 
@@ -112,6 +114,21 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
+void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
+    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
+}
+
+void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
+    updateGeometries();
+
+    if (m_vScrollBarPosValues.contains(key)){
+        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
+    }else{
+        m_vScrollBarPosValues[key] = 0;
+        verticalScrollBar()->setValue(0);
+    }
+}
+
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
     setTrackTableRowHeight(verticalHeader()->defaultSectionSize());
@@ -121,5 +138,13 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     QFontMetrics metrics(font());
     int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-            rowHeight, fontHeightPx));
+                                                rowHeight, fontHeightPx));
+}
+
+void WLibraryTableView::setSelectedClick(bool enable) {
+    if (enable) {
+        setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
+    } else {
+        setEditTriggers(QAbstractItemView::EditKeyPressed);
+    }
 }

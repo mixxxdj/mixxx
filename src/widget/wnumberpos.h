@@ -6,12 +6,13 @@
 #include <QMouseEvent>
 
 #include "wnumber.h"
-#include "preferences/dialog/dlgprefcontrols.h"
+#include "preferences/dialog/dlgprefdeck.h"
 
 class ControlProxy;
 
 class WNumberPos : public WNumber {
     Q_OBJECT
+
   public:
     explicit WNumberPos(const char *group, QWidget *parent=nullptr);
 
@@ -20,26 +21,21 @@ class WNumberPos : public WNumber {
 
   private slots:
     void setValue(double dValue) override;
-    void slotSetPosition(double);
-    void slotSetTrackSampleRate(double dSampleRate);
-    void slotSetTrackSamples(double dSamples);
+    void slotSetTimeElapsed(double);
+    void slotTimeRemainingUpdated(double);
     void slotSetDisplayMode(double);
+    void slotSetTimeFormat(double);
 
   private:
 
     TrackTime::DisplayMode m_displayMode;
+    TrackTime::DisplayFormat m_displayFormat;
 
-    // Old value set
-    double m_dOldPosition;
-    double m_dTrackSamples;
-    double m_dTrackSampleRate;
-    // True if remaining content is being shown
-    bool m_bRemain;
+    double m_dOldTimeElapsed;
+    ControlProxy* m_pTimeElapsed;
+    ControlProxy* m_pTimeRemaining;
     ControlProxy* m_pShowTrackTimeRemaining;
-    // Pointer to control object for position, rate, and track info
-    ControlProxy* m_pVisualPlaypos;
-    ControlProxy* m_pTrackSamples;
-    ControlProxy* m_pTrackSampleRate;
+    ControlProxy* m_pTimeFormat;
 };
 
 #endif

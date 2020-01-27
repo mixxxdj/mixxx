@@ -14,97 +14,141 @@
 #include <QTextStream>
 #include <QXmlStreamReader>
 #include <QUrl>
+#include <QJsonDocument>
 
 #include "musicbrainz/musicbrainzclient.h"
+
+#include "util/logger.h"
 #include "util/version.h"
 #include "defs_urls.h"
 
-const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
-const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
-const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
+
+namespace {
+
+mixxx::Logger kLogger("MusicBrainzClient");
+
+const QString kRecordingUrl = "https://musicbrainz.org/ws/2/recording/";
+const QString kDateRegex = "^[12]\\d{3}";
+constexpr int kDefaultTimeout = 5000; // msec
+constexpr int kDefaultErrorCode = 0;
+
+QString decodeText(const QByteArray& data, const QStringRef codecName) {
+    QTextStream textStream(data);
+    if (!codecName.isEmpty()) {
+        textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
+    }
+    return textStream.readAll();
+}
+
+} // anonymous namespace
+
+
+
 
 MusicBrainzClient::MusicBrainzClient(QObject* parent)
                  : QObject(parent),
                    m_network(this),
-                   m_timeouts(m_DefaultTimeout, this) {
+                   m_timeouts(kDefaultTimeout, this) {
 }
 
-void MusicBrainzClient::start(int id, const QString& mbid) {
-    typedef QPair<QString, QString> Param;
+void MusicBrainzClient::start(int id, QStringList recordingIds) {
+    nextRequest(id, Request(std::move(recordingIds)));
+}
 
+void MusicBrainzClient::nextRequest(int id, Request request) {
+    DEBUG_ASSERT(!m_requests.contains(id));
+    if (request.recordingIds.isEmpty()) {
+        emit finished(id, uniqueResults(request.results));
+        return;
+    }
+    const auto recordingId = request.recordingIds.takeFirst();
+
+    typedef QPair<QString, QString> Param;
     QList<Param> parameters;
     parameters << Param("inc", "artists+releases+media");
 
-    QUrl url(m_TrackUrl + mbid);
-    url.setQueryItems(parameters);
-    qDebug() << "MusicBrainzClient GET request:" << url.toString();
+    QUrl url(kRecordingUrl + recordingId);
+    QUrlQuery query;
+    query.setQueryItems(parameters);
+    url.setQuery(query);
+    kLogger.debug()
+            << "GET request:"
+            << url.toString();
     QNetworkRequest req(url);
     // http://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings
     QString mixxxMusicBrainzId(Version::applicationName() + "/" + Version::version() + " ( " + MIXXX_WEBSITE_URL + " )");
-    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toAscii());
+    // HTTP request headers must be latin1.
+    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toLatin1());
     QNetworkReply* reply = m_network.get(req);
-    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
-    m_requests[reply] = id;
-
+    m_requests[id] = std::move(request);
+    m_replies[reply] = id;
+    connect(reply, &QNetworkReply::finished, this, &MusicBrainzClient::replyFinished);
     m_timeouts.addReply(reply);
 }
 
 void MusicBrainzClient::cancel(int id) {
-    QNetworkReply* reply = m_requests.key(id);
-    m_requests.remove(reply);
-    delete reply;
+    m_requests.remove(id);
+    QNetworkReply* reply = m_replies.key(id);
+    if (reply) {
+        reply->abort();
+    }
 }
 
 void MusicBrainzClient::cancelAll() {
-    qDeleteAll(m_requests.keys());
     m_requests.clear();
+    auto replies = m_replies;
+    m_replies.clear();
+    for (auto it = replies.constBegin();
+         it != replies.constEnd(); ++it) {
+        it.key()->abort();
+    }
 }
 
-namespace {
-    QString decodeText(const QByteArray& data, const char* codecName) {
-        QTextStream textStream(data);
-        if ((nullptr != codecName) && (0 < strlen(codecName))) {
-            textStream.setCodec(codecName);
-        }
-        return textStream.readAll();
-    }
-} // anonymous namespace
-
-void MusicBrainzClient::requestFinished() {
+void MusicBrainzClient::replyFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
+    if (!reply) {
         return;
-
+    }
     reply->deleteLater();
-    if (!m_requests.contains(reply))
-        return;
 
-    int id = m_requests.take(reply);
-    ResultList ret;
+    if (!m_replies.contains(reply)) {
+        return;
+    }
+    int id = m_replies.take(reply);
+
+    if (!m_requests.contains(id)) {
+        return;
+    }
+    Request request = m_requests.take(id);
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    qDebug() << "MusicBrainzClient GET reply status:" << status;
+    QTextStream textReader(reply);
+    const QByteArray body(reply->readAll());
+    QXmlStreamReader reader(body);
 
     // MusicBrainz returns 404 when the MBID is not in their database. We treat
     // a status of 404 the same as a 200 but it will produce an empty list of
     // results.
     if (status != 200 && status != 404) {
-        emit(networkError(
+        qDebug() << "MusicBrainzClient POST reply status:" << status << "body:" << body;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(body);
+        QJsonObject jsonObject = jsonResponse.object();
+        QString message = jsonObject["error"].toString();
+        QStringList propertyNames;
+        QStringList propertyKeys;
+        emit networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz"));
+             "MusicBrainz", message, kDefaultErrorCode);
         return;
     }
 
-    const QByteArray body(reply->readAll());
-
-    QXmlStreamReader reader(body);
-    QByteArray codecName;
+    QStringRef codecName;
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
         case QXmlStreamReader::Invalid:
         {
             qWarning() << "MusicBrainzClient GET reply body:"
-                    << decodeText(body, codecName.constData());
+                    << decodeText(body, codecName);
             qWarning()
                 << "MusicBrainzClient GET decoding error:"
                 << reader.errorString();
@@ -113,11 +157,11 @@ void MusicBrainzClient::requestFinished() {
         case QXmlStreamReader::StartDocument:
         {
             // The character encoding is always an ASCII string
-            codecName = reader.documentEncoding().toAscii();
+            codecName = reader.documentEncoding();
             qDebug() << "MusicBrainzClient GET reply codec:"
-                    << codecName.constData();
+                     << codecName;
             qDebug() << "MusicBrainzClient GET reply body:"
-                    << decodeText(body, codecName.constData());
+                     << decodeText(body, codecName);
             break;
         }
         case QXmlStreamReader::StartElement:
@@ -126,7 +170,7 @@ void MusicBrainzClient::requestFinished() {
                 ResultList tracks = parseTrack(reader);
                 for (const Result& track: tracks) {
                     if (!track.m_title.isEmpty()) {
-                        ret << track;
+                        request.results << track;
                     }
                 }
             }
@@ -138,7 +182,7 @@ void MusicBrainzClient::requestFinished() {
         }
         }
     }
-    emit(finished(id, uniqueResults(ret)));
+    nextRequest(id, request);
 }
 
 MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& reader) {
@@ -199,7 +243,7 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
             if (name == "title") {
                 ret.m_album = reader.readElementText();
             } else if (name == "date") {
-                QRegExp regex(m_DateRegex);
+                QRegExp regex(kDateRegex);
                 if (regex.indexIn(reader.readElementText()) == 0) {
                 ret.m_year = regex.cap(0).toInt();
                 }
@@ -218,8 +262,17 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
 }
 
 MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(const ResultList& results) {
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    ResultList ret = QSet<Result>(results.begin(), results.end()).values();
+#else
     ResultList ret = QSet<Result>::fromList(results).toList();
-    qSort(ret);
+#endif
+    std::sort(ret.begin(), ret.end());
     return ret;
 }
 

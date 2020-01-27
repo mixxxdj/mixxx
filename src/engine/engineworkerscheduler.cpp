@@ -9,27 +9,24 @@
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_bWakeScheduler(false),
-          m_scheduleFIFO(MAX_ENGINE_WORKERS),
           m_bQuit(false) {
     Q_UNUSED(pParent);
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
-    m_mutex.lock();
     m_bQuit = true;
     m_waitCondition.wakeAll();
-    m_mutex.unlock();
     wait();
 }
 
-void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
-    if (pWorker) {
-        // If the write fails, we really can't do much since we should not block
-        // in this slot. Write the address of the variable pWorker, since it is
-        // a 1-element array.
-        m_scheduleFIFO.write(&pWorker, 1);
-        m_bWakeScheduler = true;
-    }
+void EngineWorkerScheduler::workerReady() {
+    m_bWakeScheduler = true;
+}
+
+void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
+    DEBUG_ASSERT(pWorker);
+    QMutexLocker locker(&m_mutex);
+    m_workers.push_back(pWorker);
 }
 
 void EngineWorkerScheduler::runWorkers() {
@@ -43,19 +40,22 @@ void EngineWorkerScheduler::runWorkers() {
 }
 
 void EngineWorkerScheduler::run() {
+    static const QString tag("EngineWorkerScheduler");
     while (!m_bQuit) {
-        Event::start("EngineWorkerScheduler");
-        EngineWorker* pWorker = NULL;
-        while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
-            if (pWorker) {
-                pWorker->wake();
+        Event::start(tag);
+        {
+            QMutexLocker lock(&m_mutex);
+            for(const auto& pWorker: m_workers) {
+                pWorker->wakeIfReady();
             }
         }
-        Event::end("EngineWorkerScheduler");
-        m_mutex.lock();
-        if (!m_bQuit) {
-            m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+        Event::end(tag);
+        {
+            QMutexLocker lock(&m_mutex);
+            if (!m_bQuit) {
+                // Wait for next runWorkers() call
+                m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+            }
         }
-        m_mutex.unlock();
     }
 }

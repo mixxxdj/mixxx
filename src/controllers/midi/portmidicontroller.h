@@ -50,7 +50,7 @@
 #define MIXXX_PORTMIDI_BUFFER_LEN 1024
 
 // Length of SysEx buffer in byte
-#define MIXXX_SYSEX_BUFFER_LEN 1024 
+#define MIXXX_SYSEX_BUFFER_LEN 1024
 
 // String to display for no MIDI devices present
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None"

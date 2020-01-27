@@ -25,14 +25,14 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAutoScroll(true);
     setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
-    header()->setResizeMode(QHeaderView::ResizeToContents);
+    header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
-    emit(rightClicked(event->globalPos(), clickedItem));
+    emit rightClicked(event->globalPos(), clickedItem);
     //}
 }
 
@@ -44,7 +44,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         // drag so for now we accept all drags. Since almost every
         // LibraryFeature accepts all files in the drop and accepts playlist
         // drops we default to those flags to DragAndDropHelper.
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+        QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(
                 event->mimeData()->urls(), false, true);
         if (!files.isEmpty()) {
             event->acceptProposedAction();
@@ -70,7 +70,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     // rejected -- rryan 3/2011
     QTreeView::dragMoveEvent(event);
     if (event->mimeData()->hasUrls()) {
-        QList<QUrl> urls(event->mimeData()->urls());
+        const QList<QUrl> urls = event->mimeData()->urls();
         // Drag and drop within this widget
         if ((event->source() == this)
                 && (event->possibleActions() & Qt::MoveAction)) {
@@ -82,7 +82,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             if (sidebarModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
-                    QModelIndex destIndex = this->indexAt(event->pos());
+                    QModelIndex destIndex = indexAt(event->pos());
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
@@ -137,9 +137,9 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
-                // event->source() will return NULL if something is droped from
+                // event->source() will return NULL if something is dropped from
                 // a different application
-                QList<QUrl> urls(event->mimeData()->urls());
+                const QList<QUrl> urls = event->mimeData()->urls();
                 if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
                     event->acceptProposedAction();
                 } else {
@@ -147,7 +147,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                 }
             }
         }
-        //emit(trackDropped(name));
+        //emit trackDropped(name);
         //repaintEverything();
     } else {
         event->ignore();
@@ -160,10 +160,25 @@ void WLibrarySidebar::toggleSelectedItem() {
     if (selectedIndices.size() > 0) {
         QModelIndex index = selectedIndices.at(0);
         // Activate the item so its content shows in the main library.
-        emit(pressed(index));
+        emit pressed(index);
         // Expand or collapse the item as necessary.
         setExpanded(index, !isExpanded(index));
     }
+}
+
+bool WLibrarySidebar::isLeafNodeSelected() {
+    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0) {
+        QModelIndex index = selectedIndices.at(0);
+        if(!index.model()->hasChildren(index)) {
+            return true;
+        }
+        const SidebarModel* sidebarModel = dynamic_cast<const SidebarModel*>(index.model());
+        if (sidebarModel) {
+            return sidebarModel->hasTrackTable(index);
+        }
+    }
+    return false;
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
@@ -182,12 +197,16 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
-            emit(pressed(index));
+            emit pressed(index);
         }
         return;
+    //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {
+    //    // encoder click via "GoToItem"
+    //    qDebug() << "GoToItem";
+    //    TODO(xxx) decide what todo here instead of in librarycontrol
     }
 
-    // Fall through to deafult handler.
+    // Fall through to default handler.
     QTreeView::keyPressEvent(event);
 }
 

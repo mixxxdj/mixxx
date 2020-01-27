@@ -1,7 +1,9 @@
 #include <QApplication>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "sources/soundsourceproxy.h"
+
+#include "sources/audiosourcetrackproxy.h"
 
 #ifdef __MAD__
 #include "sources/soundsourcemp3.h"
@@ -16,19 +18,29 @@
 #ifdef __SNDFILE__
 #include "sources/soundsourcesndfile.h"
 #endif
-#ifdef __FFMPEGFILE__
+#ifdef __FFMPEG__
 #include "sources/soundsourceffmpeg.h"
 #endif
 #ifdef __MODPLUG__
 #include "sources/soundsourcemodplug.h"
 #endif
+#ifdef __FAAD__
+#include "sources/soundsourcem4a.h"
+#endif
+#ifdef __WV__
+#include "sources/soundsourcewv.h"
+#endif
 #include "sources/soundsourceflac.h"
+#ifdef __MEDIAFOUNDATION__
+#include "sources/soundsourcemediafoundation.h"
+#endif
 
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "track/globaltrackcache.h"
 #include "util/cmdlineargs.h"
-#include "util/regex.h"
 #include "util/logger.h"
+#include "util/regex.h"
 
 //Static memory allocation
 /*static*/ mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
@@ -39,116 +51,16 @@ namespace {
 
 const mixxx::Logger kLogger("SoundSourceProxy");
 
-#if (__UNIX__ || __LINUX__ || __APPLE__)
-// Filtering of plugin file names on UNIX systems
-const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN("libsoundsource*");
-#else
-// No filtering of plugin file names on other systems, e.g. Windows
-const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN; // empty
-#endif
-
-QList<QDir> getSoundSourcePluginDirectories() {
-    QList<QDir> pluginDirs;
-
-    const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
-    if (!pluginPath.isEmpty()) {
-        kLogger.debug() << "Adding plugin path from commandline arg:" << pluginPath;
-        pluginDirs << QDir(pluginPath);
-    }
-
-    const QString dataLocation = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
-    const QString applicationPath = QCoreApplication::applicationDirPath();
-
-#ifdef __LINUX__
-    // TODO(rryan): Why can't we use applicationDirPath() and assume it's in the
-    // 'bin' folder of $PREFIX, so we just traverse
-    // ../lib/mixxx/plugins/soundsource.
-    QDir libPluginDir(UNIX_LIB_PATH);
-    if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
-        pluginDirs << libPluginDir;
-    }
-
-    QDir dataPluginDir(dataLocation);
-    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
-        pluginDirs << dataPluginDir;
-    }
-
-    // For people who build from source.
-    QDir developer32Root(applicationPath);
-    if (developer32Root.cd("lin32_build") && developer32Root.cd("plugins")) {
-        pluginDirs << developer32Root.absolutePath();
-    }
-    QDir developer64Root(applicationPath);
-    if (developer64Root.cd("lin64_build") && developer64Root.cd("plugins")) {
-        pluginDirs << developer64Root.absolutePath();
-    }
-#elif __WINDOWS__
-    QDir appPluginDir(applicationPath);
-    if (appPluginDir.cd("plugins") && appPluginDir.cd("soundsource")) {
-        pluginDirs << appPluginDir;
-    }
-#elif __APPLE__
-    // blah/Mixxx.app/Contents/MacOS/../PlugIns/
-    // TODO(XXX): Our SCons bundle target doesn't handle plugin subdirectories
-    // :( so we can't do:
-    //blah/Mixxx.app/Contents/PlugIns/soundsource
-    QDir bundlePluginDir(applicationPath);
-    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
-        pluginDirs << bundlePluginDir;
-    }
-
-    // For people who build from source.
-    QDir developer32Root(applicationPath);
-    if (developer32Root.cd("osx32_build") && developer32Root.cd("plugins")) {
-        pluginDirs << developer32Root.absolutePath();
-    }
-    QDir developer64Root(applicationPath);
-    if (developer64Root.cd("osx64_build") && developer64Root.cd("plugins")) {
-        pluginDirs << developer64Root.absolutePath();
-    }
-
-    QDir dataPluginDir(dataLocation);
-    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("soundsource")) {
-        pluginDirs << dataPluginDir;
-    }
-#endif
-
-    return pluginDirs;
-}
-
-QUrl getCanonicalUrlForTrack(const Track* pTrack) {
-    if (pTrack == nullptr) {
-        // Missing track
-        return QUrl();
-    }
-    const QString canonicalLocation(pTrack->getCanonicalLocation());
-    if (canonicalLocation.isEmpty()) {
-        // Corresponding file is missing or inaccessible
-        //
-        // NOTE(uklotzde): Special case handling is required for Qt 4.8!
-        // Creating an URL from an empty local file in Qt 4.8 will result
-        // in an URL with the string "file:" instead of an empty URL.
-        //
-        // TODO(XXX): This is no longer required for Qt 5.x
-        // http://doc.qt.io/qt-5/qurl.html#fromLocalFile
-        // "An empty localFile leads to an empty URL (since Qt 5.4)."
-        return QUrl();
-    }
-    return QUrl::fromLocalFile(canonicalLocation);
-}
-
 } // anonymous namespace
 
 // static
-void SoundSourceProxy::loadPlugins() {
+void SoundSourceProxy::registerSoundSourceProviders() {
     // Initialize built-in file types.
     // Fallback providers should be registered before specialized
     // providers to ensure that they are only after the specialized
     // provider failed to open a file. But the order of registration
     // only matters among providers with equal priority.
-#ifdef __FFMPEGFILE__
-    // Use FFmpeg as the last resort.
+#ifdef __FFMPEG__
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
 #endif
@@ -173,57 +85,41 @@ void SoundSourceProxy::loadPlugins() {
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderModPlug>());
 #endif
+#ifdef __WV__
+    s_soundSourceProviders.registerProvider(
+            std::make_shared<mixxx::SoundSourceProviderWV>());
+#endif
+#ifdef __FAAD__
+    s_soundSourceProviders.registerProvider(
+            std::make_shared<mixxx::SoundSourceProviderM4A>());
+#endif
 #ifdef __COREAUDIO__
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderCoreAudio>());
 #endif
-
-    // Scan for and initialize all plugins.
-    // Loaded plugins will replace any built-in providers
-    // that have been registered before (see above)!
-    const QList<QDir> pluginDirs(getSoundSourcePluginDirectories());
-    for (const auto& pluginDir: pluginDirs) {
-        kLogger.debug() << "Loading SoundSource plugins" << pluginDir.path();
-        const QStringList files(pluginDir.entryList(
-                SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
-                QDir::Files | QDir::NoDotAndDotDot));
-        for (const auto& file: files) {
-            const QString libFilePath(pluginDir.filePath(file));
-            mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-                    mixxx::SoundSourcePluginLibrary::load(libFilePath));
-            if (pPluginLibrary) {
-                s_soundSourceProviders.registerPluginLibrary(pPluginLibrary);
-            } else {
-                kLogger.warning() << "Failed to load SoundSource plugin"
-                        << libFilePath;
-            }
-        }
-    }
+#ifdef __MEDIAFOUNDATION__
+    s_soundSourceProviders.registerProvider(
+            std::make_shared<mixxx::SoundSourceProviderMediaFoundation>());
+#endif
 
     const QStringList supportedFileExtensions(
             s_soundSourceProviders.getRegisteredFileExtensions());
     if (kLogger.infoEnabled()) {
-        for (const auto &supportedFileExtension: supportedFileExtensions) {
+        for (const auto& supportedFileExtension : supportedFileExtensions) {
             kLogger.info() << "SoundSource providers for file extension" << supportedFileExtension;
             const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
                     s_soundSourceProviders.getRegistrationsForFileExtension(
                             supportedFileExtension));
-            for (const auto& registration: registrationsForFileExtension) {
-                if (registration.getPluginLibrary()) {
-                    kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
-                            << ":" << registration.getProvider()->getName()
-                            << "@" << registration.getPluginLibrary()->getFilePath();
-                } else {
-                    kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
-                            << ":" << registration.getProvider()->getName();
-                }
+            for (const auto& registration : registrationsForFileExtension) {
+                kLogger.info() << " " << static_cast<int>(registration.getProviderPriority())
+                               << ":" << registration.getProvider()->getName();
             }
         }
     }
 
     // Turn the file extension list into a [ "*.mp3", "*.wav", ... ] style string list
     s_supportedFileNamePatterns.clear();
-    for (const auto& supportedFileExtension: supportedFileExtensions) {
+    for (const auto& supportedFileExtension : supportedFileExtensions) {
         s_supportedFileNamePatterns += QString("*.%1").arg(supportedFileExtension);
     }
 
@@ -235,31 +131,18 @@ void SoundSourceProxy::loadPlugins() {
 }
 
 // static
-QStringList SoundSourceProxy::getSupportedFileExtensionsByPlugins() {
-    QStringList supportedFileExtensionsByPlugins;
-    const QStringList supportedFileExtensions(getSupportedFileExtensions());
-    for (const auto &supportedFileExtension: supportedFileExtensions) {
-        const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
-                s_soundSourceProviders.getRegistrationsForFileExtension(
-                        supportedFileExtension));
-        for (const auto& registration: registrationsForFileExtension) {
-            if (registration.getPluginLibrary()) {
-                supportedFileExtensionsByPlugins += supportedFileExtension;
-            }
-        }
-    }
-    return supportedFileExtensionsByPlugins;
-}
-
-// static
 bool SoundSourceProxy::isUrlSupported(const QUrl& url) {
-    const QFileInfo fileInfo(url.toLocalFile());
-    return isFileSupported(fileInfo);
+    return isFileSupported(TrackFile::fromUrl(url));
 }
 
 // static
 bool SoundSourceProxy::isFileSupported(const QFileInfo& fileInfo) {
     return isFileNameSupported(fileInfo.fileName());
+}
+
+// static
+bool SoundSourceProxy::isFileSupported(const TrackFile& trackFile) {
+    return isFileNameSupported(trackFile.fileName());
 }
 
 // static
@@ -297,51 +180,67 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 }
 
 //static
-SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
-        const Track* pTrack,
-        bool evenIfNeverParsedFromFileBefore) {
-    DEBUG_ASSERT(nullptr != pTrack);
-    SoundSourceProxy proxy(pTrack);
-    if (proxy.m_pSoundSource) {
-        mixxx::TrackMetadata trackMetadata;
-        bool parsedFromFile = false;
-        bool isDirty = false;
-        pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
-        if (parsedFromFile || evenIfNeverParsedFromFileBefore) {
-            switch (proxy.m_pSoundSource->writeTrackMetadata(trackMetadata)) {
-            case OK:
-                kLogger.debug() << "Track metadata has been written into file"
-                        << pTrack->getLocation();
-                return SaveTrackMetadataResult::SUCCEEDED;
-            case ERR:
-                break;
-            default:
-                DEBUG_ASSERT(!"unreachable code");
-            }
-        } else {
-            kLogger.debug() << "Skip writing of track metadata into file"
-                    << pTrack->getLocation();
-            return SaveTrackMetadataResult::SKIPPED;
-        }
+TrackPointer SoundSourceProxy::importTemporaryTrack(
+        TrackFile trackFile,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(
+            std::move(trackFile),
+            std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    SoundSourceProxy(pTrack).updateTrackFromSource();
+    return pTrack;
+}
+
+//static
+QImage SoundSourceProxy::importTemporaryCoverImage(
+        TrackFile trackFile,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(
+            std::move(trackFile),
+            std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    return SoundSourceProxy(pTrack).importCoverImage();
+}
+
+//static
+ExportTrackMetadataResult
+SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
+    DEBUG_ASSERT(pTrack);
+    const auto trackFile = pTrack->getFileInfo();
+    mixxx::MetadataSourcePointer pMetadataSource =
+            SoundSourceProxy(trackFile.toUrl()).m_pSoundSource;
+    if (pMetadataSource) {
+        return pTrack->exportMetadata(pMetadataSource);
+    } else {
+        kLogger.warning()
+                << "Unable to export track metadata into file"
+                << trackFile.location();
+        return ExportTrackMetadataResult::Skipped;
     }
-    kLogger.debug() << "Failed to write track metadata into file"
-            << pTrack->getLocation();
-    return SaveTrackMetadataResult::FAILED;
 }
 
 SoundSourceProxy::SoundSourceProxy(
         TrackPointer pTrack)
-    : m_pTrack(std::move(pTrack)),
-      m_url(getCanonicalUrlForTrack(m_pTrack.get())),
-      m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
-      m_soundSourceProviderRegistrationIndex(0) {
+        : m_pTrack(std::move(pTrack)),
+          m_url(m_pTrack ? m_pTrack->getFileInfo().toUrl() : QUrl()),
+          m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
+          m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
 }
 
-SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
-    : m_url(getCanonicalUrlForTrack(pTrack)),
-      m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
-      m_soundSourceProviderRegistrationIndex(0) {
+SoundSourceProxy::SoundSourceProxy(
+        const QUrl& url)
+        : m_url(url),
+          m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
+          m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
 }
 
@@ -371,7 +270,7 @@ void SoundSourceProxy::initSoundSource() {
         if (!pProvider) {
             if (!getUrl().isEmpty()) {
                 kLogger.warning() << "No SoundSourceProvider for file"
-                           << getUrl().toString();
+                                  << getUrl().toString();
             }
             // Failure
             return;
@@ -379,55 +278,28 @@ void SoundSourceProxy::initSoundSource() {
         m_pSoundSource = pProvider->newSoundSource(m_url);
         if (!m_pSoundSource) {
             kLogger.warning() << "SoundSourceProvider"
-                       << pProvider->getName()
-                       << "failed to create a SoundSource for file"
-                       << getUrl().toString();
+                              << pProvider->getName()
+                              << "failed to create a SoundSource for file"
+                              << getUrl().toString();
             // Switch to next provider...
             nextSoundSourceProvider();
             // ...and continue loop
             DEBUG_ASSERT(!m_pSoundSource);
         } else {
-            kLogger.debug() << "SoundSourceProvider"
-                     << pProvider->getName()
-                     << "created a SoundSource for file"
-                     << getUrl().toString()
-                     << "of type"
-                     << m_pSoundSource->getType();
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "SoundSourceProvider"
+                                << pProvider->getName()
+                                << "created a SoundSource for file"
+                                << getUrl().toString()
+                                << "of type"
+                                << m_pSoundSource->getType();
+            }
         }
     }
 }
 
-namespace {
-    // Parses artist/title from the file name and returns the file type.
-    // Assumes that the file name is written like: "artist - title.xxx"
-    // or "artist_-_title.xxx".
-    // This function does not overwrite any existing (non-empty) artist
-    // and title fields!
-    void parseMetadataFromFileName(mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
-        fileName.replace("_", " ");
-        QString titleWithFileType;
-        if (fileName.count('-') == 1) {
-            if (pTrackMetadata->getArtist().isEmpty()) {
-                const QString artist(fileName.section('-', 0, 0).trimmed());
-                if (!artist.isEmpty()) {
-                    pTrackMetadata->setArtist(artist);
-                }
-            }
-            titleWithFileType = fileName.section('-', 1, 1).trimmed();
-        } else {
-            titleWithFileType = fileName.trimmed();
-        }
-        if (pTrackMetadata->getTitle().isEmpty()) {
-            const QString title(titleWithFileType.section('.', 0, -2).trimmed());
-            if (!title.isEmpty()) {
-                pTrackMetadata->setTitle(title);
-            }
-        }
-    }
-} // anonymous namespace
-
-void SoundSourceProxy::updateTrack(
-        ParseFileTagsMode parseFileTagsMode) const {
+void SoundSourceProxy::updateTrackFromSource(
+        ImportTrackMetadataMode importTrackMetadataMode) const {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
@@ -435,251 +307,230 @@ void SoundSourceProxy::updateTrack(
         return; // abort
     }
     if (!m_pSoundSource) {
-        kLogger.warning() << "Unable to parse tags from unsupported file type"
-                 << getUrl().toString();
+        kLogger.warning()
+                << "Unable to update track from unsupported file type"
+                << getUrl().toString();
         return; // abort
     }
 
-    // Use the existing trackMetadata as default values. Otherwise
-    // existing values in the library will be overwritten with
-    // empty values if the corresponding file tags are missing.
-    // Depending on the file type some kind of tags might even
-    // not be supported at all and those would get lost!
+    // The SoundSource provides the actual type of the corresponding file
+    m_pTrack->setType(m_pSoundSource->getType());
+
+    // Use the existing track metadata as default values. Otherwise
+    // existing values in the library would be overwritten with empty
+    // values if the corresponding file tags are missing. Depending
+    // on the file type some kind of tags might even not be supported
+    // at all and this information would get lost entirely otherwise!
     mixxx::TrackMetadata trackMetadata;
-    bool parsedFromFile = false;
-    bool isDirty = false;
-    m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
-    // Cast away the enriched track location by explicitly slicing the
-    // returned CoverInfo to CoverInfoRelative
-    const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
+    bool metadataSynchronized = false;
+    m_pTrack->readTrackMetadata(&trackMetadata, &metadataSynchronized);
+    // If the file tags have already been parsed at least once, the
+    // existing track metadata should not be updated implicitly, i.e.
+    // if the user did not explicitly choose to (re-)import metadata
+    // explicitly from this file.
+    bool mergeImportedMetadata = false;
+    if (metadataSynchronized &&
+            (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
+        // No (re-)import needed or desired, only merge missing properties
+        mergeImportedMetadata = true;
+    }
+
+    // Embedded cover art is imported together with the track's metadata.
+    // But only if the user has not selected external cover art for this
+    // track!
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
-    QImage* pCoverImg;
-    // If the file tags have already been parsed once, both track metadata
-    // and cover art should not be updated implicitly.
-    if (parsedFromFile) {
-        if (isDirty || (parseFileTagsMode == ParseFileTagsMode::Once)) {
-            kLogger.info() << "Skip parsing of track metadata and cover art from file"
-                     << getUrl().toString();
-            return; // abort
-        }
-        // Only parse and update cover art from file tags if the track has
-        // no cover art or if cover art has already been loaded file tags.
-        if (((coverInfo.type == CoverInfo::METADATA) ||
-                (coverInfo.type == CoverInfo::NONE)) &&
-                (coverInfo.source != CoverInfo::USER_SELECTED)) {
-            pCoverImg = &coverImg;
+    QImage* pCoverImg = nullptr; // pointer also serves as a flag
+    if (!mergeImportedMetadata) {
+        const auto coverInfo = m_pTrack->getCoverInfo();
+        if (coverInfo.source == CoverInfo::USER_SELECTED &&
+                coverInfo.type == CoverInfo::FILE) {
+            // Ignore embedded cover art
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Skip importing of embedded cover art from file"
+                        << getUrl().toString();
+            }
         } else {
-            pCoverImg = nullptr;
-            kLogger.info() << "Skip parsing of cover art from file"
-                       << getUrl().toString();
+            // (Re-)import embedded cover art
+            pCoverImg = &coverImg;
         }
-    } else {
-        // If the file tags have never been parsed before it doesn't matter
-        // if the track is marked as dirty or not. In this case the track
-        // object has just been created. But better check that those
-        // assumptions are correct.
-        VERIFY_OR_DEBUG_ASSERT(trackMetadata == mixxx::TrackMetadata()) {
-            kLogger.warning() << "Reloading track metadata from file"
-                     << getUrl().toString();
-        }
-        VERIFY_OR_DEBUG_ASSERT(coverInfo == CoverInfo()) {
-            kLogger.warning() << "Reloading cover art from file"
-                     << getUrl().toString();
-        }
-        pCoverImg = &coverImg;
     }
 
     // Parse the tags stored in the audio file
-    const int parseResult =
-            m_pSoundSource->parseTrackMetadataAndCoverArt(
+    auto metadataImported =
+            m_pSoundSource->importTrackMetadataAndCoverImage(
                     &trackMetadata, pCoverImg);
-    if (parseResult != OK) {
-        kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
-                   << getUrl().toString();
-        return; // abort
+    if (metadataImported.first == mixxx::MetadataSource::ImportResult::Failed) {
+        kLogger.warning()
+                << "Failed to import track metadata"
+                << (pCoverImg ? "and embedded cover art" : "")
+                << "from file"
+                << getUrl().toString();
     }
 
-    if (!parsedFromFile && (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty())) {
-        // Fallback: If Artist or title fields are blank initially try to parse
-        // them from the file name.
-        // TODO(rryan): Should we re-visit this decision?
-        parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName());
+    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+        if (mergeImportedMetadata) {
+            // Nothing to do if no metadata imported
+            return;
+        } else if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
+            // Only parse artist and title if both fields are empty to avoid
+            // inconsistencies. Otherwise the file name (without extension)
+            // is used as the title and the artist is unmodified.
+            //
+            // TODO(XXX): Disable splitting of artist/title in settings, i.e.
+            // optionally don't split even if both title and artist are empty?
+            // Some users might want to import the whole file name of untagged
+            // files as the title without splitting the artist:
+            //     https://www.mixxx.org/forums/viewtopic.php?f=3&t=12838
+            // NOTE(uklotzde, 2019-09-26): Whoever needs this should simply set
+            // splitArtistTitle = false here and compile their custom version!
+            // It is not worth extending the settings and injecting them into
+            // SoundSourceProxy for just a few people.
+            const bool splitArtistTitle =
+                    trackMetadata.getTrackInfo().getArtist().trimmed().isEmpty();
+            const auto trackFile = m_pTrack->getFileInfo();
+            kLogger.info()
+                    << "Parsing missing"
+                    << (splitArtistTitle ? "artist/title" : "title")
+                    << "from file name:"
+                    << trackFile;
+            if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(trackFile.fileName(), splitArtistTitle) &&
+                    metadataImported.second.isNull()) {
+                // Since this is also some kind of metadata import, we mark the
+                // track's metadata as synchronized with the time stamp of the file.
+                metadataImported.second = trackFile.fileLastModified();
+            }
+        }
     }
 
-    // Until this point the track object has not been modified.
-    // Now we start updating it...
-
-    // Initialize or update the file/format as reported by the
-    // responsible SoundSource
-    m_pTrack->setType(m_pSoundSource->getType());
-
-    if (parsedFromFile) {
-        kLogger.info() << "Updating track metadata from file"
-                 << getUrl().toString();
+    if (mergeImportedMetadata) {
+        // Partial import of properties that are not (yet) stored
+        // in the database
+        m_pTrack->mergeImportedMetadata(trackMetadata);
     } else {
-        kLogger.info() << "Initializing track metadata from file"
-                 << getUrl().toString();
+        // Full import
+        if (metadataSynchronized) {
+            // Metadata has been synchronized successfully at least
+            // once in the past. Only overwrite this information if
+            // new data has actually been imported, otherwise abort
+            // and preserve the existing data!
+            if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+                return; // abort
+            }
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Updating track metadata"
+                        << (pCoverImg ? "and embedded cover art" : "")
+                        << "from file"
+                        << getUrl().toString();
+            }
+        } else {
+            DEBUG_ASSERT(pCoverImg);
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Initializing track metadata and embedded cover art from file"
+                        << getUrl().toString();
+            }
+        }
+        m_pTrack->importMetadata(trackMetadata, metadataImported.second);
     }
-    m_pTrack->setTrackMetadata(trackMetadata, true);
 
     if (pCoverImg) {
-        CoverInfoRelative coverInfoRelative;
-        if (pCoverImg->isNull()) {
-            if (coverInfo.type == CoverInfo::NONE) {
-                kLogger.info() << "No cover art found in file"
-                           << getUrl().toString();
-            } else {
-                kLogger.warning() << "Cover art is missing from file"
-                        << getUrl().toString();
-            }
-            // Cover art should be (re-)set to none
-            DEBUG_ASSERT(coverInfoRelative.type == CoverInfo::NONE);
-        } else {
-            coverInfoRelative.type = CoverInfo::METADATA;
-            coverInfoRelative.source = CoverInfo::GUESSED;
-            DEBUG_ASSERT(coverInfoRelative.coverLocation.isEmpty());
-            // TODO(XXX) here we may introduce a duplicate hash code
-            coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
-        }
-        if (coverInfoRelative.type == CoverInfo::NONE) {
-            kLogger.info() << "Resetting cover art for file"
-                     << getUrl().toString();
-        } else {
-            if (coverInfo.type == CoverInfo::NONE) {
-                kLogger.info() << "Initializing cover art from file"
-                         << getUrl().toString();
-            } else {
-                kLogger.info() << "Updating cover art from file"
-                        << getUrl().toString();
-            }
-        }
-        m_pTrack->setCoverInfo(coverInfoRelative);
+        // If the pointer is not null then the cover art should be guessed
+        auto coverInfo =
+                CoverInfoGuesser().guessCoverInfo(
+                        m_pTrack->getFileInfo(),
+                        m_pTrack->getAlbum(),
+                        *pCoverImg);
+        DEBUG_ASSERT(coverInfo.source == CoverInfo::GUESSED);
+        m_pTrack->setCoverInfo(coverInfo);
     }
 }
 
-Result SoundSourceProxy::parseTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
+mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
     if (m_pSoundSource) {
-        return m_pSoundSource->parseTrackMetadataAndCoverArt(pTrackMetadata, nullptr);
+        return m_pSoundSource->importTrackMetadataAndCoverImage(pTrackMetadata, nullptr).first;
     } else {
-        return ERR;
+        return mixxx::MetadataSource::ImportResult::Unavailable;
     }
 }
 
-QImage SoundSourceProxy::parseCoverImage() const {
-    QImage coverImg;
+QImage SoundSourceProxy::importCoverImage() const {
     if (m_pSoundSource) {
-        m_pSoundSource->parseTrackMetadataAndCoverArt(nullptr, &coverImg);
+        QImage coverImg;
+        if (m_pSoundSource->importTrackMetadataAndCoverImage(nullptr, &coverImg).first ==
+                mixxx::MetadataSource::ImportResult::Succeeded) {
+            return coverImg;
+        }
     }
-    return coverImg;
+    // Failed ore unavailable
+    return QImage();
 }
 
-namespace {
-
-// Keeps the TIO alive while accessing the audio data
-// of the track. The TIO must not be deleted while
-// accessing the corresponding file to avoid file
-// corruption when writing metadata while the file
-// is still in use.
-class AudioSourceProxy: public mixxx::AudioSource {
-public:
-    AudioSourceProxy(
-            const TrackPointer& pTrack,
-            const mixxx::AudioSourcePointer& pAudioSource)
-        : mixxx::AudioSource(*pAudioSource),
-          m_pTrack(pTrack),
-          m_pAudioSource(pAudioSource) {
-    }
-    AudioSourceProxy(const AudioSourceProxy&) = delete;
-    AudioSourceProxy(AudioSourceProxy&&) = delete;
-
-    static mixxx::AudioSourcePointer create(
-            const TrackPointer& pTrack,
-            const mixxx::AudioSourcePointer& pAudioSource) {
-        DEBUG_ASSERT(pTrack);
-        DEBUG_ASSERT(pAudioSource);
-        return mixxx::AudioSourcePointer(
-                std::make_shared<AudioSourceProxy>(pTrack, pAudioSource));
-    }
-
-    SINT seekSampleFrame(SINT frameIndex) override {
-        return m_pAudioSource->seekSampleFrame(
-                frameIndex);
-    }
-
-    SINT readSampleFrames(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override {
-        return m_pAudioSource->readSampleFrames(
-                numberOfFrames,
-                sampleBuffer);
-    }
-
-    SINT readSampleFramesStereo(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer,
-            SINT sampleBufferSize) override {
-        return m_pAudioSource->readSampleFramesStereo(
-                numberOfFrames,
-                sampleBuffer,
-                sampleBufferSize);
-    }
-
-private:
-    const TrackPointer m_pTrack;
-    const mixxx::AudioSourcePointer m_pAudioSource;
-};
-
-} // anonymous namespace
-
-mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSourceConfig& audioSrcCfg) {
+mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSource::OpenParams& params) {
     DEBUG_ASSERT(m_pTrack);
+    auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
+        // NOTE(uklotzde): Log unconditionally (with debug level) to
+        // identify files in the log file that might have caused a
+        // crash while importing metadata or decoding audio subsequently.
         kLogger.debug() << "Opening file"
-                << getUrl().toString()
-                << "with provider"
-                << getSoundSourceProvider()->getName();
+                        << getUrl().toString()
+                        << "with provider"
+                        << getSoundSourceProvider()->getName()
+                        << "using mode"
+                        << openMode;
         const mixxx::SoundSource::OpenResult openResult =
-                m_pSoundSource->open(audioSrcCfg);
-        if (openResult == mixxx::SoundSource::OpenResult::ABORTED) {
+                m_pSoundSource->open(openMode, params);
+        if ((openResult == mixxx::SoundSource::OpenResult::Aborted) ||
+                ((openMode == mixxx::SoundSource::OpenMode::Strict) && (openResult == mixxx::SoundSource::OpenResult::Failed))) {
             kLogger.warning() << "Unable to open file"
-                    << getUrl().toString()
-                    << "with provider"
-                    << getSoundSourceProvider()->getName();
+                              << getUrl().toString()
+                              << "with provider"
+                              << getSoundSourceProvider()->getName()
+                              << "using mode"
+                              << openMode;
             // Continue with the next SoundSource provider
             nextSoundSourceProvider();
+            if (!getSoundSourceProvider() && (openMode == mixxx::SoundSource::OpenMode::Strict)) {
+                // No provider was able to open the source in Strict mode.
+                // Retry to open the file in Permissive mode starting with
+                // the first provider...
+                m_soundSourceProviderRegistrationIndex = 0;
+                openMode = mixxx::SoundSource::OpenMode::Permissive;
+            }
             initSoundSource();
             continue; // try again
         }
-        if ((openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) && m_pSoundSource->verifyReadable()) {
-            m_pAudioSource =
-                    AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+        if ((openResult == mixxx::SoundSource::OpenResult::Succeeded) && m_pSoundSource->verifyReadable()) {
+            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
             DEBUG_ASSERT(m_pAudioSource);
-            if (m_pAudioSource->isEmpty()) {
+            if (m_pAudioSource->frameIndexRange().empty()) {
                 kLogger.warning() << "File is empty"
-                           << getUrl().toString();
+                                  << getUrl().toString();
             }
             // Overwrite metadata with actual audio properties
             if (m_pTrack) {
-                DEBUG_ASSERT(m_pAudioSource->hasValidChannelCount());
-                m_pTrack->setChannels(m_pAudioSource->getChannelCount());
-                DEBUG_ASSERT(m_pAudioSource->hasValidSamplingRate());
-                m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
+                DEBUG_ASSERT(m_pAudioSource->channelCount().valid());
+                m_pTrack->setChannels(m_pAudioSource->channelCount());
+                DEBUG_ASSERT(m_pAudioSource->sampleRate().valid());
+                m_pTrack->setSampleRate(m_pAudioSource->sampleRate());
                 if (m_pAudioSource->hasDuration()) {
                     // optional property
                     m_pTrack->setDuration(m_pAudioSource->getDuration());
                 }
-                if (m_pAudioSource->hasBitrate()) {
+                if (m_pAudioSource->bitrate() != mixxx::AudioSource::Bitrate()) {
                     // optional property
-                    m_pTrack->setBitrate(m_pAudioSource->getBitrate());
+                    m_pTrack->setBitrate(m_pAudioSource->bitrate());
                 }
             }
         } else {
             kLogger.warning() << "Failed to open file"
-                       << getUrl().toString()
-                       << "with provider"
-                       << getSoundSourceProvider()->getName();
-            if (openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) {
+                              << getUrl().toString()
+                              << "with provider"
+                              << getSoundSourceProvider()->getName();
+            if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
                 m_pSoundSource->close(); // cleanup
             }
             // Do NOT retry with the next SoundSource provider if the file
@@ -688,10 +539,10 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
         }
         return m_pAudioSource; // either success or failure
     }
-    // All available providers have returned OpenResult::ABORTED when
+    // All available providers have returned OpenResult::Aborted when
     // getting here. m_pSoundSource might already be invalid/null!
     kLogger.warning() << "Unable to decode file"
-            << getUrl().toString();
+                      << getUrl().toString();
     DEBUG_ASSERT(!m_pAudioSource);
     return m_pAudioSource;
 }
@@ -701,7 +552,9 @@ void SoundSourceProxy::closeAudioSource() {
         DEBUG_ASSERT(m_pSoundSource);
         m_pSoundSource->close();
         m_pAudioSource = mixxx::AudioSourcePointer();
-        kLogger.debug() << "Closed AudioSource for file"
-                 << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Closed AudioSource for file"
+                            << getUrl().toString();
+        }
     }
 }

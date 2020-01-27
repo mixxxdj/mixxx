@@ -8,35 +8,29 @@
 
 #include "control/controlobject.h"
 #include "engine/channelhandle.h"
-#include "effects/effectchainslot.h"
+#include "effects/defs.h"
 
 class EngineEffectRack;
 class EffectsManager;
 class EffectChainManager;
 
-class EffectRack;
-class StandardEffectRack;
-class EqualizerRack;
-class QuickEffectRack;
-typedef QSharedPointer<EffectRack> EffectRackPointer;
-typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
-typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
-typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
+#include "effects/effectchainslot.h"
 
+//TODO(Be): Remove these superfluous classes.
 class EffectRack : public QObject {
     Q_OBJECT
   public:
     EffectRack(EffectsManager* pEffectsManager,
                EffectChainManager* pChainManager,
                const unsigned int iRackNumber,
-               const QString& group);
+               const QString& group, SignalProcessingStage stage);
     virtual ~EffectRack();
 
     void addToEngine();
     void removeFromEngine();
     EngineEffectRack* getEngineEffectRack();
 
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
     int numEffectChainSlots() const;
     EffectChainSlotPointer getEffectChainSlot(int i);
 
@@ -52,7 +46,11 @@ class EffectRack : public QObject {
         return m_group;
     }
 
+    void refresh();
+
     QDomElement toXml(QDomDocument* doc) const;
+
+    virtual bool isAdoptMetaknobValueEnabled() const;
 
   public slots:
     void slotClearRack(double v);
@@ -73,17 +71,19 @@ class EffectRack : public QObject {
   protected:
     void addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot);
 
+    EngineEffectRack* m_pEngineEffectRack;
+
     // We could make accessors for these for sub-classes. Doesn't really matter.
     EffectsManager* m_pEffectsManager;
     EffectChainManager* m_pEffectChainManager;
 
   private:
+    SignalProcessingStage m_signalProcessingStage;
     const unsigned int m_iRackNumber;
     const QString m_group;
     QList<EffectChainSlotPointer> m_effectChainSlots;
     ControlObject m_controlNumEffectChainSlots;
     ControlObject m_controlClearRack;
-    EngineEffectRack* m_pEngineEffectRack;
 };
 
 class StandardEffectRack : public EffectRack {
@@ -118,6 +118,14 @@ class StandardEffectRack : public EffectRack {
     EffectChainSlotPointer addEffectChainSlot();
 };
 
+class OutputEffectRack : public EffectRack {
+    Q_OBJECT
+  public:
+    OutputEffectRack(EffectsManager* pEffectsManager,
+                     EffectChainManager* pChainManager);
+    virtual ~OutputEffectRack() {};
+};
+
 class PerGroupRack : public EffectRack {
     Q_OBJECT
   public:
@@ -127,15 +135,21 @@ class PerGroupRack : public EffectRack {
                  const QString& group);
     virtual ~PerGroupRack() {}
 
-    EffectChainSlotPointer addEffectChainSlotForGroup(const QString& group);
+
+    void setupForGroup(const QString& group);
     EffectChainSlotPointer getGroupEffectChainSlot(const QString& group);
+    virtual bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
 
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                  const ChannelHandleAndGroup& handle_group) = 0;
+                                                  const QString& group) = 0;
+
     virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
                                                        const unsigned int iChainSlotNumber,
                                                        const QString& group) const = 0;
+
+    virtual QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
+                                                const QString& group) const = 0;
 
   private:
     QHash<QString, EffectChainSlotPointer> m_groupToChainSlot;
@@ -149,7 +163,7 @@ class QuickEffectRack : public PerGroupRack {
                     const unsigned int iRackNumber);
     virtual ~QuickEffectRack() {}
 
-    bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
+    bool loadEffectToGroup(const QString& group, EffectPointer pEffect) override;
 
     static QString formatGroupString(const unsigned int iRackNumber) {
         return QString("[QuickEffectRack%1]")
@@ -173,17 +187,23 @@ class QuickEffectRack : public PerGroupRack {
     }
 
     QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
-                                        const QString& group) const {
+                                        const QString& group) const override {
         return formatEffectSlotGroupString(getRackNumber(), iEffectSlotNumber,
                                            group);
     }
 
+    bool isAdoptMetaknobValueEnabled() const override {
+        // No visible Metaknobs to adopt
+        return false;
+    }
+
   protected:
-    virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                  const ChannelHandleAndGroup& handle_group);
-    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
-                                                       const unsigned int iChainSlotNumber,
-                                                       const QString& group) const {
+    void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
+                                          const QString& group) override;
+
+    QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
+                                               const unsigned int iChainSlotNumber,
+                                               const QString& group) const override {
         Q_UNUSED(iChainSlotNumber);
         return formatEffectChainSlotGroupString(iRackNumber, group);
     }
@@ -196,8 +216,6 @@ class EqualizerRack : public PerGroupRack {
                   EffectChainManager* pChainManager,
                   const unsigned int iRackNumber);
     virtual ~EqualizerRack() {}
-
-    bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
 
     static QString formatGroupString(const unsigned int iRackNumber) {
         return QString("[EqualizerRack%1]")
@@ -221,17 +239,22 @@ class EqualizerRack : public PerGroupRack {
     }
 
     QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
-                                        const QString& group) const {
+                                        const QString& group) const override {
         return formatEffectSlotGroupString(getRackNumber(), iEffectSlotNumber,
                                            group);
     }
 
+    bool isAdoptMetaknobValueEnabled() const override {
+        // No visible Metaknobs to adopt
+        return false;
+    }
+
   protected:
-    virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                  const ChannelHandleAndGroup& handle_group);
-    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
-                                                       const unsigned int iChainSlotNumber,
-                                                       const QString& group) const {
+    void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
+                                          const QString& group) override;
+    QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
+                                               const unsigned int iChainSlotNumber,
+                                               const QString& group) const override {
         Q_UNUSED(iChainSlotNumber);
         return formatEffectChainSlotGroupString(iRackNumber, group);
     }

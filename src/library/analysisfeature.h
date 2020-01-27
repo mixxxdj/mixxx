@@ -15,67 +15,69 @@
 #include "library/libraryfeature.h"
 #include "library/dlganalysis.h"
 #include "library/treeitemmodel.h"
+#include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
-#include "util/db/dbconnectionpool.h"
 
-class Library;
 class TrackCollection;
-class AnalyzerQueue;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(Library* parent,
-                    UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection);
-    virtual ~AnalysisFeature();
+    AnalysisFeature(Library* pLibrary,
+                    UserSettingsPointer pConfig);
+    ~AnalysisFeature() override = default;
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override {
+        return m_title;
+    }
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(QUrl url);
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    QIcon getIcon() override {
+        return m_icon;
+    }
 
-    TreeItemModel* getChildModel();
+    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
+    bool dragMoveAccept(QUrl url) override;
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                    KeyboardEventFilter* keyboard) override;
+
+    TreeItemModel* getChildModel() override;
     void refreshLibraryModels();
 
   signals:
     void analysisActive(bool bActive);
-    void trackAnalysisStarted(int size);
 
   public slots:
-    void activate();
+    void activate() override;
     void analyzeTracks(QList<TrackId> trackIds);
 
-  private slots:
-    void slotProgressUpdate(int num_left);
+    void suspendAnalysis();
+    void resumeAnalysis();
     void stopAnalysis();
-    void cleanupAnalyzer();
+
+  private slots:
+    void onTrackAnalysisSchedulerProgress(AnalyzerProgress currentTrackProgress, int currentTrackNumber, int totalTracksCount);
+    void onTrackAnalysisSchedulerFinished();
 
   private:
     // Sets the title of this feature to the default name, given by
     // m_sAnalysisTitleName
-    void setTitleDefault();
+    void resetTitle();
 
     // Sets the title of this feature to the default name followed by (x / y)
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
-    void setTitleProgress(int trackNum, int totalNum);
+    void setTitleProgress(int currentTrackNumber, int totalTracksCount);
 
-    UserSettingsPointer m_pConfig;
-    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
-    TrackCollection* m_pTrackCollection;
-    AnalyzerQueue* m_pAnalyzerQueue;
-    // Used to temporarily enable BPM detection in the prefs before we analyse
-    int m_iOldBpmEnabled;
-    // The title returned by title()
-    QVariant m_Title;
+    const QString m_baseTitle;
+    const QIcon m_icon;
+
+    TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
+
     TreeItemModel m_childModel;
-    const static QString m_sAnalysisViewName;
-    QString m_analysisTitleName;
     DlgAnalysis* m_pAnalysisView;
+
+    // The title is dynamic and reflects the current progress
+    QString m_title;
 };
 
 

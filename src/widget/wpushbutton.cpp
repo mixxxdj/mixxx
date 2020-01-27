@@ -192,10 +192,11 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
                 if (m_rightButtonMode != ControlPushButton::PUSH &&
+                        m_rightButtonMode != ControlPushButton::TOGGLE &&
                         m_rightButtonMode != ControlPushButton::TRIGGER) {
                     SKIN_WARNING(node, context)
-                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH or TRIGGER mode is not implemented\n"
-                            << "Please set <RightClickIsPushButton>true</RightClickIsPushButton>";
+                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH, TRIGGER or TOGGLE mode is not implemented\n"
+                            << "Please consider to set <RightClickIsPushButton>true</RightClickIsPushButton>";
                 }
             }
         }
@@ -221,6 +222,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WPushButton::setStates(int iStates) {
@@ -269,7 +272,7 @@ void WPushButton::setPixmapBackground(PixmapSource source,
 }
 
 void WPushButton::restyleAndRepaint() {
-    emit(displayValueChanged(readDisplayValue()));
+    emit displayValueChanged(readDisplayValue());
 
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
@@ -345,12 +348,12 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
         if (leftClick) {
-            if (getControlParameterLeft() == 0.0) {
-                m_clickTimer.setSingleShot(true);
-                m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
-            }
+            m_clickTimer.setSingleShot(true);
+            m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
+
+            double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+            setControlParameterLeftDown(emitValue);
             m_bPressed = true;
-            setControlParameterLeftDown(1.0);
             restyleAndRepaint();
         }
         // discharge right clicks here, because is used for latching in POWERWINDOW mode
@@ -359,7 +362,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary button function always a Pushbutton
-        // due the leak of visual feedback we do not allow a toggle function
+        // due the lack of visual feedback we do not allow a toggle function
         if (m_rightButtonMode == ControlPushButton::PUSH ||
                 m_rightButtonMode == ControlPushButton::TRIGGER ||
                 m_iNoStates == 1) {
@@ -378,7 +381,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             // or this is a push button.
             emitValue = 1.0;
         } else {
-            // Toggle thru the states
+            // Toggle through the states
             emitValue = getControlParameterLeft();
             if (!isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
@@ -415,7 +418,8 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
-                setControlParameterLeftUp(0.0);
+                double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+                setControlParameterLeftUp(emitValue);
             }
             m_bPressed = false;
         } else if (rightClick) {
@@ -427,14 +431,14 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function,
-        // due the leak of visual feedback we do not allow a toggle
+        // due the lack of visual feedback we do not allow a toggle
         // function
+        m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
-            m_bPressed = false;
             setControlParameterRightUp(0.0);
-            restyleAndRepaint();
         }
+        restyleAndRepaint();
         return;
     }
 

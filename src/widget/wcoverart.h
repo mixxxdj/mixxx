@@ -5,21 +5,24 @@
 #include <QDomNode>
 #include <QMouseEvent>
 #include <QWidget>
+#include <QTimer>
 
+#include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
 #include "skin/skincontext.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize;
 
-class WCoverArt : public QWidget, public WBaseWidget {
+class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     WCoverArt(QWidget* parent, UserSettingsPointer pConfig,
-              const QString& group);
+              const QString& group, BaseTrackPlayer* pPlayer);
     ~WCoverArt() override;
 
     void setup(const QDomNode& node, const SkinContext& context);
@@ -31,12 +34,13 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void slotEnable(bool);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   private slots:
     void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
-    void slotCoverInfoSelected(const CoverInfo& coverInfo);
+                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
@@ -44,7 +48,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void paintEvent(QPaintEvent* /*unused*/) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void mousePressEvent(QMouseEvent* /*unused*/) override;
-    void leaveEvent(QEvent* /*unused*/) override;
+    void mouseReleaseEvent(QMouseEvent* /*unused*/) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
@@ -63,7 +67,9 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_defaultCover;
     QPixmap m_defaultCoverScaled;
     CoverInfo m_lastRequestedCover;
+    BaseTrackPlayer* m_pPlayer;
     DlgCoverArtFullSize* m_pDlgFullSize;
+    QTimer m_clickTimer;
 };
 
 #endif // WCOVERART_H

@@ -7,9 +7,12 @@ Variables:
   Effect: the effect
 -->
 <Template>
+  <SetVariable name="EffectGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>EffectFocusButtonContainer</ObjectName>
-    <Layout>horizontal</Layout>
+    <MaximumSize>15,15</MaximumSize>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
     <Children>
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
@@ -28,27 +31,23 @@ Variables:
           <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
           <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
         </State>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ConfigKey><Variable name="EffectGroup"/>,focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
-          <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform>
-            <IsEqual><Variable name="Effect"/></IsEqual>
-          </Transform>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <!-- right click > unfocus -->
+          <ConfigKey><Variable name="EffectGroup"/>,focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform>
-            <IsEqual><Variable name="Effect"/></IsEqual>
-            <Not/>
-          </Transform>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual><Not/></Transform>
         </Connection>
       </PushButton>
     </Children>
     <Connection>
-      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <ConfigKey><Variable name="EffectGroup"/>,show_focus</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

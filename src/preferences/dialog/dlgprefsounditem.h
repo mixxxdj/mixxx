@@ -18,6 +18,7 @@
 
 #include "preferences/dialog/ui_dlgprefsounditem.h"
 #include "soundio/soundmanagerutil.h"
+#include "soundio/sounddevice.h"
 
 class SoundDevice;
 class SoundManagerConfig;
@@ -31,8 +32,9 @@ class SoundManagerConfig;
 class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT
   public:
-    DlgPrefSoundItem(QWidget *parent, AudioPathType type,
-            QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
+    DlgPrefSoundItem(QWidget* parent, AudioPathType type,
+            const QList<SoundDevicePointer>& devices,
+            bool isInput, unsigned int index = 0);
     virtual ~DlgPrefSoundItem();
 
     AudioPathType type() const { return m_type; };
@@ -42,25 +44,25 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void settingChanged();
 
   public slots:
-    void refreshDevices(const QList<SoundDevice*> &devices);
+    void refreshDevices(const QList<SoundDevicePointer>& devices);
     void deviceChanged(int index);
     void channelChanged();
-    void loadPath(const SoundManagerConfig &config);
+    void loadPath(const SoundManagerConfig& config);
     void writePath(SoundManagerConfig *config) const;
     void save();
     void reload();
 
   private:
-    SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
-    void setDevice(const QString &deviceName);
+    SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
+    void setDevice(const SoundDeviceId& device);
     void setChannel(unsigned int channelBase, unsigned int channels);
-    int hasSufficientChannels(const SoundDevice *device) const;
+    int hasSufficientChannels(const SoundDevice& device) const;
 
     AudioPathType m_type;
     unsigned int m_index;
-    QList<SoundDevice*> m_devices;
+    QList<SoundDevicePointer> m_devices;
     bool m_isInput;
-    QString m_savedDevice;
+    SoundDeviceId m_savedDevice;
     // Because QVariant supports QPoint natively we use a QPoint to store the
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;

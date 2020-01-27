@@ -7,7 +7,6 @@
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-  <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
   <WidgetGroup>
     <ObjectName>Deck<Variable name="i"/></ObjectName>
     <Layout>horizontal</Layout>
@@ -24,6 +23,10 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
+              <WidgetGroup>
+                <ObjectName>Spacer22</ObjectName>
+                <Size>0me,1f</Size>
+              </WidgetGroup>
               <SingletonContainer>
                 <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
               </SingletonContainer>
@@ -46,7 +49,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_inner_column.xml"/>
+          <Template src="skin:deck_tempo_column.xml"/>
         </Children>
       </WidgetGroup>
     </Children>

@@ -7,6 +7,7 @@
 
 #include "control/control.h"
 #include "preferences/usersettings.h"
+#include "util/platform.h"
 
 // This class is the successor of ControlObjectThread. It should be used for
 // new code to avoid unnecessary locking during send if no slot is connected.
@@ -24,23 +25,91 @@ class ControlProxy : public QObject {
     ControlProxy(const ConfigKey& key, QObject* pParent = NULL);
     virtual ~ControlProxy();
 
-    void initialize(const ConfigKey& key);
+    void initialize(const ConfigKey& key, bool warn = true);
 
     const ConfigKey& getKey() const {
         return m_key;
     }
 
-    bool connectValueChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
-    bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    template<typename Receiver, typename Slot>
+    bool connectValueChanged(Receiver receiver,
+            Slot func,
+            Qt::ConnectionType requestedConnectionType = Qt::AutoConnection) {
+        if (!m_pControl) {
+            return false;
+        }
+
+        // We connect to the
+        // ControlObjectPrivate only once and in a way that
+        // the requested ConnectionType is working as desired.
+        // We try to avoid direct connections if not requested
+        // since you cannot safely delete an object with a pending
+        // direct connection. This fixes bug Bug #1406124
+        // requested: Auto -> COP = Auto / SCO = Auto
+        // requested: Direct -> COP = Direct / SCO = Direct
+        // requested: Queued -> COP = Queued / SCO = Auto
+        // requested: BlockingQueued -> Assert(false)
+
+        Qt::ConnectionType scoConnection;
+        switch (requestedConnectionType) {
+        case Qt::AutoConnection:
+        case Qt::QueuedConnection:
+            scoConnection = Qt::AutoConnection;
+            break;
+        case Qt::DirectConnection:
+            scoConnection = Qt::DirectConnection;
+            break;
+        case Qt::BlockingQueuedConnection:
+            // We must not block the signal source by a blocking connection
+            M_FALLTHROUGH_INTENDED;
+        default:
+            DEBUG_ASSERT(false);
+            return false;
+        }
+
+        if (!connect(this, &ControlProxy::valueChanged, receiver, func, scoConnection)) {
+            return false;
+        }
+
+        // Connect to ControlObjectPrivate only if required. Do not allow
+        // duplicate connections.
+
+        // use only explicit direct connection if requested
+        // the caller must not delete this until the all signals are
+        // processed to avoid segfaults
+        Qt::ConnectionType copConnection = static_cast<Qt::ConnectionType>(
+                requestedConnectionType | Qt::UniqueConnection);
+
+        // clazy requires us to to pass a member function to connect() directly
+        // (i.e. w/o and intermediate variable) when used with
+        // Qt::UniqueConnection. Otherwise it detects a false positive and
+        // throws a [-Wclazy-lambda-unique-connection] warning.
+        switch (requestedConnectionType) {
+        case Qt::AutoConnection:
+            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedAuto, copConnection);
+            break;
+        case Qt::DirectConnection:
+            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedDirect, copConnection);
+            break;
+        case Qt::QueuedConnection:
+            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedQueued, copConnection);
+            break;
+        default:
+            // Should be unreachable, but just to make sure ;-)
+            DEBUG_ASSERT(false);
+            return false;
+        }
+        return true;
+    }
 
     // Called from update();
     virtual void emitValueChanged() {
-        emit(valueChanged(get()));
+        emit valueChanged(get());
     }
 
-    inline bool valid() const { return m_pControl != NULL; }
+    inline bool valid() const {
+        return m_pControl != NULL;
+    }
 
     // Returns the value of the object. Thread safe, non-blocking.
     inline double get() const {
@@ -106,7 +175,7 @@ class ControlProxy : public QObject {
     void slotValueChangedDirect(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
-            emit(valueChanged(v));
+            emit valueChanged(v);
         }
     }
 
@@ -114,7 +183,7 @@ class ControlProxy : public QObject {
     void slotValueChangedAuto(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
-            emit(valueChanged(v));
+            emit valueChanged(v);
         }
     }
 
@@ -122,7 +191,7 @@ class ControlProxy : public QObject {
     void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
-            emit(valueChanged(v));
+            emit valueChanged(v);
         }
     }
 

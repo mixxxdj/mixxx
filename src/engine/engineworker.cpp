@@ -5,7 +5,8 @@
 #include "engine/engineworkerscheduler.h"
 
 EngineWorker::EngineWorker()
-    : m_pScheduler(NULL) {
+    : m_pScheduler(nullptr) {
+    m_notReady.test_and_set();
 }
 
 EngineWorker::~EngineWorker() {
@@ -15,13 +16,21 @@ void EngineWorker::run() {
 }
 
 void EngineWorker::setScheduler(EngineWorkerScheduler* pScheduler) {
+    DEBUG_ASSERT(m_pScheduler == nullptr);
     m_pScheduler = pScheduler;
+    pScheduler->addWorker(this);
 }
 
-bool EngineWorker::workReady() {
-    if (m_pScheduler) {
-        m_pScheduler->workerReady(this);
-        return true;
+void EngineWorker::workReady() {
+    m_notReady.clear();
+    VERIFY_OR_DEBUG_ASSERT(m_pScheduler) {
+        return;     
     }
-    return false;
+    m_pScheduler->workerReady();
+}
+
+void EngineWorker::wakeIfReady() {
+    if (!m_notReady.test_and_set()) {
+        m_semaRun.release();
+    }
 }

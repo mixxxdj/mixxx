@@ -11,7 +11,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QDesktopServices>
-#include <QtAlgorithms>
+#include <QStandardPaths>
 
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -20,26 +20,6 @@
 #include "controllers/defs_controllers.h"
 #include "preferences/usersettings.h"
 #include "util/version.h"
-
-namespace {
-
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
-}
-
-bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
-    // the comparison function for PresetInfo objects
-    // this function is used to sort the list of
-    // presets in the combo box
-    return nameForPreset(a) < nameForPreset(b);
-}
-
-} // The anonymous namespace
 
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
@@ -168,7 +148,7 @@ void DlgPrefController::showLearningWizard() {
     connect(m_pDlgControllerLearning, SIGNAL(inputMappingsLearned(MidiInputMappings)),
             this, SLOT(midiInputMappingsLearned(MidiInputMappings)));
 
-    emit(mappingStarted());
+    emit mappingStarted();
     connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SIGNAL(mappingEnded()));
 }
@@ -272,11 +252,10 @@ void DlgPrefController::enumeratePresets() {
     // Making the list of presets in the alphabetical order
     QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
-    qSort(presets.begin(), presets.end(), presetInfoNameComparator);
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
-        m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
+        m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
         }
@@ -284,7 +263,7 @@ void DlgPrefController::enumeratePresets() {
 
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(nameForPreset(match));
+        int index = m_ui.comboBoxPreset->findText(match.getName());
         if (index != -1) {
             m_ui.comboBoxPreset->setCurrentIndex(index);
         }
@@ -353,7 +332,7 @@ void DlgPrefController::slotApply() {
         // Load the resulting preset (which has been mutated by the input/output
         // table models). The controller clones the preset so we aren't touching
         // the same preset.
-        emit(loadPreset(m_pController, m_pPreset));
+        emit loadPreset(m_pController, m_pPreset);
 
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
@@ -388,6 +367,10 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
         presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
+    if (!pPreset) {
+        return;
+    }
+
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
                  pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
@@ -412,7 +395,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     // TODO(rryan): We really should not load the preset here. We should load it
     // into the preferences GUI and then load it to the actual controller once
     // the user hits apply.
-    emit(loadPreset(m_pController, pPreset));
+    emit loadPreset(m_pController, pPreset);
     slotDirty();
 }
 
@@ -532,7 +515,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
     m_ui.m_pScriptsTableWidget->horizontalHeader()
-            ->setResizeMode(QHeaderView::Stretch);
+            ->setSectionResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -563,16 +546,16 @@ void DlgPrefController::slotEnableDevice(bool enable) {
     slotDirty();
 
     // Set tree item text to normal/bold.
-    emit(controllerEnabled(this, enable));
+    emit controllerEnabled(this, enable);
 }
 
 void DlgPrefController::enableDevice() {
-    emit(openController(m_pController));
+    emit openController(m_pController);
     //TODO: Should probably check if open() actually succeeded.
 }
 
 void DlgPrefController::disableDevice() {
-    emit(closeController(m_pController));
+    emit closeController(m_pController);
     //TODO: Should probably check if close() actually succeeded.
 }
 
@@ -661,7 +644,7 @@ void DlgPrefController::clearAllOutputMappings() {
 void DlgPrefController::addScript() {
     QString scriptFile = QFileDialog::getOpenFileName(
         this, tr("Add Script"),
-        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         tr("Controller Script Files (*.js)"));
 
     if (scriptFile.isNull()) {
@@ -713,7 +696,7 @@ void DlgPrefController::removeScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.append(index.row());
     }
-    qSort(selectedRows);
+    std::sort(selectedRows.begin(), selectedRows.end());
 
     int lastRow = -1;
     while (!selectedRows.empty()) {
@@ -761,5 +744,3 @@ void DlgPrefController::openScript() {
         }
     }
 }
-
-

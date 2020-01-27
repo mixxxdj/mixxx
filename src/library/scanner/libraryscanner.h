@@ -49,15 +49,15 @@ class LibraryScanner : public QThread {
     void progressLoading(QString path);
     void progressCoverArt(QString file);
     void trackAdded(TrackPointer pTrack);
-    void tracksMoved(QSet<TrackId> oldTrackIds, QSet<TrackId> newTrackIds);
     void tracksChanged(QSet<TrackId> changedTrackIds);
+    void tracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
 
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.
     void startScan();
 
   protected:
-    void run();
+    void run() override;
 
   public slots:
     void queueTask(ScannerTask* pTask);

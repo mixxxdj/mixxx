@@ -6,151 +6,81 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-
-      <WidgetGroup><!-- Maximized Samplers -->
+      <WidgetGroup><!-- 1-4 -->
         <ObjectName>SamplerDecks</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /1-4 -->
+
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <Children>
-                <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
+            <ObjectName>RoundFiller25</ObjectName>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
-                <SetVariable name="Size">22f,13f</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
+                <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
+                <SetVariable name="Size">20f,15f</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <Children>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Maximized Samplers -->
+      </WidgetGroup>
 
-      <WidgetGroup><!-- minimized Samplers -->
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- 5-8 -->
         <ObjectName>SamplerDecks</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <Children>
-                <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
-                <SetVariable name="Size">22f,13f</SetVariable>
-                <SetVariable name="ConfigKeyPerm">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
-              </Template>
-              <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <Children>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
-              </Template>
-                <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-              <Template src="skin:sampler_mini.xml">
-                <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
+          </Template>
+            <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
+          </Template>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /minimized Samplers -->
-
+      </WidgetGroup><!-- /5-8 -->
     </Children>
   </WidgetGroup>
 </Template>

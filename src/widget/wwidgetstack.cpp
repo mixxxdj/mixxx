@@ -8,14 +8,14 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
         : QObject(pParent),
           m_control(pControl ? pControl->getKey() : ConfigKey(), this),
           m_index(index) {
-    m_control.connectValueChanged(SLOT(slotValueChanged(double)));
+    m_control.connectValueChanged(this, &WidgetStackControlListener::slotValueChanged);
 }
 
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
-        emit(switchToWidget());
+        emit switchToWidget();
     } else {
-        emit(hideWidget());
+        emit hideWidget();
     }
 }
 
@@ -27,29 +27,16 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
     }
 }
 
-WWidgetStack::WWidgetStack(QWidget* pParent,
-                           ControlObject* pNextControl,
-                           ControlObject* pPrevControl,
-                           ControlObject* pCurrentPageControl)
+WWidgetStack::WWidgetStack(QWidget* pParent, const ConfigKey& nextConfigKey,
+        const ConfigKey& prevConfigKey, const ConfigKey& currentPageConfigKey)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(
-                  pNextControl ?
-                  pNextControl->getKey() : ConfigKey(), this),
-          m_prevControl(
-                  pPrevControl ?
-                  pPrevControl->getKey() : ConfigKey(), this),
-          m_currentPageControl(
-                  pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey(), this) {
-    m_nextControl.connectValueChanged(SLOT(onNextControlChanged(double)));
-    m_prevControl.connectValueChanged(SLOT(onPrevControlChanged(double)));
-    m_currentPageControl.connectValueChanged(
-            SLOT(onCurrentPageControlChanged(double)));
-    connect(&m_showMapper, SIGNAL(mapped(int)),
-            this, SLOT(showIndex(int)));
-    connect(&m_hideMapper, SIGNAL(mapped(int)),
-            this, SLOT(hideIndex(int)));
+          m_nextControl(nextConfigKey, this),
+          m_prevControl(prevConfigKey, this),
+          m_currentPageControl(currentPageConfigKey, this) {
+    m_nextControl.connectValueChanged(this, &WWidgetStack::onNextControlChanged);
+    m_prevControl.connectValueChanged(this, &WWidgetStack::onPrevControlChanged);
+    m_currentPageControl.connectValueChanged(this, &WWidgetStack::onCurrentPageControlChanged);
 }
 
 // override
@@ -82,8 +69,8 @@ void WWidgetStack::hideIndex(int index) {
         return;
     }
     if (currentIndex() == index) {
-        QMap<int, int>::const_iterator it = m_hideMap.find(index);
-        if (it != m_hideMap.end()) {
+        auto it = m_hideMap.constFind(index);
+        if (it != m_hideMap.constEnd()) {
             setCurrentIndex(*it);
         } else {
             // TODO: This default behavior is a little odd, is it really what
@@ -148,19 +135,17 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
     int index = addWidget(pWidget);
     if (pControl) {
         auto pListener = new WidgetStackControlListener(this, pControl, index);
-        m_showMapper.setMapping(pListener, index);
-        m_hideMapper.setMapping(pListener, index);
         m_listeners[index] = pListener;
         if (pControl->get() > 0) {
             setCurrentIndex(count()-1);
         }
         pListener->onCurrentWidgetChanged(currentIndex());
-        connect(pListener, SIGNAL(switchToWidget()),
-                &m_showMapper, SLOT(map()));
-        connect(pListener, SIGNAL(hideWidget()),
-                &m_hideMapper, SLOT(map()));
-        connect(this, SIGNAL(currentChanged(int)),
-                pListener, SLOT(onCurrentWidgetChanged(int)));
+        connect(pListener, &WidgetStackControlListener::switchToWidget,
+                this, [this, index] { showIndex(index); });
+        connect(pListener, &WidgetStackControlListener::hideWidget,
+                this, [this, index] { hideIndex(index); });
+        connect(this, &WWidgetStack::currentChanged,
+                pListener, &WidgetStackControlListener::onCurrentWidgetChanged);
     }
 
     if (m_currentPageControl.get() == index) {
@@ -177,5 +162,5 @@ bool WWidgetStack::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QFrame::event(pEvent);
+    return QStackedWidget::event(pEvent);
 }

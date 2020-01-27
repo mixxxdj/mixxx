@@ -48,13 +48,6 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-QString fullScreenDefaultKeyBinding() {
-#ifdef __APPLE__
-    return QObject::tr("Ctrl+Shift+F");
-#else
-    return QObject::tr("F11");
-#endif
-}
 
 }  // namespace
 
@@ -64,12 +57,6 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_pKbdConfig(pKbdConfig) {
     initialize();
-    connect(&m_loadToDeckMapper, SIGNAL(mapped(int)),
-            this, SIGNAL(loadTrackToDeck(int)));
-    connect(&m_visitUrlMapper, SIGNAL(mapped(QString)),
-            this, SLOT(slotVisitUrl(QString)));
-    connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
-            this, SIGNAL(toggleVinylControl(int)));
 }
 
 void WMainMenuBar::initialize() {
@@ -97,9 +84,9 @@ void WMainMenuBar::initialize() {
         // Visibility of load to deck actions is set in
         // WMainMenuBar::onNumberOfDecksChanged.
         pFileLoadSongToPlayer->setVisible(false);
-        connect(pFileLoadSongToPlayer, SIGNAL(triggered()),
-                &m_loadToDeckMapper, SLOT(map()));
-        m_loadToDeckMapper.setMapping(pFileLoadSongToPlayer, deck + 1);
+        connect(pFileLoadSongToPlayer, &QAction::triggered,
+                this, [this, deck] { emit loadTrackToDeck(deck + 1); });
+
         pFileMenu->addAction(pFileLoadSongToPlayer);
         m_loadToDeckActions.push_back(pFileLoadSongToPlayer);
     }
@@ -169,24 +156,34 @@ void WMainMenuBar::initialize() {
 
     addMenu(pLibraryMenu);
 
-    // VIEW MENU
+#if defined(__APPLE__)
+    // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
+    // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
+    // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
+    // and the magic menu items won't get injected.
+    // https://bugs.launchpad.net/mixxx/+bug/1534292
+    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"));
+#else
     QMenu* pViewMenu = new QMenu(tr("&View"));
+#endif
 
+    // Skin Settings Menu
     QString mayNotBeSupported = tr("May not be supported on all skins.");
-    QString showSamplersTitle = tr("Show Samplers");
-    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+    QString showSkinSettingsTitle = tr("Show Skin Settings Menu");
+    QString showSkinSettingsText = tr("Show the Skin Settings Menu of the currently selected Skin") +
             " " + mayNotBeSupported;
-    auto pViewShowSamplers = new QAction(showSamplersTitle, this);
-    pViewShowSamplers->setCheckable(true);
-    pViewShowSamplers->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_ShowSamplers"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
-    pViewShowSamplers->setStatusTip(showSamplersText);
-    pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
-    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
-    pViewMenu->addAction(pViewShowSamplers);
+    auto pViewShowSkinSettings = new QAction(showSkinSettingsTitle, this);
+    pViewShowSkinSettings->setCheckable(true);
+    pViewShowSkinSettings->setShortcut(
+        QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowSkinSettings"),
+            tr("Ctrl+1", "Menubar|View|Show Skin Settings"))));
+    pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
+    pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
+    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    pViewMenu->addAction(pViewShowSkinSettings);
 
+    // Microphone Section
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
             " " + mayNotBeSupported;
@@ -231,20 +228,6 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
     pViewMenu->addAction(pViewShowPreviewDeck);
 
-    QString showEffectsTitle = tr("Show Effect Rack");
-    QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
-    " " + mayNotBeSupported;
-    auto pViewShowEffects = new QAction(showEffectsTitle, this);
-    pViewShowEffects->setCheckable(true);
-    pViewShowEffects->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(
-                ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowEffects"),
-                tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
-    pViewShowEffects->setStatusTip(showEffectsText);
-    pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
-    createVisibilityControl(pViewShowEffects, ConfigKey("[EffectRack1]", "show"));
-    pViewMenu->addAction(pViewShowEffects);
-
 
     QString showCoverArtTitle = tr("Show Cover Art");
     QString showCoverArtText = tr("Show cover art in the Mixxx interface.") +
@@ -282,10 +265,7 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    pViewFullScreen->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(
-                ConfigKey("[KeyboardShortcuts]", "ViewMenu_Fullscreen"),
-                fullScreenDefaultKeyBinding())));
+    pViewFullScreen->setShortcut(QKeySequence(QKeySequence::FullScreen));
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);
     pViewFullScreen->setChecked(false);
@@ -331,10 +311,8 @@ void WMainMenuBar::initialize() {
         vc_checkbox->setStatusTip(vinylControlText);
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
-
-        m_vinylControlEnabledMapper.setMapping(vc_checkbox, i);
-        connect(vc_checkbox, SIGNAL(triggered(bool)),
-                &m_vinylControlEnabledMapper, SLOT(map()));
+        connect(vc_checkbox, &QAction::triggered,
+                this, [this, i] { emit toggleVinylControl(i); });
         pVinylControlMenu->addAction(vc_checkbox);
     }
     pOptionsMenu->addMenu(pVinylControlMenu);
@@ -525,8 +503,8 @@ void WMainMenuBar::initialize() {
     auto pHelpSupport = new QAction(supportTitle, this);
     pHelpSupport->setStatusTip(supportText);
     pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
-    m_visitUrlMapper.setMapping(pHelpSupport, MIXXX_SUPPORT_URL);
-    connect(pHelpSupport, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpSupport, &QAction::triggered,
+            this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
     pHelpMenu->addAction(pHelpSupport);
 
     QDir resourceDir(m_pConfig->getResourcePath());
@@ -556,8 +534,8 @@ void WMainMenuBar::initialize() {
     auto pHelpManual = new QAction(manualTitle, this);
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
-    m_visitUrlMapper.setMapping(pHelpManual, qManualUrl.toString());
-    connect(pHelpManual, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpManual, &QAction::triggered,
+            this, [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
     pHelpMenu->addAction(pHelpManual);
 
     QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
@@ -565,8 +543,8 @@ void WMainMenuBar::initialize() {
     auto pHelpShortcuts = new QAction(shortcutsTitle, this);
     pHelpShortcuts->setStatusTip(shortcutsText);
     pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    m_visitUrlMapper.setMapping(pHelpShortcuts, MIXXX_SHORTCUTS_URL);
-    connect(pHelpShortcuts, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpShortcuts, &QAction::triggered,
+            this, [this] { slotVisitUrl(MIXXX_SHORTCUTS_URL); });
     pHelpMenu->addAction(pHelpShortcuts);
 
     QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
@@ -574,8 +552,8 @@ void WMainMenuBar::initialize() {
     auto pHelpFeedback = new QAction(feedbackTitle, this);
     pHelpFeedback->setStatusTip(feedbackText);
     pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
-    m_visitUrlMapper.setMapping(pHelpFeedback, MIXXX_FEEDBACK_URL);
-    connect(pHelpFeedback, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpFeedback, &QAction::triggered,
+            this, [this] { slotVisitUrl(MIXXX_FEEDBACK_URL); });
     pHelpMenu->addAction(pHelpFeedback);
 
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
@@ -583,8 +561,8 @@ void WMainMenuBar::initialize() {
     auto pHelpTranslation = new QAction(translateTitle, this);
     pHelpTranslation->setStatusTip(translateText);
     pHelpTranslation->setWhatsThis(buildWhatsThis(translateTitle, translateText));
-    m_visitUrlMapper.setMapping(pHelpTranslation, MIXXX_TRANSLATION_URL);
-    connect(pHelpTranslation, SIGNAL(triggered()), &m_visitUrlMapper, SLOT(map()));
+    connect(pHelpTranslation, &QAction::triggered,
+            this, [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
     pHelpMenu->addAction(pHelpTranslation);
 
     pHelpMenu->addSeparator();
@@ -603,39 +581,39 @@ void WMainMenuBar::initialize() {
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
-    emit(internalLibraryScanActive(true));
+    emit internalLibraryScanActive(true);
 }
 
 void WMainMenuBar::onLibraryScanFinished() {
-    emit(internalLibraryScanActive(false));
+    emit internalLibraryScanActive(false);
 }
 
 void WMainMenuBar::onNewSkinLoaded() {
-    emit(internalOnNewSkinLoaded());
+    emit internalOnNewSkinLoaded();
 }
 
 void WMainMenuBar::onNewSkinAboutToLoad() {
-    emit(internalOnNewSkinAboutToLoad());
+    emit internalOnNewSkinAboutToLoad();
 }
 
 void WMainMenuBar::onRecordingStateChange(bool recording) {
-    emit(internalRecordingStateChange(recording));
+    emit internalRecordingStateChange(recording);
 }
 
 void WMainMenuBar::onBroadcastingStateChange(bool broadcasting) {
-    emit(internalBroadcastingStateChange(broadcasting));
+    emit internalBroadcastingStateChange(broadcasting);
 }
 
 void WMainMenuBar::onDeveloperToolsShown() {
-    emit(internalDeveloperToolsStateChange(true));
+    emit internalDeveloperToolsStateChange(true);
 }
 
 void WMainMenuBar::onDeveloperToolsHidden() {
-    emit(internalDeveloperToolsStateChange(false));
+    emit internalDeveloperToolsStateChange(false);
 }
 
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
-    emit(internalFullScreenStateChange(fullscreen));
+    emit internalFullScreenStateChange(fullscreen);
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
@@ -707,8 +685,9 @@ void VisibilityControlConnection::slotClearControl() {
 }
 
 void VisibilityControlConnection::slotReconnectControl() {
-    m_pControl.reset(new ControlProxy(m_key, this));
-    m_pControl->connectValueChanged(SLOT(slotControlChanged()));
+    m_pControl.reset(new ControlProxy(this));
+    m_pControl->initialize(m_key, false);
+    m_pControl->connectValueChanged(this, &VisibilityControlConnection::slotControlChanged);
     m_pAction->setEnabled(m_pControl->valid());
     slotControlChanged();
 }

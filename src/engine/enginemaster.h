@@ -25,8 +25,9 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
+#include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
@@ -57,38 +58,21 @@ class EngineMaster : public QObject, public AudioSource {
     EngineMaster(UserSettingsPointer pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
-                 bool bEnableSidechain,
-                 bool bRampingGain);
+                 ChannelHandleFactory* pChannelHandleFactory,
+                 bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
-    inline const QString& getMasterGroup() const {
-        return m_masterHandle.name();
-    }
-
-    inline const QString& getHeadphoneGroup() const {
-        return m_headphoneHandle.name();
-    }
-
-    inline const QString& getBusLeftGroup() const {
-        return m_busLeftHandle.name();
-    }
-
-    inline const QString& getBusCenterGroup() const {
-        return m_busCenterHandle.name();
-    }
-
-    inline const QString& getBusRightGroup() const {
-        return m_busRightHandle.name();
-    }
-
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
-                m_channelHandleFactory.getOrCreateHandle(group), group);
+                   m_pChannelHandleFactory->getOrCreateHandle(group), group);
     }
+
+    // Register the sound I/O that does not correspond to any EngineChannel object
+    void registerNonEngineChannelSoundIO(SoundManager* pSoundManager);
 
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
@@ -97,6 +81,8 @@ class EngineMaster : public QObject, public AudioSource {
     // in the future.
     virtual void onOutputConnected(AudioOutput output);
     virtual void onOutputDisconnected(AudioOutput output);
+    void onInputConnected(AudioInput input);
+    void onInputDisconnected(AudioInput input);
 
     void process(const int iBufferSize);
 
@@ -126,6 +112,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getBoothBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
@@ -149,6 +136,7 @@ class EngineMaster : public QObject, public AudioSource {
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
         ControlPushButton* m_pMuteControl;
+        GroupFeatureState m_features;
         int m_index;
     };
 
@@ -176,17 +164,16 @@ class EngineMaster : public QObject, public AudioSource {
     class TalkoverGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            Q_UNUSED(pChannelInfo);
-            return 1.0;
+            return pChannelInfo->m_pVolumeControl->get();
         }
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
-                : m_dVolume(1.0),
-                  m_dLeftGain(1.0),
+                : m_dLeftGain(1.0),
                   m_dCenterGain(1.0),
-                  m_dRightGain(1.0) {
+                  m_dRightGain(1.0),
+                  m_dTalkoverDuckingGain(1.0) {
         }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
@@ -194,23 +181,34 @@ class EngineMaster : public QObject, public AudioSource {
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
                     m_dLeftGain, m_dCenterGain, m_dRightGain);
-            return m_dVolume * channelVolume * orientationGain;
+            return channelVolume * orientationGain * m_dTalkoverDuckingGain;
         }
 
-        inline void setGains(double dVolume, double leftGain,
-                double centerGain, double rightGain) {
-            m_dVolume = dVolume;
+        inline void setGains(double leftGain, double centerGain, double rightGain,
+                             double talkoverDuckingGain) {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
+            m_dTalkoverDuckingGain = talkoverDuckingGain;
         }
 
       private:
-        double m_dVolume;
         double m_dLeftGain;
         double m_dCenterGain;
         double m_dRightGain;
+        double m_dTalkoverDuckingGain;
     };
+
+    enum class MicMonitorMode {
+        // These are out of order with how they are listed in DlgPrefSound for backwards
+        // compatibility with Mixxx 2.0 user settings. In Mixxx 2.0, before the
+        // booth output was added, this was a binary option without
+        // the MASTER_AND_BOOTH mode.
+        MASTER = 0,
+        DIRECT_MONITOR,
+        MASTER_AND_BOOTH
+    };
+
     template<typename T, unsigned int CAPACITY>
     class FastVector {
       public:
@@ -258,10 +256,13 @@ class EngineMaster : public QObject, public AudioSource {
     // The master buffer is protected so it can be accessed by test subclasses.
     CSAMPLE* m_pMaster;
 
-  private:
-    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+    // ControlObjects for switching off unnecessary processing
+    // These are protected so tests can set them
+    ControlObject* m_pMasterEnabled;
+    ControlObject* m_pHeadphoneEnabled;
+    ControlObject* m_pBoothEnabled;
 
+  private:
     // Processes active channels. The master sync channel (if any) is processed
     // first and all others are processed after. Populates m_activeChannels,
     // m_activeBusChannels, m_activeHeadphoneChannels, and
@@ -269,9 +270,11 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    ChannelHandleFactory m_channelHandleFactory;
+    ChannelHandleFactory* m_pChannelHandleFactory;
+    void applyMasterEffects();
+    void processHeadphones(const double masterMixGainInHeadphones);
+
     EngineEffectsManager* m_pEngineEffectsManager;
-    bool m_bRampingGain;
 
     // List of channels added to the engine.
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_channels;
@@ -288,27 +291,35 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
+    unsigned int m_iSampleRate;
+    unsigned int m_iBufferSize;
+
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
+    CSAMPLE* m_pBooth;
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
-
-    CSAMPLE** m_ppSidechain; // points to master or to talkover buffer
+    CSAMPLE* m_pTalkoverHeadphones;
+    CSAMPLE* m_pSidechainMix;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
 
     ControlObject* m_pMasterGain;
+    ControlObject* m_pBoothGain;
     ControlObject* m_pHeadGain;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pAudioLatencyOverloadCount;
+    ControlObject* m_pNumMicsConfigured;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;
     EngineDelay* m_pMasterDelay;
     EngineDelay* m_pHeadDelay;
+    EngineDelay* m_pBoothDelay;
+    EngineDelay* m_pLatencyCompensationDelay;
 
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pEngineSideChain;
@@ -326,25 +337,26 @@ class EngineMaster : public QObject, public AudioSource {
     PflGainCalculator m_headphoneGain;
     TalkoverGainCalculator m_talkoverGain;
     OrientationVolumeGainCalculator m_masterGain;
-    CSAMPLE m_masterGainOld;
-    CSAMPLE m_headphoneMasterGainOld;
-    CSAMPLE m_headphoneGainOld;
-
+    CSAMPLE_GAIN m_masterGainOld;
+    CSAMPLE_GAIN m_boothGainOld;
+    CSAMPLE_GAIN m_headphoneMasterGainOld;
+    CSAMPLE_GAIN m_headphoneGainOld;
+    CSAMPLE_GAIN m_balleftOld;
+    CSAMPLE_GAIN m_balrightOld;
     const ChannelHandleAndGroup m_masterHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
-    const ChannelHandleAndGroup m_busLeftHandle;
-    const ChannelHandleAndGroup m_busCenterHandle;
-    const ChannelHandleAndGroup m_busRightHandle;
+    const ChannelHandleAndGroup m_masterOutputHandle;
+    const ChannelHandleAndGroup m_busTalkoverHandle;
+    const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
+    const ChannelHandleAndGroup m_busCrossfaderCenterHandle;
+    const ChannelHandleAndGroup m_busCrossfaderRightHandle;
 
-    // Produce the Master Mixxx, not Required if connected to left
-    // and right Bus and no recording and broadcast active
-    ControlObject* m_pMasterEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
-    ControlObject* m_pMasterTalkoverMix;
-    ControlObject* m_pHeadphoneEnabled;
+    ControlObject* m_pMicMonitorMode;
 
     volatile bool m_bBusOutputConnected[3];
+    bool m_bExternalRecordBroadcastInputConnected;
 };
 
 #endif

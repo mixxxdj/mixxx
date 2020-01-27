@@ -66,33 +66,41 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
-TrackMetadata::TrackMetadata()
-    : m_duration(0.0),
-      m_bitrate(0),
-      m_channels(0),
-      m_sampleRate(0) {
+void TrackMetadata::normalizeBeforeExport() {
+    refAlbumInfo().normalizeBeforeExport();
+    refTrackInfo().normalizeBeforeExport();
+}
+
+bool TrackMetadata::anyFileTagsModified(
+        const TrackMetadata& importedFromFile,
+        Bpm::Comparison cmpBpm) const {
+    // NOTE(uklotzde): The read-only audio properties that are stored
+    // directly as members of this class might differ after they have
+    // been updated while decoding audio data. They are read-only and
+    // must not be considered when exporting metadata!
+    return getAlbumInfo() != importedFromFile.getAlbumInfo() ||
+            !getTrackInfo().compareEq(importedFromFile.getTrackInfo(), cmpBpm);
 }
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    // Compare the integer and double fields 1st for maximum efficiency
-    return (lhs.getBitrate() == rhs.getBitrate()) &&
+    return (lhs.getAlbumInfo() == rhs.getAlbumInfo()) &&
+            (lhs.getTrackInfo() == rhs.getTrackInfo()) &&
+            (lhs.getBitrate() == rhs.getBitrate()) &&
             (lhs.getChannels() == rhs.getChannels()) &&
-            (lhs.getSampleRate() == rhs.getSampleRate()) &&
             (lhs.getDuration() == rhs.getDuration()) &&
-            (lhs.getArtist() == rhs.getArtist()) &&
-            (lhs.getTitle() == rhs.getTitle()) &&
-            (lhs.getAlbum() == rhs.getAlbum()) &&
-            (lhs.getAlbumArtist() == rhs.getAlbumArtist()) &&
-            (lhs.getGenre() == rhs.getGenre()) &&
-            (lhs.getComment() == rhs.getComment()) &&
-            (lhs.getYear() == rhs.getYear()) &&
-            (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
-            (lhs.getTrackTotal() == rhs.getTrackTotal()) &&
-            (lhs.getComposer() == rhs.getComposer()) &&
-            (lhs.getGrouping() == rhs.getGrouping()) &&
-            (lhs.getKey() == rhs.getKey()) &&
-            (lhs.getBpm() == rhs.getBpm()) &&
-            (lhs.getReplayGain() == rhs.getReplayGain());
+            (lhs.getSampleRate() == rhs.getSampleRate());
+}
+
+QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
+    dbg << '{';
+    arg.dbgTrackInfo(dbg);
+    arg.dbgAlbumInfo(dbg);
+    arg.dbgBitrate(dbg);
+    arg.dbgChannels(dbg);
+    arg.dbgDuration(dbg);
+    arg.dbgSampleRate(dbg);
+    dbg << '}';
+    return dbg;
 }
 
 } //namespace mixxx

@@ -23,13 +23,15 @@
 #include <QString>
 #include <QList>
 #include <QHash>
+#include <QSharedPointer>
 
 #include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddeviceerror.h"
 #include "util/types.h"
+#include "util/cmdlineargs.h"
+
 
 class EngineMaster;
 class AudioOutput;
@@ -37,6 +39,7 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
+class ControlProxy;
 class SoundDeviceNotFound;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
@@ -50,6 +53,7 @@ class SoundDeviceNotFound;
 #define SOUNDMANAGER_CONNECTING 1
 #define SOUNDMANAGER_CONNECTED 2
 
+
 class SoundManager : public QObject {
     Q_OBJECT
   public:
@@ -59,7 +63,8 @@ class SoundManager : public QObject {
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
-    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+    QList<SoundDevicePointer> getDeviceList(
+            QString filterAPI, bool bOutputDevices, bool bInputDevices) const;
 
     // Creates a list of sound devices
     void clearAndQueryDevices();
@@ -75,7 +80,7 @@ class SoundManager : public QObject {
     void setConfiguredDeckCount(int count);
     int getConfiguredDeckCount() const;
 
-    SoundDevice* getErrorDevice() const;
+    SoundDevicePointer getErrorDevice() const;
     QString getErrorDeviceName() const;
     QString getLastErrorMessage(SoundDeviceError err) const;
 
@@ -91,16 +96,16 @@ class SoundManager : public QObject {
     SoundDeviceError setConfig(SoundManagerConfig config);
     void checkConfig();
 
-    void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);
+    void onDeviceOutputCallback(const SINT iFramesPerBuffer);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
-                          const unsigned int iFramesPerBuffer);
+                          const SINT iFramesPerBuffer);
 
 
-    void writeProcess();
-    void readProcess();
+    void writeProcess() const;
+    void readProcess() const;
 
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
@@ -110,6 +115,17 @@ class SoundManager : public QObject {
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
         return m_pNetworkStream;
     }
+
+    void underflowHappened(int code) {
+        m_underflowHappened = 1;
+        // Disable the engine warnings by default, because printing a warning is a
+        // locking function that will make the problem worse
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            qWarning() << "underflowHappened code:" << code;
+        }
+    }
+
+    void processUnderflowHappened();
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
@@ -131,16 +147,14 @@ class SoundManager : public QObject {
 
     EngineMaster *m_pMaster;
     UserSettingsPointer m_pConfig;
-#ifdef __PORTAUDIO__
     bool m_paInitialized;
     unsigned int m_jackSampleRate;
-#endif
-    QList<SoundDevice*> m_devices;
+    QList<SoundDevicePointer> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
-    SoundDevice* m_pErrorDevice;
+    SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
@@ -148,7 +162,10 @@ class SoundManager : public QObject {
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
 
-    std::unique_ptr<SoundDeviceNotFound> m_soundDeviceNotFound;
+    QAtomicInt m_underflowHappened;
+    int m_underflowUpdateCount;
+    ControlProxy* m_pMasterAudioLatencyOverloadCount;
+    ControlProxy* m_pMasterAudioLatencyOverload;
 };
 
 #endif

@@ -1,16 +1,17 @@
 #include "library/dlgmissing.h"
 
 #include "library/missingtablemodel.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
 DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                        Library* pLibrary,
-                       TrackCollection* pTrackCollection, KeyboardEventFilter* pKeyboard)
+                       KeyboardEventFilter* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
            m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -23,26 +24,21 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollections());
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
-    connect(btnPurge, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotPurge()));
-    connect(btnPurge, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+    connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
+    connect(btnPurge, &QPushButton::clicked, this, &DlgMissing::clicked);
+    connect(btnSelect, &QPushButton::clicked, this, &DlgMissing::selectAll);
     connect(m_pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            &QItemSelectionModel::selectionChanged,
             this,
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+            &DlgMissing::selectionChanged);
+    connect(m_pTrackTableView, &WTrackTableView::trackSelected, this, &DlgMissing::trackSelected);
 
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, &Library::setTrackTableFont, m_pTrackTableView, &WTrackTableView::setTrackTableFont);
+    connect(pLibrary, &Library::setTrackTableRowHeight, m_pTrackTableView, &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary, &Library::setSelectedClick, m_pTrackTableView, &WTrackTableView::setSelectedClick);
 }
 
 DlgMissing::~DlgMissing() {
@@ -66,6 +62,10 @@ void DlgMissing::onSearch(const QString& text) {
     m_pMissingTableModel->search(text);
 }
 
+QString DlgMissing::currentSearch() {
+    return m_pMissingTableModel->currentSearch();
+}
+
 void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }
@@ -78,14 +78,6 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
                                   const QItemSelection &deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
-}
-
-void DlgMissing::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgMissing::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
 
 bool DlgMissing::hasFocus() const {

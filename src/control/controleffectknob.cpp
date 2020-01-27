@@ -16,6 +16,9 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
     if (type == EffectManifestParameter::ControlHint::KNOB_LINEAR) {
             m_pControl->setBehavior(new ControlLinPotmeterBehavior(
                     dMinValue, dMaxValue, false));
+    } else if (type == EffectManifestParameter::ControlHint::KNOB_LINEAR_INVERSE) {
+            m_pControl->setBehavior(new ControlLinInvPotmeterBehavior(
+                    dMinValue, dMaxValue, false));
     } else if (type == EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {
@@ -34,5 +37,8 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
             m_pControl->setBehavior(
                     new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
         }
+    } else if (type == EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE) {
+        m_pControl->setBehavior(
+                new ControlLogInvPotmeterBehavior(dMinValue, dMaxValue, -40));
     }
 }

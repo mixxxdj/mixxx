@@ -1,12 +1,12 @@
 <!--
 Description:
   The channel mixer containing
-  * EQ knobs incl. Kill buttons (if enabled)
-  * Filter knob (if enabled)
+  * EQ knobs incl. Kill buttons ] if enabled
+  * QuickEffect knob            ]
   * Headphone cue button
   * Volume slider
   * Gain knob
-  * VUMeter (if enabled)
+  * VUMeter
 Variables:
   group : [ChannelXY]
 -->
@@ -14,166 +14,116 @@ Variables:
   <WidgetGroup>
     <ObjectName>MixerChannelRight</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <Size>-1min,136f</Size>
     <Children>
 
-    <!-- No matter if VUMeter is visible, make sure there's 4px padding on the left -->
-      <WidgetGroup><Size>2f,1me</Size></WidgetGroup>
-      <Template src="skin:vumeter_mixer.xml"/>
-      <WidgetGroup><Size>2f,1me</Size></WidgetGroup>
+      <WidgetGroup><!-- VU Meter + Pfl button -->
+        <ObjectName>AlignCenter</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:vumeter_mixer.xml"/>
+            <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
+            <ObjectName>PflBoxRight</ObjectName>
+            <Size>25f,25f</Size>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+              <!-- Greyed out if no headphone device is configured -->
+              <Template src="skin:pfl_cover.xml"/>
+
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
+                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Pfl button, isolated with a 'gap' -->
+        </Children>
+      </WidgetGroup><!-- /VU Meter + Pfl button -->
 
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
         <Layout>vertical</Layout>
-        <Size>36f,1me</Size>
+        <SizePolicy>f,min</SizePolicy>
         <Children>
           <SliderComposed><!-- Volume slider -->
+            <Size>34f,103f</Size>
             <ObjectName>VolumeSlider</ObjectName>
             <TooltipId>channel_volume</TooltipId>
-            <Slider>skin:/knobs_sliders/slider_volume_v_scale.svg</Slider>
-            <Handle>skin:/knobs_sliders/slider_volume_v_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">knobs_sliders/volume_scale.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">knobs_sliders/volume_handle.svg</Handle>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>
             </Connection>
           </SliderComposed><!-- /Volume slider -->
 
-          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
-          <WidgetGroup><!--  Gain knob -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-              <Template src="skin:knob_textless.xml">
-                <SetVariable name="ObjectName">GainKnob</SetVariable>
-                <SetVariable name="TooltipId">pregain</SetVariable>
-                <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="Color">yellow</SetVariable>
-                <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="ConfigKey">pregain</SetVariable>
-              </Template>
-              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup><!--  /Gain knob -->
+          <!-- Gain knob, centered below Volume slider -->
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="ObjectName">GainKnob</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="Size">34f,30f</SetVariable>
+            <SetVariable name="Color">yellow</SetVariable>
+            <SetVariable name="group"><Variable name="group"/></SetVariable>
+            <SetVariable name="ConfigKey">pregain</SetVariable>
+          </Template>
 
         </Children>
-      </WidgetGroup><!--  /Volume Slider + Gain knob -->
+      </WidgetGroup><!-- /Volume Slider + Gain knob -->
 
-      <WidgetGroup><!-- EQs + Filter + Pfl -->
-        <ObjectName>EQKnobs</ObjectName>
-        <Layout>vertical</Layout>
+      <WidgetGroup><!-- Spacer when EQ plugin is loaded & Kill buttons are shown -->
         <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
-          <!-- see spacer in eq_knob_left/right.xml when
-               Filter knob is visible -->
-          <Template src="skin:eq_knob_right.xml"><!-- High EQ -->
-            <SetVariable name="parameter">3</SetVariable>
-            <SetVariable name="TooltipId">filterHigh</SetVariable>
-          </Template>
-          <Template src="skin:eq_knob_right.xml"><!-- Mid EQ -->
-            <SetVariable name="parameter">2</SetVariable>
-            <SetVariable name="TooltipId">filterMid</SetVariable>
-          </Template>
-          <Template src="skin:eq_knob_right.xml"><!-- Low EQ -->
-            <SetVariable name="parameter">1</SetVariable>
-            <SetVariable name="TooltipId">filterLow</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
           <WidgetGroup>
-            <Size>1min,3f</Size>
+            <Size>4f,0min</Size>
             <Connection>
-              <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
-          <!-- Filter knob + PflButton / Pfl button only -->
-          <WidgetStack currentpage="[Tango],filter_pfl_stack" persist="true">
-            <Children>
-
-              <WidgetGroup><!-- PflButton only -->
-                <ObjectName>FilterPflContainer</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-
-                  <WidgetGroup><Size>25f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">pfl</SetVariable>
-                    <SetVariable name="ObjectName">PflButton</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-                </Children>
-              </WidgetGroup><!-- /PflButton only -->
-
-              <!-- Filter knob + PflButton -->
-              <WidgetGroup trigger="[Tango],filter_knob" on-hide-select="0">
-                <ObjectName>FilterPflContainer</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">pfl</SetVariable>
-                    <SetVariable name="ObjectName">PflButton</SetVariable>
-                    <SetVariable name="Size">24f,24f</SetVariable>
-                    <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="ObjectName">FilterKnob</SetVariable>
-                    <SetVariable name="TooltipId"></SetVariable>
-                    <SetVariable name="Size">30f,30f</SetVariable>
-                    <SetVariable name="Color">blue</SetVariable>
-                    <SetVariable name="group">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
-                    <SetVariable name="ConfigKey">super1</SetVariable>
-                  </Template>
-
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Filter knob + PflButton -->
-
-            </Children>
-          </WidgetStack><!-- /Filter knob + PflButton / Pfl button only -->
-
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EQs + Filter + Pfl -->
+      </WidgetGroup>
 
-      <WidgetGroup><Size>4f,1me</Size></WidgetGroup>
+      <WidgetGroup><!-- EQ + QuickEffect knobs/buttons -->
+        <Layout>vertical</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <Template src="skin:eq_knob_right.xml"><!-- High EQ -->
+            <SetVariable name="FxParameter">3</SetVariable>
+          </Template>
+          <Template src="skin:eq_knob_right.xml"><!-- Mid EQ -->
+            <SetVariable name="FxParameter">2</SetVariable>
+          </Template>
+          <Template src="skin:eq_knob_right.xml"><!-- Low EQ -->
+            <SetVariable name="FxParameter">1</SetVariable>
+          </Template>
+          <Template src="skin:quick_fx_knob_right.xml"/><!-- Quick Effect -->
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
+
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

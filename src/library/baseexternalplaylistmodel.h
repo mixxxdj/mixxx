@@ -16,7 +16,7 @@
 class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    BaseExternalPlaylistModel(QObject* pParent, TrackCollection* pTrackCollection,
+    BaseExternalPlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager,
                               const char* settingsNamespace, const QString& playlistsTable,
                               const QString& playlistTracksTable, QSharedPointer<BaseTrackCache> trackSource);
 
@@ -25,6 +25,7 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     void setPlaylist(QString path_name);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackId getTrackId(const QModelIndex& index) const override;
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     void trackLoaded(QString group, TrackPointer pTrack) override;

@@ -12,8 +12,10 @@
 //
 
 #include <QtDebug>
+#include <QDir>
 #include <QFile>
 #include <QIODevice>
+#include <QUrl>
 
 #include "library/parser.h"
 
@@ -22,60 +24,45 @@
  **/
 
 
-Parser::Parser() : QObject()
-{
+Parser::Parser() {
 }
 
-Parser::~Parser()
-{
-
-
+Parser::~Parser() {
 }
 
-void Parser::clearLocations()
-{
+void Parser::clearLocations() {
     m_sLocations.clear();
 }
 
-long Parser::countParsed()
-{
+long Parser::countParsed() {
     return (long)m_sLocations.count();
 }
 
-bool Parser::isFilepath(QString sFilepath) {
-    QFile file(sFilepath);
-    bool exists = file.exists();
-    file.close();
-    return exists;
-}
-
 bool Parser::isBinary(QString filename) {
+    char firstByte;
     QFile file(filename);
-
-    if (file.open(QIODevice::ReadOnly)) {
-        char c;
-        unsigned char uc;
-
-        if(!file.getChar(&c))
-        {
-          qDebug() << "Parser: Error reading stream on " << filename;
-          return true; //should this raise an exception?
+    if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {
+        // If starting byte is not an ASCII character then the file
+        // probably contains binary data.
+        if (firstByte >= 32 && firstByte <= 126) {
+            // Valid ASCII character
+            return false;
         }
-
-        uc = uchar(c);
-
-        if(!(33<=uc && uc<=127))  //Starting byte is no character
-        {
-            file.close();
+        // Check for UTF-8 BOM
+        if (firstByte == static_cast<char>(0xEF)) {
+            char nextChar;
+            if (file.getChar(&nextChar) &&
+                    nextChar == static_cast<char>(0xBB) &&
+                    file.getChar(&nextChar) &&
+                    nextChar == static_cast<char>(0xBF)) {
+                // UTF-8 text file
+                return false;
+            }
             return true;
         }
-
-    } else{
-        qDebug() << "Parser: Could not open file: " << filename;
     }
-    //qDebug(QString("Parser: textstream starting character is: %1").arg(i));
-    file.close();
-    return false;
+    qDebug() << "Parser: Error reading from" << filename;
+    return true; //should this raise an exception?
 }
 
 // The following public domain code is taken from
@@ -158,4 +145,21 @@ bool Parser::isUtf8(const char* string) {
     }
 
     return true;
+}
+
+TrackFile Parser::playlistEntryToTrackFile(
+        const QString& playlistEntry,
+        const QString& basePath) {
+    if (playlistEntry.startsWith("file:")) {
+        // URLs are always absolute
+        return TrackFile::fromUrl(QUrl(playlistEntry));
+    }
+    auto filePath = QString(playlistEntry).replace('\\', '/');
+    auto trackFile = TrackFile(filePath);
+    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+        return trackFile;
+    } else {
+        // Fallback: Relative to base path
+        return TrackFile(QDir(basePath), filePath);
+    }
 }

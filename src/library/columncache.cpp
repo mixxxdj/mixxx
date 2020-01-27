@@ -2,13 +2,11 @@
 
 #include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "track/keyutils.h"
-#include "track/key_preferences.h"
-#include "control/controlproxy.h"
+
 
  ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
-    m_pKeyNotationCP->connectValueChanged(SLOT(slotSetKeySortOrder(double)));
+    m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
     // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
@@ -42,7 +40,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_GROUPING] = fieldIndex(LIBRARYTABLE_GROUPING);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TRACKNUMBER] = fieldIndex(LIBRARYTABLE_TRACKNUMBER);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE] = fieldIndex(LIBRARYTABLE_FILETYPE);
-    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION] = fieldIndex(LIBRARYTABLE_LOCATION);
+    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_NATIVELOCATION] = fieldIndex(LIBRARYTABLE_LOCATION);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT] = fieldIndex(LIBRARYTABLE_COMMENT);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_DURATION] = fieldIndex(LIBRARYTABLE_DURATION);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_BITRATE] = fieldIndex(LIBRARYTABLE_BITRATE);
@@ -94,7 +92,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_GROUPING], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TRACKNUMBER], sortInt);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
-    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_NATIVELOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);

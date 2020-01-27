@@ -16,6 +16,11 @@ var smartPFL = true;
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false;
 
+// Shift+Filter control behavior
+// true (default) - FX parameter 4 (when the FX is focused)
+// false - Channel Gain
+var ShiftFilterFX4 = true; 
+
 // allow pitch bend with wheel when wheel is not active 
 var PitchBendOnWheelOff = true;
 
@@ -77,11 +82,12 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  * 2016-09-14 (1.31) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
  * 2016-04-08 (1.4) to 2017-01-05 (2.2) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/1014
  * 2017-02-10 (2.3) - Radu Suciu - https://github.com/mixxxdj/mixxx/pull/1180
+ * 2018-01-20 (2.4) - NTMusic - Shift+Filter can control either FX4 or channel gain
  *
  ***********************************************************************
  *                           GPL v2 licence
  *                           -------------- 
- * Numark Mixtrack Pro 3 controller script 2.3 for Mixxx 2.1+
+ * Numark Mixtrack Pro 3 controller script 2.4 for Mixxx 2.1+
  * Copyright (C) 2016 Stéphane Morin
  *
  * This program is free software; you can redistribute it and/or
@@ -396,9 +402,9 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
-// doublePressTimeOut : delay in ms above wich a second press on the
+// doublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).   
 var SingleDoubleBtn = function(callback, doublePressTimeOut) {
@@ -445,7 +451,7 @@ SingleDoubleBtn.prototype.buttonDecide = function() {
 //                      and the kind of press event affecting your button (eventkind)
 //                      This callback will be called once you release the button
 //                      (Value will be equal to UP). You must provide this parameter.
-// longPressThreshold : delay in ms above which a firts press on the
+// longPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
 //                      This parameter is optional.
 // callBackOKLongPress : This callback will give you the same values than the first one
@@ -512,11 +518,11 @@ LongShortBtn.prototype.buttonUp = function() {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
-// longPressThreshold : delay in ms above which a firts press on the
+// longPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
-// doublePressTimeOut : delay in ms above wich a second press on the
+// doublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).
 
@@ -603,7 +609,7 @@ LongShortDoubleBtn.prototype.buttonDown = function(channel, control, value, stat
         // 2nd press
         this.buttonCount = 2;
 
-        // ...and take action immediatly
+        // ...and take action immediately
         this.buttonDecide();
     } // else :
     // 2nd press after short timer's out, this cannot happen,
@@ -834,7 +840,7 @@ NumarkMixtrack3.init = function(id, debug) {
     NumarkMixtrack3.id = id; // Store the ID of this device for later use
     NumarkMixtrack3.debug = debug;
 
-    engine.setValue('[Master]', 'show_superknobs', 1);
+    engine.setValue('[Skin]', 'show_superknobs', 1);
 
     NumarkMixtrack3.deckGroup = {
         '[Channel1]': '[Channel1]',
@@ -1074,27 +1080,20 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
     }
 };
 
-/******************     Browse Button/Knob :
- * Track list mode.....:
- * - Turn         : Select a track in the play list
- * - Push         : Load Selected track into first stopped deck
- * Directory mode...... :
- * - SHIFT + Turn : Select Play List/Side bar item
- * - SHIFT + Push : Open/Close selected side bar item.
- *                   Load the selected track (if any) and play.
- * *********************************************************************/
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
     var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
-    if (shifted && value === ON) {
-        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-        engine.setValue('[Library]', 'ChooseItem', true);
-    } else {
-        // Browse push : maximize/minimize library view
-        if (value === ON) {
-            script.toggleControl('[Master]', 'maximize_library');
-        }
+    if (value === ON) {
+	    if (shifted) {
+	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+	        engine.setValue('[Library]', 'GoToItem', true);
+	    } else {
+	        // Browse push : maximize/minimize library view
+	        if (value === ON) {
+	            script.toggleControl('[Master]', 'maximize_library');
+	        }
+	    }
     }
 };
 
@@ -1224,7 +1223,7 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
 /******************     Sync button :
  * - Short Press  : Press once to synchronize the tempo (BPM) and phase
  *                  to that of to that of the other track.
- * - Double Press : press twice QUICKLY to play the track immediatly,
+ * - Double Press : press twice QUICKLY to play the track immediately,
  *                  synchronized to the tempo (BPM) and to the phase of
  *                 the other track, if the track was paused.
  * - Long Press (Sync Lock) :
@@ -1300,7 +1299,7 @@ NumarkMixtrack3.CueButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
     if (!deck.shiftKey) {
-        // Don't set Cue accidentaly at the end of the song
+        // Don't set Cue accidentally at the end of the song
         if (engine.getValue(deck.group, "playposition") <= 0.97) {
             engine.setValue(deck.group, "cue_default", value ? 1 : 0);
         } else {
@@ -1766,7 +1765,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 
 
     // direct interaction with knob, without any button combination
-    if (!deck.PADMode && !deck.shiftKey) {
+    if (!deck.PADMode && !deck.shiftKey && !deck.TapDown) {
         var mixValue = engine.getParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix");
         engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue + increment);
     }
@@ -1857,10 +1856,17 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
 
     // default behavior is to control filter
     // when shifted, change parameters of focused effect
-    if (deck.shiftKey && focusedEffect) {
-        parameterSoftTakeOver(
-            "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value
-        );
+    if (deck.shiftKey) {
+		// Default behavior for Shift+Filter is to change FX4 
+		// for the currently focused effect
+		if(focusedEffect && ShiftFilterFX4) {
+			parameterSoftTakeOver(
+				"[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value
+			);
+		} else {			
+			// Shift+Filter is mapped to channel gain otherwise
+			parameterSoftTakeOver("[Channel" + decknum + "]", "pregain", value);
+		}
     } else {
         parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
     }

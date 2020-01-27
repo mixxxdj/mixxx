@@ -15,8 +15,8 @@ class PixmapSource final {
     bool isSVG() const;
     bool isBitmap() const;
     void setSVG(const QByteArray& content);
-    QString getPath() const;
-    QByteArray getData() const;
+    const QString& getPath() const;
+    const QByteArray& getSvgSourceData() const;
     QString getId() const;
 
   private:

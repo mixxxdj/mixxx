@@ -51,7 +51,11 @@ HeaderViewState::HeaderViewState(const QString& base64serialized) {
 
 QString HeaderViewState::saveState() const {
     // Serialize the proto to a byte array, then encode the array as Base64.
+#if GOOGLE_PROTOBUF_VERSION >= 3001000
+    size_t size = m_view_state.ByteSizeLong();
+#else
     int size = m_view_state.ByteSize();
+#endif
     QByteArray array(size, '\0');
     m_view_state.SerializeToArray(array.data(), size);
     return QString(array.toBase64());
@@ -97,10 +101,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
         : QHeaderView(orientation, parent),
-          m_menu(tr("Show or hide columns."), this),
-          m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(int)),
-            this, SLOT(showOrHideColumn(int)));
+          m_menu(tr("Show or hide columns."), this) {
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -139,7 +140,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     restoreHeaderState();
 
     // Here we can override values to prevent restoring corrupt values from database
-    setMovable(true);
+    setSectionsMovable(true);
 
     // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
     setCascadingSectionResizes(false);
@@ -159,7 +160,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         /* If Mixxx starts the first time or the header states have been cleared
          * due to database schema evolution we gonna hide all columns that may
          * contain a potential large number of NULL values.  Here we uncheck
-         * item in the context menu that are hidden by defualt (e.g., key
+         * item in the context menu that are hidden by default (e.g., key
          * column)
          */
         if (!hasPersistedHeaderState() &&
@@ -169,11 +170,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
             action->setChecked(!isSectionHidden(i));
         }
 
-        // Map this action's signals via our QSignalMapper
-        m_signalMapper.setMapping(action, i);
+        // Map this action's signals
         m_columnActions.insert(i, action);
-        connect(action, SIGNAL(triggered()),
-                &m_signalMapper, SLOT(map()));
+        connect(action, &QAction::triggered,
+                this, [this, i] { showOrHideColumn(i); });
         m_menu.addAction(action);
 
         // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE

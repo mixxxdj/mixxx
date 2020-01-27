@@ -1,9 +1,10 @@
+#include <QButtonGroup>
 #include <QtDebug>
 
 #include "preferences/dialog/dlgprefcrossfader.h"
-#include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "engine/enginexfader.h"
+#include "util/math.h"
 #include "util/rescaler.h"
 
 DlgPrefCrossfader::DlgPrefCrossfader(
@@ -197,6 +198,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
     graphicsViewXfader->setScene(m_pxfScene);
     graphicsViewXfader->show();
+    graphicsViewXfader->repaint();
 }
 
 // Update and save the crossfader's parameters from the dialog's widgets.

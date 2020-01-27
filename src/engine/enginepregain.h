@@ -17,14 +17,12 @@ class EnginePregain : public EngineObject {
     EnginePregain(QString group);
     ~EnginePregain() override;
 
-    void setSpeed(double speed);
-
     // If the user is scratching and the record reverses direction, the volume
     // will be ramped to zero and back up again to mimic a vinyl scratch.
     // If the user is not scratching and the direction is reversed
     // (e.g. reverse button is pressed), the audio will be immediately
     // reversed without a ramp to zero.
-    void setScratching(bool scratching);
+    void setSpeedAndScratching(double speed, bool scratching);
 
     void process(CSAMPLE* pInOut, const int iBufferSize) override;
 
@@ -33,8 +31,10 @@ class EnginePregain : public EngineObject {
   private:
     double m_dSpeed;
     double m_dOldSpeed;
+    double m_dNonScratchSpeed;
     bool m_scratching;
-    float m_fPrevGain;
+    CSAMPLE_GAIN
+    m_fPrevGain;
     ControlAudioTaperPot* m_pPotmeterPregain;
     ControlObject* m_pTotalGain;
     ControlObject* m_pCOReplayGain;

@@ -17,27 +17,30 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     m_pButtonMenu = new QMenu(this);
     connect(m_pButtonMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(slotActionChosen(QAction*)));
-
-    // EffectWidgetUtils propagates NULLs so this is all safe.
-    EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
-            node, context, m_pEffectsManager);
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-            node, context, pRack);
-    EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
-    EffectParameterSlotBasePointer pParameterSlot =
-            EffectWidgetUtils::getButtonParameterSlotFromNode(
-                    node, context, pEffectSlot);
-    if (pParameterSlot) {
-        m_pEffectParameterSlot = pParameterSlot;
-        connect(pParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
-        parameterUpdated();
-    } else {
-        SKIN_WARNING(node, context)
-                << "EffectPushButton node could not attach to effect parameter.";
-    }
+    setFocusPolicy(Qt::NoFocus);
 }
+
+void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
+    EffectButtonParameterSlotPointer pParameterSlot =
+            m_pEffectsManager->getEffectButtonParameterSlot(configKey);
+    if (!pParameterSlot) {
+        qWarning() << "EffectPushButton" << configKey <<
+                "is not an effect button parameter.";
+        return;
+    }
+    setEffectParameterSlot(pParameterSlot);
+}
+
+void WEffectPushButton::setEffectParameterSlot(
+        EffectButtonParameterSlotPointer pParameterSlot) {
+    m_pEffectParameterSlot = pParameterSlot;
+    if (m_pEffectParameterSlot) {
+        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+                this, SLOT(parameterUpdated()));
+    }
+    parameterUpdated();
+}
+
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     for (const auto& action : m_pButtonMenu->actions()) {
@@ -86,8 +89,25 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WEffectPushButton::parameterUpdated() {
+    // Set tooltip
+    if (m_pEffectParameterSlot) {
+        setBaseTooltip(QString("%1\n%2").arg(
+                       m_pEffectParameterSlot->name(),
+                       m_pEffectParameterSlot->description()));
+    } else {
+        // The button should be hidden by the skin when the buttonparameterX_loaded
+        // ControlObject indicates no parameter is loaded, so this tooltip should
+        // never be shown.
+        setBaseTooltip("");
+    }
+
     m_pButtonMenu->clear();
-    const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
+    EffectManifestParameterPointer pManifest = m_pEffectParameterSlot->getManifest();
+    QList<QPair<QString, double> > options;
+    if (pManifest) {
+        options = pManifest->getSteps();
+    }
+
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
     m_iNoStates = options.size();
     if (m_iNoStates == 0) {

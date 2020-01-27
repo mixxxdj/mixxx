@@ -12,33 +12,46 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
-                     const QString& group)
+                     const QString& group,
+                     BaseTrackPlayer* pPlayer)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()) {
+          m_pPlayer(pPlayer),
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)),
+                                          const CoverInfoRelative&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)));
+                                          const CoverInfoRelative&, QPixmap, bool)));
     }
-    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
+
+    if (m_pPlayer != nullptr) {
+        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                this, SLOT(slotLoadTrack(TrackPointer)));
+        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+
+        // just in case a track is already loaded
+        slotLoadTrack(m_pPlayer->getLoadedTrack());
+    }
 }
 
 WCoverArt::~WCoverArt() {
@@ -93,7 +106,7 @@ void WCoverArt::slotReloadCoverArt() {
     }
 }
 
-void WCoverArt::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
         m_loadedTrack->setCoverInfo(coverInfo);
@@ -135,7 +148,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
 }
 
 void WCoverArt::slotCoverFound(const QObject* pRequestor,
-                               const CoverInfo& info, QPixmap pixmap,
+                               const CoverInfoRelative& info, QPixmap pixmap,
                                bool fromCache) {
     Q_UNUSED(info);
     Q_UNUSED(fromCache);
@@ -178,7 +191,11 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaled;
+    scaled = normal.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    return scaled;
 }
 
 void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
@@ -219,17 +236,27 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
         m_pMenu->setCoverArt(m_lastRequestedCover);
         m_pMenu->popup(event->globalPos());
-    } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
-        if (m_pDlgFullSize->isVisible()) {
-            m_pDlgFullSize->close();
-        } else {
-            m_pDlgFullSize->init(m_loadedCover);
-        }
+    } else if (event->button() == Qt::LeftButton) {
+        // do nothing if left button is pressed,
+        // wait for button release
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
     }
 }
 
-void WCoverArt::leaveEvent(QEvent* /*unused*/) {
-    m_pDlgFullSize->close();
+void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
+    if (!m_bEnable) {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton && m_loadedTrack &&
+            m_clickTimer.isActive()) { // init/close fullsize cover
+        if (m_pDlgFullSize->isVisible()) {
+            m_pDlgFullSize->close();
+        } else {
+            m_pDlgFullSize->init(m_loadedTrack);
+        }
+    } // else it was a long leftclick or a right click that's already been processed
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
@@ -241,11 +268,8 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
 void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
     } else {
         event->ignore();
     }
@@ -254,15 +278,9 @@ void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
 void WCoverArt::dropEvent(QDropEvent *event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }

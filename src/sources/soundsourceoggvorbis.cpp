@@ -16,17 +16,16 @@ const int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
 
 // Parameter for ov_pcm_total()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_pcm_total.html
-const int kEntireBitstreamLink  = -1; // retrieve ... for the entire physical bitstream
+const int kEntireBitstreamLink = -1; // retrieve ... for the entire physical bitstream
 
 } // anonymous namespace
 
 //static
 ov_callbacks SoundSourceOggVorbis::s_callbacks = {
-    SoundSourceOggVorbis::ReadCallback,
-    SoundSourceOggVorbis::SeekCallback,
-    SoundSourceOggVorbis::CloseCallback,
-    SoundSourceOggVorbis::TellCallback
-};
+        SoundSourceOggVorbis::ReadCallback,
+        SoundSourceOggVorbis::SeekCallback,
+        SoundSourceOggVorbis::CloseCallback,
+        SoundSourceOggVorbis::TellCallback};
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(const QUrl& url)
         : SoundSource(url, "ogg"),
@@ -38,13 +37,15 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
+        OpenMode /*mode*/,
+        const OpenParams& /*config*/) {
     m_pFile = std::make_unique<QFile>(getLocalFileName());
-    if(!m_pFile->open(QFile::ReadOnly)) {
+    if (!m_pFile->open(QFile::ReadOnly)) {
         kLogger.warning()
                 << "Failed to open file for"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, nullptr, 0, s_callbacks);
@@ -55,14 +56,14 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
     case OV_ENOTVORBIS:
     case OV_EVERSION:
         kLogger.warning()
-            << "Unsupported format in"
-            << getUrlString();
-        return OpenResult::ABORTED;
+                << "Unsupported format in"
+                << getUrlString();
+        return OpenResult::Aborted;
     default:
         kLogger.warning()
-            << "Failed to initialize decoder for"
-            << getUrlString();
-        return OpenResult::FAILED;
+                << "Failed to initialize decoder for"
+                << getUrlString();
+        return OpenResult::Failed;
     }
 
     if (!ov_seekable(&m_vf)) {
@@ -70,7 +71,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     // lookup the ogg's channels and sample rate
@@ -79,29 +80,29 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         kLogger.warning()
                 << "Failed to read stream info from"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     setChannelCount(vi->channels);
-    setSamplingRate(vi->rate);
+    setSampleRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
-        setBitrate(vi->bitrate_nominal / 1000);
+        initBitrateOnce(vi->bitrate_nominal / 1000);
     } else {
         if ((0 < vi->bitrate_lower) && (vi->bitrate_lower == vi->bitrate_upper)) {
-            setBitrate(vi->bitrate_lower / 1000);
+            initBitrateOnce(vi->bitrate_lower / 1000);
         }
     }
 
     ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kEntireBitstreamLink);
     if (0 <= pcmTotal) {
-        setFrameCount(pcmTotal);
+        initFrameIndexRangeOnce(IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read read total length of"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceOggVorbis::close() {
@@ -112,61 +113,35 @@ void SoundSourceOggVorbis::close() {
     m_pFile.reset();
 }
 
-SINT SoundSourceOggVorbis::seekSampleFrame(
-        SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
+        WritableSampleFrames writableSampleFrames) {
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    if (frameIndex >= getMaxFrameIndex()) {
-        // EOF
-        m_curFrameIndex = getMaxFrameIndex();
-        return m_curFrameIndex;
-    }
-
-    if (frameIndex == m_curFrameIndex) {
-        return m_curFrameIndex;
-    }
-
-    const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
-    if (0 == seekResult) {
-        m_curFrameIndex = frameIndex;
-    } else {
-        kLogger.warning() << "Failed to seek file:" << seekResult;
-        const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
-        if (0 <= pcmOffset) {
-            m_curFrameIndex = pcmOffset;
+    if (m_curFrameIndex != firstFrameIndex) {
+        const int seekResult = ov_pcm_seek(&m_vf, firstFrameIndex);
+        if (seekResult == 0) {
+            m_curFrameIndex = firstFrameIndex;
         } else {
-            // Reset to EOF
-            m_curFrameIndex = getMaxFrameIndex();
+            kLogger.warning() << "Failed to seek file:" << seekResult;
+            const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
+            if (0 <= pcmOffset) {
+                m_curFrameIndex = pcmOffset;
+            } else {
+                // Reset to EOF
+                m_curFrameIndex = frameIndexMax();
+            }
+            // Abort
+            return ReadableSampleFrames(
+                    IndexRange::between(
+                            m_curFrameIndex,
+                            m_curFrameIndex));
         }
     }
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    return m_curFrameIndex;
-}
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
-SINT SoundSourceOggVorbis::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer,
-            frames2samples(numberOfFrames), false);
-}
-
-SINT SoundSourceOggVorbis::readSampleFramesStereo(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
-            true);
-}
-
-SINT SoundSourceOggVorbis::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize, bool readStereoSamples) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
-
-    const SINT numberOfFramesTotal = math_min(
-            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
-
-    CSAMPLE* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         float** pcmChannels;
@@ -175,30 +150,25 @@ SINT SoundSourceOggVorbis::readSampleFrames(
         // This is an exception from the rule not to any types with
         // differing sizes on different platforms.
         // https://bugs.launchpad.net/mixxx/+bug/1094143
-        const long readResult = ov_read_float(&m_vf, &pcmChannels,
-                numberOfFramesRemaining, &currentSection);
+        const long readResult = ov_read_float(&m_vf, &pcmChannels, numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
-            if (pSampleBuffer != nullptr) {
-                if (kChannelCountMono == getChannelCount()) {
-                    if (readStereoSamples) {
-                        for (long i = 0; i < readResult; ++i) {
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                        }
-                    } else {
-                        for (long i = 0; i < readResult; ++i) {
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                        }
+            if (pSampleBuffer) {
+                switch (channelCount()) {
+                case 1:
+                    for (long i = 0; i < readResult; ++i) {
+                        *pSampleBuffer++ = pcmChannels[0][i];
                     }
-                } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
+                    break;
+                case 2:
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
                         *pSampleBuffer++ = pcmChannels[1][i];
                     }
-                } else {
+                    break;
+                default:
                     for (long i = 0; i < readResult; ++i) {
-                        for (SINT j = 0; j < getChannelCount(); ++j) {
+                        for (SINT j = 0; j < channelCount(); ++j) {
                             *pSampleBuffer++ = pcmChannels[j][i];
                         }
                     }
@@ -213,63 +183,65 @@ SINT SoundSourceOggVorbis::readSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
-    return numberOfFramesTotal - numberOfFramesRemaining;
-}
-
-
-//static
-size_t SoundSourceOggVorbis::ReadCallback(void *ptr, size_t size, size_t nmemb,
-       void *datasource) {
-   if (!size || !nmemb) {
-       return 0;
-   }
-   QFile* pFile = static_cast<QFile*>(datasource);
-   if (!pFile) {
-       return 0;
-   }
-
-   nmemb = math_min<size_t>((pFile->size() - pFile->pos()) / size, nmemb);
-   pFile->read((char*)ptr, nmemb * size);
-   return nmemb;
+    const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
 }
 
 //static
-int SoundSourceOggVorbis::SeekCallback(void *datasource, ogg_int64_t offset,
-       int whence) {
-   QFile* pFile = static_cast<QFile*>(datasource);
-   if (!pFile) {
-       return 0;
-   }
+size_t SoundSourceOggVorbis::ReadCallback(void* ptr, size_t size, size_t nmemb, void* datasource) {
+    if (!size || !nmemb) {
+        return 0;
+    }
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
 
-   switch(whence) {
-   case SEEK_SET:
-       return pFile->seek(offset) ? 0 : -1;
-   case SEEK_CUR:
-       return pFile->seek(pFile->pos() + offset) ? 0 : -1;
-   case SEEK_END:
-       return pFile->seek(pFile->size() + offset) ? 0 : -1;
-   default:
-       return -1;
-   }
+    nmemb = math_min<size_t>((pFile->size() - pFile->pos()) / size, nmemb);
+    pFile->read((char*)ptr, nmemb * size);
+    return nmemb;
+}
+
+//static
+int SoundSourceOggVorbis::SeekCallback(void* datasource, ogg_int64_t offset, int whence) {
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+
+    switch (whence) {
+    case SEEK_SET:
+        return pFile->seek(offset) ? 0 : -1;
+    case SEEK_CUR:
+        return pFile->seek(pFile->pos() + offset) ? 0 : -1;
+    case SEEK_END:
+        return pFile->seek(pFile->size() + offset) ? 0 : -1;
+    default:
+        return -1;
+    }
 }
 
 //static
 int SoundSourceOggVorbis::CloseCallback(void* datasource) {
-   QFile* pFile = static_cast<QFile*>(datasource);
-   if (!pFile) {
-       return 0;
-   }
-   pFile->close();
-   return 0;
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+    pFile->close();
+    return 0;
 }
 
 //static
 long SoundSourceOggVorbis::TellCallback(void* datasource) {
-   QFile* pFile = static_cast<QFile*>(datasource);
-   if (!pFile) {
-       return 0;
-   }
-   return pFile->pos();
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->pos();
 }
 
 QString SoundSourceProviderOggVorbis::getName() const {
@@ -280,6 +252,13 @@ QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
     supportedFileExtensions.append("ogg");
     return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

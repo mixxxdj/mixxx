@@ -34,7 +34,7 @@ QString MidiController::presetExtension() {
 
 void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
-    emit(presetLoaded(getPreset()));
+    emit presetLoaded(getPreset());
 }
 
 int MidiController::close() {
@@ -186,9 +186,8 @@ void MidiController::commitTemporaryInputMappings() {
     // We want to replace duplicates that exist in m_preset but allow duplicates
     // in m_temporaryInputMappings. To do this, we first remove every key in
     // m_temporaryInputMappings from m_preset.inputMappings.
-    for (QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                 m_temporaryInputMappings.begin();
-         it != m_temporaryInputMappings.end(); ++it) {
+    for (auto it = m_temporaryInputMappings.constBegin();
+         it != m_temporaryInputMappings.constEnd(); ++it) {
         m_preset.inputMappings.remove(it.key());
     }
 
@@ -209,21 +208,19 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     triggerActivity();
     if (isLearning()) {
-        emit(messageReceived(status, control, value));
+        emit messageReceived(status, control, value);
 
-        QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                m_temporaryInputMappings.find(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
+        if (it != m_temporaryInputMappings.constEnd()) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
             return;
         }
     }
 
-    QHash<uint16_t, MidiInputMapping>::const_iterator it =
-            m_preset.inputMappings.find(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    auto it = m_preset.inputMappings.constFind(mappingKey.key);
+    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -274,8 +271,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping_is_14bit) {
         bool found = false;
-        for (QList<QPair<MidiInputMapping, unsigned char> >::iterator it =
-                     m_fourteen_bit_queued_mappings.begin();
+        for (auto it = m_fourteen_bit_queued_mappings.begin();
              it != m_fourteen_bit_queued_mappings.end(); ++it) {
             if (it->first.control == mapping.control) {
                 if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
@@ -348,28 +344,29 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     if (mapping.options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(pCO);
-        if (m_st.ignore(pCO, pCO->getParameterForMidiValue(newValue))) {
+        if (m_st.ignore(pCO, pCO->getParameterForMidi(newValue))) {
             return;
         }
     }
     pCO->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
 }
 
-double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
+double MidiController::computeValue(
+        MidiOptions options, double prevmidivalue, double newmidivalue) {
     double tempval = 0.;
     double diff = 0.;
 
     if (options.all == 0) {
-        return _newmidivalue;
+        return newmidivalue;
     }
 
     if (options.invert) {
-        return 127. - _newmidivalue;
+        return 127. - newmidivalue;
     }
 
     if (options.rot64 || options.rot64_inv) {
-        tempval = _prevmidivalue;
-        diff = _newmidivalue - 64.;
+        tempval = prevmidivalue;
+        diff = newmidivalue - 64.;
         if (diff == -1 || diff == 1)
             diff /= 16;
         else
@@ -382,8 +379,8 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     }
 
     if (options.rot64_fast) {
-        tempval = _prevmidivalue;
-        diff = _newmidivalue - 64.;
+        tempval = prevmidivalue;
+        diff = newmidivalue - 64.;
         diff *= 1.5;
         tempval += diff;
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
@@ -391,19 +388,19 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
     if (options.diff) {
         //Interpret 7-bit signed value using two's compliment.
-        if (_newmidivalue >= 64.)
-            _newmidivalue = _newmidivalue - 128.;
+        if (newmidivalue >= 64.)
+            newmidivalue = newmidivalue - 128.;
         //Apply sensitivity to signed value. FIXME
        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Apply new value to current value.
-        _newmidivalue = _prevmidivalue + _newmidivalue;
+        newmidivalue = prevmidivalue + newmidivalue;
     }
 
     if (options.selectknob) {
         //Interpret 7-bit signed value using two's compliment.
-        if (_newmidivalue >= 64.)
-            _newmidivalue = _newmidivalue - 128.;
+        if (newmidivalue >= 64.)
+            newmidivalue = newmidivalue - 128.;
         //Apply sensitivity to signed value. FIXME
         //if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
@@ -411,11 +408,11 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     }
 
     if (options.button) {
-        _newmidivalue = _newmidivalue != 0;
+        newmidivalue = newmidivalue != 0;
     }
 
     if (options.sw) {
-        _newmidivalue = 1;
+        newmidivalue = 1;
     }
 
     if (options.spread64) {
@@ -424,32 +421,32 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
         // but with added sensitivity adjustment. This formula is still experimental.
 
-        _newmidivalue = _newmidivalue - 64.;
+        newmidivalue = newmidivalue - 64.;
         //FIXME
         //double distance = _newmidivalue - 64.;
         // _newmidivalue = distance * distance * sensitivity / 50000.;
         //if (distance < 0.)
-        //    _newmidivalue = -_newmidivalue;
+        //    _newmidivalue = -newmidivalue;
 
-        //qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
+        //qDebug() << "Spread64: in " << distance << "  out " << newmidivalue;
     }
 
     if (options.herc_jog) {
-        if (_newmidivalue > 64.) {
-            _newmidivalue -= 128.;
+        if (newmidivalue > 64.) {
+            newmidivalue -= 128.;
         }
-        _newmidivalue += _prevmidivalue;
-        //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
+        newmidivalue += prevmidivalue;
+        //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << prevmidivalue; }
     }
 
     if (options.herc_jog_fast) {
-        if (_newmidivalue > 64.) {
-            _newmidivalue -= 128.;
+        if (newmidivalue > 64.) {
+            newmidivalue -= 128.;
         }
-        _newmidivalue = _prevmidivalue + (_newmidivalue * 3);
+        newmidivalue = prevmidivalue + (newmidivalue * 3);
     }
 
-    return _newmidivalue;
+    return newmidivalue;
 }
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
@@ -462,21 +459,19 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     // don't think this actually does anything useful.
     if (isLearning()) {
         // TODO(rryan): Fake a one value?
-        emit(messageReceived(mappingKey.status, mappingKey.control, 0x7F));
+        emit messageReceived(mappingKey.status, mappingKey.control, 0x7F);
 
-        QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                m_temporaryInputMappings.find(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
+        if (it != m_temporaryInputMappings.constEnd()) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), data, timestamp);
             }
             return;
         }
     }
 
-    QHash<uint16_t, MidiInputMapping>::const_iterator it =
-            m_preset.inputMappings.find(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    auto it = m_preset.inputMappings.constFind(mappingKey.key);
+    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }

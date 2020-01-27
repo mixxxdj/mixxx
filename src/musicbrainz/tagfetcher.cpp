@@ -9,9 +9,7 @@
 
 #include <QFuture>
 #include <QUrl>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtConcurrent>
-#endif
 #include <QtConcurrentMap>
 
 #include "musicbrainz/tagfetcher.h"
@@ -23,14 +21,14 @@ TagFetcher::TagFetcher(QObject* parent)
             m_pFingerprintWatcher(NULL),
             m_AcoustidClient(this),
             m_MusicbrainzClient(this) {
-    connect(&m_AcoustidClient, SIGNAL(finished(int,QString)),
-            this, SLOT(mbidFound(int,QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
-            this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
-    connect(&m_AcoustidClient, SIGNAL(networkError(int, QString)),
-            this, SIGNAL(networkError(int, QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(networkError(int, QString)),
-            this, SIGNAL(networkError(int, QString)));
+    connect(&m_AcoustidClient, &AcoustidClient::finished,
+            this, &TagFetcher::mbRecordingIdsFound);
+    connect(&m_MusicbrainzClient, &MusicBrainzClient::finished,
+            this, &TagFetcher::tagsFetched);
+    connect(&m_AcoustidClient, &AcoustidClient::networkError,
+            this, &TagFetcher::networkError);
+    connect(&m_MusicbrainzClient, &MusicBrainzClient::networkError,
+            this, &TagFetcher::networkError);
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {
@@ -47,12 +45,10 @@ void TagFetcher::startFetch(const TrackPointer track) {
     QFuture<QString> future = QtConcurrent::mapped(m_tracks, getFingerprint);
     m_pFingerprintWatcher = new QFutureWatcher<QString>(this);
     m_pFingerprintWatcher->setFuture(future);
-    connect(m_pFingerprintWatcher, SIGNAL(resultReadyAt(int)),
-            SLOT(fingerprintFound(int)));
+    connect(m_pFingerprintWatcher, &QFutureWatcher<QString>::resultReadyAt,
+            this, &TagFetcher::fingerprintFound);
 
-    foreach (const TrackPointer ptrack, m_tracks) {
-        emit(fetchProgress(tr("Fingerprinting track")));
-    }
+    emit fetchProgress(tr("Fingerprinting track"));
 }
 
 void TagFetcher::cancel() {
@@ -70,7 +66,7 @@ void TagFetcher::cancel() {
 }
 
 void TagFetcher::fingerprintFound(int index) {
-    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
+    QFutureWatcher<QString>* watcher = static_cast<QFutureWatcher<QString>*>(sender());
     if (!watcher || index >= m_tracks.count()) {
         return;
     }
@@ -79,30 +75,30 @@ void TagFetcher::fingerprintFound(int index) {
     const TrackPointer ptrack = m_tracks[index];
 
     if (fingerprint.isEmpty()) {
-        emit(resultAvailable(ptrack, QList<TrackPointer>()));
+        emit resultAvailable(ptrack, QList<TrackPointer>());
         return;
     }
 
-    emit(fetchProgress(tr("Identifying track")));
+    emit fetchProgress(tr("Identifying track"));
     // qDebug() << "start to look up the MBID";
     m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
 }
 
-void TagFetcher::mbidFound(int index, const QString& mbid) {
+void TagFetcher::mbRecordingIdsFound(int index, QStringList mbRecordingIds) {
     if (index >= m_tracks.count()) {
         return;
     }
 
     const TrackPointer pTrack = m_tracks[index];
 
-    if (mbid.isEmpty()) {
-        emit(resultAvailable(pTrack, QList<TrackPointer>()));
+    if (mbRecordingIds.isEmpty()) {
+        emit resultAvailable(pTrack, QList<TrackPointer>());
         return;
     }
 
     emit fetchProgress(tr("Downloading Metadata"));
     //qDebug() << "start to fetch tags from MB";
-    m_MusicbrainzClient.start(index, mbid);
+    m_MusicbrainzClient.start(index, mbRecordingIds);
 }
 
 void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& results) {
@@ -125,5 +121,5 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
         track->setYear(QString::number(result.m_year));
         tracksGuessed << track;
     }
-    emit(resultAvailable(originalTrack, tracksGuessed));
+    emit resultAvailable(originalTrack, tracksGuessed);
 }

@@ -23,14 +23,12 @@ void WEffectParameterBase::parameterUpdated() {
     if (m_pEffectParameterSlot) {
         if (!m_pEffectParameterSlot->shortName().isEmpty()) {
             setText(m_pEffectParameterSlot->shortName());
-            //: %1 = effect name; %2 = effect description
-            setBaseTooltip(tr("%1: %2").arg(
-                              m_pEffectParameterSlot->name(),
-                              m_pEffectParameterSlot->description()));
         } else {
             setText(m_pEffectParameterSlot->name());
-            setBaseTooltip(m_pEffectParameterSlot->description());
         }
+        setBaseTooltip(QString("%1\n%2").arg(
+                       m_pEffectParameterSlot->name(),
+                       m_pEffectParameterSlot->description()));
     } else {
         setText(tr("None"));
         setBaseTooltip(tr("No effect loaded."));
