@@ -1,10 +1,10 @@
 #include "util/duration.h"
 
 #include <QtGlobal>
-#include <QStringBuilder>
 #include <QTime>
 
 #include "util/assert.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -26,8 +26,9 @@ QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
-    if (dSeconds < 0.0) {
-        // negative durations are not supported
+    if (dSeconds < 0.0 || !isfinite(dSeconds)
+            || dSeconds > std::numeric_limits<qint64>::max()) {
+        // negative durations and infinity or isNaN values are not supported
         return kInvalidDurationString;
     }
 
@@ -45,6 +46,10 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
     QString durationString = t.toString(formatString);
     if (days > 0) {
         durationString = QString("%1:").arg(days * 24 + t.hour()) % durationString;
+    }
+    // remove leading 0
+    if (durationString.at(0) == '0' && durationString.at(1) != ':') {
+        durationString = durationString.right(durationString.length() - 1);
     }
 
     // The format string gives us milliseconds but we want

@@ -8,32 +8,25 @@ Variables:
   Setting       : persistent left-click control
 -->
 <Template>
-  <WidgetGroup>
-    <ObjectName>CategoryLabel</ObjectName>
-    <Layout>horizontal</Layout>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName>SkinSettingsLabelButton</ObjectName>
     <Size>190min,21f</Size>
-    <Children>
-      <PushButton>
-        <TooltipId><Variable name="TooltipId"/></TooltipId>
-        <ObjectName>SkinSettingsLabelButton</ObjectName>
-        <Size>190min,17f</Size>
-        <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>false</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-          <Text> &#9744; <Variable name="text"/></Text>
-          <Alignment>left</Alignment>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text> &#9745; <Variable name="text"/></Text>
-          <Alignment>left</Alignment>
-        </State>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-    </Children>
-  </WidgetGroup>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text> &#9744; <Variable name="text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text> &#9745; <Variable name="text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
 </Template>

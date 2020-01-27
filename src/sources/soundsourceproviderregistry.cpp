@@ -16,11 +16,11 @@ void SoundSourceProviderRegistry::registerProvider(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {
         kLogger.warning() << "SoundSource provider"
-                << pProvider->getName()
-                << "does not support any file extensions";
+                          << pProvider->getName()
+                          << "does not support any file extensions";
         return; // abort registration
     }
-    for (const auto& fileExt: supportedFileExtensions) {
+    for (const auto& fileExt : supportedFileExtensions) {
         SoundSourceProviderPriority providerPriority(
                 pProvider->getPriorityHint(fileExt));
         registerProviderForFileExtension(
@@ -48,7 +48,7 @@ void SoundSourceProviderRegistry::addRegistrationForFileExtension(
 }
 
 void SoundSourceProviderRegistry::insertRegistration(
-        QList<SoundSourceProviderRegistration> *pRegistrations,
+        QList<SoundSourceProviderRegistration>* pRegistrations,
         SoundSourceProviderRegistration registration) {
     QList<SoundSourceProviderRegistration>::iterator listIter(
             pRegistrations->begin());
@@ -75,7 +75,7 @@ void SoundSourceProviderRegistry::deregisterProvider(
         const SoundSourceProviderPointer& pProvider) {
     const QStringList supportedFileExtensions(
             pProvider->getSupportedFileExtensions());
-    for (const auto& fileExt: supportedFileExtensions) {
+    for (const auto& fileExt : supportedFileExtensions) {
         deregisterProviderForFileExtension(fileExt, pProvider);
     }
 }
@@ -111,4 +111,4 @@ SoundSourceProviderRegistry::getRegistrationsForFileExtension(
     }
 }
 
-} // Mixxx
+} // namespace mixxx

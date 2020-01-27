@@ -1,10 +1,8 @@
-#ifndef MIXXX_SOURCES_SOUNDSOURCEPROXY_H
-#define MIXXX_SOURCES_SOUNDSOURCEPROXY_H
+#pragma once
 
 #include "track/track.h"
 
 #include "sources/soundsourceproviderregistry.h"
-
 
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not shareable between multiple threads!
@@ -26,6 +24,7 @@ class SoundSourceProxy {
     }
 
     static bool isUrlSupported(const QUrl& url);
+    static bool isFileSupported(const TrackFile& trackFile);
     static bool isFileSupported(const QFileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
@@ -33,10 +32,10 @@ class SoundSourceProxy {
     // The following import functions ensure that the file will not be
     // written while reading it!
     static TrackPointer importTemporaryTrack(
-            QFileInfo fileInfo,
+            TrackFile trackFile,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     static QImage importTemporaryCoverImage(
-            QFileInfo fileInfo,
+            TrackFile trackFile,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
 
     explicit SoundSourceProxy(
@@ -108,8 +107,8 @@ class SoundSourceProxy {
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
-    friend class TrackCollection;
-    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
+    friend class TrackCollectionManager;
+    static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
@@ -143,5 +142,3 @@ class SoundSourceProxy {
     // that keeps it alive.
     mixxx::AudioSourcePointer m_pAudioSource;
 };
-
-#endif // MIXXX_SOURCES_SOUNDSOURCEPROXY_H

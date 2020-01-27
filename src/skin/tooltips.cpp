@@ -26,6 +26,7 @@ QList<QString>& Tooltips::add(QString id) {
 
 void Tooltips::addStandardTooltips() {
     QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
+    QString dragItem = tr("Drag this item to other decks/samplers, to crates and playlist or to external file manager.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
@@ -36,8 +37,10 @@ void Tooltips::addStandardTooltips() {
 
     add("waveform_overview")
             << tr("Waveform Overview")
-            << tr("Shows information about the track currently loaded in this channel.")
-            << tr("Jump around in the track by clicking anywhere on the waveform.")
+            << tr("Shows information about the track currently loaded in this deck.") << "\n"
+            << tr("Left click to jump around in the track.")
+            << tr("Right click hotcues to edit their labels and colors.")
+            << tr("Right click anywhere else to show the time at that point.")
             << dropTracksHere;
 
     QString scratchMouse = tr("Use the mouse to scratch, spin-back or throw tracks.");
@@ -122,6 +125,15 @@ void Tooltips::addStandardTooltips() {
     add("microphone_PeakIndicator")
             << tr("Microphone Peak Indicator")
             << tr("Indicates when the signal on the microphone is clipping,")
+            << clippingHelp;
+
+    add("auxiliary_VuMeter")
+            << tr("Auxiliary Volume Meter")
+            << tr("Shows the current auxiliary volume.");
+
+    add("auxiliary_PeakIndicator")
+            << tr("Auxiliary Peak Indicator")
+            << tr("Indicates when the signal on the auxiliary is clipping,")
             << clippingHelp;
 
     add("sampler_VuMeter")
@@ -258,6 +270,11 @@ void Tooltips::addStandardTooltips() {
     add("microphone_pregain")
             << tr("Microphone Gain")
             << tr("Adjusts the pre-fader microphone gain.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("auxiliary_pregain")
+            << tr("Auxiliary Gain")
+            << tr("Adjusts the pre-fader auxiliary gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("microphone_talkover")
@@ -538,7 +555,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
             << tr("If hotcue is not set, sets the hotcue to the current play position.")
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."));
+            << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."))
+            << tr("Right click hotcues on the overview waveform to edit their labels and colors.");
 
     // Status displays and toggle buttons
     add("toggle_recording")
@@ -586,7 +604,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Determines how cue points are treated in vinyl control Relative mode:")
             << tr("Off - Cue points ignored.")
             << tr("One Cue - If needle is dropped after the cue point, track will seek to that cue point.")
-            << tr("Hot Cue - Track will seek to nearest previous hot cue point.");
+            << tr("Hot Cue - Track will seek to nearest previous hotcue point.");
 
     add("loop_in")
             << tr("Loop-In Marker")
@@ -683,13 +701,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
             << trackTags
-            << dropTracksHere;
+            << dropTracksHere
+            << dragItem;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
             << trackTags
-            << dropTracksHere;
+            << dropTracksHere
+            << dragItem;
 
     add("track_album")
             << tr("Track Album")
@@ -706,7 +726,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
             << trackTags
-            << dropTracksHere;
+            << dropTracksHere
+            << dragItem;
 
     add("time")
             << tr("Clock")
@@ -725,7 +746,9 @@ void Tooltips::addStandardTooltips() {
     add("coverart")
             << tr("Cover Art")
             << tr("Displays cover artwork of the loaded track.")
-            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."));
+            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."))
+            << dropTracksHere
+            << dragItem;
 
     add("starrating")
             << tr("Star Rating")
@@ -943,4 +966,8 @@ void Tooltips::addStandardTooltips() {
     add("LoadSamplerBank")
             << tr("Load Sampler Bank")
             << tr("Load a previously saved collection of samples into the samplers.");
+
+    add("configure_input")
+            << tr("Select and configure a hardware device for this input");
+
 }

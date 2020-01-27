@@ -35,7 +35,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255,
+        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255 * m_devicePixelRatio,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
@@ -94,7 +94,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
+            painter.drawLine(QPointF(currentCompletion / 2, -left * m_devicePixelRatio),
+                             QPointF(currentCompletion / 2, 0));
         }
 
         // Retrieve "raw" LMH values from waveform
@@ -112,7 +113,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(currentCompletion / 2, 0, currentCompletion / 2, right);
+            painter.drawLine(QPointF(currentCompletion / 2, 0),
+                             QPointF(currentCompletion / 2, right * m_devicePixelRatio));
         }
     }
 

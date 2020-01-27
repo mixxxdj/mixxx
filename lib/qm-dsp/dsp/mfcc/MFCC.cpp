@@ -236,7 +236,7 @@ int MFCC::process(const double *real, const double *imag, double *outceps)
             tmp = tmp + (mfccFilterWeights[i][j] * fftMag[j]);
         }
         if (tmp > 0) earMag[i] = log10(tmp);
-	else earMag[i] = 0.0;
+        else earMag[i] = 0.0;
 
         if (logPower != 1.0) {
             earMag[i] = pow(earMag[i], logPower);
@@ -259,9 +259,7 @@ int MFCC::process(const double *real, const double *imag, double *outceps)
             }
             outceps[i] = tmp;
         }
-    }
-    else 
-    {  
+    } else {  
         for (i = 1; i < nceps+1; i++) {
             double tmp = 0.;
             for (j = 0; j < totalFilters; j++){

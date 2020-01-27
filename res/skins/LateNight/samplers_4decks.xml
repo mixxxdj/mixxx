@@ -15,31 +15,23 @@
 		        <Children>
 
               <SingletonContainer>
-                <ObjectName>Sampler1Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini1_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
-                <ObjectName>Sampler2Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini2_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
               <SingletonContainer>
-                <ObjectName>Sampler3Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini3_Singleton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
               <SingletonContainer>
-                <ObjectName>Sampler4Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini4_Singleton</ObjectName>
               </SingletonContainer>
 
             </Children>
@@ -54,31 +46,23 @@
             <Children>
 
               <SingletonContainer>
-                <ObjectName>Sampler1Big_Singleton</ObjectName>
+                <ObjectName>Sampler1_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
-                <ObjectName>Sampler2Big_Singleton</ObjectName>
+                <ObjectName>Sampler2_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
               <SingletonContainer>
-                <ObjectName>Sampler3Big_Singleton</ObjectName>
+                <ObjectName>Sampler3_Singleton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
-
               <SingletonContainer>
-                <ObjectName>Sampler4Big_Singleton</ObjectName>
+                <ObjectName>Sampler4_Singleton</ObjectName>
               </SingletonContainer>
 
             </Children>
@@ -87,8 +71,6 @@
 
         </Children>
       </WidgetStack>
-
-      
 
     </Children>
   </WidgetGroup>

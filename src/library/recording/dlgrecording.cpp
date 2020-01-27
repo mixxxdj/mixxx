@@ -2,44 +2,60 @@
 
 #include "control/controlobject.h"
 #include "library/recording/dlgrecording.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
 DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
-                           Library* pLibrary, TrackCollection* pTrackCollection,
+                           Library* pLibrary,
                            RecordingManager* pRecordingManager, KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_browseModel(this, m_pTrackCollection, pRecordingManager),
+          m_pTrackTableView(new WTrackTableView(this, pConfig, pLibrary->trackCollections(), true)),
+          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
     setupUi(this);
-    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection, true);
+
     m_pTrackTableView->installEventFilter(pKeyboard);
 
-    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
-            m_pTrackTableView, SLOT(setSelectedClick(bool)));
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrack,
+            this,
+            &DlgRecording::loadTrack);
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrackToPlayer,
+            this,
+            &DlgRecording::loadTrackToPlayer);
+    connect(pLibrary,
+            &Library::setTrackTableFont,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableFont);
+    connect(pLibrary,
+            &Library::setTrackTableRowHeight,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary,
+            &Library::setSelectedClick,
+            m_pTrackTableView,
+            &WTrackTableView::setSelectedClick);
 
-    connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-            this, SLOT(slotRecordingEnabled(bool)));
-    connect(m_pRecordingManager, SIGNAL(bytesRecorded(int)),
-            this, SLOT(slotBytesRecorded(int)));
-    connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
-            this, SLOT(slotDurationRecorded(QString)));
+    connect(m_pRecordingManager,
+            &RecordingManager::isRecording,
+            this,
+            &DlgRecording::slotRecordingEnabled);
+    connect(m_pRecordingManager,
+            &RecordingManager::bytesRecorded,
+            this,
+            &DlgRecording::slotBytesRecorded);
+    connect(m_pRecordingManager,
+            &RecordingManager::durationRecorded,
+            this,
+            &DlgRecording::slotDurationRecorded);
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -57,8 +73,10 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
     m_browseModel.setPath(m_recordingDir);
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
-    connect(pushButtonRecording, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleRecording(bool)));
+    connect(pushButtonRecording,
+            &QPushButton::toggled,
+            this,
+            &DlgRecording::toggleRecording);
     label->setText("");
     label->setEnabled(false);
 }
@@ -84,23 +102,23 @@ void DlgRecording::onSearch(const QString& text) {
 }
 
 void DlgRecording::slotRestoreSearch() {
-    emit(restoreSearch(currentSearch()));
+    emit restoreSearch(currentSearch());
 }
 
 void DlgRecording::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgRecording::slotSendToAutoDJBottom() {
-    m_pTrackTableView->slotSendToAutoDJBottom();
+void DlgRecording::slotAddToAutoDJBottom() {
+    m_pTrackTableView->slotAddToAutoDJBottom();
 }
 
-void DlgRecording::slotSendToAutoDJTop() {
-    m_pTrackTableView->slotSendToAutoDJTop();
+void DlgRecording::slotAddToAutoDJTop() {
+    m_pTrackTableView->slotAddToAutoDJTop();
 }
 
-void DlgRecording::slotSendToAutoDJReplace() {
-    m_pTrackTableView->slotSendToAutoDJReplace();
+void DlgRecording::slotAddToAutoDJReplace() {
+    m_pTrackTableView->slotAddToAutoDJReplace();
 }
 
 void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {

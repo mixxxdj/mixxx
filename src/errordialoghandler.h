@@ -20,7 +20,6 @@
 
 #include <QObject>
 #include <QMessageBox>
-#include <QSignalMapper>
 #include <QMutex>
 #include <QString>
 #include <QList>
@@ -166,7 +165,7 @@ class ErrorDialogHandler : public QObject {
   private slots:
     /** Actually displays the box */
     void errorDialog(ErrorDialogProperties* props);
-    void boxClosed(QString key);
+    void boxClosed(QString key, QMessageBox* msgBox);
 
   private:
     // Private constructor
@@ -177,7 +176,6 @@ class ErrorDialogHandler : public QObject {
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;
-    QSignalMapper m_signalMapper;
     QMutex m_mutex;
 
     DISALLOW_COPY_AND_ASSIGN(ErrorDialogHandler);

@@ -1,12 +1,14 @@
 <Template>
+  <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
 
   <SingletonDefinition>
     <ObjectName>CrossfaderSingleton</ObjectName>
     <Children>
       <SliderComposed>
         <TooltipId>crossfader</TooltipId>
-        <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
-        <Slider>slider_crossfader.svg</Slider>
+        <Size>141f,46f</Size>
+        <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_crossfader.svg</Handle>
+        <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_crossfader.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -15,28 +17,93 @@
     </Children>
   </SingletonDefinition>
 
+  <SingletonDefinition>
+    <ObjectName>VuMeterChannel1</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:vumeter_channel.xml">
+            <SetVariable name="group">[Channel1]</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VuMeterChannel2</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:vumeter_channel.xml">
+            <SetVariable name="group">[Channel2]</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VuMeterChannel3</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:vumeter_channel.xml">
+            <SetVariable name="group">[Channel3]</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VuMeterChannel4</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:vumeter_channel.xml">
+            <SetVariable name="group">[Channel4]</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VuMeterMaster</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:vumeter_master.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
-    <ObjectName>Mixer</ObjectName>
     <SizePolicy>max,me</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
       <WidgetGroup>
-        <ObjectName>MixerChannelControls</ObjectName>
+        <ObjectName>MixerContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>2f,min</Size>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>MixerContainer</ObjectName>
+            <ObjectName>MixerDecks</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
+
+              <!-- spacer to center channel controls without crossfader without
+                  stretching them -->
               <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
               <WidgetGroup><!-- Channel controls -->
@@ -44,6 +111,8 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
+
+                  <!-- Channel 3 -->
                   <WidgetGroup>
                     <SizePolicy>max,min</SizePolicy>
                     <Layout>horizontal</Layout>
@@ -71,75 +140,18 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>max,me</SizePolicy>
                     <Children>
-                      <!-- Spacer -->
+                      <WidgetGroup><Size>1min,44f</Size></WidgetGroup>
                       <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1min,0me</Size>
-                        <Children/>
-                      </WidgetGroup>
-
-                      <WidgetGroup><!-- Peak indicator L +R -->
+                        <ObjectName>VuMeterMaster2Decks</ObjectName>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>max,max</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                         <Children>
-                          <StatusLight>
-                            <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                            <PathBack>style/clipping_deck.svg</PathBack>
-                            <Connection>
-                              <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
-                            </Connection>
-                          </StatusLight>
-                          <StatusLight>
-                            <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                            <PathBack>style/clipping_deck.svg</PathBack>
-                            <Connection>
-                              <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
-                            </Connection>
-                          </StatusLight>
+                          <SingletonContainer>
+                            <ObjectName>VuMeterMaster</ObjectName>
+                          </SingletonContainer>
                         </Children>
-                      </WidgetGroup><!-- /Peak indicator L +R -->
-
-                      <WidgetGroup><!-- Level L +R -->
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>max,max</SizePolicy>
-                        <Children>
-                          <VuMeter>
-                            <TooltipId>master_VuMeterL</TooltipId>
-                            <PathVu>style/volume_display_deck_over.png</PathVu>
-                            <PathBack>style/volume_display_deck.png</PathBack>
-                            <Horizontal>false</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Master],VuMeterL</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                          <VuMeter>
-                            <TooltipId>master_VuMeterR</TooltipId>
-                            <PathVu>style/volume_display_deck_over.png</PathVu>
-                            <PathBack>style/volume_display_deck.png</PathBack>
-                            <Horizontal>false</Horizontal>
-                            <PeakHoldSize>5</PeakHoldSize>
-                            <PeakHoldTime>500</PeakHoldTime>
-                            <PeakFallTime>50</PeakFallTime>
-                            <PeakFallStep>2</PeakFallStep>
-                            <Connection>
-                              <ConfigKey>[Master],VuMeterR</ConfigKey>
-                            </Connection>
-                          </VuMeter>
-                        </Children>
-                      </WidgetGroup><!-- /Level L +R -->
-
-                      <!-- Spacer -->
-                      <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <Size>1min,5f</Size>
-                        <Children/>
                       </WidgetGroup>
+                      <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
@@ -154,6 +166,7 @@
                     <SetVariable name="xfaderRight">default</SetVariable>
                   </Template>
 
+                  <!-- Channel 4 -->
                   <WidgetGroup>
                     <SizePolicy>max,min</SizePolicy>
                     <Layout>horizontal</Layout>
@@ -170,19 +183,22 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
+
                 </Children>
               </WidgetGroup><!-- /Channel controls -->
+
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
               <WidgetGroup><!-- Crossfader + Channel1/2 assign switches -->
                 <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
+                  <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
-                  <!-- Channel1 xfader switch:
-                      visible if deck is NOT assigned to left side of xFader -->
+                  <!-- Channel1 xfader switch -->
                   <WidgetGroup>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
@@ -199,32 +215,63 @@
                     </Connection>
                   </WidgetGroup><!-- /Channel1 xfader switch -->
 
+                  <!-- center xfader buttons below EQ knobs -->
                   <WidgetGroup>
-                    <ObjectName>Crossfader</ObjectName>
+                    <Size>11f,0min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <!--  Regular crossfader for
+                        * 2 decks with EQ knobs visible
+                        * 4 decks
+                        Narrow crossfader for
+                        * 2 decks with EQ knobs hidden -->
+                  <WidgetGroup>
+                    <ObjectName>CrossfaderContainer</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <SingletonContainer>
-                        <ObjectName>CrossfaderSingleton</ObjectName>
-                        <Connection>
-                          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </SingletonContainer>
+                      <!-- 4 decks -->
                       <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <Children>
                           <SingletonContainer>
                             <ObjectName>CrossfaderSingleton</ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <!-- 2 decks -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <!-- with EQ knobs -->
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>CrossfaderSingleton</ObjectName>
+                              </SingletonContainer>
+                            </Children>
                             <Connection>
                               <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
-                          </SingletonContainer>
+                          </WidgetGroup>
+
+                          <!-- without EQ knobs -->
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
-                            <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
-                            <Slider>slider_crossfader_small.svg</Slider>
+                            <Size>102f,46f</Size>
+                            <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_crossfader.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_crossfader_small.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>
@@ -241,15 +288,24 @@
                           <Transform><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- 2 decks -->
                     </Children>
+                  </WidgetGroup><!-- CrossfaderContainer -->
+
+                  <!-- center xfader buttons below EQ knobs -->
+                  <WidgetGroup>
+                    <Size>11f,0min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </WidgetGroup>
 
-                  <!-- Channel2 xfader switch:
-                      visible if deck is NOT assigned to right side of xFader -->
+                  <!-- Channel2 xfader switch -->
                   <WidgetGroup>
+                    <ObjectName>AlignLeft</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
@@ -266,6 +322,8 @@
                     </Connection>
                   </WidgetGroup><!-- /Channel2 xfader switch -->
 
+                  <WidgetGroup><Size>me,min</Size></WidgetGroup>
+
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
@@ -273,20 +331,18 @@
                 </Connection>
               </WidgetGroup><!-- /Crossfader + Channel1/2 assign switches -->
 
+              <!-- spacer to center channel controls without crossfader without
+                  stretching them -->
               <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- MixerDecks -->
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>2f,min</Size>
-          </WidgetGroup>
+          <!-- Mixer Master & Headphone -->
+          <Template src="skin:mixer_master_headphone.xml"/>
+
         </Children>
-      </WidgetGroup>
-
-      <!-- Master & Headphone Controls -->
-      <Template src="skin:mixer_master_headphone.xml"/>
+      </WidgetGroup><!-- MixerContainer -->
 
     </Children>
     <Connection>

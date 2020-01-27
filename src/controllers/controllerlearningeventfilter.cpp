@@ -40,10 +40,10 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
             if (info.leftClickControl) {
                 ConfigKey key = info.leftClickControl->getKey();
                 qDebug() << "Left-click maps MIDI to:" << key.group << key.item;
-                emit(controlClicked(info.leftClickControl));
+                emit controlClicked(info.leftClickControl);
             } else if (info.clickControl) {
                 ConfigKey key = info.clickControl->getKey();
-                emit(controlClicked(info.clickControl));
+                emit controlClicked(info.clickControl);
                 qDebug() << "Default-click maps MIDI to:" << key.group << key.item;
             } else {
                 qDebug() << "No control bound to left-click for" << pWidget;
@@ -53,7 +53,7 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
             if (info.rightClickControl) {
                 ConfigKey key = info.rightClickControl->getKey();
                 qDebug() << "Right-click maps MIDI to:" << key.group << key.item;
-                emit(controlClicked(info.rightClickControl));
+                emit controlClicked(info.rightClickControl);
             } else if (has_right_click_reset && (info.leftClickControl || info.clickControl)) {
                 // WKnob and WSliderComposed emits a reset signal on
                 // right-click. For controls that are derived from
@@ -68,12 +68,12 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
                 ControlObject* pResetControl = ControlObject::getControl(key);
                 if (pResetControl) {
                     qDebug() << "Right-click reset maps MIDI to:" << key.group << key.item;
-                    emit(controlClicked(pResetControl));
+                    emit controlClicked(pResetControl);
                 }
             } else if (info.clickControl) {
                 ConfigKey key = info.clickControl->getKey();
                 qDebug() << "Default-click maps MIDI to:" << key.group << key.item;
-                emit(controlClicked(info.clickControl));
+                emit controlClicked(info.clickControl);
             } else {
                 qDebug() << "No control bound to right-click for" << pWidget;
             }

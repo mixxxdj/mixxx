@@ -15,116 +15,81 @@
 
 #include "FiltFilt.h"
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-FiltFilt::FiltFilt( FilterConfig Config )
+FiltFilt::FiltFilt(Filter::Parameters parameters) :
+    m_filter(parameters)
 {
-    m_filtScratchIn = NULL;
-    m_filtScratchOut = NULL;
-    m_ord = 0;
-	
-    initialise( Config );
+    m_ord = m_filter.getOrder();
 }
 
 FiltFilt::~FiltFilt()
 {
-    deInitialise();
 }
 
-void FiltFilt::initialise( FilterConfig Config )
-{
-    m_ord = Config.ord;
-    m_filterConfig.ord = Config.ord;
-    m_filterConfig.ACoeffs = Config.ACoeffs;
-    m_filterConfig.BCoeffs = Config.BCoeffs;
-	
-    m_filter = new Filter( m_filterConfig );
-}
-
-void FiltFilt::deInitialise()
-{
-    delete m_filter;
-}
-
-
-void FiltFilt::process(double *src, double *dst, unsigned int length)
-{	
-    unsigned int i;
+void FiltFilt::process(const double *const QM_R__ src,
+                       double *const QM_R__ dst,
+                       const int length)
+{       
+    int i;
 
     if (length == 0) return;
 
-    unsigned int nFilt = m_ord + 1;
-    unsigned int nFact = 3 * ( nFilt - 1);
-    unsigned int nExt	= length + 2 * nFact;
+    int nFilt = m_ord + 1;
+    int nFact = 3 * (nFilt - 1);
+    int nExt = length + 2 * nFact;
 
-    m_filtScratchIn = new double[ nExt ];
-    m_filtScratchOut = new double[ nExt ];
-
-	
-    for( i = 0; i< nExt; i++ ) 
-    {
-	m_filtScratchIn[ i ] = 0.0;
-	m_filtScratchOut[ i ] = 0.0;
+    double *filtScratchIn = new double[ nExt ];
+    double *filtScratchOut = new double[ nExt ];
+        
+    for (i = 0; i < nExt; i++) {
+        filtScratchIn[ i ] = 0.0;
+        filtScratchOut[ i ] = 0.0;
     }
 
     // Edge transients reflection
     double sample0 = 2 * src[ 0 ];
     double sampleN = 2 * src[ length - 1 ];
 
-    unsigned int index = 0;
-    for( i = nFact; i > 0; i-- )
-    {
-	m_filtScratchIn[ index++ ] = sample0 - src[ i ];
+    int index = 0;
+    for (i = nFact; i > 0; i--) {
+        if (i < length) {
+            filtScratchIn[index] = sample0 - src[ i ];
+        }
+        ++index;
     }
     index = 0;
-    for( i = 0; i < nFact; i++ )
-    {
-	m_filtScratchIn[ (nExt - nFact) + index++ ] = sampleN - src[ (length - 2) - i ];
+    for (i = 0; i < nFact; i++) {
+        if (i + 1 < length) {
+            filtScratchIn[(nExt - nFact) + index] =
+                sampleN - src[ (length - 2) - i ];
+        }
+        ++index;
     }
 
-    index = 0;
-    for( i = 0; i < length; i++ )
-    {
-	m_filtScratchIn[ i + nFact ] = src[ i ];
+    for (i = 0; i < length; i++) {
+        filtScratchIn[ i + nFact ] = src[ i ];
     }
-	
+    
     ////////////////////////////////
-    // Do  0Ph filtering
-    m_filter->process( m_filtScratchIn, m_filtScratchOut, nExt);
-	
+    // Do 0Ph filtering
+    m_filter.process(filtScratchIn, filtScratchOut, nExt);
+        
     // reverse the series for FILTFILT 
-    for ( i = 0; i < nExt; i++)
-    { 
-	m_filtScratchIn[ i ] = m_filtScratchOut[ nExt - i - 1];
+    for (i = 0; i < nExt; i++) { 
+        filtScratchIn[ i ] = filtScratchOut[ nExt - i - 1];
     }
 
+    // clear filter state
+    m_filter.reset();
+    
     // do FILTER again 
-    m_filter->process( m_filtScratchIn, m_filtScratchOut, nExt);
-	
-    // reverse the series back 
-    for ( i = 0; i < nExt; i++)
-    {
-	m_filtScratchIn[ i ] = m_filtScratchOut[ nExt - i - 1 ];
-    }
-    for ( i = 0;i < nExt; i++)
-    {
-	m_filtScratchOut[ i ] = m_filtScratchIn[ i ];
+    m_filter.process(filtScratchIn, filtScratchOut, nExt);
+
+    // reverse the series to output
+    for (i = 0; i < length; i++) {
+        dst[ i ] = filtScratchOut[ nExt - nFact - i - 1 ];
     }
 
-    index = 0;
-    for( i = 0; i < length; i++ )
-    {
-	dst[ index++ ] = m_filtScratchOut[ i + nFact ];
-    }	
-
-    delete [] m_filtScratchIn;
-    delete [] m_filtScratchOut;
-
+    delete [] filtScratchIn;
+    delete [] filtScratchOut;
 }
 
-void FiltFilt::reset()
-{
-
-}

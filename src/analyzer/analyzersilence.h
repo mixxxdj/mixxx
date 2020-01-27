@@ -11,15 +11,12 @@ class AnalyzerSilence : public Analyzer {
     explicit AnalyzerSilence(UserSettingsPointer pConfig);
     ~AnalyzerSilence() override = default;
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE* pIn, const int iLen) override;
-    void finalize(TrackPointer tio) override;
-    void cleanup(TrackPointer tio) override;
+    bool initialize(TrackPointer pTrack, int sampleRate, int totalSamples) override;
+    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
+    void storeResults(TrackPointer pTrack) override;
+    void cleanup() override;
 
   private:
-    static bool shouldUpdateCue(CuePosition cuePosition);
-
     UserSettingsPointer m_pConfig;
     float m_fThreshold;
     int m_iFramesProcessed;

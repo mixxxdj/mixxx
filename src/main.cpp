@@ -71,6 +71,7 @@ int main(int argc, char * argv[]) {
     // This needs to be set before initializing the QApplication.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
@@ -104,13 +105,6 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-    // Support utf-8 for all translation strings. Not supported in Qt 5.
-    // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
-    // isn't.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-#endif
-
     SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
@@ -131,7 +125,7 @@ int main(int argc, char * argv[]) {
 #endif
 
     // When the last window is closed, terminate the Qt event loop.
-    QObject::connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+    QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
 
     int result = runMixxx(&app, args);
 

@@ -82,7 +82,7 @@ public:
         m_peak = peak;
     }
     void resetPeak() {
-        m_peak = CSAMPLE_PEAK;
+        m_peak = kPeakUndefined;
     }
 
     // Parsing and formatting of peak amplitude values according to

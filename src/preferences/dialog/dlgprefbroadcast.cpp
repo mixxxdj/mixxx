@@ -27,7 +27,6 @@ namespace {
 const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
-const int kColumnStatus = 2;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
 }
 

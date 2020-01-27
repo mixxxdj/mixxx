@@ -10,9 +10,9 @@ namespace mixxx {
 // seems to do fine. Signal processing during analysis uses the same,
 // fixed number of channels like the engine does, usually 2 = stereo.
 constexpr mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::kEngineChannelCount;
-constexpr SINT kAnalysisFramesPerBlock = 4096;
-const SINT kAnalysisSamplesPerBlock =
-        kAnalysisFramesPerBlock * kAnalysisChannels;
+constexpr SINT kAnalysisFramesPerChunk = 4096;
+constexpr SINT kAnalysisSamplesPerChunk =
+        kAnalysisFramesPerChunk * kAnalysisChannels;
 
 // Only analyze the first minute in fast-analysis mode.
 constexpr int kFastAnalysisSecondsToAnalyze = 60;

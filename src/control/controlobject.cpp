@@ -39,8 +39,10 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
     // getControl can fail and return a NULL control even with the create flag.
     if (m_pControl) {
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(privateValueChanged(double, QObject*)),
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObject::privateValueChanged,
                 Qt::DirectConnection);
     }
 }
@@ -55,7 +57,7 @@ ControlObject::~ControlObject() {
 void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSender != this) {
-        emit(valueChanged(dValue));
+        emit valueChanged(dValue);
     }
 }
 

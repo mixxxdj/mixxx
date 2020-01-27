@@ -1,0 +1,22 @@
+<svg width="25" height="25" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<filter id="c" color-interpolation-filters="sRGB">
+			<feGaussianBlur stdDeviation="0.42678198"/>
+		</filter>
+		<radialGradient id="b" cx="366.94" cy="355.35999" r="21.466" gradientTransform="matrix(1 0 0 .98824 -5.7382e-7 4.1807)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#c4f161" stop-opacity=".94901961" offset="0"/>
+			<stop stop-color="#c0ff5d" stop-opacity=".81961" offset=".54692036"/>
+			<stop stop-color="#7bd002" stop-opacity="0" offset="1"/>
+		</radialGradient>
+		<linearGradient id="d" x1="12.517102" x2="12.517102" y1="3.9656665" y2="11.698717" gradientTransform="translate(0 .0529661)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#77c305" offset="0"/>
+			<stop stop-color="#457600" offset="1"/>
+		</linearGradient>
+	</defs>
+	<g transform="matrix(.79197011 0 0 .85270722 -9.0218349 -3.1351223)" fill="none" stroke="#000">
+		<path d="m25.174967 7.5102553c0-.7709527.64828-1.4446214 1.9809-1.4446214 1.2699 0 1.9692.6439408 1.9947 1.4271876 0 2.1984691.0244 8.6535835.0244 8.6535835-.0742.735839-.988499 1.42949-2.044399 1.42949-1.055901 0-1.937001-.837151-1.937001-1.446512-.009-3.291208-.0184-5.537373-.0185-8.6190455z" stroke-width="1.94699848"/>
+		<path d="m25.174967 5.3358c0-.9375.64828-1.7567 1.9809-1.7567 1.2699 0 1.9692.78305 1.9947 1.7355 0 2.6734.0244 10.523.0244 10.523-.0742.8948-.988499 1.7383-2.044399 1.7383-1.055901 0-1.937001-1.018-1.937001-1.759-.009-4.0022-.0184-6.7336-.0185-10.481z" stroke-width="1.21687412"/>
+	</g>
+	<path d="m12.478516.00999735c-.828428.01186317-1.490384.53415794-1.478516 1.36258605v9.3310386c0 1.55371 3.021961 1.55282 3 0v-9.3310386c.01211-.84525728-.676227-1.37469462-1.521484-1.36258605z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#d)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+	<path transform="matrix(.06987957 0 0 .07008943 -13.141225 -23.338963)" d="m388.4 355.36a21.466 21.213 0 1 1-42.931 0 21.466 21.213 0 1 1 42.931 0z" fill="url(#b)" filter="url(#c)" opacity=".772" stroke-width="1.26455235"/>
+</svg>

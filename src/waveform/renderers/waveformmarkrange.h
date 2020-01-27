@@ -6,6 +6,7 @@
 
 #include "control/controlproxy.h"
 #include "util/memory.h"
+#include "waveform/waveformmarklabel.h"
 
 class QDomNode;
 class SkinContext;
@@ -36,6 +37,19 @@ class WaveformMarkRange {
     // Returns end value or -1 if the end control doesn't exist.
     double end() const;
 
+    bool showDuration() const;
+
+    enum class DurationTextLocation {
+        Before = 0,
+        After = 1
+    };
+
+    DurationTextLocation durationTextLocation() const {
+        return m_durationTextLocation;
+    }
+
+    WaveformMarkLabel m_durationLabel;
+
   private:
     void generateImage(int weidth, int height);
 
@@ -46,9 +60,12 @@ class WaveformMarkRange {
 
     QColor m_activeColor;
     QColor m_disabledColor;
+    QColor m_durationTextColor;
 
     QImage m_activeImage;
     QImage m_disabledImage;
+
+    DurationTextLocation m_durationTextLocation;
 
     friend class WaveformRenderMarkRange;
     friend class WOverview;

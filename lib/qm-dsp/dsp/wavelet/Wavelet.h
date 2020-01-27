@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,8 +12,8 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _WAVELET_H_
-#define _WAVELET_H_
+#ifndef QM_DSP_WAVELET_H
+#define QM_DSP_WAVELET_H
 
 #include <string>
 #include <vector>
@@ -35,37 +34,37 @@ public:
         Daubechies_10,
         Daubechies_20,
         Daubechies_40,
-	Symlet_2,
-	Symlet_3,
-	Symlet_4,
-	Symlet_5,
-	Symlet_6,
-	Symlet_7,
-	Symlet_8,
-	Symlet_9,
-	Symlet_10,
-	Symlet_20,
-	Symlet_30,
-	Coiflet_1,
-	Coiflet_2,
-	Coiflet_3,
-	Coiflet_4,
-	Coiflet_5,
-	Biorthogonal_1_3,
-	Biorthogonal_1_5,
-	Biorthogonal_2_2,
-	Biorthogonal_2_4,
-	Biorthogonal_2_6,
-	Biorthogonal_2_8,
-	Biorthogonal_3_1,
-	Biorthogonal_3_3,
-	Biorthogonal_3_5,
-	Biorthogonal_3_7,
-	Biorthogonal_3_9,
-	Biorthogonal_4_4,
-	Biorthogonal_5_5,
-	Biorthogonal_6_8,
-	Meyer,
+        Symlet_2,
+        Symlet_3,
+        Symlet_4,
+        Symlet_5,
+        Symlet_6,
+        Symlet_7,
+        Symlet_8,
+        Symlet_9,
+        Symlet_10,
+        Symlet_20,
+        Symlet_30,
+        Coiflet_1,
+        Coiflet_2,
+        Coiflet_3,
+        Coiflet_4,
+        Coiflet_5,
+        Biorthogonal_1_3,
+        Biorthogonal_1_5,
+        Biorthogonal_2_2,
+        Biorthogonal_2_4,
+        Biorthogonal_2_6,
+        Biorthogonal_2_8,
+        Biorthogonal_3_1,
+        Biorthogonal_3_3,
+        Biorthogonal_3_5,
+        Biorthogonal_3_7,
+        Biorthogonal_3_9,
+        Biorthogonal_4_4,
+        Biorthogonal_5_5,
+        Biorthogonal_6_8,
+        Meyer,
 
         LastType = Meyer
     };
@@ -73,8 +72,8 @@ public:
     static std::string getWaveletName(Type);
 
     static void createDecompositionFilters(Type,
-                                           std::vector<float> &lpd,
-                                           std::vector<float> &hpd);
+                                           std::vector<double> &lpd,
+                                           std::vector<double> &hpd);
 };
 
 #endif

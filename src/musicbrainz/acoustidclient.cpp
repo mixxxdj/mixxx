@@ -7,23 +7,27 @@
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
 
-#include <QCoreApplication>
 #include <QNetworkReply>
-#include <QXmlStreamReader>
-#include <QTextStream>
+#include <QJsonDocument>
 #include <QUrl>
+#include <QUrlQuery>
 #include <QtDebug>
 
 #include "musicbrainz/acoustidclient.h"
 #include "musicbrainz/gzip.h"
 #include "musicbrainz/network.h"
 
+#include "util/logger.h"
+
 namespace {
+
+mixxx::Logger kLogger("AcoustidClient");
 
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
+// See also: https://acoustid.org/webservice
 const QString CLIENT_APIKEY = "czKxnkyO";
-const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
+const QString ACOUSTID_URL = "https://api.acoustid.org/v2/lookup";
 constexpr int kDefaultTimeout = 5000; // msec
 
 } // anonymous namespace
@@ -35,12 +39,17 @@ AcoustidClient::AcoustidClient(QObject* parent)
 }
 
 void AcoustidClient::setTimeout(int msec) {
+    VERIFY_OR_DEBUG_ASSERT(msec > 0) {
+        kLogger.warning() << "Invalid timeout" << msec << "[ms]";
+        return;
+    }
     m_timeouts.setTimeout(msec);
 }
 
 void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     QUrlQuery urlQuery;
-    urlQuery.addQueryItem("format", "xml");
+    // The default format is JSON
+    //urlQuery.addQueryItem("format", "json");
     urlQuery.addQueryItem("client", CLIENT_APIKEY);
     urlQuery.addQueryItem("duration", QString::number(duration));
     urlQuery.addQueryItem("meta", "recordingids");
@@ -53,105 +62,144 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
 
-    qDebug() << "AcoustIdClient POST request:" << ACOUSTID_URL
-             << "body:" << body;
+    kLogger.debug()
+            << "POST request:" << ACOUSTID_URL
+            << "body:" << body;
 
     QNetworkReply* reply = m_network.post(req, gzipCompress(body));
-    connect(reply, &QNetworkReply::finished, this, &AcoustidClient::requestFinished);
-    m_requests[reply] = id;
-
+    m_pendingReplies[reply] = id;
+    connect(reply, &QNetworkReply::finished, this, &AcoustidClient::onReplyFinished);
     m_timeouts.addReply(reply);
 }
 
 void AcoustidClient::cancel(int id) {
-    QNetworkReply* reply = m_requests.key(id);
-    m_requests.remove(reply);
-    delete reply;
+    QNetworkReply* reply = m_pendingReplies.key(id);
+    if (!reply) {
+        return;
+    }
+    cancelPendingReply(reply);
+}
+
+void AcoustidClient::cancelPendingReply(QNetworkReply* reply) {
+    DEBUG_ASSERT(reply);
+    m_timeouts.removeReply(reply);
+    m_pendingReplies.remove(reply);
+    if (reply->isRunning()) {
+        reply->abort();
+    }
 }
 
 void AcoustidClient::cancelAll() {
-    auto requests = m_requests;
-    m_requests.clear();
-
-    for (auto it = requests.constBegin();
-         it != requests.constEnd(); ++it) {
-        delete it.key();
+    while (!m_pendingReplies.isEmpty()) {
+        QNetworkReply* reply = m_pendingReplies.firstKey();
+        cancelPendingReply(reply);
+        DEBUG_ASSERT(!m_pendingReplies.contains(reply));
     }
 }
 
-void AcoustidClient::requestFinished() {
+void AcoustidClient::onReplyFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
+    VERIFY_OR_DEBUG_ASSERT(reply) {
         return;
-
+    }
     reply->deleteLater();
-    if (!m_requests.contains(reply))
+
+    if (!m_pendingReplies.contains(reply)) {
+        // Already Cancelled
         return;
+    }
 
-    int id = m_requests.take(reply);
+    m_timeouts.removeReply(reply);
+    int id = m_pendingReplies.take(reply);
 
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QTextStream textReader(reply);
-    const QByteArray body(reply->readAll());
-    QXmlStreamReader reader(body);
+    const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    const QByteArray body = reply->readAll();
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "POST reply status:" << statusCode
+                << "body:" << body;
+    }
 
+    const auto jsonResponse = QJsonDocument::fromJson(body);
     QString statusText;
-    while (!reader.atEnd() && statusText.isEmpty()) {
-        if (reader.readNextStartElement()) {
-            const QStringRef name = reader.name();
-            if (name == "status") {
-                statusText = reader.readElementText();
-            }
-        }
+    if (jsonResponse.isObject()) {
+        statusText = jsonResponse.object().value("status").toString();
     }
 
-    if (status != 200 || statusText != "ok") {
-        qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
-        QString message;
-        QString code;
-        while (!reader.atEnd() && (message.isEmpty() || code.isEmpty())) {
-            if (reader.readNextStartElement()) {
-                const QStringRef name = reader.name();
-                if (name == "message") {
-                    DEBUG_ASSERT(name.isEmpty()); // fail if we have duplicated message elements. 
-                    message = reader.readElementText();
-                } else if (name == "code") {
-                    DEBUG_ASSERT(code.isEmpty()); // fail if we have duplicated code elements. 
-                    code = reader.readElementText();
-                }
-            }
+    if (statusCode != 200 || statusText != "ok") {
+        QString errorMessage;
+        int errorCode = 0;
+        if (jsonResponse.isObject() && statusText == "error") {
+            const auto error = jsonResponse.object().value("error").toObject();
+            errorMessage = error.value("message").toString();
+            errorCode = error.value("message").toInt(errorCode);
         }
-        emit(networkError(
-             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "AcoustID", message, code.toInt()));
+        emit networkError(
+             statusCode,
+             "AcoustID",
+             errorMessage,
+             errorCode);
         return;
     }
 
-    qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
-
-    QString resultId;
-    while (!reader.atEnd() && resultId.isEmpty()) {
-        if (reader.readNextStartElement()
-                && reader.name()== "results") {
-            resultId = parseResult(reader);
+    QStringList recordingIds;
+    DEBUG_ASSERT(jsonResponse.isObject());
+    DEBUG_ASSERT(jsonResponse.object().value(QStringLiteral("results")).isArray());
+    const QJsonArray results = jsonResponse.object().value(QStringLiteral("results")).toArray();
+    double maxScore = -1.0; // uninitialized (< 0)
+    // Results are expected to be ordered by score (descending)
+    for (const auto result : results) {
+        DEBUG_ASSERT(result.isObject());
+        const auto resultObject = result.toObject();
+        const auto resultId =
+                resultObject.value(QStringLiteral("id")).toString();
+        DEBUG_ASSERT(!resultId.isEmpty());
+        // The default score is 1.0 if missing
+        const double score =
+                resultObject.value(QStringLiteral("score")).toDouble(1.0);
+        DEBUG_ASSERT(score >= 0.0);
+        DEBUG_ASSERT(score <= 1.0);
+        if (maxScore < 0.0) {
+            // Initialize the maximum score
+            maxScore = score;
         }
-    }
-
-    emit(finished(id, resultId));
-}
-
-QString AcoustidClient::parseResult(QXmlStreamReader& reader) {
-    while (!reader.atEnd()) {
-        QXmlStreamReader::TokenType type = reader.readNext();
-        if (type== QXmlStreamReader::StartElement) {
-            QStringRef name = reader.name();
-            if (name == "id") {
-                return reader.readElementText();
-            }
-        }
-        if (type == QXmlStreamReader::EndElement && reader.name()=="result") {
+        DEBUG_ASSERT(score <= maxScore);
+        if (score < maxScore && !recordingIds.isEmpty()) {
+            // Ignore all remaining results with lower values
+            // than the maximum score
             break;
         }
+        const auto recordings = result.toObject().value(QStringLiteral("recordings"));
+        if (recordings.isUndefined()) {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "No recording(s) available for result"
+                        << resultId
+                        << "with score"
+                        << score;
+            }
+            continue;
+        } else {
+            DEBUG_ASSERT(recordings.isArray());
+            const QJsonArray recordingsArray = recordings.toArray();
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Found"
+                        << recordingsArray.size()
+                        << "recording(s) for result"
+                        << resultId
+                        << "with score"
+                        << score;
+            }
+            for (const auto recording : recordingsArray) {
+                DEBUG_ASSERT(recording.isObject());
+                const auto recordingObject = recording.toObject();
+                const auto recordingId =
+                        recordingObject.value(QStringLiteral("id")).toString();
+                DEBUG_ASSERT(!recordingId.isEmpty());
+                recordingIds.append(recordingId);
+            }
+        }
     }
-    return QString();
+    emit finished(id, recordingIds);
 }

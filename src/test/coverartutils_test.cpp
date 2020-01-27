@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <QStringBuilder>
 #include <QFileInfo>
+#include <QTemporaryDir>
 
 #include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
@@ -50,7 +50,6 @@ class CoverArtUtilTest : public LibraryTest, public CoverArtCache {
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
-    QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
 
@@ -71,7 +70,11 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
     if (isSupportedFileExtension("m4a")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.m4a"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-itunes-12.3.0-aac.m4a"), pToken, referencePNGImage);
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-aac.m4a"), pToken, referencePNGImage);
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-alac.m4a"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("mp3")) {
@@ -107,20 +110,19 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
 TEST_F(CoverArtUtilTest, searchImage) {
     // creating a temp track directory
-    QString trackdir(QDir::tempPath() % "/TrackDir");
-    ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
-    ASSERT_TRUE(QDir().mkpath(trackdir));
+    QTemporaryDir tempTrackDir;
+    ASSERT_TRUE(tempTrackDir.isValid());
+    QString trackdir = QString(tempTrackDir.path());
 
     const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    QLinkedList<QFileInfo> covers;
-    CoverInfo res;
+    QList<QFileInfo> covers;
+    CoverInfoRelative res;
     // looking for cover in an empty directory
     res = CoverArtUtils::selectCoverArtForTrack(*pTrack, covers);
-    CoverInfo expected1;
+    CoverInfoRelative expected1;
     expected1.source = CoverInfo::GUESSED;
-    expected1.trackLocation = pTrack->getLocation();
     EXPECT_EQ(expected1, res);
 
     // Looking for a track with embedded cover.
@@ -190,7 +192,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     extraCovers << cLoc_big3;
 
     // saving more covers using the preferred names in the right order
-    QLinkedList<QFileInfo> prefCovers;
+    QList<QFileInfo> prefCovers;
     // 1. track_filename.jpg
     QString cLoc_filename = QString(trackdir % "/cover-test." % qFormat);
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));
@@ -309,5 +311,4 @@ TEST_F(CoverArtUtilTest, searchImage) {
     foreach (QString loc, extraCovers) {
         QFile::remove(loc);
     }
-    EXPECT_TRUE(QDir(trackdir).rmdir(trackdir));
 }

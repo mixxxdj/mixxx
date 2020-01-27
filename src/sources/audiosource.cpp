@@ -2,7 +2,6 @@
 
 #include "util/logger.h"
 
-
 namespace mixxx {
 
 namespace {
@@ -133,6 +132,64 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
             SampleBuffer::WritableSlice(
                     sampleFrames.writableData(frames2samples(writableFrameOffset)),
                     frames2samples(writableFrameIndexRange.length())));
+}
+
+ReadableSampleFrames AudioSource::readSampleFrames(
+        WritableSampleFrames sampleFrames) {
+    const auto writable =
+            clampWritableSampleFrames(sampleFrames);
+    if (writable.frameIndexRange().empty()) {
+        // result is empty
+        return ReadableSampleFrames(writable.frameIndexRange());
+    } else {
+        // forward clamped request
+        ReadableSampleFrames readable = readSampleFramesClamped(writable);
+        DEBUG_ASSERT(readable.frameIndexRange().empty() ||
+                readable.frameIndexRange() <= writable.frameIndexRange());
+        if (readable.frameIndexRange() != writable.frameIndexRange()) {
+            kLogger.warning()
+                    << "Failed to read sample frames:"
+                    << "expected =" << writable.frameIndexRange()
+                    << ", actual =" << readable.frameIndexRange();
+            auto shrinkedFrameIndexRange = m_frameIndexRange;
+            if (readable.frameIndexRange().empty()) {
+                // Adjust upper bound: Consider all audio data following
+                // the read position until the end as unreadable
+                shrinkedFrameIndexRange.shrinkBack(
+                        shrinkedFrameIndexRange.end() - writable.frameIndexRange().start());
+            } else {
+                // Adjust lower bound of readable audio data
+                if (writable.frameIndexRange().start() < readable.frameIndexRange().start()) {
+                    shrinkedFrameIndexRange.shrinkFront(
+                            readable.frameIndexRange().start() - shrinkedFrameIndexRange.start());
+                }
+                // Adjust upper bound of readable audio data
+                if (writable.frameIndexRange().end() > readable.frameIndexRange().end()) {
+                    shrinkedFrameIndexRange.shrinkBack(
+                            shrinkedFrameIndexRange.end() - readable.frameIndexRange().end());
+                }
+            }
+            DEBUG_ASSERT(shrinkedFrameIndexRange < m_frameIndexRange);
+            kLogger.info()
+                    << "Shrinking readable frame index range:"
+                    << "before =" << m_frameIndexRange
+                    << ", after =" << shrinkedFrameIndexRange;
+            // Propagate the adjustments to all participants in the
+            // inheritance hierarchy.
+            // NOTE(2019-08-31, uklotzde): This is an ugly hack to overcome
+            // the previous assumption that the frame index range is immutable
+            // for the whole lifetime of an AudioSource. As we know now it is
+            // not and for a future re-design we need to account for this fact!!
+            adjustFrameIndexRange(shrinkedFrameIndexRange);
+        }
+        return readable;
+    }
+}
+
+void AudioSource::adjustFrameIndexRange(
+        IndexRange frameIndexRange) {
+    DEBUG_ASSERT(frameIndexRange <= m_frameIndexRange);
+    m_frameIndexRange = frameIndexRange;
 }
 
 } // namespace mixxx

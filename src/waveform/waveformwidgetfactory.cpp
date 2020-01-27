@@ -17,6 +17,8 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/qthsvwaveformwidget.h"
+#include "waveform/widgets/qtrgbwaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
@@ -24,6 +26,7 @@
 #include "waveform/widgets/qtsimplewaveformwidget.h"
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/glvsynctestwidget.h"
+#include "waveform/widgets/qtvsynctestwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/guitick.h"
@@ -91,74 +94,60 @@ WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidge
 
 ///////////////////////////////////////////
 
-WaveformWidgetFactory::WaveformWidgetFactory() :
-        m_type(WaveformWidgetType::Count_WaveformwidgetType),
-        m_config(0),
-        m_skipRender(false),
-        m_frameRate(30),
-        m_endOfTrackWarningTime(30),
-        m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
-        m_zoomSync(false),
-        m_overviewNormalized(false),
-        m_openGlAvailable(false),
-        m_openGlesAvailable(false),
-        m_openGLShaderAvailable(false),
-        m_beatGridAlpha(90),
-        m_vsyncThread(NULL),
-        m_pGuiTick(nullptr),
-        m_pVisualsManager(nullptr),
-        m_frameCnt(0),
-        m_actualFrameRate(0),
-        m_vSyncType(0),
-        m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
-
+WaveformWidgetFactory::WaveformWidgetFactory()
+        : m_type(WaveformWidgetType::Count_WaveformwidgetType),
+          m_config(0),
+          m_skipRender(false),
+          m_frameRate(30),
+          m_endOfTrackWarningTime(30),
+          m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
+          m_zoomSync(false),
+          m_overviewNormalized(false),
+          m_openGlAvailable(false),
+          m_openGlesAvailable(false),
+          m_openGLShaderAvailable(false),
+          m_beatGridAlpha(90),
+          m_vsyncThread(nullptr),
+          m_pGuiTick(nullptr),
+          m_pVisualsManager(nullptr),
+          m_frameCnt(0),
+          m_actualFrameRate(0),
+          m_vSyncType(0),
+          m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-        QGLFormat glFormat;
-        glFormat.setDirectRendering(true);
-        glFormat.setDoubleBuffer(true);
-        glFormat.setDepth(false);
-        // Disable waiting for vertical Sync
-        // This can be enabled when using a single Threads for each QGLContext
-        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-#if defined(__APPLE__)
-        // On OS X, syncing to vsync has good performance FPS-wise and
-        // eliminates tearing.
-        glFormat.setSwapInterval(1);
-#else
-        // Otherwise, turn VSync off because it could cause horrible FPS on
-        // Linux.
-        // TODO(XXX): Make this configurable.
-        // TODO(XXX): What should we do on Windows?
-        glFormat.setSwapInterval(0);
-#endif
+    QGLWidget* pGlWidget = SharedGLContext::getWidget();
+    if (pGlWidget && pGlWidget->isValid()) {
+        // will be false if SafeMode is enabled
 
-
-        glFormat.setRgba(true);
-        QGLFormat::setDefaultFormat(glFormat);
-
-        const QGLWidget* pGlWidget = SharedGLContext::getWidget();
+        pGlWidget->show();
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
         // and QGLFormat::openGLVersionFlags() returns the maximum known version
-        pGlWidget->context()->makeCurrent();
+        pGlWidget->makeCurrent();
 
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
-        auto glFunctions = QOpenGLFunctions();
+        auto rendererString = QString();
+        if (QOpenGLContext::currentContext()) {
+            auto glFunctions = QOpenGLFunctions();
 
-        glFunctions.initializeOpenGLFunctions();
-        QString versionString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
-        QString vendorString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
-        QString rendererString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
+            glFunctions.initializeOpenGLFunctions();
+            QString versionString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
+            QString vendorString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
+            rendererString = QString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
 
-        // Either GL or GL ES Version is set, not both.
-        qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
-#endif
+            // Either GL or GL ES Version is set, not both.
+            qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
+        } else {
+            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
+            qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
+        }
 
         int majorGlVersion = 0;
         int minorGlVersion = 0;
@@ -262,11 +251,11 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
                 QGLShaderProgram::hasOpenGLShaderPrograms(
                         pGlWidget->context());
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
         if (!rendererString.isEmpty()) {
             m_openGLVersion += " (" + rendererString + ")";
         }
-#endif
+
+        pGlWidget->hide();
     }
 
     evaluateWidgets();
@@ -481,8 +470,6 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     m_skipRender = true;
     //qDebug() << "recreate start";
 
-    const float devicePixelRatio = getDevicePixelRatio();
-
     //re-create/setup all waveform widgets
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
@@ -502,7 +489,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
-        widget->resize(viewer->width(), viewer->height(), devicePixelRatio);
+        widget->resize(viewer->width(), viewer->height());
         widget->setTrack(pTrack);
         widget->getWidget()->show();
         viewer->update();
@@ -638,12 +625,12 @@ void WaveformWidgetFactory::render() {
 
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
-        emit(renderSpinnies());
+        emit renderSpinnies(m_vsyncThread);
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
         //int t1 = m_vsyncThread->elapsed();
-        emit(waveformUpdateTick());
+        emit waveformUpdateTick();
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
@@ -651,7 +638,7 @@ void WaveformWidgetFactory::render() {
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
             m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
-            emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
+            emit waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames());
             m_frameCnt = 0.0;
         }
     }
@@ -690,7 +677,7 @@ void WaveformWidgetFactory::swap() {
         }
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Swap all the WSpinny widgets now.
-        emit(swapSpinnies());
+        emit swapSpinnies();
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
@@ -804,6 +791,27 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
+        case WaveformWidgetType::QtVSyncTest:
+            widgetName = QtVSyncTestWidget::getWaveformWidgetName();
+            useOpenGl = QtVSyncTestWidget::useOpenGl();
+            useOpenGles =  QtVSyncTestWidget::useOpenGles();
+            useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
+            developerOnly = QtVSyncTestWidget::developerOnly();
+            break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widgetName = QtHSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtHSVWaveformWidget::useOpenGl();
+            useOpenGles = QtHSVWaveformWidget::useOpenGles();
+            useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
+            developerOnly = QtHSVWaveformWidget::developerOnly();
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widgetName = QtRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtRGBWaveformWidget::useOpenGl();
+            useOpenGles = QtRGBWaveformWidget::useOpenGles();
+            useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = QtRGBWaveformWidget::developerOnly();
+            break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -898,6 +906,15 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::GLVSyncTest:
             widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);
             break;
+        case WaveformWidgetType::QtVSyncTest:
+            widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
+            break;
         default:
         //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
         //case WaveformWidgetType::EmptyWaveform:
@@ -937,24 +954,18 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_vsyncThread->setVSyncType(m_vSyncType);
     m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 
-    connect(m_vsyncThread, SIGNAL(vsyncRender()),
-            this, SLOT(render()));
-    connect(m_vsyncThread, SIGNAL(vsyncSwap()),
-            this, SLOT(swap()));
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncRender,
+            this,
+            &WaveformWidgetFactory::render);
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncSwap,
+            this,
+            &WaveformWidgetFactory::swap);
 
     m_vsyncThread->start(QThread::NormalPriority);
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
     m_vsyncThread->getAvailableVSyncTypes(pList);
-}
-
-// static
-float WaveformWidgetFactory::getDevicePixelRatio() {
-    float devicePixelRatio = 1.0;
-    QWindow* pWindow = QGuiApplication::focusWindow();
-    if (pWindow != nullptr) {
-        devicePixelRatio = pWindow->devicePixelRatio();
-    }
-    return devicePixelRatio;
 }

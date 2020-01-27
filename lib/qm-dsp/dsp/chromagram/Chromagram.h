@@ -1,5 +1,4 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
-
 /*
     QM DSP Library
 
@@ -13,58 +12,82 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef CHROMAGRAM_H
-#define CHROMAGRAM_H
+#ifndef QM_DSP_CHROMAGRAM_H
+#define QM_DSP_CHROMAGRAM_H
 
 #include "dsp/transforms/FFT.h"
 #include "base/Window.h"
 #include "ConstantQ.h"
 
-struct ChromaConfig{
-    unsigned int FS;
+struct ChromaConfig {
+    double FS;
     double min;
     double max;
-    unsigned int BPO;
+    int BPO;
     double CQThresh;
     MathUtilities::NormaliseType normalise;
 };
 
 class Chromagram 
 {
-
-public:	
+public: 
     Chromagram( ChromaConfig Config );
     ~Chromagram();
-	
-    double* process( const double *data ); // time domain
-    double* process( const double *real, const double *imag ); // frequency domain
-    void unityNormalise( double* src );
+
+    /**
+     * Process a time-domain input signal of length equal to
+     * getFrameSize().
+     * 
+     * The returned buffer contains the chromagram values indexed by
+     * bin, with the number of values corresponding to the BPO field
+     * in the ChromaConfig supplied at construction. It is owned by
+     * the Chromagram object and is reused from one process call to
+     * the next.
+     */
+    double *process(const double *data);
+    
+    /**
+     * Process a frequency-domain input signal generated from a
+     * time-domain signal of length equal to getFrameSize() that has
+     * been windowed and "fftshifted" to place the zero index in the
+     * centre of the frame. The real and imag buffers must each
+     * contain the full getFrameSize() frequency bins.
+     * 
+     * The returned buffer contains the chromagram values indexed by
+     * bin, with the number of values corresponding to the BPO field
+     * in the ChromaConfig supplied at construction. It is owned by
+     * the Chromagram object and is reused from one process call to
+     * the next.
+     */
+    double *process(const double *real, const double *imag);
+    
+    void unityNormalise(double* src);
 
     // Complex arithmetic
     double kabs( double real, double imag );
-	
+        
     // Results
-    unsigned int getK() { return m_uK;}
-    unsigned int getFrameSize() { return m_frameSize; }
-    unsigned int getHopSize()   { return m_hopSize; }
-
+    int getK() { return m_uK;}
+    int getFrameSize() { return m_frameSize; }
+    int getHopSize()   { return m_hopSize; }
+    
 private:
     int initialise( ChromaConfig Config );
     int deInitialise();
 
     Window<double> *m_window;
     double *m_windowbuf;
-	
+        
     double* m_chromadata;
     double m_FMin;
     double m_FMax;
-    unsigned int m_BPO;
-    unsigned int m_uK;
+    int m_BPO;
+    int m_uK;
 
     MathUtilities::NormaliseType m_normalise;
 
-    unsigned int m_frameSize;
-    unsigned int m_hopSize;
+    int m_frameSize;
+    int m_hopSize;
 
     FFTReal* m_FFT;
     ConstantQ* m_ConstantQ;

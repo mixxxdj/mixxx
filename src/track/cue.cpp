@@ -23,31 +23,36 @@ Cue::Cue(TrackId trackId)
         : m_bDirty(false),
           m_iId(-1),
           m_trackId(trackId),
-          m_source(UNKNOWN),
-          m_type(INVALID),
-          m_samplePosition(-1.0),
-          m_length(0.0),
+          m_type(Cue::Type::Invalid),
+          m_sampleStartPosition(Cue::kNoPosition),
+          m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
           m_color(Color::kPredefinedColorsSet.noColor) {
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, Cue::CueSource source, Cue::CueType type, double position, double length,
+Cue::Cue(int id, TrackId trackId, Cue::Type type, double position, double length,
          int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
-          m_source(source),
           m_type(type),
-          m_samplePosition(position),
-          m_length(length),
+          m_sampleStartPosition(position),
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
     DEBUG_ASSERT(!m_label.isNull());
+    if (length) {
+        if (position != Cue::kNoPosition) {
+            m_sampleEndPosition = position + length;
+        } else {
+            m_sampleEndPosition = length;
+        }
+    } else {
+        m_sampleEndPosition = Cue::kNoPosition;
+    }
 }
-
 int Cue::getId() const {
     QMutexLocker lock(&m_mutex);
     return m_iId;
@@ -58,7 +63,7 @@ void Cue::setId(int cueId) {
     m_iId = cueId;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 TrackId Cue::getTrackId() const {
@@ -71,59 +76,52 @@ void Cue::setTrackId(TrackId trackId) {
     m_trackId = trackId;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
-Cue::CueSource Cue::getSource() const {
-    QMutexLocker lock(&m_mutex);
-    return m_source;
-}
-
-void Cue::setSource(CueSource source) {
-    QMutexLocker lock(&m_mutex);
-    m_source = source;
-    m_bDirty = true;
-    lock.unlock();
-    emit(updated());
-}
-
-Cue::CueType Cue::getType() const {
+Cue::Type Cue::getType() const {
     QMutexLocker lock(&m_mutex);
     return m_type;
 }
 
-void Cue::setType(Cue::CueType type) {
+void Cue::setType(Cue::Type type) {
     QMutexLocker lock(&m_mutex);
     m_type = type;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 double Cue::getPosition() const {
     QMutexLocker lock(&m_mutex);
-    return m_samplePosition;
+    return m_sampleStartPosition;
 }
 
-void Cue::setPosition(double samplePosition) {
+void Cue::setStartPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
-    m_samplePosition = samplePosition;
+    m_sampleStartPosition = samplePosition;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
+}
+
+void Cue::setEndPosition(double samplePosition) {
+    QMutexLocker lock(&m_mutex);
+    m_sampleEndPosition = samplePosition;
+    m_bDirty = true;
+    lock.unlock();
+    emit updated();
 }
 
 double Cue::getLength() const {
     QMutexLocker lock(&m_mutex);
-    return m_length;
-}
-
-void Cue::setLength(double length) {
-    QMutexLocker lock(&m_mutex);
-    m_length = length;
-    m_bDirty = true;
-    lock.unlock();
-    emit(updated());
+    if (m_sampleEndPosition == Cue::kNoPosition) {
+        return 0;
+    }
+    if (m_sampleStartPosition == Cue::kNoPosition) {
+        return m_sampleEndPosition;
+    }
+    return m_sampleEndPosition - m_sampleStartPosition;
 }
 
 int Cue::getHotCue() const {
@@ -137,7 +135,7 @@ void Cue::setHotCue(int hotCue) {
     m_iHotCue = hotCue;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 QString Cue::getLabel() const {
@@ -152,7 +150,7 @@ void Cue::setLabel(const QString label) {
     m_label = label;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 PredefinedColorPointer Cue::getColor() const {
@@ -165,7 +163,7 @@ void Cue::setColor(const PredefinedColorPointer color) {
     m_color = color;
     m_bDirty = true;
     lock.unlock();
-    emit(updated());
+    emit updated();
 }
 
 bool Cue::isDirty() const {
@@ -180,16 +178,9 @@ void Cue::setDirty(bool dirty) {
 
 double Cue::getEndPosition() const {
     QMutexLocker lock(&m_mutex);
-    if (m_samplePosition == -1.0) {
-        return m_length;
-    } else if (m_length == 0.0) {
-        return -1.0;
-    } else {
-        return  m_samplePosition + m_length;
-    }
+    return m_sampleEndPosition;
 }
 
 bool operator==(const CuePosition& lhs, const CuePosition& rhs) {
-    return lhs.getPosition() == rhs.getPosition() &&
-            lhs.getSource() == rhs.getSource();
+    return lhs.getPosition() == rhs.getPosition();
 }

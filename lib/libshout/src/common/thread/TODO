@@ -1,0 +1,5 @@
+- make DEBUG_MUTEXES and CHECK_MUTEXES work
+
+- recursive locking/unlocking (easy)
+- reader/writer locking (easy)
+- make a mode were _log is disabled (normal mode) (easy)

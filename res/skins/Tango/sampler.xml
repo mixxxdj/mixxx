@@ -204,10 +204,11 @@ Variables:
                     <SignalColor>#bababa</SignalColor>
                     <PlayPosColor>#FF4300</PlayPosColor>
                     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                    <ShowCueTimes>false</ShowCueTimes>
                     <MarkerColor>#00FF00</MarkerColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
-                      <Color>#00FF00</Color>
+                      <Color>#666666</Color>
                       <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>
@@ -239,8 +240,8 @@ Variables:
             <ObjectName>SamplerPitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
             <Size>20f,54f</Size>
-            <Handle>knobs_sliders/pitch_sampler_handle.svg</Handle>
-            <Slider>knobs_sliders/pitch_sampler_scale.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">knobs_sliders/pitch_sampler_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">knobs_sliders/pitch_sampler_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>

@@ -19,13 +19,9 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
-    connect(&m_buttonMapper, SIGNAL(mapped(QString)),
-            this, SLOT(slotOpenLocalFile(QString)));
-
-    connect(btnOpenUserPresets, SIGNAL(clicked()),
-            &m_buttonMapper, SLOT(map()));
-
-    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
+    const QString presetsPath = userPresetsPath(m_pConfig);
+    connect(btnOpenUserPresets, &QPushButton::clicked,
+            this, [this, presetsPath] { slotOpenLocalFile(presetsPath); });
 
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),
@@ -107,7 +103,7 @@ void DlgPrefControllers::setupControllerWidgets() {
     // treepane on the left.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    qSort(controllerList.begin(), controllerList.end(), controllerCompare);
+    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
         DlgPrefController* controllerDlg = new DlgPrefController(

@@ -9,7 +9,7 @@
 
 namespace soundtouch {
 class BPMDetect;
-}  // namespace soundtouch
+} // namespace soundtouch
 
 namespace mixxx {
 
@@ -17,9 +17,10 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
   public:
     static AnalyzerPluginInfo pluginInfo() {
         return AnalyzerPluginInfo(
-            "mixxxbpmdetection",
-            "Olli Parviainen",
-            QObject::tr("SoundTouch BPM Detector (Legacy)"));
+                "mixxxbpmdetection",
+                "Olli Parviainen",
+                QObject::tr("SoundTouch BPM Detector (Legacy)"),
+                false);
     }
 
     AnalyzerSoundTouchBeats();
@@ -30,7 +31,7 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
     }
 
     bool initialize(int samplerate) override;
-    bool process(const CSAMPLE* pIn, const int iLen) override;
+    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
     bool supportsBeatTracking() const override {
@@ -47,6 +48,6 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
     float m_fResultBpm;
 };
 
-}  // namespace mixxx
+} // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS */

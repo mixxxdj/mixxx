@@ -1,5 +1,5 @@
-#include <QFile>
 #include <wavpack/wavpack.h>
+#include <QFile>
 
 #include "sources/soundsourcewv.h"
 
@@ -12,15 +12,14 @@ namespace {
 const Logger kLogger("SoundSourceWV");
 
 static WavpackStreamReader s_streamReader = {
-    SoundSourceWV::ReadBytesCallback,
-    SoundSourceWV::GetPosCallback,
-    SoundSourceWV::SetPosAbsCallback,
-    SoundSourceWV::SetPosRelCallback,
-    SoundSourceWV::PushBackByteCallback,
-    SoundSourceWV::GetlengthCallback,
-    SoundSourceWV::CanSeekCallback,
-    SoundSourceWV::WriteBytesCallback
-};
+        SoundSourceWV::ReadBytesCallback,
+        SoundSourceWV::GetPosCallback,
+        SoundSourceWV::SetPosAbsCallback,
+        SoundSourceWV::SetPosRelCallback,
+        SoundSourceWV::PushBackByteCallback,
+        SoundSourceWV::GetlengthCallback,
+        SoundSourceWV::CanSeekCallback,
+        SoundSourceWV::WriteBytesCallback};
 
 } // anonymous namespace
 
@@ -59,24 +58,23 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
         m_pWVCFile = new QFile(correctionFileName);
         m_pWVCFile->open(QFile::ReadOnly);
     }
-    m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile,
-            msg, openFlags, 0);
+    m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile, msg, openFlags, 0);
     if (!m_wpc) {
         kLogger.warning() << "failed to open file : " << msg;
         return OpenResult::Failed;
     }
 
-    setChannelCount(WavpackGetReducedChannels(m_wpc));
-    setSampleRate(WavpackGetSampleRate(m_wpc));
+    setChannelCount(WavpackGetReducedChannels(static_cast<WavpackContext*>(m_wpc)));
+    setSampleRate(WavpackGetSampleRate(static_cast<WavpackContext*>(m_wpc)));
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
-                    WavpackGetNumSamples(m_wpc)));
+                    WavpackGetNumSamples(static_cast<WavpackContext*>(m_wpc))));
 
-    if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
+    if (WavpackGetMode(static_cast<WavpackContext*>(m_wpc)) & MODE_FLOAT) {
         m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
-        const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
+        const int bitsPerSample = WavpackGetBitsPerSample(static_cast<WavpackContext*>(m_wpc));
         if ((bitsPerSample >= 8) && (bitsPerSample <= 32)) {
             // Range of signed sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
             const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
@@ -98,7 +96,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
 
 void SoundSourceWV::close() {
     if (m_wpc) {
-        WavpackCloseFile(m_wpc);
+        WavpackCloseFile(static_cast<WavpackContext*>(m_wpc));
         m_wpc = nullptr;
     }
     if (m_pWVFile) {
@@ -115,17 +113,16 @@ void SoundSourceWV::close() {
 
 ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
-        if (WavpackSeekSample(m_wpc, firstFrameIndex)) {
+        if (WavpackSeekSample(static_cast<WavpackContext*>(m_wpc), firstFrameIndex)) {
             m_curFrameIndex = firstFrameIndex;
         } else {
             kLogger.warning()
                     << "Could not seek to first frame index"
                     << firstFrameIndex;
-            m_curFrameIndex = WavpackGetSampleIndex(m_wpc);
+            m_curFrameIndex = WavpackGetSampleIndex(static_cast<WavpackContext*>(m_wpc));
             return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
         }
     }
@@ -136,11 +133,12 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     static_assert(sizeof(CSAMPLE) == sizeof(int32_t),
             "CSAMPLE and int32_t must have the same size");
     CSAMPLE* pOutputBuffer = writableSampleFrames.writableData();
-    SINT unpackCount = WavpackUnpackSamples(m_wpc,
-            reinterpret_cast<int32_t*>(pOutputBuffer), numberOfFramesTotal);
+    SINT unpackCount = WavpackUnpackSamples(static_cast<WavpackContext*>(m_wpc),
+            reinterpret_cast<int32_t*>(pOutputBuffer),
+            numberOfFramesTotal);
     DEBUG_ASSERT(unpackCount >= 0);
     DEBUG_ASSERT(unpackCount <= numberOfFramesTotal);
-    if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
+    if (!(WavpackGetMode(static_cast<WavpackContext*>(m_wpc)) & MODE_FLOAT)) {
         // signed integer -> float
         const SINT sampleCount = frames2samples(unpackCount);
         for (SINT i = 0; i < sampleCount; ++i) {
@@ -162,19 +160,8 @@ QString SoundSourceProviderWV::getName() const {
     return "WavPack";
 }
 
-QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("wv");
-    return supportedFileExtensions;
-}
-
-SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceWV>(url);
-}
-
 //static
-int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount)
-{
+int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
@@ -182,10 +169,8 @@ int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount)
     return pFile->read((char*)data, bcount);
 }
 
-
 // static
-uint32_t SoundSourceWV::GetPosCallback(void *id)
-{
+uint32_t SoundSourceWV::GetPosCallback(void* id) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
@@ -194,8 +179,7 @@ uint32_t SoundSourceWV::GetPosCallback(void *id)
 }
 
 //static
-int SoundSourceWV::SetPosAbsCallback(void* id, unsigned int pos)
-{
+int SoundSourceWV::SetPosAbsCallback(void* id, unsigned int pos) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
@@ -204,14 +188,13 @@ int SoundSourceWV::SetPosAbsCallback(void* id, unsigned int pos)
 }
 
 //static
-int SoundSourceWV::SetPosRelCallback(void *id, int delta, int mode)
-{
+int SoundSourceWV::SetPosRelCallback(void* id, int delta, int mode) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
     }
 
-    switch(mode) {
+    switch (mode) {
     case SEEK_SET:
         return pFile->seek(delta) ? 0 : -1;
     case SEEK_CUR:
@@ -224,8 +207,7 @@ int SoundSourceWV::SetPosRelCallback(void *id, int delta, int mode)
 }
 
 //static
-int SoundSourceWV::PushBackByteCallback(void* id, int c)
-{
+int SoundSourceWV::PushBackByteCallback(void* id, int c) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
@@ -235,8 +217,7 @@ int SoundSourceWV::PushBackByteCallback(void* id, int c)
 }
 
 //static
-uint32_t SoundSourceWV::GetlengthCallback(void* id)
-{
+uint32_t SoundSourceWV::GetlengthCallback(void* id) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
@@ -245,8 +226,7 @@ uint32_t SoundSourceWV::GetlengthCallback(void* id)
 }
 
 //static
-int SoundSourceWV::CanSeekCallback(void *id)
-{
+int SoundSourceWV::CanSeekCallback(void* id) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
@@ -255,13 +235,29 @@ int SoundSourceWV::CanSeekCallback(void *id)
 }
 
 //static
-int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
-{
+int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount) {
     QFile* pFile = static_cast<QFile*>(id);
     if (!pFile) {
         return 0;
     }
     return (int32_t)pFile->write((char*)data, bcount);
+}
+
+QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("wv");
+    return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::HIGHER;
+}
+
+SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceWV>(url);
 }
 
 } // namespace mixxx
