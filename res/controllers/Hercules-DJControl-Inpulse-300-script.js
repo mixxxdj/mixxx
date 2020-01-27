@@ -53,9 +53,8 @@ DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
 //function DJCi300() {}
-
 														  
-DJCi300.vuMeterUpdate = function (value, group, control) {
+DJCi300.vuMeterUpdate = function(value, group, control) {
     value = (value * 127) + 5;
     switch (control) {
         case "VuMeterL":
@@ -67,7 +66,7 @@ DJCi300.vuMeterUpdate = function (value, group, control) {
     }
 };
 
-DJCi300.vuMeterUpdateDA = function (value, group, control) {
+DJCi300.vuMeterUpdateDA = function(value, group, control) {
     value = (value * 127) + 5;
     switch (control) {
         case "[Channel1]", "VuMeter":
@@ -76,7 +75,7 @@ DJCi300.vuMeterUpdateDA = function (value, group, control) {
     }
 };
 
-DJCi300.vuMeterUpdateDB = function (value, group, control) {
+DJCi300.vuMeterUpdateDB = function(value, group, control) {
     value = (value * 127) + 5;
     switch (control) {
         case "[Channel2]", "VuMeter":
@@ -85,25 +84,19 @@ DJCi300.vuMeterUpdateDB = function (value, group, control) {
     }
 };
 
-								
-
-
 DJCi300.init = function () {
 DJCi300.scratchButtonState = true;
     DJCi300.scratchAction = {
         1: DJCi300.kScratchActionNone,
         2: DJCi300.kScratchActionNone};				
 
-
     // Turn On Vinyl buttons LED(one for each deck).
     midi.sendShortMsg(0x91, 0x03, 0x7F);
     midi.sendShortMsg(0x92, 0x03, 0x7F);
 
 	//Turn On Browser button LED
-	midi.sendShortMsg(0x90, 0x05, 0x10);
-																														
+	midi.sendShortMsg(0x90, 0x05, 0x10);																													
 
-  
     // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDA");
     engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDB");
@@ -119,10 +112,8 @@ DJCi300.scratchButtonState = true;
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
 
-
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
-
-DJCi300.vinylButtonDA = function (channel, control, value, _status, _group) {
+DJCi300.vinylButtonDA = function(channel, control, value, _status, _group) {
     if (value) {
         if (DJCi300.scratchButtonState) {
 			DJCi300.scratchButtonState = false;
@@ -135,7 +126,7 @@ DJCi300.vinylButtonDA = function (channel, control, value, _status, _group) {
     }
 };
 
-DJCi300.vinylButtonDB = function (channel, control, value, _status, _group) {
+DJCi300.vinylButtonDB = function(channel, control, value, _status, _group) {
     if (value) {
         if (DJCi300.scratchButtonState) {
 			DJCi300.scratchButtonState = false;
@@ -147,7 +138,6 @@ DJCi300.vinylButtonDB = function (channel, control, value, _status, _group) {
         }
     }
 };
-
 
 DJCi300._scratchEnable = function(deck) {
     var alpha = 1.0/8;
@@ -163,7 +153,7 @@ DJCi300._convertWheelRotation = function (value) {
 };
 
 // The touch action on the jog wheel's top surface
-DJCi300.wheelTouch = function (channel, control, value, _status, _group) {
+DJCi300.wheelTouch = function(channel, control, value, _status, _group) {
     var deck = channel;
     if (value > 0) {
         //  Touching the wheel.
@@ -180,14 +170,13 @@ DJCi300.wheelTouch = function (channel, control, value, _status, _group) {
     }
 };
 
-
 // The touch action on the jog wheel's top surface while holding shift
-DJCi300.wheelTouchShift = function (channel, control, value, _status, _group) {
+DJCi300.wheelTouchShift = function(channel, control, value, _status, _group) {
     var deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
         DJCi300._scratchEnable(deck);
-        DJCi300.scratchAction[deck] = DJCi300.kScratchActionSeek;													  
+        DJCi300.scratchAction[deck] = DJCi300.kScratchActionSeek;												  
     } else {
         // Released the wheel.
         engine.scratchDisable(deck);
@@ -196,7 +185,7 @@ DJCi300.wheelTouchShift = function (channel, control, value, _status, _group) {
 };
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCi300._scratchWheelImpl = function (deck, value) {
+DJCi300._scratchWheelImpl = function(deck, value) {
     var interval = DJCi300._convertWheelRotation(value);
     var scratchAction = DJCi300.scratchAction[deck];
 	
@@ -212,13 +201,13 @@ DJCi300._scratchWheelImpl = function (deck, value) {
 };
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCi300.scratchWheel = function (channel, control, value, _status, _group) {
+DJCi300.scratchWheel = function(channel, control, value, _status, _group) {
     var deck = channel;
     DJCi300._scratchWheelImpl(deck, value);	 
 };
 
 // Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
-DJCi300.scratchWheelShift = function (channel, control, value, _status, _group) {
+DJCi300.scratchWheelShift = function(channel, control, value, _status, _group) {
     var deck = channel - 3;
     DJCi300._scratchWheelImpl(deck, value); 
 };
@@ -230,16 +219,16 @@ DJCi300._bendWheelImpl = function (deck, value) {
 };
 
 // Bending on the jog wheel (rotating using the edge)
-DJCi300.bendWheel = function (channel, control, value, _status, _group) {
+DJCi300.bendWheel = function(channel, control, value, _status, _group) {
     var deck = channel;
     DJCi300._bendWheelImpl(deck, value);
 }; 
 
-DJCi300.scratchPad = function (channel, control, value, _status, _group) {
+DJCi300.scratchPad = function(channel, control, value, _status, _group) {
     var deck = channel;
     DJCi300._scratchWheelImpl(deck, value);
 };														
 					  	
-DJCi300.shutdown = function () {
+DJCi300.shutdown = function() {
 	midi.sendShortMsg(0xB0, 0x7F, 0x00);							
 };																	 
