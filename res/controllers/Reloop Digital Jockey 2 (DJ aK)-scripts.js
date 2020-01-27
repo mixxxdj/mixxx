@@ -47,6 +47,31 @@ RDJ2.MIXXX_JOG_RANGE = 3.0;
 
 
 ////////////////////////////////////////////////////////////////////////
+// Button/Knob map                                                    //
+////////////////////////////////////////////////////////////////////////
+
+/* This map is necessary as Reloop has designed the controller in such
+   a way that not all buttons/knobs have the same offset comparing
+   CH0 and CH1. By looking at the MIDI messages sent by the controller,
+   we can see that the hardware is designed as symmetric halves.
+   
+   In other words, constant offset in hardware corresponds to symmetric
+   halves, but the controller layout is not fully symmetric.
+   (e.x. ACTIVATE 1 buttons)
+
+   Thus we need a map to preserve object oriented approach .*/
+RDJ2.BUTTONMAP_CH0_CH1 = {
+    play: [0x19, 0x55],
+    cue: [0x18, 0x54],
+    sync: [0x01, 0x3D],
+    scratch: [0x1B, 0x57]
+};
+
+RDJ2.KNOBMAP_CH0_CH1 = {
+    loopSize: [0x28, 0x63],     //this is the shifted Dry/Wet Knob
+};
+
+////////////////////////////////////////////////////////////////////////
 // Logging functions                                                  //
 ////////////////////////////////////////////////////////////////////////
 
@@ -87,23 +112,6 @@ RDJ2.isButtonPressed = function (midiValue) {
             return undefined;
     }
 };
-
-/* This map is necessary as Reloop has designed the controller in such
-   a way that not all buttons/knobs have the same offset comparing
-   CH0 and CH1. By looking at the MIDI messages sent by the controller,
-   we can see that the hardware is designed as symmetric halves.
-   
-   In other words, constant offset in hardware corresponds to symmetric
-   halves, but the controller layout is not fully symmetric.
-   (e.x. ACTIVATE 1 buttons)
-
-   Thus we need a map to preserve object oriented approach .*/
-RDJ2.BUTTONMAP_CH0_CH1 = {
-    play: [0x19, 0x55],
-    cue: [0x18, 0x54],
-    sync: [0x01, 0x3D],
-    scratch: [0x1B, 0x57]
-}
 
 /* Custom buttons */
 RDJ2.ScratchButton = function (options) {
@@ -174,7 +182,8 @@ RDJ2.ShiftButton.prototype = new components.Button({
 RDJ2.MIDI_KNOB_INC = 0x41;
 RDJ2.MIDI_KNOB_DEC = 0x3F;
 RDJ2.MIDI_KNOB_DELTA_BIAS = 0x40; // center value of relative movements
-RDJ2.MIDI_KNOB_STEPS = 20;
+//RDJ2.MIDI_KNOB_STEPS = 20;  // 20 is full knob's rotation (360deg)
+RDJ2.MIDI_KNOB_STEPS = 16;    // 16 is more like volume knobs
 
 //currently RDJ2.getKnobDeltaOld is not used
 RDJ2.getKnobDeltaOld = function (midiValue) {
@@ -197,6 +206,23 @@ RDJ2.knobInput = function (channel, control, value, status, group) {
         var knobDelta = RDJ2.getKnobDelta(value);
         this.inSetParameter(this.inGetParameter() + knobDelta / RDJ2.MIDI_KNOB_STEPS);
 };
+
+/* Custom knobs */
+RDJ2.LoopSizeKnob = function (options) {
+    components.Pot.call(this, options);
+};
+RDJ2.LoopSizeKnob.prototype = new components.Pot({
+    input: function (channel, control, value, status, group) {
+        var knobDelta = RDJ2.getKnobDelta(value);
+
+        if(knobDelta > 0) {
+            engine.setValue(this.group, "loop_double", true);
+        } else {
+            engine.setValue(this.group, "loop_halve", true);
+        }
+    }
+});
+
 
 ////////////////////////////////////////////////////////////////////////
 // Controls                                                           //
@@ -241,6 +267,9 @@ RDJ2.Deck = function (number) {
     this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
     this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
     this.scratchButton = new RDJ2.ScratchButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.scratch[number - 1]]);
+
+    //loops
+    this.loopsizeKnob = new RDJ2.LoopSizeKnob([0xB0, RDJ2.KNOBMAP_CH0_CH1.loopSize[number - 1]]);
 
     // Set the group properties of the above Components and connect their output callback functions
     // Without this, the group property for each Component would have to be specified to its
@@ -418,6 +447,8 @@ RDJ2.efxUnitKnobShift = function () {
         engine.setValue(effectGroup, 'effect_selector', knobDelta);
     };
 };
+
+//note: the shifted dry/wet knob is mapped to beatloop size
 
 ////////////////////////////////////////////////////////////////////////
 // Controller functions                                               //

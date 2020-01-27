@@ -589,7 +589,7 @@
             </control>
             <control>   <!-- SHIFT -->
                 <group>[Channel1]</group>
-                <key>RDJ2.fx1.dryWetKnob.input</key>
+                <key>RDJ2.leftDeck.loopsizeKnob.input</key>
                 <status>0xB0</status>
                 <midino>0x28</midino>
                 <options>
