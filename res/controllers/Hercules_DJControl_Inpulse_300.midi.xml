@@ -810,11 +810,11 @@
 					<normal />
 				</options>
 			</control>
-      <!--Slicer <!-- No assigned: 0x20 to 0x27-->
+      <!--Slicer  Not assigned: 0x20 to 0x27-->
 
-	  <!--Toneplay <!-- No assigned: 0x40 to 0x47-->
+	  <!--Toneplay  Not assigned: 0x40 to 0x47-->
 
-	  <!--Slicer LOOP <!-- No assigned: 0x60 to 0x67-->
+	  <!--Slicer LOOP  Not assigned: 0x60 to 0x67-->
 
 	  <!--Beatjump-->
 			<control>
@@ -1225,11 +1225,11 @@
 					<normal />
 				</options>
 			</control>
-      <!--Slicer <!-- No assigned: 0x20 to 0x27-->
+      <!--Slicer  Not assigned: 0x20 to 0x27-->
 
-	  <!--Toneplay <!-- No assigned: 0x40 to 0x47-->
+	  <!--Toneplay  Not assigned: 0x40 to 0x47-->
 
-	  <!--Slicer LOOP <!-- No assigned : 0x60 to 0x67-->
+	  <!--Slicer LOOP  Not assigned : 0x60 to 0x67-->
 
 	  <!--Beatjump-->
 			<control>
