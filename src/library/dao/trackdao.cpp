@@ -450,7 +450,7 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
             "("
             "artist,title,album,album_artist,year,genre,tracknumber,tracktotal,composer,"
-            "grouping,filetype,location,comment,url,duration,rating,key,key_id,"
+            "grouping,filetype,location,color,comment,url,duration,rating,key,key_id,"
             "bitrate,samplerate,cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
             "timesplayed,channels,mixxx_deleted,header_parsed,"
             "beats_version,beats_sub_version,beats,bpm_lock,"
@@ -459,7 +459,7 @@ void TrackDAO::addTracksPrepare() {
             "datetime_added"
             ") VALUES ("
             ":artist,:title,:album,:album_artist,:year,:genre,:tracknumber,:tracktotal,:composer,"
-            ":grouping,:filetype,:location,:comment,:url,:duration,:rating,:key,:key_id,"
+            ":grouping,:filetype,:location,:color,:comment,:url,:duration,:rating,:key,:key_id,"
             ":bitrate,:samplerate,:cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
             ":timesplayed,:channels,:mixxx_deleted,:header_parsed,"
             ":beats_version,:beats_sub_version,:beats,:bpm_lock,"
@@ -526,6 +526,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":tracknumber", track.getTrackNumber());
         pTrackLibraryQuery->bindValue(":tracktotal", track.getTrackTotal());
         pTrackLibraryQuery->bindValue(":filetype", track.getType());
+        pTrackLibraryQuery->bindValue(":color", track.getColor().rgba());
         pTrackLibraryQuery->bindValue(":comment", track.getComment());
         pTrackLibraryQuery->bindValue(":url", track.getURL());
         pTrackLibraryQuery->bindValue(":duration", track.getDuration());
@@ -1043,6 +1044,12 @@ bool setTrackTotal(const QSqlRecord& record, const int column,
     return false;
 }
 
+bool setTrackColor(const QSqlRecord& record, const int column,
+                   TrackPointer pTrack) {
+    pTrack->setColor(QColor(static_cast<QRgb>(record.value(column).toUInt())));
+    return false;
+}
+
 bool setTrackComment(const QSqlRecord& record, const int column,
                      TrackPointer pTrack) {
     pTrack->setComment(record.value(column).toString());
@@ -1240,6 +1247,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         { "tracktotal", setTrackTotal },
         { "filetype", setTrackFiletype },
         { "rating", setTrackRating },
+        { "color", setTrackColor },
         { "comment", setTrackComment },
         { "url", setTrackUrl },
         { "duration", setTrackDuration },
@@ -1469,6 +1477,7 @@ bool TrackDAO::updateTrack(Track* pTrack) {
             "filetype=:filetype,"
             "tracknumber=:tracknumber,"
             "tracktotal=:tracktotal,"
+            "color=:color,"
             "comment=:comment,"
             "url=:url,"
             "duration=:duration,"

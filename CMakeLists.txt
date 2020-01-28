@@ -332,6 +332,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
+  src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
   src/library/coverartcache.cpp

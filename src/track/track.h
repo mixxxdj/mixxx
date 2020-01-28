@@ -189,6 +189,10 @@ class Track : public QObject {
     QString getGenre() const;
     // Set genre
     void setGenre(const QString&);
+    // Returns the track color
+    QColor getColor() const;
+    // Sets the track color
+    void setColor(const QColor&);
     // Returns the user comment
     QString getComment() const;
     // Sets the user commnet

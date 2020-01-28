@@ -11,6 +11,7 @@
 
 #include "widget/wtracktableview.h"
 
+#include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
@@ -38,6 +39,7 @@
 #include "util/assert.h"
 #include "util/parented_ptr.h"
 #include "util/desktophelper.h"
+#include "util/color/predefinedcolorsset.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -92,6 +94,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("Change BPM"));
+
+    m_pColorMenu = new QMenu(this);
+    m_pColorMenu->setTitle(tr("Change Color"));
 
     m_pClearMetadataMenu = new QMenu(this);
     //: Reset metadata in right click track context menu in library
@@ -171,6 +176,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmFourThirdsAction;
     delete m_pBpmThreeHalvesAction;
     delete m_pBPMMenu;
+    delete m_pColorMenu;
     delete m_pClearBeatsAction;
     delete m_pClearPlayCountAction;
     delete m_pClearMainCueAction;
@@ -567,6 +573,11 @@ void WTrackTableView::createActions() {
             this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
     connect(m_pBpmThreeHalvesAction, &QAction::triggered,
             this, [this] { slotScaleBpm(Beats::THREEHALVES); });
+
+    m_pColorPickerAction = new WColorPickerAction(this);
+    m_pColorPickerAction->colorPicker()->setObjectName("TrackColorPicker");
+    connect(m_pColorPickerAction->colorPicker(), &WColorPicker::colorPicked,
+            this, &WTrackTableView::slotColorPicked);
 }
 
 // slot
@@ -1074,6 +1085,39 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         }
         m_pMenu->addMenu(m_pBPMMenu);
+
+        // Track color menu only appears if at least one track is selected
+        if (indices.size()) {
+            // Get color of first selected track
+            int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
+            QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
+            QColor trackColor = qvariant_cast<QColor>(index.data());
+
+            // Check if all other selected tracks have the same color
+            for (int i = 1; i < indices.size(); ++i) {
+                int row = indices.at(i).row();
+                QModelIndex index = indices.at(i).sibling(row, column);
+
+                if (trackColor  != qvariant_cast<QColor>(index.data())) {
+                    trackColor = QColor();
+                    break;
+                }
+            }
+
+            PredefinedColorPointer predefinedTrackColor = nullptr;
+            if (trackColor.isValid()) {
+                for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
+                    if (color->m_defaultRgba == trackColor) {
+                        predefinedTrackColor = color;
+                        break;
+                    }
+                }
+            }
+
+            m_pColorPickerAction->colorPicker()->setSelectedColor(predefinedTrackColor);
+            m_pColorMenu->addAction(m_pColorPickerAction);
+            m_pMenu->addMenu(m_pColorMenu);
+        }
     }
 
     m_pMenu->addSeparator();
@@ -1927,6 +1971,22 @@ void WTrackTableView::lockBpm(bool lock) {
         TrackPointer track = trackModel->getTrack(index);
         track->setBpmLocked(lock);
     }
+}
+
+void WTrackTableView::slotColorPicked(PredefinedColorPointer pColor) {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    // TODO: This should be done in a thread for large selections
+    for (const auto& index : selectedTrackIndices) {
+        TrackPointer track = trackModel->getTrack(index);
+        track->setColor(pColor->m_defaultRgba);
+    }
+
+    m_pMenu->hide();
 }
 
 void WTrackTableView::slotClearBeats() {

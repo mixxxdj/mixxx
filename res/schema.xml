@@ -480,5 +480,13 @@ METADATA
         position INTEGER
         );
     </sql>
-  </revision>  
+  </revision>
+  <revision version="31" min_compatible="3">
+    <description>
+      Add track color support. Default color is #000000.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN color INTEGER DEFAULT 0xFF000000 NOT NULL;
+    </sql>
+  </revision>
 </schema>
