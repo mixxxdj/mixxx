@@ -1,18 +1,3 @@
-
-var DJCi300 = {};
-///////////////////////////////////////////////////////////////
-//                       USER OPTIONS                        //
-///////////////////////////////////////////////////////////////
-
-// How fast scratching is.
-DJCi300.scratchScale = 1.0;
-
-// How much faster seeking (shift+scratch) is than scratching.
-DJCi300.scratchShiftMultiplier = 4;
-
-// How fast bending is.
-DJCi300.bendScale = 1.0;
-
 // DJControl_Inpulse_300_script.js
 //
 // ***************************************************************************
@@ -46,13 +31,25 @@ DJCi300.bendScale = 1.0;
 //  - See how to preselect effects for a rack
 // * Fix behavior when adjusting tempo slider after pressing [Sync] (tempo adjustment should be relative, not absolute).
 // ****************************************************************************
+var DJCi300 = {};
+///////////////////////////////////////////////////////////////
+//                       USER OPTIONS                        //
+///////////////////////////////////////////////////////////////
 
+// How fast scratching is.
+DJCi300.scratchScale = 1.0;
+
+// How much faster seeking (shift+scratch) is than scratching.
+DJCi300.scratchShiftMultiplier = 4;
+
+// How fast bending is.
+DJCi300.bendScale = 1.0;
+
+// Other scratch related options
 DJCi300.kScratchActionNone = 0;
 DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
-
-//function DJCi300() {}
 
 DJCi300.vuMeterUpdate = function(value, group, control) {
     value = (value * 127) + 5;
