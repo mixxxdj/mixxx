@@ -59,6 +59,8 @@ WColorPicker::WColorPicker(QWidget* parent)
             row++;
         }
 
+        connect(this, &WColorPicker::colorPicked,
+                this, &WColorPicker::slotColorPicked);
         connect(pColorButton, &QPushButton::clicked, this, [pColor, this]() {
             emit colorPicked(pColor);
         });
@@ -105,4 +107,9 @@ void WColorPicker::useColorSet(PredefinedColorsRepresentation* pColorRepresentat
 
         pColorButton->setToolTip(pColor->m_sDisplayName);
     }
+}
+
+
+void WColorPicker::slotColorPicked(PredefinedColorPointer pColor) {
+    setSelectedColor(pColor);
 }

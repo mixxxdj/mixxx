@@ -115,7 +115,6 @@ void WCueMenuPopup::slotChangeCueColor(PredefinedColorPointer pColor) {
         return;
     }
     m_pCue->setColor(pColor);
-    m_pColorPicker->setSelectedColor(pColor);
     hide();
 }
 

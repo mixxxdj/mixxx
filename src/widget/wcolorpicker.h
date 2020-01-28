@@ -18,6 +18,9 @@ class WColorPicker : public QWidget {
   signals:
     void colorPicked(PredefinedColorPointer pColor);
 
+  private slots:
+    void slotColorPicked(PredefinedColorPointer pColor);
+
   private:
     QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;
     PredefinedColorPointer m_pSelectedColor;
