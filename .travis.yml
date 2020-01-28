@@ -17,6 +17,30 @@ env:
 jobs:
   include:
     - name: pre-commit
+      if: type != pull_request
+      os: linux
+      dist: xenial
+      # There are too many files in the repo that have formatting issues. We'll
+      # disable these checks for now when pushing directly (but still run these
+      # on Pull Requests!).
+      env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
+      before_install:
+        - pip3 install pre-commit
+      script:
+        - pre-commit run --all-files
+      addons:
+        apt:
+          packages:
+            - python3
+            - python3-pip
+            - python3-setuptools
+            - python3-wheel
+
+    - name: pre-commit-pr
+      if: type == pull_request
       os: linux
       dist: xenial
       cache:
