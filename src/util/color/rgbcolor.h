@@ -17,6 +17,7 @@ typedef quint32 RgbColorCode;
 // to opaque for valid RGB colors and that invalid colors
 // are always represented by the same, well defined QColor,
 // namely QColor().
+// Apart from assignment this type is immutable.
 class RgbColor {
   public:
     RgbColor() {
