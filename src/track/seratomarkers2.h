@@ -8,6 +8,9 @@
 
 #include "util/types.h"
 
+// forward declaration(s)
+class Track;
+
 namespace mixxx {
 
 // Enum values need to appear in the same order as the corresponding entries
@@ -395,6 +398,9 @@ class SeratoMarkers2 final {
     void setEntries(QList<std::shared_ptr<SeratoMarkers2Entry>> entries) {
         m_entries = std::move(entries);
     }
+
+    void syncFromTrackObject(const Track* track);
+    void syncToTrackObject(Track* track) const;
 
   private:
     int m_allocatedSize;

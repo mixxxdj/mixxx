@@ -6,6 +6,8 @@
 #include "track/track.h"
 #include "track/trackref.h"
 #include "track/beatfactory.h"
+#include "track/seratomarkers2.h"
+#include "engine/engine.h"
 
 #include "util/assert.h"
 #include "util/logger.h"
@@ -128,6 +130,7 @@ void Track::importMetadata(
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
     const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
+    const auto newSeratoMarkers2 = importedMetadata.getTrackInfo().getSeratoMarkers2();
 
     {
         // enter locking scope
@@ -164,6 +167,13 @@ void Track::importMetadata(
     if (!newKey.isEmpty()
             && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
         setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
+    }
+
+    {
+        // enter locking scope
+        QMutexLocker lock(&m_qMutex);
+        newSeratoMarkers2.syncToTrackObject(this);
+        // implicitly unlocked when leaving scope
     }
 }
 

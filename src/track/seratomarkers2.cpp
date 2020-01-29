@@ -2,7 +2,13 @@
 
 #include <QtEndian>
 
+#include "engine/engine.h"
+#include "track/cue.h"
+#include "track/track.h"
+
 namespace mixxx {
+
+const QRgb kSeratoDefaultTrackColor = 0xFF9999;
 
 SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& data) {
     if (data.length() != 1) {
@@ -387,5 +393,129 @@ QByteArray SeratoMarkers2::data() const {
     return outerData.leftJustified(size, '\0');
 }
 
+void SeratoMarkers2::syncFromTrackObject(const Track* track) {
+    const double sampleRateKhz = track->getSampleRate() / 1000.0;
+    const double samples = sampleRateKhz * mixxx::kEngineChannelCount;
+
+    QMutableListIterator<std::shared_ptr<SeratoMarkers2Entry>> i(m_entries);
+
+    // Keep potential unknown entries before the COLOR entry
+    while (i.hasNext() && i.peekNext()->typeId() < SeratoMarkers2EntryTypeId::Color) {
+        i.next();
+    }
+
+    // Add the COLOR entry
+    // TODO: Add support for actually reading COLOR entries
+    //QColor color = track->getColor();
+    QColor color = QColor(kSeratoDefaultTrackColor);
+    i.insert(SeratoMarkers2EntryPointer(new SeratoMarkers2ColorEntry(color)));
+
+    // Keep potential unknown entries before the CUE entries
+    while (i.hasNext() && i.peekNext()->typeId() < SeratoMarkers2EntryTypeId::Cue) {
+        SeratoMarkers2EntryPointer pEntry = i.next();
+
+        // We already added the COLOR entry, remove existing ones
+        if (pEntry->typeId() == SeratoMarkers2EntryTypeId::Color) {
+            i.remove();
+        }
+    }
+
+    // Add the CUE entries
+    for (const CuePointer& pCue : track->getCuePoints()) {
+        if (pCue->getType() != Cue::Type::HotCue) {
+            continue;
+        }
+
+        quint8 index = pCue->getHotCue();
+        quint32 position = pCue->getPosition() / samples;
+        QString label = pCue->getLabel();
+        QColor color = QColor(0xFFFF0000); // TODO
+        i.insert(SeratoMarkers2EntryPointer(new SeratoMarkers2CueEntry(index, position, color, label)));
+    }
+
+    // TODO: Add support for LOOP entries here
+
+    // Keep potential unknown entries before the CUE entries
+    while (i.hasNext() && i.peekNext()->typeId() < SeratoMarkers2EntryTypeId::Bpmlock) {
+        SeratoMarkers2EntryPointer pEntry = i.next();
+
+        // We already added the COLOR entry, remove existing ones
+        if (pEntry->typeId() == SeratoMarkers2EntryTypeId::Color || pEntry->typeId() == SeratoMarkers2EntryTypeId::Cue) {
+            i.remove();
+        }
+    }
+
+    // Add the BPMLOCK entry
+    bool bBpmLocked = track->isBpmLocked();
+    m_entries.append(SeratoMarkers2EntryPointer(new SeratoMarkers2BpmlockEntry(bBpmLocked)));
+
+    // Keep potential unknown entries after BPMLOCK entry
+    while (i.hasNext()) {
+        SeratoMarkers2EntryPointer pEntry = i.next();
+
+        // We already added the COLOR entry, remove existing ones
+        if (pEntry->typeId() == SeratoMarkers2EntryTypeId::Color || pEntry->typeId() == SeratoMarkers2EntryTypeId::Cue || pEntry->typeId() == SeratoMarkers2EntryTypeId::Bpmlock) {
+            i.remove();
+        }
+    }
+}
+
+void SeratoMarkers2::syncToTrackObject(Track* track) const {
+    QMap<int, const mixxx::SeratoMarkers2CueEntry*> cueMap;
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        switch (pEntry->typeId()) {
+        case SeratoMarkers2EntryTypeId::Cue: {
+            const mixxx::SeratoMarkers2CueEntry* pCueEntry = static_cast<mixxx::SeratoMarkers2CueEntry*>(pEntry.get());
+            cueMap.insert(pCueEntry->getIndex(), pCueEntry);
+            break;
+        }
+        case SeratoMarkers2EntryTypeId::Bpmlock: {
+            const mixxx::SeratoMarkers2BpmlockEntry* pBpmlockEntry = static_cast<mixxx::SeratoMarkers2BpmlockEntry*>(pEntry.get());
+            track->setBpmLocked(pBpmlockEntry->isLocked());
+            break;
+        }
+        // TODO: Add support for COLOR/LOOP/FLIP
+        default:
+            break;
+        }
+    }
+
+    const double sampleRateKhz = track->getSampleRate() / 1000.0;
+    const double samples = sampleRateKhz * mixxx::kEngineChannelCount;
+
+    // Update existing hotcues
+    for (const CuePointer& pCue : track->getCuePoints()) {
+        if (pCue->getType() != Cue::Type::HotCue) {
+            continue;
+        }
+
+        const mixxx::SeratoMarkers2CueEntry* cueEntry = cueMap.take(pCue->getHotCue());
+        if (!cueEntry) {
+            qWarning() << "Removed existing hotcue" << pCue->getHotCue() << pCue->getLabel() << "at" << pCue->getPosition();
+            track->removeCue(pCue);
+            continue;
+        }
+
+        pCue->setType(Cue::Type::HotCue);
+        pCue->setStartPosition(static_cast<double>(cueEntry->getPosition()) * samples);
+        pCue->setLabel(cueEntry->getLabel());
+        // TODO: Add support for hotcue colors
+        qWarning() << "Updated existing hotcue" << pCue->getHotCue() << pCue->getLabel() << "at" << pCue->getPosition();
+    }
+
+    // Add new cues
+    for (auto cueEntry : cueMap.values()) {
+        DEBUG_ASSERT(cueEntry);
+        CuePointer pCue = CuePointer(track->createAndAddCue());
+
+        pCue->setType(Cue::Type::HotCue);
+        pCue->setHotCue(cueEntry->getIndex());
+        pCue->setStartPosition(static_cast<double>(cueEntry->getPosition()) * samples);
+        pCue->setLabel(cueEntry->getLabel());
+        // TODO: Add support for hotcue colors
+        qWarning() << "Added new hotcue" << pCue->getHotCue() << pCue->getLabel() << "at" << pCue->getPosition();
+    }
+}
 
 } //namespace mixxx
