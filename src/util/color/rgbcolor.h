@@ -6,7 +6,9 @@
 
 namespace mixxx {
 
-// A pure 24-bit 0xxRRGGBB color code without an alpha channel
+// A pure 24-bit 0xxRRGGBB color code without an alpha channel.
+// We are using a separate typedef, because QRgb implicitly
+// includes an alpha channel whereas this type does not!
 typedef quint32 RgbColorCode;
 
 // A thin wrapper around QColor to represent optional,
