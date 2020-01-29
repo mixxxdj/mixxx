@@ -3,9 +3,8 @@
 #include <QColor>
 #include <QtGlobal>
 
-#include <optional>
-
 #include "util/assert.h"
+#include "util/optional.h"
 
 namespace mixxx {
 
@@ -33,7 +32,7 @@ class RgbColor {
     }
     /*non-explicit*/ RgbColor(std::optional<RgbColorCode> optionalCode)
             : m_internalCode(optionalCodeToInternalCode(optionalCode)) {
-        DEBUG_ASSERT(isValid() == optionalCode.has_value());
+        DEBUG_ASSERT(isValid() == static_cast<bool>(optionalCode));
     }
     /*non-explicit*/ RgbColor(QColor anyColor)
             : m_internalCode(anyColorToInternalCode(anyColor)) {
@@ -70,8 +69,8 @@ class RgbColor {
         return code & kRgbCodeMask;
     }
     static RgbColorCode optionalCodeToInternalCode(std::optional<RgbColorCode> optionalCode) {
-        if (optionalCode.has_value()) {
-            return codeToInternalCode(optionalCode.value());
+        if (optionalCode) {
+            return codeToInternalCode(*optionalCode);
         } else {
             return kInvalidInternalCode;
         }
