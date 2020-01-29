@@ -23,91 +23,85 @@ typedef quint32 RgbColorCode;
 // Apart from assignment this type is immutable.
 class RgbColor {
   public:
-    RgbColor() {
+    RgbColor()
+            : m_internalCode(kInvalidInternalCode) {
         DEBUG_ASSERT(!isValid());
     }
     /*non-explicit*/ RgbColor(RgbColorCode code)
-            : m_color(codeToColor(code)) {
-        DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
+            : m_internalCode(codeToInternalCode(code)) {
+        DEBUG_ASSERT(isValid());
     }
     /*non-explicit*/ RgbColor(std::optional<RgbColorCode> optionalCode)
-            : m_color(optionalCodeToColor(optionalCode)) {
-        DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
+            : m_internalCode(optionalCodeToInternalCode(optionalCode)) {
+        DEBUG_ASSERT(isValid() == optionalCode.has_value());
     }
-    // Implicit conversion from QColor without normalization.
-    // Only use this conversion constructor if the argument
-    // matches an RgbColor! Otherwise a debug assertion will
-    // be triggered.
-    /*non-explicit*/ RgbColor(QColor color)
-            : m_color(color) {
-        DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
-    }
-    // Explicit conversion from any QColor with implicit
-    // normalization that results in a well defined RgbColor.
-    // Use this static function instead of the conversion
-    // constructor to ensure that the resulting RgbColor is
-    // well defined when converting from some QColor.
-    static RgbColor fromAnyColor(QColor anyColor) {
-        return RgbColor(normalizeAnyColor(anyColor));
+    /*non-explicit*/ RgbColor(QColor anyColor)
+            : m_internalCode(anyColorToInternalCode(anyColor)) {
+        DEBUG_ASSERT(isValid() == anyColor.isValid());
     }
 
     // Implicit conversion into the corresponding QColor.
     operator QColor() const {
-        return m_color;
+        return internalCodeToColor(m_internalCode);
     }
 
     // Checks if the color is valid or represents "no color",
     // i.e. is missing or undefined. If the corresponding color
     // code is stored in a database then the colum value is NULL.
     bool isValid() const {
-        return m_color.isValid();
+        return m_internalCode == (m_internalCode & kRgbCodeMask);
     }
 
     // Returns the corresponding, optional RGB color code.
     std::optional<RgbColorCode> optionalCode() const {
-        return colorToOptionalCode(m_color);
+        return internalCodeToOptionalCode(m_internalCode);
     }
 
     friend bool operator==(const RgbColor& lhs, const RgbColor& rhs) {
-        return lhs.m_color == rhs.m_color;
+        return lhs.m_internalCode == rhs.m_internalCode;
     }
 
   private:
     static const RgbColorCode kRgbCodeMask = 0x00FFFFFF;
     static const RgbColorCode kAlphaCodeMask = 0xFF000000;
+    static const RgbColorCode kInvalidInternalCode = 0xFFFFFFFF;
 
-    static QColor codeToColor(RgbColorCode code) {
-        return QColor((code & kRgbCodeMask) | kAlphaCodeMask);
+    static RgbColorCode codeToInternalCode(RgbColorCode code) {
+        return code & kRgbCodeMask;
     }
-    static QColor optionalCodeToColor(std::optional<RgbColorCode> optionalCode) {
+    static RgbColorCode optionalCodeToInternalCode(std::optional<RgbColorCode> optionalCode) {
         if (optionalCode.has_value()) {
-            return codeToColor(optionalCode.value());
+            return codeToInternalCode(optionalCode.value());
         } else {
-            return QColor();
+            return kInvalidInternalCode;
         }
     }
 
-    static RgbColorCode validColorToCode(QColor color) {
-        DEBUG_ASSERT(color.isValid());
-        return color.rgb() & kRgbCodeMask;
+    static RgbColorCode anyColorToInternalCode(QColor anyColor) {
+        if (anyColor.isValid()) {
+            return anyColor.rgb() & kRgbCodeMask;
+        } else {
+            return kInvalidInternalCode;
+        }
     }
-    static std::optional<RgbColorCode> colorToOptionalCode(QColor color) {
-        if (color.isValid()) {
-            return std::make_optional(validColorToCode(color));
+
+    std::optional<RgbColorCode> internalCodeToOptionalCode(RgbColorCode internalCode) const {
+        if (internalCode == (internalCode & kRgbCodeMask)) {
+            return std::make_optional(m_internalCode);
         } else {
             return std::nullopt;
         }
     }
 
-    static QColor normalizeAnyColor(QColor anyColor) {
-        if (anyColor.isValid()) {
-            return codeToColor(validColorToCode(anyColor));
+    QColor internalCodeToColor(RgbColorCode internalCode) const {
+        if (internalCode == (internalCode & kRgbCodeMask)) {
+            return QRgb(m_internalCode | kAlphaCodeMask);
         } else {
             return QColor();
         }
     }
 
-    QColor m_color;
+    RgbColorCode m_internalCode;
 };
 
 inline bool operator!=(const RgbColor& lhs, const RgbColor& rhs) {
