@@ -110,5 +110,5 @@ inline bool operator!=(const RgbColor& lhs, const RgbColor& rhs) {
 
 } // namespace mixxx
 
-Q_DECLARE_TYPEINFO(mixxx::RgbColor, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(mixxx::RgbColor, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::RgbColor)
