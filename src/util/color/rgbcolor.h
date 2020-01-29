@@ -25,44 +25,29 @@ class RgbColor {
     RgbColor() {
         DEBUG_ASSERT(!isValid());
     }
-    // Implicit conversion constructors without normalization.
-    // Only use these conversion constructors if the argument
-    // matches an RgbColor! Otherwise a debug assertion will
-    // be triggered.
     /*non-explicit*/ RgbColor(RgbColorCode code)
             : m_color(codeToColor(code)) {
-        DEBUG_ASSERT(m_color == normalizeColor(m_color));
+        DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
     }
     /*non-explicit*/ RgbColor(std::optional<RgbColorCode> optionalCode)
             : m_color(optionalCodeToColor(optionalCode)) {
-        DEBUG_ASSERT(m_color == normalizeColor(m_color));
+        DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
     }
+    // Implicit conversion from QColor without normalization.
+    // Only use this conversion constructor if the argument
+    // matches an RgbColor! Otherwise a debug assertion will
+    // be triggered.
     /*non-explicit*/ RgbColor(QColor color)
             : m_color(color) {
-        DEBUG_ASSERT(m_color == normalizeColor(m_color));
+        DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
     }
-
-    // Check that the provided color code is valid.
-    static bool isValidCode(RgbColorCode code) {
-        return code == (code & kRgbCodeMask);
-    }
-
-    // Explicit conversions with implicit normalization.
-    // Use these static functions instead of the conversion
-    // constructors to ensure that the resulting RgbColor is
-    // well defined.
-    static RgbColor fromCode(RgbColorCode code) {
-        return RgbColor(code & kRgbCodeMask);
-    }
-    static RgbColor fromOptionalCode(std::optional<RgbColorCode> code) {
-        if (code.has_value()) {
-            return fromCode(code.value());
-        } else {
-            return RgbColor();
-        }
-    }
-    static RgbColor fromColor(QColor color) {
-        return RgbColor(normalizeColor(color));
+    // Explicit conversion from any QColor with implicit
+    // normalization that results in a well define RgbColor.
+    // Use this static function instead of the conversion
+    // constructor to ensure that the resulting RgbColor is
+    // well defined when converting from some QColor.
+    static RgbColor fromAnyColor(QColor anyColor) {
+        return RgbColor(normalizeAnyColor(anyColor));
     }
 
     // Implicit conversion into the corresponding QColor.
@@ -91,8 +76,7 @@ class RgbColor {
     static const RgbColorCode kAlphaCodeMask = 0xFF000000;
 
     static QColor codeToColor(RgbColorCode code) {
-        DEBUG_ASSERT(isValidCode(code));
-        return QColor(code | kAlphaCodeMask);
+        return QColor((code & kRgbCodeMask) | kAlphaCodeMask);
     }
     static QColor optionalCodeToColor(std::optional<RgbColorCode> optionalCode) {
         if (optionalCode.has_value()) {
@@ -114,9 +98,9 @@ class RgbColor {
         }
     }
 
-    static QColor normalizeColor(QColor color) {
-        if (color.isValid()) {
-            return codeToColor(validColorToCode(color));
+    static QColor normalizeAnyColor(QColor anyColor) {
+        if (anyColor.isValid()) {
+            return codeToColor(validColorToCode(anyColor));
         } else {
             return QColor();
         }

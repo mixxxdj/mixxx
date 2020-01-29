@@ -38,29 +38,29 @@ TEST(RgbColorTest, QColorCtor) {
 }
 
 TEST(RgbColorTest, FromRgbColorCodeWithAlpha) {
-    EXPECT_TRUE(RgbColor::fromCode(0xF0000000).isValid());
-    EXPECT_EQ(0x000000, RgbColor::fromCode(0xF0000000).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF0FF0000).isValid());
-    EXPECT_EQ(0xFF0000, RgbColor::fromCode(0xF0FF0000).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF000FF00).isValid());
-    EXPECT_EQ(0x00FF00, RgbColor::fromCode(0xF000FF00).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF00000FF).isValid());
-    EXPECT_EQ(0x0000FF, RgbColor::fromCode(0xF00000FF).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF0FFFFFF).isValid());
-    EXPECT_EQ(0xFFFFFF, RgbColor::fromCode(0xF0FFFFFF).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF0000000).isValid());
+    EXPECT_EQ(0x000000, RgbColor(0xF0000000).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF0FF0000).isValid());
+    EXPECT_EQ(0xFF0000, RgbColor(0xF0FF0000).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF000FF00).isValid());
+    EXPECT_EQ(0x00FF00, RgbColor(0xF000FF00).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF00000FF).isValid());
+    EXPECT_EQ(0x0000FF, RgbColor(0xF00000FF).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF0FFFFFF).isValid());
+    EXPECT_EQ(0xFFFFFF, RgbColor(0xF0FFFFFF).optionalCode());
 }
 
 TEST(RgbColorTest, FromQColorWithAlpha) {
-    EXPECT_TRUE(RgbColor::fromCode(0xF0000000).isValid());
-    EXPECT_EQ(0x000000, RgbColor::fromCode(0xF0000000).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF0FF0000).isValid());
-    EXPECT_EQ(0xFF0000, RgbColor::fromCode(0xF0FF0000).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF000FF00).isValid());
-    EXPECT_EQ(0x00FF00, RgbColor::fromCode(0xF000FF00).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF00000FF).isValid());
-    EXPECT_EQ(0x0000FF, RgbColor::fromCode(0xF00000FF).optionalCode());
-    EXPECT_TRUE(RgbColor::fromCode(0xF0FFFFFF).isValid());
-    EXPECT_EQ(0xFFFFFF, RgbColor::fromCode(0xF0FFFFFF).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF0000000).isValid());
+    EXPECT_EQ(0x000000, RgbColor(0xF0000000).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF0FF0000).isValid());
+    EXPECT_EQ(0xFF0000, RgbColor(0xF0FF0000).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF000FF00).isValid());
+    EXPECT_EQ(0x00FF00, RgbColor(0xF000FF00).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF00000FF).isValid());
+    EXPECT_EQ(0x0000FF, RgbColor(0xF00000FF).optionalCode());
+    EXPECT_TRUE(RgbColor(0xF0FFFFFF).isValid());
+    EXPECT_EQ(0xFFFFFF, RgbColor(0xF0FFFFFF).optionalCode());
 }
 
 } // namespace mixxx
