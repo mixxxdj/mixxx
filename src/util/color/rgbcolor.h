@@ -63,6 +63,10 @@ class RgbColor {
         }
     }
 
+    friend bool operator==(const RgbColor& lhs, const RgbColor& rhs) {
+        return lhs.m_color == rhs.m_color;
+    }
+
   private:
     static const RgbColorCode kRgbCodeMask = 0x00FFFFFF;
     static const RgbColorCode kAlphaCodeMask = 0xFF000000;
@@ -88,5 +92,9 @@ class RgbColor {
 
     QColor m_color;
 };
+
+inline bool operator!=(const RgbColor& lhs, const RgbColor& rhs) {
+    return !(lhs == rhs);
+}
 
 } // namespace mixxx
