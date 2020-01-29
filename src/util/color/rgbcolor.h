@@ -23,7 +23,10 @@ class RgbColor {
     RgbColor() {
         DEBUG_ASSERT(!isValid());
     }
-    // Implicit conversion constructors without normalization!
+    // Implicit conversion constructors without normalization.
+    // Only use these conversion constructors if the argument
+    // matches an RgbColor! Otherwise a debug assertion will
+    // be triggered.
     /*non-explicit*/ RgbColor(RgbColorCode code)
             : m_color(toQColor(code)) {
         DEBUG_ASSERT(m_color == normalizeQColor(m_color));
@@ -33,11 +36,15 @@ class RgbColor {
         DEBUG_ASSERT(m_color == normalizeQColor(m_color));
     }
 
+    // Check that the provided color code is valid.
     static bool isValidCode(RgbColorCode code) {
         return code == (code & kRgbCodeMask);
     }
 
-    // Explicit conversions with normalization
+    // Explicit conversions with normalization.
+    // Use these static functions instead of the conversion
+    // constructors to ensure that the resulting RgbColor is
+    // well defined.
     static RgbColor fromCode(RgbColorCode code) {
         return RgbColor(normalizeCode(code));
     }
@@ -45,19 +52,28 @@ class RgbColor {
         return RgbColor(normalizeQColor(color));
     }
 
+    // Implicit conversion into the corresponding QColor.
     operator QColor() const {
         return m_color;
     }
 
+    // Checks if the color is valid or represents "no color",
+    // i.e. is missing or undefined. If the corresponding color
+    // code is stored in a database then the colum value is NULL.
     bool isValid() const {
         return m_color.isValid();
     }
 
+    // Returns the corresponding RGB color code of a valid color.
+    // Validity is a prerequisite and only checked by a debug
+    // assertion.
     RgbColorCode code() const {
         DEBUG_ASSERT(isValid());
         return toCode(m_color);
     }
 
+    // Returns the corresponding RGB color code of a valid color
+    // or the provided color code if the color is not valid.
     RgbColorCode codeOr(RgbColorCode codeIfNotValid) const {
         if (isValid()) {
             return code();
