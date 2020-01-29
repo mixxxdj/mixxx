@@ -53,6 +53,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    bool event(QEvent* pEvent) override;
 
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
