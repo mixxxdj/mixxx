@@ -426,4 +426,34 @@ QByteArray SeratoMarkers2::dump() const {
     return outerData.leftJustified(size, '\0');
 }
 
+RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
+    qDebug() << "Reading track color from 'Serato Markers2' tag data...";
+
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Color) {
+            continue;
+        }
+        const SeratoMarkers2ColorEntry* pColorEntry = static_cast<SeratoMarkers2ColorEntry*>(pEntry.get());
+        return RgbColor::optional(pColorEntry->getColor());
+    }
+
+    return std::nullopt;
+}
+
+bool SeratoMarkers2::isBpmLocked() const {
+    qDebug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
+
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Bpmlock) {
+            continue;
+        }
+        const SeratoMarkers2BpmlockEntry* pBpmlockEntry = static_cast<SeratoMarkers2BpmlockEntry*>(pEntry.get());
+        return pBpmlockEntry->isLocked();
+    }
+
+    return false;
+}
+
 } //namespace mixxx

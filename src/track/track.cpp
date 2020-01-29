@@ -128,12 +128,18 @@ void Track::importMetadata(
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
     const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
-    const auto newSeratoMarkers = importedMetadata.getTrackInfo().getSeratoMarkers();
 #ifdef __EXTRA_METADATA__
+    const auto newSeratoMarkers = importedMetadata.getTrackInfo().getSeratoMarkers();
+    const auto newSeratoMarkers2 = importedMetadata.getTrackInfo().getSeratoMarkers2();
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
-        newSeratoMarkers.syncToTrackObject(this);
+        // Import "Serato Markers2" first, then overwrite values with those
+        // from "Serato Markers_". This is what Serato does too (i.e. if
+        // "Serato Markers_" and "Serato Markers2" contradict each other,
+        // Serato will use the values from "Serato Markers_").
+        newSeratoMarkers2.syncToTrackObject(this);
+        newSeratoMarkers.syncToTrackObject(this, true);
         // implicitly unlocked when leaving scope
     }
 #endif // __EXTRA_METADATA__
