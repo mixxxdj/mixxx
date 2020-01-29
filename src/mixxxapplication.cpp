@@ -9,6 +9,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#include "util/color/rgbcolor.h"
 #include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
@@ -67,6 +68,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<mixxx::RgbColor>("mixxx::RgbColor");
     qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
     QMetaType::registerComparators<SoundDeviceId>();
 }
