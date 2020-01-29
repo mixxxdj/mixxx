@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QColor>
+#include <QtGlobal>
 
 #include <optional>
 
@@ -42,7 +43,7 @@ class RgbColor {
         DEBUG_ASSERT(m_color == normalizeAnyColor(m_color));
     }
     // Explicit conversion from any QColor with implicit
-    // normalization that results in a well define RgbColor.
+    // normalization that results in a well defined RgbColor.
     // Use this static function instead of the conversion
     // constructor to ensure that the resulting RgbColor is
     // well defined when converting from some QColor.
@@ -114,3 +115,6 @@ inline bool operator!=(const RgbColor& lhs, const RgbColor& rhs) {
 }
 
 } // namespace mixxx
+
+Q_DECLARE_TYPEINFO(mixxx::RgbColor, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(mixxx::RgbColor)
