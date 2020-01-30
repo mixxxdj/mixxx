@@ -152,26 +152,26 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         return;
     }
 
-    QMessageBox* msgBox = new QMessageBox();
-    msgBox->setIcon(props->m_icon);
-    msgBox->setWindowTitle(props->m_title);
-    msgBox->setText(props->m_text);
+    QMessageBox* pMsgBox = new QMessageBox();
+    pMsgBox->setIcon(props->m_icon);
+    pMsgBox->setWindowTitle(props->m_title);
+    pMsgBox->setText(props->m_text);
     if (!props->m_infoText.isEmpty()) {
-        msgBox->setInformativeText(props->m_infoText);
+        pMsgBox->setInformativeText(props->m_infoText);
     }
     if (!props->m_details.isEmpty()) {
-        msgBox->setDetailedText(props->m_details);
+        pMsgBox->setDetailedText(props->m_details);
     }
 
     while (!props->m_buttons.isEmpty()) {
-        msgBox->addButton(props->m_buttons.takeFirst());
+        pMsgBox->addButton(props->m_buttons.takeFirst());
     }
-    msgBox->setDefaultButton(props->m_defaultButton);
-    msgBox->setEscapeButton(props->m_escapeButton);
-    msgBox->setModal(props->m_modal);
+    pMsgBox->setDefaultButton(props->m_defaultButton);
+    pMsgBox->setEscapeButton(props->m_escapeButton);
+    pMsgBox->setModal(props->m_modal);
 
     // This deletes the msgBox automatically, avoiding a memory leak
-    msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    pMsgBox->setAttribute(Qt::WA_DeleteOnClose, true);
 
     QMutexLocker locker(&m_mutex);
     // To avoid duplicate dialogs on the same error
@@ -179,16 +179,19 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
-    connect(msgBox, &QMessageBox::finished,
-            this, [this, &props, &msgBox] { boxClosed(props->m_key, msgBox); });
+    QString key = props->m_key;
+    connect(pMsgBox,
+            &QMessageBox::finished,
+            this,
+            [this, key, pMsgBox] { boxClosed(key, pMsgBox); });
 
     locker.unlock();
 
     if (props->m_modal) {
         // Blocks so the user has a chance to read it before application exit
-        msgBox->exec();
+        pMsgBox->exec();
     } else {
-        msgBox->show();
+        pMsgBox->show();
     }
 
     // If critical/fatal, gracefully exit application if possible
