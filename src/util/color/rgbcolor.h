@@ -21,31 +21,29 @@ class RgbColor {
   public:
     RgbColor()
             : m_internalCode(kInvalidInternalCode) {
-        DEBUG_ASSERT(!isValid());
+        DEBUG_ASSERT(!*this);
     }
     /*non-explicit*/ RgbColor(RgbColorCode code)
             : m_internalCode(codeToInternalCode(code)) {
-        DEBUG_ASSERT(isValid());
+        DEBUG_ASSERT(*this);
     }
     /*non-explicit*/ RgbColor(std::optional<RgbColorCode> optionalCode)
             : m_internalCode(optionalCodeToInternalCode(optionalCode)) {
-        DEBUG_ASSERT(isValid() == static_cast<bool>(optionalCode));
+        DEBUG_ASSERT(*this == static_cast<bool>(optionalCode));
     }
     /*non-explicit*/ RgbColor(QColor anyColor)
             : m_internalCode(anyColorToInternalCode(anyColor)) {
-        DEBUG_ASSERT(isValid() == anyColor.isValid());
-    }
-
-    // Implicit conversion into the corresponding QColor.
-    operator QColor() const {
-        return internalCodeToColor(m_internalCode);
+        DEBUG_ASSERT(*this == anyColor.isValid());
     }
 
     // Checks if the color is valid or represents "no color",
-    // i.e. is missing or undefined. If the corresponding color
-    // code is stored in a database then the colum value is NULL.
-    bool isValid() const {
-        return m_internalCode == (m_internalCode & kRgbCodeMask);
+    // i.e. is missing or undefined.
+    constexpr operator bool() const noexcept {
+        return m_internalCode == kInvalidInternalCode;
+    }
+
+    friend bool operator==(const RgbColor& lhs, const RgbColor& rhs) {
+        return lhs.m_internalCode == rhs.m_internalCode;
     }
 
     // Returns the corresponding, optional RGB color code.
@@ -53,8 +51,9 @@ class RgbColor {
         return internalCodeToOptionalCode(m_internalCode);
     }
 
-    friend bool operator==(const RgbColor& lhs, const RgbColor& rhs) {
-        return lhs.m_internalCode == rhs.m_internalCode;
+    // Implicit conversion into the corresponding QColor.
+    operator QColor() const {
+        return internalCodeToColor(m_internalCode);
     }
 
   private:
@@ -83,16 +82,20 @@ class RgbColor {
 
     std::optional<RgbColorCode> internalCodeToOptionalCode(RgbColorCode internalCode) const {
         if (internalCode == (internalCode & kRgbCodeMask)) {
+            DEBUG_ASSERT(*this);
             return std::make_optional(m_internalCode);
         } else {
+            DEBUG_ASSERT(!*this);
             return std::nullopt;
         }
     }
 
     QColor internalCodeToColor(RgbColorCode internalCode) const {
         if (internalCode == (internalCode & kRgbCodeMask)) {
+            DEBUG_ASSERT(*this);
             return QRgb(m_internalCode | kAlphaCodeMask);
         } else {
+            DEBUG_ASSERT(!*this);
             return QColor();
         }
     }
