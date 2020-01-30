@@ -4,8 +4,7 @@
 
 namespace mixxx {
 
-SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray &data)
-{
+SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& data) {
     if (data.length() != 1) {
         qWarning() << "Parsing SeratoMarkers2BpmlockEntry failed:"
                    << "Length" << data.length() << "!= 1";
@@ -34,11 +33,10 @@ quint32 SeratoMarkers2BpmlockEntry::length() const {
     return 1;
 }
 
-SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray &data)
-{
+SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& data) {
     if (data.length() != 4) {
         qWarning() << "Parsing SeratoMarkers2ColorEntry failed:"
-                 << "Length" << data.length() << "!= 4";
+                   << "Length" << data.length() << "!= 4";
         return nullptr;
     }
 
@@ -51,8 +49,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray &dat
     }
 
     QColor color(static_cast<quint8>(data.at(1)),
-                 static_cast<quint8>(data.at(2)),
-                 static_cast<quint8>(data.at(3)));
+            static_cast<quint8>(data.at(2)),
+            static_cast<quint8>(data.at(3)));
 
     SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
     qDebug() << "SeratoMarkers2ColorEntry" << *pEntry;
@@ -78,8 +76,7 @@ quint32 SeratoMarkers2ColorEntry::length() const {
     return 4;
 }
 
-SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
-{
+SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data) {
     if (data.length() < 13) {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
                    << "Length" << data.length() << "< 13";
@@ -111,8 +108,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray &data)
     }
 
     QColor color(static_cast<quint8>(data.at(7)),
-                 static_cast<quint8>(data.at(8)),
-                 static_cast<quint8>(data.at(9)));
+            static_cast<quint8>(data.at(8)),
+            static_cast<quint8>(data.at(9)));
 
     // Unknown field(s), make sure it's 0 in case it's a
     // null-terminated string
@@ -169,8 +166,7 @@ quint32 SeratoMarkers2CueEntry::length() const {
     return 13 + m_label.toUtf8().length();
 }
 
-SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data)
-{
+SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data) {
     if (data.length() < 21) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
                    << "Length" << data.length() << "< 21";
@@ -197,13 +193,13 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray &data
 #endif
     // Unknown field, make sure it contains the expected "default" value
     if (data.at(10) != '\xff' ||
-        data.at(11) != '\xff' ||
-        data.at(12) != '\xff' ||
-        data.at(13) != '\xff' ||
-        data.at(14) != '\x00' ||
-        data.at(15) != '\x27' ||
-        data.at(16) != '\xaa' ||
-        data.at(17) != '\xe1') {
+            data.at(11) != '\xff' ||
+            data.at(12) != '\xff' ||
+            data.at(13) != '\xff' ||
+            data.at(14) != '\x00' ||
+            data.at(15) != '\x27' ||
+            data.at(16) != '\xaa' ||
+            data.at(17) != '\xe1') {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
                    << "Invalid magic value " << data.mid(10, 16);
         return nullptr;
@@ -285,7 +281,7 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 
     int offset = 2;
     int entryTypeEndPos;
-    while((entryTypeEndPos = data.indexOf('\x00', offset)) >= 0) {
+    while ((entryTypeEndPos = data.indexOf('\x00', offset)) >= 0) {
         // Entry Name
         QString entryType(data.mid(offset, entryTypeEndPos - offset));
         offset = entryTypeEndPos + 1;
@@ -314,20 +310,20 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 
         // Entry Content
         SeratoMarkers2EntryPointer pEntry;
-        if(entryType.compare("BPMLOCK") == 0) {
+        if (entryType.compare("BPMLOCK") == 0) {
             pEntry = SeratoMarkers2BpmlockEntry::parse(entryData);
-        } else if(entryType.compare("COLOR") == 0) {
+        } else if (entryType.compare("COLOR") == 0) {
             pEntry = SeratoMarkers2ColorEntry::parse(entryData);
-        } else if(entryType.compare("CUE") == 0) {
+        } else if (entryType.compare("CUE") == 0) {
             pEntry = SeratoMarkers2CueEntry::parse(entryData);
-        } else if(entryType.compare("LOOP") == 0) {
+        } else if (entryType.compare("LOOP") == 0) {
             pEntry = SeratoMarkers2LoopEntry::parse(entryData);
         } else {
             pEntry = SeratoMarkers2EntryPointer(new SeratoMarkers2UnknownEntry(entryType, entryData));
             qDebug() << "SeratoMarkers2UnknownEntry" << *pEntry;
         }
 
-        if(!pEntry) {
+        if (!pEntry) {
             qWarning() << "Parsing SeratoMarkers2 failed:"
                        << "Unable to parse entry of type " << entryType;
             return false;
@@ -359,7 +355,7 @@ QByteArray SeratoMarkers2::data() const {
     // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
     // and base64-encode them one at a time:
     int offset = 0;
-    while(offset < data.size()) {
+    while (offset < data.size()) {
         if (offset > 0) {
             outerData.append('\n');
         }
