@@ -8,18 +8,15 @@
 
 namespace mixxx {
 
-// A pure 24-bit 0xxRRGGBB color code without an alpha channel.
+// A pure 24-bit 0xxRRGGBB color code with 8-bit per channel
+// without an an alpha channel.
 // We are using a separate typedef, because QRgb implicitly
 // includes an alpha channel whereas this type does not!
 typedef quint32 RgbColorCode;
 
-// A thin wrapper around QColor to represent optional,
-// opaque RGB colors with 8-bit per channel without an
-// alpha channel. It ensures that the alpha channel is set
-// to opaque for valid RGB colors and that invalid colors
-// are always represented by the same, well defined QColor,
-// namely QColor().
-// Apart from assignment this type is immutable.
+// A thin wrapper around 24-bit opaque RGB values that includes
+// an optional state.
+// Apart from the assignment operator this type is immutable.
 class RgbColor {
   public:
     RgbColor()
