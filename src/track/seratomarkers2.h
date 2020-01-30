@@ -10,11 +10,22 @@
 
 namespace mixxx {
 
+// Enum values need to appear in the same order as the corresponding entries
+// are written to the tag by Serato.
+enum class SeratoMarkers2EntryTypeId {
+    Unknown,
+    Color,
+    Cue,
+    Loop,
+    Bpmlock,
+};
+
 class SeratoMarkers2Entry {
   public:
     virtual ~SeratoMarkers2Entry() = default;
 
     virtual QString type() const = 0;
+    virtual SeratoMarkers2EntryTypeId typeId() const = 0;
 
     virtual QByteArray data() const = 0;
 
@@ -51,6 +62,10 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
         return m_type;
     }
 
+    SeratoMarkers2EntryTypeId typeId() const override {
+        return SeratoMarkers2EntryTypeId::Unknown;
+    }
+
     QByteArray data() const override {
         return m_data;
     }
@@ -74,6 +89,10 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "BPMLOCK";
+    }
+
+    SeratoMarkers2EntryTypeId typeId() const override {
+        return SeratoMarkers2EntryTypeId::Bpmlock;
     }
 
     QByteArray data() const override;
@@ -122,6 +141,10 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
         return "COLOR";
     }
 
+    SeratoMarkers2EntryTypeId typeId() const override {
+        return SeratoMarkers2EntryTypeId::Color;
+    }
+
     QByteArray data() const override;
 
     QColor getColor() const {
@@ -166,6 +189,10 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "CUE";
+    }
+
+    SeratoMarkers2EntryTypeId typeId() const override {
+        return SeratoMarkers2EntryTypeId::Cue;
     }
 
     QByteArray data() const override;
@@ -245,6 +272,10 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "LOOP";
+    }
+
+    SeratoMarkers2EntryTypeId typeId() const override {
+        return SeratoMarkers2EntryTypeId::Loop;
     }
 
     QByteArray data() const override;
