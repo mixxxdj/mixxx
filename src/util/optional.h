@@ -11,9 +11,9 @@
 
 namespace std {
 
-using std::experimental::optional;
 using std::experimental::make_optional;
 using std::experimental::nullopt;
+using std::experimental::optional;
 
 // Workarounds for missing member functions:
 // option::has_value() -> explicit operator bool()

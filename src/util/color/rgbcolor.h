@@ -15,88 +15,94 @@ namespace mixxx {
 typedef quint32 RgbColorCode;
 
 // A thin wrapper around 24-bit opaque RGB values that includes
-// an optional state.
+// an undefined state. The undefined state could be used to
+// represent missing or transparent values.
 // Apart from the assignment operator this type is immutable.
 class RgbColor {
   public:
     RgbColor()
-            : m_internalCode(kInvalidInternalCode) {
+            : m_internalCode(kUndefinedInternalCode) {
         DEBUG_ASSERT(!*this);
     }
-    /*non-explicit*/ RgbColor(RgbColorCode code)
+    // Implicit conversions from RgbColorCode
+    /*implicit*/ RgbColor(RgbColorCode code)
             : m_internalCode(codeToInternalCode(code)) {
         DEBUG_ASSERT(*this);
     }
-    /*non-explicit*/ RgbColor(std::optional<RgbColorCode> optionalCode)
+    /*implicit*/ RgbColor(std::optional<RgbColorCode> optionalCode)
             : m_internalCode(optionalCodeToInternalCode(optionalCode)) {
-        DEBUG_ASSERT(*this == static_cast<bool>(optionalCode));
+        DEBUG_ASSERT(static_cast<bool>(*this) == static_cast<bool>(optionalCode));
     }
-    /*non-explicit*/ RgbColor(QColor anyColor)
+    // Explicit conversion from QColor
+    explicit RgbColor(QColor anyColor)
             : m_internalCode(anyColorToInternalCode(anyColor)) {
-        DEBUG_ASSERT(*this == anyColor.isValid());
+        DEBUG_ASSERT(static_cast<bool>(*this) == anyColor.isValid());
     }
 
-    // Checks if the color is valid or represents "no color",
-    // i.e. is missing or undefined.
+    // Check if the color is defined.
     constexpr operator bool() const noexcept {
-        return m_internalCode == kInvalidInternalCode;
+        return m_internalCode != kUndefinedInternalCode;
+    }
+
+    // Explicit conversion to an optional RGB color code.
+    // NOTE: An implicit conversion operator conflicts with the
+    // implicit conversion constructors of std::optional and
+    // causes undefined(?) or at least unexpected behavior!!
+    std::optional<RgbColorCode> optional() const {
+        if (m_internalCode == (m_internalCode & kRgbCodeMask)) {
+            // Defined
+            DEBUG_ASSERT(*this);
+            return std::make_optional(m_internalCode);
+        } else {
+            // Undefined
+            DEBUG_ASSERT(!*this);
+            return std::nullopt;
+        }
+    }
+
+    // Explicit conversion into the corresponding QColor.
+    // Optionally the QColor that represents an undefined
+    // value could be provided.
+    QColor toQColor(QColor undefinedColor = QColor()) const {
+        if (m_internalCode == (m_internalCode & kRgbCodeMask)) {
+            // Defined
+            DEBUG_ASSERT(*this);
+            return QColor::fromRgb(m_internalCode);
+        } else {
+            // Undefined
+            DEBUG_ASSERT(!*this);
+            return undefinedColor;
+        }
     }
 
     friend bool operator==(const RgbColor& lhs, const RgbColor& rhs) {
         return lhs.m_internalCode == rhs.m_internalCode;
     }
 
-    // Returns the corresponding, optional RGB color code.
-    std::optional<RgbColorCode> optionalCode() const {
-        return internalCodeToOptionalCode(m_internalCode);
-    }
-
-    // Implicit conversion into the corresponding QColor.
-    operator QColor() const {
-        return internalCodeToColor(m_internalCode);
-    }
-
   private:
     static const RgbColorCode kRgbCodeMask = 0x00FFFFFF;
-    static const RgbColorCode kAlphaCodeMask = 0xFF000000;
-    static const RgbColorCode kInvalidInternalCode = 0xFFFFFFFF;
+    static const RgbColorCode kUndefinedInternalCode = 0xFFFFFFFF;
 
     static RgbColorCode codeToInternalCode(RgbColorCode code) {
+        // The unused bits of an RgbColorCode should never be set.
+        DEBUG_ASSERT(code == (code & kRgbCodeMask));
+        // This normalization should not be necessary, just in case.
         return code & kRgbCodeMask;
     }
     static RgbColorCode optionalCodeToInternalCode(std::optional<RgbColorCode> optionalCode) {
         if (optionalCode) {
             return codeToInternalCode(*optionalCode);
         } else {
-            return kInvalidInternalCode;
+            return kUndefinedInternalCode;
         }
     }
 
     static RgbColorCode anyColorToInternalCode(QColor anyColor) {
         if (anyColor.isValid()) {
+            // Strip alpha channel bits
             return anyColor.rgb() & kRgbCodeMask;
         } else {
-            return kInvalidInternalCode;
-        }
-    }
-
-    std::optional<RgbColorCode> internalCodeToOptionalCode(RgbColorCode internalCode) const {
-        if (internalCode == (internalCode & kRgbCodeMask)) {
-            DEBUG_ASSERT(*this);
-            return std::make_optional(m_internalCode);
-        } else {
-            DEBUG_ASSERT(!*this);
-            return std::nullopt;
-        }
-    }
-
-    QColor internalCodeToColor(RgbColorCode internalCode) const {
-        if (internalCode == (internalCode & kRgbCodeMask)) {
-            DEBUG_ASSERT(*this);
-            return QRgb(m_internalCode | kAlphaCodeMask);
-        } else {
-            DEBUG_ASSERT(!*this);
-            return QColor();
+            return kUndefinedInternalCode;
         }
     }
 
