@@ -15,8 +15,16 @@ namespace mixxx {
 typedef quint32 RgbColorCode;
 
 // A thin wrapper around 24-bit opaque RGB values that includes
-// an undefined state. The undefined state could be used to
-// represent missing or transparent values.
+// a single undefined state. The undefined state could be used
+// to represent missing or transparent values.
+// This class might be used as a "hub" for the conversion between
+// RgbColorCode, std::optional<RgbColorCode>, and QColor. For
+// this particulare use case it's only purpose is to store an
+// intermediate representation before the internal value that
+// has been converted from the source type is finally converted
+// into the desired target type.
+// std::optional<RgbColorCode> is equivalent, RgbColorCode is
+// less versatile, and QColor is more versatile.
 // Apart from the assignment operator this type is immutable.
 class RgbColor {
   public:
