@@ -15,11 +15,22 @@ const QRgb kDefaultCueColor = QRgb(0xCC0000);
 
 namespace mixxx {
 
+// Enum values need to appear in the same order as the corresponding entries
+// are written to the tag by Serato.
 class SeratoMarkers2Entry {
   public:
+    enum class TypeId {
+        Unknown,
+        Color,
+        Cue,
+        Loop,
+        Bpmlock,
+    };
+
     virtual ~SeratoMarkers2Entry() = default;
 
     virtual QString type() const = 0;
+    virtual SeratoMarkers2Entry::TypeId typeId() const = 0;
 
     virtual QByteArray dump() const = 0;
 
@@ -57,6 +68,10 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
         return m_type;
     }
 
+    SeratoMarkers2Entry::TypeId typeId() const override {
+        return SeratoMarkers2Entry::TypeId::Unknown;
+    }
+
     QByteArray dump() const override {
         return m_data;
     }
@@ -80,6 +95,10 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "BPMLOCK";
+    }
+
+    SeratoMarkers2Entry::TypeId typeId() const override {
+        return SeratoMarkers2Entry::TypeId::Bpmlock;
     }
 
     QByteArray dump() const override;
@@ -126,6 +145,10 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "COLOR";
+    }
+
+    SeratoMarkers2Entry::TypeId typeId() const override {
+        return SeratoMarkers2Entry::TypeId::Color;
     }
 
     QByteArray dump() const override;
@@ -178,6 +201,10 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "CUE";
+    }
+
+    SeratoMarkers2Entry::TypeId typeId() const override {
+        return SeratoMarkers2Entry::TypeId::Cue;
     }
 
     QByteArray dump() const override;
@@ -265,6 +292,10 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
 
     QString type() const override {
         return "LOOP";
+    }
+
+    SeratoMarkers2Entry::TypeId typeId() const override {
+        return SeratoMarkers2Entry::TypeId::Loop;
     }
 
     QByteArray dump() const override;
