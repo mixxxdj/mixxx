@@ -16,6 +16,7 @@ typedef quint32 RgbColorCode;
 
 // Type-safe wrapper around RgbColorCode without implicit
 // range checks and no implicit validation.
+// Apart from the assignment operator this type is immutable.
 class RgbColor {
   public:
     // The default constructor is not available, because there is
@@ -46,7 +47,7 @@ class RgbColor {
 
   protected:
     // Bitmask of valid codes = 0x00RRGGBB
-    static const RgbColorCode kRgbCodeMask = 0x00FFFFFF;
+    static constexpr RgbColorCode kRgbCodeMask = 0x00FFFFFF;
 
     static RgbColorCode validateCode(RgbColorCode code) {
         return code & kRgbCodeMask;
@@ -140,7 +141,7 @@ class OptionalRgbColor final : public RgbColor {
     }
 
   private:
-    static const RgbColorCode kUndefinedInternalCode = 0xFFFFFFFF;
+    static constexpr RgbColorCode kUndefinedInternalCode = 0xFFFFFFFF;
 
     static RgbColorCode codeToInternalCode(RgbColorCode code) {
         // The unused bits of an RgbColorCode should never be set.
