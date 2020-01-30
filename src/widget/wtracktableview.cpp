@@ -974,7 +974,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             return;
         }
         bool allowClear = true;
-        int column = trackModel->fieldIndex("bpm_lock");
+        int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
         for (int i = 0; i < indices.size() && allowClear; ++i) {
             int row = indices.at(i).row();
             QModelIndex index = indices.at(i).sibling(row,column);
@@ -1039,7 +1039,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             if (trackModel == nullptr) {
                 return;
             }
-            int column = trackModel->fieldIndex("bpm_lock");
+            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
             if (index.data().toBool()) { //BPM is locked
                 m_pBpmUnlockAction->setEnabled(true);
@@ -1062,7 +1062,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
-            int column = trackModel->fieldIndex("bpm_lock");
+            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
             for (int i = 0; i < indices.size() && !anyLocked; ++i) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row,column);

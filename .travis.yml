@@ -1,4 +1,5 @@
-language: c++
+language: cpp
+os: linux
 
 
 # Build flags common to OS X and Linux.
