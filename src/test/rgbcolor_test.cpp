@@ -26,7 +26,7 @@ TEST(RgbColorTest, FromRgbColorCode) {
 
 TEST(RgbColorTest, FromOptionalRgbColorCode) {
     EXPECT_EQ(RgbColor(), RgbColor(std::nullopt));
-    EXPECT_EQ(RgbColor(0x123456), RgbColor(std::make_optional(0x123456)));
+    EXPECT_EQ(RgbColor(0x123456), RgbColor(std::make_optional(RgbColorCode(0x123456))));
 }
 
 TEST(RgbColorTest, FromQColor) {
