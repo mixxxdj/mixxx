@@ -40,7 +40,7 @@ class RgbColor {
     }
 
     // Check if the color is defined.
-    constexpr operator bool() const noexcept {
+    operator bool() const noexcept {
         return m_internalCode != kUndefinedInternalCode;
     }
 
