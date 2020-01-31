@@ -38,6 +38,7 @@ class RgbColor {
     // Explicit conversion from QColor.
     RgbColor(QColor anyColor, RgbColorCode codeIfInvalid)
             : m_code(anyColorToCode(anyColor, codeIfInvalid)) {
+        DEBUG_ASSERT(isValidCode(m_code));
     }
 
     // Implicit conversion to a color code.
