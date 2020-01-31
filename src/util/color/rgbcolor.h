@@ -8,41 +8,41 @@
 
 namespace mixxx {
 
-// A pure 24-bit 0xxRRGGBB color code with 8-bit per channel
-// without an an alpha channel.
-// We are using a separate typedef, because QRgb implicitly
-// includes an alpha channel whereas this type does not!
-typedef quint32 RgbColorCode;
-
-// Type-safe wrapper around RgbColorCode without implicit
+// Type-safe wrapper around code_t without implicit
 // range checks and no implicit validation.
 //
 // Apart from the assignment operator this type is immutable.
 class RgbColor {
   public:
-    static RgbColorCode validateCode(RgbColorCode code) {
+    // A pure 24-bit 0xxRRGGBB color code with 8-bit per channel
+    // without an an alpha channel.
+    // We are using a separate typedef, because QRgb implicitly
+    // includes an alpha channel whereas this type does not!
+    typedef quint32 code_t;
+
+    static code_t validateCode(code_t code) {
         return code & kRgbCodeMask;
     }
-    static bool isValidCode(RgbColorCode code) {
+    static bool isValidCode(code_t code) {
         return code == validateCode(code);
     }
 
     // The default constructor is not available, because there is
     // no common default value that fits all possible use cases!
     RgbColor() = delete;
-    // Explicit conversion from a valid RgbColorCode.
-    explicit constexpr RgbColor(RgbColorCode code)
+    // Explicit conversion from a valid code_t.
+    explicit constexpr RgbColor(code_t code)
             : m_code(code) {
         DEBUG_ASSERT(isValidCode(m_code));
     }
     // Explicit conversion from QColor.
-    RgbColor(QColor anyColor, RgbColorCode codeIfInvalid)
+    RgbColor(QColor anyColor, code_t codeIfInvalid)
             : m_code(anyColorToCode(anyColor, codeIfInvalid)) {
         DEBUG_ASSERT(isValidCode(m_code));
     }
 
     // Implicit conversion to a color code.
-    operator RgbColorCode() const {
+    operator code_t() const {
         return m_code;
     }
 
@@ -51,17 +51,18 @@ class RgbColor {
     }
 
     typedef std::optional<RgbColor> optional_t;
+
     static constexpr optional_t nullopt() {
         return std::nullopt;
     }
 
     // Overloaded conversion functions for conveniently creating
     // std::optional<RgbColor>.
+    static constexpr optional_t optional(code_t code) {
+        return optional(RgbColor(code));
+    }
     static constexpr optional_t optional(RgbColor color) {
         return std::make_optional(color);
-    }
-    static constexpr optional_t optional(RgbColorCode colorCode) {
-        return optional(RgbColor(colorCode));
     }
     static optional_t optional(QColor color) {
         if (color.isValid()) {
@@ -73,9 +74,9 @@ class RgbColor {
 
   protected:
     // Bitmask of valid codes = 0x00RRGGBB
-    static constexpr RgbColorCode kRgbCodeMask = 0x00FFFFFF;
+    static constexpr code_t kRgbCodeMask = 0x00FFFFFF;
 
-    static RgbColorCode anyColorToCode(QColor anyColor, RgbColorCode codeIfInvalid) {
+    static code_t anyColorToCode(QColor anyColor, code_t codeIfInvalid) {
         if (anyColor.isValid()) {
             // Strip alpha channel bits!
             return validateCode(anyColor.rgb());
@@ -84,7 +85,7 @@ class RgbColor {
         }
     }
 
-    RgbColorCode m_code;
+    code_t m_code;
 };
 
 inline bool operator!=(RgbColor lhs, RgbColor rhs) {
