@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QColor>
+#include <QtDebug>
 #include <QtGlobal>
 
 #include "util/assert.h"
@@ -101,12 +102,24 @@ QColor toQColor(RgbColor color) {
 }
 
 inline
-QColor toQColor(std::optional<RgbColor> optional, QColor defaultColor = QColor()) {
+QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
     if (optional) {
         return toQColor(*optional);
     } else {
         return defaultColor;
     }
+}
+
+// Debug output stream operators
+
+inline
+QDebug operator<<(QDebug dbg, RgbColor color) {
+    return dbg << toQColor(color);
+}
+
+inline
+QDebug operator<<(QDebug dbg, RgbColor::optional_t optional) {
+    return dbg << toQColor(optional);
 }
 
 } // namespace mixxx
