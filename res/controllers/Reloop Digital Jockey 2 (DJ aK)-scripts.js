@@ -72,6 +72,8 @@ RDJ2.BUTTONMAP_CH0_CH1 = {
     scratch: [0x1B, 0x57],
     loopin: [0x0F, 0x4B],
     loopout: [0x10, 0x4C],
+    autoloop: [0x11, 0x4D],
+    loopactive: [0x12, 0x4E],
 };
 
 RDJ2.KNOBMAP_CH0_CH1 = {
@@ -214,13 +216,39 @@ RDJ2.LoopOutButton.prototype = new components.Button({
         this.input = components.Button.prototype.input;
     },
     shift: function () {
-        //pressing when shifted will delete loop start marker
+        //pressing when shifted will delete loop end marker
         this.inKey = 'loop_end_position';
         this.input = function (channel, control, value, status, group) {
             if (this.isPress(channel, control, value, status)) {
                 this.inSetValue(RDJ2.MIXXX_LOOP_POSITION_UNDEFINED);
             }
         }
+    },
+});
+
+RDJ2.AutoLoopButton = function (options) {
+    components.Button.call(this, options);
+};
+RDJ2.AutoLoopButton.prototype = new components.Button({
+    outKey: 'beatloop_activate',
+    unshift: function () {
+        this.inKey = 'beatloop_activate';
+    },
+    shift: function () {
+        this.inKey = 'beatlooproll_activate';
+    },
+});
+
+RDJ2.LoopActiveButton = function (options) {
+    components.Button.call(this, options);
+};
+RDJ2.LoopActiveButton.prototype = new components.Button({
+    outKey: 'loop_enabled',
+    unshift: function () {
+        this.inKey = 'reloop_toggle';
+    },
+    shift: function () {
+        this.inKey = 'reloop_andstop';
     },
 });
 
@@ -322,6 +350,8 @@ RDJ2.Deck = function (number) {
     this.loopsizeKnob = new RDJ2.LoopSizeKnob([0xB0, RDJ2.KNOBMAP_CH0_CH1.loopSize[number - 1]]);
     this.loopInButton = new RDJ2.LoopInButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopin[number - 1]]);
     this.loopOutButton = new RDJ2.LoopOutButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopout[number - 1]]);
+    this.autoLoopButton = new RDJ2.AutoLoopButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.autoloop[number - 1]]);
+    this.loopActiveButton = new RDJ2.LoopActiveButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopactive[number - 1]]);
 
 
     // Set the group properties of the above Components and connect their output callback functions
