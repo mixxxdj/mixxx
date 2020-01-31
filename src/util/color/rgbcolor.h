@@ -8,8 +8,8 @@
 
 namespace mixxx {
 
-// Type-safe wrapper around code_t without implicit
-// range checks and no implicit validation.
+// Type-safe wrapper for 24-bit RGB color codes without an alpha
+// channel. Code values are implicitly validated upon construction.
 //
 // Apart from the assignment operator this type is immutable.
 class RgbColor {
