@@ -20,42 +20,59 @@ typedef quint32 RgbColorCode;
 // Apart from the assignment operator this type is immutable.
 class RgbColor {
   public:
-    // The default constructor is not available, because there is
-    // no common default value that fits all possible use cases!
-    RgbColor() = delete;
-    // Explicit conversion from RgbColorCode.
-    explicit constexpr RgbColor(RgbColorCode code)
-            : m_code(code) {
-    }
-    // Explicit conversion from QColor.
-    RgbColor(QColor anyColor, RgbColorCode codeIfInvalid)
-            : m_code(anyColorToCode(anyColor, codeIfInvalid)) {
-    }
-
-    // Explicit conversion to a valid color code.
-    RgbColorCode validCode() const {
-        return validateCode(m_code);
-    }
-
-    // Explicit conversion into the corresponding QColor.
-    QColor validQColor() const {
-        return QColor::fromRgb(validCode());
-    }
-
-    friend bool operator==(RgbColor lhs, RgbColor rhs) {
-        return lhs.m_code == rhs.m_code;
-    }
-
-  protected:
-    // Bitmask of valid codes = 0x00RRGGBB
-    static constexpr RgbColorCode kRgbCodeMask = 0x00FFFFFF;
-
     static RgbColorCode validateCode(RgbColorCode code) {
         return code & kRgbCodeMask;
     }
     static bool isValidCode(RgbColorCode code) {
         return code == validateCode(code);
     }
+
+    // The default constructor is not available, because there is
+    // no common default value that fits all possible use cases!
+    RgbColor() = delete;
+    // Explicit conversion from a valid RgbColorCode.
+    explicit constexpr RgbColor(RgbColorCode code)
+            : m_code(code) {
+        DEBUG_ASSERT(isValidCode(m_code));
+    }
+    // Explicit conversion from QColor.
+    RgbColor(QColor anyColor, RgbColorCode codeIfInvalid)
+            : m_code(anyColorToCode(anyColor, codeIfInvalid)) {
+    }
+
+    // Implicit conversion to a color code.
+    operator RgbColorCode() const {
+        return validateCode(m_code);
+    }
+
+    friend bool operator==(RgbColor lhs, RgbColor rhs) {
+        return lhs.m_code == rhs.m_code;
+    }
+
+    typedef std::optional<RgbColor> optional_t;
+    static constexpr optional_t nullopt() {
+        return std::nullopt;
+    }
+
+    // Overloaded conversion functions for conveniently creating
+    // std::optional<RgbColor>.
+    static constexpr optional_t optional(RgbColor color) {
+        return std::make_optional(color);
+    }
+    static constexpr optional_t optional(RgbColorCode colorCode) {
+        return optional(RgbColor(colorCode));
+    }
+    static optional_t optional(QColor color) {
+        if (color.isValid()) {
+            return optional(validateCode(color.rgb()));
+        } else {
+            return nullopt();
+        }
+    }
+
+  protected:
+    // Bitmask of valid codes = 0x00RRGGBB
+    static constexpr RgbColorCode kRgbCodeMask = 0x00FFFFFF;
 
     static RgbColorCode anyColorToCode(QColor anyColor, RgbColorCode codeIfInvalid) {
         if (anyColor.isValid()) {
@@ -73,105 +90,26 @@ inline bool operator!=(RgbColor lhs, RgbColor rhs) {
     return !(lhs == rhs);
 }
 
-// A thin wrapper around 24-bit opaque RGB values that includes
-// a single undefined state. The undefined state could be used
-// to represent missing or transparent values.
-//
-// This class might be used as a "hub" for the conversion between
-// RgbColorCode, std::optional<RgbColorCode>, and QColor. For
-// this particular use case its only purpose is to store an
-// intermediate representation before the internal value that
-// has been converted from the source type is finally converted
-// into the desired target type.
-//
-// Type comparison
-// - RgbColorCode is less versatile
-// - std::optional<RgbColorCode> is equivalent
-// - QColor is more versatile
-//
-// Apart from the assignment operator this type is immutable.
-class OptionalRgbColor final : public RgbColor {
-  public:
-    OptionalRgbColor()
-            : RgbColor(kUndefinedInternalCode) {
-        DEBUG_ASSERT(!isValidCode(m_code));
-    }
-    // Explicit conversion from RgbColor
-    explicit OptionalRgbColor(RgbColor base)
-            : RgbColor(base.validCode()) {
-        DEBUG_ASSERT(isValidCode(m_code));
-    }
-    // Explicit conversion from RgbColorCode
-    explicit OptionalRgbColor(RgbColorCode code)
-            : RgbColor(RgbColor(validateCode(code))) {
-        DEBUG_ASSERT(isValidCode(m_code) == isValidCode(code));
-    }
-    // Explicit conversion from an optional RgbColor that
-    // is equivalent to this class. The conversion is explicit
-    // to avoid ambiguities with the implicit conversion back
-    // into std::optional<RgbColor>.
-    explicit OptionalRgbColor(std::optional<RgbColor> optional)
-            : RgbColor(optional ? optional->validCode() : kUndefinedInternalCode) {
-        DEBUG_ASSERT(isValidCode(m_code) == static_cast<bool>(optional));
-    }
-    // Explicit conversion from QColor
-    explicit OptionalRgbColor(QColor anyColor)
-            : RgbColor(anyColorToInternalCode(anyColor)) {
-        DEBUG_ASSERT(isValidCode(m_code) == anyColor.isValid());
-    }
-    OptionalRgbColor(const OptionalRgbColor&) = default;
-    OptionalRgbColor(OptionalRgbColor&&) = default;
+// Explicit conversion of both non-optional and optional
+// RgbColor values to QColor as overloaded free functions.
 
-    // Explicit conversion to an optional RGB color.
-    std::optional<RgbColor> optional() const {
-        if (isValidCode(m_code)) {
-            // Defined
-            return std::make_optional(RgbColor(m_code));
-        } else {
-            // Undefined
-            return std::nullopt;
-        }
-    }
+inline
+QColor toQColor(RgbColor color) {
+    return QColor::fromRgb(color);
+}
 
-    // Explicit conversion into the corresponding QColor.
-    // Optionally the desired QColor that represents undefined
-    // values could be provided.
-    QColor toQColor(QColor undefinedColor = QColor()) const {
-        if (isValidCode(m_code)) {
-            // Defined
-            return validQColor();
-        } else {
-            // Undefined
-            return undefinedColor;
-        }
+inline
+QColor toQColor(std::optional<RgbColor> optional, QColor defaultColor = QColor()) {
+    if (optional) {
+        return toQColor(*optional);
+    } else {
+        return defaultColor;
     }
-
-  private:
-    static constexpr RgbColorCode kUndefinedInternalCode = 0xFFFFFFFF;
-
-    static RgbColorCode codeToInternalCode(RgbColorCode code) {
-        // The unused bits of an RgbColorCode should never be set.
-        DEBUG_ASSERT(isValidCode(code));
-        // This normalization should not be necessary, just in case.
-        return code & kRgbCodeMask;
-    }
-    static RgbColorCode optionalCodeToInternalCode(std::optional<RgbColorCode> optionalCode) {
-        if (optionalCode) {
-            return codeToInternalCode(*optionalCode);
-        } else {
-            return kUndefinedInternalCode;
-        }
-    }
-
-    static RgbColorCode anyColorToInternalCode(QColor anyColor) {
-        return anyColorToCode(anyColor, kUndefinedInternalCode);
-    }
-};
+}
 
 } // namespace mixxx
 
+// Assumption: A primitive type wrapped into std::optional is
+// still a primitive type.
 Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(std::optional<mixxx::RgbColor>)
-
-Q_DECLARE_TYPEINFO(mixxx::OptionalRgbColor, Q_PRIMITIVE_TYPE);
-Q_DECLARE_METATYPE(mixxx::OptionalRgbColor)

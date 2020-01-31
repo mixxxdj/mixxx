@@ -69,7 +69,6 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
-    qRegisterMetaType<mixxx::OptionalRgbColor>("mixxx::OptionalRgbColor");
     qRegisterMetaType<SoundDeviceId>("SoundDeviceId");
     QMetaType::registerComparators<SoundDeviceId>();
 }

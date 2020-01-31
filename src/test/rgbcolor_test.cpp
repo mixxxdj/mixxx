@@ -6,63 +6,45 @@
 
 namespace mixxx {
 
-TEST(OptionalRgbColorTest, DefaultIsUndefined) {
-    EXPECT_FALSE(OptionalRgbColor().optional());
-    EXPECT_FALSE(static_cast<bool>(OptionalRgbColor().optional()));
+TEST(RgbColorTest, OptionalRgbColorFromInvalidQColor) {
+    EXPECT_FALSE(RgbColor::optional(QColor()));
+    EXPECT_EQ(RgbColor::nullopt(), RgbColor::optional(QColor()));
 }
 
-TEST(OptionalRgbColorTest, FromRgbColorCode) {
-    EXPECT_TRUE(OptionalRgbColor(0x000000).optional());
-    EXPECT_EQ(RgbColor(0x000000), *OptionalRgbColor(0x000000).optional());
-    EXPECT_TRUE(OptionalRgbColor(0xFF0000).optional());
-    EXPECT_EQ(RgbColor(0xFF0000), *OptionalRgbColor(0xFF0000).optional());
-    EXPECT_TRUE(OptionalRgbColor(0x00FF00).optional());
-    EXPECT_EQ(RgbColor(0x00FF00), *OptionalRgbColor(0x00FF00).optional());
-    EXPECT_TRUE(OptionalRgbColor(0x0000FF).optional());
-    EXPECT_EQ(RgbColor(0x0000FF), *OptionalRgbColor(0x0000FF).optional());
-    EXPECT_TRUE(OptionalRgbColor(0xFFFFFF).optional());
-    EXPECT_EQ(RgbColor(0xFFFFFF), *OptionalRgbColor(0xFFFFFF).optional());
+TEST(RgbColorTest, OptionalRgbColorFromQColorWithoutAlpha) {
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0x000000)));
+    EXPECT_EQ(0x000000, *RgbColor::optional(QColor::fromRgb(0x000000)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0xFF0000)));
+    EXPECT_EQ(RgbColor::optional(0xFF0000), RgbColor::optional(QColor::fromRgb(0xFF0000)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0x00FF00)));
+    EXPECT_EQ(RgbColor::optional(0x00FF00), RgbColor::optional(QColor::fromRgb(0x00FF00)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0x0000FF)));
+    EXPECT_EQ(RgbColor::optional(0x0000FF), RgbColor::optional(QColor::fromRgb(0x0000FF)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0xFFFFFF)));
+    EXPECT_EQ(RgbColor::optional(0xFFFFFF), RgbColor::optional(QColor::fromRgb(0xFFFFFF)));
 }
 
-TEST(OptionalRgbColorTest, FromOptionalRgbColorCode) {
-    EXPECT_EQ(OptionalRgbColor(), OptionalRgbColor(std::nullopt));
-    EXPECT_EQ(OptionalRgbColor(0x123456), OptionalRgbColor(std::make_optional(RgbColor(0x123456))));
+TEST(RgbColorTest, OptionalRgbColorFromQColorWithAlpha) {
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAA000000)));
+    EXPECT_EQ(RgbColor::optional(0x000000), RgbColor::optional(QColor::fromRgba(0xAA000000)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAAFF0000)));
+    EXPECT_EQ(RgbColor::optional(0xFF0000), RgbColor::optional(QColor::fromRgba(0xAAFF0000)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAA00FF00)));
+    EXPECT_EQ(RgbColor::optional(0x00FF00), RgbColor::optional(QColor::fromRgba(0xAA00FF00)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAA0000FF)));
+    EXPECT_EQ(RgbColor::optional(0x0000FF), RgbColor::optional(QColor::fromRgba(0xAA0000FF)));
+    EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAAFFFFFF)));
+    EXPECT_EQ(RgbColor::optional(0xFFFFFF), RgbColor::optional(QColor::fromRgba(0xAAFFFFFF)));
 }
 
-TEST(OptionalRgbColorTest, FromQColor) {
-    EXPECT_FALSE(OptionalRgbColor(QColor()).optional());
-    EXPECT_EQ(OptionalRgbColor(), OptionalRgbColor(QColor()));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgb(0x000000)).optional());
-    EXPECT_EQ(OptionalRgbColor(0x000000), OptionalRgbColor(QColor::fromRgb(0x000000)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgb(0xFF0000)).optional());
-    EXPECT_EQ(OptionalRgbColor(0xFF0000), OptionalRgbColor(QColor::fromRgb(0xFF0000)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgb(0x00FF00)).optional());
-    EXPECT_EQ(OptionalRgbColor(0x00FF00), OptionalRgbColor(QColor::fromRgb(0x00FF00)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgb(0x0000FF)).optional());
-    EXPECT_EQ(OptionalRgbColor(0x0000FF), OptionalRgbColor(QColor::fromRgb(0x0000FF)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgb(0xFFFFFF)).optional());
-    EXPECT_EQ(OptionalRgbColor(0xFFFFFF), OptionalRgbColor(QColor::fromRgb(0xFFFFFF)));
-}
-
-TEST(OptionalRgbColorTest, FromQColorWithAlpha) {
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgba(0xAA000000)).optional());
-    EXPECT_EQ(OptionalRgbColor(0x000000), OptionalRgbColor(QColor::fromRgba(0xAA000000)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgba(0xAAFF0000)).optional());
-    EXPECT_EQ(OptionalRgbColor(0xFF0000), OptionalRgbColor(QColor::fromRgba(0xAAFF0000)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgba(0xAA00FF00)).optional());
-    EXPECT_EQ(OptionalRgbColor(0x00FF00), OptionalRgbColor(QColor::fromRgba(0xAA00FF00)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgba(0xAA0000FF)).optional());
-    EXPECT_EQ(OptionalRgbColor(0x0000FF), OptionalRgbColor(QColor::fromRgba(0xAA0000FF)));
-    EXPECT_TRUE(OptionalRgbColor(QColor::fromRgba(0xAAFFFFFF)).optional());
-    EXPECT_EQ(OptionalRgbColor(0xFFFFFF), OptionalRgbColor(QColor::fromRgba(0xAAFFFFFF)));
-}
-
-TEST(OptionalRgbColorTest, ToQColor) {
-    EXPECT_EQ(QColor(), OptionalRgbColor().toQColor());
+TEST(RgbColorTest, OptionalRgbColorToQColor) {
+    EXPECT_EQ(QColor(), toQColor(RgbColor::nullopt()));
     EXPECT_EQ(QColor::fromRgba(0xAABBCCDD),
-            OptionalRgbColor().toQColor(QColor::fromRgba(0xAABBCCDD)));
+            toQColor(RgbColor::nullopt(), QColor::fromRgba(0xAABBCCDD)));
     EXPECT_EQ(QColor::fromRgb(0x123456),
-            OptionalRgbColor(QColor::fromRgba(0xAA123456)).toQColor(QColor::fromRgba(0xAABBCCDD)));
+            toQColor(RgbColor::optional(QColor::fromRgba(0xAA123456))));
+    EXPECT_EQ(QColor::fromRgb(0x123456),
+            toQColor(RgbColor::optional(QColor::fromRgba(0xAA123456)), QColor::fromRgba(0xAABBCCDD)));
 }
 
 } // namespace mixxx
