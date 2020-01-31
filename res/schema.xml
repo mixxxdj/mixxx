@@ -483,10 +483,10 @@ METADATA
   </revision>
   <revision version="31" min_compatible="3">
     <description>
-      Add track color support. Default color is #000000.
+      Add track color support.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN color INTEGER DEFAULT 0xFF000000 NOT NULL;
+      ALTER TABLE library ADD COLUMN color INTEGER;
     </sql>
   </revision>
 </schema>

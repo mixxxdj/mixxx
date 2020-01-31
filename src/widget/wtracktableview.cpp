@@ -1983,7 +1983,7 @@ void WTrackTableView::slotColorPicked(PredefinedColorPointer pColor) {
     // TODO: This should be done in a thread for large selections
     for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
-        track->setColor(pColor->m_defaultRgba);
+        track->setColor(mixxx::RgbColor::optional(pColor->m_defaultRgba));
     }
 
     m_pMenu->hide();

@@ -526,7 +526,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":tracknumber", track.getTrackNumber());
         pTrackLibraryQuery->bindValue(":tracktotal", track.getTrackTotal());
         pTrackLibraryQuery->bindValue(":filetype", track.getType());
-        pTrackLibraryQuery->bindValue(":color", track.getColor().rgba());
+        pTrackLibraryQuery->bindValue(":color", toQVariant(track.getColor()));
         pTrackLibraryQuery->bindValue(":comment", track.getComment());
         pTrackLibraryQuery->bindValue(":url", track.getURL());
         pTrackLibraryQuery->bindValue(":duration", track.getDuration());
@@ -1046,7 +1046,7 @@ bool setTrackTotal(const QSqlRecord& record, const int column,
 
 bool setTrackColor(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    pTrack->setColor(QColor(static_cast<QRgb>(record.value(column).toUInt())));
+    pTrack->setColor(mixxx::RgbColor::optional(record.value(column)));
     return false;
 }
 
