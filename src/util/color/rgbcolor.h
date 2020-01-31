@@ -24,7 +24,7 @@ class RgbColor {
     static constexpr code_t validateCode(code_t code) {
         return code & kRgbCodeMask;
     }
-    static constexpr bool isValidCode(code_t code) {
+    static bool isValidCode(code_t code) {
         return code == validateCode(code);
     }
 
@@ -34,12 +34,10 @@ class RgbColor {
     // Explicit conversion from code_t with implicit validation.
     explicit constexpr RgbColor(code_t code)
             : m_code(validateCode(code)) {
-        DEBUG_ASSERT(isValidCode(m_code));
     }
     // Explicit conversion from QColor.
     RgbColor(QColor anyColor, code_t codeIfInvalid)
             : m_code(anyColorToCode(anyColor, codeIfInvalid)) {
-        DEBUG_ASSERT(isValidCode(m_code));
     }
 
     // Implicit conversion to a color code.
