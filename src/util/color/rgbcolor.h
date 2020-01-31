@@ -20,21 +20,19 @@ class RgbColor {
     // includes an alpha channel whereas this type does not!
     typedef quint32 code_t;
 
-    static code_t validateCode(code_t code) {
+    static constexpr code_t validateCode(code_t code) {
         return code & kRgbCodeMask;
     }
-    static bool isValidCode(code_t code) {
+    static constexpr bool isValidCode(code_t code) {
         return code == validateCode(code);
     }
 
     // The default constructor is not available, because there is
     // no common default value that fits all possible use cases!
     RgbColor() = delete;
-    // Explicit conversion from a valid code_t.
-    // No implicit validation to allow declaring this constructor
-    // as constexpr.
+    // Explicit conversion from code_t with implicit validation.
     explicit constexpr RgbColor(code_t code)
-            : m_code(code) {
+            : m_code(validateCode(code)) {
         DEBUG_ASSERT(isValidCode(m_code));
     }
     // Explicit conversion from QColor.
