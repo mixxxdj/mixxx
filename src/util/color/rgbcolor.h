@@ -42,7 +42,7 @@ class RgbColor {
     }
 
     // Implicit conversion to a color code.
-    operator code_t() const {
+    constexpr operator code_t() const {
         return m_code;
     }
 
