@@ -1,0 +1,613 @@
+// seratofeature.cpp
+// Created 2020-01-31 by Jan Holthuis
+
+#include "library/serato/seratofeature.h"
+
+#include <QMap>
+#include <QMessageBox>
+#include <QSettings>
+#include <QStandardPaths>
+#include <QtDebug>
+
+#include "engine/engine.h"
+#include "library/library.h"
+#include "library/librarytablemodel.h"
+#include "library/missingtablemodel.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "track/beatfactory.h"
+#include "track/cue.h"
+#include "track/keyfactory.h"
+#include "util/color/color.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/file.h"
+#include "util/sandbox.h"
+#include "waveform/waveform.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarytextbrowser.h"
+
+namespace {
+
+enum class FieldId : quint32 {
+    Version = 0x7672736e,        // vrsn
+    Track = 0x6f74726b,          // otrk
+    FileType = 0x74747970,       // ttyp
+    FilePath = 0x7066696c,       // pfil
+    SongTitle = 0x74736e67,      // tsng
+    Length = 0x746c656e,         // tlen
+    Bitrate = 0x74626974,        // tbit
+    SampleRate = 0x74736d70,     // tsmp
+    Bpm = 0x7462706d,            // tbpm
+    DateAddedText = 0x74616464,  // tadd
+    DateAdded = 0x75616464,      // uadd
+    Key = 0x746b6579,            // tkey
+    BeatgridLocked = 0x6262676c, // bbgl
+    Artist = 0x74617274,         // tart
+    FileTime = 0x75746d65,       // utme
+    Missing = 0x626d6973,        // bmis
+    Sorting = 0x7472736f,        // osrt
+    ReverseOrder = 0x62726576,   // brev
+    ColumnTitle = 0x6f766374,    // ovct
+    ColumnName = 0x7476636e,     // tvcn
+    ColumnWidth = 0x74766377,    // tvcw
+    TrackPath = 0x7074726b,      // ptrk
+};
+
+struct serato_track_t {
+    QString filetype;
+    QString location;
+    QString title;
+    QString duration;
+    QString bitrate;
+    QString samplerate;
+    QString bpm;
+    QString key;
+    QString artist;
+    bool beatgridlocked = false;
+    bool missing = false;
+    quint32 filetime = 0;
+    quint32 dateadded = 0;
+};
+
+const QString kDatabaseDirectory = "_Serato_";
+const QString kDatabaseFilename = "database V2";
+const QString kCrateFilter = "Subcrates/*.crate";
+const QString kSmartCrateFilter = "Smart Crates/*.scrate";
+
+inline QString parseText(const QByteArray& data, const quint32 size) {
+    return QTextCodec::codecForName("UTF-16BE")->toUnicode(data, size);
+}
+
+inline bool parseBoolean(const QByteArray& data) {
+    return data.at(0) != 0;
+}
+
+inline quint32 parseUInt32(const QByteArray& data) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    return qFromBigEndian<quint32>(data);
+#else
+    return qFromBigEndian<quint32>(
+            reinterpret_cast<const uchar*>(data.constData()));
+#endif
+}
+
+inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
+    QByteArray headerData = buffer.read(8);
+    while (headerData.length() == 8) {
+        QString fieldName = QString(headerData.mid(0, 4));
+        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
+        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+
+        // Read field data
+        QByteArray data = buffer.read(fieldSize);
+        if (static_cast<quint32>(data.length()) != fieldSize) {
+            qWarning() << "Failed to read "
+                       << fieldSize
+                       << " bytes for "
+                       << fieldName
+                       << " field.";
+            return false;
+        }
+
+        // Parse field data
+        switch (static_cast<FieldId>(fieldId)) {
+        case FieldId::FileType:
+            track.filetype = parseText(data, fieldSize);
+            break;
+        case FieldId::FilePath:
+            track.location = parseText(data, fieldSize);
+            break;
+        case FieldId::SongTitle:
+            track.title = parseText(data, fieldSize);
+            break;
+        case FieldId::Length:
+            track.duration = parseText(data, fieldSize);
+            break;
+        case FieldId::Bitrate:
+            track.bitrate = parseText(data, fieldSize);
+            break;
+        case FieldId::SampleRate:
+            track.samplerate = parseText(data, fieldSize);
+            break;
+        case FieldId::Bpm:
+            track.bpm = parseText(data, fieldSize);
+            break;
+        case FieldId::Key:
+            track.key = parseText(data, fieldSize);
+            break;
+        case FieldId::Artist:
+            track.artist = parseText(data, fieldSize);
+            break;
+        case FieldId::BeatgridLocked:
+            track.beatgridlocked = parseBoolean(data);
+            break;
+        case FieldId::Missing:
+            track.missing = parseBoolean(data);
+            break;
+        case FieldId::FileTime:
+            track.filetime = parseUInt32(data);
+            break;
+        case FieldId::DateAdded:
+            track.dateadded = parseUInt32(data);
+            break;
+        case FieldId::DateAddedText:
+            // Ignore this field, but do not print a debug message
+            break;
+        default:
+            qDebug() << "Ignoring unknown field "
+                     << fieldName
+                     << " ("
+                     << fieldSize
+                     << " bytes).";
+        }
+
+        headerData = buffer.read(8);
+    }
+
+    if (headerData.length() != 0) {
+        qWarning() << "Found "
+                   << headerData.length()
+                   << " extra bytes at end of track definition.";
+        return false;
+    }
+
+    return true;
+}
+
+QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* databaseItem) {
+    QString databaseName = databaseItem->getLabel();
+    QDir databaseDir = QDir(databaseItem->getData().toString());
+    QString databaseFilePath = databaseDir.filePath(kDatabaseFilename);
+
+    qWarning() << "Parsing database"
+               << databaseName
+               << "at" << databaseFilePath;
+
+    if (!QFile(databaseFilePath).exists()) {
+        qWarning() << "Serato database file not found: "
+                   << databaseFilePath;
+        return databaseFilePath;
+    }
+
+    // The pooler limits the lifetime all thread-local connections,
+    // that should be closed immediately before exiting this function.
+    const mixxx::DbConnectionPooler dbConnectionPooler(dbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(dbConnectionPool);
+
+    //Open the database connection in this thread.
+    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
+        qWarning() << "Failed to open database for Serato parser."
+                   << database.lastError();
+        return QString();
+    }
+
+    //Give thread a low priority
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowPriority);
+
+    ScopedTransaction transaction(database);
+
+    QFile databaseFile = QFile(databaseFilePath);
+    if (!databaseFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open file "
+                   << databaseFilePath
+                   << " for reading.";
+        return QString();
+    }
+
+    QByteArray headerData = databaseFile.read(8);
+    while (headerData.length() == 8) {
+        QString fieldName = QString(headerData.mid(0, 4));
+        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
+        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+
+        // Read field data
+        QByteArray data = databaseFile.read(fieldSize);
+        if (static_cast<quint32>(data.length()) != fieldSize) {
+            qWarning() << "Failed to read "
+                       << fieldSize
+                       << " bytes for "
+                       << fieldName
+                       << " field from "
+                       << databaseFilePath
+                       << ".";
+            return QString();
+        }
+
+        // Parse field data
+        qWarning() << "FieldId: " << fieldId;
+        switch (static_cast<FieldId>(fieldId)) {
+        case FieldId::Version: {
+            QString version = parseText(data, fieldSize);
+            qWarning() << "Serato Database Version: "
+                       << version;
+            break;
+        }
+        case FieldId::Track: {
+            serato_track_t track;
+            QBuffer buffer = QBuffer(&data);
+            buffer.open(QIODevice::ReadOnly);
+            if (parseTrack(track, buffer)) {
+                qWarning() << "Track: " << track.location;
+                // TODO
+            }
+            break;
+        }
+        default:
+            qDebug() << "Ignoring unknown field "
+                     << fieldName
+                     << " ("
+                     << fieldSize
+                     << " bytes) in database "
+                     << databaseFilePath
+                     << ".";
+        }
+
+        headerData = databaseFile.read(8);
+    }
+
+    if (headerData.length() != 0) {
+        qWarning() << "Found "
+                   << headerData.length()
+                   << " extra bytes at end of Serato database file "
+                   << databaseFilePath
+                   << ".";
+    }
+
+    return databaseFilePath;
+}
+
+// This function is executed in a separate thread other than the main thread
+QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowPriority);
+
+    QList<TreeItem*> foundDatabases;
+
+    // Build a list of directories that could contain the _Serato_ directory
+    QFileInfoList databaseLocations;
+    foreach (const QString& musicDir, QStandardPaths::standardLocations(QStandardPaths::MusicLocation)) {
+        databaseLocations.append(QFileInfo(musicDir));
+    }
+#if defined(__WINDOWS__)
+    // Repopulate drive list
+    // Using drive.filePath() instead of drive.canonicalPath() as it
+    // freezes interface too much if there is a network share mounted
+    // (drive letter assigned) but unavailable
+    //
+    // drive.canonicalPath() make a system call to the underlying filesystem
+    // introducing delay if it is unreadable.
+    // drive.filePath() doesn't make any access to the filesystem and consequently
+    // shorten the delay
+    databaseLocations.append(QDir::drives());
+#elif defined(__LINUX__)
+    // To get devices on Linux, we look for directories under /media and
+    // /run/media/$USER.
+
+    // Add folders under /media to devices.
+    databaseLocations += QDir(QStringLiteral("/media")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /media/$USER to devices.
+    QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
+    databaseLocations += mediaUserDir.entryInfoList(
+            QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /run/media/$USER to devices.
+    QDir runMediaUserDir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
+    databaseLocations += runMediaUserDir.entryInfoList(
+            QDir::AllDirs | QDir::NoDotAndDotDot);
+#elif defined(__APPLE__)
+    databaseLocations.append(QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
+#endif
+
+    foreach (QFileInfo databaseLocation, databaseLocations) {
+        QDir databaseDir = QDir(databaseLocation.filePath());
+        if (!databaseDir.cd(kDatabaseDirectory)) {
+            continue;
+        }
+
+        if (!databaseDir.exists(kDatabaseFilename)) {
+            continue;
+        }
+
+        TreeItem* foundDatabase = new TreeItem(seratoFeature);
+
+        QString displayPath = databaseLocation.filePath();
+        if (displayPath.endsWith("/")) {
+            displayPath.chop(1);
+        }
+
+        foundDatabase->setLabel(displayPath);
+        foundDatabase->setData(QVariant(databaseDir.path()));
+
+        foundDatabases << foundDatabase;
+    }
+
+    return foundDatabases;
+}
+
+} // anonymous namespace
+
+SeratoPlaylistModel::SeratoPlaylistModel(QObject* parent,
+        TrackCollectionManager* trackCollectionManager,
+        QSharedPointer<BaseTrackCache> trackSource)
+        : BaseExternalPlaylistModel(parent, trackCollectionManager, "mixxx.db.model.serato.playlistmodel", "serato_playlists", "serato_playlist_tracks", trackSource) {
+}
+
+void SeratoPlaylistModel::initSortColumnMapping() {
+    // Add a bijective mapping between the SortColumnIds and column indices
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        m_columnIndexBySortColumnId[i] = -1;
+    }
+
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION] = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+
+    m_sortColumnIdByColumnIndex.clear();
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
+        m_sortColumnIdByColumnIndex.insert(m_columnIndexBySortColumnId[sortColumn], sortColumn);
+    }
+}
+
+TrackPointer SeratoPlaylistModel::getTrack(const QModelIndex& index) const {
+    qDebug() << "SeratoTrackModel::getTrack";
+
+    TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
+
+    return track;
+}
+
+bool SeratoPlaylistModel::isColumnHiddenByDefault(int column) {
+    if (
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) {
+        return true;
+    }
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
+}
+
+SeratoFeature::SeratoFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
+          m_icon(":/images/library/ic_library_serato.svg") {
+    m_title = tr("Serato");
+
+    connect(&m_databasesFutureWatcher, &QFutureWatcher<QList<TreeItem*>>::finished, this, &SeratoFeature::onSeratoDatabasesFound);
+    connect(&m_tracksFutureWatcher, &QFutureWatcher<QString>::finished, this, &SeratoFeature::onTracksFound);
+    // initialize the model
+    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+}
+
+SeratoFeature::~SeratoFeature() {
+    m_databasesFuture.waitForFinished();
+    m_tracksFuture.waitForFinished();
+    delete m_pSeratoPlaylistModel;
+}
+
+void SeratoFeature::bindLibraryWidget(WLibrary* libraryWidget,
+        KeyboardEventFilter* keyboard) {
+    Q_UNUSED(keyboard);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
+    edit->setHtml(formatRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
+    libraryWidget->registerView("SERATOHOME", edit);
+}
+
+void SeratoFeature::htmlLinkClicked(const QUrl& link) {
+    if (QString(link.path()) == "refresh") {
+        activate();
+    } else {
+        qDebug() << "Unknown link clicked" << link;
+    }
+}
+
+BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(QString playlist) {
+    SeratoPlaylistModel* model = new SeratoPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    model->setPlaylist(playlist);
+    return model;
+}
+
+QVariant SeratoFeature::title() {
+    return m_title;
+}
+
+QIcon SeratoFeature::getIcon() {
+    return m_icon;
+}
+
+bool SeratoFeature::isSupported() {
+    return true;
+}
+
+TreeItemModel* SeratoFeature::getChildModel() {
+    return &m_childModel;
+}
+
+QString SeratoFeature::formatRootViewHtml() const {
+    QString title = tr("Serato");
+    QString summary = tr("Reads the following from Serato the Music directory and removable devices:");
+    QStringList items;
+
+    items << tr("Absolutely nothing yet :(");
+
+    QString html;
+    QString refreshLink = tr("Check for Serato databases (refresh)");
+    html.append(QString("<h2>%1</h2>").arg(title));
+    html.append(QString("<p>%1</p>").arg(summary));
+    html.append(QString("<ul>"));
+    for (const auto& item : items) {
+        html.append(QString("<li>%1</li>").arg(item));
+    }
+    html.append(QString("</ul>"));
+
+    //Colorize links in lighter blue, instead of QT default dark blue.
+    //Links are still different from regular text, but readable on dark/light backgrounds.
+    //https://bugs.launchpad.net/mixxx/+bug/1744816
+    html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
+                        .arg(refreshLink));
+    return html;
+}
+
+void SeratoFeature::refreshLibraryModels() {
+}
+
+void SeratoFeature::activate() {
+    qDebug() << "SeratoFeature::activate()";
+
+    // Let a worker thread do the XML parsing
+    m_databasesFuture = QtConcurrent::run(findSeratoDatabases, this);
+    m_databasesFutureWatcher.setFuture(m_databasesFuture);
+    m_title = tr("(loading) Serato");
+    //calls a slot in the sidebar model such that 'Serato (isLoading)' is displayed.
+    emit featureIsLoading(this, true);
+
+    emit enableCoverArtDisplay(true);
+    emit switchToView("SERATOHOME");
+}
+
+void SeratoFeature::activateChild(const QModelIndex& index) {
+    if (!index.isValid())
+        return;
+
+    //access underlying TreeItem object
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (!(item && item->getData().isValid())) {
+        return;
+    }
+
+    // TreeItem list data holds 2 values in a QList and have different meanings.
+    // If the 2nd QList element IS_RECORDBOX_DEVICE, the 1st element is the
+    // filesystem device path, and the parseDeviceDB concurrent thread to parse
+    // the Rekcordbox database is initiated. If the 2nd element is
+    // IS_NOT_RECORDBOX_DEVICE, the 1st element is the playlist path and it is
+    // activated.
+    QList<QVariant> data = item->getData().toList();
+
+    qDebug() << "SeratoFeature::activateChild " << item->getLabel();
+
+    // Let a worker thread do the XML parsing
+    m_tracksFuture = QtConcurrent::run(parseDatabase, static_cast<Library*>(parent())->dbConnectionPool(), item);
+    m_tracksFutureWatcher.setFuture(m_tracksFuture);
+
+    // This device is now a playlist element, future activations should treat is
+    // as such
+    //item->setData(QVariant(data));
+}
+
+void SeratoFeature::onSeratoDatabasesFound() {
+    QList<TreeItem*> foundDatabases = m_databasesFuture.result();
+    TreeItem* root = m_childModel.getRootItem();
+
+    QSqlDatabase database = m_pTrackCollection->database();
+
+    if (foundDatabases.size() == 0) {
+        // No Serato databases found
+        ScopedTransaction transaction(database);
+        transaction.commit();
+
+        if (root->childRows() > 0) {
+            // Devices have since been unmounted
+            m_childModel.removeRows(0, root->childRows());
+        }
+    } else {
+        for (int databaseIndex = 0; databaseIndex < root->childRows(); databaseIndex++) {
+            TreeItem* child = root->child(databaseIndex);
+            bool removeChild = true;
+
+            for (int foundDatabaseIndex = 0; foundDatabaseIndex < foundDatabases.size(); foundDatabaseIndex++) {
+                TreeItem* databaseFound = foundDatabases[foundDatabaseIndex];
+
+                if (databaseFound->getLabel() == child->getLabel()) {
+                    removeChild = false;
+                    break;
+                }
+            }
+
+            if (removeChild) {
+                // Device has since been unmounted, cleanup DB
+
+                m_childModel.removeRows(databaseIndex, 1);
+            }
+        }
+
+        QList<TreeItem*> childrenToAdd;
+
+        for (int foundDatabaseIndex = 0; foundDatabaseIndex < foundDatabases.size(); foundDatabaseIndex++) {
+            TreeItem* databaseFound = foundDatabases[foundDatabaseIndex];
+            bool addNewChild = true;
+
+            for (int databaseIndex = 0; databaseIndex < root->childRows(); databaseIndex++) {
+                TreeItem* child = root->child(databaseIndex);
+
+                if (databaseFound->getLabel() == child->getLabel()) {
+                    // This database already exists in the TreeModel, don't add or parse is again
+                    addNewChild = false;
+                }
+            }
+
+            if (addNewChild) {
+                childrenToAdd << databaseFound;
+            }
+        }
+
+        if (!childrenToAdd.empty()) {
+            m_childModel.insertTreeItemRows(childrenToAdd, 0);
+        }
+    }
+
+    // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    m_title = tr("Serato");
+    emit featureLoadingFinished(this);
+}
+
+void SeratoFeature::onTracksFound() {
+    qDebug() << "onTracksFound";
+    m_childModel.triggerRepaint();
+}

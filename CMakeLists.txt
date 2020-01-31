@@ -394,6 +394,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/scanner/scannertask.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
+  src/library/serato/seratofeature.cpp
   src/library/setlogfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp

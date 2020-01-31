@@ -32,6 +32,7 @@
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/rekordbox/rekordboxfeature.h"
+#include "library/serato/seratofeature.h"
 #include "library/analysisfeature.h"
 
 #include "mixer/playermanager.h"
@@ -166,6 +167,10 @@ Library::Library(
     // periodically. Not ideal perfomance wise.
     if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
         addFeature(new RekordboxFeature(this, m_pConfig));
+    }
+
+    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
+        addFeature(new SeratoFeature(this, m_pConfig));
     }
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
