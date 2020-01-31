@@ -170,5 +170,8 @@ class OptionalRgbColor final : public RgbColor {
 
 } // namespace mixxx
 
+Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(std::optional<mixxx::RgbColor>)
+
 Q_DECLARE_TYPEINFO(mixxx::OptionalRgbColor, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::OptionalRgbColor)
