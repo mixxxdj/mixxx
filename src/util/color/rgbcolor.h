@@ -31,6 +31,8 @@ class RgbColor {
     // no common default value that fits all possible use cases!
     RgbColor() = delete;
     // Explicit conversion from a valid code_t.
+    // No implicit validation to allow declaring this constructor
+    // as constexpr.
     explicit constexpr RgbColor(code_t code)
             : m_code(code) {
         DEBUG_ASSERT(isValidCode(m_code));
