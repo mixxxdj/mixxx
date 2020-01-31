@@ -42,7 +42,7 @@ class RgbColor {
 
     // Implicit conversion to a color code.
     operator RgbColorCode() const {
-        return validateCode(m_code);
+        return m_code;
     }
 
     friend bool operator==(RgbColor lhs, RgbColor rhs) {
