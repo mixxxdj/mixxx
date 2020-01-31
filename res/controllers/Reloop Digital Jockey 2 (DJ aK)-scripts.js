@@ -44,6 +44,7 @@ RDJ2.MIDI_JOG_DELTA_RANGE = 0x3F; // both forward (= positive) and reverse (= ne
 
 // Mixxx constants
 RDJ2.MIXXX_JOG_RANGE = 3.0;
+RDJ2.MIXXX_LOOP_POSITION_UNDEFINED = -1;
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -59,12 +60,18 @@ RDJ2.MIXXX_JOG_RANGE = 3.0;
    halves, but the controller layout is not fully symmetric.
    (e.x. ACTIVATE 1 buttons)
 
-   Thus we need a map to preserve object oriented approach .*/
+   Thus we need a map to preserve object oriented approach .
+   
+   The below map is only for the unshifted controls as shifted ones
+   have the same handlers mapped in the xml file and the outputs
+   always refer to the unshifted controls. */
 RDJ2.BUTTONMAP_CH0_CH1 = {
     play: [0x19, 0x55],
     cue: [0x18, 0x54],
     sync: [0x01, 0x3D],
-    scratch: [0x1B, 0x57]
+    scratch: [0x1B, 0x57],
+    loopin: [0x0F, 0x4B],
+    loopout: [0x10, 0x4C],
 };
 
 RDJ2.KNOBMAP_CH0_CH1 = {
@@ -175,6 +182,48 @@ RDJ2.ShiftButton.prototype = new components.Button({
     }
 });
 
+RDJ2.LoopInButton = function (options) {
+    components.Button.call(this, options);
+};
+RDJ2.LoopInButton.prototype = new components.Button({
+    outKey: 'loop_start_position',
+    outValueScale: function (value) {return (value >= 0) * this.max;},
+    unshift: function () {
+        this.inKey = 'loop_in';
+        this.input = components.Button.prototype.input;
+    },
+    shift: function () {
+        //pressing when shifted will delete loop start marker
+        this.inKey = 'loop_start_position';
+        this.input = function (channel, control, value, status, group) {
+            if (this.isPress(channel, control, value, status)) {
+                this.inSetValue(RDJ2.MIXXX_LOOP_POSITION_UNDEFINED);
+            }
+        }
+    },
+});
+
+RDJ2.LoopOutButton = function (options) {
+    components.Button.call(this, options);
+};
+RDJ2.LoopOutButton.prototype = new components.Button({
+    outKey: 'loop_end_position',
+    outValueScale: function (value) {return (value >= 0) * this.max;},
+    unshift: function () {
+        this.inKey = 'loop_out';
+        this.input = components.Button.prototype.input;
+    },
+    shift: function () {
+        //pressing when shifted will delete loop start marker
+        this.inKey = 'loop_end_position';
+        this.input = function (channel, control, value, status, group) {
+            if (this.isPress(channel, control, value, status)) {
+                this.inSetValue(RDJ2.MIXXX_LOOP_POSITION_UNDEFINED);
+            }
+        }
+    },
+});
+
 ////////////////////////////////////////////////////////////////////////
 // Knobs                                                              //
 ////////////////////////////////////////////////////////////////////////
@@ -263,6 +312,7 @@ RDJ2.Deck = function (number) {
 
     components.Deck.call(this, number);
 
+    //primary buttons
     this.playButton = new components.PlayButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.play[number - 1]]);
     this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
     this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
@@ -270,6 +320,9 @@ RDJ2.Deck = function (number) {
 
     //loops
     this.loopsizeKnob = new RDJ2.LoopSizeKnob([0xB0, RDJ2.KNOBMAP_CH0_CH1.loopSize[number - 1]]);
+    this.loopInButton = new RDJ2.LoopInButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopin[number - 1]]);
+    this.loopOutButton = new RDJ2.LoopOutButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopout[number - 1]]);
+
 
     // Set the group properties of the above Components and connect their output callback functions
     // Without this, the group property for each Component would have to be specified to its

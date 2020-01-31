@@ -614,6 +614,44 @@
                     <script-binding/>
                 </options>
             </control>
+
+        <!-- Left Loop Unit -->
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.loopInButton.input</key>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.loopInButton.input</key>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.loopOutButton.input</key>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.loopOutButton.input</key>
+                <status>0x90</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
         </controls>
 
         <outputs>
