@@ -34,7 +34,7 @@ RDJ2.JOG_SEEK_REVOLUTIONS = 2;
 
 // Controller constants
 RDJ2.DECK_COUNT = 2;
-RDJ2.JOG_RESOLUTION = 128; // measured/estimated
+RDJ2.JOG_RESOLUTION = 148; // measured/estimated
 
 
 // Jog constants
@@ -69,7 +69,9 @@ RDJ2.BUTTONMAP_CH0_CH1 = {
     play: [0x19, 0x55],
     cue: [0x18, 0x54],
     sync: [0x01, 0x3D],
+    search: [0x1A, 0x56],
     scratch: [0x1B, 0x57],
+    fxdrywet: [0x1C, 0x58],
     bendminus: [0x03, 0x3F],
     bendplus: [0x04, 0x40],
     loopin: [0x0F, 0x4B],
@@ -125,27 +127,6 @@ RDJ2.isButtonPressed = function (midiValue) {
 };
 
 /* Custom buttons */
-RDJ2.ScratchButton = function (options) {
-    this.state = undefined;
-    components.Button.call(this, options);
-    this.init();
-};
-RDJ2.ScratchButton.prototype = new components.Button({
-    type: components.Button.prototype.types.toggle,
-    init: function () {
-        this.state = false;
-        this.send(this.outValueScale(this.state));
-    },
-    input: function (isButtonPressed) {
-        if (isButtonPressed) {
-            this.state = !this.state;
-            this.send(this.outValueScale(this.state));
-        }
-    },
-    isActive: function () {
-        return this.state;
-    }
-});
 
 RDJ2.ShiftButton = function (options) {
     this.state = false;
@@ -306,6 +287,13 @@ RDJ2.LoopSizeKnob.prototype = new components.Pot({
 // Decks                                                              //
 ////////////////////////////////////////////////////////////////////////
 
+RDJ2.JOGMODES = {
+    normal: 0,
+    vinyl: 1,
+    search: 2,
+    fxdrywet: 3,
+};
+
 RDJ2.getJogDeltaValue = function (value) {
     if (0x00 === value) {
         return 0x00;
@@ -324,9 +312,7 @@ RDJ2.Deck = function (number) {
     this.filterGroup = "[QuickEffectRack1_" + this.group + "_Effect1]";
     this.rateDirBackup = this.getValue("rate_dir");
     this.setValue("rate_dir", -1);
-    this.vinylMode = false;
     this.jogTouchState = false;
-    this.syncMode = undefined;
 
     components.Deck.call(this, number);
 
@@ -334,9 +320,12 @@ RDJ2.Deck = function (number) {
     this.playButton = new components.PlayButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.play[number - 1]]);
     this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
     this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
-    this.scratchButton = new RDJ2.ScratchButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.scratch[number - 1]]);
     this.bendMinusButton = new RDJ2.BendMinusButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.bendminus[number - 1]]);
     this.bendPlusButton = new RDJ2.BendPlusButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.bendplus[number - 1]]);
+    this.jogModeSelector = new RDJ2.JogModeSelector(number,
+                                                    RDJ2.BUTTONMAP_CH0_CH1.search[number - 1],
+                                                    RDJ2.BUTTONMAP_CH0_CH1.scratch[number - 1],
+                                                    RDJ2.BUTTONMAP_CH0_CH1.fxdrywet[number - 1]);
 
     //loops
     this.loopsizeKnob = new RDJ2.LoopSizeKnob([0xB0, RDJ2.KNOBMAP_CH0_CH1.loopSize[number - 1]]);
@@ -451,19 +440,62 @@ RDJ2.BendPlusButton.prototype = new components.Button({
     },
 });
 
-/* Vinyl Mode (Scratching) */
+/* Jog Mode */
 
-RDJ2.Deck.prototype.onScratchButton = function (channel, control, value) {
-    this.scratchButton.input(RDJ2.isButtonPressed(value));
-    this.vinylMode = this.scratchButton.isActive();
+RDJ2.JogModeSelector = function (number, searchMidiCtrl, scratchMidiCtrl, fxDryWetMidiCtrl) {
+    this.number = number;
+    this.searchMidiCtrl = searchMidiCtrl;
+    this.scratchMidiCtrl = scratchMidiCtrl;
+    this.fxDryWetMidiCtrl = fxDryWetMidiCtrl;
+    this.jogMode = RDJ2.JOGMODES.normal;
+
+    this.updateControls();            
+};
+RDJ2.JogModeSelector.prototype = {
+    updateControls: function () {
+        var searchValue = this.jogMode === RDJ2.JOGMODES.search ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
+        var scratchValue = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
+        var fxDryWetValue = this.jogMode === RDJ2.JOGMODES.fxdrywet ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
+
+        midi.sendShortMsg(0x90, this.searchMidiCtrl, searchValue);
+        midi.sendShortMsg(0x90, this.scratchMidiCtrl, scratchValue);
+        midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, fxDryWetValue);
+    },
+    input: function (channel, control, value) {
+        var isButtonPressed = RDJ2.isButtonPressed(value);
+        if (isButtonPressed) {
+            switch(control) {
+                case this.searchMidiCtrl:
+                    this.jogMode = this.jogMode === RDJ2.JOGMODES.search ? RDJ2.JOGMODES.normal : RDJ2.JOGMODES.search;
+                    break;
+                case this.scratchMidiCtrl:
+                    this.jogMode = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.JOGMODES.normal : RDJ2.JOGMODES.vinyl;
+                    break;
+                case this.fxDryWetMidiCtrl:
+                    this.jogMode = this.jogMode === RDJ2.JOGMODES.fxdrywet ? RDJ2.JOGMODES.normal : RDJ2.JOGMODES.fxdrywet;
+                    break;
+                default:
+                    RDJ2.logError("Unexpected MIDI ctrl value: " + control);
+            }
+            if(this.jogMode !== RDJ2.JOGMODES.vinyl && engine.isScratching(this.number)) {
+                engine.scratchDisable(this.number, RDJ2.JOG_SCRATCH_RAMP);
+            }
+            this.updateControls();
+            RDJ2.logDebug("Current jog mode: " + this.getJogMode());
+        }
+    },
+    getJogMode: function () {
+        return this.jogMode;
+    }
 };
 
 /* Jog Wheel */
 
-RDJ2.Deck.prototype.onJogTouch = function (channel, control, value) {    
+RDJ2.Deck.prototype.onJogTouch = function (channel, control, value) {   
+    var currentJogMode =  this.jogModeSelector.getJogMode();
     this.jogTouchState = RDJ2.isButtonPressed(value);
     
-    if (this.vinylMode && this.jogTouchState) {
+    if (currentJogMode === RDJ2.JOGMODES.vinyl && this.jogTouchState) {
         engine.scratchEnable(this.number,
             RDJ2.JOG_RESOLUTION,
             RDJ2.JOG_SCRATCH_RPM,
@@ -476,18 +508,22 @@ RDJ2.Deck.prototype.onJogTouch = function (channel, control, value) {
 };
 
 RDJ2.Deck.prototype.onJogSpin = function (channel, control, value) {
+    var currentJogMode =  this.jogModeSelector.getJogMode();
     var jogDelta = RDJ2.getJogDeltaValue(value);
 
-    if (engine.isScratching(this.number)) {
+    if (currentJogMode === RDJ2.JOGMODES.vinyl) {
         engine.scratchTick(this.number, jogDelta);
-    } else if (this.jogTouchState && !this.isPlaying()) {
-        // fast track seek (strip search)
+    } else if (currentJogMode === RDJ2.JOGMODES.fxdrywet) {
+        var currMixValue = engine.getParameter('[EffectRack1_EffectUnit' + this.number + ']', 'mix');
+        engine.setParameter('[EffectRack1_EffectUnit' + this.number + ']', 'mix', currMixValue + jogDelta / RDJ2.JOG_RESOLUTION);
+    }
+    else if (currentJogMode === RDJ2.JOGMODES.search) {
         var playPos = engine.getValue(this.group, "playposition");
         if (undefined !== playPos) {
             var seekPos = playPos + (jogDelta / (RDJ2.JOG_RESOLUTION * RDJ2.JOG_SEEK_REVOLUTIONS));
             this.setValue("playposition", Math.max(0.0, Math.min(1.0, seekPos)));
         }
-    } else {
+    } else if (currentJogMode === RDJ2.JOGMODES.normal) {
         var normalizedDelta = jogDelta / RDJ2.MIDI_JOG_DELTA_RANGE;
         var scaledDelta;
         var jogExponent;
@@ -512,6 +548,9 @@ RDJ2.Deck.prototype.onJogSpin = function (channel, control, value) {
         var scaledDeltaPow = direction * Math.pow(scaledDeltaAbs, jogExponent);
         var jogValue = RDJ2.MIXXX_JOG_RANGE * scaledDeltaPow;
         this.setValue("jog", jogValue);
+    }
+    else {
+        RDJ2.logError("onJogSpin error!");
     }
 };
 

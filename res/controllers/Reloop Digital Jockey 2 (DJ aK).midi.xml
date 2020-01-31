@@ -162,11 +162,29 @@
                     <script-binding/>
                 </options>
             </control>
-            <control>
+           <control>   <!-- SEARCH -->
                 <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.onScratchButton</key>
+                <key>RDJ2.leftDeck.jogModeSelector.input</key>
+                <status>0x90</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SCRATCH -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.jogModeSelector.input</key>
                 <status>0x90</status>
                 <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- FX DRY/WET -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.jogModeSelector.input</key>
+                <status>0x90</status>
+                <midino>0x1C</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -388,11 +406,29 @@
                     <script-binding/>
                 </options>
             </control>
-            <control>
+            <control>   <!-- SEARCH -->
                 <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.onScratchButton</key>
+                <key>RDJ2.rightDeck.jogModeSelector.input</key>
+                <status>0x90</status>
+                <midino>0x56</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SCRATCH -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.jogModeSelector.input</key>
                 <status>0x90</status>
                 <midino>0x57</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- FX DRY/WET -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.jogModeSelector.input</key>
+                <status>0x90</status>
+                <midino>0x58</midino>
                 <options>
                     <script-binding/>
                 </options>
