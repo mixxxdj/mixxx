@@ -110,18 +110,36 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.recvBendPlusButton</key>
+                <key>RDJ2.leftDeck.bendPlusButton.input</key>
                 <status>0x90</status>
                 <midino>0x04</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <control>   <!-- shifted -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.bendPlusButton.input</key>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.recvBendMinusButton</key>
+                <key>RDJ2.leftDeck.bendMinusButton.input</key>
                 <status>0x90</status>
                 <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- shifted -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.bendMinusButton.input</key>
+                <status>0x90</status>
+                <midino>0x21</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -318,18 +336,36 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.recvBendPlusButton</key>
+                <key>RDJ2.rightDeck.bendPlusButton.input</key>
                 <status>0x90</status>
                 <midino>0x40</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <control>      <!-- shifted -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.bendPlusButton.input</key>
+                <status>0x90</status>
+                <midino>0x5E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.recvBendMinusButton</key>
+                <key>RDJ2.rightDeck.bendMinusButton.input</key>
                 <status>0x90</status>
                 <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>      <!-- shifted -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.bendMinusButton.input</key>
+                <status>0x90</status>
+                <midino>0x5D</midino>
                 <options>
                     <script-binding/>
                 </options>

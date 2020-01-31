@@ -70,6 +70,8 @@ RDJ2.BUTTONMAP_CH0_CH1 = {
     cue: [0x18, 0x54],
     sync: [0x01, 0x3D],
     scratch: [0x1B, 0x57],
+    bendminus: [0x03, 0x3F],
+    bendplus: [0x04, 0x40],
     loopin: [0x0F, 0x4B],
     loopout: [0x10, 0x4C],
     autoloop: [0x11, 0x4D],
@@ -201,7 +203,7 @@ RDJ2.LoopInButton.prototype = new components.Button({
             if (this.isPress(channel, control, value, status)) {
                 this.inSetValue(RDJ2.MIXXX_LOOP_POSITION_UNDEFINED);
             }
-        }
+        };
     },
 });
 
@@ -222,7 +224,7 @@ RDJ2.LoopOutButton.prototype = new components.Button({
             if (this.isPress(channel, control, value, status)) {
                 this.inSetValue(RDJ2.MIXXX_LOOP_POSITION_UNDEFINED);
             }
-        }
+        };
     },
 });
 
@@ -313,16 +315,7 @@ RDJ2.LoopSizeKnob.prototype = new components.Pot({
 
 /* Management */
 
-//TODO REMOVE
-// RDJ2.decksByGroup = {};
-
-// RDJ2.getDeckByGroup = function (group) {
-//     var deck = RDJ2.decksByGroup[group];
-//     if (undefined === deck) {
-//         RDJ2.logError("No deck found for " + group);
-//     }
-//     return deck;
-// };
+//nothing yet
 
 /* Constructor */
 
@@ -345,6 +338,8 @@ RDJ2.Deck = function (number) {
     this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
     this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
     this.scratchButton = new RDJ2.ScratchButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.scratch[number - 1]]);
+    this.bendMinusButton = new RDJ2.BendMinusButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.bendminus[number - 1]]);
+    this.bendPlusButton = new RDJ2.BendPlusButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.bendplus[number - 1]]);
 
     //loops
     this.loopsizeKnob = new RDJ2.LoopSizeKnob([0xB0, RDJ2.KNOBMAP_CH0_CH1.loopSize[number - 1]]);
@@ -399,31 +394,65 @@ RDJ2.Deck.prototype.isPlaying = function () {
 
 /* Pitch Bend / Track Search */
 
-RDJ2.Deck.prototype.onBendPlusButton = function (isButtonPressed) {
-    if (this.isPlaying()) {
-        this.setValue("fwd", false);
-        /*if (this.getShiftState()) {
-            this.setValue("rate_temp_up_small", isButtonPressed);
-        } else*/ {
-            this.setValue("rate_temp_up", isButtonPressed);
-        }
-    } else {
-        this.setValue("fwd", isButtonPressed);
-    }
+RDJ2.BendMinusButton = function (options) {
+    components.Button.call(this, options);
 };
+RDJ2.BendMinusButton.prototype = new components.Button({
+    input: function (channel, control, value, status, group) {
+        var isPlaying = engine.getValue(this.group, "play");
+        if (isPlaying) {
+            engine.setValue(this.group, "back", false);
+            this.inSetValue(this.isPress(channel, control, value, status));
+        } else {
+            engine.setValue(this.group, "back", this.isPress(channel, control, value, status));
+        }
+    },
+    unshift: function () {
+        this.inSetValue(false);     // bug? inKey was not reset by default on unshift()
+        this.inKey = 'rate_temp_down';
+        this.disconnect();
+        this.outKey = 'rate_temp_down';
+        this.connect();
+        this.trigger();
+    },
+    shift: function () {
+        this.inKey = 'rate_temp_down_small';
+        this.disconnect();
+        this.outKey = 'rate_temp_down_small';
+        this.connect();
+        this.trigger();
+    },
+});
 
-RDJ2.Deck.prototype.onBendMinusButton = function (isButtonPressed) {
-    if (this.isPlaying()) {
-        this.setValue("back", false);
-        /*if (this.getShiftState()) {
-            this.setValue("rate_temp_down_small", isButtonPressed);
-        } else*/ {
-            this.setValue("rate_temp_down", isButtonPressed);
-        }
-    } else {
-        this.setValue("back", isButtonPressed);
-    }
+RDJ2.BendPlusButton = function (options) {
+    components.Button.call(this, options);
 };
+RDJ2.BendPlusButton.prototype = new components.Button({
+    input: function (channel, control, value, status, group) {
+        var isPlaying = engine.getValue(this.group, "play");
+        if (isPlaying) {
+            engine.setValue(this.group, "fwd", false);
+            this.inSetValue(this.isPress(channel, control, value, status));
+        } else {
+            engine.setValue(this.group, "fwd", this.isPress(channel, control, value, status));
+        }
+    },
+    unshift: function () {
+        this.inSetValue(false);     // bug? inKey was not reset by default on unshift()
+        this.inKey = 'rate_temp_up';
+        this.disconnect();
+        this.outKey = 'rate_temp_up';
+        this.connect();
+        this.trigger();
+    },
+    shift: function () {
+        this.inKey = 'rate_temp_up_small';
+        this.disconnect();
+        this.outKey = 'rate_temp_up_small';
+        this.connect();
+        this.trigger();
+    },
+});
 
 /* Vinyl Mode (Scratching) */
 
@@ -489,14 +518,6 @@ RDJ2.Deck.prototype.onJogSpin = function (jogDelta) {
 };
 
 /* MIDI Input Callbacks */
-
-RDJ2.Deck.prototype.recvBendPlusButton = function (channel, control, value) {
-    this.onBendPlusButton(RDJ2.isButtonPressed(value));
-};
-
-RDJ2.Deck.prototype.recvBendMinusButton = function (channel, control, value) {
-    this.onBendMinusButton(RDJ2.isButtonPressed(value));
-};
 
 RDJ2.Deck.prototype.recvJogTouch = function (channel, control, value) {
     this.onJogTouch(RDJ2.isButtonPressed(value));
