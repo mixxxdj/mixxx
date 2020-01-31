@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QColor>
+#include <QVariant>
 #include <QtDebug>
 #include <QtGlobal>
 
@@ -70,6 +71,19 @@ class RgbColor {
             return nullopt();
         }
     }
+    static optional_t optional(const QVariant& varCode) {
+        if (varCode.isNull()) {
+            return nullopt();
+        } else {
+            DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt));
+            bool ok = false;
+            const auto code = varCode.toUInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return nullopt();
+            }
+            return optional(static_cast<code_t>(code));
+        }
+    }
 
   protected:
     // Bitmask of valid codes = 0x00RRGGBB
@@ -105,6 +119,23 @@ QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
         return toQColor(*optional);
     } else {
         return defaultColor;
+    }
+}
+
+// Explicit conversion of both non-optional and optional
+// RgbColor values to QVariant as overloaded free functions.
+
+inline
+QVariant toQVariant(RgbColor color) {
+    return QVariant(static_cast<RgbColor::code_t>(color));
+}
+
+inline
+QVariant toQVariant(RgbColor::optional_t optional) {
+    if (optional) {
+        return toQVariant(*optional);
+    } else {
+        return QVariant();
     }
 }
 
