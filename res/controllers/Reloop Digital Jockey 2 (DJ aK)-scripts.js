@@ -302,20 +302,17 @@ RDJ2.LoopSizeKnob.prototype = new components.Pot({
     }
 });
 
-
-////////////////////////////////////////////////////////////////////////
-// Controls                                                           //
-////////////////////////////////////////////////////////////////////////
-
-//code removed - looks as deprecated
-
 ////////////////////////////////////////////////////////////////////////
 // Decks                                                              //
 ////////////////////////////////////////////////////////////////////////
 
-/* Management */
-
-//nothing yet
+RDJ2.getJogDeltaValue = function (value) {
+    if (0x00 === value) {
+        return 0x00;
+    } else {
+        return value - RDJ2.MIDI_JOG_DELTA_BIAS;
+    }
+};
 
 /* Constructor */
 
@@ -456,30 +453,31 @@ RDJ2.BendPlusButton.prototype = new components.Button({
 
 /* Vinyl Mode (Scratching) */
 
-RDJ2.Deck.prototype.onScratchButton = function (isButtonPressed) {
-    this.scratchButton.input(isButtonPressed);
+RDJ2.Deck.prototype.onScratchButton = function (channel, control, value) {
+    this.scratchButton.input(RDJ2.isButtonPressed(value));
     this.vinylMode = this.scratchButton.isActive();
-
 };
 
 /* Jog Wheel */
 
-RDJ2.Deck.prototype.onJogTouch = function (isJogTouched) {    
-    this.jogTouchState = isJogTouched;
+RDJ2.Deck.prototype.onJogTouch = function (channel, control, value) {    
+    this.jogTouchState = RDJ2.isButtonPressed(value);
     
-    if (this.vinylMode && isJogTouched) {
+    if (this.vinylMode && this.jogTouchState) {
         engine.scratchEnable(this.number,
             RDJ2.JOG_RESOLUTION,
             RDJ2.JOG_SCRATCH_RPM,
             RDJ2.JOG_SCRATCH_ALPHA,
             RDJ2.JOG_SCRATCH_BETA,
             RDJ2.JOG_SCRATCH_RAMP);
-    } else if (!isJogTouched && engine.isScratching(this.number)) {
+    } else if (!this.jogTouchState && engine.isScratching(this.number)) {
         engine.scratchDisable(this.number, RDJ2.JOG_SCRATCH_RAMP);
     }
 };
 
-RDJ2.Deck.prototype.onJogSpin = function (jogDelta) {
+RDJ2.Deck.prototype.onJogSpin = function (channel, control, value) {
+    var jogDelta = RDJ2.getJogDeltaValue(value);
+
     if (engine.isScratching(this.number)) {
         engine.scratchTick(this.number, jogDelta);
     } else if (this.jogTouchState && !this.isPlaying()) {
@@ -517,19 +515,6 @@ RDJ2.Deck.prototype.onJogSpin = function (jogDelta) {
     }
 };
 
-/* MIDI Input Callbacks */
-
-RDJ2.Deck.prototype.recvJogTouch = function (channel, control, value) {
-    this.onJogTouch(RDJ2.isButtonPressed(value));
-};
-
-RDJ2.Deck.prototype.recvJogSpin = function (channel, control, value) {
-    this.onJogSpin(RDJ2.getJogDeltaValue(value));
-};
-
-RDJ2.Deck.prototype.recvScratchButton = function (channel, control, value) {
-    this.onScratchButton(RDJ2.isButtonPressed(value));
-};
 
 ////////////////////////////////////////////////////////////////////////
 // Effects                                                            //
@@ -554,44 +539,6 @@ RDJ2.efxUnitKnobShift = function () {
 
 //note: the shifted dry/wet knob is mapped to beatloop size
 
-////////////////////////////////////////////////////////////////////////
-// Controller functions                                               //
-////////////////////////////////////////////////////////////////////////
-
-RDJ2.group = "[Master]";
-
-RDJ2.getValue = function (key) {
-    return engine.getValue(RDJ2.group, key);
-};
-
-RDJ2.setValue = function (key, value) {
-    engine.setValue(RDJ2.group, key, value);
-};
-
-RDJ2.getJogDeltaValue = function (value) {
-    if (0x00 === value) {
-        return 0x00;
-    } else {
-        return value - RDJ2.MIDI_JOG_DELTA_BIAS;
-    }
-};
-
-
-////////////////////////////////////////////////////////////////////////
-// MIDI callback functions without a group                            //
-////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////
-// MIDI [Channel<n>] callback functions                               //
-////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////
-// Mixxx connected controls callback functions                        //
-////////////////////////////////////////////////////////////////////////
-
-//some out of context code was here (?)
 
 ////////////////////////////////////////////////////////////////////////
 // Mixxx Callback Functions                                           //

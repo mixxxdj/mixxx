@@ -146,7 +146,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.recvJogTouch</key>
+                <key>RDJ2.leftDeck.onJogTouch</key>
                 <status>0x90</status>
                 <midino>0x1D</midino>
                 <options>
@@ -155,7 +155,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.recvJogSpin</key>
+                <key>RDJ2.leftDeck.onJogSpin</key>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
@@ -164,7 +164,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.recvScratchButton</key>
+                <key>RDJ2.leftDeck.onScratchButton</key>
                 <status>0x90</status>
                 <midino>0x1B</midino>
                 <options>
@@ -372,7 +372,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.recvJogTouch</key>
+                <key>RDJ2.rightDeck.onJogTouch</key>
                 <status>0x90</status>
                 <midino>0x59</midino>
                 <options>
@@ -381,7 +381,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.recvJogSpin</key>
+                <key>RDJ2.rightDeck.onJogSpin</key>
                 <status>0xB0</status>
                 <midino>0x47</midino>
                 <options>
@@ -390,7 +390,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.recvScratchButton</key>
+                <key>RDJ2.rightDeck.onScratchButton</key>
                 <status>0x90</status>
                 <midino>0x57</midino>
                 <options>
