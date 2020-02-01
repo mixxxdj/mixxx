@@ -800,18 +800,36 @@
         <!-- Library -->
             <control>
                 <group>[Master]</group>
-                <key>RDJ2.traxButton.input</key>
+                <key>RDJ2.trax.traxButton.input</key>
                 <status>0x90</status>
                 <midino>0x1E</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <control>   <!-- LEFT SHIFT (ONLY)-->
+                <group>[Master]</group>
+                <key>RDJ2.trax.traxButton.input</key>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Library]</group>
-                <key>RDJ2.traxKnob.input</key>
+                <key>RDJ2.trax.traxKnob.input</key>
                 <status>0xB0</status>
                 <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Library]</group>
+                <key>RDJ2.trax.traxKnob.input</key>
+                <status>0xB0</status>
+                <midino>0x31</midino>
                 <options>
                     <script-binding/>
                 </options>

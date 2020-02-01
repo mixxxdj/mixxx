@@ -601,6 +601,56 @@ RDJ2.efxUnitKnobShift = function () {
 
 
 ////////////////////////////////////////////////////////////////////////
+// Library                                                            //
+////////////////////////////////////////////////////////////////////////
+
+/* Trax knob */
+
+RDJ2.TraxKnob = function (options) {
+    components.Encoder.call(this, options);
+};
+RDJ2.TraxKnob.prototype = new components.Encoder({
+    group: "[Library]",
+    unshift: function () {
+        this.inKey = 'MoveVertical';
+    },
+    shift: function () {
+        this.inKey = 'ScrollVertical';
+    },
+    input: function (channel, control, value, status, group) {
+        var knobDelta = RDJ2.getKnobDelta(value);
+        this.inSetValue(knobDelta);
+    }
+});
+
+/* Trax button */
+
+RDJ2.TraxButton = function (options) {
+    components.Button.call(this, options);
+};
+RDJ2.TraxButton.prototype = new components.Button({
+    unshift: function () {
+        this.type = components.Button.prototype.types.toggle;
+        this.group = "[Master]";
+        this.inKey = 'maximize_library';
+    },
+    shift: function () {
+        this.type = components.Button.prototype.types.push;
+        this.group = "[Library]";
+        this.inKey = 'MoveFocusForward';
+    },
+});
+
+/* Trax container */
+
+RDJ2.Trax = function () {
+    this.traxKnob = new RDJ2.TraxKnob();
+    this.traxButton = new RDJ2.TraxButton();
+};
+RDJ2.Trax.prototype = new components.ComponentContainer();
+
+
+////////////////////////////////////////////////////////////////////////
 // Mixxx Callback Functions                                           //
 ////////////////////////////////////////////////////////////////////////
 
@@ -610,7 +660,7 @@ RDJ2.init = function (id, debug) {
     
     RDJ2.logInfo("Initializing controller");
 
-    //left and right shift buttons
+    // left and right shift buttons
     RDJ2.leftShiftButton = new RDJ2.ShiftButton([0x90, 0x0A]);
     RDJ2.rightShiftButton = new RDJ2.ShiftButton([0x90, 0x46]);
     
@@ -618,11 +668,11 @@ RDJ2.init = function (id, debug) {
     RDJ2.leftDeck = new RDJ2.Deck(1);
     RDJ2.rightDeck = new RDJ2.Deck(2);
 
-    //efx unit
+    // efx unit
     RDJ2.fx1 = new components.EffectUnit(1);
     RDJ2.fx1.EffectUnitKnob.prototype.unshift = RDJ2.efxUnitKnobUnshift;
     RDJ2.fx1.EffectUnitKnob.prototype.shift = RDJ2.efxUnitKnobShift;
-    RDJ2.fx1.EffectUnitKnob.prototype.eu = RDJ2.fx1;    //hack for use by reimplemented unshift/shift
+    RDJ2.fx1.EffectUnitKnob.prototype.eu = RDJ2.fx1;    // hack for use by reimplemented unshift/shift
     RDJ2.fx1.enableButtons[1].midi = [0x90, 0x07];
     RDJ2.fx1.enableButtons[2].midi = [0x90, 0x0C];
     RDJ2.fx1.enableButtons[3].midi = [0x90, 0x09];
@@ -641,10 +691,15 @@ RDJ2.init = function (id, debug) {
     // Now init the fx unit
     RDJ2.fx1.init();
 
-    //connect decks and efx units to shift buttons
+    // Trax/library
+    RDJ2.trax = new RDJ2.Trax();
+
+    // connect decks, efx units and trax to shift buttons
     RDJ2.leftShiftButton.connectContainer(RDJ2.leftDeck);
     RDJ2.leftShiftButton.connectContainer(RDJ2.fx1);
+    RDJ2.leftShiftButton.connectContainer(RDJ2.trax);
     RDJ2.rightShiftButton.connectContainer(RDJ2.rightDeck);
+    RDJ2.rightShiftButton.connectContainer(RDJ2.trax);
 };
 
 RDJ2.shutdown = function () {
