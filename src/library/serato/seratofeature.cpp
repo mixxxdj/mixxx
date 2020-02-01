@@ -884,10 +884,11 @@ TreeItemModel* SeratoFeature::getChildModel() {
 
 QString SeratoFeature::formatRootViewHtml() const {
     QString title = tr("Serato");
-    QString summary = tr("Reads the following from Serato the Music directory and removable devices:");
+    QString summary = tr("Reads the following from the Serato Music directory and removable devices:");
     QStringList items;
 
-    items << tr("Absolutely nothing yet :(");
+    items << tr("Tracks")
+          << tr("Crates");
 
     QString html;
     QString refreshLink = tr("Check for Serato databases (refresh)");
