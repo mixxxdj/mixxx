@@ -108,13 +108,11 @@ inline bool operator!=(RgbColor lhs, RgbColor rhs) {
 // Explicit conversion of both non-optional and optional
 // RgbColor values to QColor as overloaded free functions.
 
-inline
-QColor toQColor(RgbColor color) {
+inline QColor toQColor(RgbColor color) {
     return QColor::fromRgb(color);
 }
 
-inline
-QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
+inline QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
     if (optional) {
         return toQColor(*optional);
     } else {
@@ -125,13 +123,11 @@ QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
 // Explicit conversion of both non-optional and optional
 // RgbColor values to QVariant as overloaded free functions.
 
-inline
-QVariant toQVariant(RgbColor color) {
+inline QVariant toQVariant(RgbColor color) {
     return QVariant(static_cast<RgbColor::code_t>(color));
 }
 
-inline
-QVariant toQVariant(RgbColor::optional_t optional) {
+inline QVariant toQVariant(RgbColor::optional_t optional) {
     if (optional) {
         return toQVariant(*optional);
     } else {
@@ -141,13 +137,11 @@ QVariant toQVariant(RgbColor::optional_t optional) {
 
 // Debug output stream operators
 
-inline
-QDebug operator<<(QDebug dbg, RgbColor color) {
+inline QDebug operator<<(QDebug dbg, RgbColor color) {
     return dbg << toQColor(color);
 }
 
-inline
-QDebug operator<<(QDebug dbg, RgbColor::optional_t optional) {
+inline QDebug operator<<(QDebug dbg, RgbColor::optional_t optional) {
     return dbg << toQColor(optional);
 }
 
