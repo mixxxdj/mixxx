@@ -17,6 +17,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "library/dao/trackschema.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -85,13 +86,52 @@ struct serato_track_t {
     bool beatgridlocked = false;
     bool missing = false;
     quint32 filetime = 0;
-    quint32 dateadded = 0;
+    quint32 datetimeadded = 0;
 };
 
 const QString kDatabaseDirectory = "_Serato_";
 const QString kDatabaseFilename = "database V2";
-const QString kCrateFilter = "Subcrates/*.crate";
-const QString kSmartCrateFilter = "Smart Crates/*.scrate";
+const QString kCrateDirectory = "Subcrates";
+const QString kCrateFilter = "*.crate";
+const QString kSmartCrateDirectory = "Smart Crates";
+const QString kSmartCrateFilter = "*.scrate";
+
+const QString kSeratoLibraryTable = "serato_library";
+const QString kSeratoPlaylistsTable = "serato_library";
+const QString kSeratoPlaylistTracksTable = "serato_library";
+
+int createPlaylist(QSqlDatabase& database, QString name, QString databasePath) {
+    QSqlQuery query(database);
+    query.prepare(
+            "INSERT INTO serato_playlists (name, serato_db)"
+            "VALUES (:name, :serato_db)");
+    query.bindValue(":name", name);
+    query.bindValue(":serato_db", databasePath);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "databasePath: " << databasePath;
+        return -1;
+    }
+
+    return query.lastInsertId().toInt();
+}
+
+int insertTrackIntoPlaylist(QSqlDatabase& database, int playlistId, int trackId, int position) {
+    QSqlQuery query(database);
+    query.prepare(
+            "INSERT INTO serato_playlist_tracks (playlist_id, track_id, position) "
+            "VALUES (:playlist_id, :track_id, :position)");
+    query.bindValue(":playlist_id", playlistId);
+    query.bindValue(":track_id", trackId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+
+    return query.lastInsertId().toInt();
+}
 
 inline QString parseText(const QByteArray& data, const quint32 size) {
     return QTextCodec::codecForName("UTF-16BE")->toUnicode(data, size);
@@ -200,7 +240,7 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
             track.filetime = parseUInt32(data);
             break;
         case FieldId::DateAdded:
-            track.dateadded = parseUInt32(data);
+            track.datetimeadded = parseUInt32(data);
             break;
         case FieldId::DateAddedText:
             // Ignore this field, but do not print a debug message
@@ -223,6 +263,11 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
         return false;
     }
 
+    if (track.location.isEmpty()) {
+        qWarning() << "Found track with empty location field.";
+        return false;
+    }
+
     return true;
 }
 
@@ -231,9 +276,19 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     QDir databaseDir = QDir(databaseItem->getData().toString());
     QString databaseFilePath = databaseDir.filePath(kDatabaseFilename);
 
-    qWarning() << "Parsing database"
-               << databaseName
-               << "at" << databaseFilePath;
+    QDir databaseRootDir = QDir(databaseDir);
+    databaseRootDir.cdUp();
+
+#if defined(__WINDOWS__)
+    // Find drive letter (paths are relative to drive root on Windows)
+    while (databaseRootDir.cdUp()) {
+        // Nothing to do here
+    }
+#endif
+
+    qDebug() << "Parsing Serato database"
+             << databaseName
+             << "at" << databaseFilePath;
 
     if (!QFile(databaseFilePath).exists()) {
         qWarning() << "Serato database file not found: "
@@ -259,6 +314,46 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 
     ScopedTransaction transaction(database);
 
+    QSqlQuery query(database);
+    query.prepare(
+            "INSERT INTO " + kSeratoLibraryTable + " ("
+            + LIBRARYTABLE_TITLE + ", "
+            + LIBRARYTABLE_ARTIST + ", "
+            + LIBRARYTABLE_ALBUM + ", "
+            + LIBRARYTABLE_GENRE + ", "
+            + LIBRARYTABLE_COMMENT + ", "
+            + LIBRARYTABLE_GROUPING + ", "
+            + LIBRARYTABLE_YEAR + ", "
+            + LIBRARYTABLE_DURATION + ", "
+            + LIBRARYTABLE_BITRATE + ", "
+            + LIBRARYTABLE_SAMPLERATE + ", "
+            + LIBRARYTABLE_BPM + ", "
+            + LIBRARYTABLE_KEY + ", "
+            + LIBRARYTABLE_LOCATION + ", "
+            + LIBRARYTABLE_BPM_LOCK + ", "
+            + LIBRARYTABLE_DATETIMEADDED + ", "
+            "label, "
+            "serato_db"
+            ") VALUES ("
+            ":title, "
+            ":artist, "
+            ":album, "
+            ":genre, "
+            ":comment, "
+            ":grouping, "
+            ":year, "
+            ":duration, "
+            ":bitrate, "
+            ":samplerate, "
+            ":bpm, "
+            ":key, "
+            ":location, "
+            ":bpm_lock, "
+            ":datetime_added, "
+            ":label, "
+            ":serato_db"
+            ")");
+
     QFile databaseFile = QFile(databaseFilePath);
     if (!databaseFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
@@ -267,6 +362,14 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
         return QString();
     }
 
+    int playlistId = createPlaylist(database, databaseDir.path(), databaseDir.path());
+    if (playlistId < 0) {
+        qWarning() << "Failed to create library playlist for "
+                   << databaseFilePath;
+        return QString();
+    }
+
+    int trackCount = 0;
     QByteArray headerData = databaseFile.read(8);
     while (headerData.length() == 8) {
         QString fieldName = QString(headerData.mid(0, 4));
@@ -287,12 +390,11 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
         }
 
         // Parse field data
-        qWarning() << "FieldId: " << fieldId;
         switch (static_cast<FieldId>(fieldId)) {
         case FieldId::Version: {
             QString version = parseText(data, fieldSize);
-            qWarning() << "Serato Database Version: "
-                       << version;
+            qDebug() << "Serato Database Version: "
+                     << version;
             break;
         }
         case FieldId::Track: {
@@ -300,8 +402,33 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             QBuffer buffer = QBuffer(&data);
             buffer.open(QIODevice::ReadOnly);
             if (parseTrack(track, buffer)) {
-                qWarning() << "Track: " << track.location;
-                // TODO
+                QString location = databaseRootDir.absoluteFilePath(track.location);
+                query.bindValue(":title", track.title);
+                query.bindValue(":artist", track.artist);
+                query.bindValue(":album", track.album);
+                query.bindValue(":genre", track.genre);
+                query.bindValue(":comment", track.comment);
+                query.bindValue(":grouping", track.grouping);
+                query.bindValue(":year", track.year);
+                query.bindValue(":duration", track.duration);
+                query.bindValue(":bitrate", track.bitrate);
+                query.bindValue(":samplerate", track.samplerate);
+                query.bindValue(":bpm", track.bpm);
+                query.bindValue(":key", track.key);
+                query.bindValue(":location", location);
+                query.bindValue(":bpm_lock", track.beatgridlocked);
+                query.bindValue(":datetime_added", track.datetimeadded);
+                query.bindValue(":label", track.label);
+                query.bindValue(":serato_db", databaseDir.path());
+
+                if (!query.exec()) {
+                    LOG_FAILED_QUERY(query);
+                } else {
+                    int trackId = query.lastInsertId().toInt();
+                    insertTrackIntoPlaylist(database, playlistId, trackId, trackCount);
+                    trackCount++;
+                }
+                break;
             }
             break;
         }
@@ -325,6 +452,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                    << databaseFilePath
                    << ".";
     }
+
+    transaction.commit();
 
     return databaseFilePath;
 }
@@ -398,6 +527,25 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
     return foundDatabases;
 }
 
+void clearTable(QSqlDatabase& database, QString tableName) {
+    QSqlQuery query(database);
+    query.prepare("DELETE FROM " + tableName);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "tableName:" << tableName;
+        return;
+    }
+
+    query.prepare("DELETE FROM sqlite_sequence WHERE name=:name");
+    query.bindValue(":name", tableName);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "tableName:" << tableName;
+        return;
+    }
+
+    qDebug() << "Serato table entries of '" << tableName << "' have been cleared.";
+}
+
 } // anonymous namespace
 
 SeratoPlaylistModel::SeratoPlaylistModel(QObject* parent,
@@ -454,6 +602,7 @@ TrackPointer SeratoPlaylistModel::getTrack(const QModelIndex& index) const {
 bool SeratoPlaylistModel::isColumnHiddenByDefault(int column) {
     if (
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) {
         return true;
     }
@@ -465,10 +614,59 @@ SeratoFeature::SeratoFeature(
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_icon(":/images/library/ic_library_serato.svg") {
+    QStringList columns;
+    columns << LIBRARYTABLE_ID
+            << LIBRARYTABLE_TITLE
+            << LIBRARYTABLE_ARTIST
+            << LIBRARYTABLE_ALBUM
+            << LIBRARYTABLE_GENRE
+            << LIBRARYTABLE_COMMENT
+            << LIBRARYTABLE_GROUPING
+            << LIBRARYTABLE_YEAR
+            << LIBRARYTABLE_DURATION
+            << LIBRARYTABLE_BITRATE
+            << LIBRARYTABLE_SAMPLERATE
+            << LIBRARYTABLE_BPM
+            << LIBRARYTABLE_KEY
+            << LIBRARYTABLE_TRACKNUMBER
+            << LIBRARYTABLE_LOCATION
+            << LIBRARYTABLE_BPM_LOCK
+            << "label"
+            << "serato_db";
+
+    QStringList searchColumns;
+    searchColumns
+            << LIBRARYTABLE_ARTIST
+            << LIBRARYTABLE_TITLE
+            << LIBRARYTABLE_ALBUM
+            << LIBRARYTABLE_YEAR
+            << LIBRARYTABLE_GENRE
+            << LIBRARYTABLE_TRACKNUMBER
+            << LIBRARYTABLE_LOCATION
+            << LIBRARYTABLE_COMMENT
+            << LIBRARYTABLE_DURATION
+            << LIBRARYTABLE_BITRATE
+            << LIBRARYTABLE_BPM
+            << LIBRARYTABLE_KEY;
+
+    m_trackSource = QSharedPointer<BaseTrackCache>(
+            new BaseTrackCache(m_pTrackCollection, kSeratoLibraryTable, LIBRARYTABLE_ID, columns, false));
+    m_trackSource->setSearchColumns(searchColumns);
+    m_pSeratoPlaylistModel = new SeratoPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+
     m_title = tr("Serato");
+
+    //Clear any previous Serato database entries if they exist
+    QSqlDatabase database = m_pTrackCollection->database();
+    ScopedTransaction transaction(database);
+    clearTable(database, kSeratoPlaylistTracksTable);
+    clearTable(database, kSeratoPlaylistsTable);
+    clearTable(database, kSeratoLibraryTable);
+    transaction.commit();
 
     connect(&m_databasesFutureWatcher, &QFutureWatcher<QList<TreeItem*>>::finished, this, &SeratoFeature::onSeratoDatabasesFound);
     connect(&m_tracksFutureWatcher, &QFutureWatcher<QString>::finished, this, &SeratoFeature::onTracksFound);
+
     // initialize the model
     m_childModel.setRootItem(std::make_unique<TreeItem>(this));
 }
@@ -550,7 +748,7 @@ void SeratoFeature::refreshLibraryModels() {
 void SeratoFeature::activate() {
     qDebug() << "SeratoFeature::activate()";
 
-    // Let a worker thread do the XML parsing
+    // Let a worker thread do the parsing
     m_databasesFuture = QtConcurrent::run(findSeratoDatabases, this);
     m_databasesFutureWatcher.setFuture(m_databasesFuture);
     m_title = tr("(loading) Serato");
@@ -571,23 +769,12 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
         return;
     }
 
-    // TreeItem list data holds 2 values in a QList and have different meanings.
-    // If the 2nd QList element IS_RECORDBOX_DEVICE, the 1st element is the
-    // filesystem device path, and the parseDeviceDB concurrent thread to parse
-    // the Rekcordbox database is initiated. If the 2nd element is
-    // IS_NOT_RECORDBOX_DEVICE, the 1st element is the playlist path and it is
-    // activated.
-    QList<QVariant> data = item->getData().toList();
-
     qDebug() << "SeratoFeature::activateChild " << item->getLabel();
 
-    // Let a worker thread do the XML parsing
+    // Let a worker thread do the parsing
     m_tracksFuture = QtConcurrent::run(parseDatabase, static_cast<Library*>(parent())->dbConnectionPool(), item);
     m_tracksFutureWatcher.setFuture(m_tracksFuture);
 
-    // This device is now a playlist element, future activations should treat is
-    // as such
-    //item->setData(QVariant(data));
 }
 
 void SeratoFeature::onSeratoDatabasesFound() {
@@ -659,4 +846,11 @@ void SeratoFeature::onSeratoDatabasesFound() {
 void SeratoFeature::onTracksFound() {
     qDebug() << "onTracksFound";
     m_childModel.triggerRepaint();
+
+    QString databasePlaylist = m_tracksFuture.result();
+
+    qDebug() << "Show Serato Database Playlist: " << databasePlaylist;
+
+    m_pSeratoPlaylistModel->setPlaylist(databasePlaylist);
+    emit showTrackModel(m_pSeratoPlaylistModel);
 }
