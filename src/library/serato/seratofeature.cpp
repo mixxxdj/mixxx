@@ -31,12 +31,23 @@
 
 namespace {
 
+// Serato Database Field IDs
+// The "magic" value is the short 4 byte ascii code intepreted as quint32, so
+// that we can use the value in a switch statement instead of going through
+// a strcmp if/else ladder.
 enum class FieldId : quint32 {
     Version = 0x7672736e,        // vrsn
     Track = 0x6f74726b,          // otrk
     FileType = 0x74747970,       // ttyp
     FilePath = 0x7066696c,       // pfil
     SongTitle = 0x74736e67,      // tsng
+    Artist = 0x74617274,         // tart
+    Album = 0x74616c62,          // talb
+    Genre = 0x7467656e,          // tgen
+    Comment = 0x74636f6d,        // tcom
+    Grouping = 0x74677270,       // tgrp
+    Label = 0x746c626c,          // tlbl
+    Year = 0x74747972,           // ttyr
     Length = 0x746c656e,         // tlen
     Bitrate = 0x74626974,        // tbit
     SampleRate = 0x74736d70,     // tsmp
@@ -45,7 +56,6 @@ enum class FieldId : quint32 {
     DateAdded = 0x75616464,      // uadd
     Key = 0x746b6579,            // tkey
     BeatgridLocked = 0x6262676c, // bbgl
-    Artist = 0x74617274,         // tart
     FileTime = 0x75746d65,       // utme
     Missing = 0x626d6973,        // bmis
     Sorting = 0x7472736f,        // osrt
@@ -60,12 +70,18 @@ struct serato_track_t {
     QString filetype;
     QString location;
     QString title;
-    QString duration;
+    QString artist;
+    QString album;
+    QString genre;
+    QString comment;
+    QString grouping;
+    QString label;
+    int year = -1;
+    int duration = -1;
     QString bitrate;
     QString samplerate;
-    QString bpm;
+    double bpm = -1.0;
     QString key;
-    QString artist;
     bool beatgridlocked = false;
     bool missing = false;
     quint32 filetime = 0;
@@ -123,23 +139,56 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
         case FieldId::SongTitle:
             track.title = parseText(data, fieldSize);
             break;
-        case FieldId::Length:
-            track.duration = parseText(data, fieldSize);
+        case FieldId::Artist:
+            track.artist = parseText(data, fieldSize);
             break;
+        case FieldId::Album:
+            track.album = parseText(data, fieldSize);
+            break;
+        case FieldId::Genre:
+            track.genre = parseText(data, fieldSize);
+            break;
+        case FieldId::Length: {
+            bool ok;
+            int duration = parseText(data, fieldSize).toInt(&ok);
+            if (ok) {
+                track.duration = duration;
+            }
+            break;
+        }
         case FieldId::Bitrate:
             track.bitrate = parseText(data, fieldSize);
             break;
         case FieldId::SampleRate:
             track.samplerate = parseText(data, fieldSize);
             break;
-        case FieldId::Bpm:
-            track.bpm = parseText(data, fieldSize);
+        case FieldId::Bpm: {
+            bool ok;
+            double bpm = parseText(data, fieldSize).toDouble(&ok);
+            if (ok) {
+                track.bpm = bpm;
+            }
             break;
+        }
+        case FieldId::Comment:
+            track.comment = parseText(data, fieldSize);
+            break;
+        case FieldId::Grouping:
+            track.grouping = parseText(data, fieldSize);
+            break;
+        case FieldId::Label:
+            track.label = parseText(data, fieldSize);
+            break;
+        case FieldId::Year: {
+            bool ok;
+            int year = parseText(data, fieldSize).toInt(&ok);
+            if (ok) {
+                track.year = year;
+            }
+            break;
+        }
         case FieldId::Key:
             track.key = parseText(data, fieldSize);
-            break;
-        case FieldId::Artist:
-            track.artist = parseText(data, fieldSize);
             break;
         case FieldId::BeatgridLocked:
             track.beatgridlocked = parseBoolean(data);
