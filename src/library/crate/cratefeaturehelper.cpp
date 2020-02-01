@@ -35,35 +35,37 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
     const QString proposedCrateName =
             proposeNameForNewCrate(tr("New Crate"));
     Crate newCrate;
-    while (!newCrate.hasName()) {
+    for (;;) {
         bool ok = false;
-        newCrate.parseName(
+        auto newName =
                 QInputDialog::getText(
                         nullptr,
                         tr("Create New Crate"),
                         tr("Enter name for new crate:"),
                         QLineEdit::Normal,
                         proposedCrateName,
-                        &ok));
+                        &ok);
         if (!ok) {
             return CrateId();
         }
-        if (!newCrate.hasName()) {
+        newName = parseEntityName(newName);
+        if (!isValidEntityName(newName)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Creating Crate Failed"),
                     tr("A crate cannot have a blank name."));
             continue;
         }
-
-        if (m_pTrackCollection->crates().readCrateByName(newCrate.getName())) {
+        if (m_pTrackCollection->crates().readCrateByName(newName)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Creating Crate Failed"),
                     tr("A crate by that name already exists."));
-            newCrate.resetName();
             continue;
         }
+        newCrate.setName(std::move(newName));
+        DEBUG_ASSERT(newCrate.hasName());
+        break;
     }
 
     CrateId newCrateId;
@@ -89,34 +91,37 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
                     QString("%1 %2").arg(
                             oldCrate.getName(), tr("copy" , "[noun]")));
     Crate newCrate;
-    while (!newCrate.hasName()) {
+    for (;;) {
         bool ok = false;
-        newCrate.parseName(
+        auto newName =
                 QInputDialog::getText(
                         nullptr,
                          tr("Duplicate Crate"),
                          tr("Enter name for new crate:"),
                          QLineEdit::Normal,
                          proposedCrateName,
-                         &ok));
+                         &ok);
         if (!ok) {
             return CrateId();
         }
-        if (!newCrate.hasName()) {
+        newName = parseEntityName(newName);
+        if (!isValidEntityName(newName)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Duplicating Crate Failed"),
                     tr("A crate cannot have a blank name."));
             continue;
         }
-        if (m_pTrackCollection->crates().readCrateByName(newCrate.getName())) {
+        if (m_pTrackCollection->crates().readCrateByName(newName)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Duplicating Crate Failed"),
                     tr("A crate by that name already exists."));
-            newCrate.resetName();
             continue;
         }
+        newCrate.setName(std::move(newName));
+        DEBUG_ASSERT(newCrate.hasName());
+        break;
     }
 
     CrateId newCrateId;
