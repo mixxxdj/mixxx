@@ -271,9 +271,146 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
     return true;
 }
 
+inline QString parseCrateTrack(QIODevice& buffer) {
+    QString location;
+    QByteArray headerData = buffer.read(8);
+    while (headerData.length() == 8) {
+        QString fieldName = QString(headerData.mid(0, 4));
+        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
+        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+
+        // Read field data
+        QByteArray data = buffer.read(fieldSize);
+        if (static_cast<quint32>(data.length()) != fieldSize) {
+            qWarning() << "Failed to read "
+                       << fieldSize
+                       << " bytes for "
+                       << fieldName
+                       << " field.";
+            return QString();
+        }
+
+        // Parse field data
+        switch (static_cast<FieldId>(fieldId)) {
+        case FieldId::TrackPath:
+            location = parseText(data, fieldSize);
+            break;
+        default:
+            qDebug() << "Ignoring unknown field "
+                     << fieldName
+                     << " ("
+                     << fieldSize
+                     << " bytes).";
+        }
+
+        headerData = buffer.read(8);
+    }
+
+    if (headerData.length() != 0) {
+        qWarning() << "Found "
+                   << headerData.length()
+                   << " extra bytes at end of track definition.";
+        return QString();
+    }
+
+    return location;
+}
+
+QString parseCrate(QSqlDatabase& database, QString databasePath, QString crateFilePath, const QMap<QString, int>& trackIdMap) {
+    QString crateName = QFileInfo(crateFilePath).baseName();
+    qDebug() << "Parsing crate"
+               << crateName
+               << "at" << crateFilePath;
+
+    //Open the database connection in this thread.
+    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
+        qWarning() << "Failed to open database for Serato parser."
+                   << database.lastError();
+        return QString();
+    }
+
+    QFile crateFile = QFile(crateFilePath);
+    if (!crateFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open file "
+                   << crateFilePath
+                   << " for reading.";
+        return QString();
+    }
+
+    int playlistId = createPlaylist(database, crateFilePath, databasePath);
+    if (playlistId < 0) {
+        qWarning() << "Failed to create library playlist for "
+                   << crateFilePath;
+        return QString();
+    }
+
+    int trackCount = 0;
+    QByteArray headerData = crateFile.read(8);
+    while (headerData.length() == 8) {
+        QString fieldName = QString(headerData.mid(0, 4));
+        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
+        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+
+        // Read field data
+        QByteArray data = crateFile.read(fieldSize);
+        if (static_cast<quint32>(data.length()) != fieldSize) {
+            qWarning() << "Failed to read "
+                       << fieldSize
+                       << " bytes for "
+                       << fieldName
+                       << " field from "
+                       << crateFilePath
+                       << ".";
+            return QString();
+        }
+
+        // Parse field data
+        switch (static_cast<FieldId>(fieldId)) {
+        case FieldId::Version: {
+            QString version = parseText(data, fieldSize);
+            qDebug() << "Serato Database Version: "
+                     << version;
+            break;
+        }
+        case FieldId::Track: {
+            QBuffer buffer = QBuffer(&data);
+            buffer.open(QIODevice::ReadOnly);
+            QString location = parseCrateTrack(buffer);
+            if (!location.isEmpty()) {
+                int trackId = trackIdMap.value(location, -1);
+                insertTrackIntoPlaylist(database, playlistId, trackId, trackCount);
+                trackCount++;
+                break;
+            }
+            break;
+        }
+        default:
+            qDebug() << "Ignoring unknown field "
+                     << fieldName
+                     << " ("
+                     << fieldSize
+                     << " bytes) in database "
+                     << crateFilePath
+                     << ".";
+        }
+
+        headerData = crateFile.read(8);
+    }
+
+    if (headerData.length() != 0) {
+        qWarning() << "Found "
+                   << headerData.length()
+                   << " extra bytes at end of Serato database file "
+                   << crateFilePath
+                   << ".";
+    }
+
+    return crateName;
+}
+
 QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* databaseItem) {
     QString databaseName = databaseItem->getLabel();
-    QDir databaseDir = QDir(databaseItem->getData().toString());
+    QDir databaseDir = QDir(databaseItem->getData().toList()[0].toString());
     QString databaseFilePath = databaseDir.filePath(kDatabaseFilename);
 
     QDir databaseRootDir = QDir(databaseDir);
@@ -370,6 +507,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     }
 
     int trackCount = 0;
+    QMap<QString, int> trackIdMap;
     QByteArray headerData = databaseFile.read(8);
     while (headerData.length() == 8) {
         QString fieldName = QString(headerData.mid(0, 4));
@@ -426,6 +564,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                 } else {
                     int trackId = query.lastInsertId().toInt();
                     insertTrackIntoPlaylist(database, playlistId, trackId, trackCount);
+                    trackIdMap.insert(track.location, trackId);
                     trackCount++;
                 }
                 break;
@@ -452,6 +591,28 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                    << databaseFilePath
                    << ".";
     }
+
+    // Parse Crates
+    QDir crateDir = QDir(databaseDir);
+    if (crateDir.cd(kCrateDirectory)) {
+        QStringList filters;
+        filters << kCrateFilter;
+        foreach(const QString& entry, crateDir.entryList(filters)) {
+            QString crateFilePath = crateDir.filePath(entry);
+            QString crateName = parseCrate(database, databaseDir.path(), crateFilePath, trackIdMap);
+            if (!crateName.isEmpty()) {
+                QList<QVariant> data;
+                data << QVariant(crateFilePath)
+                     << QVariant(true);
+                databaseItem->appendChild(crateName, data);
+            }
+        }
+    } else {
+        qWarning() << "Failed to open crate directory: "
+                   << databaseDir.filePath(kCrateDirectory);
+    }
+
+    // TODO: Parse Smart Crates
 
     transaction.commit();
 
@@ -519,7 +680,11 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
         }
 
         foundDatabase->setLabel(displayPath);
-        foundDatabase->setData(QVariant(databaseDir.path()));
+
+        QList<QVariant> data;
+        data << QVariant(databaseDir.path())
+             << QVariant(false);
+        foundDatabase->setData(data);
 
         foundDatabases << foundDatabase;
     }
@@ -769,12 +934,33 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
         return;
     }
 
+    // TreeItem list data holds 2 values in a QList:
+    //
+    //     1. Playlist Name/Path (QString)
+    //     2. isPlaylist (boolean)
+    //
+    // If the second element is false, then the database does still have to be
+    // parsed.
+    QList<QVariant> data = item->getData().toList();
+    QString playlist = data[0].toString();
+    bool isPlaylist = data[1].toBool();
+
     qDebug() << "SeratoFeature::activateChild " << item->getLabel();
 
-    // Let a worker thread do the parsing
-    m_tracksFuture = QtConcurrent::run(parseDatabase, static_cast<Library*>(parent())->dbConnectionPool(), item);
-    m_tracksFutureWatcher.setFuture(m_tracksFuture);
+    if (!isPlaylist) {
+        // Let a worker thread do the parsing
+        m_tracksFuture = QtConcurrent::run(parseDatabase, static_cast<Library*>(parent())->dbConnectionPool(), item);
+        m_tracksFutureWatcher.setFuture(m_tracksFuture);
 
+        // This device is now a playlist element, future activations should
+        // treat is as such
+        data[1] = QVariant(true);
+        item->setData(QVariant(data));
+    } else {
+        qDebug() << "Activate Serato Playlist: " << playlist;
+        m_pSeratoPlaylistModel->setPlaylist(playlist);
+        emit showTrackModel(m_pSeratoPlaylistModel);
+    }
 }
 
 void SeratoFeature::onSeratoDatabasesFound() {
