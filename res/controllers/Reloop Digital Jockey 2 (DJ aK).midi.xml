@@ -296,6 +296,24 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.loadButton.input</key>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel1]</group>
+                <key>RDJ2.leftDeck.loadButton.input</key>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
 
         <!-- Right Deck -->
             <control>
@@ -540,6 +558,24 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loadButton.input</key>
+                <status>0x90</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loadButton.input</key>
+                <status>0x90</status>
+                <midino>0x6D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
 
         <!-- Left EFX -->
             <control>
@@ -756,6 +792,26 @@
                 <key>RDJ2.leftDeck.loopActiveButton.input</key>
                 <status>0x90</status>
                 <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+        <!-- Library -->
+            <control>
+                <group>[Master]</group>
+                <key>RDJ2.traxButton.input</key>
+                <status>0x90</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>RDJ2.traxKnob.input</key>
+                <status>0xB0</status>
+                <midino>0x13</midino>
                 <options>
                     <script-binding/>
                 </options>

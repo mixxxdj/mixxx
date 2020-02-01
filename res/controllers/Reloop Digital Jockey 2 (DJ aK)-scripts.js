@@ -66,6 +66,7 @@ RDJ2.MIXXX_LOOP_POSITION_UNDEFINED = -1;
    have the same handlers mapped in the xml file and the outputs
    always refer to the unshifted controls. */
 RDJ2.BUTTONMAP_CH0_CH1 = {
+    load: [0x13, 0x4F],
     play: [0x19, 0x55],
     cue: [0x18, 0x54],
     sync: [0x01, 0x3D],
@@ -317,6 +318,7 @@ RDJ2.Deck = function (number) {
     components.Deck.call(this, number);
 
     //primary buttons
+    this.loadButton = new RDJ2.LoadButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.load[number - 1]]);
     this.playButton = new components.PlayButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.play[number - 1]]);
     this.cueButton = new components.CueButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.cue[number - 1]]);
     this.syncButton = new components.SyncButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.sync[number - 1]]);
@@ -371,6 +373,25 @@ RDJ2.Deck.prototype.setParameter = function (key, param) {
 RDJ2.Deck.prototype.triggerValue = function (key) {
     engine.trigger(this.group, key);
 };
+
+/* Load Track */
+
+
+RDJ2.LoadButton = function (options) {
+    components.Button.call(this, options);
+};
+RDJ2.LoadButton.prototype = new components.Button({
+    outKey: 'track_loaded',
+    unshift: function () {
+        this.inKey = 'LoadSelectedTrack';
+    },
+    shift: function () {
+        this.inKey = 'eject';
+    },
+});
+
+
+
 
 /* Cue & Play */
 
