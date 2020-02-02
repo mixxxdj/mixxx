@@ -337,7 +337,8 @@ inline QString parseCrateTrack(QIODevice* buffer) {
     return location;
 }
 
-QString parseCrate(QSqlDatabase& database, QString databasePath, QString crateFilePath, const QMap<QString, int>& trackIdMap) {
+QString parseCrate(const QSqlDatabase& database, QString databasePath,
+                   QString crateFilePath, const QMap<QString, int>& trackIdMap) {
     QString crateName = QFileInfo(crateFilePath).baseName();
     qDebug() << "Parsing crate"
                << crateName
