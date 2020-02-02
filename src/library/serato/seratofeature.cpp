@@ -100,6 +100,8 @@ const QString kSeratoLibraryTable = QStringLiteral("serato_library");
 const QString kSeratoPlaylistsTable = QStringLiteral("serato_library");
 const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_library");
 
+constexpr int kHeaderSize = 2*sizeof(quint32);
+
 int createPlaylist(const QSqlDatabase& database, const QString& name, const QString& databasePath) {
     QSqlQuery query(database);
     query.prepare(
@@ -151,11 +153,11 @@ inline quint32 parseUInt32(const QByteArray& data) {
 }
 
 inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
-    QByteArray headerData = buffer->read(8);
-    while (headerData.length() == 8) {
-        QString fieldName = QString(headerData.mid(0, 4));
-        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
-        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+    QByteArray headerData = buffer->read(kHeaderSize);
+    while (headerData.length() == kHeaderSize) {
+        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldId = parseUInt32(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldSize = parseUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = buffer->read(fieldSize);
@@ -253,7 +255,7 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
                      << " bytes).";
         }
 
-        headerData = buffer->read(8);
+        headerData = buffer->read(kHeaderSize);
     }
 
     if (headerData.length() != 0) {
@@ -273,11 +275,11 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
 
 inline QString parseCrateTrack(QIODevice* buffer) {
     QString location;
-    QByteArray headerData = buffer->read(8);
-    while (headerData.length() == 8) {
-        QString fieldName = QString(headerData.mid(0, 4));
-        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
-        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+    QByteArray headerData = buffer->read(kHeaderSize);
+    while (headerData.length() == kHeaderSize) {
+        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldId = parseUInt32(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldSize = parseUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = buffer->read(fieldSize);
@@ -303,7 +305,7 @@ inline QString parseCrateTrack(QIODevice* buffer) {
                      << " bytes).";
         }
 
-        headerData = buffer->read(8);
+        headerData = buffer->read(kHeaderSize);
     }
 
     if (headerData.length() != 0) {
@@ -345,11 +347,11 @@ QString parseCrate(QSqlDatabase& database, QString databasePath, QString crateFi
     }
 
     int trackCount = 0;
-    QByteArray headerData = crateFile.read(8);
-    while (headerData.length() == 8) {
-        QString fieldName = QString(headerData.mid(0, 4));
-        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
-        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+    QByteArray headerData = crateFile.read(kHeaderSize);
+    while (headerData.length() == kHeaderSize) {
+        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldId = parseUInt32(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldSize = parseUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = crateFile.read(fieldSize);
@@ -394,7 +396,7 @@ QString parseCrate(QSqlDatabase& database, QString databasePath, QString crateFi
                      << ".";
         }
 
-        headerData = crateFile.read(8);
+        headerData = crateFile.read(kHeaderSize);
     }
 
     if (headerData.length() != 0) {
@@ -508,11 +510,11 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 
     int trackCount = 0;
     QMap<QString, int> trackIdMap;
-    QByteArray headerData = databaseFile.read(8);
-    while (headerData.length() == 8) {
-        QString fieldName = QString(headerData.mid(0, 4));
-        quint32 fieldId = parseUInt32(headerData.mid(0, 4));
-        quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
+    QByteArray headerData = databaseFile.read(kHeaderSize);
+    while (headerData.length() == kHeaderSize) {
+        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldId = parseUInt32(headerData.mid(0, sizeof(quint32)));
+        quint32 fieldSize = parseUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = databaseFile.read(fieldSize);
@@ -581,7 +583,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                      << ".";
         }
 
-        headerData = databaseFile.read(8);
+        headerData = databaseFile.read(kHeaderSize);
     }
 
     if (headerData.length() != 0) {
