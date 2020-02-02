@@ -44,12 +44,11 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
                         tr("Enter name for new crate:"),
                         QLineEdit::Normal,
                         proposedCrateName,
-                        &ok);
+                        &ok).trimmed();
         if (!ok) {
             return CrateId();
         }
-        newName = parseEntityName(newName);
-        if (!isValidEntityName(newName)) {
+        if (newName.isEmpty()) {
             QMessageBox::warning(
                     nullptr,
                     tr("Creating Crate Failed"),
@@ -100,12 +99,11 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
                          tr("Enter name for new crate:"),
                          QLineEdit::Normal,
                          proposedCrateName,
-                         &ok);
+                         &ok).trimmed();
         if (!ok) {
             return CrateId();
         }
-        newName = parseEntityName(newName);
-        if (!isValidEntityName(newName)) {
+        if (newName.isEmpty()) {
             QMessageBox::warning(
                     nullptr,
                     tr("Duplicating Crate Failed"),

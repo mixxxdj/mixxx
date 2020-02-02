@@ -2,15 +2,6 @@
 
 #include "util/db/dbentity.h"
 
-
-inline QString parseEntityName(const QString& name) {
-    return name.trimmed();
-}
-inline bool isValidEntityName(const QString& name) {
-    DEBUG_ASSERT(name == parseEntityName(name));
-    return !name.isEmpty();
-}
-
 // Base class for database entities with a non-empty name.
 template<typename T> // where T is derived from DbId
 class DbNamedEntity: public DbEntity<T> {
@@ -18,12 +9,16 @@ class DbNamedEntity: public DbEntity<T> {
     ~DbNamedEntity() override = default;
 
     bool hasName() const {
-        return isValidEntityName(m_name);
+        return !m_name.isEmpty();
     }
     const QString& getName() const {
         return m_name;
     }
     void setName(QString name) {
+        // Due to missing trimming names with only whitespaces
+        // may occur in the database and can't we assert on
+        // this here!
+        DEBUG_ASSERT(!name.isEmpty());
         m_name = std::move(name);
     }
     void resetName() {

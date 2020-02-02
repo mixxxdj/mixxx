@@ -380,15 +380,11 @@ void CrateFeature::slotRenameCrate() {
                             tr("Enter new name for crate:"),
                             QLineEdit::Normal,
                             oldName,
-                            &ok);
-            if (!ok) {
+                            &ok).trimmed();
+            if (!ok || newName.isEmpty()) {
                 return;
             }
-            newName = parseEntityName(newName);
-            if (newName == oldName) {
-                return;
-            }
-            if (!isValidEntityName(newName)) {
+            if (newName.isEmpty()) {
                 QMessageBox::warning(
                         nullptr,
                         tr("Renaming Crate Failed"),
@@ -604,8 +600,8 @@ void CrateFeature::slotCreateImportCrate() {
             if (i > 0) {
                 name += QString(" %1").arg(i);
             }
-            name = parseEntityName(name);
-            if (isValidEntityName(name)) {
+            name = name.trimmed();
+            if (!name.isEmpty()) {
                 if (!m_pTrackCollection->crates().readCrateByName(name)) {
                     // unused crate name found
                     crate.setName(std::move(name));
