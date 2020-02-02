@@ -113,6 +113,7 @@ class WPushButton : public WWidget {
 
     // Array of associated pixmaps
     int m_iNoStates;
+    Qt::TextElideMode m_elideMode;
     QVector<QString> m_text;
     QVector<PaintablePointer> m_pressedPixmaps;
     QVector<PaintablePointer> m_unpressedPixmaps;
