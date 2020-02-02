@@ -75,6 +75,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
   public slots:
     void slotPassingToggle(double v);
+    void slotPassthroughChangeRequest(double v);
 
   private:
     UserSettingsPointer m_pConfig;
