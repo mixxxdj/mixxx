@@ -21,6 +21,7 @@
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "util/assert.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
@@ -140,10 +141,16 @@ inline QString parseText(const QByteArray& data, const quint32 size) {
 }
 
 inline bool parseBoolean(const QByteArray& data) {
+    VERIFY_OR_DEBUG_ASSERT(!data.isEmpty()) {
+        return false;
+    }
     return data.at(0) != 0;
 }
 
 inline quint32 parseUInt32(const QByteArray& data) {
+    VERIFY_OR_DEBUG_ASSERT(data.size() >= static_cast<int>(sizeof(quint32))) {
+        return 0;
+    }
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     return qFromBigEndian<quint32>(data);
 #else
@@ -222,6 +229,7 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
             track->label = parseText(data, fieldSize);
             break;
         case FieldId::Year: {
+            // 4-digit year as string (YYYY)
             bool ok;
             int year = parseText(data, fieldSize).toInt(&ok);
             if (ok) {
@@ -236,16 +244,27 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
             track->beatgridlocked = parseBoolean(data);
             break;
         case FieldId::Missing:
-            track->missing = parseBoolean(data);
+            if (fieldSize == 1) {
+                track->missing = parseBoolean(data);
+            }
             break;
         case FieldId::FileTime:
-            track->filetime = parseUInt32(data);
+            // POSIX timestamp
+            if (fieldSize == sizeof(quint32)) {
+                track->filetime = parseUInt32(data);
+            }
             break;
         case FieldId::DateAdded:
-            track->datetimeadded = parseUInt32(data);
+            // POSIX timestamp
+            if (fieldSize == sizeof(quint32)) {
+                track->datetimeadded = parseUInt32(data);
+            }
             break;
         case FieldId::DateAddedText:
-            // Ignore this field, but do not print a debug message
+            // Ignore this field, but do not print a debug message. It's the
+            // same as the regular DateAdded field, but this time the timestamp
+            // is a string instead of an unsigned integer. Since we already
+            // parse the integer version, it doesn't make sense to parse this.
             break;
         default:
             qDebug() << "Ignoring unknown field "
