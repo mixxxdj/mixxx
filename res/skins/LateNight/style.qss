@@ -172,6 +172,9 @@ WOverview QLabel {
   #RecDuration[highlight="2"] {
     color: #d2d2d2;
   }
+  #FxAssignButtonDeck {
+    padding-left: 15px;
+  }
 
 #VinylButton[displayValue="1"],
 #VinylButton[displayValue="2"],
@@ -2474,4 +2477,9 @@ QTreeView {
 
 #Border58 {
   border: 1px solid #585858;
+}
+
+#FxAssignButtonDeck[displayValue="0"][hover="true"] {
+  color: red;
+  background-color: #3d3d3d;
 }
