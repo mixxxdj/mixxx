@@ -89,16 +89,16 @@ struct serato_track_t {
     quint32 datetimeadded = 0;
 };
 
-const QString kDatabaseDirectory = "_Serato_";
-const QString kDatabaseFilename = "database V2";
-const QString kCrateDirectory = "Subcrates";
-const QString kCrateFilter = "*.crate";
-const QString kSmartCrateDirectory = "Smart Crates";
-const QString kSmartCrateFilter = "*.scrate";
+const QString kDatabaseDirectory = QStringLiteral("_Serato_");
+const QString kDatabaseFilename = QStringLiteral("database V2");
+const QString kCrateDirectory = QStringLiteral("Subcrates");
+const QString kCrateFilter = QStringLiteral("*.crate");
+const QString kSmartCrateDirectory = QStringLiteral("Smart Crates");
+const QString kSmartCrateFilter = QStringLiteral("*.scrate");
 
-const QString kSeratoLibraryTable = "serato_library";
-const QString kSeratoPlaylistsTable = "serato_library";
-const QString kSeratoPlaylistTracksTable = "serato_library";
+const QString kSeratoLibraryTable = QStringLiteral("serato_library");
+const QString kSeratoPlaylistsTable = QStringLiteral("serato_library");
+const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_library");
 
 int createPlaylist(QSqlDatabase& database, QString name, QString databasePath) {
     QSqlQuery query(database);
