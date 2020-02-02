@@ -70,7 +70,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    // Load pixmaps for associated states
+    // Load pixmaps and set texts for associated states
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
@@ -227,6 +227,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WPushButton::setStates(int iStates) {
+    m_bHovered = false;
     m_bPressed = false;
     m_iNoStates = iStates;
     m_activeTouchButton = Qt::NoButton;
@@ -339,6 +340,18 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     if (!text.isEmpty()) {
         p.drawText(rect(), m_align.at(idx), text);
     }
+}
+
+void WPushButton::enterEvent(QEvent *event) {
+    m_bHovered = true;
+    restyleAndRepaint();
+    return QWidget::enterEvent(event);
+}
+
+void WPushButton::leaveEvent(QEvent *event) {
+    m_bHovered = false;
+    restyleAndRepaint();
+    return QWidget::leaveEvent(event);
 }
 
 void WPushButton::mousePressEvent(QMouseEvent * e) {
