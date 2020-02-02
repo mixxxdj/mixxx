@@ -100,7 +100,7 @@ const QString kSeratoLibraryTable = QStringLiteral("serato_library");
 const QString kSeratoPlaylistsTable = QStringLiteral("serato_library");
 const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_library");
 
-int createPlaylist(QSqlDatabase& database, QString name, QString databasePath) {
+int createPlaylist(const QSqlDatabase& database, const QString& name, const QString& databasePath) {
     QSqlQuery query(database);
     query.prepare(
             "INSERT INTO serato_playlists (name, serato_db)"
@@ -116,7 +116,7 @@ int createPlaylist(QSqlDatabase& database, QString name, QString databasePath) {
     return query.lastInsertId().toInt();
 }
 
-int insertTrackIntoPlaylist(QSqlDatabase& database, int playlistId, int trackId, int position) {
+int insertTrackIntoPlaylist(const QSqlDatabase& database, int playlistId, int trackId, int position) {
     QSqlQuery query(database);
     query.prepare(
             "INSERT INTO serato_playlist_tracks (playlist_id, track_id, position) "
@@ -150,15 +150,15 @@ inline quint32 parseUInt32(const QByteArray& data) {
 #endif
 }
 
-inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
-    QByteArray headerData = buffer.read(8);
+inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
+    QByteArray headerData = buffer->read(8);
     while (headerData.length() == 8) {
         QString fieldName = QString(headerData.mid(0, 4));
         quint32 fieldId = parseUInt32(headerData.mid(0, 4));
         quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
 
         // Read field data
-        QByteArray data = buffer.read(fieldSize);
+        QByteArray data = buffer->read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
             qWarning() << "Failed to read "
                        << fieldSize
@@ -171,76 +171,76 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
         // Parse field data
         switch (static_cast<FieldId>(fieldId)) {
         case FieldId::FileType:
-            track.filetype = parseText(data, fieldSize);
+            track->filetype = parseText(data, fieldSize);
             break;
         case FieldId::FilePath:
-            track.location = parseText(data, fieldSize);
+            track->location = parseText(data, fieldSize);
             break;
         case FieldId::SongTitle:
-            track.title = parseText(data, fieldSize);
+            track->title = parseText(data, fieldSize);
             break;
         case FieldId::Artist:
-            track.artist = parseText(data, fieldSize);
+            track->artist = parseText(data, fieldSize);
             break;
         case FieldId::Album:
-            track.album = parseText(data, fieldSize);
+            track->album = parseText(data, fieldSize);
             break;
         case FieldId::Genre:
-            track.genre = parseText(data, fieldSize);
+            track->genre = parseText(data, fieldSize);
             break;
         case FieldId::Length: {
             bool ok;
             int duration = parseText(data, fieldSize).toInt(&ok);
             if (ok) {
-                track.duration = duration;
+                track->duration = duration;
             }
             break;
         }
         case FieldId::Bitrate:
-            track.bitrate = parseText(data, fieldSize);
+            track->bitrate = parseText(data, fieldSize);
             break;
         case FieldId::SampleRate:
-            track.samplerate = parseText(data, fieldSize);
+            track->samplerate = parseText(data, fieldSize);
             break;
         case FieldId::Bpm: {
             bool ok;
             double bpm = parseText(data, fieldSize).toDouble(&ok);
             if (ok) {
-                track.bpm = bpm;
+                track->bpm = bpm;
             }
             break;
         }
         case FieldId::Comment:
-            track.comment = parseText(data, fieldSize);
+            track->comment = parseText(data, fieldSize);
             break;
         case FieldId::Grouping:
-            track.grouping = parseText(data, fieldSize);
+            track->grouping = parseText(data, fieldSize);
             break;
         case FieldId::Label:
-            track.label = parseText(data, fieldSize);
+            track->label = parseText(data, fieldSize);
             break;
         case FieldId::Year: {
             bool ok;
             int year = parseText(data, fieldSize).toInt(&ok);
             if (ok) {
-                track.year = year;
+                track->year = year;
             }
             break;
         }
         case FieldId::Key:
-            track.key = parseText(data, fieldSize);
+            track->key = parseText(data, fieldSize);
             break;
         case FieldId::BeatgridLocked:
-            track.beatgridlocked = parseBoolean(data);
+            track->beatgridlocked = parseBoolean(data);
             break;
         case FieldId::Missing:
-            track.missing = parseBoolean(data);
+            track->missing = parseBoolean(data);
             break;
         case FieldId::FileTime:
-            track.filetime = parseUInt32(data);
+            track->filetime = parseUInt32(data);
             break;
         case FieldId::DateAdded:
-            track.datetimeadded = parseUInt32(data);
+            track->datetimeadded = parseUInt32(data);
             break;
         case FieldId::DateAddedText:
             // Ignore this field, but do not print a debug message
@@ -253,7 +253,7 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
                      << " bytes).";
         }
 
-        headerData = buffer.read(8);
+        headerData = buffer->read(8);
     }
 
     if (headerData.length() != 0) {
@@ -263,7 +263,7 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
         return false;
     }
 
-    if (track.location.isEmpty()) {
+    if (track->location.isEmpty()) {
         qWarning() << "Found track with empty location field.";
         return false;
     }
@@ -271,16 +271,16 @@ inline bool parseTrack(serato_track_t& track, QIODevice& buffer) {
     return true;
 }
 
-inline QString parseCrateTrack(QIODevice& buffer) {
+inline QString parseCrateTrack(QIODevice* buffer) {
     QString location;
-    QByteArray headerData = buffer.read(8);
+    QByteArray headerData = buffer->read(8);
     while (headerData.length() == 8) {
         QString fieldName = QString(headerData.mid(0, 4));
         quint32 fieldId = parseUInt32(headerData.mid(0, 4));
         quint32 fieldSize = parseUInt32(headerData.mid(4, 8));
 
         // Read field data
-        QByteArray data = buffer.read(fieldSize);
+        QByteArray data = buffer->read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
             qWarning() << "Failed to read "
                        << fieldSize
@@ -303,7 +303,7 @@ inline QString parseCrateTrack(QIODevice& buffer) {
                      << " bytes).";
         }
 
-        headerData = buffer.read(8);
+        headerData = buffer->read(8);
     }
 
     if (headerData.length() != 0) {
@@ -375,7 +375,7 @@ QString parseCrate(QSqlDatabase& database, QString databasePath, QString crateFi
         case FieldId::Track: {
             QBuffer buffer = QBuffer(&data);
             buffer.open(QIODevice::ReadOnly);
-            QString location = parseCrateTrack(buffer);
+            QString location = parseCrateTrack(&buffer);
             if (!location.isEmpty()) {
                 int trackId = trackIdMap.value(location, -1);
                 insertTrackIntoPlaylist(database, playlistId, trackId, trackCount);
@@ -539,7 +539,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             serato_track_t track;
             QBuffer buffer = QBuffer(&data);
             buffer.open(QIODevice::ReadOnly);
-            if (parseTrack(track, buffer)) {
+            if (parseTrack(&track, &buffer)) {
                 QString location = databaseRootDir.absoluteFilePath(track.location);
                 query.bindValue(":title", track.title);
                 query.bindValue(":artist", track.artist);
