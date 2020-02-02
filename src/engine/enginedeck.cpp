@@ -173,6 +173,6 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
     if (v <= 0 || m_pInputConfigured->get() > 0) {
         m_pPassing->setAndConfirm(v);
     } else {
-        emit(noPassthroughInputConfigured());
+        emit noPassthroughInputConfigured();
     }
 }
