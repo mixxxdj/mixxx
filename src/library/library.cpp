@@ -367,11 +367,11 @@ void Library::addFeature(LibraryFeature* feature) {
     connect(feature,
             &LibraryFeature::restoreSearch,
             this,
-            &Library::slotRestoreSearch);
+            &Library::restoreSearch); // forward signal
     connect(feature,
             &LibraryFeature::disableSearch,
             this,
-            &Library::slotDisableSearch);
+            &Library::disableSearch); // forward signal
     connect(feature,
             &LibraryFeature::enableCoverArtDisplay,
             this,
@@ -425,14 +425,6 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
-}
-
-void Library::slotRestoreSearch(const QString& text) {
-    emit restoreSearch(text);
-}
-
-void Library::slotDisableSearch() {
-    emit disableSearch();
 }
 
 void Library::slotRefreshLibraryModels() {
