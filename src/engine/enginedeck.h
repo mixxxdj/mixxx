@@ -73,6 +73,9 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;
 
+  signals:
+    void noPassthroughInputConfigured();
+
   public slots:
     void slotPassingToggle(double v);
     void slotPassthroughChangeRequest(double v);
