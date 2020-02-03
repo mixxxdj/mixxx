@@ -78,6 +78,14 @@ repos:
     stages:
     - commit
     - manual
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: '3.7.9'
+    hooks:
+    -   id: flake8
+-   repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+    -   id: black
 - repo: local
   hooks:
   - id: qsscheck
