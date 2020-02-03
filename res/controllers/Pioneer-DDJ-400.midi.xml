@@ -919,7 +919,7 @@
                 <group>[Channel1]</group>
                 <key>bpm_tap</key>
                 <status>0x90</status>
-                <midino>0x58</midino>
+                <midino>0x68</midino>
                 <options>
                     <normal/>
                 </options>
@@ -929,7 +929,7 @@
                 <group>[Channel2]</group>
                 <key>bpm_tap</key>
                 <status>0x91</status>
-                <midino>0x58</midino>
+                <midino>0x68</midino>
                 <options>
                     <normal/>
                 </options>
