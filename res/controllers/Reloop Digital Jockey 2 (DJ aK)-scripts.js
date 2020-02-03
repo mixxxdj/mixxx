@@ -357,7 +357,7 @@ RDJ2.Deck = function (number) {
 // give our custom Deck all the methods of the generic Deck in the Components library
 RDJ2.Deck.prototype = Object.create(components.Deck.prototype);
 
-/* Values & Parameters */
+/* get/set Values */
 
 RDJ2.Deck.prototype.getValue = function (key) {
     return engine.getValue(this.group, key);
@@ -365,18 +365,6 @@ RDJ2.Deck.prototype.getValue = function (key) {
 
 RDJ2.Deck.prototype.setValue = function (key, value) {
     engine.setValue(this.group, key, value);
-};
-
-RDJ2.Deck.prototype.toggleValue = function (key) {
-    this.setValue(key, !this.getValue(key));
-};
-
-RDJ2.Deck.prototype.setParameter = function (key, param) {
-    engine.setParameter(this.group, key, param);
-};
-
-RDJ2.Deck.prototype.triggerValue = function (key) {
-    engine.trigger(this.group, key);
 };
 
 /* Load Track */
