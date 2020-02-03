@@ -20,7 +20,7 @@
 # If you have Python >= 3.7 and python-pip installed, just run:
 #
 #     $ pip install --user pre-commit
-#     $ git clone https://github.com/mixxxdj/mixxx.git
+#     $ git clone https://github.com/your-fork-of/mixxx.git
 #     $ cd mixxx
 #     $ pre-commit install
 #     $ pre-commit install -t pre-push
