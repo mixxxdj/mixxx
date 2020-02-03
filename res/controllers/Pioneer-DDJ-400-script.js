@@ -498,6 +498,17 @@ PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
 };
 
+// Wrapper to easily ignore the function when the button is released.
+var ignoreRelease = function(fn) {
+    "use strict";
+    return function(channel, control, value, status, group) {
+        if (value === 0) { // This means the button is released.
+            return;
+        }
+        return fn(channel, control, value, status, group);
+    };
+};
+
 PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
     "use strict";
     PioneerDDJ400.selectedFxSlot -= 1;
@@ -586,17 +597,6 @@ PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, 
 
     startSampleFlicker(status, control, group);
 });
-
-// Wrapper to easily ignore the function when the button is released.
-var ignoreRelease = function(fn) {
-    "use strict";
-    return function(channel, control, value, status, group) {
-        if (value === 0) { // This means the button is released.
-            return;
-        }
-        return fn(channel, control, value, status, group);
-    };
-};
 
 var TimersPioneerDDJ400 = {};
 
