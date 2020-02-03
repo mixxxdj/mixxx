@@ -32,6 +32,8 @@ repos:
   rev: master
   hooks:
   - id: clang-format
+    entry: git clang-format
+    args: []
     stages:
     - commit
     - manual
