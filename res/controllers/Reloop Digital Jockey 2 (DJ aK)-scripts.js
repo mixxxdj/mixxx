@@ -35,6 +35,7 @@ RDJ2.JOG_SEEK_REVOLUTIONS = 2;
 // Controller constants
 RDJ2.DECK_COUNT = 2;
 RDJ2.JOG_RESOLUTION = 148; // measured/estimated
+RDJ2.SHIFT_OFFSET = 0x1E;
 
 
 // Jog constants
@@ -84,6 +85,7 @@ RDJ2.BUTTONMAP_CH0_CH1 = {
 RDJ2.KNOBMAP_CH0_CH1 = {
     loopSize: [0x28, 0x63],     //this is the shifted Dry/Wet Knob
 };
+
 
 ////////////////////////////////////////////////////////////////////////
 // Logging functions                                                  //
@@ -236,6 +238,7 @@ RDJ2.LoopActiveButton.prototype = new components.Button({
     },
 });
 
+
 ////////////////////////////////////////////////////////////////////////
 // Knobs                                                              //
 ////////////////////////////////////////////////////////////////////////
@@ -284,6 +287,7 @@ RDJ2.LoopSizeKnob.prototype = new components.Pot({
     }
 });
 
+
 ////////////////////////////////////////////////////////////////////////
 // Decks                                                              //
 ////////////////////////////////////////////////////////////////////////
@@ -293,6 +297,7 @@ RDJ2.JOGMODES = {
     vinyl: 1,
     search: 2,
     fxdrywet: 3,
+    trax: 4,
 };
 
 RDJ2.getJogDeltaValue = function (value) {
@@ -376,7 +381,6 @@ RDJ2.Deck.prototype.triggerValue = function (key) {
 
 /* Load Track */
 
-
 RDJ2.LoadButton = function (options) {
     components.Button.call(this, options);
 };
@@ -389,9 +393,6 @@ RDJ2.LoadButton.prototype = new components.Button({
         this.inKey = 'eject';
     },
 });
-
-
-
 
 /* Cue & Play */
 
@@ -469,10 +470,13 @@ RDJ2.JogModeSelector = function (number, searchMidiCtrl, scratchMidiCtrl, fxDryW
     this.scratchMidiCtrl = scratchMidiCtrl;
     this.fxDryWetMidiCtrl = fxDryWetMidiCtrl;
     this.jogMode = RDJ2.JOGMODES.normal;
+    this.lastNonTraxJogMode = this.jogMode;
+    this.input = this.inputNormal;
 
+    components.Component.call(this);
     this.updateControls();            
 };
-RDJ2.JogModeSelector.prototype = {
+RDJ2.JogModeSelector.prototype = new components.Component({
     updateControls: function () {
         var searchValue = this.jogMode === RDJ2.JOGMODES.search ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
         var scratchValue = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
@@ -482,7 +486,7 @@ RDJ2.JogModeSelector.prototype = {
         midi.sendShortMsg(0x90, this.scratchMidiCtrl, scratchValue);
         midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, fxDryWetValue);
     },
-    input: function (channel, control, value) {
+    inputNormal: function (channel, control, value) {
         var isButtonPressed = RDJ2.isButtonPressed(value);
         if (isButtonPressed) {
             switch(control) {
@@ -505,10 +509,74 @@ RDJ2.JogModeSelector.prototype = {
             RDJ2.logDebug("Current jog mode: " + this.getJogMode());
         }
     },
+    inputTrax: function (channel, control, value) {
+        var isButtonPressed = RDJ2.isButtonPressed(value);
+        if (isButtonPressed) {
+            switch(control) {
+                case this.searchMidiCtrl:
+                case this.searchMidiCtrl + RDJ2.SHIFT_OFFSET:
+                    engine.setValue('[Library]', 'MoveRight', 1);
+                    break;
+                case this.scratchMidiCtrl:
+                case this.scratchMidiCtrl + RDJ2.SHIFT_OFFSET:
+                    engine.setValue('[Library]', 'MoveLeft', 1);
+                    break;
+                case this.fxDryWetMidiCtrl:
+                case this.fxDryWetMidiCtrl + RDJ2.SHIFT_OFFSET:
+                    //'MoveFocusForward' is equivalent to pressing TAB key on the keyboard
+                    engine.setValue('[Library]', 'MoveFocusForward', 1);
+                    break;
+                /* The below code will probably be removed.
+                   It allowed absolute referencing to buttons to enable 
+                   moving focus backward/forward. It seems that using only
+                   'MoveFocusForward' is enough.
+
+                case RDJ2.BUTTONMAP_CH0_CH1.fxdrywet[0]:
+                case RDJ2.BUTTONMAP_CH0_CH1.fxdrywet[0] + RDJ2.SHIFT_OFFSET:
+                    engine.setValue('[Library]', 'MoveFocusBackward', 1);
+                    break;
+                case RDJ2.BUTTONMAP_CH0_CH1.fxdrywet[1]:
+                case RDJ2.BUTTONMAP_CH0_CH1.fxdrywet[1] + RDJ2.SHIFT_OFFSET:
+                    engine.setValue('[Library]', 'MoveFocusForward', 1);
+                    break;*/
+                default:
+                    RDJ2.logError("Unexpected MIDI ctrl value: " + control);
+            }
+        }
+    },
     getJogMode: function () {
         return this.jogMode;
-    }
-};
+    },
+    setTraxMode: function (isTraxModeEnabled) {
+        if(isTraxModeEnabled) {
+            if(this.jogMode !== RDJ2.JOGMODES.trax) {
+                this.lastNonTraxJogMode = this.jogMode;
+                this.jogMode = RDJ2.JOGMODES.trax;
+                this.input = this.inputTrax;
+                //set all LEDs on to indicate trax mode
+                midi.sendShortMsg(0x90, this.searchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                midi.sendShortMsg(0x90, this.scratchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+            }
+        } else {
+            this.jogMode = this.lastNonTraxJogMode;
+            this.input = this.inputNormal;
+            this.updateControls();
+        }
+    },
+    unshift: function () {
+        var isLibraryModeEnabled = engine.getValue('[Master]', 'maximize_library');
+        if(!isLibraryModeEnabled) {
+            this.setTraxMode(false);
+        }
+    },
+    shift: function () {
+        var isLibraryModeEnabled = engine.getValue('[Master]', 'maximize_library');
+        if(!isLibraryModeEnabled) {
+            this.setTraxMode(true);
+        }
+    },
+});
 
 /* Jog Wheel */
 
@@ -537,13 +605,14 @@ RDJ2.Deck.prototype.onJogSpin = function (channel, control, value) {
     } else if (currentJogMode === RDJ2.JOGMODES.fxdrywet) {
         var currMixValue = engine.getParameter('[EffectRack1_EffectUnit' + this.number + ']', 'mix');
         engine.setParameter('[EffectRack1_EffectUnit' + this.number + ']', 'mix', currMixValue + jogDelta / RDJ2.JOG_RESOLUTION);
-    }
-    else if (currentJogMode === RDJ2.JOGMODES.search) {
+    } else if (currentJogMode === RDJ2.JOGMODES.search) {
         var playPos = engine.getValue(this.group, "playposition");
         if (undefined !== playPos) {
             var seekPos = playPos + (jogDelta / (RDJ2.JOG_RESOLUTION * RDJ2.JOG_SEEK_REVOLUTIONS));
             this.setValue("playposition", Math.max(0.0, Math.min(1.0, seekPos)));
         }
+    } else if (currentJogMode === RDJ2.JOGMODES.trax) {
+        engine.setValue('[Library]', 'MoveVertical', jogDelta);
     } else if (currentJogMode === RDJ2.JOGMODES.normal) {
         var normalizedDelta = jogDelta / RDJ2.MIDI_JOG_DELTA_RANGE;
         var scaledDelta;
@@ -571,7 +640,7 @@ RDJ2.Deck.prototype.onJogSpin = function (channel, control, value) {
         this.setValue("jog", jogValue);
     }
     else {
-        RDJ2.logError("onJogSpin error!");
+        RDJ2.logError("onJogSpin unknown mode error!");
     }
 };
 
@@ -604,6 +673,20 @@ RDJ2.efxUnitKnobShift = function () {
 // Library                                                            //
 ////////////////////////////////////////////////////////////////////////
 
+/* Trax global functions */
+
+RDJ2.updateTraxMode = function (mode) {
+    RDJ2.logDebug("Global Trax Mode: " + mode);
+
+    // find decks in RDJ2 object and update their trax mode
+    for (var memberName in this) {
+        if (this.hasOwnProperty(memberName) && this[memberName] instanceof components.Deck) {
+            this[memberName].jogModeSelector.setTraxMode(mode);
+            RDJ2.logDebug("Global Trax Mode updated for " + memberName);
+        }
+    }
+};
+
 /* Trax knob */
 
 RDJ2.TraxKnob = function (options) {
@@ -631,13 +714,18 @@ RDJ2.TraxButton = function (options) {
 RDJ2.TraxButton.prototype = new components.Button({
     unshift: function () {
         this.type = components.Button.prototype.types.toggle;
-        this.group = "[Master]";
+        this.group = '[Master]';
         this.inKey = 'maximize_library';
     },
     shift: function () {
         this.type = components.Button.prototype.types.push;
-        this.group = "[Library]";
+        this.group = '[Library]';
         this.inKey = 'MoveFocusForward';
+    },
+    group: '[Master]',
+    outKey: 'maximize_library',
+    output: function (value, group, control) {
+        RDJ2.updateTraxMode(value);
     },
 });
 
