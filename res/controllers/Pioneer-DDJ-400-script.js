@@ -584,7 +584,6 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
     }
 };
 
-
 PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, _value, status, group) {
     "use strict";
     var isLoaded = engine.getValue(group, "track_loaded") === 1;
@@ -592,42 +591,8 @@ PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, 
     if (!isLoaded) {
         return;
     }
-
     engine.setValue(group, "cue_gotoandplay", 1);
-
-    startSampleFlicker(status, control, group);
 });
-
-var TimersPioneerDDJ400 = {};
-
-var startSampleFlicker = function(channel, control, group) {
-    "use strict";
-    var val = 0x7f;
-
-    stopFlicker(channel, control);
-    TimersPioneerDDJ400[channel][control] = engine.beginTimer(250, function() {
-        val = 0x7f - val;
-
-        midi.sendShortMsg(channel, control, val);
-
-        var isPlaying = engine.getValue(group, "play") === 1;
-
-        if (!isPlaying) {
-            stopFlicker(channel, control);
-            midi.sendShortMsg(channel, control, 0x7f);
-        }
-    });
-};
-
-var stopFlicker = function(channel, control) {
-    "use strict";
-    TimersPioneerDDJ400[channel] = TimersPioneerDDJ400[channel] || {};
-
-    if (TimersPioneerDDJ400[channel][control] !== undefined) {
-        engine.stopTimer(TimersPioneerDDJ400[channel][control]);
-        TimersPioneerDDJ400[channel][control] = undefined;
-    }
-};
 
 PioneerDDJ400.shutdown = function() {
     "use strict";
