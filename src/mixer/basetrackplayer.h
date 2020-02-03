@@ -42,7 +42,6 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
-    void noPassthroughInputConfigured();
     void noVinylControlInputConfigured();
 };
 

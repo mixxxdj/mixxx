@@ -41,8 +41,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
-    connect(m_pChannel, &EngineDeck::noPassthroughInputConfigured,
-            [this]{ emit(noPassthroughInputConfigured()); });
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
 #ifdef __VINYLCONTROL__
