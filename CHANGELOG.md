@@ -13,6 +13,7 @@
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
 
+* Store default recording format after "Restore Defaults" lp:1857806 #2414
 * Prevent infinite loop when decoding corrupt MP3 files #2417
 * Add workaround for broken libshout versions #2040 #2438
 * Speed up purging of tracks lp:1845837 #2393
