@@ -38,7 +38,7 @@
                 </options>
             </control>
             <control>
-                <description>BROWSE - press - Move cursor between track list and tree view / open a folder</description>
+                <description>BROWSE - press - Move cursor between track list and tree view</description>
                 <group>[Library]</group>
                 <key>MoveFocusForward</key> <!-- missing function to open Folder -->
                 <status>0x96</status>
@@ -48,8 +48,7 @@
                 </options>
             </control>
             <control>
-                <description>BROWSE +SHIFT - press - Move cursor between track list and tree view / close a folder
-                </description>
+              <description>BROWSE +SHIFT - press - Move cursor between track list and tree view</description>
                 <group>[Library]</group>
                 <key>MoveFocusBackward</key> <!-- missing function to close Folder -->
                 <status>0x96</status>
