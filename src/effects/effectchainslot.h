@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QMap>
 #include <QList>
-#include <QSignalMapper>
 
 #include "engine/channelhandle.h"
 #include "util/class.h"
@@ -167,7 +166,6 @@ class EffectChainSlot : public QObject {
     QMap<QString, ChannelInfo*> m_channelInfoByName;
 
     QList<EffectSlotPointer> m_slots;
-    QSignalMapper m_channelStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

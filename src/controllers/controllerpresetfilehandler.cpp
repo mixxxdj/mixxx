@@ -32,12 +32,6 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
         return ControllerPresetPointer();
     }
 
-    // TODO(XXX): This means filenames can't have .foo.midi.xml filenames. We
-    // should regex match against the end.
-    // NOTE(rryan): We prepend a dot because all the XXX_PRESET_EXTENSION
-    // defines include the dot.
-    QString extension = "." + scriptPathInfo.completeSuffix();
-
     ControllerPresetFileHandler* pHandler = NULL;
     if (scriptPath.endsWith(MIDI_PRESET_EXTENSION, Qt::CaseInsensitive)) {
         pHandler = new MidiControllerPresetFileHandler();

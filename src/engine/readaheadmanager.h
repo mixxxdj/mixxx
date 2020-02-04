@@ -56,12 +56,9 @@ class ReadAheadManager {
     // indicate that the given portion of a song is about to be read.
     virtual void hintReader(double dRate, HintVector* hintList);
 
-    virtual double getFilePlaypositionFromLog(double currentFilePlayposition,
-                                                       double numConsumedSamples);
-
-    virtual void setReader(CachingReader* pReader) {
-        m_pReader = pReader;
-    }
+    virtual double getFilePlaypositionFromLog(
+            double currentFilePlayposition,
+            double numConsumedSamples);
 
   private:
     // An entry in the read log indicates the virtual playposition the read

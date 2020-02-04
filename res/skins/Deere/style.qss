@@ -365,6 +365,20 @@ WSearchLineEdit:focus {
   selection-color: #222222;
   selection-background-color: #d2d2d2;
 }
+  /* Clear button */
+  WSearchLineEdit QToolButton {
+    /* C++ code adds 3px in each dimension.
+       height of search box inside the border: 22px
+       make the button use the available height */
+    height: 19px;
+    width: 19px;
+    }
+    WSearchLineEdit QToolButton:!focus {
+      image: url(skin:/icon/ic_lib_clear_search.svg);
+    }
+    WSearchLineEdit QToolButton:focus {
+      image: url(skin:/icon/ic_lib_clear_search_focus.svg);
+    }
 
 /* library preview deck */
 #PreviewDeck {
@@ -497,7 +511,7 @@ QTreeView::branch:open:!has-children:has-siblings:selected {
 WLibrary QLabel, WLibrary QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
-  margin: 9px 10px 6px 0px;
+  margin: 9px 5px 6px 0px;
   font-size: 12px;
 }
 
@@ -522,13 +536,29 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
   margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #D2D2D2;
   background-color: #4B4B4B;
-  border: 0px solid #4B4B4B;
+  border: 1px solid #4B4B4B;
   border-radius: 2px;
-  outline: none;
-}
+  outline: none; 
+  }
+  #DlgMissing > QPushButton,
+  #DlgHidden > QPushButton,
+  #DlgRecording > QPushButton,
+  #DlgAnalysis > QPushButton {
+    padding: 3px 4px;
+  }
+  #DlgAutoDJ > QPushButton {
+    padding: 0px 1px;
+  }
+  #DlgAutoDJ > QPushButton {
+    width: 34px;
+    height: 20px;
+  }
+  QPushButton#pushButtonAutoDJ {
+    width: 42px;
+  }
+
 
 #DlgMissing > QPushButton:!enabled,
 #DlgHidden > QPushButton:!enabled,
@@ -536,12 +566,10 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #808080; /* Default #A3A3A3 -90L HSL*/
   background-color: rgba(95, 95, 95, 127);
-                                    /* 50% #5F5F5F = RGBA#5F5F5F7F */
-  border: 0px solid #5F5F5F;
+                    /* 50% #5F5F5F = RGBA#5F5F5F7F */
+  border: 1px solid rgba(95, 95, 95, 127);
   border-radius: 2px;
   outline: none;
 }
@@ -551,12 +579,28 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:hover,
 #DlgRecording > QPushButton:hover,
 #DlgAnalysis > QPushButton:hover {
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #D2D2D2;
   background-color: #5F5F5F;
-  border: 0px solid #5F5F5F;
-  border-radius: 2px;
+  border: 1px solid #5F5F5F;
+  outline: none;
+}
+
+#DlgMissing > QPushButton:focus,
+#DlgHidden > QPushButton:focus,
+#DlgAutoDJ > QPushButton:focus,
+#DlgRecording > QPushButton:focus,
+#DlgAnalysis > QPushButton:focus,
+#fadeModeCombobox:focus,
+#DlgAutoDJ QSpinBox:focus {
+  border: 1px solid #bbb;
+  outline: none;
+}
+#DlgMissing > QPushButton:checked:focus,
+#DlgHidden > QPushButton:checked:focus,
+#DlgAutoDJ > QPushButton:checked:focus,
+#DlgRecording > QPushButton:checked:focus,
+#DlgAnalysis > QPushButton:checked:focus {
+  border: 1px solid #d2d2d2;
   outline: none;
 }
 
@@ -564,12 +608,9 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:checked,
 #DlgAnalysis > QPushButton:checked {
   /* checkbuttons in active state */
-  margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #FDFDFD;
   background-color: #006596;
-  border: 0px solid #006596;
-  border-radius: 2px;
+  border: 1px solid #006596;
   outline: none;
 }
 
@@ -578,11 +619,9 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:checked:hover {
   /* checkbuttons hovered over in "active" state */
   margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #FDFDFD;
   background-color: #0080BE;
-  border: 0px solid #0080BE;
-  border-radius: 2px;
+  border: 1px solid #0080BE;
   outline: none;
 }
 
@@ -592,23 +631,39 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:pressed {
   /* pushbuttons in "down" state */
   margin: 9px 3px 6px 3px;
-  padding: 4px;
   color: #FDFDFD;
   background-color: #006596;
-  border: 0px solid #006596;
-  border-radius: 2px;
+  border: 1px solid #006596;
   outline: none;
 }
 
-/* Space in between 'Enable AutoDJ' and transition time spinbox */
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ {
-  margin: 9px 12px 6px 3px;
-}
 
-#DlgAutoDJ > QPushButton#pushButtonShuffle {
-  margin: 9px 3px 6px 12px;
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ {
+  image: url(skin:/icon/ic_autodj_enable.svg) no-repeat center center;
 }
-
+QPushButton#pushButtonFadeNow:!enabled {
+  image: url(skin:/icon/ic_autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    image: url(skin:/icon/ic_autodj_fade.svg) no-repeat center center;
+  }
+QPushButton#pushButtonSkipNext:!enabled {
+  image: url(skin:/icon/ic_autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    image: url(skin:/icon/ic_autodj_skip.svg) no-repeat center center;
+  }
+QPushButton#pushButtonShuffle {
+  image: url(skin:/icon/ic_autodj_shuffle.svg) no-repeat center center;
+}
+QPushButton#pushButtonAddRandom {
+  image: url(skin:/icon/ic_autodj_addrandom.svg) no-repeat center center;
+}
+QPushButton#pushButtonRepeatPlaylist {
+  image: url(skin:/icon/ic_autodj_repeat_playlist.svg) no-repeat center center;
+}
+/* AutoDJ button icons */
 
 /* Scroll bars */
 QScrollBar:horizontal {
@@ -734,10 +789,17 @@ QAbstractScrollArea::corner {
   background-color: #222;
 }
 
-WWidget, QLabel {
+WWidget, WLibrary QLabel {
   font-family: "Open Sans";
-  font-size: 8px;
+  font-size: 12px;
   text-transform: uppercase;
+}
+
+/* This affects the labels for cue points. */
+WOverview,
+/* This is for the label in the edit dialog */
+WOverview QLabel {
+  text-transform: none;
 }
 
 /* Start spacing for Deck overview row (small waveform, option grid) */
@@ -1114,56 +1176,65 @@ WBeatSpinBox,
   image: url(skin:/icon/ic_power_48px.svg) no-repeat center center;
 }
 
-WEffectSelector {
+WEffectSelector,
+#fadeModeCombobox {
   color: #c1cabe;
   background-color: #444342;
   /* TODO: use a linear gradient for the background color */
-
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin-top: 0px;
   margin-bottom: 0px;
-
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
    * names start getting cut off. Adding explicit padding improves this. */
   padding: 0px 6px;
-
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
   border-radius: 3px;
-
   font: 15px;
 }
+#fadeModeCombobox {
+  /* 1px is added in each dimension. 20+1+1 = 22 = button height */
+  height: 20px;
+  margin: 9px 3px 6px 3px;
+}
 
-  WEffectSelector:hover {
+  WEffectSelector:hover,
+  #fadeModeCombobox:hover {
     border: 1px ridge #015d8d;
   }
 
-  WEffectSelector::drop-down {
+  WEffectSelector::drop-down,
+  #fadeModeCombobox::drop-down {
     /* This causes the Qt theme's widget style to magically not apply. Go figure. */
     border: 0;
   }
 
-  WEffectSelector::down-arrow {
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
     width: 20px;
     height: 20px;
     image: url(skin:/icon/ic_chevron_down_48px.svg);
   }
 
-  WEffectSelector QAbstractItemView {
+  WEffectSelector QAbstractItemView,
+  #fadeModeCombobox QAbstractItemView {
     color: #c1cabe;
     background-color: #201f1f;
   }
 
-  WEffectSelector::item:!selected {
+  WEffectSelector::item:!selected,
+  #fadeModeCombobox::item:!selected {
     background-color: #201f1f;
   }
 
-  WEffectSelector::item:selected {
+  WEffectSelector::item:selected,
+  #fadeModeCombobox::item:selected {
     background-color: #080808;
   }
 
   /* currently loaded effect */
-  WEffectSelector::checked {
+  WEffectSelector::checked,
+  #fadeModeCombobox::checked {
     color: #4495F4;
     font-weight: bold;
   }
@@ -1791,8 +1862,11 @@ do not highlight either state. */
   standard button definitions.
   Note: EQ Gain effects cannot be used in split mode (= can be 0 or 1 only)
 */
-#EffectSlotParameterLinkTypeButton {
-    margin: 0 4px 0 4px;
+#EffectSlotParameterLinkButtonsContainer {
+    margin: 1px 4px;
+    qproperty-layoutSpacing: 1;
+    border-radius: 2px;
+    background-color: #282828;
 }
 
 #EffectSlotParameterLinkTypeButton[value="2"] {
@@ -1873,10 +1947,6 @@ do not highlight either state. */
                                       stop: 1 #0080BE);
 
     border: 0px solid #0080BE;
-}
-
-#EffectSlotParameterLinkInversionButton {
-    margin: 0px 4px 0px 4px;
 }
 
 #EffectSlotParameterLinkInversionButton[value="1"] {

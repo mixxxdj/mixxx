@@ -22,17 +22,15 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                const QString& idColumn,
                                const QStringList& columns,
                                bool isCaching)
-        : QObject(),
-          m_tableName(tableName),
+        : m_tableName(tableName),
           m_idColumn(idColumn),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(columns),
+          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->database()),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)) {
+          m_database(pTrackCollection->database()) {
     m_searchColumns << "artist"
                     << "album"
                     << "album_artist"
@@ -51,8 +49,63 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     }
 }
 
+void BaseTrackCache::connectTrackDAO(TrackDAO* pTrackDAO) {
+    connect(pTrackDAO,
+            &TrackDAO::trackDirty,
+            this,
+            &BaseTrackCache::slotTrackDirty);
+    connect(pTrackDAO,
+            &TrackDAO::trackClean,
+            this,
+            &BaseTrackCache::slotTrackClean);
+    connect(pTrackDAO,
+            &TrackDAO::trackChanged,
+            this,
+            &BaseTrackCache::slotTrackChanged);
+    connect(pTrackDAO,
+            &TrackDAO::tracksAdded,
+            this,
+            &BaseTrackCache::slotTracksAdded);
+    connect(pTrackDAO,
+            &TrackDAO::tracksRemoved,
+            this,
+            &BaseTrackCache::slotTracksRemoved);
+    connect(pTrackDAO,
+            &TrackDAO::dbTrackAdded,
+            this,
+            &BaseTrackCache::slotDbTrackAdded);
+}
+
+void BaseTrackCache::disconnectTrackDAO(TrackDAO* pTrackDAO) {
+    disconnect(pTrackDAO,
+            &TrackDAO::trackDirty,
+            this,
+            &BaseTrackCache::slotTrackDirty);
+    disconnect(pTrackDAO,
+            &TrackDAO::trackClean,
+            this,
+            &BaseTrackCache::slotTrackClean);
+    disconnect(pTrackDAO,
+            &TrackDAO::trackChanged,
+            this,
+            &BaseTrackCache::slotTrackChanged);
+    disconnect(pTrackDAO,
+            &TrackDAO::tracksAdded,
+            this,
+            &BaseTrackCache::slotTracksAdded);
+    disconnect(pTrackDAO,
+            &TrackDAO::tracksRemoved,
+            this,
+            &BaseTrackCache::slotTracksRemoved);
+    disconnect(pTrackDAO,
+            &TrackDAO::dbTrackAdded,
+            this,
+            &BaseTrackCache::slotDbTrackAdded);
+}
+
 BaseTrackCache::~BaseTrackCache() {
-    delete m_pQueryParser;
+    // Required to allow forward declarations of (managed pointer) members
+    // in header file
 }
 
 int BaseTrackCache::columnCount() const {
@@ -116,7 +169,7 @@ void BaseTrackCache::slotTrackChanged(TrackId trackId) {
     }
     QSet<TrackId> trackIds;
     trackIds.insert(trackId);
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
@@ -354,7 +407,7 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
         qDebug() << "updateTracksInIndex failed!";
         return;
     }
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
@@ -489,8 +542,20 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         }
     }
 
-    std::unique_ptr<QueryNode> pQuery(parseQuery(
-        searchQuery, extraFilter, idStrings));
+    QStringList queryFragments;
+    if (!extraFilter.isNull() && extraFilter != "") {
+        queryFragments << QString("(%1)").arg(extraFilter);
+    }
+    if (idStrings.size() > 0) {
+        queryFragments << QString("%1 in (%2)")
+                .arg(m_idColumn, idStrings.join(","));
+    }
+
+    const std::unique_ptr<QueryNode> pQuery =
+            m_pQueryParser->parseQuery(
+                    searchQuery,
+                    m_searchColumns,
+                    queryFragments.join(" AND "));
 
     QString filter = pQuery->toSql();
     if (!filter.isEmpty()) {
@@ -607,22 +672,6 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
             }
         }
     }
-}
-
-std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString extraFilter,
-                                      QStringList idStrings) const {
-    QStringList queryFragments;
-    if (!extraFilter.isNull() && extraFilter != "") {
-        queryFragments << QString("(%1)").arg(extraFilter);
-    }
-
-    if (idStrings.size() > 0) {
-        queryFragments << QString("%1 in (%2)")
-                .arg(m_idColumn, idStrings.join(","));
-    }
-
-    return m_pQueryParser->parseQuery(query, m_searchColumns,
-                                      queryFragments.join(" AND "));
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,

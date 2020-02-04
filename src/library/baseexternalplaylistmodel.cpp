@@ -1,16 +1,18 @@
 #include "library/baseexternalplaylistmodel.h"
 
-#include "library/queryutil.h"
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
-                                                     TrackCollection* pTrackCollection,
+                                                     TrackCollectionManager* pTrackCollectionManager,
                                                      const char* settingsNamespace,
                                                      const QString& playlistsTable,
                                                      const QString& playlistTracksTable,
                                                      QSharedPointer<BaseTrackCache> trackSource)
-        : BaseSqlTableModel(parent, pTrackCollection,
+        : BaseSqlTableModel(parent, pTrackCollectionManager,
                             settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
@@ -31,8 +33,9 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     }
 
     bool track_already_in_library = false;
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, &track_already_in_library);
+    TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFileInfo(location),
+            &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from iTunes. If it was already in the library
@@ -153,7 +156,7 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         if (pTrack) {

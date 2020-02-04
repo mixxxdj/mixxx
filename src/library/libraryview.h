@@ -22,9 +22,9 @@ class LibraryView {
     // track. Does nothing otherwise.
     virtual void loadSelectedTrack() {};
 
-    virtual void slotSendToAutoDJBottom() {};
-    virtual void slotSendToAutoDJTop() {};
-    virtual void slotSendToAutoDJReplace() {};
+    virtual void slotAddToAutoDJBottom() {};
+    virtual void slotAddToAutoDJTop() {};
+    virtual void slotAddToAutoDJReplace() {};
 
     // If applicable, requests that the LibraryView load the selected track to
     // the specified group. Does nothing otherwise.

@@ -2,7 +2,6 @@
   <WidgetGroup>
     <Size>108f,54f</Size>
     <BackPath>style/style_bg_auxiliary_<Variable name="auxnum"/>.png</BackPath>
-    <Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
     <!--<Layout>horizontal</Layout>-->
     <Children>
       <!--
@@ -11,8 +10,7 @@
       **********************************************
       -->
       <StatusLight>
-        <TooltipId>channel_PeakIndicator</TooltipId>
-        <Style></Style>
+        <TooltipId>auxiliary_PeakIndicator</TooltipId>
         <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
         <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
         <Pos>99,6</Pos>
@@ -27,8 +25,7 @@
       **********************************************
       -->
       <VuMeter>
-        <TooltipId>channel_VuMeter</TooltipId>
-        <Style></Style>
+        <TooltipId>auxiliary_VuMeter</TooltipId>
         <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
         <PathBack>skin:/style/volume_display_microphone.png</PathBack>
         <Pos>99,14</Pos>
@@ -42,8 +39,7 @@
       </VuMeter>
 
       <Knob>
-        <TooltipId>pregain</TooltipId>
-        <Style></Style>
+        <TooltipId>auxiliary_pregain</TooltipId>
         <NumberStates>64</NumberStates>
         <Path>knobs/knob_rotary_s%1.png</Path>
         <Pos>66,22</Pos>
@@ -54,7 +50,6 @@
 
       <PushButton>
         <TooltipId>orientation</TooltipId>
-        <Style></Style>
         <NumberStates>3</NumberStates>
         <State>
           <Number>0</Number>
@@ -80,8 +75,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId></TooltipId>
-        <Style></Style>
+        <TooltipId>pfl</TooltipId>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>

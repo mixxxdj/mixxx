@@ -3,6 +3,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "util/painterscope.h"
 #include "util/performancetimer.h"
 
 QtVSyncTestRenderer::QtVSyncTestRenderer(
@@ -51,7 +52,7 @@ void QtVSyncTestRenderer::draw(QPainter* pPainter, QPaintEvent* /*event*/) {
         return;
     }
 
-    pPainter->save();
+    PainterScope PainterScope(pPainter);
 
     auto brush = QBrush(Qt::SolidPattern);
     if (++m_drawcount & 1) {
@@ -64,6 +65,4 @@ void QtVSyncTestRenderer::draw(QPainter* pPainter, QPaintEvent* /*event*/) {
 
     pPainter->drawRect(0, 0, m_waveformRenderer->getWidth(),
             m_waveformRenderer->getHeight());
-
-    pPainter->restore();
 }

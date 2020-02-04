@@ -18,20 +18,19 @@
 
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
-    m_pRateRangeControl = new ControlProxy(group, "rateRange", this);
-    m_pRateRangeControl->connectValueChanged(this, &WNumberRate::setValue);
-    m_pRateDirControl = new ControlProxy(group, "rate_dir", this);
-    m_pRateDirControl->connectValueChanged(this, &WNumberRate::setValue);
-    m_pRateControl = new ControlProxy(group, "rate", this);
-    m_pRateControl->connectValueChanged(this, &WNumberRate::setValue);
-    // Initialize the widget.
-    setValue(0);
+    m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
+    m_pRateRatio->connectValueChanged(this, &WNumberRate::setValue);
 }
 
-void WNumberRate::setValue(double /*dValue*/) {
-    double vsign = m_pRateControl->get() *
-            m_pRateRangeControl->get() *
-            m_pRateDirControl->get();
+void WNumberRate::setup(const QDomNode& node, const SkinContext& context) {
+    WNumber::setup(node, context);
+
+    // Initialize the widget (overrides the base class initial value.
+    setValue(m_pRateRatio->get());
+}
+
+void WNumberRate::setValue(double dValue) {
+    double vsign = dValue - 1;
 
     char sign = '+';
     if (vsign < -0.00000001) {

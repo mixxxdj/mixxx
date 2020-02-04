@@ -6,8 +6,6 @@
 
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
-#include "util/event.h"
-#include "util/counter.h"
 #include "util/math.h"
 #include "waveform/guitick.h"
 
@@ -33,7 +31,6 @@ VSyncThread::~VSyncThread() {
 }
 
 void VSyncThread::run() {
-    Counter droppedFrames("VsyncThread real time error");
     QThread::currentThread()->setObjectName("VSyncThread");
 
     m_waitToSwapMicros = m_syncIntervalTimeMicros;
@@ -44,48 +41,37 @@ void VSyncThread::run() {
         if (m_vSyncMode == ST_FREE) {
             // for benchmark only!
 
-            Event::start("VsyncThread vsync render");
             // renders the waveform, Possible delayed due to anti tearing
-            emit(vsyncRender());
+            emit vsyncRender();
             m_semaVsyncSlot.acquire();
-            Event::end("VsyncThread vsync render");
 
-            Event::start("VsyncThread vsync swap");
-            emit(vsyncSwap()); // swaps the new waveform to front
+            emit vsyncSwap(); // swaps the new waveform to front
             m_semaVsyncSlot.acquire();
-            Event::end("VsyncThread vsync swap");
 
             m_timer.restart();
             m_waitToSwapMicros = 1000;
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
-
-            Event::start("VsyncThread vsync render");
-            emit(vsyncRender()); // renders the new waveform.
+            emit vsyncRender(); // renders the new waveform.
 
             // wait until rendering was scheduled. It might be delayed due a
             // pending swap (depends one driver vSync settings)
             m_semaVsyncSlot.acquire();
-            Event::end("VsyncThread vsync render");
 
             // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
             int remainingForSwap = m_waitToSwapMicros - static_cast<int>(
                 m_timer.elapsed().toIntegerMicros());
             // waiting for interval by sleep
             if (remainingForSwap > 100) {
-                Event::start("VsyncThread usleep for VSync");
                 usleep(remainingForSwap);
-                Event::end("VsyncThread usleep for VSync");
             }
 
-            Event::start("VsyncThread vsync swap");
             // swaps the new waveform to front in case of gl-wf
-            emit(vsyncSwap());
+            emit vsyncSwap();
 
             // wait until swap occurred. It might be delayed due to driver vSync
             // settings.
             m_semaVsyncSlot.acquire();
-            Event::end("VsyncThread vsync swap");
 
             // <- Assume we are VSynced here ->
             int lastSwapTime = static_cast<int>(m_timer.restart().toIntegerMicros());
@@ -93,7 +79,6 @@ void VSyncThread::run() {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings
                 m_droppedFrames++; // Count as Real Time Error
-                droppedFrames.increment();
             }
             // try to stay in right intervals
             m_waitToSwapMicros = m_syncIntervalTimeMicros +

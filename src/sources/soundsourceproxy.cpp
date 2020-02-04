@@ -18,7 +18,7 @@
 #ifdef __SNDFILE__
 #include "sources/soundsourcesndfile.h"
 #endif
-#ifdef __FFMPEGFILE__
+#ifdef __FFMPEG__
 #include "sources/soundsourceffmpeg.h"
 #endif
 #ifdef __MODPLUG__
@@ -60,8 +60,7 @@ void SoundSourceProxy::registerSoundSourceProviders() {
     // providers to ensure that they are only after the specialized
     // provider failed to open a file. But the order of registration
     // only matters among providers with equal priority.
-#ifdef __FFMPEGFILE__
-    // Use FFmpeg as the last resort.
+#ifdef __FFMPEG__
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
 #endif
@@ -212,7 +211,7 @@ QImage SoundSourceProxy::importTemporaryCoverImage(
 }
 
 //static
-Track::ExportMetadataResult
+ExportTrackMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     const auto trackFile = pTrack->getFileInfo();
@@ -224,7 +223,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
         kLogger.warning()
                 << "Unable to export track metadata into file"
                 << trackFile.location();
-        return Track::ExportMetadataResult::Skipped;
+        return ExportTrackMetadataResult::Skipped;
     }
 }
 
@@ -299,39 +298,6 @@ void SoundSourceProxy::initSoundSource() {
     }
 }
 
-namespace {
-// Parses artist/title from the file name and returns the file type.
-// Assumes that the file name is written like: "artist - title.xxx"
-// or "artist_-_title.xxx".
-// This function does not overwrite any existing (non-empty) artist
-// and title fields!
-bool parseMetadataFromFileName(mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
-    fileName.replace("_", " ");
-    QString titleWithFileType;
-    bool parsed = false;
-    if (fileName.count('-') == 1) {
-        if (pTrackMetadata->getTrackInfo().getArtist().isEmpty()) {
-            const QString artist(fileName.section('-', 0, 0).trimmed());
-            if (!artist.isEmpty()) {
-                pTrackMetadata->refTrackInfo().setArtist(artist);
-                parsed = true;
-            }
-        }
-        titleWithFileType = fileName.section('-', 1, 1).trimmed();
-    } else {
-        titleWithFileType = fileName.trimmed();
-    }
-    if (pTrackMetadata->getTrackInfo().getTitle().isEmpty()) {
-        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
-        if (!title.isEmpty()) {
-            pTrackMetadata->refTrackInfo().setTitle(title);
-            parsed = true;
-        }
-    }
-    return parsed;
-}
-} // anonymous namespace
-
 void SoundSourceProxy::updateTrackFromSource(
         ImportTrackMetadataMode importTrackMetadataMode) const {
     DEBUG_ASSERT(m_pTrack);
@@ -357,19 +323,16 @@ void SoundSourceProxy::updateTrackFromSource(
     // at all and this information would get lost entirely otherwise!
     mixxx::TrackMetadata trackMetadata;
     bool metadataSynchronized = false;
-    m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized);
+    m_pTrack->readTrackMetadata(&trackMetadata, &metadataSynchronized);
     // If the file tags have already been parsed at least once, the
     // existing track metadata should not be updated implicitly, i.e.
     // if the user did not explicitly choose to (re-)import metadata
     // explicitly from this file.
+    bool mergeImportedMetadata = false;
     if (metadataSynchronized &&
             (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Skip importing of track metadata and embedded cover art from file"
-                    << getUrl().toString();
-        }
-        return; // abort
+        // No (re-)import needed or desired, only merge missing properties
+        mergeImportedMetadata = true;
     }
 
     // Embedded cover art is imported together with the track's metadata.
@@ -377,24 +340,21 @@ void SoundSourceProxy::updateTrackFromSource(
     // track!
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
-    QImage* pCoverImg; // pointer is also used as a flag
-    const CoverInfoRelative coverInfoOld = m_pTrack->getCoverInfo();
-    // Only re-import cover art if it is save to update, e.g. never
-    // discard a users's custom choice! We are using a whitelisting
-    // filter here that explicitly checks all valid preconditions
-    // when it is permissible to update/replace existing cover art.
-    if (((coverInfoOld.source == CoverInfo::UNKNOWN) || (coverInfoOld.source == CoverInfo::GUESSED)) &&
-            ((coverInfoOld.type == CoverInfo::NONE) || (coverInfoOld.type == CoverInfo::METADATA))) {
-        // Should import and update embedded cover art
-        pCoverImg = &coverImg;
-    } else {
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Skip importing of embedded cover art from file"
-                    << getUrl().toString();
+    QImage* pCoverImg = nullptr; // pointer also serves as a flag
+    if (!mergeImportedMetadata) {
+        const auto coverInfo = m_pTrack->getCoverInfo();
+        if (coverInfo.source == CoverInfo::USER_SELECTED &&
+                coverInfo.type == CoverInfo::FILE) {
+            // Ignore embedded cover art
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Skip importing of embedded cover art from file"
+                        << getUrl().toString();
+            }
+        } else {
+            // (Re-)import embedded cover art
+            pCoverImg = &coverImg;
         }
-        // Skip import of embedded cover art
-        pCoverImg = nullptr;
     }
 
     // Parse the tags stored in the audio file
@@ -407,78 +367,84 @@ void SoundSourceProxy::updateTrackFromSource(
                 << (pCoverImg ? "and embedded cover art" : "")
                 << "from file"
                 << getUrl().toString();
-        // Continue for now, but the abort may follow shortly if the
-        // track already has metadata (see below)
     }
-    if (metadataSynchronized) {
-        // Metadata has been synchronized successfully at least
-        // once in the past. Only overwrite this information if
-        // new data has actually been imported, otherwise abort
-        // and preserve the existing data!
-        if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-            return; // abort
+
+    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+        if (mergeImportedMetadata) {
+            // Nothing to do if no metadata imported
+            return;
+        } else if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
+            // Only parse artist and title if both fields are empty to avoid
+            // inconsistencies. Otherwise the file name (without extension)
+            // is used as the title and the artist is unmodified.
+            //
+            // TODO(XXX): Disable splitting of artist/title in settings, i.e.
+            // optionally don't split even if both title and artist are empty?
+            // Some users might want to import the whole file name of untagged
+            // files as the title without splitting the artist:
+            //     https://www.mixxx.org/forums/viewtopic.php?f=3&t=12838
+            // NOTE(uklotzde, 2019-09-26): Whoever needs this should simply set
+            // splitArtistTitle = false here and compile their custom version!
+            // It is not worth extending the settings and injecting them into
+            // SoundSourceProxy for just a few people.
+            const bool splitArtistTitle =
+                    trackMetadata.getTrackInfo().getArtist().trimmed().isEmpty();
+            const auto trackFile = m_pTrack->getFileInfo();
+            kLogger.info()
+                    << "Parsing missing"
+                    << (splitArtistTitle ? "artist/title" : "title")
+                    << "from file name:"
+                    << trackFile;
+            if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(trackFile.fileName(), splitArtistTitle) &&
+                    metadataImported.second.isNull()) {
+                // Since this is also some kind of metadata import, we mark the
+                // track's metadata as synchronized with the time stamp of the file.
+                metadataImported.second = trackFile.fileLastModified();
+            }
         }
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Updating track metadata"
-                    << (pCoverImg ? "and embedded cover art" : "")
-                    << "from file"
-                    << getUrl().toString();
-        }
+    }
+
+    if (mergeImportedMetadata) {
+        // Partial import of properties that are not (yet) stored
+        // in the database
+        m_pTrack->mergeImportedMetadata(trackMetadata);
     } else {
-        DEBUG_ASSERT(pCoverImg);
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Initializing track metadata and embedded cover art from file"
-                    << getUrl().toString();
-        }
-    }
-
-    // Fallback: If artist or title fields are blank then try to populate
-    // them from the file name. This might happen if tags are unavailable,
-    // unreadable, or partially/completely missing.
-    if (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
-            trackMetadata.getTrackInfo().getTitle().isEmpty()) {
-        kLogger.info()
-                << "Adding missing artist/title from file name"
-                << getUrl().toString();
-        const auto trackFile = m_pTrack->getFileInfo();
-        if (parseMetadataFromFileName(&trackMetadata, trackFile.fileName()) &&
-                metadataImported.second.isNull()) {
-            // Since this is also some kind of metadata import, we mark the
-            // track's metadata as synchronized with the time stamp of the file.
-            metadataImported.second = trackFile.fileLastModified();
-        }
-    }
-
-    m_pTrack->setTrackMetadata(trackMetadata, metadataImported.second);
-
-    if (pCoverImg) {
-        // If the pointer is not null then the cover art should be guessed
-        // from the embedded metadata
-        CoverInfoRelative coverInfoNew;
-        DEBUG_ASSERT(coverInfoNew.coverLocation.isNull());
-        if (pCoverImg->isNull()) {
-            // Cover art will be cleared
-            DEBUG_ASSERT(coverInfoNew.source == CoverInfo::UNKNOWN);
-            DEBUG_ASSERT(coverInfoNew.type == CoverInfo::NONE);
+        // Full import
+        if (metadataSynchronized) {
+            // Metadata has been synchronized successfully at least
+            // once in the past. Only overwrite this information if
+            // new data has actually been imported, otherwise abort
+            // and preserve the existing data!
+            if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+                return; // abort
+            }
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
-                        << "No embedded cover art found in file"
+                        << "Updating track metadata"
+                        << (pCoverImg ? "and embedded cover art" : "")
+                        << "from file"
                         << getUrl().toString();
             }
         } else {
-            coverInfoNew.source = CoverInfo::GUESSED;
-            coverInfoNew.type = CoverInfo::METADATA;
-            // TODO(XXX) here we may introduce a duplicate hash code
-            coverInfoNew.hash = CoverArtUtils::calculateHash(coverImg);
+            DEBUG_ASSERT(pCoverImg);
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
-                        << "Embedded cover art found in file"
+                        << "Initializing track metadata and embedded cover art from file"
                         << getUrl().toString();
             }
         }
-        m_pTrack->setCoverInfo(coverInfoNew);
+        m_pTrack->importMetadata(trackMetadata, metadataImported.second);
+    }
+
+    if (pCoverImg) {
+        // If the pointer is not null then the cover art should be guessed
+        auto coverInfo =
+                CoverInfoGuesser().guessCoverInfo(
+                        m_pTrack->getFileInfo(),
+                        m_pTrack->getAlbum(),
+                        *pCoverImg);
+        DEBUG_ASSERT(coverInfo.source == CoverInfo::GUESSED);
+        m_pTrack->setCoverInfo(coverInfo);
     }
 }
 

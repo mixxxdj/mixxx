@@ -40,15 +40,16 @@ void EngineWorkerScheduler::runWorkers() {
 }
 
 void EngineWorkerScheduler::run() {
+    static const QString tag("EngineWorkerScheduler");
     while (!m_bQuit) {
-        Event::start("EngineWorkerScheduler");
+        Event::start(tag);
         {
             QMutexLocker lock(&m_mutex);
             for(const auto& pWorker: m_workers) {
                 pWorker->wakeIfReady();
             }
         }
-        Event::end("EngineWorkerScheduler");
+        Event::end(tag);
         {
             QMutexLocker lock(&m_mutex);
             if (!m_bQuit) {

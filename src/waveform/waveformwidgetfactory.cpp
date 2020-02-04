@@ -85,11 +85,11 @@ WaveformWidgetHolder::WaveformWidgetHolder()
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
                                            WWaveformViewer* waveformViewer,
                                            const QDomNode& node,
-                                           const SkinContext& skinContext)
+                                           const SkinContext& parentContext)
     : m_waveformWidget(waveformWidget),
       m_waveformViewer(waveformViewer),
       m_skinNodeCache(node.cloneNode()),
-      m_skinContextCache(skinContext) {
+      m_skinContextCache(&parentContext) {
 }
 
 ///////////////////////////////////////////
@@ -131,7 +131,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
         auto rendererString = QString();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
         if (QOpenGLContext::currentContext()) {
             auto glFunctions = QOpenGLFunctions();
 
@@ -146,10 +145,9 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             // Either GL or GL ES Version is set, not both.
             qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
         } else {
-            qDebug() << "QOpenGLContext::currentContext() retuns nullptr";
+            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
             qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
         }
-#endif
 
         int majorGlVersion = 0;
         int minorGlVersion = 0;
@@ -342,7 +340,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         WaveformWidgetAbstract* pWidget = m_waveformWidgetHolders[i].m_waveformWidget;;
         m_waveformWidgetHolders[i].m_waveformWidget = NULL;
         delete pWidget;
@@ -361,7 +359,7 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
                                               const QDomElement& node,
-                                              const SkinContext& context) {
+                                              const SkinContext& parentContext) {
     int index = findIndexOf(viewer);
     if (index != -1) {
         qDebug() << "WaveformWidgetFactory::setWaveformWidget - "\
@@ -373,16 +371,18 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     // constructor (pure virtual)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
     viewer->setWaveformWidget(waveformWidget);
-    viewer->setup(node, context);
+    viewer->setup(node, parentContext);
 
     // create new holder
+    WaveformWidgetHolder holder(waveformWidget, viewer, node, &parentContext);
     if (index == -1) {
-        m_waveformWidgetHolders.push_back(
-            WaveformWidgetHolder(waveformWidget, viewer, node, context));
+        // add holder
+        m_waveformWidgetHolders.push_back(std::move(holder));
         index = m_waveformWidgetHolders.size() - 1;
-    } else { //update holder
-        m_waveformWidgetHolders[index] =
-                WaveformWidgetHolder(waveformWidget, viewer, node, context);
+    } else {
+        // update holder
+        DEBUG_ASSERT(index >= 0);
+        m_waveformWidgetHolders[index] = std::move(holder);
     }
 
     viewer->setZoom(m_defaultZoom);
@@ -473,7 +473,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     //qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
@@ -509,7 +509,7 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(m_defaultZoom);
     }
 }
@@ -525,7 +525,7 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 
     double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for (int i = 1; i < m_waveformWidgetHolders.size(); i++) {
+    for (std::size_t i = 1; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
     }
 }
@@ -536,7 +536,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
         return;
     }
 
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+    for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 
@@ -577,7 +577,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         double refZoom = pWaveformWidget->getZoomFactor();
 
-        for (int i = 0; i < m_waveformWidgetHolders.size(); ++i) {
+        for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); ++i) {
             WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
             if (holder.m_waveformViewer != viewer) {
                 holder.m_waveformViewer->setZoom(refZoom);
@@ -598,7 +598,7 @@ void WaveformWidgetFactory::render() {
         if (m_type) {   // no regular updates for an empty waveform
             // next rendered frame is displayed after next buffer swap and than after VSync
             QVarLengthArray<bool, 10> shouldRenderWaveforms(m_waveformWidgetHolders.size());
-            for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 // Don't bother doing the pre-render work if we aren't going to
                 // render this widget.
@@ -615,7 +615,7 @@ void WaveformWidgetFactory::render() {
             // It may happen that there is an artificially delayed due to
             // anti tearing driver settings
             // all render commands are delayed until the swap from the previous run is executed
-            for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (!shouldRenderWaveforms[i]) {
                     continue;
@@ -627,12 +627,12 @@ void WaveformWidgetFactory::render() {
 
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
-        emit(renderSpinnies(m_vsyncThread));
+        emit renderSpinnies(m_vsyncThread);
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
         //int t1 = m_vsyncThread->elapsed();
-        emit(waveformUpdateTick());
+        emit waveformUpdateTick();
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
@@ -640,7 +640,7 @@ void WaveformWidgetFactory::render() {
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
             m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
-            emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
+            emit waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames());
             m_frameCnt = 0.0;
         }
     }
@@ -660,7 +660,7 @@ void WaveformWidgetFactory::swap() {
         if (m_type) {   // no regular updates for an empty waveform
             // Show rendered buffer from last render() run
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
-            for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
 
                 // Don't swap invalid / invisible widgets or widgets with an
@@ -679,7 +679,7 @@ void WaveformWidgetFactory::swap() {
         }
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Swap all the WSpinny widgets now.
-        emit(swapSpinnies());
+        emit swapSpinnies();
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();

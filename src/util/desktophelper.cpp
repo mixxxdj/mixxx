@@ -151,7 +151,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         while (!dir.exists() && dirPath.size()) {
             // Note: dir.cdUp() does not work for not existing dirs
             dirPath = removeChildDir(dirPath);
-            dir = dirPath;
+            dir.setPath(dirPath);
         }
 
         // This function does not work for a non-existent directory!

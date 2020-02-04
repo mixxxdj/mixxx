@@ -23,6 +23,7 @@
 #include <QTabWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
+#include <QScreen>
 
 #include "preferences/dialog/dlgpreferences.h"
 
@@ -64,6 +65,8 @@
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
 #include "library/library.h"
+#include "library/trackcollectionmanager.h"
+#include "util/compatibility.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
@@ -94,8 +97,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_soundPage);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage);
-    connect(m_libraryPage, SIGNAL(scanLibrary()),
-            pLibrary, SLOT(scan()));
+    connect(m_libraryPage,
+            &DlgPrefLibrary::scanLibrary,
+            pLibrary->trackCollections(),
+            &TrackCollectionManager::startLibraryScan);
     m_controllersPage = new DlgPrefControllers(this, m_pConfig, controllers,
                                             m_pControllerTreeItem);
     addPageWidget(m_controllersPage);
@@ -381,7 +386,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
 
 void DlgPreferences::onHide() {
     // Notify children that we are about to hide.
-    emit(closeDlg());
+    emit closeDlg();
 }
 
 void DlgPreferences::onShow() {
@@ -402,8 +407,17 @@ void DlgPreferences::onShow() {
     }
     int newX = m_geometry[0].toInt();
     int newY = m_geometry[1].toInt();
-    newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width()- m_geometry[2].toInt()));
-    newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_geometry[3].toInt()));
+
+    const QScreen* primaryScreen = getPrimaryScreen();
+    QSize screenSpace;
+    if (primaryScreen) {
+        screenSpace = primaryScreen->geometry().size();
+    } else {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenSpace = QSize(800, 600);
+    }
+    newX = std::max(0, std::min(newX, screenSpace.width()- m_geometry[2].toInt()));
+    newY = std::max(0, std::min(newY, screenSpace.height() - m_geometry[3].toInt()));
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
 
@@ -428,7 +442,7 @@ void DlgPreferences::onShow() {
     move(newX, newY);
 
     // Notify children that we are about to show.
-    emit(showDlg());
+    emit showDlg();
 }
 
 void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
@@ -448,11 +462,11 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             }
             break;
         case QDialogButtonBox::AcceptRole:
-            emit(applyPreferences());
+            emit applyPreferences();
             accept();
             break;
         case QDialogButtonBox::RejectRole:
-            emit(cancelPreferences());
+            emit cancelPreferences();
             reject();
             break;
         default:

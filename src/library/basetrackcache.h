@@ -1,8 +1,4 @@
-// trackcache.h
-// Created 7/3/2011 by RJ Ryan (rryan@mit.edu)
-
-#ifndef BASETRACKCACHE_H
-#define BASETRACKCACHE_H
+#pragma once
 
 #include <QList>
 #include <QObject>
@@ -13,15 +9,15 @@
 #include <QSqlDatabase>
 #include <QVector>
 
-#include "library/dao/trackdao.h"
+#include <memory>
+
 #include "library/columncache.h"
 #include "track/track.h"
 #include "util/class.h"
-#include "util/memory.h"
 #include "util/string.h"
 
 class SearchQueryParser;
-class QueryNode;
+class TrackDAO;
 class TrackCollection;
 
 class SortColumn {
@@ -48,7 +44,7 @@ class BaseTrackCache : public QObject {
                    const QString& idColumn,
                    const QStringList& columns,
                    bool isCaching);
-    virtual ~BaseTrackCache();
+    ~BaseTrackCache() override;
 
     // Rebuild the BaseTrackCache index from the SQL table. This can be
     // expensive on large tables.
@@ -79,7 +75,7 @@ class BaseTrackCache : public QObject {
   signals:
     void tracksChanged(QSet<TrackId> trackIds);
 
-  private slots:
+  public slots:
     void slotTracksAdded(QSet<TrackId> trackId);
     void slotTracksRemoved(QSet<TrackId> trackId);
     void slotTrackDirty(TrackId trackId);
@@ -88,6 +84,10 @@ class BaseTrackCache : public QObject {
     void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
+    friend class TrackCollection;
+    void connectTrackDAO(TrackDAO* pTrackDAO);
+    void disconnectTrackDAO(TrackDAO* pTrackDAO);
+
     const TrackPointer& getRecentTrack(TrackId trackId) const;
     void replaceRecentTrack(TrackPointer pTrack) const;
     void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;
@@ -100,8 +100,6 @@ class BaseTrackCache : public QObject {
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
-    std::unique_ptr<QueryNode> parseQuery(QString query, QString extraFilter,
-                          QStringList idStrings) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const QList<SortColumn>& sortColumns,
                                const int columnOffset,
@@ -122,6 +120,8 @@ class BaseTrackCache : public QObject {
     const QString m_columnsJoined;
 
     const ColumnCache m_columnCache;
+
+    const std::unique_ptr<SearchQueryParser> m_pQueryParser;
 
     const StringCollator m_collator;
 
@@ -147,12 +147,8 @@ class BaseTrackCache : public QObject {
     bool m_bIndexBuilt;
     bool m_bIsCaching;
     QHash<TrackId, QVector<QVariant> > m_trackInfo;
-    TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
-    SearchQueryParser* m_pQueryParser;
     ControlProxy* m_pKeyNotationCP;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };
-
-#endif // BASETRACKCACHE_H

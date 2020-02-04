@@ -42,12 +42,10 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                 audioPortIndices.append(i);
                 inputPorts++;
                 info = lilv_port_get_name(m_pLV2plugin, port);
-                QString paramName = lilv_node_as_string(info);
             } else if (lilv_port_is_a(m_pLV2plugin, port, properties["output_port"])) {
                 audioPortIndices.append(i);
                 outputPorts++;
                 info = lilv_port_get_name(m_pLV2plugin, port);
-                QString paramName = lilv_node_as_string(info);
             }
         }
 

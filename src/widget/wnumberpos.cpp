@@ -1,7 +1,5 @@
 // Tue Haste Andersen <haste@diku.dk>, (C) 2003
 
-#include <QStringBuilder>
-
 #include "widget/wnumberpos.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"

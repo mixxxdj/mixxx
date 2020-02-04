@@ -8,14 +8,14 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <ObjectName>MetaKnob</ObjectName>
+    <ObjectName>FxMetaKnob</ObjectName>
     <SizePolicy>f,max</SizePolicy>
     <Children>
       <KnobComposed>
         <TooltipId>EffectSlot_metaknob</TooltipId>
         <Size>25f,25f</Size>
-        <Knob>knob_small_indicator_green.svg</Knob>
-        <BackPath>knob_small_bg.svg</BackPath>
+        <Knob>skin:/knobs_<Variable name="knob_scheme"/>/knob_indicator_fx_green.svg</Knob>
+        <BackPath>skin:/knobs_<Variable name="knob_scheme"/>/knob_bg_fx.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <Connection>

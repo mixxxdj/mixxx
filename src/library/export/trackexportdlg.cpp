@@ -14,20 +14,28 @@ TrackExportDlg::TrackExportDlg(QWidget *parent,
           m_pConfig(pConfig),
           m_worker(worker) {
     setupUi(this);
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonClicked()));
+    connect(cancelButton,
+            &QPushButton::clicked,
+            this,
+            &TrackExportDlg::cancelButtonClicked);
     exportProgress->setMinimum(0);
     exportProgress->setMaximum(1);
     exportProgress->setValue(0);
     statusLabel->setText("");
     setModal(true);
 
-    connect(m_worker, SIGNAL(progress(QString, int, int)), this,
-            SLOT(slotProgress(QString, int, int)));
     connect(m_worker,
-            SIGNAL(askOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
+            &TrackExportWorker::progress,
             this,
-            SLOT(slotAskOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)));
-    connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
+            &TrackExportDlg::slotProgress);
+    connect(m_worker,
+            &TrackExportWorker::askOverwriteMode,
+            this,
+            &TrackExportDlg::slotAskOverwriteMode);
+    connect(m_worker,
+            &TrackExportWorker::canceled,
+            this,
+            &TrackExportDlg::cancelButtonClicked);
 }
 
 void TrackExportDlg::showEvent(QShowEvent* event) {

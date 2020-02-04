@@ -16,8 +16,8 @@ class WTrackText : public WLabel, public TrackDropTarget {
     WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
 
   signals:
-    void trackDropped(QString fileName, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString fileName, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

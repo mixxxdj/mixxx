@@ -275,7 +275,7 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
             TrackPointer nextTrack =
-                    m_library->trackCollection().getTrackDAO().getTrack(nextTrackId);
+                    m_library->trackCollection().getTrackById(nextTrackId);
             if (nextTrack) {
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {

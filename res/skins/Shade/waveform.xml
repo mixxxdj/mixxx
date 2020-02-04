@@ -1,7 +1,6 @@
 <Template>
   <Visual>
     <TooltipId>waveform_display</TooltipId>
-    <Style></Style>
     <Channel><Variable name="channum"/></Channel>
     <Size>0e,81f</Size>
     <BgColor>#8D98A3</BgColor>

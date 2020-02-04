@@ -89,7 +89,7 @@ bool AndNode::match(const TrackPointer& pTrack) const {
 
 QString AndNode::toSql() const {
     QStringList queryFragments;
-    queryFragments.reserve(m_nodes.size());
+    queryFragments.reserve(static_cast<int>(m_nodes.size()));
     for (const auto& pNode: m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
@@ -118,7 +118,7 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 
 QString OrNode::toSql() const {
     QStringList queryFragments;
-    queryFragments.reserve(m_nodes.size());
+    queryFragments.reserve(static_cast<int>(m_nodes.size()));
     for (const auto& pNode: m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {

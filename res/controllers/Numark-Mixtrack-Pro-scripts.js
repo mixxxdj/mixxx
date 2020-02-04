@@ -49,7 +49,7 @@
 //	In Stop mode, with Scratch OFF or ON: 	Scratch at touch, and Stop moving when the wheel stop moving.
 //	In Play mode, with Scratch OFF: 	Only Pitch bend.
 // 	In Play mode, with Scratch ON: 		Scratch at touch and, in Backwards Stop Scratch when the wheel stop moving for 20ms -> BACKSPIN EFFECT!!!!.
-//						In Fordward Stop Scratch when the touch is released > Play Inmediatly (without breaks for well mix).
+//						In Fordward Stop Scratch when the touch is released > Play Immediately (without breaks for well mix).
 //						Border of the wheels: Pitch Bend.
 //
 

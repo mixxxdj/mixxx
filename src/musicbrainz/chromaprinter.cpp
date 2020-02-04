@@ -64,7 +64,7 @@ QString calcFingerprint(
 
     PerformanceTimer timerGeneratingFingerprint;
     timerGeneratingFingerprint.start();
-    int success = chromaprint_feed(ctx, &fingerprintSamples[0], fingerprintSamples.size());
+    int success = chromaprint_feed(ctx, &fingerprintSamples[0], static_cast<int>(fingerprintSamples.size()));
     chromaprint_finish(ctx);
     if (!success) {
         qWarning() << "Failed to generate fingerprint from sample data";

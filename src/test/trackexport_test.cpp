@@ -40,7 +40,7 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     TrackPointer track1(Track::newTemporary(fileinfo1));
     TrackFile fileinfo2(m_testDataDir.filePath("cover-test.flac"));
     TrackPointer track2(Track::newTemporary(fileinfo2));
-    TrackFile fileinfo3(m_testDataDir.filePath("cover-test.m4a"));
+    TrackFile fileinfo3(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     TrackPointer track3(Track::newTemporary(fileinfo3));
 
     // An initializer list would be prettier here, but it doesn't compile
@@ -59,9 +59,9 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     EXPECT_EQ(3, m_answerer->currentProgressCount());
 
     // The destination folder should have all the files.
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.ogg")).exists());
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.flac")).exists());
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.m4a")).exists());
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test.ogg")));
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test.flac")));
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a")));
 }
 
 TEST_F(TrackExporterTest, OverwriteSkip) {
@@ -70,7 +70,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
     const qint64 fileSize1 = fileinfo1.asFileInfo().size();
     TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
+    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
     // Create empty versions at the destination so we can see if we actually
@@ -78,7 +78,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     QFile file1(m_exportDir.filePath("cover-test.ogg"));
     ASSERT_TRUE(file1.open(QIODevice::WriteOnly));
     file1.close();
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
@@ -105,7 +105,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     EXPECT_TRUE(newfile1.exists());
     EXPECT_EQ(fileSize1, newfile1.size());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(0, newfile2.size());
 }
@@ -115,7 +115,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
     const qint64 fileSize1 = fileinfo1.asFileInfo().size();
     TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
+    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     const qint64 fileSize2 = fileinfo2.asFileInfo().size();
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
@@ -124,7 +124,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     QFile file1(m_exportDir.filePath("cover-test.ogg"));
     ASSERT_TRUE(file1.open(QIODevice::WriteOnly));
     file1.close();
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
@@ -148,7 +148,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     EXPECT_TRUE(newfile1.exists());
     EXPECT_EQ(fileSize1, newfile1.size());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(fileSize2, newfile2.size());
 }
@@ -157,7 +157,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     // Export a tracklist with two existing tracks -- skip both.
     TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
     TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
+    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
     // Create empty versions at the destination so we can see if we actually
@@ -165,7 +165,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     QFile file1(m_exportDir.filePath("cover-test.ogg"));
     ASSERT_TRUE(file1.open(QIODevice::WriteOnly));
     file1.close();
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
@@ -189,7 +189,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     EXPECT_TRUE(newfile1.exists());
     EXPECT_EQ(0, newfile1.size());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(0, newfile2.size());
 }
@@ -199,12 +199,12 @@ TEST_F(TrackExporterTest, Cancel) {
     // anything.
     TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
     TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
+    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
     // Create empty version at the destination so we can see if we actually
     // canceled.
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
@@ -228,7 +228,7 @@ TEST_F(TrackExporterTest, Cancel) {
     QFileInfo newfile1(m_exportDir.filePath("cover-test.ogg"));
     EXPECT_FALSE(newfile1.exists());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(0, newfile2.size());
 }

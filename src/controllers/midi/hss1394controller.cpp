@@ -40,7 +40,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 if (i + 2 < uBufferSize) {
                     note = pBuffer[i+1];
                     velocity = pBuffer[i+2];
-                    emit(incomingData(status, note, velocity, timestamp));
+                    emit incomingData(status, note, velocity, timestamp);
                 } else {
                     qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
                 }
@@ -49,7 +49,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             default:
                 // Handle platter messages and any others that are not 3 bytes
                 QByteArray outArray((char*)pBuffer,uBufferSize);
-                emit(incomingData(outArray, timestamp));
+                emit incomingData(outArray, timestamp);
                 i = uBufferSize;
                 break;
         }

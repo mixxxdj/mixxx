@@ -50,24 +50,35 @@ NetworkTimeouts::NetworkTimeouts(int timeout_msec, QObject* parent)
 }
 
 void NetworkTimeouts::addReply(QNetworkReply* reply) {
-    if (m_timers.contains(reply))
+    if (!reply->isRunning() || m_timers.contains(reply)) {
         return;
+    }
 
-    connect(reply, &QNetworkReply::destroyed, this, &NetworkTimeouts::replyFinished);
-    connect(reply, &QNetworkReply::finished, this, &NetworkTimeouts::replyFinished);
+    connect(reply, &QNetworkReply::destroyed, this, &NetworkTimeouts::replyFinishedOrDestroyed);
+    connect(reply, &QNetworkReply::finished, this, &NetworkTimeouts::replyFinishedOrDestroyed);
     m_timers[reply] = startTimer(m_timeout_msec);
 }
 
-void NetworkTimeouts::replyFinished() {
-    QNetworkReply* reply = reinterpret_cast<QNetworkReply*>(sender());
-    if (m_timers.contains(reply)) {
+void NetworkTimeouts::removeReply(QNetworkReply* reply) {
+    if (reply && m_timers.contains(reply)) {
         killTimer(m_timers.take(reply));
     }
 }
 
+void NetworkTimeouts::replyFinishedOrDestroyed() {
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    removeReply(reply);
+}
+
 void NetworkTimeouts::timerEvent(QTimerEvent* e) {
-    QNetworkReply* reply = m_timers.key(e->timerId());
-    if (reply) {
-      reply->abort();
+    const int timerId = e->timerId();
+    killTimer(timerId); // oneshot
+    QNetworkReply* reply = m_timers.key(timerId);
+    if (!reply) {
+        return;
+    }
+    m_timers.remove(reply);
+    if (reply->isRunning()) {
+        reply->abort();
     }
 }

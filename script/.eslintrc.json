@@ -1,0 +1,7 @@
+{
+  "globals": {
+    "__extension__": "readonly",
+    "__setupPackage__": "readonly",
+    "__postInit__": "readonly"
+  }
+}

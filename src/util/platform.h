@@ -27,6 +27,11 @@
 #if __has_feature(cxx_attributes) && __has_warning("-Wimplicit-fallthrough")
 #define M_FALLTHROUGH_INTENDED [[clang::fallthrough]]
 #endif
+#elif defined(__GNUC__) && __GNUC__ >= 7
+// Taken from https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wimplicit-fallthrough_003d
+// We could also use a comment, but that would require ccache users to set the
+// keep_comments_cpp option. If we switch to C++17, we can use [[fallthough]].
+#define M_FALLTHROUGH_INTENDED __attribute__ ((fallthrough));
 #endif
 
 #ifndef M_FALLTHROUGH_INTENDED

@@ -187,7 +187,7 @@ Variables:
       <WidgetGroup><!-- FxUnitControls -->
         <ObjectName>FxUnitControls</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- FX label + FX expand button -->
             <ObjectName>AlignCenter</ObjectName>
@@ -201,7 +201,7 @@ Variables:
                 <Alignment>right</Alignment>
               </Label>
 
-              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
@@ -255,7 +255,7 @@ Variables:
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                         <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                        <SetVariable name="Size">30f,30f</SetVariable>
+                        <SetVariable name="Size">30f,26f</SetVariable>
                         <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                         <SetVariable name="ConfigKey">super1</SetVariable>
                         <SetVariable name="Color">blue</SetVariable>

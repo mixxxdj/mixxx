@@ -182,7 +182,7 @@
           <Amount>-40</Amount>
         </Add>
       </Filters>
-      <Style src="skin:dark.qss"/>
+      <Style src="skin:style_dark.qss"/>
     </Scheme>
     <Scheme>
       <Name>Summer Sunset</Name>
@@ -200,7 +200,7 @@
           <VConst>-10</VConst>
         </HSVTweak>
       </Filters>
-      <Style src="skin:summer_sunset.qss"/>
+      <Style src="skin:style_summer_sunset.qss"/>
     </Scheme>
   </Schemes>
 
@@ -213,7 +213,7 @@
   ############################################################################################
   -->
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style_mac.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
     <LaunchImageStyle>
@@ -247,7 +247,7 @@
     Singletons - create singletons for scrolling waveforms
         Above the maximized library there are minimal decks which contain overview waveforms.
         For the end-of-track warning in those overviews to work instances of scrolling waveforms
-        are required. We load in the maximzed library view, as well, but they are invisble as
+        are required. We load in the maximzed library view, as well, but they are invisible as
         they are 0px tall. 
     ############################################################################################
     ############################################################################################
@@ -375,12 +375,10 @@
             <WidgetGroup>
               <SizePolicy>me,min</SizePolicy>
               <Layout>horizontal</Layout>
-              <Style>QGroupBox { border: 0px solid yellow; margin: 0px;}</Style>
               <Children>
                 <WidgetGroup>
                   <ObjectName>EffectLeftBorder</ObjectName>
                   <Size>3f,43f</Size>
-                  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
                 </WidgetGroup>
                 <Template src="skin:looping.xml">
                   <SetVariable name="channum">1</SetVariable>
@@ -432,7 +430,6 @@
           <SizePolicy>me,me</SizePolicy>
           <Layout>horizontal</Layout>
           <Style>
-          QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
           <!--
           <BgColor>#101010</BgColor>
           <FgColor>#C1C1C1</FgColor>
@@ -448,15 +445,12 @@
               <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
               <Children>
                 <WidgetGroup>
-                  <Style>QGroupBox {}</Style>
                   <Layout>vertical</Layout>
                   <Children>
                     <WidgetGroup>
                       <Style>
                         QGroupBox {
                           margin: 2px 0px 4px 3px;
-                          padding: 0px;
-                          background: transparent;
                         }
                       </Style>
                       <Layout>horizontal</Layout>
@@ -473,7 +467,6 @@
                     <!--Library Tree View-->
                     <Splitter>
                       <Size>e,me</Size>
-                      <Style></Style>
                       <SplitSizes>1,e</SplitSizes>
                       <Collapsible>0,0</Collapsible>
                       <Children>
@@ -493,11 +486,12 @@
                 </WidgetGroup>
                 <WidgetGroup>
                   <!-- Library Table-->
-                  <Style>QGroupBox {}</Style>
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
-                    <Library></Library>
+                    <Library>
+                      <ShowButtonText>false</ShowButtonText>
+                    </Library>
                   </Children>
                 </WidgetGroup>
               </Children>

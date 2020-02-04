@@ -30,11 +30,12 @@
  * all the controls to the values obtained from SoundManager.
  */
 DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, UserSettingsPointer pConfig)
+                           PlayerManager* pPlayerManager, UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
           m_pPlayerManager(pPlayerManager),
-          m_pConfig(pConfig),
+          m_pSettings(pSettings),
+          m_config(pSoundManager),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
@@ -204,11 +205,11 @@ void DlgPrefSound::slotUpdate() {
     // we change to this pane, we lose changed and unapplied settings
     // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
-    m_settingsModified = false;
     m_bSkipConfigClear = true;
     loadSettings();
     checkLatencyCompensation();
     m_bSkipConfigClear = false;
+    m_settingsModified = false;
 }
 
 /**
@@ -221,13 +222,13 @@ void DlgPrefSound::slotApply() {
 
     m_config.clearInputs();
     m_config.clearOutputs();
-    emit(writePaths(&m_config));
+    emit writePaths(&m_config);
 
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
         m_pKeylockEngine->set(keylockComboBox->currentIndex());
-        m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+        m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
                        ConfigValue(keylockComboBox->currentIndex()));
 
         err = m_pSoundManager->setConfig(m_config);
@@ -413,13 +414,13 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     }
 
     // Default keylock is Rubberband.
-    int keylock_engine = m_pConfig->getValue(
+    int keylock_engine = m_pSettings->getValue(
             ConfigKey("[Master]", "keylock_engine"), 1);
     keylockComboBox->setCurrentIndex(keylock_engine);
 
     m_loading = false;
-    // DlgPrefSoundItem has it's own inhibit flag 
-    emit(loadPaths(m_config));
+    // DlgPrefSoundItem has it's own inhibit flag
+    emit loadPaths(m_config);
 }
 
 /**
@@ -451,7 +452,7 @@ void DlgPrefSound::apiChanged(int index) {
  */
 void DlgPrefSound::updateAPIs() {
     QString currentAPI(apiComboBox->itemData(apiComboBox->currentIndex()).toString());
-    emit(updatingAPI());
+    emit updatingAPI();
     while (apiComboBox->count() > 1) {
         apiComboBox->removeItem(apiComboBox->count() - 1);
     }
@@ -462,7 +463,7 @@ void DlgPrefSound::updateAPIs() {
     if (newIndex > -1) {
         apiComboBox->setCurrentIndex(newIndex);
     }
-    emit(updatedAPI());
+    emit updatedAPI();
 }
 
 /**
@@ -557,8 +558,8 @@ void DlgPrefSound::refreshDevices() {
         m_inputDevices =
             m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
     }
-    emit(refreshOutputDevices(m_outputDevices));
-    emit(refreshInputDevices(m_inputDevices));
+    emit refreshOutputDevices(m_outputDevices);
+    emit refreshInputDevices(m_inputDevices);
 }
 
 /**
@@ -590,7 +591,7 @@ void DlgPrefSound::queryClicked() {
  * Slot called when the "Reset to Defaults" button is clicked.
  */
 void DlgPrefSound::slotResetToDefaults() {
-    SoundManagerConfig newConfig;
+    SoundManagerConfig newConfig(m_pSoundManager);
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
@@ -685,7 +686,7 @@ void DlgPrefSound::checkLatencyCompensation() {
         m_config.clearOutputs();
     }
 
-    emit(writePaths(&m_config));
+    emit writePaths(&m_config);
 
     if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
         micMonitorModeComboBox->setEnabled(true);

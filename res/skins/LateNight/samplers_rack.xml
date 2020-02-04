@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="btn_type">embedded</SetVariable>
 
   <SingletonDefinition>
     <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
@@ -8,42 +9,47 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>show_samplers</TooltipId>
-            <ObjectName>SamplerExpandbutton</ObjectName>
-            <Size>min,me</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerExpand.svg</Pressed>
-              <Unpressed>skin:/buttons/btn_samplerExpand.svg</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerCollapse.svg</Pressed>
-              <Unpressed>skin:/buttons/btn_samplerCollapse.svg</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey>[Skin],expand_samplers</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </PushButton>
-
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>SamplerExpandButtonBox</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <PushButton>
+                <TooltipId>show_samplers</TooltipId>
+                <ObjectName>FxExpandCollapseButton</ObjectName>
+                <Size>26f,26f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[Skin],expand_samplers</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler1Small_Singleton</ObjectName>
+    <ObjectName>SamplerMini1_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum">1</SetVariable>
           </Template>
         </Children>
@@ -52,14 +58,14 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler2Small_Singleton</ObjectName>
+    <ObjectName>SamplerMini2_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum">2</SetVariable>
           </Template>
         </Children>
@@ -68,14 +74,14 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler3Small_Singleton</ObjectName>
+    <ObjectName>SamplerMini3_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum">3</SetVariable>
           </Template>
         </Children>
@@ -84,14 +90,14 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler4Small_Singleton</ObjectName>
+    <ObjectName>SamplerMini4_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:samplersmall.xml">
+          <Template src="skin:sampler_mini.xml">
             <SetVariable name="samplernum">4</SetVariable>
           </Template>
         </Children>
@@ -100,7 +106,71 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler1Big_Singleton</ObjectName>
+    <ObjectName>SamplerMini5_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_mini.xml">
+            <SetVariable name="samplernum">5</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini6_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_mini.xml">
+            <SetVariable name="samplernum">6</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini7_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_mini.xml">
+            <SetVariable name="samplernum">7</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini8_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler_mini.xml">
+            <SetVariable name="samplernum">8</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler1_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
@@ -116,7 +186,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler2Big_Singleton</ObjectName>
+    <ObjectName>Sampler2_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
@@ -132,7 +202,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler3Big_Singleton</ObjectName>
+    <ObjectName>Sampler3_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
@@ -148,7 +218,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Sampler4Big_Singleton</ObjectName>
+    <ObjectName>Sampler4_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
         <ObjectName>AlignCenterTop</ObjectName>
@@ -172,6 +242,8 @@
     </Connection>
     <Children>
 
+      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -186,12 +258,13 @@
 
             </Children>
           </WidgetStack>
-
         </Children>
       </WidgetGroup>
 
+      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+
       <WidgetGroup>
-        <Size>5f,1min</Size>
+        <Size>2f,1min</Size>
         <Connection>
           <ConfigKey>[Master],skin_settings</ConfigKey>
           <BindProperty>visible</BindProperty>

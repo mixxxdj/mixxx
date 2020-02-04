@@ -20,7 +20,6 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotCancel() ;
 
   private slots:
-    void slotSetAutoDjRequeue(int);
     void slotSetAutoDjMinimumAvailable(int);
     void slotSetAutoDjUseIgnoreTime(int);
     void slotSetAutoDjIgnoreTime(const QTime &a_rTime);

@@ -100,11 +100,11 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
 
     // Signal that we should run slotInitialize once our event loop has started
     // up.
-    emit(requestInitialize());
+    emit requestInitialize();
 }
 
 ControllerManager::~ControllerManager() {
-    emit(requestShutdown());
+    emit requestShutdown();
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
@@ -176,7 +176,7 @@ void ControllerManager::updateControllerList() {
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
         locker.unlock();
-        emit(devicesChanged());
+        emit devicesChanged();
     }
 }
 

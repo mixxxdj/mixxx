@@ -17,8 +17,6 @@
 #include "musicbrainz/network.h"
 #include "track/track.h"
 
-class QXmlStreamReader;
-
 class AcoustidClient : public QObject {
   Q_OBJECT
 
@@ -48,19 +46,19 @@ class AcoustidClient : public QObject {
     // requests.
     void cancelAll();
 
-    QString parseResult(QXmlStreamReader& reader);
-
   signals:
-    void finished(int id, const QString& mbid);
+    void finished(int id, QStringList mbRecordingIds);
     void networkError(int httpStatus, QString app, QString message, int code);
 
   private slots:
-    void requestFinished();
+    void onReplyFinished();
 
   private:
+    void cancelPendingReply(QNetworkReply* reply);
+
     QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
-    QMap<QNetworkReply*, int> m_requests;
+    QMap<QNetworkReply*, int> m_pendingReplies;
 };
 
 #endif // ACOUSTIDCLIENT_H

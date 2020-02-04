@@ -97,7 +97,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
                     this, SLOT(slotParameterValueChanged(double)));
         }
     }
-    emit(updated());
+    emit updated();
 }
 
 void EffectParameterSlot::clear() {
@@ -115,7 +115,7 @@ void EffectParameterSlot::clear() {
         static_cast<double>(EffectManifestParameter::LinkType::NONE));
     m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
-    emit(updated());
+    emit updated();
 }
 
 void EffectParameterSlot::slotParameterValueChanged(double value) {

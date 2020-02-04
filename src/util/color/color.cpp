@@ -42,7 +42,7 @@ QColor chooseContrastColor(QColor baseColor) {
         lightColor = baseColor.lighter(iLighterFactor);
     }
 
-    // Even though we have the HSV representation fo the color here, the "value" component alone is
+    // Even though we have the HSV representation for the color here, the "value" component alone is
     // not a good indicator of a color brightness (saturation comes into play too).
     // That's why we call chooseColorByBrightness so the proper brightness of the color is used
     // to choose between the light and the dark colors.

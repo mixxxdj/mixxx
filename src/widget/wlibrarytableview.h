@@ -11,9 +11,8 @@
 #include "preferences/usersettings.h"
 #include "library/libraryview.h"
 #include "track/track.h"
-#include "library/coverartcache.h"
-#include "library/trackmodel.h"
 
+class TrackModel;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
@@ -23,6 +22,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
                       UserSettingsPointer pConfig,
                       ConfigKey vScrollBarPosKey);
     ~WLibraryTableView() override;
+
     void moveSelection(int delta) override;
 
     /**

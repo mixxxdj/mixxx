@@ -11,6 +11,7 @@
         <Children>
           <Template src="skin:deck.xml">
             <SetVariable name="channum">2</SetVariable>
+            <SetVariable name="decks_group">12</SetVariable>
           </Template>
 
           <WidgetGroup>
@@ -19,6 +20,7 @@
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channum">4</SetVariable>
+                <SetVariable name="decks_group">34</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -31,7 +33,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Size>5f,1min</Size>
+        <Size>2f,1min</Size>
         <Connection>
           <ConfigKey>[Master],skin_settings</ConfigKey>
           <BindProperty>visible</BindProperty>

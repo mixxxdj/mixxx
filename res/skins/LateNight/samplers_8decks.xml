@@ -8,68 +8,52 @@
       <WidgetStack currentpage="[Skin],expand_samplers">
         <Children>
 
-          <!--8 big Samplers -->
+          <!--8 small Samplers -->
           <WidgetGroup>
             <ObjectName>SamplerRow</ObjectName>
 		        <Layout>horizontal</Layout>
 		        <Children>
 
               <SingletonContainer>
-                <ObjectName>Sampler1Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini1_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
-                <ObjectName>Sampler2Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini2_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
-                <ObjectName>Sampler3Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini3_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
-                <ObjectName>Sampler4Small_Singleton</ObjectName>
+                <ObjectName>SamplerMini4_Singleton</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+              <SingletonContainer>
+                <ObjectName>SamplerMini5_Singleton</ObjectName>
+              </SingletonContainer>
 
-              <Template src="skin:samplersmall.xml">
-                <SetVariable name="samplernum">5</SetVariable>
-              </Template>
+              <SingletonContainer>
+                <ObjectName>SamplerMini6_Singleton</ObjectName>
+              </SingletonContainer>
 
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+              <SingletonContainer>
+                <ObjectName>SamplerMini7_Singleton</ObjectName>
+              </SingletonContainer>
 
-              <Template src="skin:samplersmall.xml">
-                <SetVariable name="samplernum">6</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
-              <Template src="skin:samplersmall.xml">
-                <SetVariable name="samplernum">7</SetVariable>
-              </Template>
-
-              <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
-              <Template src="skin:samplersmall.xml">
-                <SetVariable name="samplernum">8</SetVariable>
-              </Template>
+              <SingletonContainer>
+                <ObjectName>SamplerMini8_Singleton</ObjectName>
+              </SingletonContainer>
 
             </Children>
           </WidgetGroup>
 
-          <!--8 small Samplers -->
+          <!--8 big Samplers -->
           <WidgetGroup trigger="[Skin],expand_samplers" on_hide_select="0">
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
@@ -83,28 +67,20 @@
                 <Children>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler1Big_Singleton</ObjectName>
+                    <ObjectName>Sampler1_Singleton</ObjectName>
                   </SingletonContainer>
-
-                  <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler2Big_Singleton</ObjectName>
+                    <ObjectName>Sampler2_Singleton</ObjectName>
                   </SingletonContainer>
-
-                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
                   <SingletonContainer>
                     <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
                   </SingletonContainer>
 
-                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-
                   <Template src="skin:sampler.xml">
                     <SetVariable name="samplernum">5</SetVariable>
                   </Template>
-
-                  <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
 
                   <Template src="skin:sampler.xml">
                     <SetVariable name="samplernum">6</SetVariable>
@@ -121,22 +97,18 @@
                 <Children>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler3Big_Singleton</ObjectName>
+                    <ObjectName>Sampler3_Singleton</ObjectName>
                   </SingletonContainer>
-
-                  <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
 
                   <SingletonContainer>
-                    <ObjectName>Sampler4Big_Singleton</ObjectName>
+                    <ObjectName>Sampler4_Singleton</ObjectName>
                   </SingletonContainer>
 
-                  <WidgetGroup><Size>30f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
                   <Template src="skin:sampler.xml">
                     <SetVariable name="samplernum">7</SetVariable>
                   </Template>
-
-                  <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
 
                   <Template src="skin:sampler.xml">
                     <SetVariable name="samplernum">8</SetVariable>
@@ -151,8 +123,6 @@
 
         </Children>
       </WidgetStack>
-
-      
 
     </Children>
   </WidgetGroup>

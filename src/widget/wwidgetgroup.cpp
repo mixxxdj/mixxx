@@ -223,5 +223,5 @@ void WWidgetGroup::setHighlight(int highlight) {
     style()->unpolish(this);
     style()->polish(this);
     update();
-    emit(highlightChanged(m_highlight));
+    emit highlightChanged(m_highlight);
 }

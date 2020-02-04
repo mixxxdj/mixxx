@@ -66,6 +66,8 @@ void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
             m_pixmaps[i].clear();
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WStatusLight::setPixmap(int iState, PixmapSource source,

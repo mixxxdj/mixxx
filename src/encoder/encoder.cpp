@@ -76,62 +76,65 @@ Encoder::Format EncoderFactory::getFormatFor(QString formatText) const
     return m_formats.first();
 }
 
-EncoderPointer EncoderFactory::getNewEncoder(
-    UserSettingsPointer pConfig, EncoderCallback* pCallback) const
-{
-    return getNewEncoder(getSelectedFormat(pConfig),  pConfig, pCallback);
+EncoderPointer EncoderFactory::createRecordingEncoder(
+        Encoder::Format format,
+        UserSettingsPointer pConfig, 
+        EncoderCallback* pCallback) const {
+    EncoderRecordingSettingsPointer pSettings =
+            getEncoderRecordingSettings(format, pConfig);
+    return createEncoder(pSettings, pCallback);
 }
 
-EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
-    UserSettingsPointer pConfig, EncoderCallback* pCallback) const
-{
+EncoderPointer EncoderFactory::createEncoder(
+        EncoderSettingsPointer pSettings,
+        EncoderCallback* pCallback) const {
     EncoderPointer pEncoder;
-    if (format.internalName == ENCODING_WAVE) {
+    if (pSettings && pSettings->getFormat() == ENCODING_WAVE) {
         pEncoder = std::make_shared<EncoderWave>(pCallback);
-        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
-    } else if (format.internalName == ENCODING_AIFF) {
+        pEncoder->setEncoderSettings(*pSettings);
+    } else if (pSettings && pSettings->getFormat() == ENCODING_AIFF) {
         pEncoder = std::make_shared<EncoderWave>(pCallback);
-        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
-    } else if (format.internalName == ENCODING_FLAC) {
+        pEncoder->setEncoderSettings(*pSettings);
+    } else if (pSettings && pSettings->getFormat() == ENCODING_FLAC) {
         pEncoder = std::make_shared<EncoderSndfileFlac>(pCallback);
-        pEncoder->setEncoderSettings(EncoderFlacSettings(pConfig));
-    } else if (format.internalName == ENCODING_MP3) {
+        pEncoder->setEncoderSettings(*pSettings);
+    } else if (pSettings && pSettings->getFormat() == ENCODING_MP3) {
 #ifdef __FFMPEGFILE_ENCODERS__
         pEncoder = std::make_shared<EncoderFfmpegMp3>(pCallback);
 #else
         pEncoder = std::make_shared<EncoderMp3>(pCallback);
 #endif
-        pEncoder->setEncoderSettings(EncoderMp3Settings(pConfig));
-    } else if (format.internalName == ENCODING_OGG) {
+        pEncoder->setEncoderSettings(*pSettings);
+    } else if (pSettings && pSettings->getFormat() == ENCODING_OGG) {
 #ifdef __FFMPEGFILE_ENCODERS__
         pEncoder = std::make_shared<EncoderFfmpegVorbis>(pCallback);
 #else
         pEncoder = std::make_shared<EncoderVorbis>(pCallback);
 #endif
-        pEncoder->setEncoderSettings(EncoderVorbisSettings(pConfig));
+        pEncoder->setEncoderSettings(*pSettings);
     }
 #ifdef __OPUS__
-    else if (format.internalName == ENCODING_OPUS) {
+    else if (pSettings && pSettings->getFormat() == ENCODING_OPUS) {
         pEncoder = std::make_shared<EncoderOpus>(pCallback);
-        pEncoder->setEncoderSettings(EncoderOpusSettings(pConfig));
+        pEncoder->setEncoderSettings(*pSettings);
     }
 #endif
     else {
-        qWarning() << "Unsupported format requested! " << format.internalName;
+        qWarning() << "Unsupported format requested! "
+                << QString(pSettings ? pSettings->getFormat() : QString("NULL"));
         DEBUG_ASSERT(false);
-        pEncoder = std::make_shared<EncoderWave>(pCallback);
-        pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
+        pEncoder = std::make_shared<EncoderWave>(pCallback);;
     }
     return pEncoder;
 }
 
-EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format,
+EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Encoder::Format format,
     UserSettingsPointer pConfig) const
 {
     if (format.internalName == ENCODING_WAVE) {
-        return std::make_shared<EncoderWaveSettings>(pConfig, format);
+        return std::make_shared<EncoderWaveSettings>(pConfig, format.internalName);
     } else if (format.internalName == ENCODING_AIFF) {
-        return std::make_shared<EncoderWaveSettings>(pConfig, format);
+        return std::make_shared<EncoderWaveSettings>(pConfig, format.internalName);
     } else if (format.internalName == ENCODING_FLAC) {
         return std::make_shared<EncoderFlacSettings>(pConfig);
     } else if (format.internalName == ENCODING_MP3) {
@@ -143,6 +146,6 @@ EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format
     } else {
         qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
-        return std::make_shared<EncoderWaveSettings>(pConfig, format);
+        return std::make_shared<EncoderWaveSettings>(pConfig, ENCODING_WAVE);
     }
 }

@@ -8,6 +8,7 @@
 WBattery::WBattery(QWidget* parent)
         : WWidget(parent),
           m_pBattery(Battery::getBattery(this)) {
+    setVisible(false);
     if (m_pBattery) {
         connect(m_pBattery.data(), SIGNAL(stateChanged()),
                 this, SLOT(update()));
@@ -20,14 +21,6 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
         setPixmap(&m_pPixmapBack,
                   context.getPixmapSource(backPath),
                   context.selectScaleMode(backPath, Paintable::TILE),
-                  context.getScaleFactor());
-    }
-
-    QDomElement unknownPath = context.selectElement(node, "PixmapUnknown");
-    if (!unknownPath.isNull()) {
-        setPixmap(&m_pPixmapUnknown,
-                  context.getPixmapSource(unknownPath),
-                  context.selectScaleMode(unknownPath, Paintable::TILE),
                   context.getScaleFactor());
     }
 
@@ -91,11 +84,19 @@ int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
     return result;
 }
 
+QString WBattery::formatTooltip(double dPercentage) {
+    return QString::number(dPercentage, 'f', 0) + QStringLiteral("%");
+}
+
 void WBattery::update() {
     int minutesLeft = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
     Battery::ChargingState chargingState = m_pBattery ?
             m_pBattery->getChargingState() : Battery::UNKNOWN;
     double dPercentage = m_pBattery ? m_pBattery->getPercentage() : 0;
+
+    if (chargingState != Battery::UNKNOWN) {
+        setBaseTooltip(formatTooltip(dPercentage));
+    }
 
     m_pCurrentPixmap.clear();
     switch (chargingState) {
@@ -105,10 +106,8 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_chargingPixmaps.size())];
             }
-            if (minutesLeft == Battery::TIME_UNKNOWN) {
-                setBaseTooltip(tr("Time until charged unknown."));
-            } else {
-                setBaseTooltip(tr("Time until charged: %1")
+            if (minutesLeft != Battery::TIME_UNKNOWN) {
+                appendBaseTooltip("\n" + tr("Time until charged: %1")
                                .arg(formatMinutes(minutesLeft)));
             }
             break;
@@ -118,23 +117,19 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_dischargingPixmaps.size())];
             }
-            if (minutesLeft == Battery::TIME_UNKNOWN) {
-                setBaseTooltip(tr("Time left unknown."));
-            } else {
-                setBaseTooltip(tr("Time left: %1")
+            if (minutesLeft != Battery::TIME_UNKNOWN) {
+                appendBaseTooltip("\n" + tr("Time left: %1")
                                .arg(formatMinutes(minutesLeft)));
             }
             break;
         case Battery::CHARGED:
             m_pCurrentPixmap = m_pPixmapCharged;
-            setBaseTooltip(tr("Battery fully charged."));
+            appendBaseTooltip("\n" + tr("Battery fully charged."));
             break;
-        case Battery::UNKNOWN:
         default:
-            m_pCurrentPixmap = m_pPixmapUnknown;
-            setBaseTooltip(tr("Battery status unknown."));
             break;
     }
+    setVisible(chargingState != Battery::UNKNOWN);
 
     // call parent's update() to show changes, this should call
     // QWidget::update()

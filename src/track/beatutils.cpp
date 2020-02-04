@@ -5,6 +5,7 @@
  *      Author: vittorio
  */
 
+#include <algorithm>
 #include <QtDebug>
 #include <QString>
 #include <QList>
@@ -331,7 +332,7 @@ double BeatUtils::calculateOffset(
         int freq = 0;
         for (int i = 0; i < beats2.size(); i += 4) {
             double beats2_beat = beats2.at(i);
-            QVector<double>::const_iterator it = qUpperBound(
+            QVector<double>::const_iterator it = std::upper_bound(
                 beats1.constBegin(), beats1.constEnd(), beats2_beat);
             if (fabs(*it - beats2_beat - offset) <= beatLength1Epsilon) {
                 freq++;

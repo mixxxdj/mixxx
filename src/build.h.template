@@ -1,0 +1,7 @@
+#ifndef BUILD_H
+#define BUILD_H
+
+#define BUILD_BRANCH "@GIT_BRANCH@"
+#define BUILD_REV "@GIT_COMMIT_COUNT@"
+
+#endif // BUILD_H

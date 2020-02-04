@@ -1,49 +1,65 @@
 <Template>
   <WidgetGroup>
+    <ObjectName>MicAuxRack</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>MicRack</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-
-          <Template src="skin:mic_unit.xml">
-            <SetVariable name="mic1hack">1</SetVariable>
-          </Template>
-          <Template src="skin:mic_unit.xml">
-            <SetVariable name="micnum">2</SetVariable>
-          </Template>
-          <Template src="skin:mic_unit.xml">
-            <SetVariable name="micnum">3</SetVariable>
-          </Template>
+          <!-- Dummy to fill empty space -->
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>i,min</SizePolicy>
+          </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>i,min</SizePolicy>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">4</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
+          <Template src="skin:mic_unit.xml">
+            <SetVariable name="micnum">3</SetVariable>
+          </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
+          <Template src="skin:mic_unit.xml">
+            <SetVariable name="micnum">2</SetVariable>
+          </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
+          <Template src="skin:mic_unit.xml">
+            <SetVariable name="mic1hack">1</SetVariable>
+          </Template>
 
-          <WidgetGroup><!-- Ducking controls -->
+          <WidgetGroup>
             <ObjectName>MicDuckingContainer</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
-
               <Template src="skin:button_3state.xml">
                 <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
                 <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
-                <SetVariable name="Size">72f,29f</SetVariable>
-                <SetVariable name="state_0">micDuck</SetVariable>
-                <SetVariable name="state_0_text">DUCK OFF</SetVariable>
-                <SetVariable name="state_1">micDuck_over</SetVariable>
-                <SetVariable name="state_1_text">DUCK AUTO</SetVariable>
-                <SetVariable name="state_2">micDuck_over</SetVariable>
-                <SetVariable name="state_2_text">DUCK MAN</SetVariable>
+                <SetVariable name="Size">42f,24f</SetVariable>
+                <SetVariable name="btn_type">embedded</SetVariable>
+                <SetVariable name="btn_format">medium</SetVariable>
                 <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
               </Template>
-
               <WidgetGroup>
                 <ObjectName>MicDuckingStrengthKnob</ObjectName>
                 <Layout>horizontal</Layout>
@@ -51,42 +67,72 @@
                 <Children>
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
-                    <SetVariable name="Size">40f,34f</SetVariable>
+                    <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="type">small</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
                     <SetVariable name="control">duckStrength</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- MicDuckingStrengthKnob -->
             </Children>
-          </WidgetGroup><!-- /Ducking controls -->
+          </WidgetGroup><!-- MicDuckingContainer -->
         </Children>
-      </WidgetGroup><!-- /Mic -->
+      </WidgetGroup><!-- MicRack -->
       
-      <WidgetGroup><!-- Aux -->
+      <WidgetGroup>
         <ObjectName>AuxRack</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:aux_unit.xml">
-            <SetVariable name="auxnum">1</SetVariable>
-          </Template>
-          <Template src="skin:aux_unit.xml">
-            <SetVariable name="auxnum">2</SetVariable>
-          </Template>
-          <Template src="skin:aux_unit.xml">
-            <SetVariable name="auxnum">3</SetVariable>
-          </Template>
+          <!-- Dummy to fill empty space -->
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>i,min</SizePolicy>
+          </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>i,min</SizePolicy>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">4</SetVariable>
           </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
+          <Template src="skin:aux_unit.xml">
+            <SetVariable name="auxnum">3</SetVariable>
+          </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
+          <Template src="skin:aux_unit.xml">
+            <SetVariable name="auxnum">2</SetVariable>
+          </Template>
+            <WidgetGroup>
+              <SizePolicy>min,min</SizePolicy>
+              <MinimumSize>3,0</MinimumSize>
+              <MaximumSize>5,</MaximumSize>
+            </WidgetGroup>
+          <Template src="skin:aux_unit.xml">
+            <SetVariable name="auxnum">1</SetVariable>
+          </Template>
         </Children>
-      </WidgetGroup><!-- Aux -->
-
-      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+      </WidgetGroup><!-- AuxRack -->
 
       <WidgetGroup>
-        <Size>5f,1min</Size>
+        <SizePolicy>min,min</SizePolicy>
+        <MaximumSize>78,i</MaximumSize>
+      </WidgetGroup>
+
+      <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
+
+      <WidgetGroup>
+        <Size>2f,1min</Size>
         <Connection>
           <ConfigKey>[Master],skin_settings</ConfigKey>
           <BindProperty>visible</BindProperty>

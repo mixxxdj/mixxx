@@ -574,6 +574,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
     CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
+    SINT retryFrameIndex = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         bool abortReading = false;
 
@@ -654,11 +655,23 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
-                if (kLogger.debugEnabled()) {
-                    kLogger.debug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
+                // Retry decoding, but only once for each position to
+                // prevent infinite loops when decoding corrupt files
+                if (retryFrameIndex != m_curFrameIndex) {
+                    retryFrameIndex = m_curFrameIndex;
+                    if (kLogger.debugEnabled()) {
+                        kLogger.debug()
+                                << "Retry decoding MP3 frame @"
+                                << m_curFrameIndex;
+                    }
+                    continue;
+                } else {
+                    kLogger.warning()
+                            << "Decoding MP3 frame @"
+                            << m_curFrameIndex
+                            << "failed again";
+                    break;
                 }
-                // Retry decoding
-                continue;
             }
 
             DEBUG_ASSERT(isStreamValid(m_madStream));

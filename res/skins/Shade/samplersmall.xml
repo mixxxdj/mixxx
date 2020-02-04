@@ -4,27 +4,20 @@
 		<Layout>horizontal</Layout>
 		<Children>
 			<WidgetGroup>
-		        <ObjectName>EffectLeftBorder</ObjectName>
+        <ObjectName>EffectLeftBorder</ObjectName>
 				<Size>5f,40f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 			<WidgetGroup>
 				<Size>0e,40f</Size>
-				<Style>QGroupBox { 
-					border: 0px solid green;  
-					margin: 0px 0px 0px 0px;
-				} 
-				</Style>
 				<BackPath>style/style_bg_looping.png</BackPath>
-                <Layout>horizontal</Layout>
+        <Layout>horizontal</Layout>
 				<Children>
 					<WidgetGroup>
 						<Size>4f,28f</Size>
 					</WidgetGroup>
 					<PushButton>
 						<TooltipId>cue_gotoandplay_cue_default</TooltipId>
-						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -37,36 +30,33 @@
 							<Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
 						</State>
 						<Connection>
-			                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
-			                <ButtonState>LeftButton</ButtonState>
-			            </Connection>
-			            <Connection>
-			                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
-			                <ButtonState>RightButton</ButtonState>
-			            </Connection>
-			            <Connection>
-			                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
-			            </Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+            </Connection>
 					</PushButton>
-
 
 					<WidgetGroup>
 						<Size>0e,40f</Size>
 						<SizePolicy>me,max</SizePolicy>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 						<Layout>horizontal</Layout>
 						<Children>
 							<WidgetGroup>
 							 	<Size>0e,40f</Size>
 								<Pos>0,2</Pos>
-								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>						
 								<Children>
 								<Text>
 									<Size>0e,40f</Size>
 									<TooltipId>text</TooltipId>
 									<Style>QLabel { 
-                                            font: bold 13px sans-serif;
+                      font: bold 13px sans-serif;
 											font-family: "Open Sans";
 											background-color: transparent;
 											color: #191F24;
@@ -75,7 +65,7 @@
 											padding-top: 2px;}
 									</Style>
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
-																<Elide>right</Elide>
+                  <Elide>right</Elide>
 								</Text>
 								<!-- Alternative "TITLE ONLY" display
 								<TrackProperty>
@@ -97,7 +87,6 @@
 							</WidgetGroup>
 							<WidgetGroup>
 							 	<Size>35f,40f</Size>
-								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>									
 								<Children>
 									<Number>
@@ -122,11 +111,10 @@
 							<WidgetGroup>
 								<ObjectName>SamplerButtonGrid</ObjectName>
 								<Size>20f,30f</Size>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+								
 								<Children>	
 									<PushButton>
 										<TooltipId>eject</TooltipId>
-										<Style></Style>
 										<NumberStates>1</NumberStates>
 										<State>
 											<Number>0</Number>
@@ -143,7 +131,6 @@
 									</PushButton>
 									<PushButton>
 										<TooltipId>orientation</TooltipId>
-										<Style></Style>
 										<NumberStates>3</NumberStates>
 										<State>
 											<Number>0</Number>
@@ -174,15 +161,13 @@
 			    </Children>
 			</WidgetGroup>
 			<WidgetGroup>
-		        <ObjectName>EffectRightBorder</ObjectName>
+        <ObjectName>EffectRightBorder</ObjectName>
 				<Size>5f,40f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 			<WidgetGroup>
 				<ObjectName>EffectRightBorder</ObjectName>
 				<Size>3f,40f</Size>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 		</Children>		
 	</WidgetGroup>	

@@ -1,51 +1,66 @@
 // browsefeature.cpp
 // Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QStringList>
-#include <QTreeView>
-#include <QDirModel>
-#include <QStringList>
-#include <QFileInfo>
-#include <QStandardPaths>
 #include <QAction>
+#include <QDirModel>
+#include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QTreeView>
 
-#include "track/track.h"
-#include "library/treeitem.h"
-#include "library/browse/browsefeature.h"
-#include "library/trackcollection.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "util/sandbox.h"
+#include "library/browse/browsefeature.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "track/track.h"
 #include "util/memory.h"
+#include "util/sandbox.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarytextbrowser.h"
+#include "widget/wlibrarysidebar.h"
 
-const QString kQuickLinksSeparator = "-+-";
+namespace {
 
-BrowseFeature::BrowseFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
-                             TrackCollection* pTrackCollection,
-                             RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_browseModel(this, pTrackCollection, pRecordingManager),
+const QString kQuickLinksSeparator = QStringLiteral("-+-");
+
+} // anonymous namespace
+
+BrowseFeature::BrowseFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig,
+        RecordingManager* pRecordingManager)
+        : LibraryFeature(pLibrary, pConfig),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL),
+          m_pLastRightClickedItem(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
-    connect(this, SIGNAL(requestAddDir(QString)),
-            parent, SLOT(slotRequestAddDir(QString)));
+    connect(this,
+            &BrowseFeature::requestAddDir,
+            pLibrary,
+            &Library::slotRequestAddDir);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
-    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
+    connect(m_pAddQuickLinkAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotAddQuickLink);
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
-    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+    connect(m_pRemoveQuickLinkAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotRemoveQuickLink);
 
     m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
-    connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToLibrary()));
+    connect(m_pAddtoLibraryAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotAddToLibrary);
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -153,7 +168,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit(requestAddDir(spath));
+    emit requestAddDir(spath);
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -169,7 +184,7 @@ void BrowseFeature::slotAddToLibrary() {
     msgBox.exec();
 
     if (msgBox.clickedButton() == scanButton) {
-        emit(scanLibrary());
+        emit scanLibrary();
     }
 }
 
@@ -208,7 +223,7 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindWidget(WLibrary* libraryWidget,
+void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -216,10 +231,15 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView("BROWSEHOME", edit);
 }
 
+void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSEHOME"));
+    emit switchToView("BROWSEHOME");
     emit disableSearch();
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -247,8 +267,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         }
         m_browseModel.setPath(dir);
     }
-    emit(showTrackModel(&m_proxyModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(&m_proxyModel);
+    emit enableCoverArtDisplay(false);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -265,7 +285,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         return;
     }
 
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
         menu.addAction(m_pRemoveQuickLinkAction);
         menu.exec(globalPos);
@@ -275,7 +295,12 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     foreach (const QString& str, m_quickLinkList) {
         if (str == path) {
-             return;
+            // if path is a QuickLink:
+            // show remove action
+            menu.addAction(m_pRemoveQuickLinkAction);
+            menu.exec(globalPos);
+            onLazyChildExpandation(index);
+            return;
         }
      }
 
@@ -322,7 +347,7 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += run_media_user_dir.entryInfoList(
         QDir::AllDirs | QDir::NoDotAndDotDot);
 
@@ -331,10 +356,11 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
         TreeItem* folder = new TreeItem(
             pFeature,
             device.fileName(),
-            device.filePath() + "/");
+            QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
-
+#else
+    Q_UNUSED(pFeature);
 #endif
     return ret;
 }
@@ -400,7 +426,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             TreeItem* folder = new TreeItem(
                 this,
                 one.fileName(),
-                one.absoluteFilePath() + "/");
+                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
             folders << folder;
         }
     }

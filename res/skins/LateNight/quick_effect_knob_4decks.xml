@@ -11,30 +11,49 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><Size>4f,-1min</Size></WidgetGroup>
+          <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>22f,30min</Size>
+            <ObjectName>EQKillButtonBox4Decks</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>20f,34f</Size>
             <Children>
-              <WidgetGroup>
-                <ObjectName>KillButtonLeft</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>22f,30min</Size>
-                <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                    <SetVariable name="icon">quickEffect</SetVariable>
-                    <SetVariable name="Size">18f,18f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="QuickEffect"/>,enabled</SetVariable>
-                  </Template>
-                </Children>
+              <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+              <PushButton>
+                <TooltipId>QuickEffectRack_enabled</TooltipId>
+                <ObjectName>QuickEffectButton</ObjectName>
+                <Size>18f,18f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
+                </State>
                 <Connection>
-                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-                  <BindProperty>visible</BindProperty>
+                  <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
                 </Connection>
-              </WidgetGroup>
+              </PushButton>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EQKillButtonBox4Decks</ObjectName>
+            <Size>20f,34f</Size>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -42,46 +61,23 @@
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:knob_textless.xml">
-                <SetVariable name="Color">green</SetVariable>
                 <SetVariable name="Size">40f,34f</SetVariable>
+                <SetVariable name="Color">green</SetVariable>
+                <SetVariable name="type">regular</SetVariable>
                 <SetVariable name="group"><Variable name="QuickEffectGroup"/></SetVariable>
                 <SetVariable name="control">super1</SetVariable>
                 <SetVariable name="TooltipId">QuickEffectRack_super1</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Kill button + knob -->
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,f</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <Size>0min,0min</Size>
-            <Children/>
-          </WidgetGroup>
-
-          <EffectName>
-            <ObjectName>KnobLabel</ObjectName>
-            <MinimumSize>40,12</MinimumSize>
-            <MaximumSize>62,12</MaximumSize>
-            <SizePolicy>me,f</SizePolicy>
-            <Elide>right</Elide>
-            <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
-            <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
-            <Effect>1</Effect>
-          </EffectName>
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
 
     </Children>
     <Connection>

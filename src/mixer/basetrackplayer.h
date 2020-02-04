@@ -137,7 +137,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pMidFilterKill;
     std::unique_ptr<ControlProxy> m_pHighFilterKill;
     std::unique_ptr<ControlProxy> m_pPreGain;
-    std::unique_ptr<ControlProxy> m_pRateSlider;
+    std::unique_ptr<ControlProxy> m_pRateRatio;
     std::unique_ptr<ControlProxy> m_pPitchAdjust;
     std::unique_ptr<ControlProxy> m_pInputConfigured;
     std::unique_ptr<ControlProxy> m_pPassthroughEnabled;

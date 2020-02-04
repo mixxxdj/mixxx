@@ -16,37 +16,6 @@
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
 
-HidReader::HidReader(hid_device* device)
-        : QThread(),
-          m_pHidDevice(device) {
-}
-
-HidReader::~HidReader() {
-}
-
-void HidReader::run() {
-    m_stop = 0;
-    unsigned char *data = new unsigned char[255];
-    while (m_stop.load() == 0) {
-        // Blocked polling: The only problem with this is that we can't close
-        // the device until the block is released, which means the controller
-        // has to send more data
-        //result = hid_read_timeout(m_pHidDevice, data, 255, -1);
-
-        // This relieves that at the cost of higher CPU usage since we only
-        // block for a short while (500ms)
-        int result = hid_read_timeout(m_pHidDevice, data, 255, 500);
-        Trace timeout("HidReader timeout");
-        if (result > 0) {
-            Trace process("HidReader process packet");
-            //qDebug() << "Read" << result << "bytes, pointer:" << data;
-            QByteArray outData(reinterpret_cast<char*>(data), result);
-            emit(incomingData(outData, mixxx::Time::elapsed()));
-        }
-    }
-    delete [] data;
-}
-
 HidController::HidController(const hid_device_info deviceInfo)
         : m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
@@ -105,7 +74,6 @@ HidController::HidController(const hid_device_info deviceInfo)
     // All HID devices are full-duplex
     setInputDevice(true);
     setOutputDevice(true);
-    m_pReader = NULL;
 }
 
 HidController::~HidController() {
@@ -129,7 +97,7 @@ void HidController::visit(const MidiControllerPreset* preset) {
 void HidController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
+    emit presetLoaded(getPreset());
 }
 
 bool HidController::savePreset(const QString fileName) const {
@@ -183,7 +151,8 @@ void HidController::guessDeviceCategory() {
                 case 0x6: info = tr("Generic HID Keyboard"); break;
                 case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
                 default: info = tr("Unknown HID Desktop Device") +
-                        QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
+                    QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                    QStringLiteral("/0x") + QString::number(hid_usage, 16);
                     break;
             }
         } else if (hid_vendor_id==0x5ac) {
@@ -191,19 +160,22 @@ void HidController::guessDeviceCategory() {
             if (hid_product_id==0x8242) {
                 info = tr("HID Infrared Control");
             } else {
-                info = tr("Unknown Apple HID Device") + QString().sprintf(
-                    " 0x%0x/0x%0x",hid_usage_page,hid_usage);
+                info = tr("Unknown Apple HID Device") +
+                    QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                    QStringLiteral("/0x") + QString::number(hid_usage, 16);
             }
         } else {
             // Fill in the usage page and usage fields for debugging info
-            info = tr("HID Unknown Device") + QString().sprintf(
-                " 0x%0x/0x%0x", hid_usage_page, hid_usage);
+            info = tr("HID Unknown Device") +
+                QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+                QStringLiteral("/0x") + QString::number(hid_usage, 16);
         }
     } else {
         // Guess linux device types somehow as well. Or maybe just fill in the
         // interface number?
-        info = tr("HID Interface Number") + QString().sprintf(
-            " 0x%0x", hid_interface_number);
+        info = tr("HID Interface Number") +
+            QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
+            QStringLiteral("/0x") + QString::number(hid_usage, 16);
     }
     setDeviceCategory(info);
 }
@@ -241,22 +213,14 @@ int HidController::open() {
         return -1;
     }
 
+    // Set hid controller to non-blocking
+    if (hid_set_nonblocking(m_pHidDevice, 1) != 0) {
+        qWarning() << "Unable to set HID device " << getName() << " to non-blocking";
+        return -1;
+    }
+
     setOpen(true);
     startEngine();
-
-    if (m_pReader != NULL) {
-        qWarning() << "HidReader already present for" << getName();
-    } else {
-        m_pReader = new HidReader(m_pHidDevice);
-        m_pReader->setObjectName(QString("HidReader %1").arg(getName()));
-
-        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                this, SLOT(receive(QByteArray, mixxx::Duration)));
-
-        // Controller input needs to be prioritized since it can affect the
-        // audio directly, like when scratching
-        m_pReader->start(QThread::HighPriority);
-    }
 
     return 0;
 }
@@ -269,21 +233,6 @@ int HidController::close() {
 
     qDebug() << "Shutting down HID device" << getName();
 
-    // Stop the reading thread
-    if (m_pReader == NULL) {
-        qWarning() << "HidReader not present for" << getName()
-                   << "yet the device is open!";
-    } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                   this, SLOT(receive(QByteArray, mixxx::Duration)));
-        m_pReader->stop();
-        hid_set_nonblocking(m_pHidDevice, 1);   // Quit blocking
-        controllerDebug("  Waiting on reader to finish");
-        m_pReader->wait();
-        delete m_pReader;
-        m_pReader = NULL;
-    }
-
     // Stop controller engine here to ensure it's done before the device is closed
     //  in case it has any final parting messages
     stopEngine();
@@ -293,6 +242,25 @@ int HidController::close() {
     hid_close(m_pHidDevice);
     setOpen(false);
     return 0;
+}
+
+bool HidController::poll() {
+    Trace hidRead("HidController poll");
+
+    int result = hid_read(m_pHidDevice, m_pPollData, sizeof(m_pPollData) / sizeof(m_pPollData[0]));
+    if (result == -1) {
+        return false;
+    } else if (result > 0) {
+        Trace process("HidController process packet");
+        QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
+        receive(outData, mixxx::Time::elapsed());
+    }
+
+    return true;
+}
+
+bool HidController::isPolling() const {
+    return isOpen();
 }
 
 void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {

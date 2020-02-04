@@ -13,10 +13,6 @@ class NetworkInputStreamWorker {
     virtual ~NetworkInputStreamWorker();
 
     void setSourceFifo(FIFO<CSAMPLE>* pFifo);
-
-  private:
-    double m_sampleRate;
-    int m_numInputChannels;
 };
 
 #endif // ENGINE_SIDECHAIN_NETWORKINPUTSTREAMWORKER_H

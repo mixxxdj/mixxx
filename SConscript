@@ -107,12 +107,12 @@ def define_test_targets(default=False):
         test_files = Glob('src/test/*.cpp', strings=True)
         test_env = env.Clone()
 
-        test_env.Append(CPPPATH="lib/gtest-1.7.0/include")
-        test_env.Append(LIBPATH="lib/gtest-1.7.0")
+        test_env.Append(CPPPATH="lib/googletest-1.8.x/googletest/include")
+        test_env.Append(LIBPATH="lib/googletest-1.8.x/googletest")
         test_env.Append(LIBS=['gtest'])
 
-        test_env.Append(CPPPATH="lib/gmock-1.7.0/include")
-        test_env.Append(LIBPATH="lib/gmock-1.7.0")
+        test_env.Append(CPPPATH="lib/googletest-1.8.x/googlemock/include")
+        test_env.Append(LIBPATH="lib/googletest-1.8.x/googlemock")
         test_env.Append(LIBS=['gmock'])
 
         test_env.Append(CPPPATH="lib/benchmark/include")

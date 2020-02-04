@@ -76,9 +76,34 @@ Description:
               <!-- Rate Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                <SetVariable name="text">Rate Control</SetVariable>
+                <SetVariable name="text">Rate Slider &amp; Sync</SetVariable>
                 <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
               </Template>
+
+              <!-- Rate Control buttons toggle -->
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>stacked</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                    <SetVariable name="text">Rate Control Buttons</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_rate_control_buttons</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
               <!-- Vinyl Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
@@ -96,17 +121,33 @@ Description:
 
               <!-- Cover Art -->
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_spinny</SetVariable>
+                <SetVariable name="TooltipId">show_coverart</SetVariable>
                 <SetVariable name="text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
               </Template>
 
               <!-- Big Spinny -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_spinny</SetVariable>
-                <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[LateNight],no_spinny_no_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- Big Spinny -->
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
@@ -123,6 +164,11 @@ Description:
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">Master / Headphone Mixer</SetVariable>
+                <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+              </Template>
 
               <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
@@ -272,12 +318,12 @@ Description:
 
           <!-- Samplers -->
           <Template src="skin:skin_settings_labelbutton_2state.xml">
+            <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="text">Samplers </SetVariable>
             <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
           </Template>
 
-
-        <WidgetGroup><!-- 4 buttons -->
+          <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
@@ -362,7 +408,8 @@ Description:
 
               <!-- Cover Art -->
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">Cover Art in Library</SetVariable>
+                <SetVariable name="TooltipId">show_coverart</SetVariable>
+                <SetVariable name="text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Library],show_coverart</SetVariable>
               </Template>
 

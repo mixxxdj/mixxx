@@ -5,12 +5,9 @@
 
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
         : QDialog(parent),
-          m_TagFetcher(parent),
-          m_networkError(NOERROR) {
+          m_tagFetcher(parent),
+          m_networkResult(NetworkResult::Ok) {
     init();
-}
-
-DlgTagFetcher::~DlgTagFetcher() {
 }
 
 void DlgTagFetcher::init() {
@@ -27,12 +24,12 @@ void DlgTagFetcher::init() {
     connect(results, &QTreeWidget::currentItemChanged,
             this, &DlgTagFetcher::resultSelected);
 
-    connect(&m_TagFetcher, &TagFetcher::resultAvailable,
+    connect(&m_tagFetcher, &TagFetcher::resultAvailable,
             this, &DlgTagFetcher::fetchTagFinished);
-    connect(&m_TagFetcher, &TagFetcher::fetchProgress,
+    connect(&m_tagFetcher, &TagFetcher::fetchProgress,
             this, &DlgTagFetcher::fetchTagProgress);
-    connect(&m_TagFetcher, &TagFetcher::networkError,
-            this, &DlgTagFetcher::slotNetworkError);
+    connect(&m_tagFetcher, &TagFetcher::networkError,
+            this, &DlgTagFetcher::slotNetworkResult);
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
@@ -42,7 +39,7 @@ void DlgTagFetcher::init() {
     results->setColumnWidth(4, 160); // Album column
 }
 
-void DlgTagFetcher::loadTrack(const TrackPointer track) {
+void DlgTagFetcher::loadTrack(const TrackPointer& track) {
     if (track == NULL) {
         return;
     }
@@ -52,8 +49,8 @@ void DlgTagFetcher::loadTrack(const TrackPointer track) {
 
     m_track = track;
     m_data = Data();
-    m_networkError = NOERROR;
-    m_TagFetcher.startFetch(m_track);
+    m_networkResult = NetworkResult::Ok;
+    m_tagFetcher.startFetch(m_track);
 
     connect(track.get(), &Track::changed,
             this, &DlgTagFetcher::updateTrackMetadata);
@@ -90,7 +87,7 @@ void DlgTagFetcher::apply() {
 }
 
 void DlgTagFetcher::quit() {
-    m_TagFetcher.cancel();
+    m_tagFetcher.cancel();
     accept();
 }
 
@@ -112,8 +109,8 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
     updateStack();
 }
 
-void DlgTagFetcher::slotNetworkError(int httpError, QString app, QString message, int code) {
-    m_networkError = httpError == 0 ?  FTWERROR : HTTPERROR;
+void DlgTagFetcher::slotNetworkResult(int httpError, QString app, QString message, int code) {
+    m_networkResult = httpError == 0 ?  NetworkResult::UnknownError : NetworkResult::HttpError;
     m_data.m_pending = false;
     QString strError = tr("HTTP Status: %1");
     QString strCode = tr("Code: %1");
@@ -129,10 +126,10 @@ void DlgTagFetcher::updateStack() {
     if (m_data.m_pending) {
         stack->setCurrentWidget(loading_page);
         return;
-    } else if (m_networkError == HTTPERROR) {
+    } else if (m_networkResult == NetworkResult::HttpError) {
         stack->setCurrentWidget(networkError_page);
         return;
-    } else if (m_networkError == FTWERROR) {
+    } else if (m_networkResult == NetworkResult::UnknownError) {
         stack->setCurrentWidget(generalnetworkError_page);
         return;
     } else if (m_data.m_results.isEmpty()) {

@@ -11,55 +11,64 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,max</SizePolicy>
         <Children>
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">pfl</SetVariable>
-                <SetVariable name="icon">pfl</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-                <SetVariable name="Size">26,26</SetVariable>
-              </Template>
-
-              <!-- Spacer to put the PFL button a little bit higher -->
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Size>1min,8f</Size>
-                <Children/>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup>
-          <Template src="skin:knob.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
-            <SetVariable name="Color">orange</SetVariable>
-            <SetVariable name="group"><Variable name="group"/></SetVariable>
-            <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="label">gain</SetVariable>
-            <SetVariable name="TooltipId">pregain</SetVariable>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="btn_format">square</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
           </Template>
+          <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:eq_knob_4decks.xml">
-        <SetVariable name="FxParameter">4</SetVariable>
-      </Template>
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="Color">orange</SetVariable>
+                <SetVariable name="type">regular</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
+          </Template>
+          <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">3</SetVariable>
+        <SetVariable name="Text">H</SetVariable>
       </Template>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">2</SetVariable>
+        <SetVariable name="Text">M</SetVariable>
       </Template>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">1</SetVariable>
+        <SetVariable name="Text">L</SetVariable>
       </Template>
 
+      <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+
       <Template src="skin:quick_effect_knob_4decks.xml"/>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>CrossfaderSwitch4Decks</ObjectName>
@@ -97,40 +106,23 @@
         <ObjectName>VuAndSlider4decks</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
+
           <WidgetGroup>
-            <ObjectName>VuMeter4Decks</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Size>26,0</Size>
+            <ObjectName>VuMeterChannel4Decks</ObjectName>
+            <Size>22f,0min</Size>
+            <Layout>horizontal</Layout>
             <Children>
-              <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
-                <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
-                <PathBack>style/clipping_deck.png</PathBack>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                </Connection>
-              </StatusLight>
-              <VuMeter>
-                <TooltipId>channel_VuMeter</TooltipId>
-                <PathVu>style/volume_display_deck_over.png</PathVu>
-                <PathBack>style/volume_display_deck.png</PathBack>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel<Variable name="channum"/></ObjectName>
+              </SingletonContainer>
             </Children>
           </WidgetGroup>
 
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
-            <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
-            <Slider>slider_volume_deck.svg</Slider>
+            <Size>46f,108f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_volume_deck.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>
@@ -139,9 +131,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Size>0min,0me</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup>

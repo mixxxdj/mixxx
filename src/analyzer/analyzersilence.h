@@ -11,9 +11,9 @@ class AnalyzerSilence : public Analyzer {
     explicit AnalyzerSilence(UserSettingsPointer pConfig);
     ~AnalyzerSilence() override = default;
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool initialize(TrackPointer pTrack, int sampleRate, int totalSamples) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
-    void storeResults(TrackPointer tio) override;
+    void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
 
   private:

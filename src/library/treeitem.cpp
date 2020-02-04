@@ -72,6 +72,11 @@ void TreeItem::appendChild(TreeItem* pChild) {
     pChild->m_pParent = this;
 }
 
+TreeItem* TreeItem::appendChild(std::unique_ptr<TreeItem> pChild) {
+    appendChild(pChild.get());
+    return pChild.release();
+}
+
 TreeItem* TreeItem::appendChild(
         const QString& label,
         const QVariant& data) {

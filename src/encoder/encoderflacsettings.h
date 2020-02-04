@@ -8,20 +8,17 @@
 #ifndef ENCODERFLACSETTINGS_H
 #define ENCODERFLACSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
-class EncoderFlacSettings : public EncoderSettings {
+class EncoderFlacSettings : public EncoderRecordingSettings {
   public:
     EncoderFlacSettings(UserSettingsPointer pConfig);
     virtual ~EncoderFlacSettings();
 
-    // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
     // Indicates that it uses the compression slider section of the preferences
     bool usesCompressionSlider() const override;
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
 
     // Returns the list of compression values supported, to assign them to the slider
     virtual QList<int> getCompressionValues() const override;
@@ -37,6 +34,11 @@ class EncoderFlacSettings : public EncoderSettings {
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
 
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_FLAC;
+    }
+
     static const int DEFAULT_QUALITY_VALUE;
     static const QString BITS_GROUP;
     static const QString GROUP_COMPRESSION;
@@ -45,16 +47,6 @@ class EncoderFlacSettings : public EncoderSettings {
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
 };
-
-
-inline bool EncoderFlacSettings::usesQualitySlider() const
-{
-    return false;
-}
-inline bool EncoderFlacSettings::usesOptionGroups() const
-{
-    return true;
-}
 
 #endif // ENCODERFLACSETTINGS_H
 

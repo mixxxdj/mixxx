@@ -41,9 +41,9 @@ class ShoutConnection
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
-    void process(const CSAMPLE* pBuffer, const int iBufferSize);
+    void process(const CSAMPLE* pBuffer, const int iBufferSize) override;
 
-    void shutdown() {
+    void shutdown() override {
     }
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
@@ -62,11 +62,11 @@ class ShoutConnection
     bool isConnected();
     void applySettings();
 
-    virtual void outputAvailable();
-    virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo);
-    QSharedPointer<FIFO<CSAMPLE>> getOutputFifo();
-    virtual bool threadWaiting();
-    virtual void run();
+    void outputAvailable() override;
+    void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo) override;
+    QSharedPointer<FIFO<CSAMPLE>> getOutputFifo() override;
+    bool threadWaiting() override;
+    void run() override;
 
     BroadcastProfilePtr profile() {
         return m_pProfile;

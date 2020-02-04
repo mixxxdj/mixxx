@@ -14,7 +14,7 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     BaseExternalTrackModel(QObject* parent,
-                           TrackCollection* pTrackCollection,
+                           TrackCollectionManager* pTrackCollectionManager,
                            const char* settingsNamespace,
                            const QString& trackTable,
                            QSharedPointer<BaseTrackCache> trackSource);

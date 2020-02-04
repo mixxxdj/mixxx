@@ -37,19 +37,6 @@ QList<int> EncoderVorbisSettings::getQualityValues() const
 {
     return m_qualList;
 }
-// Sets the value
-void EncoderVorbisSettings::setQualityByValue(int qualityValue) 
-{
-    // Vorbis does not have a fixed set of bitrates, so we can accept any value.
-    int indexValue;
-    if (m_qualList.contains(qualityValue)) {
-        indexValue = m_qualList.indexOf(qualityValue);
-    } else {
-    // If we let the user write a bitrate value, this would allow to save such value.
-        indexValue = qualityValue;
-    }
-    m_pConfig->setValue<int>(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), indexValue);
-}
 
 void EncoderVorbisSettings::setQualityByIndex(int qualityIndex)
 {
@@ -60,6 +47,7 @@ void EncoderVorbisSettings::setQualityByIndex(int qualityIndex)
             << qualityIndex << ". Ignoring it";
     }
 }
+
 int EncoderVorbisSettings::getQuality() const
 {
     int qualityIndex = m_pConfig->getValue(

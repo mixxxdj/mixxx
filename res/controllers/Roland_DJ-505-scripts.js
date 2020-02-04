@@ -1,12 +1,3 @@
-////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global midi                                                        */
-/* global components                                                  */
-////////////////////////////////////////////////////////////////////////
-
 /*
  * The Roland DJ-505 controller has two basic modes:
  *
@@ -30,7 +21,7 @@
  *
  * When the DJ-505 receives a SysEx message, the controller is put in "Serato"
  * mode.  However, in order to keep the DJ-505 in this mode, it seems to be
- * necessary to regularily send a "keep-alive" MIDI message (0xBF 0x64 0x00).
+ * necessary to regularly send a "keep-alive" MIDI message (0xBF 0x64 0x00).
  * Otherwise the device will switch back to "Standalone mode" after
  * approximately 1.5 seconds.
  *
@@ -72,12 +63,12 @@ DJ505.trsGroup = "Auxiliary1";  // TR-S input
 // Code. //
 ///////////
 
-DJ505.init = function () {
+DJ505.init = function() {
     var i, j;
 
-    DJ505.shiftButton = function (channel, control, value, status, group) {
+    DJ505.shiftButton = function(channel, control, value, _status, _group) {
         DJ505.deck.concat(DJ505.effectUnit, [DJ505.sampler, DJ505.browseEncoder]).forEach(
-            value ? function (module) { module.shift(); } : function (module) { module.unshift(); }
+            value ? function(module) { module.shift(); } : function(module) { module.unshift(); }
         );
     };
 
@@ -91,13 +82,13 @@ DJ505.init = function () {
     DJ505.leftLoadTrackButton = new components.Button({
         group: "[Channel1]",
         midi: [0x9F, 0x02],
-        unshift: function () {
+        unshift: function() {
             this.inKey = "LoadSelectedTrack";
         },
-        shift: function () {
+        shift: function() {
             this.inKey = "eject";
         },
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             this.send(this.isPress(channel, control, value, status) ? this.on : this.off);
             components.Button.prototype.input.apply(this, arguments);
         },
@@ -111,13 +102,13 @@ DJ505.init = function () {
     DJ505.rightLoadTrackButton = new components.Button({
         group: "[Channel2]",
         midi: [0x9F, 0x02],
-        unshift: function () {
+        unshift: function() {
             this.inKey = "LoadSelectedTrack";
         },
-        shift: function () {
+        shift: function() {
             this.inKey = "eject";
         },
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             this.send(this.isPress(channel, control, value, status) ? this.on : this.off);
             components.Button.prototype.input.apply(this, arguments);
         },
@@ -131,7 +122,7 @@ DJ505.init = function () {
     DJ505.sampler = new DJ505.Sampler();
 
     DJ505.effectUnit = [];
-    for(i = 0; i <= 1; i++) {
+    for (i = 0; i <= 1; i++) {
         DJ505.effectUnit[i] = new components.EffectUnit([i + 1, i + 3]);
         DJ505.effectUnit[i].sendShifted = true;
         DJ505.effectUnit[i].shiftOffset = 0x0B;
@@ -144,7 +135,7 @@ DJ505.init = function () {
         DJ505.effectUnit[i].knobs[2].midi = [0xB8 + i, 0x01];
         DJ505.effectUnit[i].knobs[3].midi = [0xB8 + i, 0x02];
         DJ505.effectUnit[i].dryWetKnob.midi = [0xB8 + i, 0x03];
-        DJ505.effectUnit[i].dryWetKnob.input = function (channel, control, value, status, group) {
+        DJ505.effectUnit[i].dryWetKnob.input = function(channel, control, value, _status, _group) {
             if (value === 1) {
                 // 0.05 is an example. Adjust that value to whatever works well for your controller.
                 this.inSetParameter(this.inGetParameter() + 0.05);
@@ -152,17 +143,17 @@ DJ505.init = function () {
                 this.inSetParameter(this.inGetParameter() - 0.05);
             }
         };
-        for(j = 1; j <= 4; j++) {
+        for (j = 1; j <= 4; j++) {
             DJ505.effectUnit[i].enableOnChannelButtons.addButton("Channel" + j);
             DJ505.effectUnit[i].enableOnChannelButtons["Channel" + j].midi = [0x98 + i, 0x04 + j];
         }
         DJ505.effectUnit[i].enableOnChannelButtons.addButton(DJ505.trsGroup);
         DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].midi = [0x98 + i, 0x09];
-        DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].input = function (channel, control, value, status, group) {
+        DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].input = function(channel, control, value, status, _group) {
             components.Button.prototype.input.apply(this, arguments);
             if (this.isPress(channel, control, value, status)) {
                 var enabled = this.inGetValue();
-                for(var j = 1; j <= 16; j++) {
+                for (var j = 1; j <= 16; j++) {
                     engine.setValue(this.group, "group_[Sampler" + j + "]_enable", enabled);
                 }
             }
@@ -195,15 +186,15 @@ DJ505.init = function () {
     }
 };
 
-DJ505.autoShowDecks = function (value, group, control) {
-    var any_loaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
+DJ505.autoShowDecks = function(_value, _group, _control) {
+    var anyLoaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
     if (!DJ505.autoShowFourDecks) {
         return;
     }
-    engine.setValue("[Master]", "show_4decks", any_loaded);
+    engine.setValue("[Master]", "show_4decks", anyLoaded);
 };
 
-DJ505.shutdown = function () {
+DJ505.shutdown = function() {
 };
 
 
@@ -213,7 +204,7 @@ DJ505.browseEncoder = new components.Encoder({
     previewSeekEnabled: false,
     previewSeekHappened: false,
     unshift: function() {
-        this.onKnobEvent = function (rotateValue) {
+        this.onKnobEvent = function(rotateValue) {
             if (rotateValue !== 0) {
                 if (this.previewSeekEnabled) {
                     var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
@@ -224,12 +215,12 @@ DJ505.browseEncoder = new components.Encoder({
                 }
             }
         };
-        this.onButtonEvent = function (value) {
+        this.onButtonEvent = function(value) {
             if (value) {
                 this.isLongPressed = false;
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
-                    function () { this.isLongPressed = true; },
+                    function() { this.isLongPressed = true; },
                     true
                 );
 
@@ -256,18 +247,18 @@ DJ505.browseEncoder = new components.Encoder({
         };
     },
     shift: function() {
-        this.onKnobEvent = function (rotateValue) {
+        this.onKnobEvent = function(rotateValue) {
             if (rotateValue !== 0) {
                 engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
             }
         };
-        this.onButtonEvent = function (value) {
+        this.onButtonEvent = function(value) {
             if (value) {
                 script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
             }
         };
     },
-    input: function (channel, control, value, status, group) {
+    input: function(channel, control, value, status, _group) {
         switch (status) {
         case 0xBF: // Rotate.
             var rotateValue = (value === 127) ? -1 : ((value === 1) ? 1 : 0);
@@ -299,13 +290,13 @@ DJ505.addPrepareButton = new components.Button({
 });
 
 
-DJ505.sortLibrary = function (channel, control, value, status, group) {
+DJ505.sortLibrary = function(channel, control, value, _status, _group) {
     if (value === 0) {
         return;
     }
 
     var sortColumn;
-    switch(control) {
+    switch (control) {
         case 0x12:  // SONG
             sortColumn = 1;
             break;
@@ -329,7 +320,7 @@ DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
     group: "[Master]",
     inKey: "crossfader",
-    input: function () {
+    input: function() {
         // We need a weird max. for the crossfader to make it cut cleanly.
         // However, components.js resets max. to 0x3fff when the first value is
         // received. Hence, we need to set max. here instead of within the
@@ -338,9 +329,9 @@ DJ505.crossfader = new components.Pot({
         components.Pot.prototype.input.apply(this, arguments);
     }
 });
-DJ505.crossfader.setCurve = function (channel, control, value, status, group) {
+DJ505.crossfader.setCurve = function(channel, control, value, _status, _group) {
     // 0x00 is Picnic Bench, 0x01 is Constant Power and 0x02 is Linear
-    switch(value) {
+    switch (value) {
     case 0x00:  // Picnic Bench / Fast Cut
         engine.setValue("[Mixer Profile]", "xFaderMode", 0);
         engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
@@ -358,15 +349,15 @@ DJ505.crossfader.setCurve = function (channel, control, value, status, group) {
     }
 };
 
-DJ505.crossfader.setReverse = function (channel, control, value, status, group) {
+DJ505.crossfader.setReverse = function(channel, control, value, _status, _group) {
     // 0x00 is ON, 0x01 is OFF
     engine.setValue("[Mixer Profile]", "xFaderReverse", (value === 0x00) ? 1 : 0);
 };
 
-DJ505.setChannelInput = function (channel, control, value, status, group) {
+DJ505.setChannelInput = function(channel, control, value, _status, _group) {
     var number = (channel === 0x00) ? 0 : 1;
     var channelgroup = "[Channel" + (number + 1) + "]";
-    switch(value) {
+    switch (value) {
     case 0x00:  // PC
         engine.setValue(channelgroup, "passthrough", 0);
         break;
@@ -377,7 +368,7 @@ DJ505.setChannelInput = function (channel, control, value, status, group) {
     }
 };
 
-DJ505.Deck = function (deckNumbers, offset) {
+DJ505.Deck = function(deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);
 
     this.slipModeButton = new DJ505.SlipModeButton({
@@ -391,19 +382,19 @@ DJ505.Deck = function (deckNumbers, offset) {
     this.tempoFader = new components.Pot({
         group: "[Channel" + deckNumbers + "]",
         midi: [0xB0 + offset, 0x09],
-        connect: function () {
+        connect: function() {
             engine.softTakeover(this.group, "pitch", true);
             engine.softTakeover(this.group, "rate", true);
             components.Pot.prototype.connect.apply(this, arguments);
         },
-        unshift: function () {
+        unshift: function() {
             this.inKey = "rate";
             this.inSetParameter = components.Pot.prototype.inSetParameter;
             engine.softTakeoverIgnoreNextValue(this.group, "pitch");
         },
-        shift: function () {
+        shift: function() {
             this.inKey = "pitch";
-            this.inSetParameter = function (value) {
+            this.inSetParameter = function(value) {
                 // Scale to interval ]-7…7[; invert direction as per controller
                 // labeling.
                 value = 14 * value - 7;
@@ -416,7 +407,7 @@ DJ505.Deck = function (deckNumbers, offset) {
 
 
     // ============================= JOG WHEELS =================================
-    this.wheelTouch = function (channel, control, value, status, group) {
+    this.wheelTouch = function(channel, control, value, _status, _group) {
         if (value === 0x7F && !this.isShifted) {
             var alpha = 1.0/8;
             var beta = alpha/32;
@@ -426,7 +417,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         }
     };
 
-    this.wheelTurn = function (channel, control, value, status, group) {
+    this.wheelTurn = function(channel, control, value, _status, _group) {
         // When the jog wheel is turned in clockwise direction, value is
         // greater than 64 (= 0x40). If it's turned in counter-clockwise
         // direction, the value is smaller than 64.
@@ -505,15 +496,15 @@ DJ505.Deck = function (deckNumbers, offset) {
         shiftOffset: 1,
         outKey: "keylock",
         currentRangeIndex: (DJ505.tempoRange.indexOf(engine.getValue("[Channel" + deckNumbers + "]", "rateRange"))) ? DJ505.tempoRange.indexOf(engine.getValue("[Channel" + deckNumbers + "]", "rateRange")) : 0,
-        unshift: function () {
+        unshift: function() {
             this.inKey = "keylock";
             this.input = components.Button.prototype.input;
             this.type = components.Button.prototype.types.toggle;
         },
-        shift: function () {
+        shift: function() {
             this.inKey = "rateRange";
             this.type = undefined;
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
                     this.currentRangeIndex++;
                     if (this.currentRangeIndex >= DJ505.tempoRange.length) {
@@ -533,7 +524,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         shiftControl: true,
         shiftOffset: 4,
         reverseRollOnShift: false,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             components.CueButton.prototype.input.call(this, channel, control, value, status, group);
             if (value) {
                 return;
@@ -555,15 +546,15 @@ DJ505.Deck = function (deckNumbers, offset) {
     this.sync = new components.Button({
         midi: [0x90 + offset, 0x02],
         outKey: "sync_enabled",
-        output: function (value, group, control) {
+        output: function(value, _group, _control) {
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, 0x7F);
         },
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
+        unshift: function() {
+            this.input = function(channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
                     script.triggerControl(this.group, "beatsync", 1);
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
                         }, true);
@@ -576,8 +567,8 @@ DJ505.Deck = function (deckNumbers, offset) {
                 }
             };
         },
-        shift: function () {
-            this.input = function (channel, control, value, status, group) {
+        shift: function() {
+            this.input = function(channel, control, value, _status, _group) {
                 if (value) {
                     engine.setValue(this.group, "sync_enabled", 0);
                 }
@@ -615,13 +606,13 @@ DJ505.Deck = function (deckNumbers, offset) {
     });
 
     this.tapBPM = new components.Button({
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             if (this.isPress(channel, control, value, status, group)) {
                 script.triggerControl(group, "beats_translate_curpos");
                 script.triggerControl(group, "bpm_tap", 1);
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
-                    function () {
+                    function() {
                         script.triggerControl(group, "beats_translate_match_alignment");
                     },
                     true
@@ -642,7 +633,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         midi: [0xB0 + offset, 0x1F],
         group: "[Channel" + deckNumbers + "]",
         outKey: "VuMeter",
-        output: function (value, group, control) {
+        output: function(value, group, _control) {
             // The red LEDs light up with MIDI values greater than 0x24. The
             // maximum brightness is reached at value 0x28. Red LEDs should
             // only be illuminated if the track is clipping.
@@ -664,12 +655,12 @@ DJ505.DeckToggleButton = function(options) {
     components.Button.call(this, options);
 };
 DJ505.DeckToggleButton.prototype = Object.create(components.Button.prototype);
-DJ505.DeckToggleButton.prototype.input = function (channel, control, value, status, group) {
+DJ505.DeckToggleButton.prototype.input = function(channel, control, value, status, _group) {
     if (this.isPress(channel, control, value, status)) {
         // Button was pressed
         this.longPressTimer = engine.beginTimer(
             this.longPressTimeout,
-            function () { this.isLongPressed = true; },
+            function() { this.isLongPressed = true; },
             true
         );
         this.secondaryDeck = !this.secondaryDeck;
@@ -686,11 +677,11 @@ DJ505.DeckToggleButton.prototype.input = function (channel, control, value, stat
 
     this.trigger();
 };
-DJ505.DeckToggleButton.prototype.trigger = function () {
+DJ505.DeckToggleButton.prototype.trigger = function() {
     this.send(this.secondaryDeck ? this.on : this.off);
-    var new_group = "[Channel" + (this.secondaryDeck ? this.decks[1] : this.decks[0]) + "]";
-    if (this.loadTrackButton.group !== new_group) {
-        this.loadTrackButton.group = new_group;
+    var newGroup = "[Channel" + (this.secondaryDeck ? this.decks[1] : this.decks[0]) + "]";
+    if (this.loadTrackButton.group !== newGroup) {
+        this.loadTrackButton.group = newGroup;
         this.loadTrackButton.disconnect();
         this.loadTrackButton.connect();
         this.loadTrackButton.trigger();
@@ -766,7 +757,7 @@ DJ505.Sampler = function() {
         return newdeck;
     };
 
-    this.syncButtonPressed = function (channel, control, value, status, group) {
+    this.syncButtonPressed = function(channel, control, value, _status, _group) {
         if (value !== 0x7f) {
             return;
         }
@@ -784,20 +775,20 @@ DJ505.Sampler = function() {
             if (!(bpm >= 5 && bpm <= 800)) {
                 return;
             }
-            var bpm_value = Math.round(bpm*10);
-            midi.sendShortMsg(0xEA, bpm_value & 0x7f, (bpm_value >> 7) & 0x7f);
+            var bpmValue = Math.round(bpm*10);
+            midi.sendShortMsg(0xEA, bpmValue & 0x7f, (bpmValue >> 7) & 0x7f);
             this.syncDeck = deck;
         }
     };
 
-    this.bpmKnobTurned = function (channel, control, value, status, group) {
+    this.bpmKnobTurned = function(channel, control, value, _status, _group) {
         if (this.syncDeck >= 0) {
             var bpm = ((value << 7) | control) / 10;
             engine.setValue("[Channel" + (this.syncDeck + 1) + "]", "bpm", bpm);
         }
     };
 
-    this.startStopButtonPressed = function (channel, control, value, status, group) {
+    this.startStopButtonPressed = function(channel, control, value, status, _group) {
         if (status === 0xFA) {
             this.playbackCounter = 1;
             this.playbackTimer = engine.beginTimer(500, function() {
@@ -811,7 +802,7 @@ DJ505.Sampler = function() {
         }
     };
 
-    this.customSamplePlayback = function (channel, control, value, status, group) {
+    this.customSamplePlayback = function(channel, control, value, status, group) {
         if (value) {
             // Volume has to be re-set because it could have been modified by
             // the Performance Pads in Velocity Sampler mode
@@ -823,7 +814,7 @@ DJ505.Sampler = function() {
     this.levelKnob = new components.Pot({
         group: "[" + DJ505.trsGroup + "]",
         inKey: "volume",
-        input: function (channel, control, value, status, group) {
+        input: function(_channel, _control, _value, _status, _group) {
             components.Pot.prototype.input.apply(this, arguments);
             var volume = this.inGetParameter();
             for (var i = 1; i <= 16; i++) {
@@ -837,7 +828,7 @@ DJ505.Sampler = function() {
         key: "pfl",
         type: components.Button.prototype.types.toggle,
         midi: [0x9F, 0x1D],
-        input: function (channel, control, value, status, group) {
+        input: function(_channel, _control, _value, _status, _group) {
             components.Button.prototype.input.apply(this, arguments);
             var pfl = this.inGetValue();
             for (var i = 1; i <= 16; i++) {
@@ -854,15 +845,15 @@ DJ505.Sampler.prototype = Object.create(components.ComponentContainer.prototype)
 // Custom components. //
 ////////////////////////
 
-DJ505.SlipModeButton = function (options) {
+DJ505.SlipModeButton = function(options) {
     components.Button.apply(this, arguments);
     this.doubleTapTimeout = 500;
 
     components.Button.call(this, options);
 };
 DJ505.SlipModeButton.prototype = Object.create(components.Button.prototype);
-DJ505.SlipModeButton.prototype.unshift = function () {
-    this.input = function (channel, control, value, status, group) {
+DJ505.SlipModeButton.prototype.unshift = function() {
+    this.input = function(channel, control, value, _status, _group) {
         if (value) {                                                // Button press.
             this.inSetValue(true);
             return;
@@ -881,7 +872,7 @@ DJ505.SlipModeButton.prototype.unshift = function () {
 
         this.doubleTapTimer = engine.beginTimer(
             this.doubleTapTimeout,
-            function () {
+            function() {
                 this.doubleTapped = false;
                 this.doubleTapTimer = null;
             },
@@ -895,7 +886,7 @@ DJ505.SlipModeButton.prototype.unshift = function () {
     this.connect();
     this.trigger();
 };
-DJ505.SlipModeButton.prototype.shift = function () {
+DJ505.SlipModeButton.prototype.shift = function() {
     this.input = components.Button.prototype.input;
     this.inKey = "vinylcontrol_enabled";
     this.outKey = "vinylcontrol_enabled";
@@ -922,22 +913,22 @@ DJ505.PadMode = {
 };
 
 DJ505.PadColor = {
-    OFF:          0x00,
-    RED:          0x01,
-    ORANGE:       0x02,
-    BLUE:         0x03,
-    YELLOW:       0x04,
-    APPLEGREEN:   0x05,
-    MAGENTA:      0x06,
-    CELESTE:      0x07,
-    PURPLE:       0x08,
-    APRICOT:      0x09,
-    CORAL:        0x0A,
-    AZURE:        0x0B,
-    TURQUOISE:    0x0C,
-    AQUAMARINE:   0x0D,
-    GREEN:        0x0E,
-    WHITE:        0x0F,
+    OFF: 0x00,
+    RED: 0x01,
+    ORANGE: 0x02,
+    BLUE: 0x03,
+    YELLOW: 0x04,
+    APPLEGREEN: 0x05,
+    MAGENTA: 0x06,
+    CELESTE: 0x07,
+    PURPLE: 0x08,
+    APRICOT: 0x09,
+    CORAL: 0x0A,
+    AZURE: 0x0B,
+    TURQUOISE: 0x0C,
+    AQUAMARINE: 0x0D,
+    GREEN: 0x0E,
+    WHITE: 0x0F,
     DIM_MODIFIER: 0x10,
 };
 
@@ -953,7 +944,7 @@ DJ505.PadColorMap = [
     DJ505.PadColor.WHITE,
 ];
 
-DJ505.PadSection = function (deck, offset) {
+DJ505.PadSection = function(deck, offset) {
     // TODO: Add support for missing modes (flip, slicer, slicerloop)
     /*
      * The Performance Pad Section on the DJ-505 apparently have two basic
@@ -996,7 +987,7 @@ DJ505.PadSection = function (deck, offset) {
      * [SAMPLER] (press twice)        0x0F         Aquamarine       Green        Pitch Play
      * [SHIFT] + [SAMPLER]            0x0C         Magenta          Purple       Velocity Sampler
      *
-     * The Pad and Mode Butttons support 31 different LED states:
+     * The Pad and Mode Buttons support 31 different LED states:
      *
      *   MIDI value Color          MIDI value Color
      *   ---------- -----          ---------- -----
@@ -1013,9 +1004,32 @@ DJ505.PadSection = function (deck, offset) {
      *   0x0A       Coral          0x1A       Coral (Dim)
      *   0x0B       Azure          0x1B       Azure (Dim)
      *   0x0C       Turquoise      0x1C       Turquoise (Dim)
-     *   0x0C       Aquamarine     0x1C       Aquamarine (Dim)
+     *   0x0D       Aquamarine     0x1D       Aquamarine (Dim)
      *   0x0E       Green          0x1E       Green (Dim)
      *   0x0F       White          0x1F       White (Dim)
+     *
+     * Serato DJ Pro maps its cue colors to MIDI values like this:
+     *
+     *   Number Default Cue  Serato Color       MIDI value Color
+     *   ------ ------------ -----------------  ---------  ----------
+     *        1            1 #CC0000 / #C02626  0x01       Red
+     *        2              #CC4400 / #DB4E27  0x0A       Coral
+     *        3            2 #CC8800 / #F8821A  0x02       Orange
+     *        4            4 #CCCC00 / #FAC313  0x04       Yellow
+     *        5              #88CC00 / #4EB648  0x0E       Green
+     *        6              #44CC00 / #006838  0x0E       Green
+     *        7            5 #00CC00 / #1FAD26  0x05       Applegreen
+     *        8              #00CC44 / #8DC63F  0x0D       Aquamarine
+     *        9              #00CC88 / #2B3673  0x0D       Aquamarine
+     *       10            7 #00CCCC / #1DBEBD  0x0C       Turquoise
+     *       11              #0088CC / #0F88CA  0x07       Celeste
+     *       12              #0044CC / #16308B  0x03       Blue
+     *       13            3 #0000CC / #173BA2  0x03       Blue
+     *       14              #4400CC / #5C3F97  0x0B       Azure
+     *       15            8 #8800CC / #6823B6  0x08       Purple
+     *       16            6 #CC00CC / #CE359E  0x06       Magenta
+     *       17              #CC0088 / #DC1D49  0x06       Magenta
+     *       18              #CC0044 / #C71136  0x01       Red
      */
     components.ComponentContainer.call(this);
     this.modes = {
@@ -1038,9 +1052,9 @@ DJ505.PadSection = function (deck, offset) {
 
 DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.PadSection.prototype.controlToPadMode = function (control) {
+DJ505.PadSection.prototype.controlToPadMode = function(control) {
     var mode;
-    switch(control) {
+    switch (control) {
     case DJ505.PadMode.HOTCUE:
         mode = this.modes.hotcue;
         break;
@@ -1089,68 +1103,100 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     return mode;
 };
 
-DJ505.PadSection.prototype.padModeButtonPressed = function (channel, control, value, status, group) {
+DJ505.PadSection.prototype.padModeButtonPressed = function(channel, control, _value, _status, _group) {
     this.setPadMode(control);
 };
 
-DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, value, status, group) {
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode && mode.paramPlusButton && mode.paramMinusButton) {
-        if (control & 1) {
-            mode.paramPlusButton.input(channel, control, value, status, group);
-        } else {
-            mode.paramMinusButton.input(channel, control, value, status, group);
-        }
+DJ505.PadSection.prototype.paramButtonPressed = function(channel, control, value, status, group) {
+    if (!this.currentMode) {
+        return;
+    }
+    var button;
+    switch (control) {
+        case 0x2A: // PARAMETER 2 -
+            if (this.currentMode.param2MinusButton) {
+                button = this.currentMode.param2MinusButton;
+                break;
+            }
+            /* falls through */
+        case 0x28: // PARAMETER -
+            button = this.currentMode.paramMinusButton;
+            break;
+        case 0x2B: // PARAMETER 2 +
+            if (this.currentMode.param2PlusButton) {
+                button = this.currentMode.param2PlusButton;
+                break;
+            }
+            /* falls through */
+        case 0x29: // PARAMETER +
+            button = this.currentMode.paramPlusButton;
+            break;
+    }
+    if (button) {
+        button.input(channel, control, value, status, group);
     }
 };
 
-DJ505.PadSection.prototype.setPadMode = function (control) {
-    if (this.padMode === control) {
+DJ505.PadSection.prototype.setPadMode = function(control) {
+    var newMode = this.controlToPadMode(control);
+
+    // Exit early if the requested mode is already active or not mapped
+    if (newMode === this.currentMode || newMode === undefined) {
         return;
     }
 
-    var mode = this.controlToPadMode(control);
-    if (mode === undefined) {
-        return;
-    }
+    // If we're switching away from or to a hardware-based mode (e.g. TR mode),
+    // the performance pad behaviour is hardcoded in the firmware and not
+    // controlled by Mixxx. These modes are represented by the value null.
+    // Hence, we only need to change LEDs and (dis-)connect components if
+    // this.currentMode or newMode is not null.
+    if (this.currentMode) {
+        // Disable the mode button LED of the currently active mode
+        midi.sendShortMsg(0x94 + this.offset, this.currentMode.ledControl, 0x00);
 
-    // Disable previous mode's LED
-    var previous_mode = this.controlToPadMode(this.padMode);
-    if (previous_mode) {
-        midi.sendShortMsg(0x94 + this.offset, previous_mode.ledControl, 0x00);
-        previous_mode.forEachComponent(function (component) {
+        this.currentMode.forEachComponent(function(component) {
             component.disconnect();
         });
     }
 
-    this.padMode = control;
-    if (mode) {
-        // Set new mode's LED
-        midi.sendShortMsg(0x94 + this.offset, mode.ledControl, mode.color);
-        mode.forEachComponent(function (component) {
+    if (newMode) {
+        // Illuminate the mode button LED of the new mode
+        midi.sendShortMsg(0x94 + this.offset, newMode.ledControl, newMode.color);
+
+        // Set the correct shift state for the new mode. For example, if the
+        // user is in HOT CUE mode and wants to switch to CUE LOOP mode, you
+        // need to press [SHIFT]+[HOT CUE]. Pressing [SHIFT] will make the HOT
+        // CUE mode pads become shifted.
+        // When you're in CUE LOOP mode and want to switch back to
+        // HOT CUE mode, the user need to press HOT CUE (without holding
+        // SHIFT). However, the HOT CUE mode pads are still shifted even though
+        // the user is not pressing [SHIFT] because they never got the unshift
+        // event (the [SHIFT] button was released in CUE LOOP mode, not in HOT
+        // CUE mode).
+        // Hence, it's necessary to set the correct shift state when switching
+        // modes.
+        if (this.isShifted) {
+            newMode.shift();
+        } else {
+            newMode.unshift();
+        }
+
+        newMode.forEachComponent(function(component) {
             component.connect();
             component.trigger();
         });
     }
+    this.currentMode = newMode;
 };
 
-DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
+DJ505.PadSection.prototype.padPressed = function(channel, control, value, status, group) {
     var i = control - ((control >= 0x1C) ? 0x1C : 0x14);
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.pads[i].input(channel, control, value, status, group);
+    if (this.currentMode) {
+        this.currentMode.pads[i].input(channel, control, value, status, group);
     }
 };
 
-DJ505.PadSection.prototype.forEachComponent = function (operation, recursive) {
-    components.ComponentContainer.prototype.forEachComponent.apply(this, arguments);
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.forEachComponent(operation, recursive);
-    }
-};
-
-DJ505.HotcueMode = function (deck, offset) {
+DJ505.HotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.WHITE;
@@ -1173,20 +1219,32 @@ DJ505.HotcueMode = function (deck, offset) {
     }
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
-        mode: this,
-        outKey: "beats_translate_earlier",
-        inKey: "beats_translate_earlier",
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
     });
     this.paramPlusButton = new components.Button({
         midi: [0x94 + offset, 0x29],
-        mode: this,
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
+    });
+    this.param2MinusButton = new components.Button({
+        midi: [0x94 + offset, 0x2A],
+        group: deck.currentDeck,
+        outKey: "beats_translate_earlier",
+        inKey: "beats_translate_earlier",
+    });
+    this.param2PlusButton = new components.Button({
+        midi: [0x94 + offset, 0x2B],
+        group: deck.currentDeck,
         outKey: "beats_translate_later",
         inKey: "beats_translate_later",
     });
 };
 DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.CueLoopMode = function (deck, offset) {
+DJ505.CueLoopMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.BLUE;
@@ -1196,6 +1254,7 @@ DJ505.CueLoopMode = function (deck, offset) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 1;
         this.outKey = "hotcue_" + this.number + "_enabled";
+        this.colorIdKey = "hotcue_" + this.number + "_color_id";
 
         components.Button.call(this);
     };
@@ -1209,12 +1268,12 @@ DJ505.CueLoopMode = function (deck, offset) {
         colors: cueloopColors,
         outConnect: false,
         unshift: function() {
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(channel, control, value, status, group) {
                 if (value) {
-                    var enabled = true;
+                    var hotcueEnabled = true;
                     if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
                         // set a new cue point and loop
-                        enabled = false;
+                        hotcueEnabled = false;
                         script.triggerControl(group, "hotcue_" + this.number + "_activate");
                     }
                     // jump to existing cue and loop
@@ -1225,40 +1284,69 @@ DJ505.CueLoopMode = function (deck, offset) {
 
                     // disable loop if currently enabled
                     if (engine.getValue(group, "loop_enabled")) {
-                        script.triggerControl(group, "reloop_toggle", 1);
-                        if (enabled && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
+                        if (hotcueEnabled &&
+                                engine.getValue(group, "loop_start_position") === startpos &&
+                                engine.getValue(group, "loop_end_position") === endpos) {
+                            script.triggerControl(group, "loop_in_goto", 1);
                             return;
+                        } else {
+                            // disable active loop
+                            script.triggerControl(group, "reloop_toggle", 1);
                         }
                     }
+
                     // set start and endpoints
                     engine.setValue(group, "loop_start_position", startpos);
                     engine.setValue(group, "loop_end_position", endpos);
                     // enable loop
                     script.triggerControl(group, "reloop_toggle", 1);
-                    if (enabled) {
+                    if (hotcueEnabled) {
                         script.triggerControl(group, "loop_in_goto", 1);
                     }
                 }
             };
         },
         shift: function() {
-            this.input = function (channel, control, value, status, group) {
-                if (value) {
-                    if (engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
-                        // jump to existing cue and loop
-                        var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
-                        var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
-                        var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
-                        var endpos = startpos + loopsamples;
-
-                        if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
-                            engine.setValue(group, "reloop_toggle", 1);
-                        } else {
-                            script.triggerControl(group, "hotcue_" + this.number + "_clear");
-                        }
-                    }
+            this.inKey = "hotcue_" + this.number + "_clear";
+            this.input = components.Button.prototype.input;
+        },
+        output: function(value) {
+            var outval = this.outValueScale(value);
+            // WARNING: outputColor only handles hotcueColors
+            // and there is no hotcueColor for turning the LED
+            // off. So the `send()` function is responsible for turning the
+            // actual LED off.
+            if (this.colorIdKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorIdKey));
+            } else {
+                this.send(outval);
+            }
+        },
+        outputColor: function(id) {
+            var color = this.colors[id];
+            if (color instanceof Array) {
+                if (color.length !== 3) {
+                    print("ERROR: invalid color array for id: " + id);
+                    return;
                 }
-            };
+                if (this.sendRGB === undefined) {
+                    print("ERROR: no function defined for sending RGB colors");
+                    return;
+                }
+                this.sendRGB(color);
+            } else if (typeof color === "number") {
+                this.send(color);
+            }
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorIdKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function(id) {
+                    if (engine.getValue(this.group, this.outKey)) {
+                        this.outputColor(id);
+                    }
+                });
+            }
         },
     });
 
@@ -1266,10 +1354,23 @@ DJ505.CueLoopMode = function (deck, offset) {
     for (var n = 0; n <= 7; n++) {
         this.pads[n] = new this.PerformancePad(n);
     }
+
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        group: deck.currentDeck,
+        outKey: "loop_halve",
+        inKey: "loop_halve",
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        group: deck.currentDeck,
+        outKey: "loop_double",
+        inKey: "loop_double",
+    });
 };
 DJ505.CueLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.RollMode = function (deck, offset) {
+DJ505.RollMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.ROLL;
     this.color = DJ505.PadColor.CELESTE;
@@ -1317,7 +1418,7 @@ DJ505.RollMode = function (deck, offset) {
         on: DJ505.PadColor.ORANGE,
         off: DJ505.PadColor.ORANGE + DJ505.PadColor.DIM_MODIFIER,
         mode: this,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 var jumpSize = engine.getValue(this.group, "beatjump_size");
                 if (jumpSize > this.mode.minSize) {
@@ -1325,7 +1426,7 @@ DJ505.RollMode = function (deck, offset) {
                 }
             }
         },
-        output: function (value, group, control) {
+        output: function(value, _group, _control) {
             this.send((value > this.mode.minSize) ? this.on : this.off);
         },
     });
@@ -1340,7 +1441,7 @@ DJ505.RollMode = function (deck, offset) {
         on: DJ505.PadColor.ORANGE,
         off: DJ505.PadColor.ORANGE + DJ505.PadColor.DIM_MODIFIER,
         mode: this,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 var jumpSize = engine.getValue(this.group, "beatjump_size");
                 if (jumpSize < this.mode.maxSize) {
@@ -1348,7 +1449,7 @@ DJ505.RollMode = function (deck, offset) {
                 }
             }
         },
-        output: function (value, group, control) {
+        output: function(value, _group, _control) {
             this.send((value < this.mode.maxSize) ? this.on : this.off);
         },
     });
@@ -1368,7 +1469,7 @@ DJ505.RollMode = function (deck, offset) {
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
         mode: this,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 if (this.mode.loopSize > this.mode.minSize) {
                     this.mode.setLoopSize(this.mode.loopSize / 2);
@@ -1380,7 +1481,7 @@ DJ505.RollMode = function (deck, offset) {
     this.paramPlusButton = new components.Button({
         midi: [0x94 + offset, 0x29],
         mode: this,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 if (this.mode.loopSize * 8 < this.mode.maxSize) {
                     this.mode.setLoopSize(this.mode.loopSize * 2);
@@ -1391,7 +1492,7 @@ DJ505.RollMode = function (deck, offset) {
     });
 };
 DJ505.RollMode.prototype = Object.create(components.ComponentContainer.prototype);
-DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
+DJ505.RollMode.prototype.setLoopSize = function(loopSize) {
     this.loopSize = loopSize;
     var padLoopSize;
     for (var i = 0; i <= 3; i++) {
@@ -1403,7 +1504,7 @@ DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
     this.reconnectComponents();
 };
 
-DJ505.SamplerMode = function (deck, offset) {
+DJ505.SamplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.SAMPLER;
     this.color = DJ505.PadColor.MAGENTA;
@@ -1423,7 +1524,7 @@ DJ505.SamplerMode = function (deck, offset) {
 };
 DJ505.SamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.VelocitySamplerMode = function (deck, offset) {
+DJ505.VelocitySamplerMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.SAMPLER;
     this.color = DJ505.PadColor.PURPLE;
@@ -1444,7 +1545,7 @@ DJ505.VelocitySamplerMode = function (deck, offset) {
 };
 DJ505.VelocitySamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.PitchPlayMode = function (deck, offset) {
+DJ505.PitchPlayMode = function(deck, offset) {
     components.ComponentContainer.call(this);
 
     var PitchPlayRange = {
@@ -1464,7 +1565,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         this.number = n + 1;
         this.on = this.color + DJ505.PadColor.DIM_MODIFIER;
         this.colors = pitchplayColors;
-        this.colorIdKey = 'hotcue_' + this.number + '_color_id';
+        this.colorIdKey = "hotcue_" + this.number + "_color_id";
         components.Button.call(this);
     };
     this.PerformancePad.prototype = new components.Button({
@@ -1482,7 +1583,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         },
         unshift: function() {
             this.outKey = "pitch_adjust";
-            this.output = function (value, group, control) {
+            this.output = function(_value, _group, _control) {
                 var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
                 if ((this.mode.range === PitchPlayRange.UP && this.number === 5) ||
                     (this.mode.range === PitchPlayRange.MID && this.number === 1) ||
@@ -1491,10 +1592,10 @@ DJ505.PitchPlayMode = function (deck, offset) {
                 }
                 this.send(color);
             };
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 if (value > 0) {
                     var pitchAdjust;
-                    switch(this.mode.range) {
+                    switch (this.mode.range) {
                     case PitchPlayRange.UP:
                         pitchAdjust = this.number + ((this.number <= 4) ? 4 : -5);
                         break;
@@ -1524,7 +1625,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
         },
         shift: function() {
             this.outKey = "hotcue_" + this.number + "_enabled";
-            this.output = function (value, group, control) {
+            this.output = function(value, _group, _control) {
                 var outval = this.outValueScale(value);
                 if (this.colorIdKey !== undefined && outval !== this.off) {
                     this.outputColor(engine.getValue(this.group, this.colorIdKey));
@@ -1532,18 +1633,18 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     this.send(DJ505.PadColor.OFF);
                 }
             };
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 if (value > 0 && this.mode.cuepoint !== this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
-                    var previous_cuepoint = this.mode.cuepoint;
+                    var previousCuepoint = this.mode.cuepoint;
                     this.mode.cuepoint = this.number;
-                    this.mode.pads[previous_cuepoint - 1].trigger();
+                    this.mode.pads[previousCuepoint - 1].trigger();
                     this.outputColor(engine.getValue(this.group, this.colorIdKey));
                 }
             };
             this.connect = function() {
                 components.Button.prototype.connect.call(this); // call parent connect
                 if (undefined !== this.group && this.colorIdKey !== undefined) {
-                    this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                    this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function(id) {
                         if (engine.getValue(this.group, this.outKey)) {
                             this.outputColor(id);
                         }
@@ -1566,7 +1667,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
         mode: this,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 if (this.mode.range === PitchPlayRange.UP) {
                     this.mode.range = PitchPlayRange.MID;
@@ -1575,7 +1676,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
                 } else {
                     this.mode.range = PitchPlayRange.UP;
                 }
-                this.mode.forEachComponent(function (component) {
+                this.mode.forEachComponent(function(component) {
                     component.trigger();
                 });
             }
@@ -1585,7 +1686,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
     this.paramPlusButton = new components.Button({
         midi: [0x94 + offset, 0x29],
         mode: this,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 if (this.mode.range === PitchPlayRange.UP) {
                     this.mode.range = PitchPlayRange.DOWN;
@@ -1594,7 +1695,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
                 } else {
                     this.mode.range = PitchPlayRange.MID;
                 }
-                this.mode.forEachComponent(function (component) {
+                this.mode.forEachComponent(function(component) {
                     component.trigger();
                 });
             }

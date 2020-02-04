@@ -6,29 +6,28 @@
 #include <QLinkedList>
 #include <QSqlTableModel>
 #include <QAction>
+#include <QPointer>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
-class TrackCollection;
-class TreeItem;
-
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
 public:
-    SetlogFeature(QObject* parent, UserSettingsPointer pConfig,
-                  TrackCollection* pTrackCollection);
+    SetlogFeature(Library* pLibrary,
+                  UserSettingsPointer pConfig);
     virtual ~SetlogFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    virtual void bindWidget(WLibrary* libraryWidget,
-                            KeyboardEventFilter* keyboard);
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                           KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
   public slots:
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClick(const QPoint& globalPos) override;
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
     void slotJoinWithPrevious();
     void slotGetNewPlaylist();
 
@@ -39,19 +38,20 @@ public:
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
-    void slotPlaylistTableChanged(int playlistId);
-    void slotPlaylistContentChanged(int playlistId);
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
+    void slotPlaylistTableChanged(int playlistId) override;
+    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistTableRenamed(int playlistId, QString newName) override;
 
   private:
-    QString getRootViewHtml() const;
+    QString getRootViewHtml() const override;
 
     QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;
     WLibrary* m_libraryWidget;
-    QIcon m_icon;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
+    const QIcon m_icon;
 };
 
 #endif // SETLOGFEATURE_H

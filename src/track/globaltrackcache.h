@@ -32,6 +32,8 @@ protected:
     virtual ~GlobalTrackCacheRelocator() {}
 };
 
+typedef void (*deleteTrackFn_t)(Track*);
+
 class GlobalTrackCacheEntry final {
     // We need to hold two shared pointers, the deletingPtr is
     // responsible for the lifetime of the Track object itself.
@@ -39,25 +41,44 @@ class GlobalTrackCacheEntry final {
     // is not longer referenced, the track is saved and evicted
     // from the cache.
   public:
+    class TrackDeleter {
+    public:
+        explicit TrackDeleter(deleteTrackFn_t deleteTrackFn = nullptr)
+                : m_deleteTrackFn(deleteTrackFn) {
+        }
+
+        void operator()(Track* pTrack) const;
+
+    private:
+        deleteTrackFn_t m_deleteTrackFn;
+    };
+
     explicit GlobalTrackCacheEntry(
-            std::unique_ptr<Track, void (&)(Track*)> deletingPtr)
+            std::unique_ptr<Track, TrackDeleter> deletingPtr)
         : m_deletingPtr(std::move(deletingPtr)) {
     }
-
     GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
+    GlobalTrackCacheEntry(GlobalTrackCacheEntry&&) = default;
+
+    void init(TrackWeakPointer savingWeakPtr) {
+        // Uninitialized or expired
+        DEBUG_ASSERT(!m_savingWeakPtr.lock());
+        m_savingWeakPtr = std::move(savingWeakPtr);
+    }
 
     Track* getPlainPtr() const {
         return m_deletingPtr.get();
     }
-    const TrackWeakPointer& getSavingWeakPtr() const {
-        return m_savingWeakPtr;
+
+    TrackPointer lock() const {
+        return m_savingWeakPtr.lock();
     }
-    void setSavingWeakPtr(TrackWeakPointer savingWeakPtr) {
-        m_savingWeakPtr = std::move(savingWeakPtr);
+    bool expired() const {
+        return m_savingWeakPtr.expired();
     }
 
   private:
-    std::unique_ptr<Track, void (&)(Track*)> m_deletingPtr;
+    std::unique_ptr<Track, TrackDeleter> m_deletingPtr;
     TrackWeakPointer m_savingWeakPtr;
 };
 
@@ -155,7 +176,7 @@ private:
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveCachedTrack(Track* pTrack) noexcept = 0;
+    virtual void saveEvictedTrack(Track* pEvictedTrack) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheSaver() {}
@@ -165,7 +186,10 @@ class GlobalTrackCache : public QObject {
     Q_OBJECT
 
 public:
-    static void createInstance(GlobalTrackCacheSaver* pDeleter);
+    static void createInstance(
+            GlobalTrackCacheSaver* pSaver,
+            // A custom deleter is only needed for tests without an event loop!
+            deleteTrackFn_t deleteTrackFn = nullptr);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
     // instance during shutdown, because we are not able to guarantee that
     // all track references have been released before. Instead the singular
@@ -184,7 +208,9 @@ private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
-    explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
+    GlobalTrackCache(
+            GlobalTrackCacheSaver* pSaver,
+            deleteTrackFn_t deleteTrackFn);
     ~GlobalTrackCache();
 
     void relocateTracks(
@@ -210,17 +236,21 @@ private:
 
     void purgeTrackId(TrackId trackId);
 
-    bool evict(Track* plainPtr);
-    bool isEvicted(Track* plainPtr) const;
+    bool tryEvict(Track* plainPtr);
+    bool isCached(Track* plainPtr) const;
 
     bool isEmpty() const;
 
     void deactivate();
 
+    void saveEvictedTrack(Track* pEvictedTrack) const;
+
     // Managed by GlobalTrackCacheLocker
     mutable QMutex m_mutex;
 
     GlobalTrackCacheSaver* m_pSaver;
+
+    deleteTrackFn_t m_deleteTrackFn;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;

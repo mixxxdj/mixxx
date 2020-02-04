@@ -32,12 +32,12 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
   public slots:
     // Common preference page slots.
-    void slotUpdate();
-    void slotShow();
-    void slotHide();
-    void slotResetToDefaults();
-    void slotApply();
-    void slotCancel();
+    void slotUpdate() override;
+    void slotShow() override;
+    void slotHide() override;
+    void slotResetToDefaults() override;
+    void slotApply() override;
+    void slotCancel() override;
 
     // Dialog to browse for music file directory
     void slotAddDir();

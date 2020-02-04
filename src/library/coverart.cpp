@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QStringBuilder>
 
 #include "library/coverart.h"
 #include "library/coverartutils.h"

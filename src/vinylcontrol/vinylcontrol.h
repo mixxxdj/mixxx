@@ -41,8 +41,8 @@ class VinylControl : public QObject {
     ControlProxy* m_pVCRate;
     // Reflects the mean value (filtered for display) used of m_pVCRate during
     // VC and and is used to change the speed/pitch of the song without VC
-    // 0.0 = original rate
-    ControlProxy* m_pRateSlider;
+    // 1.0 = original rate
+    ControlProxy* m_pRateRatio;
     // The ControlObject used to get the duration of the current song.
     ControlProxy* duration;
     // The ControlObject used to get the vinyl control mode
@@ -58,11 +58,7 @@ class VinylControl : public QObject {
     ControlProxy* cueing;
     // Is pitch changing very quickly?
     ControlProxy* scratching;
-    // The ControlObject used to the get the pitch range from the prefs.
-    ControlProxy* m_pRateRange;
     ControlProxy* vinylStatus;
-    // direction of rate
-    ControlProxy* m_pRateDir;
     // looping enabled?
     ControlProxy* loopEnabled;
     // show the signal in the skin?

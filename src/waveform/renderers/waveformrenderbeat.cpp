@@ -10,6 +10,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "util/painterscope.h"
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -62,7 +63,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
@@ -96,6 +98,4 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     // Make sure to use constData to prevent detaches!
     painter->drawLines(m_beats.constData(), beatCount);
-
-    painter->restore();
 }

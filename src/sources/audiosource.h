@@ -288,19 +288,7 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     bool verifyReadable() const override;
 
     ReadableSampleFrames readSampleFrames(
-            WritableSampleFrames sampleFrames) {
-        const auto sampleFramesFramesClamped =
-                clampWritableSampleFrames(sampleFrames);
-        if (sampleFramesFramesClamped.frameIndexRange().empty()) {
-            // result is empty
-            return ReadableSampleFrames(
-                    sampleFramesFramesClamped.frameIndexRange());
-        } else {
-            // forward clamped request
-            return readSampleFramesClamped(
-                    sampleFramesFramesClamped);
-        }
-    }
+            WritableSampleFrames sampleFrames);
 
   protected:
     explicit AudioSource(QUrl url);
@@ -308,6 +296,18 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
 
     bool initFrameIndexRangeOnce(
             IndexRange frameIndexRange);
+    // The frame index range needs to be adjusted while
+    // reading. This virtual function is an ugly hack!!!
+    // It needs to be overridden in derived proxy classes
+    // that wrap a pointer to the actual audio source and
+    // delegate to that.
+    virtual void adjustFrameIndexRange(
+            IndexRange frameIndexRange);
+    static void adjustFrameIndexRangeOn(
+            AudioSource& that,
+            IndexRange frameIndexRange) {
+        that.adjustFrameIndexRange(frameIndexRange);
+    }
 
     bool initBitrateOnce(Bitrate bitrate);
     bool initBitrateOnce(SINT bitrate) {

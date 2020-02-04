@@ -11,6 +11,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
+#include "util/painterscope.h"
 #include "util/timer.h"
 
 namespace {
@@ -74,7 +75,8 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
             remainingTimeTriggerSeconds;
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->resetTransform();
     painter->setOpacity(0.5 * blinkIntensity);
     painter->setPen(m_pen);
@@ -90,7 +92,6 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     //painter->fillRect(m_waveformRenderer->getWidth()/2, 1,
     //        m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2,
     //        m_gradient);
-    painter->restore();
 }
 
 void WaveformRendererEndOfTrack::generateBackRects() {

@@ -14,6 +14,7 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
     <Layout>stacked</Layout>
     <Children>
       <StatusLight>
+        <TooltipId><Variable name="sourceType"/>_VuMeter</TooltipId>
         <PathStatusLight scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
         <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping.png</PathBack>
         <Connection>

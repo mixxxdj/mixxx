@@ -1,4 +1,4 @@
-﻿// cuecontrol.h
+// cuecontrol.h
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef CUECONTROL_H
@@ -18,28 +18,31 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
-enum SeekOnLoadMode {
-    SEEK_ON_LOAD_DEFAULT = 0,  // Use CueRecall preference setting
-    SEEK_ON_LOAD_ZERO_POS = 1,  // Use 0:00.000
-    SEEK_ON_LOAD_MAIN_CUE = 2,  // Use main cue point
-    SEEK_ON_LOAD_INTRO_CUE = 3,  // Use intro cue point
-    SEEK_ON_LOAD_NUM_MODES
+enum class CueMode {
+    Mixxx,
+    Pioneer,
+    Denon,
+    Numark,
+    MixxxNoBlinking,
+    CueAndPlay
+};
+
+enum class SeekOnLoadMode {
+    MainCue = 0,    // Use main cue point
+    Beginning = 1,  // Use 0:00.000
+    FirstSound = 2, // Skip leading silence
+    IntroStart = 3, // Use intro start cue point
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
-    // msvs does not allow to cast from double to an enum
-    SeekOnLoadMode mode = static_cast<SeekOnLoadMode>(int(value));
-    if (mode >= SEEK_ON_LOAD_NUM_MODES || mode < 0) {
-        return SEEK_ON_LOAD_DEFAULT;
-    }
-    return mode;
+    return static_cast<SeekOnLoadMode>(int(value));
 }
 
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
     HotcueControl(QString group, int hotcueNumber);
-    virtual ~HotcueControl();
+    ~HotcueControl() override;
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
@@ -118,7 +121,7 @@ class CueControl : public EngineControl {
                UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    virtual void hintReader(HintVector* pHintList) override;
+    void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtZeroPos();
@@ -126,9 +129,8 @@ class CueControl : public EngineControl {
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
-    bool isCueRecallEnabled();
+    SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
-    SeekOnLoadMode getSeekOnLoadMode();
 
   private slots:
     void quantizeChanged(double v);
@@ -144,6 +146,9 @@ class CueControl : public EngineControl {
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
+
+    void hotcueFocusColorNext(double v);
+    void hotcueFocusColorPrev(double v);
 
     void cueSet(double v);
     void cueClear(double v);
@@ -172,12 +177,6 @@ class CueControl : public EngineControl {
     void outroEndActivate(double v);
 
   private:
-    enum class QuantizeMode {
-        ClosestBeat,
-        PreviousBeat,
-        NextBeat,
-    };
-
     enum class TrackAt {
         Cue,
         End,
@@ -186,12 +185,12 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(CuePointer pCue, int hotcueNumber);
-    void detachCue(int hotcueNumber);
+    void attachCue(CuePointer pCue, HotcueControl* pControl);
+    void detachCue(HotcueControl* pControl);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
-    double quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode);
-    double quantizeCurrentPosition(QuantizeMode mode);
+    double quantizeCuePoint(double position);
+    double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
@@ -199,8 +198,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pPrevBeat;
-    ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
 
@@ -210,7 +207,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
-    ControlObject* m_pSeekOnLoadMode;
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;
@@ -250,6 +246,10 @@ class CueControl : public EngineControl {
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
+
+    ControlObject* m_pHotcueFocus;
+    ControlObject* m_pHotcueFocusColorNext;
+    ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 

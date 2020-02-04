@@ -1221,7 +1221,7 @@ KONTROL1.getNoShiftNoModBankCode = function getNoShiftNoModBankCode() {//return 
     return outstr;
     };
 
-KONTROL1.getGroup = function getGroup(groupstr) {//return Mixx group
+KONTROL1.getGroup = function getGroup(groupstr) {//return Mixxx group
     if (KONTROL1.debug>2){print("##function: "+KONTROL1.getFunctionName())};
 
     var outstr;

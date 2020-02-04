@@ -16,13 +16,21 @@
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
-
-const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
+#include "util/logger.h"
 
 namespace {
 
+const mixxx::Logger kLogger("AnalysisFeature");
+
+const QString kViewName = QStringLiteral("Analysis");
+
 // Utilize all available cores for batch analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount());
+
+inline
+int numberOfAnalyzerThreads() {
+    return kNumberOfAnalyzerThreads;
+}
 
 inline
 AnalyzerModeFlags getAnalyzerModeFlags(
@@ -42,71 +50,69 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 } // anonymous namespace
 
 AnalysisFeature::AnalysisFeature(
-        Library* parent,
+        Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(parent),
-        m_library(parent),
-        m_pConfig(pConfig),
+        : LibraryFeature(pLibrary, pConfig),
+        m_baseTitle(tr("Analyze")),
+        m_icon(":/images/library/ic_library_prepare.svg"),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-        m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr),
-        m_icon(":/images/library/ic_library_prepare.svg") {
-    setTitleDefault();
+        m_title(m_baseTitle) {
 }
 
-void AnalysisFeature::stop() {
-    if (m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler->stop();
-    }
-}
-
-void AnalysisFeature::setTitleDefault() {
-    m_Title = m_analysisTitleName;
-    emit(featureIsLoading(this, false));
+void AnalysisFeature::resetTitle() {
+    m_title = m_baseTitle;
+    emit featureIsLoading(this, false);
 }
 
 void AnalysisFeature::setTitleProgress(int currentTrackNumber, int totalTracksCount) {
-    m_Title = QString("%1 (%2 / %3)")
-            .arg(m_analysisTitleName)
+    m_title = QString("%1 (%2 / %3)")
+            .arg(m_baseTitle)
             .arg(QString::number(currentTrackNumber))
             .arg(QString::number(totalTracksCount));
-    emit(featureIsLoading(this, false));
+    emit featureIsLoading(this, false);
 }
 
-QVariant AnalysisFeature::title() {
-    return m_Title;
-}
-
-QIcon AnalysisFeature::getIcon() {
-    return m_icon;
-}
-
-void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
+void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,
-                                      m_library);
-    connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
-            this, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
-            this, SLOT(stopAnalysis()));
+                                      m_pLibrary);
+    connect(m_pAnalysisView,
+            &DlgAnalysis::loadTrack,
+            this,
+            &AnalysisFeature::loadTrack);
+    connect(m_pAnalysisView,
+            &DlgAnalysis::loadTrackToPlayer,
+            this,
+            [=](TrackPointer track, QString group) {
+                emit loadTrackToPlayer(track, group, false);
+            });
+    connect(m_pAnalysisView,
+            &DlgAnalysis::analyzeTracks,
+            this,
+            &AnalysisFeature::analyzeTracks);
+    connect(m_pAnalysisView,
+            &DlgAnalysis::stopAnalysis,
+            this,
+            &AnalysisFeature::stopAnalysis);
 
-    connect(m_pAnalysisView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pAnalysisView,
+            &DlgAnalysis::trackSelected,
+            this,
+            &AnalysisFeature::trackSelected);
 
-    connect(this, SIGNAL(analysisActive(bool)),
-            m_pAnalysisView, SLOT(slotAnalysisActive(bool)));
+    connect(this,
+            &AnalysisFeature::analysisActive,
+            m_pAnalysisView,
+            &DlgAnalysis::slotAnalysisActive);
 
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    emit(analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler)));
+    emit analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler));
 
-    libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
+    libraryWidget->registerView(kViewName, m_pAnalysisView);
 }
 
 TreeItemModel* AnalysisFeature::getChildModel() {
@@ -121,36 +127,73 @@ void AnalysisFeature::refreshLibraryModels() {
 
 void AnalysisFeature::activate() {
     //qDebug() << "AnalysisFeature::activate()";
-    emit(switchToView(m_sAnalysisViewName));
+    emit switchToView(kViewName);
     if (m_pAnalysisView) {
-        emit(restoreSearch(m_pAnalysisView->currentSearch()));
+        emit restoreSearch(m_pAnalysisView->currentSearch());
     }
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (!m_pTrackAnalysisScheduler) {
+        const int numAnalyzerThreads = numberOfAnalyzerThreads();
+        kLogger.info()
+                << "Starting analysis using"
+                << numAnalyzerThreads
+                << "analyzer threads";
         m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
-                m_library,
-                kNumberOfAnalyzerThreads,
+                m_pLibrary,
+                numAnalyzerThreads,
                 m_pConfig,
                 getAnalyzerModeFlags(m_pConfig));
 
-        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
-                m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerProgress);
-        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,
-                m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerFinished);
-        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
-                this, &AnalysisFeature::onTrackAnalysisSchedulerProgress);
-        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,
-                this, &AnalysisFeature::stopAnalysis);
+        connect(m_pTrackAnalysisScheduler.get(),
+                &TrackAnalysisScheduler::progress,
+                m_pAnalysisView,
+                &DlgAnalysis::onTrackAnalysisSchedulerProgress);
+        connect(m_pTrackAnalysisScheduler.get(),
+                &TrackAnalysisScheduler::finished,
+                m_pAnalysisView,
+                &DlgAnalysis::onTrackAnalysisSchedulerFinished);
+        connect(m_pTrackAnalysisScheduler.get(),
+                &TrackAnalysisScheduler::progress,
+                this,
+                &AnalysisFeature::onTrackAnalysisSchedulerProgress);
+        connect(m_pTrackAnalysisScheduler.get(),
+                &TrackAnalysisScheduler::finished,
+                this,
+                &AnalysisFeature::onTrackAnalysisSchedulerFinished);
 
-        emit(analysisActive(true));
+        emit analysisActive(true);
     }
 
     if (m_pTrackAnalysisScheduler->scheduleTracksById(trackIds) > 0) {
-        m_pTrackAnalysisScheduler->resume();
+        resumeAnalysis();
     }
+}
+
+void AnalysisFeature::suspendAnalysis() {
+    if (!m_pTrackAnalysisScheduler) {
+        return; // inactive
+    }
+    kLogger.info() << "Suspending analysis";
+    m_pTrackAnalysisScheduler->suspend();
+}
+
+void AnalysisFeature::resumeAnalysis() {
+    if (!m_pTrackAnalysisScheduler) {
+        return; // inactive
+    }
+    kLogger.info() << "Resuming analysis";
+    m_pTrackAnalysisScheduler->resume();
+}
+
+void AnalysisFeature::stopAnalysis() {
+    if (!m_pTrackAnalysisScheduler) {
+        return; // inactive
+    }
+    kLogger.info() << "Stopping analysis";
+    m_pTrackAnalysisScheduler->stop();
 }
 
 void AnalysisFeature::onTrackAnalysisSchedulerProgress(
@@ -159,31 +202,21 @@ void AnalysisFeature::onTrackAnalysisSchedulerProgress(
         int totalTracksCount) {
     // Ignore any delayed progress updates after the analysis
     // has already been stopped.
-    if (m_pTrackAnalysisScheduler) {
-        if (totalTracksCount > 0) {
-            setTitleProgress(currentTrackNumber, totalTracksCount);
-        } else {
-            setTitleDefault();
-        }
+    if (!m_pTrackAnalysisScheduler) {
+        return; // inactive
+    }
+    if (totalTracksCount > 0) {
+        setTitleProgress(currentTrackNumber, totalTracksCount);
+    } else {
+        resetTitle();
     }
 }
 
-void AnalysisFeature::suspendAnalysis() {
-    //qDebug() << this << "suspendAnalysis";
-    if (m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler->suspend();
+void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
+    if (!m_pTrackAnalysisScheduler) {
+        return; // already inactive
     }
-}
-
-void AnalysisFeature::resumeAnalysis() {
-    //qDebug() << this << "resumeAnalysis";
-    if (m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler->resume();
-    }
-}
-
-void AnalysisFeature::stopAnalysis() {
-    //qDebug() << this << "stopAnalysis()";
+    kLogger.info() << "Finishing analysis";
     if (m_pTrackAnalysisScheduler) {
         // Free resources by abandoning the queue after the batch analysis
         // has completed. Batch analysis are not started very frequently
@@ -192,15 +225,13 @@ void AnalysisFeature::stopAnalysis() {
         // for creating the queue with its worker threads are acceptable.
         m_pTrackAnalysisScheduler.reset();
     }
-    setTitleDefault();
-    emit(analysisActive(false));
+    resetTitle();
+    emit analysisActive(false);
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    Q_UNUSED(pSource);
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds = m_library->trackCollection().getTrackDAO().addMultipleTracks(files, true);
+    QList<TrackId> trackIds = m_pLibrary->trackCollection().resolveTrackIdsFromUrls(urls,
+            !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

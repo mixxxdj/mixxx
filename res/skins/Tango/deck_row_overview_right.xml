@@ -27,7 +27,7 @@ Variables:
         <SizePolicy>me,f</SizePolicy>
         <Children>
 
-          <!-- Small Cover/Spinny when explicitely set 'small' -->
+          <!-- Small Cover/Spinny when explicitly set 'small' -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>

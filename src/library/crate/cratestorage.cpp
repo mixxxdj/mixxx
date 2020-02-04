@@ -538,7 +538,7 @@ CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QSt
                     CRATETABLE_ID,
                     CRATETRACKSTABLE_CRATEID,
                     CRATETABLE_NAME));
-    query.bindValue(":crateNameLike", kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+    query.bindValue(":crateNameLike", QVariant(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll));
 
     if (query.execPrepared()) {
         return CrateTrackSelectResult(std::move(query));

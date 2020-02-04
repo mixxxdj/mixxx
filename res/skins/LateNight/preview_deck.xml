@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="group">[PreviewDeck1]</SetVariable>
   <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
@@ -10,16 +11,17 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <!-- Preview Deck Column 1 Row 1 -->
+
+          <!-- PreviewDeck left: Play, text, overview -->
           <WidgetGroup>
-            <ObjectName>PreviewColumnOne</ObjectName>
+            <ObjectName>PreviewDeckLeftPart</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>,40</MinimumSize>
             <Children>
-              <!-- Row 1 -->
+              <!-- Row 1 PreviewTitleEjectRow -->
               <WidgetGroup>
-                <ObjectName>PreviewTitleEject</ObjectName>
+                <ObjectName>PreviewTitleEjectRow</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -29,178 +31,154 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Text>Preview</Text>
                     <Connection>
-                      <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </Label>
 
                   <WidgetGroup>
-                    <ObjectName>PreviewDeckTextRow</ObjectName>
+                    <ObjectName>PreviewDeckText</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>i,min</SizePolicy>
                     <Children>
                       <Text>
+                        <ObjectName>PreviewTitle</ObjectName>
                         <TooltipId>text</TooltipId>
                         <SizePolicy>me,min</SizePolicy>
-                        <ObjectName>PreviewTitle</ObjectName>
-                        <Group>[PreviewDeck1]</Group>
+                        <Group><Variable name="group"/></Group>
                         <Elide>right</Elide>
                       </Text>
                       <Number>
+                        <ObjectName>PreviewBPM</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
-                        <Group>[PreviewDeck1]</Group>
-                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-                        <Alignment>left</Alignment>
+                        <Size>45f,21f</Size>
+                        <Group><Variable name="group"/></Group>
+                        <!--CSS alignments not respected, bug lp:605530 -->
+                        <Alignment>right</Alignment>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </Number>
                     </Children>
                   </WidgetGroup>
+
                   <WidgetGroup>
-                    <ObjectName>AlignRightCenter</ObjectName>
+                    <ObjectName>PreviewEjectButton</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <PushButton>
-                        <TooltipId>eject</TooltipId>
-                        <NumberStates>1</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_eject_over.svg</Pressed>
-                          <Unpressed>buttons/btn_eject.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey>[PreviewDeck1],eject</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_1state.xml">
+                        <SetVariable name="TooltipId">eject</SetVariable>
+                        <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                        <SetVariable name="btn_type"></SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                        <SetVariable name="Size">21f,18f</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Row 1 PreviewTitleEjectRow -->
 
-              <!-- Row 2 -->
+              <!-- Row 2 PreviewPlayOverview -->
               <WidgetGroup>
                 <ObjectName>PreviewPlayOverview</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <WidgetGroup>
-                    <ObjectName>PreviewPlay</ObjectName>
+                    <ObjectName>PreviewPlayBox</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <PushButton>
-                        <TooltipId>play_start</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_play_preview_down.svg</Pressed>
-                          <Unpressed>buttons/btn_play_preview.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_play_preview_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_play_preview_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey>[PreviewDeck1],play</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey>[PreviewDeck1],start</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_2state_right_display.xml">
+                        <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                        <SetVariable name="ObjectName">PlayButtonPreview</SetVariable>
+                        <SetVariable name="Size">34f,34f</SetVariable>
+                        <SetVariable name="btn_type">embedded</SetVariable>
+                        <SetVariable name="btn_format">square_big</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,start</SetVariable>
+                        <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
 
-                  <Overview>
-                    <TooltipId>waveform_overview</TooltipId>
-                    <Size>0me,20me</Size>
-                    <Group>[PreviewDeck1]</Group>
-                    <BgColor></BgColor>
-                    <BgColor>#FFFFFF</BgColor>
-                    <SignalColor>#FF8000</SignalColor>
-                    <SignalHighColor>#F0EBD1</SignalHighColor>
-                    <SignalMidColor>#EECE33</SignalMidColor>
-                    <SignalLowColor>#E4C739</SignalLowColor>
-                    <PlayPosColor>#00FF00</PlayPosColor>
-                    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-                    <DefaultMark>
-                      <Align>bottom|right</Align>
-                      <Color>#FF0000</Color>
-                      <TextColor>#FFFFFF</TextColor>
-                      <Text> %1 </Text>
-                    </DefaultMark>
-                    <Mark>
-                      <Control>cue_point</Control>
-                      <Text> C </Text>
-                      <Align>top|right</Align>
-                      <Color>#FF001C</Color>
-                      <TextColor>#FFFFFF</TextColor>
-                    </Mark>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-                    </Connection>
-                  </Overview>
+                  <WidgetGroup>
+                    <ObjectName>OverviewBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>0me,32f</Size>
+                    <Children>
+                      <Overview>
+                        <TooltipId>waveform_overview</TooltipId>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Group><Variable name="group"/></Group>
+                        <SignalColor><Variable name="SignalColor_12"/></SignalColor>
+                        <BgColor><Variable name="SignalBgColor_SamplerPreview"/></BgColor>
+                        <SignalHighColor><Variable name="SignalRGBHighColor"/></SignalHighColor>
+                        <SignalMidColor><Variable name="SignalRGBMidColor"/></SignalMidColor>
+                        <SignalLowColor><Variable name="SignalRGBLowColor"/></SignalLowColor>
+                        <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
+                        <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                        <ShowCueTimes>false</ShowCueTimes>
+                        <DefaultMark>
+                          <Align>bottom|right</Align>
+                          <Color>#FF0000</Color>
+                          <TextColor>#FFFFFF</TextColor>
+                          <Text> %1 </Text>
+                        </DefaultMark>
+                        <Mark>
+                          <Control>cue_point</Control>
+                          <Text> C </Text>
+                          <Align>top|right</Align>
+                          <Color>#FF001C</Color>
+                          <TextColor>#FFFFFF</TextColor>
+                        </Mark>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                        </Connection>
+                      </Overview>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Row 2 PreviewPlayOverview -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- PreviewDeck left: Play, text, overview -->
 
-          <!-- Preview Deck Column 2 -->
+          <!-- PreviewDeck right: VU, pregain -->
           <WidgetGroup>
+            <ObjectName>PreviewDeckRightPart</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
+                <ObjectName>PreviewVuMeter</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <StatusLight>
-                    <TooltipId>preview_PeakIndicator</TooltipId>
-                    <PathStatusLight>style/clipping_previewdeck_over.png</PathStatusLight>
-                    <PathBack>style/clipping_previewdeck.png</PathBack>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-                    </Connection>
-                  </StatusLight>
-
-                  <VuMeter>
-                    <TooltipId>preview_VuMeter</TooltipId>
-                    <PathVu>style/volume_display_previewdeck_over.png</PathVu>
-                    <PathBack>style/volume_display_previewdeck.png</PathBack>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>3</PeakHoldSize>
-                    <PeakHoldTime>250</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>3</PeakFallStep>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
-                    </Connection>
-                  </VuMeter>
+                  <Template src="skin:vumeter_small.xml">
+                    <SetVariable name="GroupType">preview</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">knob_volume_previewdeck.svg</Handle>
-                <Slider>slider_volume_previewdeck.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skin:/sliders_<Variable name="slider_scheme"/>/knob_volume_previewdeck.svg</Handle>
+                <Slider>skin:/sliders_<Variable name="slider_scheme"/>/slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
-                  <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
                 </Connection>
               </SliderComposed>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- PreviewDeck right: VU, pregain -->
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- PreviewDeck -->
 
     </Children>
     <Connection>

@@ -24,34 +24,34 @@ class SyncControl : public EngineControl, public Syncable {
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     ~SyncControl() override;
 
-    const QString& getGroup() const { return m_sGroup; }
-    EngineChannel* getChannel() const { return m_pChannel; }
-    double getBpm() const;
+    const QString& getGroup() const override { return m_sGroup; }
+    EngineChannel* getChannel() const override { return m_pChannel; }
+    double getBpm() const override;
 
-    SyncMode getSyncMode() const;
-    void notifySyncModeChanged(SyncMode mode);
-    void notifyOnlyPlayingSyncable();
-    void requestSync();
-    bool isPlaying() const;
+    SyncMode getSyncMode() const override;
+    void notifySyncModeChanged(SyncMode mode) override;
+    void notifyOnlyPlayingSyncable() override;
+    void requestSync() override;
+    bool isPlaying() const override;
 
-    double getBeatDistance() const;
+    double getBeatDistance() const override;
     void setBeatDistance(double beatDistance);
-    double getBaseBpm() const;
+    double getBaseBpm() const override;
     void setLocalBpm(double local_bpm);
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    void setMasterBeatDistance(double beatDistance);
-    void setMasterBaseBpm(double);
+    void setMasterBeatDistance(double beatDistance) override;
+    void setMasterBaseBpm(double) override;
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
-    void setMasterBpm(double bpm);
-    void setMasterParams(double beatDistance, double baseBpm, double bpm);
+    void setMasterBpm(double bpm) override;
+    void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
 
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    void setInstantaneousBpm(double bpm);
+    void setInstantaneousBpm(double bpm) override;
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
@@ -91,7 +91,6 @@ class SyncControl : public EngineControl, public Syncable {
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
-    double calcRateRatio();
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -127,9 +126,7 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pBpm;
     ControlProxy* m_pLocalBpm;
     ControlProxy* m_pFileBpm;
-    ControlProxy* m_pRateSlider;
-    ControlProxy* m_pRateDirection;
-    ControlProxy* m_pRateRange;
+    ControlProxy* m_pRateRatio;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
     ControlProxy* m_pEjectButton;

@@ -94,7 +94,6 @@ WWidgetGroup {
       image: url(skin:/graphics/splitterVert_handle_pressed.svg);
     }
 
-
 /* ################################################################
 ####### Colors ##################################################
 ###############################################################*/
@@ -607,7 +606,7 @@ WLabel#TrackComment {
 }
 
 #DeckOverview {
-    background-color: #0f0f0f;
+  background-color: #0f0f0f;
   }
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
@@ -1135,7 +1134,7 @@ WBeatSpinBox,
     /* Note(ronso0):
     Individual padding/margin in AutoDJ feature */
     padding: -1px 3px -1px 3px;
-    margin: 0px 17px 3px 7px;
+    margin: 0px 17px 3px 3px;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
@@ -1664,10 +1663,13 @@ decks, samplers, mic, aux, fx */
       font-size: 13px/12px;
     }
 
-  WEffectSelector {
+  WEffectSelector,
+  #fadeModeCombobox {
     font-size: 13px/13px;
     /* On Linux this is applied to both effect name and effect list. */
     color: #ccc;
+  }
+  WEffectSelector {
     /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
     margin: 0px;
     /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
@@ -1677,16 +1679,26 @@ decks, samplers, mic, aux, fx */
     border: 0px solid transparent;
     border-radius: 3px;
     background-color: #1e1e1e;
-    }
+  }
+  #fadeModeCombobox {
+    background-color: #333;
+    border: 1px solid #333;
+    margin: 0px 0px 2px 1px;
+    padding: 1px 3px;
+    border-radius: 2px;
+    height: 20px;
+  }
   WEffectSelector:hover {
     background-color: #0f0f0f;
     }
-    WEffectSelector::drop-down {
+    WEffectSelector::drop-down,
+    #fadeModeCombobox::drop-down {
       border: 0px;
       margin: 0px -2px 0px 0px;
       padding: 0px;
     }
-    WEffectSelector::down-arrow {
+    WEffectSelector::down-arrow,
+    #fadeModeCombobox::down-arrow {
       /* When the skin is scaled, bg-color would be applied
       to the (not scaled) button image only:
       background-color: #101010;
@@ -1694,11 +1706,13 @@ decks, samplers, mic, aux, fx */
       height: 20px; */
       image: url(skin:/buttons/btn_fx_selector_list.svg) no-repeat center center;
       }
-      WEffectSelector::down-arrow:hover {
+      WEffectSelector::down-arrow:hover,
+      #fadeModeCombobox::down-arrow:hover {
         image: url(skin:/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
       }
 
-    WEffectSelector QAbstractItemView {
+    WEffectSelector QAbstractItemView,
+    #fadeModeCombobox QAbstractItemView {
       background-color: #202020;
       selection-background-color: #0f0f0f;
       /* On Linux, this is not applied but font color from WEffectSelector
@@ -1709,18 +1723,21 @@ decks, samplers, mic, aux, fx */
       margin: 0px;
     }
     /* items */
-    WEffectSelector::item:!selected {
+    WEffectSelector::item:!selected,
+    #fadeModeCombobox::item:!selected {
       background-color: #202020;
     }
     /* hovered items */
-    WEffectSelector::item:selected {
+    WEffectSelector::item:selected,
+    #fadeModeCombobox:item:selected {
       background-color: #0f0f0f;
     /* This moves the tick mark behind item text, text sits at left border now.
       Drawback: font size is not scaled with skin anymore. magic!
       border: 0; */
     }
     /* selected item */
-    WEffectSelector::checked {
+    WEffectSelector::checked,
+    #fadeModeCombobox::checked {
       /* not applied
       padding-left: 5px;
       font-weight: bold;
@@ -1728,7 +1745,8 @@ decks, samplers, mic, aux, fx */
       color: #0081B7;
     }
     /* tick mark frame */
-    WEffectSelector::indicator:checked {
+    WEffectSelector::indicator:checked,
+    #fadeModeCombobox::indicator:checked {
     /* This is sufficient to completely hide the tick mark,
       but this alone would show an empty, shadowed box instead of tick mark:  */
       background-color: transparent;
@@ -1745,7 +1763,8 @@ decks, samplers, mic, aux, fx */
       background: #0081B7; */
       image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center center;
     }
-    WEffectSelector::indicator:!checked {
+    WEffectSelector::indicator:!checked,
+    #fadeModeCombobox::indicator:!checked {
       image: url(skin:/buttons/btn_.svg) no-repeat center center;
       background-color: #202020;
     }
@@ -1801,14 +1820,20 @@ decks, samplers, mic, aux, fx */
     #FxParameterButtonName_active {
       color: #eeeeee;
     }
-
+#FxSuperLinkButtonBox,
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
   /* those buttons are only 5px tall, that's why they won't accept
   3px radius which is set for all WPushButtons */
   border-radius: 2px;
-  margin-right: 1px;
-}
+  }
+  #FxSuperLinkButtonBox {
+    background-color: #282828;
+    margin: 0px 2px 0px 1px;
+    qproperty-layoutSpacing: 1;
+  }
+  #FxSuperLinkInvertButton {
+  }
 
 #FxSuperLinkButton[value="0"],
 #FxSuperLinkInvertButton[displayValue="0"] {
@@ -2440,10 +2465,20 @@ WLibrary QPushButton {
   background-color: #333;
   background-position: center;
   }
+  #DlgAutoDJ > QPushButton {
+    padding: 1px 2px;
+    height: 20px;
+    min-width: 32px;
+  }
+  #pushButtonAutoDJ {
+    width: 42px;
+  }
+
   WLibrary QPushButton:!enabled {
     color: #888;
     }
-  WLibrary QPushButton:hover {
+  WLibrary QPushButton:hover,
+  #fadeModeCombobox:hover {
     border: 1px solid #888;
     }
   WLibrary QPushButton:unchecked {
@@ -2455,8 +2490,36 @@ WLibrary QPushButton {
     background-color: #ff7b00;
     }
   WLibrary QPushButton:checked:hover {
-    border: 1px solid #ff3f00;
+    border: 1px solid #fff;
     }
+  QPushButton#pushButtonRecording:unchecked {
+    color: #888;
+    background-color: #444;
+    border: 1px solid #444;
+  }
+  QPushButton#pushButtonAutoDJ:checked {
+    border: 1px solid #ff9900;
+  }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    background-color: #888;
+    border: 1px solid #bbb;
+  }
+  QPushButton#pushButtonRecording:unchecked:hover,
+  QPushButton#pushButtonRecording:checked {
+    color: #dddddd;
+    background-color: #a90000;
+    border: 1px solid #ca0000;
+  }
+  WLibrary QPushButton:focus,
+  #fadeModeCombobox:focus {
+    border: 1px solid #bbb;
+    outline: none;
+  }
+  WLibrary QPushButton:checked:focus
+  #pushButtonAutoDJ:checked:focus,
+  #pushButtonRepeatPlaylist:checked:focus {
+    border: 1px solid #fff;
+  }
   /* make library action buttons bold */
   QPushButton#pushButtonAutoDJ,
   QPushButton#pushButtonRecording,
@@ -2471,7 +2534,6 @@ WLibrary QPushButton {
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;
   }
-
   /* Increased margin for action buttons */
   QPushButton#pushButtonAutoDJ,
   QPushButton#pushButtonRecording {
@@ -2480,21 +2542,43 @@ WLibrary QPushButton {
   QPushButton#btnPurge {
     margin: 1px 1px 4px 5px;
   }
-  QPushButton#pushButtonRecording:unchecked {
-    color: #888;
-    background-color: #444;
-    border: 1px solid #444;
+
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ:!checked {
+  image: url(skin:/buttons/btn_autodj_enable_off.svg) no-repeat center center;
   }
-  QPushButton#pushButtonRecording:unchecked:hover,
-  QPushButton#pushButtonRecording:checked {
-    color: #dddddd;
-    background-color: #a90000;
-    border: 1px solid #ca0000;
+  QPushButton#pushButtonAutoDJ:checked {
+    image: url(skin:/buttons/btn_autodj_enable_on.svg) no-repeat center center;
   }
+QPushButton#pushButtonFadeNow:!enabled {
+  image: url(skin:/buttons/btn_autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    image: url(skin:/buttons/btn_autodj_fade.svg) no-repeat center center;
+  }
+QPushButton#pushButtonSkipNext:!enabled {
+  image: url(skin:/buttons/btn_autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    image: url(skin:/buttons/btn_autodj_skip.svg) no-repeat center center;
+  }
+QPushButton#pushButtonShuffle {
+  image: url(skin:/buttons/btn_autodj_shuffle.svg) no-repeat center center;
+}
+QPushButton#pushButtonAddRandom {
+  image: url(skin:/buttons/btn_autodj_addrandom.svg) no-repeat center center;
+}
+QPushButton#pushButtonRepeatPlaylist:!checked {
+  image: url(skin:/buttons/btn_autodj_repeat_playlist_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    image: url(skin:/buttons/btn_autodj_repeat_playlist_on.svg) no-repeat center center;
+  }
+/* AutoDJ button icons */
 
   /* align/center AutoDJ transition label vertically with spinbox */
   QLabel#labelTransitionAppendix {
-    margin: 0px 0px 5px 2px;
+    margin: 0px 0px 5px 0px;
   }
   /* Push labels away from buttons at the right */
   /* AutoDJ selection info */
@@ -2619,10 +2703,21 @@ WSearchLineEdit {
     color: #eeeeee;
     padding: 2px;
   }
-  /* Clear button next to text field */
+  /* Clear button */
   WSearchLineEdit QToolButton {
-    margin-bottom: 4px;
-  }
+    /* C++ code adds 3px in each dimension.
+       height of search box inside the border: 22px
+       make the button use the available height */
+    height: 19px;
+    width: 19px;
+    margin-bottom: 5px;
+    }
+    WSearchLineEdit QToolButton:!focus {
+      image: url(skin:/buttons/btn_lib_clear_search.svg);
+    }
+    WSearchLineEdit QToolButton:focus {
+      image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
+    }
 
 WLibrary QLabel,
 WLibrary QRadioButton {	/*

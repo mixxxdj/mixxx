@@ -25,10 +25,13 @@
         <file>images/library/ic_library_recordings.svg</file>
         <file>images/library/ic_library_rhythmbox.svg</file>
         <file>images/library/ic_library_traktor.svg</file>
+        <file>images/library/ic_library_rekordbox.svg</file>
         <file>images/mixxx_logo.svg</file> <!-- logo in 'About' dialog -->
         <file>images/mixxx_icon.svg</file> <!-- icon in 'About' dialog -->
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
         <file>images/skin_preview_placeholder.png</file>
+        <file>images/ic_checkmark.svg</file>
+        <file>images/ic_delete.svg</file>
         <file>images/preferences/ic_preferences_autodj.svg</file>
         <file>images/preferences/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/ic_preferences_broadcast.svg</file>
@@ -53,7 +56,9 @@
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
-        <file>shaders/rgbsignal.frag</file>              
+        <file>shaders/rgbsignal.frag</file>
+        <file>shaders/rgbsignal.frag</file>
+        <file>skins/default.qss</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>
@@ -66,6 +71,7 @@
         <file>translations/mixxx_da.qm</file>
         <file>translations/mixxx_de.qm</file>
         <file>translations/mixxx_el.qm</file>
+        <file>translations/mixxx_el-GR.qm</file>
         <file>translations/mixxx_en.qm</file>
         <file>translations/mixxx_en_GB.qm</file>
         <file>translations/mixxx_eo.qm</file>
@@ -81,6 +87,7 @@
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
         <file>translations/mixxx_he.qm</file>
+        <file>translations/mixxx_he-IL.qm</file>
         <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_hu.qm</file>
         <file>translations/mixxx_hy.qm</file>
@@ -102,6 +109,8 @@
         <file>translations/mixxx_my.qm</file>
         <file>translations/mixxx_nb.qm</file>
         <file>translations/mixxx_nl.qm</file>
+        <file>translations/mixxx_nl-BE.qm</file>
+        <file>translations/mixxx_nl-NL.qm</file>
         <file>translations/mixxx_nn.qm</file>
         <file>translations/mixxx_oc.qm</file>
         <file>translations/mixxx_pl.qm</file>
@@ -123,6 +132,7 @@
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_vi.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
+        <file>translations/mixxx_zh-HK.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
         <file>translations/mixxx_zh_TW.Big5.qm</file>
     </qresource>

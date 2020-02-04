@@ -58,8 +58,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     //QWidget:

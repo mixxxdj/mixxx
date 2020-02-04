@@ -58,7 +58,7 @@ class WSingletonContainer : public WWidgetGroup {
     // widget to the container.
     explicit WSingletonContainer(QWidget* pParent=nullptr);
 
-    virtual void setup(const QDomNode& node, const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   public slots:
     void showEvent(QShowEvent* event) override;

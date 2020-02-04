@@ -1,0 +1,368 @@
+# 
+# Translators:
+# Arnold Marko <arnold.marko@gmail.com>, 2019
+msgid ""
+msgstr ""
+"Project-Id-Version: Mixxx DJ Windows installer\n"
+"PO-Revision-Date: 2019-04-17 21:53+0000\n"
+"Last-Translator: Arnold Marko <arnold.marko@gmail.com>\n"
+"Language-Team: Slovenian (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/sl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sl\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
+
+#.  Programm informations
+msgctxt "ApplicationName"
+msgid "Mixxx"
+msgstr "Mixxx"
+
+msgctxt "ManufacturerName"
+msgid "Mixxx"
+msgstr "Mixxx"
+
+msgctxt "ManufacturerFullName"
+msgid "The Mixxx Development Team"
+msgstr "Mixxx razvojna skupina "
+
+msgctxt "ProductDescription"
+msgid "Open-source Digital DJ software"
+msgstr "Odprtokodni program za digitalno didžejanje"
+
+msgctxt "Comments"
+msgid "Installs Mixxx"
+msgstr "Namesti Mixxx"
+
+#.  Error messages
+#.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
+msgctxt "OS2Old"
+msgid "This product requires Windows 7 or above."
+msgstr "Ta izdelek potrebuje Windows 7 ali novejše."
+
+msgctxt "NewerInstalled"
+msgid "The same or a newer version of this product is already installed."
+msgstr "Ista ali novejša različica tega izdelka je že nameščena."
+
+msgctxt "x64VersionRequired"
+msgid ""
+"You need to install the 64-bit version of this product on 64-bit Windows."
+msgstr "Na 64-bitnih Windowsih je potrebno namestiti 64-bitno različico tega izdelka."
+
+msgctxt "x86VersionRequired"
+msgid ""
+"You need to install the 32-bit version of this product on 32-bit Windows."
+msgstr "Na 32-bitnih Windowsih je potrebno namestiti 32-bitno različico tega izdelka."
+
+msgctxt "x86VersionWarning"
+msgid ""
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Na 64-bitni operacijski sistem želite namestiti 32-bitno različico. Za boljši izkoristek priporočamo uporabo 64-bitne različice. 64-bitni namestiveni program lahko prenesete iz http://mixxx.org/download/"
+
+msgctxt "XPWarning"
+msgid ""
+"You are installing Mixxx on an outdated operating system. Some functions may"
+" not work well or at all. We recommend upgrading your operating system."
+msgstr "Mixxx želite namestiti na prestar operacijski sistem. Nekatere funkcije morda ne bodo dobro delovale ali sploh ne. Priporočamo nadgradnjo operacijskega sistema."
+
+msgctxt "bitWidthMismatch32"
+msgid ""
+"You are about to install the 32-bit version but a 64-bit one is already "
+"installed. This can lead to undesired behavior. Please un-install the "
+"existing Mixxx first, or download the 64-bit installation package to upgrade"
+" (unless you know exactly what you are doing.)"
+msgstr "Namestiti želite 32-bitno različico, a je že nameščena 64-bitna različica. To lahko ima neželjene posledice v delovanju programa. Prosimo, najprej odstranite obstoječi Mixxx ali prenesite 64-bitni namestitveni program (razen v primeru, da točno veste, kaj delate)."
+
+msgctxt "bitWidthMismatch64"
+msgid ""
+"You are about to install the 64-bit version but a 32-bit one is already "
+"installed. This can lead to undesired behavior. Please un-install the "
+"existing Mixxx first, or download the 32-bit installation package to upgrade"
+" (unless you know exactly what you are doing.)"
+msgstr "Namestiti želite 64-bitno različico, a je že nameščena 32-bitna različica. To lahko ima neželjene posledice v delovanju programa. Prosimo, najprej odstranite obstoječi Mixxx ali prenesite 32-bitni namestitveni program (razen v primeru, da točno veste, kaj delate)."
+
+msgctxt "OlderVersionFound"
+msgid ""
+"An older version of Mixxx has been detected. As we changed installer, we can"
+" not smoothly upgrade. Please uninstall older version before installing this"
+" one."
+msgstr "Nameščena je starejša različica Mixxx. Ker smo spremenili namestitveni program, preprosta nadgradnja ni več mogoča. Prosimo, odstranite starejšo različico, preden namestite to novejšo."
+
+msgctxt "VCredistNotFound"
+msgid ""
+"Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
+"this system. This is likely an installer bug that should be reported to "
+"Mixxx developers."
+msgstr "Namestitveni program na tem sistemu ni uspel najti  Microsoft Visual C++ 2015 Redistributable. Verjetno gre za hrošč v namestitvenem programu, ki bi ga bilo dobro prijaviti razvijalcem programa Mixxx."
+
+#.  Custom Warning Dialog
+msgctxt "WarningDlgTitle"
+msgid "{\\WixUI_Font_Title}Warning"
+msgstr "{\\WixUI_Font_Title}Opozorilo"
+
+#.  Custom exit dialog
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr "Po končani namestitvi zaženi Mixxx."
+
+#.  Features translations
+msgctxt "FeatureCompleteDescription"
+msgid "The complete package."
+msgstr "Celoten paket."
+
+msgctxt "FeatureMainProgramTitle"
+msgid "Core application"
+msgstr "Jedro aplikacije"
+
+msgctxt "FeatureMainProgramDescription"
+msgid "The core Mixxx application including controller presets."
+msgstr "Jedro aplikacije Mixxx, vključno z predlogami za kontrolerje."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr "PDB datoteke za razhroščevanje"
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is useful to debug "
+"Mixxx and provide readable backtraces to the development team."
+msgstr "Za uporabo z razhroščevalnikom, namestite Mixxx PDB datoteke. To je uporabno za razhroščevanju Mixxx in omogoča razvojni skupini razumljivo sledenje delovanju programa."
+
+msgctxt "FeatureDesktopShortcutTitle"
+msgid "Desktop Shortcut"
+msgstr "Bližnjica na namizju"
+
+msgctxt "FeatureDesktopShortcutDescription"
+msgid "Add a shortcut to Mixxx on your desktop"
+msgstr "Doda Mixxx bližnjico  na namizje."
+
+msgctxt "FeatureManualTitle"
+msgid "User Manual"
+msgstr "Uporabniški priročnik"
+
+msgctxt "FeatureManualDescription"
+msgid ""
+"The Mixxx user manual in PDF form, also available at "
+"http://mixxx.org/manual/"
+msgstr "Mixxx uporabniški priročnik v PDF obliki. Na voljo tudi na http://mixxx.org/manual/"
+
+msgctxt "FeatureTranslationsTitle"
+msgid "Translations"
+msgstr "Prevodi"
+
+msgctxt "FeatureTranslationsDescription"
+msgid ""
+"Resource files that allow Mixxx to display in alternate languages, other "
+"than US english"
+msgstr "Datoteke, ki omogočajo, da Mixxx prikazuje tudi druge jezike in ne le ameriško angleščino."
+
+#.  Bootstrapper
+msgctxt "Caption"
+msgid "[WixBundleName] Setup"
+msgstr "[WixBundleName] Namestitev"
+
+msgctxt "Title"
+msgid "[WixBundleName]"
+msgstr "[WixBundleName]"
+
+msgctxt "ConfirmCancelMessage"
+msgid "Are you sure you want to cancel?"
+msgstr "Ste prepričani, da želite prekiniti?"
+
+msgctxt "ExecuteUpgradeRelatedBundleMessage"
+msgid "Previous version"
+msgstr "Prejšnja različica"
+
+msgctxt "HelpHeader"
+msgid "Setup Help"
+msgstr "Pomoč za namestitev"
+
+msgctxt "HelpText"
+msgid ""
+"/install | /repair | /uninstall | /layout [directory] - installs, repairs, uninstalls or\n"
+"    creates a complete local copy of the bundle in directory.\n"
+"    Install is the default.\n"
+"\n"
+" /passive | /quiet - displays minimal user interface with no prompts or displays no user interface\n"
+"    and no prompts. By default user interface and all prompts are displayed.\n"
+"\n"
+" /norestart - suppress any attempts to restart. By default user interface will prompt before restart.\n"
+"\n"
+" /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
+msgstr "/install | /repair | /uninstall | /layout [directory] - namesti, popravi, odstrani ali\n  ustvari popolnoma lokalno kopijo paketa v direktoriju.\n    Install je privzeto\n\n /passive | /quiet - prikaže minimalni uporabniški vmesnik brez opozoril ali sploh ne prikaže vmesnika in opozoril.\nPrivzet je prikaz celotnega vmesnika in opozoril.\n\n /norestart - onemogoči vsak poskus ponovnega zagona. privzeto je, da vmesnik uporabnika opozori pred ponovnim zagonom\n\n /log log.txt - izpiše dnevnik na specifično lokacijio. Privzeta lokacija je %TEMP%."
+
+msgctxt "HelpCloseButton"
+msgid "&Close"
+msgstr "&Zapri"
+
+msgctxt "InstallHeader"
+msgid "Welcome"
+msgstr "Dobrodošli"
+
+msgctxt "InstallMessage"
+msgid ""
+"Setup will install Mixxx on your computer.\n"
+"It will first install required third party libraries, then Mixxx itself.\n"
+"Click Install to continue or Close to exit."
+msgstr "Namestitveni program bo na vaš računalnik namestil Mixxx.\nNajprej bodo nameščene potrebne knjižnice drugih razvijalcev, potem pa še sam Mixxx.\nKliknite na Namesti, če želite nadaljevati ali na Zapri za izhod iz namestitve."
+
+msgctxt "InstallVersion"
+msgid "Version [WixBundleVersion]"
+msgstr "Različica [WixBundleVersion]"
+
+msgctxt "InstallOptionsButton"
+msgid "&Options"
+msgstr "&Možnosti"
+
+msgctxt "InstallInstallButton"
+msgid "&Install"
+msgstr "&Namesti"
+
+msgctxt "InstallCloseButton"
+msgid "&Close"
+msgstr "&Zapri"
+
+msgctxt "OptionsHeader"
+msgid "Setup Options"
+msgstr "Možnosti namestitve"
+
+msgctxt "OptionsLocationLabel"
+msgid "Install location:"
+msgstr "Lokacija namestitve:"
+
+msgctxt "OptionsBrowseButton"
+msgid "&Browse"
+msgstr "&Brskaj"
+
+msgctxt "OptionsOkButton"
+msgid "&OK"
+msgstr "&V redu"
+
+msgctxt "OptionsCancelButton"
+msgid "&Cancel"
+msgstr "&Prekini"
+
+msgctxt "FilesInUseHeader"
+msgid "Files In Use"
+msgstr "Datoteke v rabi"
+
+msgctxt "FilesInUseLabel"
+msgid "The following applications are using files that need to be updated:"
+msgstr "Naslednje aplikacije uporabljajo datoteke, ki morajo biti nadgrajene: "
+
+msgctxt "FilesInUseCloseRadioButton"
+msgid "Close the &applications and attempt to restart them."
+msgstr "Zaprite &aplikacije in jih poskusite ponovno zagnati."
+
+msgctxt "FilesInUseDontCloseRadioButton"
+msgid "&Do not close applications. A reboot will be required."
+msgstr "&Ne zapirajte Aplikaciji. Potreben bo ponoven zagon."
+
+msgctxt "FilesInUseOkButton"
+msgid "&OK"
+msgstr "&V redu"
+
+msgctxt "FilesInUseCancelButton"
+msgid "&Cancel"
+msgstr "&Prekini"
+
+msgctxt "ProgressHeader"
+msgid "Setup Progress"
+msgstr "Potek nameščanja:"
+
+msgctxt "ProgressLabel"
+msgid "Processing:"
+msgstr "Procesiranje: "
+
+msgctxt "OverallProgressPackageText"
+msgid "Initializing..."
+msgstr "Inicializacija..."
+
+msgctxt "ProgressCancelButton"
+msgid "&Cancel"
+msgstr "&Prekini"
+
+msgctxt "ModifyHeader"
+msgid "Modify Setup"
+msgstr "Prilagodi namestitev"
+
+msgctxt "ModifyRepairButton"
+msgid "&Repair"
+msgstr "Pop&ravi"
+
+msgctxt "ModifyUninstallButton"
+msgid "&Uninstall"
+msgstr "&Odstrani"
+
+msgctxt "ModifyCloseButton"
+msgid "&Close"
+msgstr "&Zapri"
+
+msgctxt "SuccessHeader"
+msgid "Setup Successful"
+msgstr "Uspešna namestitev"
+
+msgctxt "SuccessInstallHeader"
+msgid "Mixxx installation has been successful"
+msgstr "Nameščanje programa Mixxx je bilo uspešno zaključeno"
+
+msgctxt "SuccessRepairHeader"
+msgid "Mixxx repair has been successful"
+msgstr "Popravljanje programa Mixxx je bilo uspešno zaključeno"
+
+msgctxt "SuccessUninstallHeader"
+msgid "Mixxx uninstall has been successful"
+msgstr "Odstranjanje programa Mixxx je bilo uspešno zaključeno"
+
+msgctxt "SuccessLaunchButton"
+msgid "&Launch"
+msgstr "&Zaženi"
+
+msgctxt "SuccessRestartText"
+msgid "You must restart your computer before you can use the software."
+msgstr "Pred uporabo progrma je potreben ponovni zagon računalnika."
+
+msgctxt "SuccessRestartButton"
+msgid "&Restart"
+msgstr "&Ponovni zagon"
+
+msgctxt "SuccessCloseButton"
+msgid "&Close"
+msgstr "&Zapri"
+
+msgctxt "FailureHeader"
+msgid "Setup Failed"
+msgstr "Neuspešna namestitev"
+
+msgctxt "FailureInstallHeader"
+msgid "Mixxx installation failed"
+msgstr "Namestitev programa Mixxx ni uspela."
+
+msgctxt "FailureRepairHeader"
+msgid "Mixxx repair failed"
+msgstr "Popravljanje programa Mixxx ni uspelo."
+
+msgctxt "FailureUninstallHeader"
+msgid "Mixxx uninstall failed"
+msgstr "Odstranitev programa Mixxx ni uspela."
+
+msgctxt "FailureHyperlinkLogText"
+msgid ""
+"One or more issues caused the setup to fail. Please fix the issues and then "
+"retry setup. For more information see the <a href=\"#\">log file</a>."
+msgstr "Pri nameščanju programa se je pojavila ena ali več težav. Prosimo, odpravite težavo in potem znova poskusite. Za več informacij glej <a href=\"#\">dnevniško datoteko</a>."
+
+msgctxt "FailureRestartText"
+msgid ""
+"You must restart your computer to complete the rollback of the software."
+msgstr "Za vrnitev na starejšo različico je potreben ponoven zagon računalnika."
+
+msgctxt "FailureRestartButton"
+msgid "&Restart"
+msgstr "&Ponovni zagon"
+
+msgctxt "FailureCloseButton"
+msgid "&Close"
+msgstr "&Zapri"

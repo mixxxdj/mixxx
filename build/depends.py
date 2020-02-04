@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
+
 from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
@@ -20,17 +22,6 @@ class PortAudio(Dependence):
 
     def sources(self, build):
         return ['src/soundio/sounddeviceportaudio.cpp']
-
-
-class OSXFilePathUrlBackport(Dependence):
-
-    def configure(self, build, conf):
-        return
-
-    def sources(self, build):
-        if build.platform_is_osx:
-            return ['src/util/filepathurl.mm']
-        return []
 
 
 class PortMIDI(Dependence):
@@ -208,15 +199,19 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        import sys
-        if sys.platform.startswith('linux') or sys.platform.find('bsd') >= 0:
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    if os.path.isdir(core):
-                        return core
+        pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
+        try:
+            output = subprocess.check_output(pkg_config_cmd)
+        except OSError:
+            # pkg-config is not installed
+            pass
+        except subprocess.CalledProcessError:
+            # pkg-config failed to find Qt5Core
+            pass
+        else:
+            core = output.decode('utf-8').rstrip()
+            if os.path.isdir(core):
+                return core
 
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
@@ -279,6 +274,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
@@ -443,18 +439,26 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++14 support
+        # Mixxx requires C++17 support
         if build.platform_is_windows:
             # MSVC
-            build.env.Append(CXXFLAGS='/std:c++14')
+            build.env.Append(CXXFLAGS='/std:c++17')
+            # Fix build of googletest 1.8.x
+            # https://developercommunity.visualstudio.com/content/problem/225156/google-test-does-not-work-with-stdc17.html
+            # https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+            build.env.Append(CXXFLAGS='/Zc:__cplusplus')
         else:
             # GCC/Clang
-            build.env.Append(CXXFLAGS='-std=c++14')
+            build.env.Append(CXXFLAGS='-std=c++17')
+            if build.platform_is_osx and build.compiler_is_clang:
+                # Aligned allocation is only supported since macOS 10.13,
+                # but not for the minimum supported version macOS 10.11
+                build.env.Append(CXXFLAGS='-fno-aligned-allocation')
 
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        build.env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
 
 class FidLib(Dependence):
     def sources(self, build):
@@ -485,6 +489,30 @@ class ReplayGain(Dependence):
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
+
+# For Rekordbox removable device binary database file parsing
+class Kaitai(Dependence):
+
+    def sources(self, build):
+        return ["lib/kaitai/kaitaistream.cpp"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
+        build.env.Append(CPPPATH="#lib/kaitai")
+
+# For determining MP3 timing offset cases in Rekordbox library feature
+class MP3GuessEnc(Dependence):
+
+    def sources(self, build):
+        return [
+            "lib/mp3guessenc-0.27.4/mp3guessenc.c",
+            "lib/mp3guessenc-0.27.4/tags.c",
+            "lib/mp3guessenc-0.27.4/decode.c",
+            "lib/mp3guessenc-0.27.4/bit_utils.c",
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/mp3guessenc-0.27.4/')
 
 
 class Ebur128Mit(Dependence):
@@ -688,6 +716,11 @@ class PortAudioRingBuffer(Dependence):
 
     def sources(self, build):
         return ['lib/portaudio/pa_ringbuffer.c']
+
+# https://github.com/rigtorp/SPSCQueue
+class RigtorpSPSCQueue(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/rigtorp/SPSCQueue/include')
 
 class Reverb(Dependence):
     def configure(self, build, conf):
@@ -958,6 +991,8 @@ class MixxxCore(Feature):
                    "src/widget/wcoverart.cpp",
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
+                   "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
@@ -981,6 +1016,8 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
+                   "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
                    "src/library/columncache.cpp",
@@ -1046,6 +1083,10 @@ class MixxxCore(Feature):
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
 
+                   "src/library/rekordbox/rekordboxfeature.cpp",
+                   "src/library/rekordbox/rekordbox_pdb.cpp",
+                   "src/library/rekordbox/rekordbox_anlz.cpp",
+
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
 
@@ -1082,6 +1123,8 @@ class MixxxCore(Feature):
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
 
+                   "src/library/trackloader.cpp",
+
                    "src/widget/wwaveformviewer.cpp",
 
                    "src/waveform/sharedglcontext.cpp",
@@ -1112,7 +1155,6 @@ class MixxxCore(Feature):
 
                    "src/waveform/renderers/waveformrenderersignalbase.cpp",
                    "src/waveform/renderers/waveformmark.cpp",
-                   "src/waveform/renderers/waveformmarkproperties.cpp",
                    "src/waveform/renderers/waveformmarkset.cpp",
                    "src/waveform/renderers/waveformmarkrange.cpp",
                    "src/waveform/renderers/glwaveformrenderersimplesignal.cpp",
@@ -1121,6 +1163,7 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/glslwaveformrenderersignal.cpp",
                    "src/waveform/renderers/glvsynctestrenderer.cpp",
 
+                   "src/waveform/waveformmarklabel.cpp",
                    "src/waveform/widgets/waveformwidgetabstract.cpp",
                    "src/waveform/widgets/emptywaveformwidget.cpp",
                    "src/waveform/widgets/softwarewaveformwidget.cpp",
@@ -1163,6 +1206,7 @@ class MixxxCore(Feature):
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
+                   "src/track/seratomarkers2.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
                    "src/track/trackfile.cpp",
@@ -1306,7 +1350,11 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+
+        # In Python 3.x, map() returns a "map object" (instead of a list),
+        # which is evaluated on-demand rather than at once. To invoke uic
+        # for all *.ui files at once, we need to cast it to a list here.
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
@@ -1543,7 +1591,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, OSXFilePathUrlBackport]
+                QueenMaryDsp, Kaitai, MP3GuessEnc, RigtorpSPSCQueue]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "util/workerthread.h"
+#include "rigtorp/SPSCQueue.h"
 
 #include "analyzer/analyzer.h"
 #include "analyzer/analyzerprogress.h"
@@ -11,9 +11,9 @@
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/memory.h"
-#include "util/mpscfifo.h"
 #include "util/performancetimer.h"
 #include "util/samplebuffer.h"
+#include "util/workerthread.h"
 
 enum AnalyzerModeFlags {
     None = 0x00,
@@ -107,7 +107,7 @@ class AnalyzerThread : public WorkerThread {
     // safely exchanging data between two threads.
     // NOTE(uklotzde, 2018-01-04): Ideally we would use std::atomic<TrackPointer>,
     // for this purpose, which will become available in C++20.
-    MpscFifo<TrackPointer, 1> m_nextTrack;
+    rigtorp::SPSCQueue<TrackPointer> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
@@ -125,8 +125,7 @@ class AnalyzerThread : public WorkerThread {
 
     enum class AnalysisResult {
         Pending,
-        Partial,
-        Complete,
+        Finished,
         Cancelled,
     };
     AnalysisResult analyzeAudioSource(

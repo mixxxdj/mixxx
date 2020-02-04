@@ -12,7 +12,7 @@
  * This works great except it marks the track as played. I don't see a Mixxx function to toggle the played state for tracks, so there's nothing I can do about that.
  * To see the sampler, click on the word "Sampler" above the main VU meters in the center of the Mixxx window.
  * 
- * EFX/fader knobs: Since the EFX function in Mixx is kinda useless (only a flanger effect that doesn't sound that different), the EFX knobs adjust the gain, 
+ * EFX/fader knobs: Since the EFX function in Mixxx is kinda useless (only a flanger effect that doesn't sound that different), the EFX knobs adjust the gain, 
  * the gain knobs to adjust the high fader and the treble knobs to adjust the mid fader. This way, you get high/mid/low faders.
  * 
  * EFX buttons & Master volume: The EFX buttons are mapped to send that deck to the headphones (a.k.a PFL function). The buttons light up to indicate PFL state.

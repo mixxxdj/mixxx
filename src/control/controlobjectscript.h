@@ -26,7 +26,7 @@ class ControlObjectScript : public ControlProxy {
 
     // Called from update();
     void emitValueChanged() override {
-        emit(trigger(get(), this));
+        emit trigger(get(), this);
     }
 
   signals:

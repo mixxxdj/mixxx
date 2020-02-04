@@ -71,13 +71,13 @@ def write_channelmixer_autogen(output, num_channels):
         if not inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=1)
         write('if (totalActive == 0) {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_0active");' %
+        write('//ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_0active");' %
               {'inplace': 'InPlace' if inplace else ''}, depth=2)
         if inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
-            write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_%(i)dactive");' %
+            write('//ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_%(i)dactive");' %
                   {'inplace': 'InPlace' if inplace else '', 'i': i}, depth=2)
             write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
             write('CSAMPLE_GAIN newGain[%(i)d];' % {'i': i}, depth=2)
@@ -116,7 +116,7 @@ def write_channelmixer_autogen(output, num_channels):
                 write('}', depth=2)
 
         write('} else {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_Over32active");' %
+        write('//ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_Over32active");' %
             {'inplace': 'InPlace' if inplace else ''}, depth=2)
         if inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)

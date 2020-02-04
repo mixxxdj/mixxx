@@ -91,7 +91,7 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
             this, SLOT(onConnectionStatusChanged(int)));
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
-    emit(profileAdded(profile));
+    emit profileAdded(profile);
     return true;
 }
 
@@ -160,7 +160,7 @@ void BroadcastSettings::saveAll() {
     for (const auto& kv : m_profiles) {
         saveProfile(kv);
     }
-    emit(profilesChanged());
+    emit profilesChanged();
 }
 
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
@@ -170,7 +170,7 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
     BroadcastProfilePtr profile = m_profiles.take(oldName);
     if (profile) {
         m_profiles.insert(newName, profile);
-        emit(profileRenamed(oldName, profile));
+        emit profileRenamed(oldName, profile);
 
         deleteFileForProfile(profile);
         saveProfile(profile);
@@ -205,7 +205,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
             const auto removedProfile = *profileIter;
             deleteFileForProfile(removedProfile);
             profileIter = m_profiles.erase(profileIter);
-            emit(profileRemoved(removedProfile));
+            emit profileRemoved(removedProfile);
         } else {
             ++profileIter;
         }

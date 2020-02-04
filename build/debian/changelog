@@ -1,3 +1,9 @@
+mixxx (2.2.2-0ubuntu1) bionic; urgency=medium
+
+  * Bugfix release
+
+ -- Uwe Klotz <uklotz@mixxx.org>  Thu, 10 Aug 2019 08:50:58 +0200
+
 mixxx (2.2.1-0ubuntu1) bionic; urgency=medium
 
   * Bugfix release 

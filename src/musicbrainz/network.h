@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef NETWORK_H
 #define NETWORK_H
 
@@ -19,28 +19,29 @@ class NetworkAccessManager : public QNetworkAccessManager {
 
   public:
     NetworkAccessManager(QObject* parent = 0);
-  
+
   protected:
     QNetworkReply* createRequest(Operation op, const QNetworkRequest& request,
                                  QIODevice* outgoingData);
 };
-  
-  
+
+
 class NetworkTimeouts : public QObject {
     Q_OBJECT
-  
+
   public:
     NetworkTimeouts(int timeout_msec, QObject* parent = 0);
-  
+
     void addReply(QNetworkReply* reply);
+    void removeReply(QNetworkReply* reply);
     void setTimeout(int msec) { m_timeout_msec = msec; }
-  
+
   protected:
     void timerEvent(QTimerEvent* e);
-  
+
   private slots:
-    void replyFinished();
-  
+    void replyFinishedOrDestroyed();
+
   private:
     int m_timeout_msec;
     QMap<QNetworkReply*, int> m_timers;

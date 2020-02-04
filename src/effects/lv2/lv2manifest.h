@@ -42,7 +42,6 @@ class LV2Manifest {
     float* m_maximum;
     float* m_default;
     Status m_status;
-    bool m_isValid;
 };
 
 #endif // LV2MANIFEST_H

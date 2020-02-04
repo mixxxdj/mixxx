@@ -67,7 +67,7 @@ public:
 protected:
     explicit CachingReaderChunk(
             mixxx::SampleBuffer::WritableSlice sampleBuffer);
-    virtual ~CachingReaderChunk();
+    virtual ~CachingReaderChunk() = default;
 
     void init(SINT index);
 
@@ -91,7 +91,7 @@ class CachingReaderChunkForOwner: public CachingReaderChunk {
 public:
     explicit CachingReaderChunkForOwner(
             mixxx::SampleBuffer::WritableSlice sampleBuffer);
-    ~CachingReaderChunkForOwner() override;
+    ~CachingReaderChunkForOwner() override = default;
 
     void init(SINT index);
     void free();
@@ -108,24 +108,30 @@ public:
 
     // The state is controlled by the cache as the owner of each chunk!
     void giveToWorker() {
-        DEBUG_ASSERT(READY == m_state);
+        // Must not be referenced in MRU/LRU list!
+        DEBUG_ASSERT(!m_pPrev);
+        DEBUG_ASSERT(!m_pNext);
+        DEBUG_ASSERT(m_state == READY);
         m_state = READ_PENDING;
     }
     void takeFromWorker() {
-        DEBUG_ASSERT(READ_PENDING == m_state);
+        // Must not be referenced in MRU/LRU list!
+        DEBUG_ASSERT(!m_pPrev);
+        DEBUG_ASSERT(!m_pNext);
+        DEBUG_ASSERT(m_state == READ_PENDING);
         m_state = READY;
     }
 
     // Inserts a chunk into the double-linked list before the
-    // given chunk. If the list is currently empty simply pass
-    // pBefore = nullptr. Please note that if pBefore points to
-    // the head of the current list this chunk becomes the new
-    // head of the list.
+    // given chunk and adjusts the head/tail pointers. The
+    // chunk is inserted at the tail of the list if
+    // pBefore == nullptr.
     void insertIntoListBefore(
+            CachingReaderChunkForOwner** ppHead,
+            CachingReaderChunkForOwner** ppTail,
             CachingReaderChunkForOwner* pBefore);
-    // Removes a chunk from the double-linked list and optionally
-    // adjusts head/tail pointers. Pass ppHead/ppTail = nullptr if
-    // you prefer to adjust those pointers manually.
+    // Removes a chunk from the double-linked list and adjusts
+    // the head/tail pointers.
     void removeFromList(
             CachingReaderChunkForOwner** ppHead,
             CachingReaderChunkForOwner** ppTail);

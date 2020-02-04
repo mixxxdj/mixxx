@@ -168,11 +168,15 @@ TEST_F(IndexRangeTest, equal) {
     EXPECT_FALSE(IndexRange::backward(-1, 3) != IndexRange::between(-1, -4));
     EXPECT_FALSE(IndexRange::between(-1, 3) == reverse(IndexRange::between(-1, 3)));
     EXPECT_TRUE(IndexRange::between(-1, 3) != reverse(IndexRange::between(-1, 3)));
+    EXPECT_FALSE(IndexRange::between(0, 0) == IndexRange::between(1, 1));
+    EXPECT_TRUE(IndexRange::between(0, 0) != IndexRange::between(1, 1));
 }
 
 TEST_F(IndexRangeTest, lessOrEqual) {
-    EXPECT_TRUE(IndexRange() <= IndexRange::between(-2, 2));
-    EXPECT_TRUE(IndexRange() <= IndexRange::between(2, -1));
+    EXPECT_FALSE(IndexRange::between(3, 3) <= IndexRange::between(-2, 2));
+    EXPECT_TRUE(IndexRange::between(0, 0) <= IndexRange::between(2, -1));
+    EXPECT_TRUE(IndexRange::between(2, 2) <= IndexRange::between(2, -1));
+    EXPECT_FALSE(IndexRange::between(-2, -2) <= IndexRange::between(2, -1));
     EXPECT_TRUE(IndexRange::between(-2, 1) <= IndexRange::between(-2, 2));
     EXPECT_TRUE(IndexRange::between(1, -2) <= IndexRange::between(2, -2));
     EXPECT_FALSE(IndexRange::between(-2, 1) <= IndexRange::between(-1, 2));
@@ -180,8 +184,10 @@ TEST_F(IndexRangeTest, lessOrEqual) {
     EXPECT_FALSE(IndexRange::between(-2, 1) <= IndexRange::between(0, 1));
     EXPECT_FALSE(IndexRange::between(-2, 1) <= IndexRange::between(1, 2));
     EXPECT_FALSE(IndexRange::between(-2, 1) <= IndexRange::between(1, 1));
-    EXPECT_TRUE(IndexRange::between(3, 3) <= IndexRange::between(-2, 1));
-    EXPECT_TRUE(IndexRange::between(3, 3) <= IndexRange::between(1, -2));
+    EXPECT_FALSE(IndexRange::between(3, 3) <= IndexRange::between(-2, 1));
+    EXPECT_FALSE(IndexRange::between(3, 3) <= IndexRange::between(1, -2));
+    EXPECT_TRUE(IndexRange::between(1, 1) <= IndexRange::between(-2, 1));
+    EXPECT_TRUE(IndexRange::between(1, 1) <= IndexRange::between(1, -2));
 }
 
 TEST_F(IndexRangeTest, greaterOrEqual) {
@@ -192,8 +198,10 @@ TEST_F(IndexRangeTest, greaterOrEqual) {
     EXPECT_FALSE(IndexRange::between(0, 1) >= IndexRange::between(-2, 1));
     EXPECT_FALSE(IndexRange::between(1, 2) >= IndexRange::between(-2, 1));
     EXPECT_FALSE(IndexRange::between(1, 1) >= IndexRange::between(-2, 1));
-    EXPECT_TRUE(IndexRange::between(-2, 1) >= IndexRange::between(3, 3));
-    EXPECT_TRUE(IndexRange::between(1, -2) >= IndexRange::between(3, 3));
+    EXPECT_FALSE(IndexRange::between(-2, 1) >= IndexRange::between(3, 3));
+    EXPECT_FALSE(IndexRange::between(1, -2) >= IndexRange::between(3, 3));
+    EXPECT_TRUE(IndexRange::between(-2, 1) >= IndexRange::between(1, 1));
+    EXPECT_TRUE(IndexRange::between(1, -2) >= IndexRange::between(1, 1));
 }
 
 TEST_F(IndexRangeTest, reverse) {
@@ -213,6 +221,14 @@ TEST_F(IndexRangeTest, intersect) {
     EXPECT_EQ(IndexRange::between(1, -1), intersect(IndexRange::between(1, -1), IndexRange::between(1, -1)));
     EXPECT_EQ(IndexRange::between(1, -1), intersect(IndexRange::between(2, -1), IndexRange::between(1, -2)));
     EXPECT_TRUE(intersect(IndexRange::between(-1, -2), IndexRange::between(2, 1)).empty());
+    EXPECT_EQ(IndexRange(), intersect(IndexRange::between(1, 2), IndexRange::between(3, 4)));
+    EXPECT_EQ(IndexRange(), intersect(IndexRange::between(-1, -2), IndexRange::between(-3, -4)));
+    EXPECT_EQ(IndexRange(), intersect(IndexRange(), IndexRange::between(1, 2)));
+    EXPECT_EQ(IndexRange(), intersect(IndexRange(), IndexRange::between(-1, -2)));
+    EXPECT_EQ(IndexRange::between(1, 1), intersect(IndexRange::between(1, 1), IndexRange::between(1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, -1), intersect(IndexRange::between(-1, -1), IndexRange::between(-1, -1)));
+    EXPECT_EQ(IndexRange::between(1, 1), intersect(IndexRange::between(0, 1), IndexRange::between(1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, -1), intersect(IndexRange::between(0, -1), IndexRange::between(-1, -1)));
 }
 
 TEST_F(IndexRangeTest, span) {
@@ -224,7 +240,14 @@ TEST_F(IndexRangeTest, span) {
     EXPECT_EQ(IndexRange::between(1, -1), span(IndexRange::between(1, -1), IndexRange::between(1, -1)));
     EXPECT_EQ(IndexRange::between(2, -2), span(IndexRange::between(1, -2), IndexRange::between(2, -1)));
     EXPECT_EQ(IndexRange::between(2, -2), span(IndexRange::between(-1, -2), IndexRange::between(2, 1)));
+    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(0, 0)));
+    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(0, 0), IndexRange::between(-1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(1, 1), IndexRange::between(-1, 1)));
+    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, 1), IndexRange::between(-1, -1)));
+    EXPECT_EQ(IndexRange::between(-1, 1), span(IndexRange::between(-1, -1), IndexRange::between(-1, 1)));
+    EXPECT_EQ(IndexRange::between(3, -1), span(IndexRange::between(1, -1), IndexRange::between(3, 3)));
+    EXPECT_EQ(IndexRange::between(1, -3), span(IndexRange::between(-3, -3), IndexRange::between(1, -1)));
 }
-
 
 } // namespace mixxx

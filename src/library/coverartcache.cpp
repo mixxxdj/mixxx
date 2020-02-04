@@ -1,11 +1,11 @@
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 
@@ -15,7 +15,7 @@ mixxx::Logger kLogger("CoverArtCache");
 
 QString pixmapCacheKey(quint16 hash, int width) {
     return QString("CoverArtCache_%1_%2")
-            .arg(QString::number(hash)).arg(width);
+            .arg(QString::number(hash), QString::number(width));
 }
 
 // The transformation mode when scaling images
@@ -26,9 +26,9 @@ inline QImage resizeImageWidth(const QImage& image, int width) {
     return image.scaledToWidth(width, kTransformationMode);
 }
 
-} // anonymous namespace
-
 const bool sDebug = false;
+
+} // anonymous namespace
 
 CoverArtCache::CoverArtCache() {
     // The initial QPixmapCache limit is 10MB.
@@ -58,8 +58,8 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     if (requestInfo.type == CoverInfo::NONE) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestInfo,
-                            QPixmap(), true));
+            emit coverFound(pRequestor, requestInfo,
+                            QPixmap(), true);
         }
         return QPixmap();
     }
@@ -80,8 +80,11 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
+        if (sDebug) {
+            kLogger.debug() << "CoverArtCache::requestCover cover found in cache" << requestInfo << signalWhenDone;
+        }
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestInfo, pixmap, true));
+            emit coverFound(pRequestor, requestInfo, pixmap, true);
         }
         return pixmap;
     }
@@ -93,13 +96,19 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
         return QPixmap();
     }
 
+    if (sDebug) {
+        kLogger.debug() << "CoverArtCache::requestCover starting future for" << requestInfo;
+    }
     m_runningRequests.insert(requestId);
     // The watcher will be deleted in coverLoaded()
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
             desiredWidth, signalWhenDone);
-    connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
+    connect(watcher,
+            &QFutureWatcher<FutureResult>::finished,
+            this,
+            &CoverArtCache::coverLoaded);
     watcher->setFuture(future);
     return QPixmap();
 }
@@ -180,7 +189,7 @@ void CoverArtCache::coverLoaded() {
     m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.hash));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.cover, pixmap, false));
+        emit coverFound(res.pRequestor, res.cover, pixmap, false);
     }
 }
 
@@ -193,15 +202,16 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 }
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
-    if (pTrack) {
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Guessing cover art for"
-                    << pTrack->getFileInfo();
-        }
-        CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
-        pTrack->setCoverInfo(cover);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
     }
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Guessing cover art for"
+                << pTrack->getFileInfo();
+    }
+    pTrack->setCoverInfo(
+            CoverInfoGuesser().guessCoverInfoForTrack(*pTrack));
 }
 
 void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
@@ -209,9 +219,9 @@ void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
         kLogger.debug()
                 << "Guessing cover art for"
                 << tracks.size()
-                << "tracks";
+                << "track(s)";
     }
-    foreach (TrackPointer pTrack, tracks) {
+    for (TrackPointer pTrack : qAsConst(tracks)) {
         guessCover(pTrack);
     }
 }

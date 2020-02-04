@@ -61,7 +61,6 @@ class EngineNetworkStream {
     // the workers are then performed on thread-safe QSharedPointers and not
     // onto the thread-unsafe QVector
     QVector<NetworkOutputStreamWorkerPtr> m_outputWorkers;
-    NetworkInputStreamWorker* m_pInputWorker;
 };
 
 #endif /* ENGINENETWORKSTREAM_H_ */

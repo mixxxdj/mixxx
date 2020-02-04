@@ -16,6 +16,7 @@ using namespace QKeychain;
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "util/compatibility.h"
 #include "util/xml.h"
 #include "util/memory.h"
 #include "util/logger.h"
@@ -416,7 +417,7 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
     m_profileName = QString(profileName);
 
-    emit(profileNameChanged(oldName, m_profileName));
+    emit profileNameChanged(oldName, m_profileName);
 }
 
 QString BroadcastProfile::getProfileName() const {
@@ -425,11 +426,11 @@ QString BroadcastProfile::getProfileName() const {
 
 void BroadcastProfile::setConnectionStatus(int newState) {
     m_connectionStatus = newState;
-    emit(connectionStatusChanged(connectionStatus()));
+    emit connectionStatusChanged(connectionStatus());
 }
 
 int BroadcastProfile::connectionStatus() {
-    return m_connectionStatus.load();
+    return atomicLoadRelaxed(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
@@ -532,7 +533,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
-    emit(statusChanged(m_enabled));
+    emit statusChanged(m_enabled);
 }
 
 QString BroadcastProfile::getHost() const {

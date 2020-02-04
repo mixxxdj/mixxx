@@ -95,6 +95,7 @@ Description:
               <Library>
                 <BgColor>#585858</BgColor>
                 <FgColor>#eece33</FgColor>
+                <ShowButtonText>false</ShowButtonText>
               </Library>
             </Children>
           </WidgetGroup><!-- /Library Table -->

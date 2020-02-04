@@ -51,6 +51,32 @@ class ReplayGainTest : public testing::Test {
     }
 };
 
+TEST_F(ReplayGainTest, hasRatio) {
+    mixxx::ReplayGain replayGain;
+    EXPECT_FALSE(replayGain.hasRatio());
+    replayGain.setRatio(mixxx::ReplayGain::kRatioUndefined);
+    EXPECT_FALSE(replayGain.hasRatio());
+    replayGain.setRatio(mixxx::ReplayGain::kRatioMin); // exclusive
+    EXPECT_FALSE(replayGain.hasRatio());
+    replayGain.setRatio(mixxx::ReplayGain::kRatio0dB);
+    EXPECT_TRUE(replayGain.hasRatio());
+    replayGain.resetRatio();
+    EXPECT_FALSE(replayGain.hasRatio());
+}
+
+TEST_F(ReplayGainTest, hasPeak) {
+    mixxx::ReplayGain replayGain;
+    EXPECT_FALSE(replayGain.hasPeak());
+    replayGain.setPeak(mixxx::ReplayGain::kPeakUndefined);
+    EXPECT_FALSE(replayGain.hasPeak());
+    replayGain.setPeak(mixxx::ReplayGain::kPeakMin);
+    EXPECT_TRUE(replayGain.hasPeak());
+    replayGain.setPeak(mixxx::ReplayGain::kPeakClip);
+    EXPECT_TRUE(replayGain.hasPeak());
+    replayGain.resetPeak();
+    EXPECT_FALSE(replayGain.hasPeak());
+}
+
 TEST_F(ReplayGainTest, RatioFromString0dB) {
     ratioFromString("0 dB", true, mixxx::ReplayGain::kRatio0dB);
     ratioFromString("0.0dB", true, mixxx::ReplayGain::kRatio0dB);

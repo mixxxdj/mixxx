@@ -1,12 +1,15 @@
-#include <QTableView>
 #include <QPainter>
 
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
+#include "library/trackmodel.h"
+#include "widget/wlibrarytableview.h"
+#include "util/compatibility.h"
 #include "util/math.h"
 
-CoverArtDelegate::CoverArtDelegate(QTableView* parent)
+
+CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
         : TableItemDelegate(parent),
           m_pTableView(parent),
           m_bOnlyCachedCover(false),
@@ -18,21 +21,22 @@ CoverArtDelegate::CoverArtDelegate(QTableView* parent)
           m_iTrackLocationColumn(-1),
           m_iIdColumn(-1) {
     // This assumes that the parent is wtracktableview
-    connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
-            this, SLOT(slotOnlyCachedCoverArt(bool)));
+    connect(parent,
+            &WLibraryTableView::onlyCachedCoverArt,
+            this,
+            &CoverArtDelegate::slotOnlyCachedCoverArt);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfoRelative&,
-                                          QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfoRelative&,
-                                          QPixmap, bool)));
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &CoverArtDelegate::slotCoverFound);
     }
 
-    TrackModel* pTrackModel = NULL;
-    QTableView* pTableView = NULL;
-    if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
-        pTableView = tableView;
+    TrackModel* pTrackModel = nullptr;
+    QTableView* pTableView = qobject_cast<QTableView*>(parent);
+    if (pTableView) {
         pTrackModel = dynamic_cast<TrackModel*>(pTableView->model());
     }
 
@@ -54,9 +58,6 @@ CoverArtDelegate::CoverArtDelegate(QTableView* parent)
     }
 }
 
-CoverArtDelegate::~CoverArtDelegate() {
-}
-
 void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
     m_bOnlyCachedCover = b;
 
@@ -64,7 +65,7 @@ void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
     // were cache misses since the last time.
     if (!m_bOnlyCachedCover) {
         foreach (int row, m_cacheMissRows) {
-            emit(coverReadyForCell(row, m_iCoverColumn));
+            emit coverReadyForCell(row, m_iCoverColumn);
         }
         m_cacheMissRows.clear();
     }
@@ -78,7 +79,7 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
         //          << pixmap.size();
         QLinkedList<int> rows = m_hashToRow.take(info.hash);
         foreach(int row, rows) {
-            emit(coverReadyForCell(row, m_iCoverColumn));
+            emit coverReadyForCell(row, m_iCoverColumn);
         }
     }
 }
@@ -108,17 +109,14 @@ void CoverArtDelegate::paintItem(QPainter *painter,
     info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
+    double scaleFactor = getDevicePixelRatioF(static_cast<QWidget*>(parent()));
     // We listen for updates via slotCoverFound above and signal to
     // BaseSqlTableModel when a row's cover is ready.
-    QPixmap pixmap = pCache->requestCover(info, this, option.rect.width(),
+    QPixmap pixmap = pCache->requestCover(info, this, option.rect.width() * scaleFactor,
                                           m_bOnlyCachedCover, true);
     if (!pixmap.isNull()) {
-        int width = math_min(pixmap.width(), option.rect.width());
-        int height = math_min(pixmap.height(), option.rect.height());
-        QRect target(option.rect.x(), option.rect.y(),
-                     width, height);
-        QRect source(0, 0, target.width(), target.height());
-        painter->drawPixmap(target, pixmap, source);
+        pixmap.setDevicePixelRatio(scaleFactor);
+        painter->drawPixmap(option.rect.topLeft(), pixmap);
     } else if (!m_bOnlyCachedCover) {
         // If we asked for a non-cache image and got a null pixmap, then our
         // request was queued.

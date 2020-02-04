@@ -162,9 +162,9 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
             m_sampleBuffer.clear();
             invalidateCurFrameIndex();
             if (FLAC__stream_decoder_seek_absolute(m_decoder, seekFrameIndex)) {
+                DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
                 // Success: Set the new position
                 m_curFrameIndex = seekFrameIndex;
-                DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
             } else {
                 // Failure
                 kLogger.warning()
@@ -198,8 +198,14 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
                 } else {
                     // We have already reached the beginning of the file
                     // and cannot move the seek position backwards any
-                    // further!
-                    break; // exit loop
+                    // further! As a last resort try to reset the decoder.
+                    kLogger.warning()
+                            << "Resetting decoder after seek errors";
+                    if (!FLAC__stream_decoder_reset(m_decoder)) {
+                        kLogger.critical()
+                                << "Failed to reset decoder after seek errors";
+                        break; // exit loop
+                    }
                 }
             }
         }
@@ -211,8 +217,12 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         if (!precedingFrames.empty() &&
                 (precedingFrames != readSampleFramesClamped(WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
-                    << "Failed to skip preceding frames"
+                    << "Resetting decoder after failure to skip preceding frames"
                     << precedingFrames;
+            if (!FLAC__stream_decoder_reset(m_decoder)) {
+                kLogger.critical()
+                        << "Failed to reset decoder after skip errors";
+            }
             // Abort
             return ReadableSampleFrames(
                     IndexRange::between(
@@ -545,6 +555,13 @@ QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
     supportedFileExtensions.append("flac");
     return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

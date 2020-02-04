@@ -116,4 +116,11 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                     writableSlice.length()));
 }
 
+void AudioSourceStereoProxy::adjustFrameIndexRange(
+        IndexRange frameIndexRange) {
+    // Ugly hack to keep both sources (inherited base + delegate) in sync!
+    AudioSource::adjustFrameIndexRange(frameIndexRange);
+    adjustFrameIndexRangeOn(*m_pAudioSource, frameIndexRange);
+}
+
 } // namespace mixxx

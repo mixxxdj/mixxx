@@ -6,6 +6,7 @@
 
 #include "control/controlproxy.h"
 #include "util/memory.h"
+#include "waveform/waveformmarklabel.h"
 
 class QDomNode;
 class SkinContext;
@@ -46,6 +47,8 @@ class WaveformMarkRange {
     DurationTextLocation durationTextLocation() const {
         return m_durationTextLocation;
     }
+
+    WaveformMarkLabel m_durationLabel;
 
   private:
     void generateImage(int weidth, int height);

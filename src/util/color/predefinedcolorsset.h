@@ -17,42 +17,42 @@ class PredefinedColorsSet final {
             QObject::tr("No Color"),
             0);
     const PredefinedColorPointer red = std::make_shared<PredefinedColor>(
-            QColor("#c50a08"),
+            QColor(0xC50A08),
             QLatin1String("Red"),
             QObject::tr("Red"),
             1);
     const PredefinedColorPointer green = std::make_shared<PredefinedColor>(
-            QColor("#32be44"),
+            QColor(0x32BE44),
             QLatin1String("Green"),
             QObject::tr("Green"),
             2);
     const PredefinedColorPointer blue = std::make_shared<PredefinedColor>(
-            QColor("#0044ff"),
+            QColor(0x0044FF),
             QLatin1String("Blue"),
             QObject::tr("Blue"),
             3);
     const PredefinedColorPointer yellow = std::make_shared<PredefinedColor>(
-            QColor("#f8d200"),
+            QColor(0xF8D200),
             QLatin1String("Yellow"),
             QObject::tr("Yellow"),
             4);
     const PredefinedColorPointer cyan = std::make_shared<PredefinedColor>(
-            QColor("#42d4f4"),
+            QColor(0x42D4F4),
             QLatin1String("Celeste"),
             QObject::tr("Celeste"),
             5);
     const PredefinedColorPointer magenta = std::make_shared<PredefinedColor>(
-            QColor("#af00cc"),
+            QColor(0xAF00CC),
             QLatin1String("Purple"),
             QObject::tr("Purple"),
             6);
     const PredefinedColorPointer pink = std::make_shared<PredefinedColor>(
-            QColor("#fca6d7"),
+            QColor(0xFCA6D7),
             QLatin1String("Pink"),
             QObject::tr("Pink"),
             7);
     const PredefinedColorPointer white = std::make_shared<PredefinedColor>(
-            QColor("#f2f2ff"),
+            QColor(0xF2F2FF),
             QLatin1String("White"),
             QObject::tr("White"),
             8);

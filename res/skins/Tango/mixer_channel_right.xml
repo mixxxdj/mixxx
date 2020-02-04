@@ -54,10 +54,11 @@ Variables:
         <SizePolicy>f,min</SizePolicy>
         <Children>
           <SliderComposed><!-- Volume slider -->
+            <Size>34f,103f</Size>
             <ObjectName>VolumeSlider</ObjectName>
             <TooltipId>channel_volume</TooltipId>
-            <Slider>knobs_sliders/volume_scale.svg</Slider>
-            <Handle>knobs_sliders/volume_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">knobs_sliders/volume_scale.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">knobs_sliders/volume_handle.svg</Handle>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>

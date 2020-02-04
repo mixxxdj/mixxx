@@ -9,7 +9,7 @@ Variables passed through from fx_unit:
   <WidgetGroup>
     <ObjectName>FxParameters<Variable name="Side"/></ObjectName>
     <Layout>horizontal</Layout>
-    <Size>min,47f</Size>
+    <Size>min,min</Size>
     <Children>
 
       <Template src="skin:fx_parameter_knob.xml">

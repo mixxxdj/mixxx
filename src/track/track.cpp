@@ -121,13 +121,13 @@ void Track::relocate(
     // the updated location from the database.
 }
 
-void Track::setTrackMetadata(
-        mixxx::TrackMetadata trackMetadata,
+void Track::importMetadata(
+        mixxx::TrackMetadata importedMetadata,
         QDateTime metadataSynchronized) {
     // Safe some values that are needed after move assignment and unlocking(see below)
-    const auto newBpm = trackMetadata.getTrackInfo().getBpm();
-    const auto newKey = trackMetadata.getTrackInfo().getKey();
-    const auto newReplayGain = trackMetadata.getTrackInfo().getReplayGain();
+    const auto newBpm = importedMetadata.getTrackInfo().getBpm();
+    const auto newKey = importedMetadata.getTrackInfo().getKey();
+    const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
 
     {
         // enter locking scope
@@ -137,18 +137,18 @@ void Track::setTrackMetadata(
                 &m_record.refMetadataSynchronized(),
                 !metadataSynchronized.isNull());
         bool modifiedReplayGain = false;
-        if (m_record.getMetadata() != trackMetadata) {
+        if (m_record.getMetadata() != importedMetadata) {
             modifiedReplayGain =
                     (m_record.getMetadata().getTrackInfo().getReplayGain() != newReplayGain);
-            m_record.setMetadata(std::move(trackMetadata));
-            // Don't use trackMetadata after move assignment!!
+            m_record.setMetadata(std::move(importedMetadata));
+            // Don't use importedMetadata after move assignment!!
             modified = true;
         }
         if (modified) {
             // explicitly unlock before emitting signals
             markDirtyAndUnlock(&lock);
             if (modifiedReplayGain) {
-                emit(ReplayGainUpdated(newReplayGain));
+                emit ReplayGainUpdated(newReplayGain);
             }
         }
         // implicitly unlocked when leaving scope
@@ -161,12 +161,19 @@ void Track::setTrackMetadata(
         setBpm(actualBpm.getValue());
     }
 
-    if (!newKey.isEmpty()) {
+    if (!newKey.isEmpty()
+            && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
         setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
     }
 }
 
-void Track::getTrackMetadata(
+void Track::mergeImportedMetadata(
+        const mixxx::TrackMetadata& importedMetadata) {
+    QMutexLocker lock(&m_qMutex);
+    m_record.mergeImportedMetadata(importedMetadata);
+}
+
+void Track::readTrackMetadata(
         mixxx::TrackMetadata* pTrackMetadata,
         bool* pMetadataSynchronized) const {
     DEBUG_ASSERT(pTrackMetadata);
@@ -177,7 +184,7 @@ void Track::getTrackMetadata(
     }
 }
 
-void Track::getTrackRecord(
+void Track::readTrackRecord(
         mixxx::TrackRecord* pTrackRecord,
         bool* pDirty) const {
     DEBUG_ASSERT(pTrackRecord);
@@ -202,7 +209,7 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(&m_record.refMetadata().refTrackInfo().refReplayGain(), replayGain)) {
         markDirtyAndUnlock(&lock);
-        emit(ReplayGainUpdated(replayGain));
+        emit ReplayGainUpdated(replayGain);
     }
 }
 
@@ -248,7 +255,7 @@ double Track::setBpm(double bpmValue) {
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
         //qDebug() << "Track signaling BPM update to" << f;
-        emit(bpmUpdated(bpmValue));
+        emit bpmUpdated(bpmValue);
     }
 
     return bpmValue;
@@ -286,8 +293,8 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
     markDirtyAndUnlock(pLock);
-    emit(bpmUpdated(bpmValue));
-    emit(beatsUpdated());
+    emit bpmUpdated(bpmValue);
+    emit beatsUpdated();
 }
 
 BeatsPointer Track::getBeats() const {
@@ -305,8 +312,8 @@ void Track::slotBeatsUpdated() {
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
     markDirtyAndUnlock(&lock);
-    emit(bpmUpdated(bpmValue));
-    emit(beatsUpdated());
+    emit bpmUpdated(bpmValue);
+    emit beatsUpdated();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {
@@ -631,7 +638,7 @@ ConstWaveformPointer Track::getWaveform() const {
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
     m_waveform = pWaveform;
-    emit(waveformUpdated());
+    emit waveformUpdated();
 }
 
 ConstWaveformPointer Track::getWaveformSummary() const {
@@ -640,7 +647,7 @@ ConstWaveformPointer Track::getWaveformSummary() const {
 
 void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     m_waveformSummary = pWaveform;
-    emit(waveformSummaryUpdated());
+    emit waveformSummaryUpdated();
 }
 
 void Track::setCuePoint(CuePosition cue) {
@@ -652,28 +659,26 @@ void Track::setCuePoint(CuePosition cue) {
     }
 
     // Store the cue point in a load cue
-    CuePointer pLoadCue = findCueByType(Cue::LOAD);
-    Cue::CueSource source = cue.getSource();
+    CuePointer pLoadCue = findCueByType(Cue::Type::MainCue);
     double position = cue.getPosition();
-    if (position != 0.0 && position != -1.0) {
+    if (position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
-            pLoadCue->setType(Cue::LOAD);
+            pLoadCue->setType(Cue::Type::MainCue);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
-        pLoadCue->setPosition(position);
-        pLoadCue->setSource(source);
+        pLoadCue->setStartPosition(position);
     } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
     }
 
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 CuePosition Track::getCuePoint() const {
@@ -683,7 +688,7 @@ CuePosition Track::getCuePoint() const {
 
 void Track::slotCueUpdated() {
     markDirty();
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 CuePointer Track::createAndAddCue() {
@@ -692,14 +697,14 @@ CuePointer Track::createAndAddCue() {
     connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
     return pCue;
 }
 
-CuePointer Track::findCueByType(Cue::CueType type) const {
+CuePointer Track::findCueByType(Cue::Type type) const {
     // This method cannot be used for hotcues because there can be
     // multiple hotcues and this function returns only a single CuePointer.
-    DEBUG_ASSERT(type != Cue::CUE);
+    DEBUG_ASSERT(type != Cue::Type::HotCue);
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
@@ -717,20 +722,20 @@ void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
-    if (pCue->getType() == Cue::LOAD) {
+    if (pCue->getType() == Cue::Type::MainCue) {
         m_record.setCuePoint(CuePosition());
     }
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
-void Track::removeCuesOfType(Cue::CueType type) {
+void Track::removeCuesOfType(Cue::Type type) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = false;
     QMutableListIterator<CuePointer> it(m_cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        // FIXME: Why does this only work for the CUE CueType?
+        // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
             disconnect(pCue.get(), 0, this, 0);
             it.remove();
@@ -742,7 +747,7 @@ void Track::removeCuesOfType(Cue::CueType type) {
     }
     if (dirty) {
         markDirtyAndUnlock(&lock);
-        emit(cuesUpdated());
+        emit cuesUpdated();
     }
 }
 
@@ -763,12 +768,12 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
-        if (pCue->getType() == Cue::LOAD) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition(), pCue->getSource()));
+        if (pCue->getType() == Cue::Type::MainCue) {
+            m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
     markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
+    emit cuesUpdated();
 }
 
 void Track::markDirty() {
@@ -795,14 +800,14 @@ void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
 
     if (dirtyChanged) {
         if (bDirty) {
-            emit(dirty(this));
+            emit dirty(this);
         } else {
-            emit(clean(this));
+            emit clean(this);
         }
     }
     if (bDirty) {
         // Emit a changed signal regardless if this attempted to set us dirty.
-        emit(changed(this));
+        emit changed(this);
     }
 }
 
@@ -840,8 +845,8 @@ void Track::afterKeysUpdated(QMutexLocker* pLock) {
     // New key might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_record.getGlobalKey();
     markDirtyAndUnlock(pLock);
-    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
-    emit(keysUpdated());
+    emit keyUpdated(KeyUtils::keyToNumericValue(newKey));
+    emit keysUpdated();
 }
 
 void Track::setKeys(const Keys& keys) {
@@ -905,7 +910,7 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(&m_record.refCoverInfo(), coverInfo)) {
         markDirtyAndUnlock(&lock);
-        emit(coverArtUpdated());
+        emit coverArtUpdated();
     }
 }
 
@@ -924,105 +929,102 @@ quint16 Track::getCoverHash() const {
     return m_record.getCoverInfo().hash;
 }
 
-Track::ExportMetadataResult Track::exportMetadata(
+ExportTrackMetadataResult Track::exportMetadata(
         mixxx::MetadataSourcePointer pMetadataSource) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
                 << getLocation();
-        return ExportMetadataResult::Failed;
+        return ExportTrackMetadataResult::Failed;
     }
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
-    // Discard the values of all currently unsupported fields that are
-    // not stored in the library, yet. Those fields are already imported
-    // from file tags, but the database schema needs to be extended for
-    // storing them. Currently those fields will be empty/null when read
-    // from the database and must be ignored until the schema has been
-    // updated.
-    m_record.refMetadata().resetUnsupportedValues();
+    // TODO(XXX): m_record.getMetadataSynchronized() currently is a
+    // boolean flag, but it should become a time stamp in the future.
+    // We could take this time stamp and the file's last modification
+    // time stamp into account and might decide to skip importing
+    // the metadata again.
+    if (!m_bMarkedForMetadataExport && !m_record.getMetadataSynchronized()) {
+        // If the metadata has never been imported from file tags it
+        // must be exported explicitly once. This ensures that we don't
+        // overwrite existing file tags with completely different
+        // information.
+        kLogger.info()
+                << "Skip exporting of unsynchronized track metadata:"
+                << getLocation();
+        // abort
+        return ExportTrackMetadataResult::Skipped;
+    }
     // Normalize metadata before exporting to adjust the precision of
     // floating values, ... Otherwise the following comparisons may
     // repeatedly indicate that values have changed only due to
     // rounding errors.
     m_record.refMetadata().normalizeBeforeExport();
-    if (!m_bMarkedForMetadataExport) {
-        // Perform some consistency checks if metadata is exported
-        // implicitly after a track has been modified and NOT explicitly
-        // requested by a user as indicated by this flag.
-        if (!m_record.getMetadataSynchronized()) {
-            // If the metadata has never been imported from file tags it
-            // must be exported explicitly once. This ensures that we don't
-            // overwrite existing file tags with completely different
-            // information.
-            kLogger.info()
-                    << "Skip exporting of unsynchronized track metadata:"
-                    << getLocation();
-            return ExportMetadataResult::Skipped;
-        }
-        // Check if the metadata has actually been modified. Otherwise
-        // we don't need to write it back. Exporting unmodified metadata
-        // would needlessly update the file's time stamp and should be
-        // avoided. Since we don't know in which state the file's metadata
-        // is we import it again into a temporary variable.
-        // TODO(XXX): m_record.getMetadataSynchronized() currently is a
-        // boolean flag, but it should become a time stamp in the future.
-        // We could take this time stamp and the file's last modification
-        // time stamp into // account and might decide to skip importing
-        // the metadata again.
-        mixxx::TrackMetadata importedFromFile;
-        if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
-                mixxx::MetadataSource::ImportResult::Succeeded)) {
-            // Discard the values of all currently unsupported fields that are
-            // not stored in the library, yet. We have done the same with the track's
-            // current metadata to make the tags comparable (see above).
-            importedFromFile.resetUnsupportedValues();
-            // Account for floating-point rounding errors before exporting
-            // the BPM value. The imported value must be compared to the
-            // pre-normalized value for valid results.
-            // NOTE(2019-02-19, uklotzde): The pre-normalization cannot prevent
-            // repeated export of metadata for files with ID3 tags that are only
-            // able to store the BPM value with integer precision! In case of a
-            // fractional value the ID3 metadata is always detected as modified
-            // and will be exported regardless if it has actually been modified
-            // or not.
-            auto currentBpm = m_record.getMetadata().getTrackInfo().getBpm();
-            currentBpm.normalizeBeforeExport();
-            m_record.refMetadata().refTrackInfo().setBpm(currentBpm);
-            // Finally the track's current metadata and the imported/adjusted metadata
-            // can be compared for differences to decide whether the tags in the file
-            // would change if we perform the write operation. We are using a special
-            // comparison function that excludes all read-only audio properties which
-            // are stored in file tags, but may not be accurate. They can't be written
-            // anyway, so we must not take them into account here.
-            if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
-                // The file tags are in-sync with the track's metadata and don't need
-                // to be updated.
-                if (kLogger.debugEnabled()) {
-                    kLogger.debug()
-                                << "Skip exporting of unmodified track metadata into file:"
-                                << getLocation();
-                }
-                return ExportMetadataResult::Skipped;
+    // Check if the metadata has actually been modified. Otherwise
+    // we don't need to write it back. Exporting unmodified metadata
+    // would needlessly update the file's time stamp and should be
+    // avoided. Since we don't know in which state the file's metadata
+    // is we import it again into a temporary variable.
+    mixxx::TrackMetadata importedFromFile;
+    if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
+            mixxx::MetadataSource::ImportResult::Succeeded)) {
+        // Prevent overwriting any file tags that are not yet stored in the
+        // library database!
+        m_record.mergeImportedMetadata(importedFromFile);
+        // Finally the track's current metadata and the imported/adjusted metadata
+        // can be compared for differences to decide whether the tags in the file
+        // would change if we perform the write operation. This function will also
+        // copy all extra properties that are not (yet) stored in the library before
+        // checking for differences! If an export has been requested explicitly then
+        // we will continue even if no differences are detected.
+        // NOTE(uklotzde, 2020-01-05): Detection of modified bpm values is restricted
+        // to integer precision to avoid re-exporting of unmodified ID3 tags in case
+        // of fractional bpm values. As a consequence small changes in bpm values
+        // cannot be detected and file tags with fractional values might not be
+        // updated as expected! In these edge cases users need to explicitly
+        // trigger the re-export of file tags or they could modify other metadata
+        // properties.
+        if (!m_bMarkedForMetadataExport &&
+                !m_record.getMetadata().anyFileTagsModified(
+                        importedFromFile,
+                        mixxx::Bpm::Comparison::Integer))  {
+            // The file tags are in-sync with the track's metadata and don't need
+            // to be updated.
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                            << "Skip exporting of unmodified track metadata into file:"
+                            << getLocation();
             }
-        } else {
-            // Something must be wrong with the file or it doesn't
-            // contain any file tags. We don't want to risk a failure
-            // during export and abort the operation for safety here.
-            // The user may decide to explicitly export the metadata.
-            kLogger.warning()
-                    << "Skip exporting of track metadata after import failed."
-                    << "Export of metadata must be triggered explicitly for this file:"
-                    << getLocation();
-            return ExportMetadataResult::Skipped;
+            // abort
+            return ExportTrackMetadataResult::Skipped;
         }
-        // ...by continuing the file tags will be updated
+    } else {
+        // The file doesn't contain any tags yet or it might be missing, unreadable,
+        // or corrupt.
+        if (m_bMarkedForMetadataExport) {
+            kLogger.info()
+                    << "Adding or overwriting tags after failure to import tags from file:"
+                    << getLocation();
+            // ...and continue
+        } else {
+            kLogger.warning()
+                    << "Skip exporting of track metadata after failure to import tags from file:"
+                    << getLocation();
+            // abort
+            return ExportTrackMetadataResult::Skipped;
+        }
     }
     // The track's metadata will be exported instantly. The export should
     // only be tried once so we reset the marker flag.
     m_bMarkedForMetadataExport = false;
+    kLogger.debug()
+            << "Old metadata (imported)"
+            << importedFromFile;
+    kLogger.debug()
+            << "New metadata (modified)"
+            << m_record.getMetadata();
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
     if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
@@ -1040,11 +1042,11 @@ Track::ExportMetadataResult Track::exportMetadata(
                     << "Exported track metadata:"
                     << getLocation();
         }
-        return ExportMetadataResult::Succeeded;
+        return ExportTrackMetadataResult::Succeeded;
     } else {
         kLogger.warning()
                 << "Failed to export track metadata:"
                 << getLocation();
-        return ExportMetadataResult::Failed;
+        return ExportTrackMetadataResult::Failed;
     }
 }

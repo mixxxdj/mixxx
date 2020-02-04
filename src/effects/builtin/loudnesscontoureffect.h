@@ -47,7 +47,7 @@ class LoudnessContourEffect
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+                        const GroupFeatureState& groupFeatureState) override;
 
   private:
     LoudnessContourEffect(const LoudnessContourEffect&) = delete;

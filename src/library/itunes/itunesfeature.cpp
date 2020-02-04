@@ -15,8 +15,11 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/queryutil.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "util/lcs.h"
 #include "util/sandbox.h"
+#include "widget/wlibrarysidebar.h"
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
@@ -58,9 +61,8 @@ QString localhost_token() {
 
 } // anonymous namespace
 
-ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
+ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";
@@ -83,15 +85,15 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "rating";
 
     m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+            new BaseTrackCache(m_pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
                                columns, false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes",
         "itunes_library",
         m_trackSource);
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
@@ -99,13 +101,16 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(), "ITUNES_SCANNER");
+    m_database = QSqlDatabase::cloneDatabase(m_pLibrary->trackCollections()->internalCollection()->database(), "ITUNES_SCANNER");
 
     // Open the database connection in this thread.
     if (!m_database.open()) {
         qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher,
+            &QFutureWatcher<TreeItem*>::finished,
+            this,
+            &ITunesFeature::onTrackCollectionLoaded);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -118,7 +123,7 @@ ITunesFeature::~ITunesFeature() {
 
 BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
@@ -143,9 +148,16 @@ QIcon ITunesFeature::getIcon() {
     return m_icon;
 }
 
+void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClick()
+    m_pSidebarWidget = pSidebarWidget;
+    // send it to BaseExternalLibraryFeature for onRightClickChild()
+    BaseExternalLibraryFeature::bindSidebarWidget(pSidebarWidget);
+}
+
 void ITunesFeature::activate() {
     activate(false);
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 void ITunesFeature::activate(bool forceReload) {
@@ -159,7 +171,7 @@ void ITunesFeature::activate(bool forceReload) {
         clearTable("itunes_playlists");
         transaction.commit();
 
-        emit(showTrackModel(m_pITunesTrackModel));
+        emit showTrackModel(m_pITunesTrackModel);
 
         SettingsDAO settings(m_pTrackCollection->database());
         QString dbSetting(settings.getValue(ITDB_PATH_KEY));
@@ -196,25 +208,16 @@ void ITunesFeature::activate(bool forceReload) {
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
-        // Usually the maximum number of threads
-        // is > 2 depending on the CPU cores
-        // Unfortunately, within VirtualBox
-        // the maximum number of allowed threads
-        // is 1 at all times We'll need to increase
-        // the number to > 1, otherwise importing the music collection
-        // takes place when the GUI threads terminates, i.e., on
-        // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit(featureIsLoading(this, true));
+        emit featureIsLoading(this, true);
     } else {
-        emit(showTrackModel(m_pITunesTrackModel));
+        emit showTrackModel(m_pITunesTrackModel);
     }
-    emit(enableCoverArtDisplay(false));
+    emit enableCoverArtDisplay(false);
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
@@ -222,8 +225,8 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pITunesPlaylistModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(m_pITunesPlaylistModel);
+    emit enableCoverArtDisplay(false);
 }
 
 TreeItemModel* ITunesFeature::getChildModel() {
@@ -232,7 +235,7 @@ TreeItemModel* ITunesFeature::getChildModel() {
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    QMenu menu;
+    QMenu menu(m_pSidebarWidget);
     QAction useDefault(tr("Use Default Library"), &menu);
     QAction chooseNew(tr("Choose Library..."), &menu);
     menu.addAction(&useDefault);
@@ -434,7 +437,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     if (xml.hasError()) {
         // do error handling
-        qDebug() << "Abbort processing iTunes music collection";
+        qDebug() << "Abort processing iTunes music collection";
         qDebug() << "line:" << xml.lineNumber() <<
                 "column:" << xml.columnNumber() <<
                 "error:" << xml.errorString();
@@ -735,7 +738,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                        if (query_insert_to_playlists.lastError().nativeErrorCode() == QString::number(SQLITE_CONSTRAINT)) {
                             // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
                             query_insert_to_playlists.bindValue(":name", playlistname );
@@ -813,7 +816,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pITunesTrackModel->select();
-        emit(showTrackModel(m_pITunesTrackModel));
+        emit showTrackModel(m_pITunesTrackModel);
         qDebug() << "Itunes library loaded: success";
     } else {
         QMessageBox::warning(
@@ -824,6 +827,6 @@ void ITunesFeature::onTrackCollectionLoaded() {
     }
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("iTunes");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
     activate();
 }

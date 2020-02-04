@@ -3,14 +3,15 @@
 
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "util/db/fwdsqlquery.h"
 
 #include <QtDebug>
 
 CrateTableModel::CrateTableModel(QObject* pParent,
-                                 TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(pParent, pTrackCollection,
+                                 TrackCollectionManager* pTrackCollectionManager)
+        : BaseSqlTableModel(pParent, pTrackCollectionManager,
                             "mixxx.db.model.crate") {
 }
 
@@ -52,7 +53,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
     setTable(tableName, LIBRARYTABLE_ID, columns,
-             m_pTrackCollection->getTrackSource());
+             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
@@ -70,13 +71,13 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
         return false;
     }
 
-    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
     // If the track is already contained in the library it will not insert
     // a duplicate. It also handles unremoving logic if the track has been
     // removed from the library recently and re-adds it.
-    const TrackPointer pTrack = trackDao.addSingleTrack(fileInfo, true);
+    const TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFileInfo(fileInfo));
     if (!pTrack) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "Failed to add track"
@@ -87,11 +88,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     QList<TrackId> trackIds;
     trackIds.append(pTrack->getId());
-    if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
-        // TODO(rryan) just add the track don't select
-        select();
-        return true;
-    } else {
+    if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(m_selectedCrate, trackIds)) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "Failed to add track"
                 << location
@@ -99,6 +96,10 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
                 << m_selectedCrate;
         return false;
     }
+
+    // TODO(rryan) just add the track don't select
+    select();
+    return true;
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
@@ -115,7 +116,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RESETPLAYED;
     if (m_selectedCrate.isValid()) {
         Crate crate;
-        if (m_pTrackCollection->crates().readCrateById(m_selectedCrate, &crate)) {
+        if (m_pTrackCollectionManager->internalCollection()->crates().readCrateById(m_selectedCrate, &crate)) {
             if (crate.isLocked()) {
                 caps |= TRACKMODELCAPS_LOCKED;
             }
@@ -146,24 +147,17 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<QFileInfo> fileInfoList;
-    foreach(QString fileLocation, locations) {
-        QFileInfo fileInfo(fileLocation);
-        if (fileInfo.exists()) {
-            fileInfoList.append(fileInfo);
-        }
-    }
-
-    QList<TrackId> trackIds(m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true));
-    if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
-        select();
-        return trackIds.size();
-    } else {
+    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+            locations);
+    if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(m_selectedCrate, trackIds)) {
         qWarning() << "CrateTableModel::addTracks could not add"
                  << locations.size()
                  << "tracks to crate" << m_selectedCrate;
         return 0;
     }
+
+    select();
+    return trackIds.size();
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
@@ -175,7 +169,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     Crate crate;
-    if (!m_pTrackCollection->crates().readCrateById(m_selectedCrate, &crate)) {
+    if (!m_pTrackCollectionManager->internalCollection()->crates().readCrateById(m_selectedCrate, &crate)) {
         qWarning() << "Failed to read create" << m_selectedCrate;
         return;
     }
@@ -189,9 +183,10 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     for (const QModelIndex& index: indices) {
         trackIds.append(getTrackId(index));
     }
-    if (m_pTrackCollection->removeCrateTracks(crate.getId(), trackIds)) {
-        select();
-    } else {
+    if (!m_pTrackCollectionManager->internalCollection()->removeCrateTracks(crate.getId(), trackIds)) {
         qWarning() << "Failed to remove tracks from crate" << crate;
+        return;
     }
+
+    select();
 }

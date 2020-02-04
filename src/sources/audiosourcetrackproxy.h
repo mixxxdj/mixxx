@@ -46,6 +46,13 @@ class AudioSourceTrackProxy : public AudioSource {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }
 
+    void adjustFrameIndexRange(
+            IndexRange frameIndexRange) override {
+        // Ugly hack to keep both sources (inherited base + delegate) in sync!
+        AudioSource::adjustFrameIndexRange(frameIndexRange);
+        adjustFrameIndexRangeOn(*m_pAudioSource, frameIndexRange);
+    }
+
   private:
     TrackPointer m_pTrack;
     // The audio source must be closed before releasing the track

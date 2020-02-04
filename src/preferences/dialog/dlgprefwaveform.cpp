@@ -2,6 +2,7 @@
 
 #include "mixxx.h"
 #include "library/library.h"
+#include "library/dao/analysisdao.h"
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"

@@ -1,7 +1,6 @@
 <Template>
   <WidgetGroup>
     <Size>105f,59f</Size>
-    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
     <Children>
         <!--
       **********************************************
@@ -10,7 +9,6 @@
       -->
       <PushButton>
         <TooltipId>show_effects</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -30,7 +28,6 @@
 
       <PushButton>
         <TooltipId>EffectUnit_deck_enabled</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -51,7 +48,6 @@
 
       <PushButton>
         <TooltipId>EffectUnit_headphones_enabled</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -72,7 +68,6 @@
 
       <PushButton>
         <TooltipId>EffectUnit_<Variable name="effectgroup"/>_enabled</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -95,12 +90,10 @@
         <Size>17f,5f</Size>
         <Pos>53,14</Pos>
         <BackPath>skin:/btn/btn_mix.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { border: 0px solid red; margin: 0; padding: 0; }</Style>
       </WidgetGroup>
 
       <Knob>
         <TooltipId>EffectUnit_mix</TooltipId>
-        <Style></Style>
         <NumberStates>63</NumberStates>
         <Path>knobs/knob_rotary_s%1.png</Path>
         <Pos>49,21</Pos>
@@ -111,7 +104,6 @@
 
       <PushButton>
         <TooltipId>EffectUnit_mix_mode</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -134,12 +126,10 @@
         <Size>29f,5f</Size>
         <Pos>76,14</Pos>
         <BackPath>skin:/btn/btn_super.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
       </WidgetGroup>
 
       <Knob>
         <TooltipId>EffectUnit_super1</TooltipId>
-        <Style></Style>
         <NumberStates>63</NumberStates>
         <Path>knobs/knob_rotary_s%1.png</Path>
         <Pos>77,21</Pos>

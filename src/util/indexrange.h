@@ -166,7 +166,7 @@ bool operator!=(IndexRange lhs, IndexRange rhs) {
 
 inline
 bool operator<=(IndexRange lhs, IndexRange rhs) {
-    return lhs.empty() || (intersect(lhs, rhs) == lhs);
+    return intersect(lhs, rhs) == lhs;
 }
 
 inline

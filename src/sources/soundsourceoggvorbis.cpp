@@ -254,4 +254,11 @@ QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
+SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
+        const QString& /*supportedFileExtension*/) const {
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::HIGHER;
+}
+
 } // namespace mixxx

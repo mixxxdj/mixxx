@@ -53,6 +53,6 @@ void Battery::update() {
     if (fabs(lastPercentage - m_dPercentage) > kPercentageEpsilon ||
         lastChargingState != m_chargingState ||
         lastMinutesLeft != m_iMinutesLeft) {
-        emit(stateChanged());
+        emit stateChanged();
     }
 }

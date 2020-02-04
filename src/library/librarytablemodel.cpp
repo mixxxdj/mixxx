@@ -1,7 +1,10 @@
-
 #include "library/librarytablemodel.h"
-#include "library/queryutil.h"
+
 #include "library/dao/trackschema.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/queryutil.h"
+
 #include "mixer/playermanager.h"
 
 namespace {
@@ -12,9 +15,9 @@ const QString kDefaultLibraryFilter =
 } // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
-                                     TrackCollection* pTrackCollection,
+                                     TrackCollectionManager* pTrackCollectionManager,
                                      const char* settingsNamespace)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
+        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
     setTableModel();
 }
 
@@ -32,7 +35,7 @@ void LibraryTableModel::setTableModel(int id) {
 
     const QString tableName = "library_view";
 
-    QSqlQuery query(m_pTrackCollection->database());
+    QSqlQuery query(m_database);
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
@@ -48,7 +51,7 @@ void LibraryTableModel::setTableModel(int id) {
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource());
+             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 
@@ -61,11 +64,8 @@ void LibraryTableModel::setTableModel(int id) {
 int LibraryTableModel::addTracks(const QModelIndex& index,
                                  const QList<QString>& locations) {
     Q_UNUSED(index);
-    QList<QFileInfo> fileInfoList;
-    foreach (QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
-    }
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+            locations);
     select();
     return trackIds.size();
 }

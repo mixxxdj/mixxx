@@ -68,9 +68,6 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     connect(m_pControlChainSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainSelector(double)));
 
-    connect(&m_channelStatusMapper, SIGNAL(mapped(const QString&)),
-            this, SLOT(slotChannelStatusChanged(const QString&)));
-
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
     m_pControlChainShowFocus = new ControlPushButton(
@@ -136,22 +133,22 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
 }
 
 void EffectChainSlot::slotChainNameChanged(const QString&) {
-    emit(updated());
+    emit updated();
 }
 
 void EffectChainSlot::slotChainEnabledChanged(bool bEnabled) {
     m_pControlChainEnabled->set(bEnabled);
-    emit(updated());
+    emit updated();
 }
 
 void EffectChainSlot::slotChainMixChanged(double mix) {
     m_pControlChainMix->set(mix);
-    emit(updated());
+    emit updated();
 }
 
 void EffectChainSlot::slotChainMixModeChanged(EffectChainMixMode mixMode) {
     m_pControlChainMixMode->set(static_cast<double>(mixMode));
-    emit(updated());
+    emit updated();
 }
 
 void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
@@ -159,7 +156,7 @@ void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
     ChannelInfo* pInfo = m_channelInfoByName.value(group, NULL);
     if (pInfo != NULL && pInfo->pEnabled != NULL) {
         pInfo->pEnabled->set(enabled);
-        emit(updated());
+        emit updated();
     }
 }
 
@@ -190,7 +187,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
                 m_pEffectChain->numEffects()));
 
         if (shouldEmit) {
-            emit(updated());
+            emit updated();
         }
     }
 }
@@ -230,8 +227,8 @@ void EffectChainSlot::loadEffectChainToSlot(EffectChainPointer pEffectChain) {
         }
     }
 
-    emit(effectChainLoaded(pEffectChain));
-    emit(updated());
+    emit effectChainLoaded(pEffectChain);
+    emit updated();
 }
 
 void EffectChainSlot::updateRoutingSwitches() {
@@ -281,7 +278,7 @@ void EffectChainSlot::clear() {
     m_pControlChainLoaded->forceSet(0.0);
     m_pControlChainMixMode->set(
             static_cast<double>(EffectChainMixMode::DrySlashWet));
-    emit(updated());
+    emit updated();
 }
 
 unsigned int EffectChainSlot::numSlots() const {
@@ -330,14 +327,14 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
     m_channelInfoByName[handle_group.name()] = pInfo;
-    m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
-    connect(pEnableControl, SIGNAL(valueChanged(double)),
-            &m_channelStatusMapper, SLOT(map()));
+    connect(pEnableControl, &ControlPushButton::valueChanged,
+            this, [this, handle_group] { slotChannelStatusChanged(handle_group.name()); });
+
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
     // const int is a safe read... don't bother locking
-    emit(effectLoaded(pEffect, m_iChainSlotNumber, slotNumber));
+    emit effectLoaded(pEffect, m_iChainSlotNumber, slotNumber);
 }
 
 void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
@@ -408,9 +405,9 @@ void EffectChainSlot::slotControlChainMixMode(double v) {
 void EffectChainSlot::slotControlChainSelector(double v) {
     //qDebug() << debugString() << "slotControlChainSelector" << v;
     if (v > 0) {
-        emit(nextChain(m_iChainSlotNumber, m_pEffectChain));
+        emit nextChain(m_iChainSlotNumber, m_pEffectChain);
     } else if (v < 0) {
-        emit(prevChain(m_iChainSlotNumber, m_pEffectChain));
+        emit prevChain(m_iChainSlotNumber, m_pEffectChain);
     }
 }
 

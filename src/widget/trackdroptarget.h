@@ -11,7 +11,7 @@ signals:
     }
 
   void emitTrackDropped(const QString& filename, const QString& group) {
-      emit(trackDropped(filename, group));
+      emit trackDropped(filename, group);
   }
 
   signals:

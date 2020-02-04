@@ -32,11 +32,6 @@ VinylControlManager::VinylControlManager(QObject* pParent,
         pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
     }
-
-    connect(&m_vinylControlEnabledMapper,
-            QOverload<int>::of(&QSignalMapper::mapped),
-            this,
-            &VinylControlManager::slotVinylControlEnabledChanged);
 }
 
 VinylControlManager::~VinylControlManager() {
@@ -91,8 +86,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         QString group = PlayerManager::groupForDeck(i);
         ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
         m_pVcEnabled.push_back(pEnabled);
-        pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, QOverload<int>::of(&QSignalMapper::mapped));
-        m_vinylControlEnabledMapper.setMapping(pEnabled, i);
+        pEnabled->connectValueChanged(this, [this, i] { slotVinylControlEnabledChanged(i); });
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
@@ -115,7 +109,7 @@ void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
     }
 
     ControlProxy* pEnabled = m_pVcEnabled.at(deck);
-    emit(vinylControlDeckEnabled(deck, pEnabled->toBool()));
+    emit vinylControlDeckEnabled(deck, pEnabled->toBool());
 }
 
 void VinylControlManager::requestReloadConfig() {
@@ -127,7 +121,7 @@ bool VinylControlManager::vinylInputConnected(int deck) {
         return false;
     }
     if (deck < 0 || deck >= m_pVcEnabled.length()) {
-        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
+        qDebug() << "WARNING, tried to get vinyl enabled status for non-existent deck " << deck;
         return false;
     }
     return m_pProcessor->deckConfigured(deck);

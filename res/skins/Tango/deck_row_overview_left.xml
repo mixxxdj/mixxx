@@ -74,7 +74,7 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Vinyl Controls toggles -->
 
-          <!-- Small Cover/Spinny when explicitely set 'small' -->
+          <!-- Small Cover/Spinny when explicitly set 'small' -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>

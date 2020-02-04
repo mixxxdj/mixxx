@@ -5,9 +5,11 @@
 #include <QString>
 #include <QtDebug>
 
+#include "skin/imgloader.h"
+
 #include "util/math.h"
 #include "util/memory.h"
-#include "skin/imgloader.h"
+#include "util/painterscope.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -68,7 +70,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         }
         m_pSvg.reset(pSvg.release());
 #ifdef __APPLE__
-        // Apple does Retina scaling behind the sceens, so we also pass a
+        // Apple does Retina scaling behind the scenes, so we also pass a
         // Paintable::FIXED image. On the other targets, it is better to
         // cache the pixmap. We do not do this for TILE and color schemas.
         // which can result in a correct but possibly blurry picture at a
@@ -244,12 +246,11 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             // entire SVG to the painter. We save/restore the QPainter in case
             // there is an existing clip region (I don't know of any Mixxx code
             // that uses one but we may in the future).
-            pPainter->save();
+            PainterScope PainterScope(pPainter);
             pPainter->setClipping(true);
             pPainter->setClipRect(targetRect);
             m_pSvg->setViewBox(sourceRect);
             m_pSvg->render(pPainter, targetRect);
-            pPainter->restore();
         }
     }
 }

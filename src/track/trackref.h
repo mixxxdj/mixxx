@@ -10,7 +10,7 @@
 //
 // This class is intended to be used as a simple, almost immutable
 // value object. Only the id can be set once.
-class TrackRef {
+class TrackRef final {
 public:
     // Converts a TrackFile and an optional TrackId into a TrackRef. This
     // involves obtaining the file-related track properties from QFileInfo
@@ -76,6 +76,7 @@ public:
     bool isValid() const {
         return hasId() || hasCanonicalLocation();
     }
+
 protected:
     // Initializing constructor
     TrackRef(

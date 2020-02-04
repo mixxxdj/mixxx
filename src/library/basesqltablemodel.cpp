@@ -1,17 +1,19 @@
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
+#include <algorithm>
 #include <QtDebug>
 #include <QUrl>
-#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
+#include "library/bpmdelegate.h"
 #include "library/coverartdelegate.h"
+#include "library/locationdelegate.h"
+#include "library/previewbuttondelegate.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
-#include "library/bpmdelegate.h"
-#include "library/previewbuttondelegate.h"
-#include "library/locationdelegate.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
@@ -21,33 +23,41 @@
 #include "util/duration.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "widget/wlibrarytableview.h"
 
-static const bool sDebug = false;
+namespace {
+
+const bool sDebug = false;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-static const int kIdColumn = 0;
-static const int kMaxSortColumns = 3;
+const int kIdColumn = 0;
+const int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
-static const char* COLUMNS_SORTING = "ColumnsSorting";
+const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
+
+} // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
-                                     TrackCollection* pTrackCollection,
+                                     TrackCollectionManager* pTrackCollectionManager,
                                      const char* settingsNamespace)
         : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->database(), settingsNamespace),
-          m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->database()),
+          TrackModel(pTrackCollectionManager->internalCollection()->database(), settingsNamespace),
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_database(pTrackCollectionManager->internalCollection()->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
-    DEBUG_ASSERT(m_pTrackCollection);
-    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
-            this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
-            this, SLOT(select()));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackLoaded,
+            this,
+            &BaseSqlTableModel::trackLoaded);
+    connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
+            &TrackDAO::forceModelUpdate,
+            this,
+            &BaseSqlTableModel::select);
     // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
@@ -173,7 +183,7 @@ bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 
@@ -368,7 +378,7 @@ void BaseSqlTableModel::select() {
     // end so we can easily slice off rows that are no longer present. Stable
     // sort is necessary because the tracks may be in pre-sorted order so we
     // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfos.begin(), rowInfos.end());
+    std::stable_sort(rowInfos.begin(), rowInfos.end());
 
     TrackId2Rows trackIdToRows;
     // We expect almost all rows to be valid and that only a few tracks
@@ -412,8 +422,10 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableColumns = tableColumns;
 
     if (m_trackSource) {
-        disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                   this, SLOT(tracksChanged(QSet<TrackId>)));
+        disconnect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged);
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
@@ -424,8 +436,11 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
-        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                this, SLOT(tracksChanged(QSet<TrackId>)), Qt::QueuedConnection);
+        connect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged,
+                Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
@@ -709,7 +724,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
                 if (value.canConvert(QMetaType::Int))
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                    value = QVariant::fromValue(StarRating(value.toInt()));
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
                 if (value.canConvert(QMetaType::Int))
                     value =  QString("(%1)").arg(value.toInt());
@@ -773,7 +788,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
                 if (value.canConvert(QMetaType::Int)) {
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                    value = QVariant::fromValue(StarRating(value.toInt()));
                 }
             }
             break;
@@ -834,7 +849,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+    TrackPointer pTrack = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
     if (!pTrack) {
         return false;
     }
@@ -910,7 +925,7 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollection->getTrackDAO().getTrack(getTrackId(index));
+    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -936,7 +951,7 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         m_previewDeckTrackId = pTrack ? pTrack->getId() : TrackId();
@@ -955,7 +970,7 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, numColumns);
-            emit(dataChanged(left, right));
+            emit dataChanged(left, right);
         }
     }
 }
@@ -1104,7 +1119,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
-    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    auto* pTableView = qobject_cast<WLibraryTableView*>(pParent);
     DEBUG_ASSERT(pTableView);
 
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
@@ -1117,16 +1132,18 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new LocationDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
-        connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
-                this, SLOT(refreshCell(int, int)));
+        connect(pCoverDelegate,
+                &CoverArtDelegate::coverReadyForCell,
+                this,
+                &BaseSqlTableModel::refreshCell);
         return pCoverDelegate;
     }
-    return NULL;
+    return nullptr;
 }
 
 void BaseSqlTableModel::refreshCell(int row, int column) {
     QModelIndex coverIndex = index(row, column);
-    emit(dataChanged(coverIndex, coverIndex));
+    emit dataChanged(coverIndex, coverIndex);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
@@ -1136,7 +1153,7 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_pTrackCollection->hideTracks(trackIds);
+    m_pTrackCollectionManager->hideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

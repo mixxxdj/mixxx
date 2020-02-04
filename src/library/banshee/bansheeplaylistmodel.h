@@ -14,7 +14,7 @@
 class BansheePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection);
+    BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection);
     ~BansheePlaylistModel() final;
 
     void setTableModel(int playlistId);

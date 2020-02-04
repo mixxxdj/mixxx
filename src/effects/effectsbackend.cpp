@@ -26,7 +26,7 @@ void EffectsBackend::registerEffect(const QString& id,
 
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
     m_effectIds.append(id);
-    emit(effectRegistered(pManifest));
+    emit effectRegistered(pManifest);
 }
 
 const QList<QString> EffectsBackend::getEffectIds() const {

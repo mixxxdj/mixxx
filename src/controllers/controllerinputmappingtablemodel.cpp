@@ -183,7 +183,6 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         }
 
         const MidiInputMapping& mapping = m_midiInputMappings.at(row);
-        QString value;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);
@@ -196,13 +195,13 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                 if (role == Qt::UserRole) {
                     return mapping.options.all;
                 }
-                return qVariantFromValue(mapping.options);
+                return QVariant::fromValue(mapping.options);
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group + "," + mapping.control.item;
+                    return QVariant(mapping.control.group + QStringLiteral(",") + mapping.control.item);
                 }
-                return qVariantFromValue(mapping.control);
+                return QVariant::fromValue(mapping.control);
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:
@@ -234,29 +233,29 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
                 mapping.key.status = static_cast<unsigned char>(
                     MidiUtils::opCodeFromStatus(mapping.key.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.key.status = static_cast<unsigned char>(
                     MidiUtils::channelFromStatus(mapping.key.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_CONTROL:
                 mapping.key.control = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OPTIONS:
                 mapping.options = value.value<MidiOptions>();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ACTION:
                 mapping.control = value.value<ConfigKey>();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_COMMENT:
                 mapping.description = value.toString();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             default:
                 return false;

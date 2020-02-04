@@ -90,6 +90,8 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WVuMeter::setPixmapBackground(

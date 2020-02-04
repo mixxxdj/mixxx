@@ -8,35 +8,56 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><Size>4f,-1min</Size></WidgetGroup>
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <!-- Kill button -->
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Size>22f,30min</Size>
+            <ObjectName>EQKillButtonBox4Decks</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>20f,34f</Size>
             <Children>
-              <WidgetGroup>
-                <ObjectName>KillButtonLeft</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>22f,30min</Size>
-                <Children>
-                  <Template src="skin:fx_button.xml">
-                    <SetVariable name="icon">eq_kill</SetVariable>
-                    <SetVariable name="Size">18f,18f</SetVariable>
-                    <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
-                  </Template>
-                </Children>
+              <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+              <EffectPushButton>
+                <ObjectName>EQKillButton</ObjectName>
+                <Size>18f,18f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text><Variable name="Text"/></Text>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
+                </State>
                 <Connection>
-                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-                  <BindProperty>visible</BindProperty>
+                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
                 </Connection>
-              </WidgetGroup>
+              </EffectPushButton>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EQKillButtonBox4Decks</ObjectName>
+            <Size>20f,34f</Size>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
           <!-- EQ knob -->
@@ -46,8 +67,8 @@
             <Children>
               <EffectParameterKnobComposed>
                 <Size>40f,34f</Size>
-                <Knob>skin:knob_indicator_red.svg</Knob>
-                <BackPath>skin:knob_bg.svg</BackPath>
+                <Knob>skin:/knobs_<Variable name="knob_scheme"/>/knob_indicator_regular_red.svg</Knob>
+                <BackPath>skin:/knobs_<Variable name="knob_scheme"/>/knob_bg_regular.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>1.598</KnobCenterYOffset>
@@ -57,6 +78,8 @@
               </EffectParameterKnobComposed>
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
         </Children>
         <Connection>

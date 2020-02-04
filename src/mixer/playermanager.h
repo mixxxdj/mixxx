@@ -12,6 +12,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
 class Auxiliary;
@@ -67,7 +68,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    // (currently unused, keept for consistency with other types)
+    // (currently unused, kept for consistency with other types)
     void addDeck();
 
     // Add number of decks according to configuration.
@@ -265,6 +266,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
+    parented_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 

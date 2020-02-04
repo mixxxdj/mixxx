@@ -8,26 +8,22 @@
 #ifndef ENCODERMP3SETTINGS_H
 #define ENCODERMP3SETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
-class EncoderMp3Settings : public EncoderSettings {
+class EncoderMp3Settings : public EncoderRecordingSettings {
   public:
     EncoderMp3Settings(UserSettingsPointer m_pConfig);
     virtual ~EncoderMp3Settings();
 
     // Indicates that it uses the quality slider section of the preferences
-    bool usesQualitySlider() const override;
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override;
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
-
+    bool usesQualitySlider() const override {
+        return true;
+    }
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
     QList<int> getVBRQualityValues() const;
-    // Sets the quality value by its value
-    void setQualityByValue(int qualityValue) override;
     // Sets the quality value by its index
     void setQualityByIndex(int qualityIndex) override;
     // Returns the current quality value
@@ -42,6 +38,11 @@ class EncoderMp3Settings : public EncoderSettings {
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
 
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_MP3;
+    }
+
     static const int DEFAULT_BITRATE_INDEX;
     static const QString ENCODING_MODE_GROUP;
   private:
@@ -50,19 +51,5 @@ class EncoderMp3Settings : public EncoderSettings {
     QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
 };
-
-
-inline bool EncoderMp3Settings::usesQualitySlider() const
-{
-    return true;
-}
-inline bool EncoderMp3Settings::usesCompressionSlider() const
-{
-    return false;
-}
-inline bool EncoderMp3Settings::usesOptionGroups() const
-{
-    return true;
-}
 
 #endif // ENCODERMP3SETTINGS_H

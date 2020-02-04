@@ -505,3 +505,24 @@ TEST_F(EngineBufferTest, RateTempTest) {
     EXPECT_EQ(0.98, m_pChannel1->getEngineBuffer()->m_speed_old);
     ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down_small"), 0);
 }
+
+
+TEST_F(EngineBufferTest, RatePermTest) {
+    RateControl::setPermanentRateChangeCoarseAmount(4);
+    RateControl::setPermanentRateChangeFineAmount(2);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_dir"), 1);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(1.0, m_pChannel1->getEngineBuffer()->m_speed_old);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up"), 1);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up"), 0);
+    EXPECT_EQ(1.04, m_pChannel1->getEngineBuffer()->m_speed_old);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up_small"), 1);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up_small"), 0);
+    EXPECT_EQ(1.06, m_pChannel1->getEngineBuffer()->m_speed_old);
+}

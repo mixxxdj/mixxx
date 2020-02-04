@@ -9,6 +9,7 @@
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "util/painterscope.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
   : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -51,7 +52,8 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0;
         const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0;
 
-        painter->save();
+        PainterScope PainterScope(painter);
+
         painter->setRenderHint(QPainter::Antialiasing);
         //painter->setRenderHint(QPainter::HighQualityAntialiasing);
         //painter->setBackgroundMode(Qt::TransparentMode);
@@ -81,7 +83,5 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
             polygon.translate(-(polyLength + 1), 0);
             index -= (polyLength + 1) * samplesPerPixel;
         }
-
-        painter->restore();
     }
 }

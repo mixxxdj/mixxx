@@ -38,8 +38,8 @@ class ControllerManager : public QObject {
     }
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
-    void setUpDevices() { emit(requestSetUpDevices()); };
-    void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
+    void setUpDevices() { emit requestSetUpDevices(); };
+    void savePresets(bool onlyActive=false) { emit requestSave(onlyActive); };
 
     static QList<QString> getPresetPaths(UserSettingsPointer pConfig);
 

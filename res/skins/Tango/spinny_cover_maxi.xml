@@ -74,7 +74,7 @@ Variables:
                 <TooltipId>coverart</TooltipId>
                 <Size>111f,111f</Size>
                 <Group><Variable name="group"/></Group>
-                <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
+                <DefaultCover scalemode="STRETCH_ASPECT">skin:/graphics/cover_default.svg</DefaultCover>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>

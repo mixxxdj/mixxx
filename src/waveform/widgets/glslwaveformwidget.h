@@ -14,7 +14,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
                        bool rgbRenderer);
     ~GLSLWaveformWidget() override;
 
-    void resize(int width, int height);
+    void resize(int width, int height) override;
 
   protected:
     void castToQWidget() override;

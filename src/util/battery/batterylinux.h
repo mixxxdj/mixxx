@@ -5,11 +5,14 @@
 
 class BatteryLinux : public Battery {
   public:
-    BatteryLinux(QObject* pParent=nullptr);
-    virtual ~BatteryLinux();
+    explicit BatteryLinux(QObject* pParent=nullptr);
+    ~BatteryLinux() override;
 
   protected:
     void read() override;
+
+  private:
+    void* m_client;
 };
 
 #endif /* UTIL_BATTERY_BATTERYLINUX_H */

@@ -5,6 +5,7 @@
 #include "library/queryutil.h"
 #include "library/starrating.h"
 #include "library/previewbuttondelegate.h"
+#include "library/trackcollectionmanager.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "mixer/playermanager.h"
@@ -32,11 +33,13 @@
 #define CLM_PREVIEW "preview"
 
 namespace {
+
 QAtomicInt sTableNumber;
+
 }
 
-BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
-        : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
+BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection)
+        : BaseSqlTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.banshee_playlist"),
           m_pConnection(pConnection),
           m_playlistId(-1) {
     m_tempTableName = BANSHEE_TABLE + QString::number(sTableNumber.fetchAndAddAcquire(1));
@@ -50,7 +53,7 @@ void BansheePlaylistModel::dropTempTable() {
     if (m_playlistId >= 0) {
         // Clear old playlist
         m_playlistId = -1;
-        QSqlQuery query(m_pTrackCollection->database());
+        QSqlQuery query(m_database);
         QString strQuery("DROP TABLE IF EXISTS %1");
         if (!query.exec(strQuery.arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
@@ -71,7 +74,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         // setup new playlist
         m_playlistId = playlistId;
 
-        QSqlQuery query(m_pTrackCollection->database());
+        QSqlQuery query(m_database);
         QString strQuery("CREATE TEMP TABLE IF NOT EXISTS %1"
             " (" CLM_TRACK_ID " INTEGER, "
                  CLM_VIEW_ORDER " INTEGER, "
@@ -209,7 +212,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
          << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollection, m_tempTableName, CLM_TRACK_ID,
+            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(), m_tempTableName, CLM_TRACK_ID,
                     trackSourceColumns, false));
 
     setTable(m_tempTableName, CLM_TRACK_ID, tableColumns, trackSource);
@@ -280,7 +283,7 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         if (pTrack) {
@@ -315,8 +318,9 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     }
 
     bool track_already_in_library = false;
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, &track_already_in_library);
+    TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFileInfo(location),
+            &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from Banshee. If it was already in the library

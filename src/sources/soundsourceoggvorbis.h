@@ -46,6 +46,9 @@ class SoundSourceProviderOggVorbis : public SoundSourceProvider {
 
     QStringList getSupportedFileExtensions() const override;
 
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
+
     SoundSourcePointer newSoundSource(const QUrl &url) override {
         return newSoundSourceFromUrl<SoundSourceOggVorbis>(url);
     }

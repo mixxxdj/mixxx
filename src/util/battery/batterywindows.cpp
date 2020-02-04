@@ -39,7 +39,7 @@ void BatteryWindows::read() {
         if (m_dPercentage > 99) {
             m_chargingState = Battery::CHARGED;
         }
-        // windows tells us the remainging time in seconds (-1 if unknown)
+        // windows tells us the remaining time in seconds (-1 if unknown)
         int seconds_left = static_cast<int>(spsPwr.BatteryLifeTime);
         if (seconds_left >= 0) {
             m_iMinutesLeft = seconds_left / 60;

@@ -7,35 +7,43 @@ Variables:
   label: Button text.
 -->
 <Template>
-  <PushButton>
-    <TooltipId><Variable name="cue_type"/></TooltipId>
-    <ObjectName>SpecialCueButton</ObjectName>
-    <MinimumSize>16,26</MinimumSize>
+  <WidgetGroup>
+    <ObjectName>SpecialCueButton_<Variable name="cue_type"/></ObjectName>
+    <MinimumSize>22,26</MinimumSize>
     <MaximumSize>26,26</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
-    <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
-    <State>
-      <Number>0</Number>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="cue_type"/>.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="cue_type"/>_pressed.svg</Pressed>
-    </State>
-    <State>
-      <Number>1</Number>
-      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="cue_type"/>.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="cue_type"/>_pressed.svg</Pressed>
-    </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_activate</ConfigKey>
-      <ButtonState>LeftButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_clear</ConfigKey>
-      <ButtonState>RightButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_enabled</ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-    </Connection>
-  </PushButton>
+    <Layout>horizontal</Layout>
+    <Children>
+      <PushButton>
+        <TooltipId><Variable name="cue_type"/></TooltipId>
+        <ObjectName>SpecialCueButton</ObjectName>
+        <MinimumSize>20,26</MinimumSize>
+        <MaximumSize>26,26</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_set.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_activate</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_clear</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_enabled</ConfigKey>
+          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
 </Template>

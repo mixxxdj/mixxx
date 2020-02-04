@@ -9,6 +9,7 @@
 #include <QFuture>
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QPointer>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
@@ -17,28 +18,30 @@
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
+class WLibrarySidebar;
 
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    ITunesFeature(QObject* parent, TrackCollection* pTrackCollection);
+    ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~ITunesFeature();
     static bool isSupported();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
+    void activate() override;
     void activate(bool forceReload);
-    void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
+    void activateChild(const QModelIndex& index) override;
+    void onRightClick(const QPoint& globalPos) override;
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
     static QString getiTunesMusicPath();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
@@ -55,7 +58,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
-    TrackCollection* m_pTrackCollection;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;
     bool m_cancelImport;
@@ -70,6 +72,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QString m_mixxxItunesRoot;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
     QIcon m_icon;
 };
 

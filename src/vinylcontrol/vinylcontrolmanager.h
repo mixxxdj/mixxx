@@ -8,7 +8,6 @@
 #define VINYLCONTROLMANAGER_H
 
 #include <QObject>
-#include <QSignalMapper>
 #include <QString>
 #include <QTimerEvent>
 
@@ -73,7 +72,6 @@ class VinylControlManager : public QObject {
     QList<ControlProxy*> m_pVcEnabled;
     ControlProxy* m_pNumDecks;
     int m_iNumConfiguredDecks;
-    QSignalMapper m_vinylControlEnabledMapper;
 };
 
 #endif // VINYLCONTROLMANAGER_H

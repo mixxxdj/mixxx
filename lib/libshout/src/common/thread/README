@@ -1,0 +1,9 @@
+This is the cross platform thread and syncronization library.
+
+It depends on the avl library.
+
+This is a massively cleaned and picked through version of the code from
+the icecast 1.3.x base.  It has not been heavily tested *YET*.  But since
+it's just cleanups, it really shouldn't have that many problems.
+
+jack.

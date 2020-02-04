@@ -26,12 +26,12 @@ Logger kLogger("MetadataSourceTagLib");
 const bool kExportTrackMetadataIntoTemporaryFile = true;
 
 // Appended to the original file name of the temporary file used for writing
-const QString kSafelyWritableTempFileSuffix = "_temp";
+const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 
 // Appended to the original file name for renaming and before deleting this
 // file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
 // potential failures caused by exceeded path length.
-const QString kSafelyWritableOrigFileSuffix = "_orig";
+const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
@@ -78,12 +78,9 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
+inline
 QDateTime getMetadataSynchronized(QFileInfo fileInfo) {
-    const QDateTime metadataSynchronized = fileInfo.lastModified();
-    VERIFY_OR_DEBUG_ASSERT(!metadataSynchronized.isNull()) {
-        return QDateTime::currentDateTimeUtc();
-    }
-    return metadataSynchronized;
+    return fileInfo.lastModified();
 }
 
 } // anonymous namespace

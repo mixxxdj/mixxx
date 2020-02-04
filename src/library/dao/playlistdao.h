@@ -51,7 +51,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     PlaylistDAO();
     ~PlaylistDAO() override {}
 
-    void initialize(const QSqlDatabase& database);
+    void initialize(const QSqlDatabase& database) override;
 
     // Create a playlist, fails with -1 if already exists
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
@@ -91,17 +91,17 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // removes all hidden and purged Tracks from the playlist
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
-    void removeTrackFromPlaylist(const int playlistId, const TrackId& trackId);
-    void removeTrackFromPlaylist(const int playlistId, const int position);
-    void removeTracksFromPlaylist(const int playlistId, QList<int>& positions);
+    void removeTrackFromPlaylist(int playlistId, int position);
+    void removeTracksFromPlaylist(int playlistId, QList<int> positions);
+    void removeTracksFromPlaylistById(int playlistId, TrackId trackId);
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(const QList<TrackId>& trackIds, const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
-    void addPlaylistToAutoDJQueue(const int playlistId, const bool bTop);
+    void addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc);
     // Add a list of tracks to the Auto-DJ Queue
-    void addTracksToAutoDJQueue(const QList<TrackId>& trackIds, const bool bTop);
+    void addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;
@@ -119,20 +119,20 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
-    void sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
 
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
-    void changed(int playlistId);
+    void renamed(int playlistId, QString newName);
+    void lockChanged(int playlistId);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
-    void renamed(int playlistId, QString a_strName);
-    void lockChanged(int playlistId);
+    void tracksChanged(QSet<int> playlistIds); // added/removed/reordered
 
   private:
-    bool removeTracksFromPlaylist(const int playlistId, const int startIndex);
+    bool removeTracksFromPlaylist(int playlistId, int startIndex);
     void removeTracksFromPlaylistInner(int playlistId, int position);
+    void removeTracksFromPlaylistByIdInner(int playlistId, TrackId trackId);
     void searchForDuplicateTrack(const int fromPosition,
                                  const int toPosition,
                                  TrackId trackID,

@@ -8,11 +8,12 @@
 #include <QObject>
 #include <QStack>
 
-#include "preferences/usersettings.h"
-#include "engine/controls/enginecontrol.h"
-#include "track/track.h"
-#include "track/beats.h"
 #include "control/controlvalue.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/controls/ratecontrol.h"
+#include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/track.h"
 
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
@@ -50,7 +51,7 @@ class LoopingControl : public EngineControl {
     double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
     void notifySeek(double dNewPlaypos) override;
-
+    void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
   public slots:
@@ -129,6 +130,7 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopHalveButton;
     ControlPushButton* m_pLoopDoubleButton;
     ControlObject* m_pSlipEnabled;
+    RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;
 
     bool m_bLoopingEnabled;

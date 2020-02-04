@@ -6,23 +6,32 @@
 
 #include "control/controlobject.h"
 #include "library/playlisttablemodel.h"
+#include "library/library.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "util/compatibility.h"
 
-SetlogFeature::SetlogFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
-                             TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
+SetlogFeature::SetlogFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : BasePlaylistFeature(
+                pLibrary,
+                pConfig,
+                QStringLiteral("SETLOGHOME")),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
-          m_icon(":/images/library/ic_library_history.svg") {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog",
-                                                   true); //show all tracks
+          m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
+    initTableModel(new PlaylistTableModel(
+            this,
+            pLibrary->trackCollections(),
+            "mixxx.db.model.setlog",
+            /*show-all-tracks*/ true));
 
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
@@ -30,11 +39,16 @@ SetlogFeature::SetlogFeature(QObject* parent,
     constructChildModel(-1);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
-    connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
-            this, SLOT(slotJoinWithPrevious()));
+    connect(m_pJoinWithPreviousAction,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotJoinWithPrevious);
 
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
-    connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
+    connect(m_pGetNewPlaylist,
+            &QAction::triggered,
+            this,
+            &SetlogFeature::slotGetNewPlaylist);
 
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
@@ -58,14 +72,21 @@ QIcon SetlogFeature::getIcon() {
     return m_icon;
 }
 
-void SetlogFeature::bindWidget(WLibrary* libraryWidget,
+void SetlogFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindWidget(libraryWidget,
+    BasePlaylistFeature::bindLibraryWidget(libraryWidget,
                                     keyboard);
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            this, SLOT(slotPlayingTrackChanged(TrackPointer)));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingTrackChanged,
+            this,
+            &SetlogFeature::slotPlayingTrackChanged);
     m_libraryWidget = libraryWidget;
 
+}
+
+void SetlogFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -82,9 +103,9 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
+
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
@@ -93,13 +114,12 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-
-    //Create the right-click menu
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     //menu.addAction(m_pCreatePlaylistAction);
     //menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
+    menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     if (playlistId != m_playlistId) {
         // Todays playlist should not be locked or deleted
@@ -122,7 +142,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlTableModel playlistTableModel(this, m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
     playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
@@ -150,7 +170,7 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
+    QSqlTableModel playlistTableModel(this, m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
@@ -205,7 +225,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
-    emit(showTrackModel(m_pPlaylistTableModel));
+    emit showTrackModel(m_pPlaylistTableModel);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -253,7 +273,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
                     slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    emit(showTrackModel(m_pPlaylistTableModel));
+                    emit showTrackModel(m_pPlaylistTableModel);
                 }
             }
         }
@@ -332,21 +352,24 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
-void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
+void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     if (!m_pPlaylistTableModel) {
         return;
     }
 
-    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        updateChildModel(playlistId);
+    for (const auto playlistId : qAsConst(playlistIds)) {
+        enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+        if (type == PlaylistDAO::PLHT_SET_LOG ||
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            updateChildModel(playlistId);
+        }
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
-                                             QString /* a_strName */) {
+void SetlogFeature::slotPlaylistTableRenamed(
+        int playlistId,
+        QString newName) {
+    Q_UNUSED(newName);
     if (!m_pPlaylistTableModel) {
         return;
     }

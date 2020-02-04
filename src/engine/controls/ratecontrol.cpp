@@ -37,12 +37,31 @@ RateControl::RateControl(QString group,
       m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
+    // This is the resulting rate ratio that can be used for display or calculations.
+    // The track original rate ratio is 1.
+    m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
+                  true, false, false, 1.0);
+    connect(m_pRateRatio, &ControlObject::valueChanged,
+            this, &RateControl::slotRateRatioChanged,
+            Qt::DirectConnection);
+
     m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
-    m_pRateRange = new ControlPotmeter(ConfigKey(group, "rateRange"), 0.01, 4.00);
+    connect(m_pRateDir, &ControlObject::valueChanged,
+            this, &RateControl::slotRateRangeChanged,
+            Qt::DirectConnection);
+    m_pRateRange = new ControlPotmeter(
+            ConfigKey(group, "rateRange"), 0.01, 4.00);
+    connect(m_pRateRange, &ControlObject::valueChanged,
+            this, &RateControl::slotRateRangeChanged,
+            Qt::DirectConnection);
+
     // Allow rate slider to go out of bounds so that master sync rate
     // adjustments are not capped.
-    m_pRateSlider = new ControlPotmeter(ConfigKey(group, "rate"),
-                                        -1.0, 1.0, true);
+    m_pRateSlider = new ControlPotmeter(
+            ConfigKey(group, "rate"), -1.0, 1.0, true);
+    connect(m_pRateSlider, &ControlObject::valueChanged,
+            this, &RateControl::slotRateSliderChanged,
+            Qt::DirectConnection);
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
@@ -154,6 +173,7 @@ RateControl::RateControl(QString group,
 }
 
 RateControl::~RateControl() {
+    delete m_pRateRatio;
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
@@ -252,6 +272,26 @@ double RateControl::getPermanentRateChangeFineAmount() {
     return m_dPermanentRateChangeFine.getValue();
 }
 
+void RateControl::slotRateRangeChanged(double) {
+    // update RateSlider with the new Range value butdo not change m_pRateRatio
+    slotRateRatioChanged(m_pRateRatio->get());
+}
+
+void RateControl::slotRateSliderChanged(double v) {
+    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * v;
+    m_pRateRatio->set(rateRatio);
+}
+
+void RateControl::slotRateRatioChanged(double v) {
+    double rateRange = m_pRateRange->get();
+    if (rateRange > 0.0) {
+        double newRate = m_pRateDir->get() * (v - 1) / rateRange;
+        m_pRateSlider->set(newRate);
+    } else {
+        m_pRateSlider->set(0);
+    }
+}
+
 void RateControl::slotReverseRollActivate(double v) {
     if (v > 0.0) {
         m_pSlipEnabled->set(1);
@@ -285,6 +325,7 @@ void RateControl::slotControlRatePermDown(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100 * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -293,6 +334,7 @@ void RateControl::slotControlRatePermDownSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -301,6 +343,7 @@ void RateControl::slotControlRatePermUp(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -308,14 +351,9 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     // Adjusts temp rate up if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
-                m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+                           m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
-}
-
-double RateControl::calcRateRatio() const {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
-            m_pRateSlider->get();
-    return rateRatio;
 }
 
 double RateControl::getWheelFactor() const {
@@ -555,4 +593,11 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+}
+
+bool RateControl::isReverseButtonPressed() {
+    if (m_pReverseButton) {
+        return m_pReverseButton->toBool();
+    }
+    return false;
 }

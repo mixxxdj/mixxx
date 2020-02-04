@@ -76,10 +76,11 @@ GetKeyMode::GetKeyMode(Config config) :
 
     // Set C3 (= MIDI #48) as our base:
     // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.
+    const float centsOffset = -12.0f / kBinsPerOctave * 100; // 3 bins per note, start with the first
     chromaConfig.min =
-        Pitch::getFrequencyForPitch( 48, 0, config.tuningFrequency );
+        Pitch::getFrequencyForPitch( 48, centsOffset, config.tuningFrequency );
     chromaConfig.max =
-        Pitch::getFrequencyForPitch( 96, 0, config.tuningFrequency );
+        Pitch::getFrequencyForPitch( 96, centsOffset, config.tuningFrequency );
 
     chromaConfig.BPO = kBinsPerOctave;
     chromaConfig.CQThresh = 0.0054;
@@ -232,14 +233,11 @@ int GetKeyMode::process(double *pcmData)
     }
 
     for (k = 0; k < kBinsPerOctave; k++) {
-        // The Chromagram has the center of C at bin 0, while the major
-        // and minor profiles have the center of C at 1. We want to have
-        // the correlation for C result also at 1.
-        // To achieve this we have to shift two times:
-        m_majCorr[k] = krumCorr
-            (m_meanHPCP, m_majProfileNorm, k - 2, kBinsPerOctave);
-        m_minCorr[k] = krumCorr
-            (m_meanHPCP, m_minProfileNorm, k - 2, kBinsPerOctave);
+        // The cromagram and the major and minor profiles have the
+        // center of C at bin 1. We want to have the correlation for C result
+        // also at 1. To achieve this we have to shift by one:
+        m_majCorr[k] = krumCorr(m_meanHPCP, m_majProfileNorm, (int)k - 1, kBinsPerOctave);
+        m_minCorr[k] = krumCorr(m_meanHPCP, m_minProfileNorm, (int)k - 1, kBinsPerOctave);
     }
 
     // m_MajCorr[1] is C center  1 / 3 + 1 = 1
@@ -314,3 +312,4 @@ double* GetKeyMode::getKeyStrengths() {
 
     return m_keyStrengths;
 }
+

@@ -98,18 +98,15 @@ EncoderWave::~EncoderWave() {
     }
 }
 
-void EncoderWave::setEncoderSettings(const EncoderSettings& settings)
-{
+void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
     const EncoderWaveSettings& wavesettings = reinterpret_cast<const EncoderWaveSettings&>(settings);
-    Encoder::Format format = wavesettings.getFormat();
-    if (format.internalName == ENCODING_WAVE) {
+    QString format = wavesettings.getFormat();
+    if (format == ENCODING_WAVE) {
         m_sfInfo.format = SF_FORMAT_WAV;
-    }
-    else if (format.internalName == ENCODING_AIFF) {
+    } else if (format == ENCODING_AIFF) {
         m_sfInfo.format = SF_FORMAT_AIFF;
-    }
-    else {
-        qWarning() << "Unexpected Format when setting EncoderWave: " << format.internalName << ". Reverting to wav";
+    } else {
+        qWarning() << "Unexpected Format when setting EncoderWave: " << format << ". Reverting to wav";
         // Other possibly interesting formats
         // There is a n option for RF64 to automatically downgrade to RIFF WAV if less than 4GB using an
         // sf_command, so it could be interesting to use it in place of FORMAT_WAVE.

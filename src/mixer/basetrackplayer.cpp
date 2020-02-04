@@ -153,7 +153,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     pEngineBuffer->loadFakeTrack(pTrack, bPlay);
 
     // await slotTrackLoaded()/slotLoadFailed()
-    emit(loadingTrack(pTrack, pOldTrack));
+    emit loadingTrack(pTrack, pOldTrack);
 
     return pTrack;
 }
@@ -181,7 +181,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         QListIterator<CuePointer> it(trackCues);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::LOOP) {
+            if (pCue->getType() == Cue::Type::Loop) {
                 double loopStart = pCue->getPosition();
                 double loopEnd = loopStart + pCue->getLength();
                 if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
@@ -220,17 +220,16 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::LOOP) {
+            if (pCue->getType() == Cue::Type::Loop) {
                 pLoopCue = pCue;
             }
         }
         if (!pLoopCue) {
             pLoopCue = m_pLoadedTrack->createAndAddCue();
-            pLoopCue->setSource(Cue::MANUAL);
-            pLoopCue->setType(Cue::LOOP);
+            pLoopCue->setType(Cue::Type::Loop);
         }
-        pLoopCue->setPosition(loopStart);
-        pLoopCue->setLength(loopEnd - loopStart);
+        pLoopCue->setStartPosition(loopStart);
+        pLoopCue->setEndPosition(loopEnd);
     }
 
     disconnectLoadedTrack();
@@ -281,7 +280,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     pEngineBuffer->loadTrack(pNewTrack, bPlay);
 
     // await slotTrackLoaded()/slotLoadFailed()
-    emit(loadingTrack(pNewTrack, pOldTrack));
+    emit loadingTrack(pNewTrack, pOldTrack);
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
@@ -314,7 +313,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to change the track and update themselves.
-        emit(loadingTrack(pNewTrack, pOldTrack));
+        emit loadingTrack(pNewTrack, pOldTrack);
         m_pDuration->set(0);
         m_pFileBPM->set(0);
         m_pKey->set(0);
@@ -322,7 +321,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pLoopInPoint->set(kNoTrigger);
         m_pLoopOutPoint->set(kNoTrigger);
         m_pLoadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // NOTE(uklotzde): In a previous version track metadata was reloaded
         // from the source file at this point again. This is no longer necessary
@@ -371,8 +370,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 // Avoid resetting speed if master sync is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
-                    if (m_pRateSlider != NULL) {
-                        m_pRateSlider->set(0.0);
+                    if (m_pRateRatio != NULL) {
+                        m_pRateRatio->set(1.0);
                     }
                 }
             }
@@ -385,8 +384,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             // perform a clone of the given channel
 
             // copy rate
-            if (m_pRateSlider != nullptr) {
-                m_pRateSlider->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "rate")));
+            if (m_pRateRatio != nullptr) {
+                m_pRateRatio->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
             }
 
             // copy pitch
@@ -407,7 +406,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
         }
 
-        emit(newTrackLoaded(m_pLoadedTrack));
+        emit newTrackLoaded(m_pLoadedTrack);
     } else {
         // this is the result from an outdated load or unload signal
         // A new load is already pending
@@ -496,7 +495,7 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pLowFilterKill = std::make_unique<ControlProxy>(group, "filterLowKill", this);
     m_pMidFilterKill = std::make_unique<ControlProxy>(group, "filterMidKill", this);
     m_pHighFilterKill = std::make_unique<ControlProxy>(group, "filterHighKill", this);
-    m_pRateSlider = std::make_unique<ControlProxy>(group, "rate", this);
+    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
     m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
 }
 
@@ -508,7 +507,7 @@ void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {
     // configured input.
     if (!configured && passthrough) {
         m_pPassthroughEnabled->set(0.0);
-        emit(noPassthroughInputConfigured());
+        emit noPassthroughInputConfigured();
     }
 }
 
@@ -522,7 +521,7 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
     if (!configured && vinylcontrol_enabled) {
         m_pVinylControlEnabled->set(0.0);
         m_pVinylControlStatus->set(VINYL_STATUS_DISABLED);
-        emit(noVinylControlInputConfigured());
+        emit noVinylControlInputConfigured();
     }
 #endif
 }

@@ -22,23 +22,23 @@ Variables:
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0"/>.svg</Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1"/>.svg</Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <State>
       <Number>2</Number>
       <Text><Variable name="state_2_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_2"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_2"/>.svg</Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_<Variable name="btn_format"/>_active.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey persist="true"><Variable name="ConfigKey"/></ConfigKey>

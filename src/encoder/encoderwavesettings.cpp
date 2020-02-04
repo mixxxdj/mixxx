@@ -9,17 +9,15 @@
  #include "recording/defs_recording.h"
  
 const QString EncoderWaveSettings::BITS_GROUP = "BITS";
- 
+
 EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
-        Encoder::Format format) :
-    m_pConfig(pConfig),
-    m_format(format)
-{
-    VERIFY_OR_DEBUG_ASSERT(m_format.internalName == ENCODING_WAVE
-            || m_format.internalName == ENCODING_AIFF) {
-        m_format = EncoderFactory::getFactory().getFormatFor(ENCODING_WAVE);
-        qWarning() << "EncoderWaveSettings setup with " << format.internalName
-        << ". This is an error! Changing it to " << m_format.internalName;
+        QString format)
+        : m_pConfig(pConfig),
+          m_format(std::move(format)) {
+    VERIFY_OR_DEBUG_ASSERT(m_format == ENCODING_WAVE || m_format == ENCODING_AIFF) {
+        m_format = ENCODING_WAVE;
+        qWarning() << "EncoderWaveSettings setup with " << m_format
+                   << ". This is an error! Changing it to " << m_format;
     }
     QList<QString> names;
     names.append(QObject::tr("16 bits"));
@@ -27,6 +25,7 @@ EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
     names.append(QObject::tr("32 bits float"));
     m_radioList.append(OptionsGroup(QObject::tr("Bit depth"), BITS_GROUP, names));
 }
+
 EncoderWaveSettings::~EncoderWaveSettings()
 {
     
@@ -49,8 +48,8 @@ void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex)
             found=true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
                 m_pConfig->set(
-                    ConfigKey(RECORDING_PREF_KEY, m_format.internalName + "_" + groupCode),
-                    ConfigValue(optionIndex));
+                        ConfigKey(RECORDING_PREF_KEY, m_format + "_" + groupCode),
+                        ConfigValue(optionIndex));
             } else {
                 qWarning() << "Received an index out of range for: " 
                     << groupCode << ", index: " << optionIndex;
@@ -67,7 +66,7 @@ int EncoderWaveSettings::getSelectedOption(QString groupCode) const
 {
     bool found=false;
     int value = m_pConfig->getValue(
-        ConfigKey(RECORDING_PREF_KEY, m_format.internalName + "_" + groupCode), 0);
+            ConfigKey(RECORDING_PREF_KEY, m_format + "_" + groupCode), 0);
     for (const auto& group : m_radioList) {
         if (groupCode == group.groupCode) {
             found=true;

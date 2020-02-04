@@ -1,0 +1,60 @@
+<!--
+Description:
+  A button that has click or display controls.
+Variables:
+  ObjectName        : object name
+  ToolTipID         : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/TooltipIds.cpp
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>FxAssignButton_<Variable name="Text"/><Variable name="FxUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <MinimumSize><Variable name="MinWidth"/>,20</MinimumSize>
+    <MaximumSize><Variable name="MaxWidth"/>,20</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <!-- This overrides the external stylesheet properties and would save numerous
+    per-button icons in qss, but unfortunately variables aren't recognised.
+    <Style>
+      WPushButton[value="0"] {
+        image: url(skin:/buttons_<Variable name="btn_scheme"/>/btn__fx_<Variable name="Text"/><Variable name="FxUnit"/>.svg) no-repeat center center;}
+      WPushButton[value="1"] {
+        image: url(skin:/buttons_<Variable name="btn_scheme"/>/btn__fx_<Variable name="Text"/><Variable name="FxUnit"/>_active.svg) no-repeat center center;}
+    </Style> -->
+    <Children>
+      <PushButton>
+        <TooltipId>EffectUnit_<Variable name="Type"/>_enabled</TooltipId>
+        <ObjectName>FxAssignButton</ObjectName>
+        <MinimumSize><Variable name="MinWidth"/>,20</MinimumSize>
+        <MaximumSize><Variable name="MaxWidth"/>,20</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <!--Text><Variable name="Text"/><Variable name="FxUnit"/></Text-->
+          <Alignment>center</Alignment>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <!--Text><Variable name="Text"/><Variable name="FxUnit"/></Text-->
+          <Alignment>center</Alignment>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="SubRegion_btn_type"/>_fx_active.svg</Pressed>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

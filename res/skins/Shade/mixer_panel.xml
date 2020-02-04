@@ -2,7 +2,6 @@
     <WidgetGroup>
       <Pos>3,0</Pos>
       <Size>255,229e</Size>
-      <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
       <BackPath>style/style_bg_mixer_panel.png</BackPath>
       <Children>
         <!-- if we don't put all this in an extra child widget, the <NumberRate> will somehow
@@ -11,7 +10,6 @@
         <WidgetGroup>
           <Pos>0,0</Pos>
           <Size>250,224</Size>
-          <Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
           <Children>
             <!--
             **********************************************
@@ -20,7 +18,6 @@
             -->
             <SliderComposed>
               <TooltipId>channel_volume</TooltipId>
-              <Style></Style>
               <Handle>knob_volume.png</Handle>
               <Slider>slider_volume.png</Slider>
               <Pos>72,55</Pos>
@@ -32,7 +29,6 @@
             </SliderComposed>
             <SliderComposed>
               <TooltipId>channel_volume</TooltipId>
-              <Style></Style>
               <Handle>knob_volume.png</Handle>
               <Slider>slider_volume.png</Slider>
               <Pos>168,55</Pos>
@@ -50,7 +46,6 @@
             -->
             <SliderComposed>
               <TooltipId>crossfader</TooltipId>
-              <Style></Style>
               <Handle>knob_crossfader.png</Handle>
               <Slider>slider_crossfader.png</Slider>
               <Pos>72,200</Pos>
@@ -68,7 +63,6 @@
             -->
             <PushButton>
               <TooltipId>play_cue_set</TooltipId>
-              <Style></Style>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -95,7 +89,6 @@
             </PushButton>
             <PushButton>
               <TooltipId>play_cue_set</TooltipId>
-              <Style></Style>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -128,7 +121,6 @@
             -->
             <PushButton>
               <TooltipId>cue_default_cue_gotoandstop</TooltipId>
-              <Style></Style>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -157,7 +149,6 @@
             </PushButton>
             <PushButton>
               <TooltipId>cue_default_cue_gotoandstop</TooltipId>
-              <Style></Style>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -192,7 +183,6 @@
             -->
             <PushButton>
               <TooltipId>pfl</TooltipId>
-              <Style></Style>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -211,7 +201,6 @@
             </PushButton>
             <PushButton>
               <TooltipId>pfl</TooltipId>
-              <Style></Style>
               <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -374,6 +363,17 @@
               </Connection>
             </EffectPushButton>
 
+            <Battery>
+              <ObjectName>Battery</ObjectName>
+              <Size>16f,16f</Size>
+              <Pos>119,7</Pos>
+              <SizePolicy>f,f</SizePolicy>
+              <PixmapCharged scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charged.svg</PixmapCharged>
+              <NumberStates>8</NumberStates>
+              <PixmapsCharging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+              <PixmapsDischarging scalemode="STRETCH_ASPECT">graphics/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+            </Battery>
+
             <!--
             **********************************************
             Text- Clock display
@@ -398,8 +398,6 @@
             <StatusLight>
               <Pos>113,27</Pos>
               <TooltipId>audio_latency_usage</TooltipId>
-              <Style>
-              </Style>
               <PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
               <PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
               <Connection>
@@ -425,7 +423,6 @@
             </VuMeter>
 
             <PushButton>
-              <Style></Style>
               <NumberStates>5</NumberStates>
               <State>
                 <Number>0</Number>
@@ -469,20 +466,18 @@
             -->
             <Knob>
               <TooltipId>master_gain</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>208,15</Pos>
+              <Pos>217,15</Pos>
               <Connection>
                 <ConfigKey>[Master],gain</ConfigKey>
               </Connection>
             </Knob>
             <Knob>
               <TooltipId>balance</TooltipId>
-              <Style></Style>
               <NumberStates>63</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>155,15</Pos>
+              <Pos>151,15</Pos>
               <Connection>
                 <ConfigKey>[Master],balance</ConfigKey>
               </Connection>
@@ -495,24 +490,46 @@
             -->
             <Knob>
               <TooltipId>headphone_gain</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs_no_center/knob_rotary_s%1.png</Path>
-              <Pos>20,15</Pos>
+              <Pos>11,15</Pos>
               <Connection>
                 <ConfigKey>[Master],headGain</ConfigKey>
               </Connection>
             </Knob>
             <Knob>
               <TooltipId>headMix</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>72,15</Pos>
+              <Pos>76,15</Pos>
               <Connection>
                 <ConfigKey>[Master],headMix</ConfigKey>
               </Connection>
             </Knob>
+
+            <!--
+            **********************************************
+            Button - Headphone split cue
+            **********************************************
+            -->
+            <PushButton>
+              <TooltipId>headSplit</TooltipId>
+              <NumberStates>2</NumberStates>
+              <State>
+                <Number>0</Number>
+                <Pressed>skin:/btn/btn_headsplit_down.png</Pressed>
+                <Unpressed>skin:/btn/btn_headsplit.png</Unpressed>
+              </State>
+              <State>
+                <Number>1</Number>
+                <Pressed>skin:/btn/btn_headsplit_overdown.png</Pressed>
+                <Unpressed>skin:/btn/btn_headsplit_over.png</Unpressed>
+              </State>
+              <Pos>42,18</Pos>
+              <Connection>
+                <ConfigKey>[Master],headSplit</ConfigKey>
+              </Connection>
+            </PushButton>
 
             <!--
             **********************************************
@@ -521,7 +538,6 @@
             -->
             <Knob>
               <TooltipId>pregain</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
               <Pos>32,47</Pos>
@@ -568,7 +584,6 @@
 
             <Knob>
               <TooltipId>pregain</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
               <Pos>196,47</Pos>
@@ -590,7 +605,6 @@
             </EffectParameterKnob>
             <EffectParameterKnob>
               <TooltipId>filterMid</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
               <Pos>196,105</Pos>
@@ -604,7 +618,6 @@
             </EffectParameterKnob>
             <EffectParameterKnob>
               <TooltipId>filterLow</TooltipId>
-              <Style></Style>
               <NumberStates>64</NumberStates>
               <Path>knobs/knob_rotary_s%1.png</Path>
               <Pos>196,134</Pos>
@@ -624,7 +637,6 @@
             -->
             <VuMeter>
               <TooltipId>channel_VuMeter</TooltipId>
-              <Style></Style>
               <PathVu>skin:/style/volume_display_over.png</PathVu>
               <PathBack>skin:/style/volume_display.png</PathBack>
               <Pos>107,76</Pos>
@@ -639,7 +651,6 @@
             </VuMeter>
             <VuMeter>
               <TooltipId>channel_VuMeter</TooltipId>
-              <Style></Style>
               <PathVu>skin:/style/volume_display_over.png</PathVu>
               <PathBack>skin:/style/volume_display.png</PathBack>
               <Pos>143,76</Pos>
@@ -655,7 +666,6 @@
 
             <VuMeter>
               <TooltipId>master_VuMeterL</TooltipId>
-              <Style></Style>
               <PathVu>skin:/style/volume_display_master_over.png</PathVu>
               <PathBack>skin:/style/volume_display_master.png</PathBack>
               <Pos>122,76</Pos>
@@ -669,7 +679,6 @@
             </VuMeter>
             <VuMeter>
               <TooltipId>master_VuMeterR</TooltipId>
-              <Style></Style>
               <PathVu>skin:/style/volume_display_master_over.png</PathVu>
               <PathBack>skin:/style/volume_display_master.png</PathBack>
               <Pos>128,76</Pos>
@@ -689,7 +698,6 @@
             -->
             <StatusLight>
               <TooltipId>channel_PeakIndicator</TooltipId>
-              <Style></Style>
               <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
               <PathBack>skin:/style/volume_clipping.png</PathBack>
               <Pos>107,57</Pos>
@@ -699,7 +707,6 @@
             </StatusLight>
             <StatusLight>
               <TooltipId>channel_PeakIndicator</TooltipId>
-              <Style></Style>
               <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
               <PathBack>skin:/style/volume_clipping.png</PathBack>
               <Pos>143,57</Pos>
@@ -709,7 +716,6 @@
             </StatusLight>
             <StatusLight>
               <TooltipId>master_PeakIndicatorL</TooltipId>
-              <Style></Style>
               <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
               <PathBack>skin:/style/volume_clipping_master.png</PathBack>
               <Pos>122,57</Pos>
@@ -719,7 +725,6 @@
             </StatusLight>
             <StatusLight>
               <TooltipId>master_PeakIndicatorR</TooltipId>
-              <Style></Style>
               <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
               <PathBack>skin:/style/volume_clipping_master.png</PathBack>
               <Pos>128,57</Pos>
