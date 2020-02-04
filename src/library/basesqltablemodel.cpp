@@ -225,7 +225,8 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN))) {
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE))) {
         return true;
     }
     return false;
