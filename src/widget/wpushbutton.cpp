@@ -290,7 +290,9 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
-    m_bPressed = (dValue == 1.0);
+    if (m_iNoStates == 1) {
+        m_bPressed = (dValue == 1.0);
+    }
 
     restyleAndRepaint();
 }
@@ -395,15 +397,27 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 }
 
+bool WPushButton::event(QEvent* e) {
+    if (e->type() == QEvent::WindowDeactivate) {
+        // if the window is deactivated while in pressed state
+        if (m_bPressed) {
+            m_bPressed = false;
+            restyleAndRepaint();
+        }
+    }
+    return QWidget::event(e);
+}
+
 void WPushButton::focusOutEvent(QFocusEvent* e) {
-    Q_UNUSED(e);
-    if (e->reason() != Qt::MouseFocusReason) {
+    qDebug() << "focusOutEvent" << e->reason();
+    if (m_bPressed && e->reason() != Qt::MouseFocusReason) {
         // Since we support multi touch there is no reason to reset
         // the pressed flag if the Primary touch point is moved to an
         // other widget
         m_bPressed = false;
         restyleAndRepaint();
     }
+    QWidget::focusOutEvent(e);
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
