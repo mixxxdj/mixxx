@@ -511,9 +511,9 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT +SHIFT (DECK1) - press - Active loop on/off</description>
+                <description>RELOOP/EXIT +SHIFT (DECK1) - press - Reloop and stop</description>
                 <group>[Channel1]</group>
-                <key>reloop_andstop</key> <!-- TODO Check if correct -->
+                <key>reloop_andstop</key>
                 <status>0x90</status>
                 <midino>0x50</midino>
                 <options>
@@ -532,9 +532,9 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT +SHIFT (DECK2) - press - Active loop on/off</description>
+                <description>RELOOP/EXIT +SHIFT (DECK2) - press - Reloop and stop</description>
                 <group>[Channel2]</group>
-                <key>reloop_andstop</key> <!-- TODO Check if correct -->
+                <key>reloop_andstop</key>
                 <status>0x91</status>
                 <midino>0x50</midino>
                 <options>
