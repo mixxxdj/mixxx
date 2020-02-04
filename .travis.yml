@@ -31,7 +31,7 @@ jobs:
         directories:
           - $HOME/.cache/pre-commit
       before_install:
-        - pip install pre-commit
+        - pip install pre-commit==2.0.1
       script:
         - pre-commit run --all-files
       addons: []
@@ -46,7 +46,7 @@ jobs:
         directories:
           - $HOME/.cache/pre-commit
       before_install:
-        - pip install pre-commit
+        - pip install pre-commit==2.0.1
       script:
         - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
       addons: []
