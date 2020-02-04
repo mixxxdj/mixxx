@@ -7,7 +7,6 @@ import os.path
 import re
 import sys
 import tinycss.css21
-import PyQt5.QtWidgets
 
 
 RE_CPP_CLASSNAME = re.compile(r'^\s*class\s+([\w_]+)')
@@ -18,6 +17,66 @@ RE_XML_OBJNAME_SETVAR = re.compile(
     r'<SetVariable\s+name="ObjectName">(.*)</SetVariable>')
 RE_CLASSNAME = re.compile(r'^[A-Z]\w+$')
 RE_OBJNAME_VARTAG = re.compile(r'<.*>')
+
+# List of Qt Widgets, generated with:
+# python -c 'import inspect, PyQt5.QtWidgets; print([k for k, v in PyQt5.QtWidgets.__dict__.items() if inspect.isclass(v)])'
+QTWIDGETS = [
+    'QWidget', 'QAbstractButton', 'QGraphicsItem',
+    'QAbstractGraphicsShapeItem', 'QAbstractItemDelegate', 'QFrame',
+    'QAbstractScrollArea', 'QAbstractItemView', 'QAbstractSlider',
+    'QAbstractSpinBox', 'QAction', 'QActionGroup', 'QApplication',
+    'QLayoutItem', 'QLayout', 'QBoxLayout', 'QButtonGroup', 'QCalendarWidget',
+    'QCheckBox', 'QDialog', 'QColorDialog', 'QColumnView', 'QComboBox',
+    'QPushButton', 'QCommandLinkButton', 'QStyle', 'QCommonStyle',
+    'QCompleter', 'QDataWidgetMapper', 'QDateTimeEdit', 'QDateEdit',
+    'QDesktopWidget', 'QDial', 'QDialogButtonBox', 'QDirModel', 'QDockWidget',
+    'QDoubleSpinBox', 'QErrorMessage', 'QFileDialog', 'QFileIconProvider',
+    'QFileSystemModel', 'QFocusFrame', 'QFontComboBox', 'QFontDialog',
+    'QFormLayout', 'QGesture', 'QGestureEvent', 'QGestureRecognizer',
+    'QGraphicsAnchor', 'QGraphicsLayoutItem', 'QGraphicsLayout',
+    'QGraphicsAnchorLayout', 'QGraphicsEffect', 'QGraphicsBlurEffect',
+    'QGraphicsColorizeEffect', 'QGraphicsDropShadowEffect',
+    'QGraphicsEllipseItem', 'QGraphicsGridLayout', 'QGraphicsItemGroup',
+    'QGraphicsLineItem', 'QGraphicsLinearLayout', 'QGraphicsObject',
+    'QGraphicsOpacityEffect', 'QGraphicsPathItem', 'QGraphicsPixmapItem',
+    'QGraphicsPolygonItem', 'QGraphicsWidget', 'QGraphicsProxyWidget',
+    'QGraphicsRectItem', 'QGraphicsTransform', 'QGraphicsRotation',
+    'QGraphicsScale', 'QGraphicsScene', 'QGraphicsSceneEvent',
+    'QGraphicsSceneContextMenuEvent', 'QGraphicsSceneDragDropEvent',
+    'QGraphicsSceneHelpEvent', 'QGraphicsSceneHoverEvent',
+    'QGraphicsSceneMouseEvent', 'QGraphicsSceneMoveEvent',
+    'QGraphicsSceneResizeEvent', 'QGraphicsSceneWheelEvent',
+    'QGraphicsSimpleTextItem', 'QGraphicsTextItem', 'QGraphicsView',
+    'QGridLayout', 'QGroupBox', 'QHBoxLayout', 'QHeaderView', 'QInputDialog',
+    'QItemDelegate', 'QItemEditorCreatorBase', 'QItemEditorFactory',
+    'QKeyEventTransition', 'QKeySequenceEdit', 'QLCDNumber', 'QLabel',
+    'QLineEdit', 'QListView', 'QListWidget', 'QListWidgetItem', 'QMainWindow',
+    'QMdiArea', 'QMdiSubWindow', 'QMenu', 'QMenuBar', 'QMessageBox',
+    'QMouseEventTransition', 'QOpenGLWidget', 'QPanGesture', 'QPinchGesture',
+    'QPlainTextDocumentLayout', 'QPlainTextEdit', 'QProgressBar',
+    'QProgressDialog', 'QProxyStyle', 'QRadioButton', 'QRubberBand',
+    'QScrollArea', 'QScrollBar', 'QScroller', 'QScrollerProperties',
+    'QShortcut', 'QSizeGrip', 'QSizePolicy', 'QSlider', 'QSpacerItem',
+    'QSpinBox', 'QSplashScreen', 'QSplitter', 'QSplitterHandle',
+    'QStackedLayout', 'QStackedWidget', 'QStatusBar', 'QStyleFactory',
+    'QStyleHintReturn', 'QStyleHintReturnMask', 'QStyleHintReturnVariant',
+    'QStyleOption', 'QStyleOptionButton', 'QStyleOptionComplex',
+    'QStyleOptionComboBox', 'QStyleOptionDockWidget', 'QStyleOptionFocusRect',
+    'QStyleOptionFrame', 'QStyleOptionGraphicsItem', 'QStyleOptionGroupBox',
+    'QStyleOptionHeader', 'QStyleOptionMenuItem', 'QStyleOptionProgressBar',
+    'QStyleOptionRubberBand', 'QStyleOptionSizeGrip', 'QStyleOptionSlider',
+    'QStyleOptionSpinBox', 'QStyleOptionTab', 'QStyleOptionTabBarBase',
+    'QStyleOptionTabWidgetFrame', 'QStyleOptionTitleBar',
+    'QStyleOptionToolBar', 'QStyleOptionToolBox', 'QStyleOptionToolButton',
+    'QStyleOptionViewItem', 'QStylePainter', 'QStyledItemDelegate',
+    'QSwipeGesture', 'QSystemTrayIcon', 'QTabBar', 'QTabWidget', 'QTableView',
+    'QTableWidget', 'QTableWidgetItem', 'QTableWidgetSelectionRange',
+    'QTapAndHoldGesture', 'QTapGesture', 'QTextEdit', 'QTextBrowser',
+    'QTimeEdit', 'QToolBar', 'QToolBox', 'QToolButton', 'QToolTip',
+    'QTreeView', 'QTreeWidget', 'QTreeWidgetItem', 'QTreeWidgetItemIterator',
+    'QUndoCommand', 'QUndoGroup', 'QUndoStack', 'QUndoView', 'QVBoxLayout',
+    'QWhatsThis', 'QWidgetAction', 'QWidgetItem', 'QWizard', 'QWizardPage',
+]
 
 
 def get_skins(path):
@@ -88,7 +147,7 @@ def check_stylesheet(stylesheet, classnames, objectnames, objectnames_fuzzy):
                     continue
                 if token.value in classnames:
                     continue
-                if token.value in dir(PyQt5.QtWidgets):
+                if token.value in QTWIDGETS:
                     continue
                 yield (token, 'Unknown widget class "%s"' % token.value)
 
