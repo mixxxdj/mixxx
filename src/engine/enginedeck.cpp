@@ -44,6 +44,11 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
     m_bPassthroughIsActive = false;
     m_bPassthroughWasActive = false;
 
+    // Ensure that input is configured before enabling passthrough
+    m_pPassing->connectValueChangeRequest(
+            this, SLOT(slotPassthroughChangeRequest(double)),
+            Qt::DirectConnection);
+
     // Set up passthrough toggle button
     connect(m_pPassing, SIGNAL(valueChanged(double)),
             this, SLOT(slotPassingToggle(double)),
@@ -162,4 +167,12 @@ bool EngineDeck::isPassthroughActive() const {
 
 void EngineDeck::slotPassingToggle(double v) {
     m_bPassthroughIsActive = v > 0;
+}
+
+void EngineDeck::slotPassthroughChangeRequest(double v) {
+    if (v <= 0 || m_pInputConfigured->get() > 0) {
+        m_pPassing->setAndConfirm(v);
+    } else {
+        emit noPassthroughInputConfigured();
+    }
 }

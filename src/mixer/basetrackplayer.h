@@ -42,7 +42,6 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
-    void noPassthroughInputConfigured();
     void noVinylControlInputConfigured();
 };
 
@@ -78,7 +77,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotPlayToggled(double);
 
   private slots:
-    void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
@@ -129,7 +127,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pRateSlider;
     std::unique_ptr<ControlProxy> m_pPitchAdjust;
     std::unique_ptr<ControlProxy> m_pInputConfigured;
-    std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlStatus;
 };
