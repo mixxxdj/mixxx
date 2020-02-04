@@ -164,8 +164,8 @@ RDJ2.ShiftButton.prototype = new components.Button({
         }
         else
         {
-            RDJ2.logDebug("Connecting container to shift button");
             this.connectedContainers.push(container);
+            RDJ2.logDebug("Connected container " + this.connectedContainers.indexOf(container) + " to shift button 0x" + this.midi[1].toString(16));
         }
     }
 });
@@ -661,20 +661,6 @@ RDJ2.efxUnitKnobShift = function () {
 // Library                                                            //
 ////////////////////////////////////////////////////////////////////////
 
-/* Trax global functions */
-
-RDJ2.updateTraxMode = function (mode) {
-    RDJ2.logDebug("Global Trax Mode: " + mode);
-
-    // find decks in RDJ2 object and update their trax mode
-    for (var memberName in this) {
-        if (this.hasOwnProperty(memberName) && this[memberName] instanceof components.Deck) {
-            this[memberName].jogModeSelector.setTraxMode(mode);
-            RDJ2.logDebug("Global Trax Mode updated for " + memberName);
-        }
-    }
-};
-
 /* Trax knob */
 
 RDJ2.TraxKnob = function (options) {
@@ -696,8 +682,25 @@ RDJ2.TraxKnob.prototype = new components.Encoder({
 
 /* Trax button */
 
-RDJ2.TraxButton = function (options) {
-    components.Button.call(this, options);
+RDJ2.TraxButton = function (obj) {
+    this.detectedDecks = [];
+    /* group and/or outKey cannot be defined at prototype initialization
+       (inside anonymous object passed to components.Button constructor
+       below) as this would cause additional premature engine.makeConnection
+       call that binds prototype object's output callback to the outKey.
+       This would cause uncaught exception when invoking the callback:
+       
+       "TypeError: Result of expression 'this.detectedDecks' [undefined] is not an object"
+
+       which happens because at the time we create the prototype object,
+       we have no information yet about detectedDecks, as detectedDecks is
+       created at new TraxButton object construction, when its prototype is
+       long time existing. */
+    this.group = '[Master]';
+    this.outKey = 'maximize_library';
+
+    this.detectDecks(obj);
+    components.Button.call(this);
 };
 RDJ2.TraxButton.prototype = new components.Button({
     unshift: function () {
@@ -710,18 +713,32 @@ RDJ2.TraxButton.prototype = new components.Button({
         this.group = '[Library]';
         this.inKey = 'MoveFocusForward';
     },
-    group: '[Master]',
-    outKey: 'maximize_library',
     output: function (value, group, control) {
-        RDJ2.updateTraxMode(value);
+        this.updateTraxMode(value);
+    },
+    updateTraxMode: function (mode) {
+        RDJ2.logDebug("Global Trax Mode: " + mode);
+        this.detectedDecks.forEach(function (deck, index) {
+            deck.jogModeSelector.setTraxMode(mode);
+            RDJ2.logDebug("Global Trax Mode updated for deck " + index);
+        });
+    },
+    detectDecks: function (obj) {
+        // find decks in the passed object and store them in the array
+        for (var memberName in obj) {
+            if (obj.hasOwnProperty(memberName) && obj[memberName] instanceof components.Deck) {
+                RDJ2.logDebug("Detected " + memberName);
+                this.detectedDecks.push(obj[memberName]);
+            }
+        }
     },
 });
 
 /* Trax container */
 
-RDJ2.Trax = function () {
+RDJ2.Trax = function (obj) {
     this.traxKnob = new RDJ2.TraxKnob();
-    this.traxButton = new RDJ2.TraxButton();
+    this.traxButton = new RDJ2.TraxButton(obj);
 };
 RDJ2.Trax.prototype = new components.ComponentContainer();
 
@@ -768,7 +785,7 @@ RDJ2.init = function (id, debug) {
     RDJ2.fx1.init();
 
     // Trax/library
-    RDJ2.trax = new RDJ2.Trax();
+    RDJ2.trax = new RDJ2.Trax(RDJ2);
 
     // connect decks, efx units and trax to shift buttons
     RDJ2.leftShiftButton.connectContainer(RDJ2.leftDeck);
