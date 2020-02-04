@@ -284,6 +284,8 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
         return false;
     }
 
+    // Ignore tracks with empty location fields. The track location is used as
+    // identifier by Serato (e.g. it's also used to reference them in Crates).
     if (track->location.isEmpty()) {
         qWarning() << "Found track with empty location field.";
         return false;
