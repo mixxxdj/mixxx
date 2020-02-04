@@ -292,7 +292,7 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
     return true;
 }
 
-inline QString parseCrateTrack(QIODevice* buffer) {
+inline QString parseCrateTrackPath(QIODevice* buffer) {
     QString location;
     QByteArray headerData = buffer->read(kHeaderSize);
     while (headerData.length() == kHeaderSize) {
@@ -397,7 +397,7 @@ QString parseCrate(const QSqlDatabase& database, const QString& databasePath,
         case FieldId::Track: {
             QBuffer buffer = QBuffer(&data);
             buffer.open(QIODevice::ReadOnly);
-            QString location = parseCrateTrack(&buffer);
+            QString location = parseCrateTrackPath(&buffer);
             if (!location.isEmpty()) {
                 int trackId = trackIdMap.value(location, -1);
                 insertTrackIntoPlaylist(database, playlistId, trackId, trackCount);
