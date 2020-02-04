@@ -162,13 +162,13 @@ inline quint32 bytesToUInt32(const QByteArray& data) {
 inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
     QByteArray headerData = buffer->read(kHeaderSize);
     while (headerData.length() == kHeaderSize) {
-        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
         quint32 fieldId = bytesToUInt32(headerData.mid(0, sizeof(quint32)));
         quint32 fieldSize = bytesToUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = buffer->read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qWarning() << "Failed to read "
                        << fieldSize
                        << " bytes for "
@@ -266,12 +266,14 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
             // is a string instead of an unsigned integer. Since we already
             // parse the integer version, it doesn't make sense to parse this.
             break;
-        default:
+        default: {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qDebug() << "Ignoring unknown field "
                      << fieldName
                      << " ("
                      << fieldSize
                      << " bytes).";
+        }
         }
 
         headerData = buffer->read(kHeaderSize);
@@ -298,13 +300,13 @@ inline QString parseCrateTrackPath(QIODevice* buffer) {
     QString location;
     QByteArray headerData = buffer->read(kHeaderSize);
     while (headerData.length() == kHeaderSize) {
-        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
         quint32 fieldId = bytesToUInt32(headerData.mid(0, sizeof(quint32)));
         quint32 fieldSize = bytesToUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = buffer->read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qWarning() << "Failed to read "
                        << fieldSize
                        << " bytes for "
@@ -318,12 +320,14 @@ inline QString parseCrateTrackPath(QIODevice* buffer) {
         case FieldId::TrackPath:
             location = bytesToQString(data, fieldSize);
             break;
-        default:
+        default: {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qDebug() << "Ignoring unknown field "
                      << fieldName
                      << " ("
                      << fieldSize
                      << " bytes).";
+        }
         }
 
         headerData = buffer->read(kHeaderSize);
@@ -371,13 +375,13 @@ QString parseCrate(const QSqlDatabase& database, const QString& databasePath,
     int trackCount = 0;
     QByteArray headerData = crateFile.read(kHeaderSize);
     while (headerData.length() == kHeaderSize) {
-        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
         quint32 fieldId = bytesToUInt32(headerData.mid(0, sizeof(quint32)));
         quint32 fieldSize = bytesToUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = crateFile.read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qWarning() << "Failed to read "
                        << fieldSize
                        << " bytes for "
@@ -408,7 +412,8 @@ QString parseCrate(const QSqlDatabase& database, const QString& databasePath,
             }
             break;
         }
-        default:
+        default: {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qDebug() << "Ignoring unknown field "
                      << fieldName
                      << " ("
@@ -416,6 +421,7 @@ QString parseCrate(const QSqlDatabase& database, const QString& databasePath,
                      << " bytes) in database "
                      << crateFilePath
                      << ".";
+        }
         }
 
         headerData = crateFile.read(kHeaderSize);
@@ -534,13 +540,13 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     QMap<QString, int> trackIdMap;
     QByteArray headerData = databaseFile.read(kHeaderSize);
     while (headerData.length() == kHeaderSize) {
-        QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
         quint32 fieldId = bytesToUInt32(headerData.mid(0, sizeof(quint32)));
         quint32 fieldSize = bytesToUInt32(headerData.mid(sizeof(quint32), kHeaderSize));
 
         // Read field data
         QByteArray data = databaseFile.read(fieldSize);
         if (static_cast<quint32>(data.length()) != fieldSize) {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qWarning() << "Failed to read "
                        << fieldSize
                        << " bytes for "
@@ -595,7 +601,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             }
             break;
         }
-        default:
+        default: {
+            QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
             qDebug() << "Ignoring unknown field "
                      << fieldName
                      << " ("
@@ -603,6 +610,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                      << " bytes) in database "
                      << databaseFilePath
                      << ".";
+        }
         }
 
         headerData = databaseFile.read(kHeaderSize);
