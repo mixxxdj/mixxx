@@ -23,11 +23,6 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
         return true;
     }
 
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override {
-        return true;
-    }
-
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
     // Sets the quality value by its index
