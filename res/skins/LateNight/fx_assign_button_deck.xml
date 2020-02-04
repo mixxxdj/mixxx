@@ -16,18 +16,17 @@ Variables:
   <PushButton>
     <TooltipId>EffectUnit_<Variable name="Type"/>_enabled</TooltipId>
     <ObjectName>FxAssignButtonDeck</ObjectName>
-    <Size>40f,20f</Size>
+    <Size><Variable name="Width"/>f,20f</Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
-    <Elide>middle</Elide>
     <State>
       <Number>0</Number>
-      <Text>FxUnit<Variable name="FxUnit"/></Text>
+      <Text><Variable name="Text"/><Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text>FxUnit<Variable name="FxUnit"/></Text>
+      <Text><Variable name="Text"/><Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
     </State>
     <Connection>
