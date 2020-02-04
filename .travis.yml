@@ -21,6 +21,8 @@ jobs:
       if: type != pull_request
       os: linux
       dist: xenial
+      language: python
+      python: 3.7
       # There are too many files in the repo that have formatting issues. We'll
       # disable these checks for now when pushing directly (but still run these
       # on Pull Requests!).
@@ -29,35 +31,25 @@ jobs:
         directories:
           - $HOME/.cache/pre-commit
       before_install:
-        - pip3 install pre-commit
+        - pip install pre-commit==2.0.1
       script:
         - pre-commit run --all-files
-      addons:
-        apt:
-          packages:
-            - python3
-            - python3-pip
-            - python3-setuptools
-            - python3-wheel
+      addons: []
 
     - name: pre-commit-pr
       if: type == pull_request
       os: linux
       dist: xenial
+      language: python
+      python: 3.7
       cache:
         directories:
           - $HOME/.cache/pre-commit
       before_install:
-        - pip3 install pre-commit
+        - pip install pre-commit==2.0.1
       script:
         - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
-      addons:
-        apt:
-          packages:
-            - python3
-            - python3-pip
-            - python3-setuptools
-            - python3-wheel
+      addons: []
 
     - name: Ubuntu/gcc/SCons build
       os: linux
