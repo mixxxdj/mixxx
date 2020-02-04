@@ -6,7 +6,7 @@ UseTab:       Never
 # NOTE(2019-02-23, uklotzde) The column limit has been set to 0
 # to avoid eagerly reformatting of the existing code base. This
 # may later be changed to 80-100 characters per line if desired.
-ColumnLimit:  0
+ColumnLimit:  80
 ---
 # Customize only those options that differ from the base style!
 # Dumping the options of the base style for comparison:
