@@ -858,9 +858,7 @@ SeratoFeature::SeratoFeature(
             << LIBRARYTABLE_KEY
             << LIBRARYTABLE_TRACKNUMBER
             << LIBRARYTABLE_LOCATION
-            << LIBRARYTABLE_BPM_LOCK
-            << "label"
-            << "serato_db";
+            << LIBRARYTABLE_BPM_LOCK;
 
     QStringList searchColumns;
     searchColumns
