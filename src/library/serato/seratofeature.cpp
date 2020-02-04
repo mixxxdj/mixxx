@@ -667,21 +667,29 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
 #elif defined(__LINUX__)
     // To get devices on Linux, we look for directories under /media and
     // /run/media/$USER.
+    const QString userName = QString::fromLocal8Bit(qgetenv("USER"));
 
     // Add folders under /media to devices.
-    databaseLocations += QDir(QStringLiteral("/media")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QDir mediaDir = QDir(QStringLiteral("/media/"));
+    databaseLocations.append(
+            mediaDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
 
     // Add folders under /media/$USER to devices.
-    QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
-    databaseLocations += mediaUserDir.entryInfoList(
-            QDir::AllDirs | QDir::NoDotAndDotDot);
+    if (mediaDir.cd(userName)) {
+        databaseLocations.append(
+                mediaDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
+    }
 
     // Add folders under /run/media/$USER to devices.
-    QDir runMediaUserDir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
-    databaseLocations += runMediaUserDir.entryInfoList(
-            QDir::AllDirs | QDir::NoDotAndDotDot);
+    QDir runMediaDir = QDir(QStringLiteral("/run/media/"));
+    if (runMediaDir.cd(userName)) {
+        databaseLocations.append(
+                runMediaDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
+    }
 #elif defined(__APPLE__)
-    databaseLocations.append(QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
+    QDir volumesDir = QDir(QStringLiteral("/Volumes"));
+    databaseLocations.append(
+            volumesDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
 #endif
 
     foreach (QFileInfo databaseLocation, databaseLocations) {
