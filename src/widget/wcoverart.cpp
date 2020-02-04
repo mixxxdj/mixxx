@@ -284,3 +284,10 @@ void WCoverArt::dropEvent(QDropEvent *event) {
         event->ignore();
     }
 }
+
+bool WCoverArt::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QWidget::event(pEvent);
+}

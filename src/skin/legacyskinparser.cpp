@@ -1504,7 +1504,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
     QString path = node.attribute("src");
 
     std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
-    m_pContext = std::make_unique<SkinContext>(*pOldContext);
+    m_pContext = std::make_unique<SkinContext>(pOldContext.get());
 
     QDomElement templateNode = loadTemplate(path);
 

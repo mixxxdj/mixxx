@@ -82,7 +82,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             // context.
             QScopedPointer<SkinContext> createdStateContext;
             if (context.hasVariableUpdates(state)) {
-                createdStateContext.reset(new SkinContext(context));
+                createdStateContext.reset(new SkinContext(&context));
                 createdStateContext->updateVariables(state);
             }
 
