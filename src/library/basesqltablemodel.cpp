@@ -120,6 +120,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE,
+                        tr("Samplerate"), 50);
 }
 
 void BaseSqlTableModel::initSortColumnMapping() {
