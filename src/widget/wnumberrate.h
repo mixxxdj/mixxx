@@ -21,6 +21,8 @@ class WNumberRate final : public WNumber {
   public:
     explicit WNumberRate(const char *group, QWidget *parent=nullptr);
 
+    void setup(const QDomNode& node, const SkinContext& context) override;
+
   private slots:
     void setValue(double dValue) override;
 

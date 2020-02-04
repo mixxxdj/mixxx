@@ -19,8 +19,6 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
 
     // Indicates that it uses the compression slider section of the preferences
     bool usesCompressionSlider() const override;
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override;
 
     // Returns the list of compression values supported, to assign them to the slider
     virtual QList<int> getCompressionValues() const override;
@@ -49,11 +47,6 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
 };
-
-inline bool EncoderFlacSettings::usesOptionGroups() const
-{
-    return true;
-}
 
 #endif // ENCODERFLACSETTINGS_H
 

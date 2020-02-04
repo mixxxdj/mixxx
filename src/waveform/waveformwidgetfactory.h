@@ -1,5 +1,6 @@
-#ifndef WAVEFORMWIDGETFACTORY_H
-#define WAVEFORMWIDGETFACTORY_H
+#pragma once
+
+#include <vector>
 
 #include <QObject>
 #include <QTime>
@@ -36,11 +37,14 @@ class WaveformWidgetAbstractHandle {
 class WaveformWidgetHolder {
   public:
     WaveformWidgetHolder();
+    WaveformWidgetHolder(WaveformWidgetHolder&&) = default;
+    WaveformWidgetHolder& operator=(WaveformWidgetHolder&&) = default;
   private:
-    WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
-                         WWaveformViewer* waveformViewer,
-                         const QDomNode& skinNode,
-                         const SkinContext& skinContext);
+    WaveformWidgetHolder(
+            WaveformWidgetAbstract* waveformWidget,
+            WWaveformViewer* waveformViewer,
+            const QDomNode& skinNode,
+            const SkinContext& parentContext);
 
     WaveformWidgetAbstract* m_waveformWidget;
     WWaveformViewer* m_waveformViewer;
@@ -62,8 +66,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
-    bool setWaveformWidget(WWaveformViewer* viewer,
-                           const QDomElement &node, const SkinContext& context);
+    bool setWaveformWidget(
+            WWaveformViewer* viewer,
+            const QDomElement &node,
+            const SkinContext& parentContext);
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
@@ -139,7 +145,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     QVector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
 
     //Currently in use widgets/visual/node
-    QVector<WaveformWidgetHolder> m_waveformWidgetHolders;
+    std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
 
     WaveformWidgetType::Type m_type;
 
@@ -170,5 +176,3 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_vSyncType;
     double m_playMarkerPosition;
 };
-
-#endif // WAVEFORMWIDGETFACTORY_H
