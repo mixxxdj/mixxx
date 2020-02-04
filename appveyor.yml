@@ -103,12 +103,8 @@ for:
 
   test_script:
     - echo *** Testing
-    # Calling mixxx-test under bash to have standard output
-    # and use stdbuf to unbuffer standard & error output
-    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
-    - timeout 5 > NUL
-    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --benchmark 2>&1"
-    - timeout 5 > NUL
+    - dist*/mixxx-test.exe --gtest_output=xml:test_results.xml
+    - dist*/mixxx-test.exe --benchmark
 
   after_test:
     - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
