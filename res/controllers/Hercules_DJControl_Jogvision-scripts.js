@@ -152,7 +152,7 @@ DJCJV.shutdown = function() {
 };
 
 // Beat led ACTIVATE (move)
-DJCJV.beatActive = function(value, group, control) {
+DJCJV.beatActive = function(value, group) {
 	if (value === 1) {
 		return;
 	}
@@ -164,7 +164,7 @@ DJCJV.beatActive = function(value, group, control) {
 	DJCJV.Channel[group].beatPosition = DJCJV.Channel[group].beatPosition >= 4 ? 1 : DJCJV.Channel[group].beatPosition  + 1;
 };
 // Beat led DEACTIVATE (off all)
-DJCJV.beatInactive = function(value, group, control) {
+DJCJV.beatInactive = function(value, group) {
 	midi.sendShortMsg(DJCJV.Channel[group].central, 0x3A, off);
 	midi.sendShortMsg(DJCJV.Channel[group].central, 0x3B, off);
 	midi.sendShortMsg(DJCJV.Channel[group].central, 0x3C, off);
@@ -174,7 +174,7 @@ DJCJV.beatInactive = function(value, group, control) {
 };
 
 //Jogwheels inner LED display - Play position
-DJCJV.wheelInnerUpdate = function(value, group, control) {
+DJCJV.wheelInnerUpdate = function(value, group) {
 	var playPos = value * 127;
 	midi.sendShortMsg(DJCJV.Channel[group].deck, 0x61, playPos);
 	if (engine.getValue(group, "end_of_track")) {
@@ -190,7 +190,7 @@ DJCJV.wheelInnerUpdate = function(value, group, control) {
 };
 
 //Vu Meter
-DJCJV.vuMeterUpdate = function(value, group, control) {
+DJCJV.vuMeterUpdate = function(value, group) {
 	midi.sendShortMsg(DJCJV.Channel[group].central, 0x44, value * 6);
 };
 
@@ -242,7 +242,7 @@ DJCJV.beatjumpSize = function(channel, control, value, status, group) {
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels.
-DJCJV.vinylButton = function(channel, control, value, status, group) {
+DJCJV.vinylButton = function(channel, control, value) {
 	if (!value) {
 		return;
 	}
