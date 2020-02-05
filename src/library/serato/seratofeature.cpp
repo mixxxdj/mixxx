@@ -10,6 +10,7 @@
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -17,7 +18,6 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "library/dao/trackschema.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -101,7 +101,7 @@ const QString kSeratoLibraryTable = QStringLiteral("serato_library");
 const QString kSeratoPlaylistsTable = QStringLiteral("serato_playlists");
 const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_playlist_tracks");
 
-constexpr int kHeaderSize = 2*sizeof(quint32);
+constexpr int kHeaderSize = 2 * sizeof(quint32);
 
 int createPlaylist(const QSqlDatabase& database, const QString& name, const QString& databasePath) {
     QSqlQuery query(database);
@@ -343,12 +343,15 @@ inline QString parseCrateTrackPath(QIODevice* buffer) {
     return location;
 }
 
-QString parseCrate(const QSqlDatabase& database, const QString& databasePath,
-                   const QString& crateFilePath, const QMap<QString, int>& trackIdMap) {
+QString parseCrate(
+        const QSqlDatabase& database,
+        const QString& databasePath,
+        const QString& crateFilePath,
+        const QMap<QString, int>& trackIdMap) {
     QString crateName = QFileInfo(crateFilePath).baseName();
     qDebug() << "Parsing crate"
-               << crateName
-               << "at" << crateFilePath;
+             << crateName
+             << "at" << crateFilePath;
 
     //Open the database connection in this thread.
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
@@ -483,22 +486,24 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 
     QSqlQuery query(database);
     query.prepare(
-            "INSERT INTO " + kSeratoLibraryTable + " ("
-            + LIBRARYTABLE_TITLE + ", "
-            + LIBRARYTABLE_ARTIST + ", "
-            + LIBRARYTABLE_ALBUM + ", "
-            + LIBRARYTABLE_GENRE + ", "
-            + LIBRARYTABLE_COMMENT + ", "
-            + LIBRARYTABLE_GROUPING + ", "
-            + LIBRARYTABLE_YEAR + ", "
-            + LIBRARYTABLE_DURATION + ", "
-            + LIBRARYTABLE_BITRATE + ", "
-            + LIBRARYTABLE_SAMPLERATE + ", "
-            + LIBRARYTABLE_BPM + ", "
-            + LIBRARYTABLE_KEY + ", "
-            + LIBRARYTABLE_LOCATION + ", "
-            + LIBRARYTABLE_BPM_LOCK + ", "
-            + LIBRARYTABLE_DATETIMEADDED + ", "
+            "INSERT INTO " +
+            kSeratoLibraryTable + " (" +
+            LIBRARYTABLE_TITLE + ", " +
+            LIBRARYTABLE_ARTIST + ", " +
+            LIBRARYTABLE_ALBUM + ", " +
+            LIBRARYTABLE_GENRE + ", " +
+            LIBRARYTABLE_COMMENT + ", " +
+            LIBRARYTABLE_GROUPING + ", " +
+            LIBRARYTABLE_YEAR + ", " +
+            LIBRARYTABLE_DURATION + ", " +
+            LIBRARYTABLE_BITRATE + ", " +
+            LIBRARYTABLE_SAMPLERATE + ", " +
+            LIBRARYTABLE_BPM + ", " +
+            LIBRARYTABLE_KEY + ", " +
+            LIBRARYTABLE_LOCATION + ", " +
+            LIBRARYTABLE_BPM_LOCK + ", " +
+            LIBRARYTABLE_DATETIMEADDED +
+            ", "
             "label, "
             "serato_db"
             ") VALUES ("
@@ -629,9 +634,13 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     if (crateDir.cd(kCrateDirectory)) {
         QStringList filters;
         filters << kCrateFilter;
-        foreach(const QString& entry, crateDir.entryList(filters)) {
+        foreach (const QString& entry, crateDir.entryList(filters)) {
             QString crateFilePath = crateDir.filePath(entry);
-            QString crateName = parseCrate(database, databaseDir.path(), crateFilePath, trackIdMap);
+            QString crateName = parseCrate(
+                    database,
+                    databaseDir.path(),
+                    crateFilePath,
+                    trackIdMap);
             if (!crateName.isEmpty()) {
                 QList<QVariant> data;
                 data << QVariant(crateFilePath)
@@ -842,52 +851,52 @@ void SeratoPlaylistModel::initSortColumnMapping() {
         m_columnIndexBySortColumnId[i] = -1;
     }
 
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART]
-        = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION]
-        = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
@@ -972,10 +981,14 @@ SeratoFeature::SeratoFeature(
     createPlaylistTracksTable(database, kSeratoPlaylistTracksTable);
     transaction.commit();
 
-    connect(&m_databasesFutureWatcher, &QFutureWatcher<QList<TreeItem*>>::finished,
-            this, &SeratoFeature::onSeratoDatabasesFound);
-    connect(&m_tracksFutureWatcher, &QFutureWatcher<QString>::finished,
-            this, &SeratoFeature::onTracksFound);
+    connect(&m_databasesFutureWatcher,
+            &QFutureWatcher<QList<TreeItem*>>::finished,
+            this,
+            &SeratoFeature::onSeratoDatabasesFound);
+    connect(&m_tracksFutureWatcher,
+            &QFutureWatcher<QString>::finished,
+            this,
+            &SeratoFeature::onTracksFound);
 
     // initialize the model
     m_childModel.setRootItem(std::make_unique<TreeItem>(this));

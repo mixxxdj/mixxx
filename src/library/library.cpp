@@ -20,6 +20,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 
+#include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
@@ -28,12 +29,11 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
-#include "library/rekordbox/rekordboxfeature.h"
-#include "library/serato/seratofeature.h"
-#include "library/analysisfeature.h"
 
 #include "mixer/playermanager.h"
 
