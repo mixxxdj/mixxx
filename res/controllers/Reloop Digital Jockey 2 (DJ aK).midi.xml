@@ -795,6 +795,152 @@
                 </options>
             </control>
 
+        <!-- Right EFX -->
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.enableButtons[1].input</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.enableButtons[1].input</key>
+                <status>0x90</status>
+                <midino>0x66</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.enableButtons[2].input</key>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.enableButtons[2].input</key>
+                <status>0x90</status>
+                <midino>0x61</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.enableButtons[3].input</key>
+                <status>0x90</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.enableButtons[3].input</key>
+                <status>0x90</status>
+                <midino>0x68</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.knobs[1].input</key>
+                <status>0xB0</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.knobs[1].input</key>
+                <status>0xB0</status>
+                <midino>0x62</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.knobs[2].input</key>
+                <status>0xB0</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.knobs[2].input</key>
+                <status>0xB0</status>
+                <midino>0x61</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.knobs[3].input</key>
+                <status>0xB0</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.knobs[3].input</key>
+                <status>0xB0</status>
+                <midino>0x64</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.dryWetKnob.input</key>
+                <status>0xB0</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopsizeKnob.input</key>
+                <status>0xB0</status>
+                <midino>0x63</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.effectFocusButton.input</key>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.fx2.effectFocusButton.input</key>
+                <status>0x90</status>
+                <midino>0x63</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
         <!-- Left Loop Unit -->
             <control>
                 <group>[Channel1]</group>
@@ -864,6 +1010,80 @@
                 <key>RDJ2.leftDeck.loopActiveButton.input</key>
                 <status>0x90</status>
                 <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+        <!-- Right Loop Unit -->
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopInButton.input</key>
+                <status>0x90</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopInButton.input</key>
+                <status>0x90</status>
+                <midino>0x69</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopOutButton.input</key>
+                <status>0x90</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopOutButton.input</key>
+                <status>0x90</status>
+                <midino>0x6A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.autoLoopButton.input</key>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.autoLoopButton.input</key>
+                <status>0x90</status>
+                <midino>0x6B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopActiveButton.input</key>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- SHIFT -->
+                <group>[Channel2]</group>
+                <key>RDJ2.rightDeck.loopActiveButton.input</key>
+                <status>0x90</status>
+                <midino>0x6C</midino>
                 <options>
                     <script-binding/>
                 </options>

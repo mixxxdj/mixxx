@@ -753,7 +753,7 @@ RDJ2.init = function (id, debug) {
     
     RDJ2.logInfo("Initializing controller");
 
-    // left and right shift buttons
+    // left and right shift button
     RDJ2.leftShiftButton = new RDJ2.ShiftButton([0x90, 0x0A]);
     RDJ2.rightShiftButton = new RDJ2.ShiftButton([0x90, 0x46]);
     
@@ -761,7 +761,7 @@ RDJ2.init = function (id, debug) {
     RDJ2.leftDeck = new RDJ2.Deck(1);
     RDJ2.rightDeck = new RDJ2.Deck(2);
 
-    // efx unit
+    // effect unit 1
     RDJ2.fx1 = new components.EffectUnit(1);
     RDJ2.fx1.EffectUnitKnob.prototype.unshift = RDJ2.efxUnitKnobUnshift;
     RDJ2.fx1.EffectUnitKnob.prototype.shift = RDJ2.efxUnitKnobShift;
@@ -784,6 +784,29 @@ RDJ2.init = function (id, debug) {
     // Now init the fx unit
     RDJ2.fx1.init();
 
+    // effect unit 2
+    RDJ2.fx2 = new components.EffectUnit(2);
+    RDJ2.fx2.EffectUnitKnob.prototype.unshift = RDJ2.efxUnitKnobUnshift;
+    RDJ2.fx2.EffectUnitKnob.prototype.shift = RDJ2.efxUnitKnobShift;
+    RDJ2.fx2.EffectUnitKnob.prototype.eu = RDJ2.fx2;    // hack for use by reimplemented unshift/shift
+    RDJ2.fx2.enableButtons[1].midi = [0x90, 0x48];
+    RDJ2.fx2.enableButtons[2].midi = [0x90, 0x43];
+    RDJ2.fx2.enableButtons[3].midi = [0x90, 0x4A];
+    RDJ2.fx2.knobs[1].midi = [0xB0, 0x44];
+    RDJ2.fx2.knobs[2].midi = [0xB0, 0x43];
+    RDJ2.fx2.knobs[3].midi = [0xB0, 0x46];
+    RDJ2.fx2.dryWetKnob.midi = [0xB0, 0x45];
+    RDJ2.fx2.dryWetKnob.input = RDJ2.knobInput;
+    RDJ2.fx2.effectFocusButton.midi = [0x90, 0x45];
+    // We need to call unshift() again for each EffectUnitKnob as we
+    // swapped its implementation after fx object construction (when 
+    // it is called automatically)
+    for (var n = 1; n <= 3; n++) {
+        RDJ2.fx2.knobs[n].unshift();
+    }
+    // Now init the fx unit
+    RDJ2.fx2.init();
+
     // Trax/library
     RDJ2.trax = new RDJ2.Trax(RDJ2);
 
@@ -792,6 +815,7 @@ RDJ2.init = function (id, debug) {
     RDJ2.leftShiftButton.connectContainer(RDJ2.fx1);
     RDJ2.leftShiftButton.connectContainer(RDJ2.trax);
     RDJ2.rightShiftButton.connectContainer(RDJ2.rightDeck);
+    RDJ2.rightShiftButton.connectContainer(RDJ2.fx2);
     RDJ2.rightShiftButton.connectContainer(RDJ2.trax);
 };
 
