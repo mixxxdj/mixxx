@@ -645,7 +645,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                 QList<QVariant> data;
                 data << QVariant(crateFilePath)
                      << QVariant(true);
-                databaseItem->appendChild(crateName, data);
+                TreeItem* crateItem = databaseItem->appendChild(crateName, data);
+                crateItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
             }
         }
     } else {
