@@ -150,7 +150,6 @@ DJCJV.shutdown = function() {
 		engine.stopTimer(ledRotationTimer);
 		ledRotationTimer = 0;
 	}
-	print("Hercules DJControl Jogvision id: \""+id+"\" finalized");
 };
 
 // Beat led ACTIVATE (move)
