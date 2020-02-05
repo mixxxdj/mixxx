@@ -98,8 +98,8 @@ const QString kSmartCrateDirectory = QStringLiteral("Smart Crates");
 const QString kSmartCrateFilter = QStringLiteral("*.scrate");
 
 const QString kSeratoLibraryTable = QStringLiteral("serato_library");
-const QString kSeratoPlaylistsTable = QStringLiteral("serato_library");
-const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_library");
+const QString kSeratoPlaylistsTable = QStringLiteral("serato_playlists");
+const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_playlist_tracks");
 
 constexpr int kHeaderSize = 2*sizeof(quint32);
 
