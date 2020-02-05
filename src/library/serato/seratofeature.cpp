@@ -440,8 +440,8 @@ QString parseCrate(const QSqlDatabase& database, const QString& databasePath,
 
 QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* databaseItem) {
     QString databaseName = databaseItem->getLabel();
-    QDir databaseDir = QDir(databaseItem->getData().toList()[0].toString());
-    QString databaseFilePath = databaseDir.filePath(kDatabaseFilename);
+    QString databaseFilePath = databaseItem->getData().toList()[0].toString();
+    QDir databaseDir = QFileInfo(databaseFilePath).dir();
 
     QDir databaseRootDir = QDir(databaseDir);
     databaseRootDir.cdUp();
@@ -529,7 +529,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
         return QString();
     }
 
-    int playlistId = createPlaylist(database, databaseDir.path(), databaseDir.path());
+    int playlistId = createPlaylist(database, databaseFilePath, databaseDir.path());
     if (playlistId < 0) {
         qWarning() << "Failed to create library playlist for "
                    << databaseFilePath;
@@ -722,7 +722,7 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
         foundDatabase->setLabel(displayPath);
 
         QList<QVariant> data;
-        data << QVariant(databaseDir.path())
+        data << QVariant(databaseDir.filePath(kDatabaseFilename))
              << QVariant(false);
         foundDatabase->setData(data);
 
