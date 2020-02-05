@@ -697,7 +697,7 @@
             </control>
             <control>   <!-- SHIFT -->
                 <group>[Channel1]</group>
-                <key>RDJ2.fx1.enableButtons[3].input</key>
+                <key>RDJ2.leftDeck.fx1AssignmentButton.input</key>
                 <status>0x90</status>
                 <midino>0x27</midino>
                 <options>
@@ -787,7 +787,7 @@
             </control>
             <control>   <!-- SHIFT -->
                 <group>[Channel1]</group>
-                <key>RDJ2.fx1.effectFocusButton.input</key>
+                <key>RDJ2.leftDeck.fx2AssignmentButton.input</key>
                 <status>0x90</status>
                 <midino>0x2C</midino>
                 <options>
@@ -843,7 +843,7 @@
             </control>
             <control>   <!-- SHIFT -->
                 <group>[Channel2]</group>
-                <key>RDJ2.fx2.enableButtons[3].input</key>
+                <key>RDJ2.rightDeck.fx1AssignmentButton.input</key>
                 <status>0x90</status>
                 <midino>0x68</midino>
                 <options>
@@ -933,7 +933,7 @@
             </control>
             <control>   <!-- SHIFT -->
                 <group>[Channel2]</group>
-                <key>RDJ2.fx2.effectFocusButton.input</key>
+                <key>RDJ2.rightDeck.fx2AssignmentButton.input</key>
                 <status>0x90</status>
                 <midino>0x63</midino>
                 <options>

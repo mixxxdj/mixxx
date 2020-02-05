@@ -80,6 +80,8 @@ RDJ2.BUTTONMAP_CH0_CH1 = {
     loopout: [0x10, 0x4C],
     autoloop: [0x11, 0x4D],
     loopactive: [0x12, 0x4E],
+    fx1assign: [0x27, 0x68],    //this is the shifted Activate 3 button
+    fx2assign: [0x2C, 0x63],    //this is the shifted FX ON button
 };
 
 RDJ2.KNOBMAP_CH0_CH1 = {
@@ -340,6 +342,18 @@ RDJ2.Deck = function (number) {
     this.loopOutButton = new RDJ2.LoopOutButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopout[number - 1]]);
     this.autoLoopButton = new RDJ2.AutoLoopButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.autoloop[number - 1]]);
     this.loopActiveButton = new RDJ2.LoopActiveButton([0x90, RDJ2.BUTTONMAP_CH0_CH1.loopactive[number - 1]]);
+
+    //effect assignment switches
+    this.fx1AssignmentButton = new components.EffectAssignmentButton({
+        midi: [0x90, RDJ2.BUTTONMAP_CH0_CH1.fx1assign[number - 1]],
+        effectUnit: 1,
+        group: '[Channel' + number + ']',
+    });
+    this.fx2AssignmentButton = new components.EffectAssignmentButton({
+        midi: [0x90, RDJ2.BUTTONMAP_CH0_CH1.fx2assign[number - 1]],
+        effectUnit: 2,
+        group: '[Channel' + number + ']',
+    });
 
 
     // Set the group properties of the above Components and connect their output callback functions
