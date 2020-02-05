@@ -732,23 +732,100 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
     return foundDatabases;
 }
 
-void clearTable(QSqlDatabase& database, QString tableName) {
+bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
+    qDebug() << "Creating Serato library table: " << tableName;
+
     QSqlQuery query(database);
-    query.prepare("DELETE FROM " + tableName);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "    title TEXT,"
+            "    artist TEXT,"
+            "    album TEXT,"
+            "    genre TEXT,"
+            "    comment TEXT,"
+            "    grouping TEXT,"
+            "    year INTEGER,"
+            "    duration INTEGER,"
+            "    bitrate TEXT,"
+            "    samplerate TEXT,"
+            "    bpm FLOAT,"
+            "    key TEXT,"
+            "    location TEXT,"
+            "    bpm_lock INTEGER,"
+            "    datetime_added DEFAULT CURRENT_TIMESTAMP,"
+            "    label TEXT,"
+            "    composer TEXT,"
+            "    filename TEXT,"
+            "    filetype TEXT,"
+            "    remixer TEXT,"
+            "    size INTEGER,"
+            "    tracknumber TEXT,"
+            "    serato_db TEXT"
+            ");");
 
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "tableName:" << tableName;
-        return;
+        LOG_FAILED_QUERY(query);
+        return false;
     }
 
-    query.prepare("DELETE FROM sqlite_sequence WHERE name=:name");
-    query.bindValue(":name", tableName);
+    return true;
+}
+
+bool createPlaylistsTable(QSqlDatabase& database, const QString& tableName) {
+    qDebug() << "Creating Serato playlists table: " << tableName;
+
+    QSqlQuery query(database);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY,"
+            "    name TEXT,"
+            "    serato_db TEXT"
+            ");");
+
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "tableName:" << tableName;
-        return;
+        LOG_FAILED_QUERY(query);
+        return false;
     }
 
-    qDebug() << "Serato table entries of '" << tableName << "' have been cleared.";
+    return true;
+}
+
+bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName) {
+    qDebug() << "Creating Serato playlist tracks table: " << tableName;
+
+    QSqlQuery query(database);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "    playlist_id INTEGER REFERENCES serato_playlists(id),"
+            "    track_id INTEGER REFERENCES serato_library(id),"
+            "    position INTEGER"
+            ");");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    return true;
+}
+
+bool dropTable(QSqlDatabase& database, QString tableName) {
+    qDebug() << "Dropping Serato table: " << tableName;
+
+    QSqlQuery query(database);
+    query.prepare("DROP TABLE IF EXISTS " + tableName);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    return true;
 }
 
 } // anonymous namespace
@@ -882,12 +959,17 @@ SeratoFeature::SeratoFeature(
 
     m_title = tr("Serato");
 
-    //Clear any previous Serato database entries if they exist
     QSqlDatabase database = m_pTrackCollection->database();
     ScopedTransaction transaction(database);
-    clearTable(database, kSeratoPlaylistTracksTable);
-    clearTable(database, kSeratoPlaylistsTable);
-    clearTable(database, kSeratoLibraryTable);
+    // Drop any leftover temporary Serato database tables if they exist
+    dropTable(database, kSeratoPlaylistTracksTable);
+    dropTable(database, kSeratoPlaylistsTable);
+    dropTable(database, kSeratoLibraryTable);
+
+    // Create new temporary Serato database tables
+    createLibraryTable(database, kSeratoLibraryTable);
+    createPlaylistsTable(database, kSeratoPlaylistsTable);
+    createPlaylistTracksTable(database, kSeratoPlaylistTracksTable);
     transaction.commit();
 
     connect(&m_databasesFutureWatcher, &QFutureWatcher<QList<TreeItem*>>::finished,
@@ -902,6 +984,15 @@ SeratoFeature::SeratoFeature(
 SeratoFeature::~SeratoFeature() {
     m_databasesFuture.waitForFinished();
     m_tracksFuture.waitForFinished();
+
+    // Drop temporary Serato database tables on shutdown
+    QSqlDatabase database = m_pTrackCollection->database();
+    ScopedTransaction transaction(database);
+    dropTable(database, kSeratoPlaylistTracksTable);
+    dropTable(database, kSeratoPlaylistsTable);
+    dropTable(database, kSeratoLibraryTable);
+    transaction.commit();
+
     delete m_pSeratoPlaylistModel;
 }
 
