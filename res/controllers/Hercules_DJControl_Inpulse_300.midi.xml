@@ -121,8 +121,8 @@
 			
       <!--Vinyl button-->
 			<control>
-				<group>[Master]</group>
-				<key>DJCi300.vinylButtonDA</key>
+				<group>[Channel1]</group>
+				<key>DJCi300.vinylButton</key>
 				<description>Vinyl Deck A</description>
 				<status>0x91</status>
 				<midino>0x03</midino>
@@ -258,9 +258,9 @@
 			</control>
       <!--Vinyl button-->
 			<control>
-				<group>[Master]</group>
-				<key>DJCi300.vinylButtonDB</key>
-				<description>Vinyl</description>
+				<group>[Channel2]</group>
+				<key>DJCi300.vinylButton</key>
+				<description>Vinyl Deck B</description>
 				<status>0x92</status>
 				<midino>0x03</midino>
 				<options>
