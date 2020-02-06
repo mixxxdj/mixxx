@@ -65,7 +65,7 @@ DJCi300.vuMeterUpdateMaster = function(value, group, control) {
 
 DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
     value = (value * 122) + 5;
-    var status = (group == "[Channel1]") ? 0xB1 : 0xB2;
+    var status = (group === "[Channel1]") ? 0xB1 : 0xB2;
     midi.sendShortMsg(status, 0x40, value);
 };
 
