@@ -51,8 +51,8 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
-DJCi300.vuMeterUpdate = function(value, group, control) {
-    value = (value * 127) + 5;
+DJCi300.vuMeterUpdateMaster = function(value, group, control) {
+    value = (value * 122) + 5;
     switch (control) {
     case "VuMeterL":
         midi.sendShortMsg(0xB0, 0x40, value);
@@ -63,22 +63,10 @@ DJCi300.vuMeterUpdate = function(value, group, control) {
     }
 };
 
-DJCi300.vuMeterUpdateDA = function(value, group, control) {
-    value = (value * 127) + 5;
-    switch (control) {
-    case "[Channel1]", "VuMeter":
-        midi.sendShortMsg(0xB1, 0x40, value);
-        break;
-    }
-};
-
-DJCi300.vuMeterUpdateDB = function(value, group, control) {
-    value = (value * 127) + 5;
-    switch (control) {
-    case "[Channel2]", "VuMeter":
-        midi.sendShortMsg(0xB2, 0x40, value);
-        break;
-    }
+DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
+    value = (value * 122) + 5;
+    var status = (group == "[Channel1]") ? 0xB1 : 0xB2;
+    midi.sendShortMsg(status, 0x40, value);
 };
 
 DJCi300.init = function() {
@@ -96,10 +84,14 @@ DJCi300.init = function() {
     midi.sendShortMsg(0x90, 0x05, 0x10);
 
     // Connect the VUMeters
-    engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDA");
-    engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDB");
-    engine.connectControl("[Master]", "VuMeterL", "DJCi300.vuMeterUpdate");
-    engine.connectControl("[Master]", "VuMeterR", "DJCi300.vuMeterUpdate");
+    engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+    engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+	engine.getValue("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+    engine.connectControl("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
+    engine.connectControl("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
+	engine.getValue("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
+    engine.getValue("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
 
     // Connect the Browser LEDs
     engine.getValue("[Library]", "MoveFocus");
@@ -111,28 +103,14 @@ DJCi300.init = function() {
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
-DJCi300.vinylButtonDA = function(channel, control, value, _status, _group) {
+DJCi300.vinylButton = function(_channel, _control, value, status, _group) {
     if (value) {
         if (DJCi300.scratchButtonState) {
             DJCi300.scratchButtonState = false;
-            midi.sendShortMsg(0x91, 0x03, 0x00);
-
+            midi.sendShortMsg(status, 0x03, 0x00);
         } else {
             DJCi300.scratchButtonState = true;
-            midi.sendShortMsg(0x91, 0x03, 0x7F);
-        }
-    }
-};
-
-DJCi300.vinylButtonDB = function(channel, control, value, _status, _group) {
-    if (value) {
-        if (DJCi300.scratchButtonState) {
-            DJCi300.scratchButtonState = false;
-            midi.sendShortMsg(0x92, 0x03, 0x00);
-
-        } else {
-            DJCi300.scratchButtonState = true;
-            midi.sendShortMsg(0x92, 0x03, 0x7F);
+            midi.sendShortMsg(status, 0x03, 0x7F);
         }
     }
 };
@@ -219,11 +197,6 @@ DJCi300._bendWheelImpl = function(deck, value) {
 DJCi300.bendWheel = function(channel, control, value, _status, _group) {
     var deck = channel;
     DJCi300._bendWheelImpl(deck, value);
-};
-
-DJCi300.scratchPad = function(channel, control, value, _status, _group) {
-    var deck = channel;
-    DJCi300._scratchWheelImpl(deck, value);
 };
 
 DJCi300.shutdown = function() {
