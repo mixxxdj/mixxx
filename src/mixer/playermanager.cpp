@@ -365,8 +365,8 @@ void PlayerManager::addDeckInner() {
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
                            orientation, group);
-    connect(pDeck, SIGNAL(noPassthroughInputConfigured()),
-            this, SIGNAL(noDeckPassthroughInputConfigured()));
+    connect(pDeck->getEngineDeck(), &EngineDeck::noPassthroughInputConfigured,
+            this, &PlayerManager::noDeckPassthroughInputConfigured);
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 

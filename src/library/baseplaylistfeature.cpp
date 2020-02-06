@@ -74,29 +74,45 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotExportTrackFiles()));
 
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
-    connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotAnalyzePlaylist()));
+    connect(m_pAnalyzePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAnalyzePlaylist);
 
-    connect(&m_playlistDao, SIGNAL(added(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::added,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    connect(&m_playlistDao, SIGNAL(deleted(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::deleted,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
-            this, SLOT(slotPlaylistTableRenamed(int,QString)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::renamed,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableRenamed);
 
-    connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(slotPlaylistContentChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::tracksChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistContentChanged);
 
-    connect(&m_playlistDao, SIGNAL(lockChanged(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao,
+            &PlaylistDAO::lockChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
 
     Library* pLibrary = static_cast<Library*>(parent);
-    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(slotTrackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(switchToView(const QString&)),
-            this, SLOT(slotResetSelectedTrack()));
+    connect(pLibrary,
+            &Library::trackSelected,
+            this,
+            &BasePlaylistFeature::slotTrackSelected);
+    connect(pLibrary,
+            &Library::switchToView,
+            this,
+            &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
