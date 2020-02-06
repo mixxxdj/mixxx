@@ -297,21 +297,21 @@ DJ505.sortLibrary = function(channel, control, value, _status, _group) {
 
     var sortColumn;
     switch (control) {
-        case 0x12:  // SONG
-            sortColumn = 1;
-            break;
-        case 0x13:  // BPM
-            sortColumn = 14;
-            break;
-        case 0x14:  // ARTIST
-            sortColumn = 0;
-            break;
-        case 0x1E:  // KEY
-            sortColumn = 19;
-            break;
-        default:
-            // unknown sort column
-            return;
+    case 0x12:  // SONG
+        sortColumn = 1;
+        break;
+    case 0x13:  // BPM
+        sortColumn = 14;
+        break;
+    case 0x14:  // ARTIST
+        sortColumn = 0;
+        break;
+    case 0x1E:  // KEY
+        sortColumn = 19;
+        break;
+    default:
+        // unknown sort column
+        return;
     }
     engine.setValue("[Library]", "sort_column_toggle", sortColumn);
 };
@@ -1113,24 +1113,24 @@ DJ505.PadSection.prototype.paramButtonPressed = function(channel, control, value
     }
     var button;
     switch (control) {
-        case 0x2A: // PARAMETER 2 -
-            if (this.currentMode.param2MinusButton) {
-                button = this.currentMode.param2MinusButton;
-                break;
-            }
-            /* falls through */
-        case 0x28: // PARAMETER -
-            button = this.currentMode.paramMinusButton;
+    case 0x2A: // PARAMETER 2 -
+        if (this.currentMode.param2MinusButton) {
+            button = this.currentMode.param2MinusButton;
             break;
-        case 0x2B: // PARAMETER 2 +
-            if (this.currentMode.param2PlusButton) {
-                button = this.currentMode.param2PlusButton;
-                break;
-            }
-            /* falls through */
-        case 0x29: // PARAMETER +
-            button = this.currentMode.paramPlusButton;
+        }
+        /* falls through */
+    case 0x28: // PARAMETER -
+        button = this.currentMode.paramMinusButton;
+        break;
+    case 0x2B: // PARAMETER 2 +
+        if (this.currentMode.param2PlusButton) {
+            button = this.currentMode.param2PlusButton;
             break;
+        }
+        /* falls through */
+    case 0x29: // PARAMETER +
+        button = this.currentMode.paramPlusButton;
+        break;
     }
     if (button) {
         button.input(channel, control, value, status, group);
@@ -1499,7 +1499,7 @@ DJ505.RollMode.prototype.setLoopSize = function(loopSize) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.pads[i].color + DJ505.PadColor.DIM_MODIFIER));
+        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.color + DJ505.PadColor.DIM_MODIFIER));
     }
     this.reconnectComponents();
 };
