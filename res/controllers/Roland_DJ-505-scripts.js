@@ -1499,7 +1499,7 @@ DJ505.RollMode.prototype.setLoopSize = function(loopSize) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.pads[i].color + DJ505.PadColor.DIM_MODIFIER));
+        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.color + DJ505.PadColor.DIM_MODIFIER));
     }
     this.reconnectComponents();
 };
