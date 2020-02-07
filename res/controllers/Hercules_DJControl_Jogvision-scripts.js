@@ -1,10 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                                      //
-///////////////////////////////////////////////////////////////////////////////
-/* global engine                                                             */
-/* global print                                                              */
-/* global midi                                                               */
-///////////////////////////////////////////////////////////////////////////////
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
