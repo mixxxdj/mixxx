@@ -48,6 +48,15 @@ class WPushButton : public WWidget {
         return m_bPressed;
     }
 
+    // #MyPushButton:hover would affect most object styles except font color
+    // so we use a custom property that allows to also change the font color
+    // with #MyPushButton[hover="true"] {}
+    Q_PROPERTY(bool hover READ isHovered);
+
+    bool isHovered() const {
+        return m_bHovered;
+    }
+
     // The displayValue property is used to restyle the pushbutton with CSS.
     // The declaration #MyButton[displayValue="0"] { } will define the style
     // when the widget is in state 0.  This allows for effects like reversing
@@ -78,6 +87,8 @@ class WPushButton : public WWidget {
     void paintEvent(QPaintEvent* /*unused*/) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
+    void enterEvent(QEvent *event) override;
+    void leaveEvent(QEvent *event) override;
     void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
@@ -97,9 +108,12 @@ class WPushButton : public WWidget {
 
     // True, if the button is currently pressed
     bool m_bPressed;
+    // True, if the button is pointer is above button
+    bool m_bHovered;
 
     // Array of associated pixmaps
     int m_iNoStates;
+    Qt::TextElideMode m_elideMode;
     QVector<QString> m_text;
     QVector<PaintablePointer> m_pressedPixmaps;
     QVector<PaintablePointer> m_unpressedPixmaps;

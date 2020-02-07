@@ -1,4 +1,5 @@
-language: c++
+language: cpp
+os: linux
 
 
 # Build flags common to OS X and Linux.
@@ -16,21 +17,39 @@ env:
 
 jobs:
   include:
-    - name: qsscheck
+    - name: pre-commit
+      if: type != pull_request
       os: linux
       dist: xenial
+      language: python
+      python: 3.7
+      # There are too many files in the repo that have formatting issues. We'll
+      # disable these checks for now when pushing directly (but still run these
+      # on Pull Requests!).
+      env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
       before_install:
-        - pip3 install tinycss
+        - pip install pre-commit==2.0.1
       script:
-        - ./scripts/qsscheck.py .
-      addons:
-        apt:
-          packages:
-            - python3
-            - python3-pip
-            - python3-pyqt5
-            - python3-setuptools
-            - python3-wheel
+        - pre-commit run --all-files
+      addons: []
+
+    - name: pre-commit-pr
+      if: type == pull_request
+      os: linux
+      dist: xenial
+      language: python
+      python: 3.7
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
+      before_install:
+        - pip install pre-commit==2.0.1
+      script:
+        - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
+      addons: []
 
     - name: Ubuntu/gcc/SCons build
       os: linux
