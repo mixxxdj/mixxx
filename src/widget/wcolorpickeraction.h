@@ -10,7 +10,7 @@ class WColorPickerAction : public QWidgetAction {
   public:
     WColorPickerAction(QWidget* parent)
             : QWidgetAction(parent) {
-        m_pColorPicker = new WColorPicker(parent);
+        m_pColorPicker = new WColorPicker(parent, true);
 
         QHBoxLayout* pLayout = new QHBoxLayout();
         pLayout->addWidget(m_pColorPicker);
