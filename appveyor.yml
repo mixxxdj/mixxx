@@ -56,7 +56,6 @@ for:
     - sudo apt-get update
     - sudo apt-get -y install
       ccache
-      cmake
       gdb
       libavformat-dev
       libchromaprint-dev
@@ -87,10 +86,12 @@ for:
       libwavpack-dev
       portaudio19-dev
       protobuf-compiler
+      python-pip
       qt5-default
       qt5keychain-dev
       qtscript5-dev
       xsltproc
+    - sudo pip install cmake
 
   before_build:
      # Limit cache size to 100 MB
