@@ -189,7 +189,7 @@ DJCJV.vuMeterUpdate = function(value, group, _control) {
 
 // Headphone CUE/MIX buttons status
 DJCJV.headCue = function(midino, control, value, status, group) {
-    if (engine.getValue(group, "headMix") == 0) {
+    if (engine.getValue(group, "headMix") === 0) {
         engine.setValue(group, "headMix", -1.0);
         midi.sendShortMsg(masterLeds, 0x4D, 0x7f);
         midi.sendShortMsg(masterLeds, 0x4C, 0x00);
