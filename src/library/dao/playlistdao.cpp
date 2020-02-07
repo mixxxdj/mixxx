@@ -83,7 +83,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     int playlistId = query.lastInsertId().toInt();
     // Commit the transaction
     transaction.commit();
-    emit(added(playlistId));
+    emit added(playlistId);
     return playlistId;
 }
 
@@ -197,7 +197,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
         }
     }
 
-    emit(deleted(playlistId));
+    emit deleted(playlistId);
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
@@ -209,7 +209,7 @@ void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
         LOG_FAILED_QUERY(query);
         return;
     }
-    emit(renamed(playlistId, newName));
+    emit renamed(playlistId, newName);
 }
 
 bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
@@ -224,7 +224,7 @@ bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-    emit(lockChanged(playlistId));
+    emit lockChanged(playlistId);
     return true;
 }
 
@@ -297,7 +297,7 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const i
     for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) don't emit if the track didn't add successfully.
-        emit(trackAdded(playlistId, trackId, insertPosition++));
+        emit trackAdded(playlistId, trackId, insertPosition++);
     }
     emit tracksChanged(QSet<int>{playlistId});
     return true;
@@ -506,7 +506,7 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     }
 
     m_playlistsTrackIsIn.remove(trackId, playlistId);
-    emit(trackRemoved(playlistId, trackId, position));
+    emit trackRemoved(playlistId, trackId, position);
 }
 
 
@@ -550,7 +550,7 @@ bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId,
     transaction.commit();
 
     m_playlistsTrackIsIn.insert(trackId, playlistId);
-    emit(trackAdded(playlistId, trackId, position));
+    emit trackAdded(playlistId, trackId, position);
     emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
@@ -610,7 +610,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) The position is wrong if any track failed to insert.
-        emit(trackAdded(playlistId, trackId, insertPositon++));
+        emit trackAdded(playlistId, trackId, insertPositon++);
     }
     emit tracksChanged(QSet<int>{playlistId});
     return tracksAdded;
@@ -711,7 +711,7 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
         TrackId copiedTrackId(query.value(0));
         int copiedPosition = query.value(1).toInt();
         m_playlistsTrackIsIn.insert(copiedTrackId, targetPlaylistID);
-        emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
+        emit trackAdded(targetPlaylistID, copiedTrackId, copiedPosition);
     }
     emit tracksChanged(QSet<int>{targetPlaylistID});
     return true;

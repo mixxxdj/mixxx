@@ -189,7 +189,7 @@ void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit(onlyCachedCoverArt(true));
+        emit onlyCachedCoverArt(true);
         m_loadCachedOnly = true;
     }
     m_lastUserAction = mixxx::Time::elapsed();
@@ -224,19 +224,19 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
                 if (trackModel) {
                     TrackPointer pTrack = trackModel->getTrack(indices.first());
                     if (pTrack) {
-                        emit(trackSelected(pTrack));
+                        emit trackSelected(pTrack);
                     }
                 }
             } else {
                 // None or multiple tracks have been selected
-                emit(trackSelected(TrackPointer()));
+                emit trackSelected(TrackPointer());
             }
             m_selectionChangedSinceLastGuiTick = false;
         }
 
         // This allows CoverArtDelegate to request that we load covers from disk
         // (as opposed to only serving them from cache).
-        emit(onlyCachedCoverArt(false));
+        emit onlyCachedCoverArt(false);
         m_loadCachedOnly = false;
     }
 }
@@ -590,7 +590,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
             return;
         }
 
-        emit(loadTrack(pTrack));
+        emit loadTrack(pTrack);
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM
         && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
@@ -618,7 +618,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
         TrackPointer pTrack;
         if (trackModel &&
                 (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, group, play));
+            emit loadTrackToPlayer(pTrack, group, play);
         }
     }
 }
@@ -957,7 +957,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             return;
         }
         bool allowClear = true;
-        int column = trackModel->fieldIndex("bpm_lock");
+        int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
         for (int i = 0; i < indices.size() && allowClear; ++i) {
             int row = indices.at(i).row();
             QModelIndex index = indices.at(i).sibling(row,column);
@@ -1022,7 +1022,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             if (trackModel == nullptr) {
                 return;
             }
-            int column = trackModel->fieldIndex("bpm_lock");
+            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
             if (index.data().toBool()) { //BPM is locked
                 m_pBpmUnlockAction->setEnabled(true);
@@ -1045,7 +1045,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
-            int column = trackModel->fieldIndex("bpm_lock");
+            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
             for (int i = 0; i < indices.size() && !anyLocked; ++i) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row,column);
@@ -1742,9 +1742,9 @@ void WTrackTableView::slotPopulateCrateMenu() {
 
         m_pCrateMenu->addAction(pAction.get());
         connect(pAction.get(), &QAction::triggered,
-                this, [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+                this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
         connect(pCheckBox.get(), &QCheckBox::stateChanged,
-                this, [this, &pCheckBox] { updateSelectionCrates(pCheckBox.get()); });
+                this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
 
     }
     m_pCrateMenu->addSeparator();

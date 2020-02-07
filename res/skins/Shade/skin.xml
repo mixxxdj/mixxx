@@ -462,7 +462,15 @@
                     </WidgetGroup><!-- Preview deck -->
 
                     <!--Search Input Field-->
-                    <SearchBox></SearchBox>
+                    <WidgetGroup>
+                      <Style>
+                        QGroupBox {margin: 0px 0px 5px 0px;}
+                      </Style>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <SearchBox></SearchBox>
+                      </Children>
+                    </WidgetGroup>
                     <!--Library Tree View-->
                     <Splitter>
                       <Size>e,me</Size>

@@ -33,6 +33,6 @@ void Microphone::slotTalkoverEnabled(double v) {
     // configured input.
     if (!configured && talkover) {
         m_pTalkoverEnabled->set(0.0);
-        emit(noMicrophoneInputConfigured());
+        emit noMicrophoneInputConfigured();
     }
 }

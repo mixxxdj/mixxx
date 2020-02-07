@@ -9,7 +9,6 @@ WNumber,
 WNumberPos,
 WPushButton, WLibrary QPushButton,
 WRecordingDuration,
-WSearchLineEdit,
 WTime,
 WTrackText,
 WTrackProperty,
@@ -43,7 +42,6 @@ WBeatSpinBox QMenu {
 /* regular case / no text transformation */
 WKey,
 WOverview,
-WSearchLineEdit,
 WTrackProperty, WTrackText,
 QToolTip,
 #LibraryContainer QMenu,
@@ -2310,6 +2308,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::corner {
   margin-bottom: 3px;
   margin-left: 2px;
 }
+
 WSearchLineEdit {
   padding: 2px;
   background-color: #0f0f0f;
@@ -2317,20 +2316,10 @@ WSearchLineEdit {
   selection-background-color: #ccc;
   }
   WSearchLineEdit:focus {
-    padding: 2px 0px 2px 2px;
-    border: 2px solid #ff6600;
+    padding: 1px;
+    border: 2px solid #d08e00;
   }
-  /* Clear button */
-  WSearchLineEdit QToolButton {
-    /* C++ code adds 3px in each dimension.
-      height of search box inside the border: 22px
-      make the button use the available height */
-    height: 19px;
-    width: 19px;
-    margin-right: -1px;
-    }
-/*********** library search bar *********************************/
-
+  /* Clear button: see /skins/default.qss */
 
 /************ splitters ***********************/
 /* HorizontalSplitter

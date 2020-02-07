@@ -367,32 +367,15 @@ WSearchLineEdit {
   border: 1px solid #4B4B4B;
   background-color: #1e1e1e;
   color: #d2d2d2;
-  font-size: 13px;
+  }
+  WSearchLineEdit:focus {
+    border: 1px solid #FF6600;
+    color: #D6D6D6;
+    selection-color: #222222;
+    selection-background-color: #d2d2d2;
+  }
+  /* Clear button: see /skins/default.qss */
 }
-
-WSearchLineEdit:focus {
-  margin: 0px 0px 0px 1px;
-  padding: 2px;
-  border: 1px solid #FF6600;
-  background-color: #1e1e1e;
-  color: #D6D6D6;
-  selection-color: #222222;
-  selection-background-color: #d2d2d2;
-}
-  /* Clear button */
-  WSearchLineEdit QToolButton {
-    /* C++ code adds 3px in each dimension.
-       height of search box inside the border: 22px
-       make the button use the available height */
-    height: 19px;
-    width: 19px;
-    }
-    WSearchLineEdit QToolButton:!focus {
-      image: url(skin:/icon/ic_lib_clear_search.svg);
-    }
-    WSearchLineEdit QToolButton:focus {
-      image: url(skin:/icon/ic_lib_clear_search_focus.svg);
-    }
 
 /* library preview deck */
 #PreviewDeck {

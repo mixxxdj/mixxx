@@ -85,7 +85,7 @@ void WMainMenuBar::initialize() {
         // WMainMenuBar::onNumberOfDecksChanged.
         pFileLoadSongToPlayer->setVisible(false);
         connect(pFileLoadSongToPlayer, &QAction::triggered,
-                this, [this, deck] { loadTrackToDeck(deck + 1); });
+                this, [this, deck] { emit loadTrackToDeck(deck + 1); });
 
         pFileMenu->addAction(pFileLoadSongToPlayer);
         m_loadToDeckActions.push_back(pFileLoadSongToPlayer);
@@ -156,13 +156,16 @@ void WMainMenuBar::initialize() {
 
     addMenu(pLibraryMenu);
 
-    // VIEW MENU
+#if defined(__APPLE__)
     // Note: On macOS 10.11 ff. we have to deal with "automagic" menu items,
     // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
     // https://bugs.launchpad.net/mixxx/+bug/1534292
-    QMenu* pViewMenu = new QMenu(tr("&View")+("\u200C"));
+    QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"));
+#else
+    QMenu* pViewMenu = new QMenu(tr("&View"));
+#endif
 
     // Skin Settings Menu
     QString mayNotBeSupported = tr("May not be supported on all skins.");
@@ -309,7 +312,7 @@ void WMainMenuBar::initialize() {
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
         connect(vc_checkbox, &QAction::triggered,
-                this, [this, i] { toggleVinylControl(i); });
+                this, [this, i] { emit toggleVinylControl(i); });
         pVinylControlMenu->addAction(vc_checkbox);
     }
     pOptionsMenu->addMenu(pVinylControlMenu);
@@ -578,39 +581,39 @@ void WMainMenuBar::initialize() {
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
-    emit(internalLibraryScanActive(true));
+    emit internalLibraryScanActive(true);
 }
 
 void WMainMenuBar::onLibraryScanFinished() {
-    emit(internalLibraryScanActive(false));
+    emit internalLibraryScanActive(false);
 }
 
 void WMainMenuBar::onNewSkinLoaded() {
-    emit(internalOnNewSkinLoaded());
+    emit internalOnNewSkinLoaded();
 }
 
 void WMainMenuBar::onNewSkinAboutToLoad() {
-    emit(internalOnNewSkinAboutToLoad());
+    emit internalOnNewSkinAboutToLoad();
 }
 
 void WMainMenuBar::onRecordingStateChange(bool recording) {
-    emit(internalRecordingStateChange(recording));
+    emit internalRecordingStateChange(recording);
 }
 
 void WMainMenuBar::onBroadcastingStateChange(bool broadcasting) {
-    emit(internalBroadcastingStateChange(broadcasting));
+    emit internalBroadcastingStateChange(broadcasting);
 }
 
 void WMainMenuBar::onDeveloperToolsShown() {
-    emit(internalDeveloperToolsStateChange(true));
+    emit internalDeveloperToolsStateChange(true);
 }
 
 void WMainMenuBar::onDeveloperToolsHidden() {
-    emit(internalDeveloperToolsStateChange(false));
+    emit internalDeveloperToolsStateChange(false);
 }
 
 void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
-    emit(internalFullScreenStateChange(fullscreen));
+    emit internalFullScreenStateChange(fullscreen);
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {

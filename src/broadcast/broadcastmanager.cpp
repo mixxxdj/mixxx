@@ -94,7 +94,7 @@ void BroadcastManager::slotControlEnabled(double v) {
         // since the status button has 4 states, but this CO is bool
         v = 0.0;
         m_pBroadcastEnabled->set(v);
-        emit(broadcastEnabled(v));
+        emit broadcastEnabled(v);
     }
 
     if (v > 0.0) {
@@ -109,7 +109,7 @@ void BroadcastManager::slotControlEnabled(double v) {
 
         if (!atLeastOneEnabled) {
             m_pBroadcastEnabled->set(false);
-            emit(broadcastEnabled(0.0));
+            emit broadcastEnabled(0.0);
             QMessageBox::warning(nullptr, tr("Action failed"),
                                 tr("Please enable at least one connection to use Live Broadcasting."));
             return;
@@ -126,7 +126,7 @@ void BroadcastManager::slotControlEnabled(double v) {
         }
     }
 
-    emit(broadcastEnabled(v > 0.0));
+    emit broadcastEnabled(v > 0.0);
 }
 
 void BroadcastManager::slotProfileAdded(BroadcastProfilePtr profile) {

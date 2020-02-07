@@ -73,6 +73,7 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     void showIndex(int index);
     void hideIndex(int index);
     void showEvent(QShowEvent* event) override;
+    void slotSetIndex(int index);
 
   private:
     ControlProxy m_nextControl;

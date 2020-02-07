@@ -2387,8 +2387,11 @@ WCoverArtMenu::item:!enabled,
  ################### most of it was LateNight & Deere ##########
 ############ added styling for AutoDJ & Recording etc ##### */
 
+#SearchBoxContainer {
+  margin-bottom: 5px;
+}
+
 #LibMiniMaxiButton {
-  margin-bottom: 12px;
   }
   #LibMiniMaxiButton[displayValue="0"] {
     image: url(skin:/buttons/btn_lib_maxi.svg) no-repeat center top;
@@ -2916,34 +2919,22 @@ WLibrary QSpinBox {
 /* library search text box */
 WSearchLineEdit {
   padding: 2px;
-  margin-bottom: 5px;
   border: 1px solid #656565;
-  border-left: 0px;
   color: #cfcfcf;
   background: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
+/* margin will increase the Qt widget size which is used to position the
+  Clear button. If > 0 it will shift the cue button outside the visible
+  search box.
+  margin-bottom: 5px; */
   }
   WSearchLineEdit:focus {
+    padding: 1px;
     border: 2px solid #ff6600;
     color: #eeeeee;
-    padding: 2px;
   }
-  /* Clear button */
-  WSearchLineEdit QToolButton {
-    /* C++ code adds 3px in each dimension.
-       height of search box inside the border: 22px
-       make the button use the available height */
-    height: 19px;
-    width: 19px;
-    margin-bottom: 5px;
-    }
-    WSearchLineEdit QToolButton:!focus {
-      image: url(skin:/buttons/btn_lib_clear_search.svg);
-    }
-    WSearchLineEdit QToolButton:focus {
-      image: url(skin:/buttons/btn_lib_clear_search_focus.svg);
-    }
+  /* Clear button: see /skins/default.qss */
 
 WLibrary QLabel,
 WLibrary QRadioButton {	/*

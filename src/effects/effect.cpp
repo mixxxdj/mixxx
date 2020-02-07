@@ -115,7 +115,7 @@ void Effect::setEnabled(bool enabled) {
     if (enabled != m_bEnabled) {
         m_bEnabled = enabled;
         updateEngineState();
-        emit(enabledChanged(m_bEnabled));
+        emit enabledChanged(m_bEnabled);
     }
 }
 

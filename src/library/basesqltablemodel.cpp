@@ -120,6 +120,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE,
+                        tr("Samplerate"), 50);
 }
 
 void BaseSqlTableModel::initSortColumnMapping() {
@@ -149,6 +151,7 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_SAMPLERATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
@@ -183,7 +186,7 @@ bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 
@@ -222,7 +225,9 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN))) {
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE))) {
         return true;
     }
     return false;
@@ -951,7 +956,7 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         m_previewDeckTrackId = pTrack ? pTrack->getId() : TrackId();
@@ -970,7 +975,7 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, numColumns);
-            emit(dataChanged(left, right));
+            emit dataChanged(left, right);
         }
     }
 }
@@ -1143,7 +1148,7 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
 
 void BaseSqlTableModel::refreshCell(int row, int column) {
     QModelIndex coverIndex = index(row, column);
-    emit(dataChanged(coverIndex, coverIndex));
+    emit dataChanged(coverIndex, coverIndex);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
