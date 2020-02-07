@@ -270,13 +270,31 @@
                     <normal/>
                 </options>
             </control>
+            <control>   <!-- HIGH knob SHIFT -->
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <status>0xB0</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <control>   <!-- HIGH kill knob -->
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>button_parameter3</key>
+                <key>RDJ2.leftDeck.highKillQuickEffectButton.input</key>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- HIGH kill knob SHIFT -->
+                <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
+                <key>RDJ2.leftDeck.highKillQuickEffectButton.input</key>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>   <!-- volume fader -->
@@ -568,13 +586,31 @@
                     <normal/>
                 </options>
             </control>
+            <control>   <!-- HIGH knob SHIFT -->
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <status>0xB0</status>
+                <midino>0x5D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <control>   <!-- HIGH kill knob -->
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>button_parameter3</key>
+                <key>RDJ2.rightDeck.highKillQuickEffectButton.input</key>
                 <status>0x90</status>
                 <midino>0x50</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>   <!-- HIGH kill knob SHIFT -->
+                <group>[QuickEffectRack1_[Channel2]_Effect1]</group>
+                <key>RDJ2.rightDeck.highKillQuickEffectButton.input</key>
+                <status>0x90</status>
+                <midino>0x6E</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>   <!-- volume fader -->
@@ -1144,13 +1180,13 @@
 				<midino>0x15</midino>
                 <minimum>0.5</minimum>
 			</output>
-			<output>    <!-- HIGH kill knob -->
+			<!--<output>     HIGH kill knob (control moved to script)
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<key>button_parameter3</key>
 				<status>0x90</status>
 				<midino>0x14</midino>
                 <minimum>0.5</minimum>
-			</output>
+			</output>-->
 			<output>
                 <group>[Channel1]</group>
 				<key>keylock</key>
@@ -1181,13 +1217,13 @@
 				<midino>0x51</midino>
                 <minimum>0.5</minimum>
 			</output>
-			<output>    <!-- HIGH kill knob -->
+			<!--<output>     HIGH kill knob (control moved to script)
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<key>button_parameter3</key>
 				<status>0x90</status>
 				<midino>0x50</midino>
                 <minimum>0.5</minimum>
-			</output>
+			</output>-->
             <output>
                 <group>[Channel2]</group>
 				<key>keylock</key>

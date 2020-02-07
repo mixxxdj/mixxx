@@ -82,6 +82,7 @@ RDJ2.BUTTONMAP_CH0_CH1 = {
     loopactive: [0x12, 0x4E],
     fx1assign: [0x27, 0x68],    //this is the shifted Activate 3 button
     fx2assign: [0x2C, 0x63],    //this is the shifted FX ON button
+    highkill: [0x14, 0x50],
 };
 
 RDJ2.KNOBMAP_CH0_CH1 = {
@@ -353,6 +354,12 @@ RDJ2.Deck = function (number) {
         midi: [0x90, RDJ2.BUTTONMAP_CH0_CH1.fx2assign[number - 1]],
         effectUnit: 2,
         group: '[Channel' + number + ']',
+    });
+
+    // high kill / quick effect enable button
+    this.highKillQuickEffectButton = new RDJ2.HighKillQuickEffectButton({
+        midi: [0x90, RDJ2.BUTTONMAP_CH0_CH1.highkill[number - 1]],
+        channelNr: number,
     });
 
 
@@ -669,6 +676,37 @@ RDJ2.efxUnitKnobShift = function () {
 };
 
 //note: the shifted dry/wet knob is mapped to beatloop size
+
+
+////////////////////////////////////////////////////////////////////////
+// Quick Effects                                                      //
+////////////////////////////////////////////////////////////////////////
+
+/* HIGH kill / QuickEffect enable button */
+
+RDJ2.HighKillQuickEffectButton = function (options) {
+    this.channelNr = options.channelNr;
+    components.Button.call(this, options);
+};
+RDJ2.HighKillQuickEffectButton.prototype = new components.Button({
+    type: components.Button.prototype.types.powerWindow,
+    unshift: function () {
+        this.disconnect();
+        this.group = '[EqualizerRack1_[Channel' + this.channelNr + ']_Effect1]';
+        this.inKey = 'button_parameter3';
+        this.outKey = 'button_parameter3';
+        this.connect();
+        this.trigger();
+    },
+    shift: function () {
+        this.disconnect();
+        this.group = '[QuickEffectRack1_[Channel' + this.channelNr + ']_Effect1]';
+        this.inKey = 'enabled';
+        this.outKey = 'enabled';
+        this.connect();
+        this.trigger();
+    },
+});
 
 
 ////////////////////////////////////////////////////////////////////////
