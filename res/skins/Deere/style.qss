@@ -375,7 +375,6 @@ WSearchLineEdit {
     selection-background-color: #d2d2d2;
   }
   /* Clear button: see /skins/default.qss */
-}
 
 /* library preview deck */
 #PreviewDeck {
