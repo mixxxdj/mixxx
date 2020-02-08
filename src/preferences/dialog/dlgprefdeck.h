@@ -74,6 +74,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotRateTempFineSpinbox(double);
     void slotRatePermCoarseSpinbox(double);
     void slotRatePermFineSpinbox(double);
+    void slotBrakeEffectTimeSpinbox(int);
     void slotSetTrackTimeDisplay(QAbstractButton*);
     void slotSetTrackTimeDisplay(double);
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
@@ -143,6 +144,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     double m_dRateTempFine;
     double m_dRatePermCoarse;
     double m_dRatePermFine;
+    double m_iBrakeEffectTime;
 };
 
 #endif

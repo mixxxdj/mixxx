@@ -358,3 +358,46 @@ void ControlPushButtonBehavior::setValueFromMidi(
         }
     }
 }
+
+ControlPlayButtonBehavior::ControlPlayButtonBehavior() {
+}
+
+void ControlPlayButtonBehavior::setValueFromMidi(
+        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
+    // Calculate pressed State of the midi Button
+    // Some controller like the RMX2 are sending always MIDI_NOTE_ON
+    // with a changed dParam 127 for pressed an 0 for released.
+    // Other controller like the VMS4 are using MIDI_NOTE_ON
+    // And MIDI_NOTE_OFF and a velocity value like a piano keyboard
+    if (o == MIDI_NOTE_OFF || dParam == 0) {
+        // MIDI_NOTE_ON + 0 should be interpreted a released according to
+        // http://de.wikipedia.org/wiki/Musical_Instrument_Digital_Interface
+        // looking for MIDI_NOTE_ON doesn't seem to work...
+        return;
+    }
+
+    // This block makes the play button act as a three state machine whenever it is pressed
+    // pause -> play -> brake -> play -> pause
+
+    // This is a possibly race condition if another writer wants
+    // to change the value at the same time. We allow the race here,
+    // because this is possibly what the user expects if he changes
+    // the same control from different devices.
+    double value = pControl->get();
+    switch ((unsigned int)value) {
+    case ControlPlayButtonBehavior::PAUSE:
+        value = ControlPlayButtonBehavior::PLAY;
+        break;
+    case ControlPlayButtonBehavior::PLAY:
+        value = ControlPlayButtonBehavior::BRAKE;
+        break;
+    case ControlPlayButtonBehavior::BRAKE:
+        value = ControlPlayButtonBehavior::PLAY;
+        break;
+    default:
+        value = ControlPlayButtonBehavior::PAUSE;
+        break;
+    }
+
+    pControl->set(value, NULL);
+}

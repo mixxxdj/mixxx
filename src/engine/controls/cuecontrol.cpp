@@ -1659,7 +1659,7 @@ bool CueControl::isTrackAtIntroCue() {
 }
 
 bool CueControl::isPlayingByPlayButton() {
-    return m_pPlay->toBool() &&
+    return m_pPlay->get() == ControlPlayButtonBehavior::PLAY &&
             !m_iCurrentlyPreviewingHotcues && !m_bPreviewing;
 }
 

@@ -160,4 +160,18 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     QScopedPointer<QTimer> m_pushTimer;
 };
 
+class ControlPlayButtonBehavior : public ControlNumericBehavior {
+  public:
+    enum ButtonState {
+        PAUSE = 0,
+        PLAY,
+        BRAKE
+    };
+
+    ControlPlayButtonBehavior();
+    void setValueFromMidi(
+            MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
+            override;
+};
+
 #endif /* CONTROLBEHAVIOR_H */

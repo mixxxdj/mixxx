@@ -332,7 +332,7 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButton* m_playButton;
+    ControlPushButton* m_pPlayButton;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;
     ControlPushButton* m_stopButton;

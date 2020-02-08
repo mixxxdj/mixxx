@@ -172,7 +172,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>f,me</SizePolicy>
                 <Children>
-                  <Template src="skin:left_right_display_2state_button.xml">
+                  <Template src="skin:left_right_display_3state_button.xml">
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="ObjectName">PlayToggle</SetVariable>
                     <SetVariable name="MinimumSize">24,30</SetVariable>

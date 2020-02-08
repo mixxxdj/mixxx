@@ -1,4 +1,4 @@
-// ratecontrol.h
+﻿// ratecontrol.h
 // Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef RATECONTROL_H
@@ -54,9 +54,7 @@ public:
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
-    double calculateSpeed(double baserate, double speed, bool paused,
-                         int iSamplesPerBuffer, bool* pReportScratching,
-                         bool* pReportReverse);
+    double calculateSpeed(double baserate, double speed, bool paused, bool brake, int iSamplesPerBuffer, bool* pReportScratching, bool* pReportReverse, bool* pReportBrakeStop);
 
     // Set rate change when temp rate button is pressed
     static void setTemporaryRateChangeCoarseAmount(double v);
@@ -70,6 +68,8 @@ public:
     // Set rate change when perm rate small button is pressed
     static void setPermanentRateChangeFineAmount(double v);
     static double getPermanentRateChangeFineAmount();
+    // Set time for brake effect to fully stop the playing track
+    static void setBrakeEffectTime(int);
     // Set Rate Ramp Mode
     static void setRateRampMode(RampMode mode);
     static RampMode getRateRampMode();
@@ -113,6 +113,7 @@ public:
     static ControlValueAtomic<double> m_dTemporaryRateChangeFine;
     static ControlValueAtomic<double> m_dPermanentRateChangeCoarse;
     static ControlValueAtomic<double> m_dPermanentRateChangeFine;
+    static ControlValueAtomic<int> m_iBrakeEffectTimeMilliSeconds;
 
     ControlPushButton* m_pButtonRateTempDown;
     ControlPushButton* m_pButtonRateTempDownSmall;
@@ -156,6 +157,11 @@ public:
 
     // This is true if we've already started to ramp the rate
     bool m_bTempStarted;
+    // Used to check if play/pause was toggeled
+    bool m_bPaused;
+    // Number of samples
+    unsigned int m_iBrakeSamples;
+
     // Set the Temporary Rate Change Mode
     static RampMode m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets

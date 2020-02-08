@@ -30,6 +30,7 @@ constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
 constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
+constexpr int kDefaultBrakeEffectTime = 800; // milli seconds
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
 }
@@ -303,11 +304,19 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     spinBoxTemporaryRateFine->setValue(m_dRateTempFine);
     spinBoxPermanentRateCoarse->setValue(m_dRatePermCoarse);
     spinBoxPermanentRateFine->setValue(m_dRatePermFine);
-
     RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
     RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
+
+    //
+    // Brake effect configuration
+    //
+    connect(spinBoxBrakeEffectTime, SIGNAL(valueChanged(int)), this, SLOT(slotBrakeEffectTimeSpinbox(int)));
+    m_iBrakeEffectTime = m_pConfig->getValue(ConfigKey("[Controls]", "BrakeEffectTime"),
+            kDefaultBrakeEffectTime);
+    spinBoxBrakeEffectTime->setValue(m_iBrakeEffectTime);
+    RateControl::setBrakeEffectTime(m_iBrakeEffectTime);
 
     // Rate Ramp Sensitivity
     m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), kDefaultRateRampSensitivity);
@@ -484,6 +493,8 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+
+    spinBoxBrakeEffectTime->setValue(kDefaultBrakeEffectTime);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -593,6 +604,10 @@ void DlgPrefDeck::slotRatePermFineSpinbox(double value) {
     m_dRatePermFine = value;
 }
 
+void DlgPrefDeck::slotBrakeEffectTimeSpinbox(int value) {
+    m_iBrakeEffectTime = value;
+}
+
 void DlgPrefDeck::slotRateRampSensitivitySlider(int value) {
     m_iRateRampSensitivity = value;
 }
@@ -695,6 +710,9 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "RateTempRight"), m_dRateTempFine);
     m_pConfig->setValue(ConfigKey("[Controls]", "RatePermLeft"), m_dRatePermCoarse);
     m_pConfig->setValue(ConfigKey("[Controls]", "RatePermRight"), m_dRatePermFine);
+
+    m_pConfig->setValue(ConfigKey("[Controls]", "BrakeEffectTime"), m_iBrakeEffectTime);
+    RateControl::setBrakeEffectTime(m_iBrakeEffectTime);
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {

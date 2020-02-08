@@ -165,6 +165,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlobjectscript.cpp
   src/control/controlpotmeter.cpp
   src/control/controlproxy.cpp
+  src/control/controlplaybutton.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
   src/controllers/colorjsproxy.cpp

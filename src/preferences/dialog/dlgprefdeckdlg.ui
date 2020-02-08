@@ -156,7 +156,7 @@ If this option is disabled, the intro start point is automatically placed at the
        </widget>
       </item>
       <item row="4" column="1" colspan="2">
-        <widget class="QComboBox" name="comboBoxLoadPoint"/>
+       <widget class="QComboBox" name="comboBoxLoadPoint"/>
       </item>
       <item row="5" column="0">
        <widget class="QLabel" name="labelAutoHotcueColors">
@@ -227,32 +227,67 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
        <layout class="QGridLayout" name="GridLayoutSpeedOptions">
-        <item row="7" column="1">
-         <widget class="QDoubleSpinBox" name="spinBoxPermanentRateCoarse">
-          <property name="toolTip">
-           <string>Permanent rate change when left-clicking</string>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="checkBoxResetPitch">
+          <property name="text">
+           <string>Key/Pitch</string>
           </property>
-          <property name="accelerated">
-           <bool>true</bool>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedPitchReset</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelSpeedBendBehavior">
+          <property name="text">
+           <string>Pitch bend behavior</string>
           </property>
-          <property name="suffix">
-           <string>%</string>
+          <property name="buddy">
+           <cstring>radioButtonRateRampModeStepping</cstring>
           </property>
-          <property name="decimals">
-           <number>2</number>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QRadioButton" name="radioButtonOriginalKey">
+          <property name="text">
+           <string>Original key</string>
           </property>
-          <property name="minimum">
-           <double>0.010000000000000</double>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyLockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QLabel" name="labelSpeedTemporary">
+          <property name="enabled">
+           <bool>false</bool>
           </property>
-          <property name="maximum">
-           <double>10.000000000000000</double>
+          <property name="text">
+           <string>Temporary</string>
           </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
-          <property name="value">
-           <double>0.500000000000000</double>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="checkBoxResetSpeed">
+          <property name="text">
+           <string>Speed/Tempo</string>
           </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedPitchReset</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QRadioButton" name="radioButtonResetUnlockedKey">
+          <property name="text">
+           <string>Reset key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyUnlockMode</string>
+          </attribute>
          </widget>
         </item>
         <item row="8" column="1">
@@ -290,57 +325,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
           <property name="buddy">
            <cstring>checkBoxResetPitch</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QRadioButton" name="radioButtonCurrentKey">
-          <property name="text">
-           <string>Current key</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyLockMode</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="8" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateFine">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Temporary rate change when right-clicking</string>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>%</string>
-          </property>
-          <property name="decimals">
-           <number>2</number>
-          </property>
-          <property name="minimum">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>10.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QLabel" name="labelSpeedPermanent">
-          <property name="text">
-           <string>Permanent</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
@@ -392,26 +376,28 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </item>
          </layout>
         </item>
-        <item row="6" column="2">
-         <widget class="QLabel" name="labelSpeedTemporary">
+        <item row="7" column="0">
+         <widget class="QLabel" name="labelSpeedCoarse">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string/>
           </property>
           <property name="text">
-           <string>Temporary</string>
+           <string>Coarse</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelKeylockMode">
-          <property name="text">
-           <string>Keylock mode</string>
+          <property name="wordWrap">
+           <bool>false</bool>
           </property>
           <property name="buddy">
-           <cstring>radioButtonOriginalKey</cstring>
+           <cstring>spinBoxPermanentRateCoarse</cstring>
           </property>
          </widget>
         </item>
@@ -428,24 +414,118 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="labelSpeedBendBehavior">
+        <item row="8" column="0">
+         <widget class="QLabel" name="labelSpeedFine">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="text">
-           <string>Pitch bend behavior</string>
+           <string>Fine</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
           </property>
           <property name="buddy">
-           <cstring>radioButtonRateRampModeStepping</cstring>
+           <cstring>spinBoxPermanentRateFine</cstring>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QRadioButton" name="radioButtonOriginalKey">
+        <item row="3" column="2">
+         <widget class="QRadioButton" name="radioButtonKeepUnlockedKey">
           <property name="text">
-           <string>Original key</string>
+           <string>Keep key</string>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyLockMode</string>
+           <string notr="true">buttonGroupKeyUnlockMode</string>
           </attribute>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QRadioButton" name="radioButtonRateRampModeStepping">
+          <property name="text">
+           <string>Abrupt jump</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLabel" name="labelSpeedPermanent">
+          <property name="text">
+           <string>Permanent</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QDoubleSpinBox" name="spinBoxPermanentRateCoarse">
+          <property name="toolTip">
+           <string>Permanent rate change when left-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.500000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateFine">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Temporary rate change when right-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>1.000000000000000</double>
+          </property>
          </widget>
         </item>
         <item row="7" column="2">
@@ -479,83 +559,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QCheckBox" name="checkBoxResetSpeed">
-          <property name="text">
-           <string>Speed/Tempo</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBoxResetPitch">
-          <property name="text">
-           <string>Key/Pitch</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="labelSpeedAdjustment">
-          <property name="text">
-           <string>Adjustment buttons:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="labelSpeedCoarse">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font/>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Coarse</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-          <property name="buddy">
-           <cstring>spinBoxPermanentRateCoarse</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="labelSpeedFine">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font/>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Fine</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-          <property name="buddy">
-           <cstring>spinBoxPermanentRateFine</cstring>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
          <widget class="QCheckBox" name="checkBoxInvertSpeedSlider">
           <property name="toolTip">
@@ -563,6 +566,63 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
           <property name="text">
            <string>Down increases speed</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelKeyunlockMode">
+          <property name="text">
+           <string>Keyunlock mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="ComboBoxRateRange">
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelKeylockMode">
+          <property name="text">
+           <string>Keylock mode</string>
+          </property>
+          <property name="buddy">
+           <cstring>radioButtonOriginalKey</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QRadioButton" name="radioButtonCurrentKey">
+          <property name="text">
+           <string>Current key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyLockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QRadioButton" name="radioButtonRateRampModeLinear">
+          <property name="toolTip">
+           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
+          </property>
+          <property name="text">
+           <string>Smooth ramping</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="labelSpeedAdjustment">
+          <property name="text">
+           <string>Adjustment buttons:</string>
           </property>
          </widget>
         </item>
@@ -585,64 +645,24 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="ComboBoxRateRange">
-          <property name="font">
-           <font/>
-          </property>
-          <property name="toolTip">
-           <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Brake effect time</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
-         <widget class="QRadioButton" name="radioButtonRateRampModeStepping">
-          <property name="text">
-           <string>Abrupt jump</string>
+        <item row="9" column="1">
+         <widget class="QSpinBox" name="spinBoxBrakeEffectTime">
+          <property name="suffix">
+           <string>ms</string>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedBendBehavior</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QRadioButton" name="radioButtonRateRampModeLinear">
-          <property name="toolTip">
-           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
+          <property name="maximum">
+           <number>5000</number>
           </property>
-          <property name="text">
-           <string>Smooth ramping</string>
+          <property name="value">
+           <number>800</number>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedBendBehavior</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="labelKeyunlockMode">
-          <property name="text">
-           <string>Keyunlock mode</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QRadioButton" name="radioButtonResetUnlockedKey">
-          <property name="text">
-           <string>Reset key</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyUnlockMode</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QRadioButton" name="radioButtonKeepUnlockedKey">
-          <property name="text">
-           <string>Keep key</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyUnlockMode</string>
-          </attribute>
          </widget>
         </item>
        </layout>
@@ -822,14 +842,13 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
  </connections>
  <buttongroups>
   <buttongroup name="buttonGroupTrackTime"/>
-  <buttongroup name="buttonGroupLoadPoint"/>
   <buttongroup name="buttonGroupKeyLockMode"/>
+  <buttongroup name="buttonGroupSpeedBendBehavior"/>
   <buttongroup name="buttonGroupSpeedPitchReset">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
   <buttongroup name="buttonGroupKeyUnlockMode"/>
-  <buttongroup name="buttonGroupSpeedBendBehavior"/>
  </buttongroups>
 </ui>

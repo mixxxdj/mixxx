@@ -22,6 +22,7 @@ ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeFine;
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeFine;
+ControlValueAtomic<int> RateControl::m_iBrakeEffectTimeMilliSeconds;
 int RateControl::m_iRateRampSensitivity;
 RateControl::RampMode RateControl::m_eRateRampMode;
 
@@ -29,12 +30,14 @@ const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
 RateControl::RateControl(QString group,
-                         UserSettingsPointer pConfig)
-    : EngineControl(group, pConfig),
-      m_pBpmControl(NULL),
-      m_bTempStarted(false),
-      m_tempRateRatio(0.0),
-      m_dRateTempRampChange(0.0) {
+        UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_pBpmControl(NULL),
+          m_bTempStarted(false),
+          m_bPaused(true),
+          m_iBrakeSamples(0.0),
+          m_tempRateRatio(0.0),
+          m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
     // This is the resulting rate ratio that can be used for display or calculations.
@@ -253,6 +256,11 @@ void RateControl::setPermanentRateChangeFineAmount(double v) {
 }
 
 //static
+void RateControl::setBrakeEffectTime(int i) {
+    m_iBrakeEffectTimeMilliSeconds.setValue(i);
+}
+
+//static
 double RateControl::getTemporaryRateChangeCoarseAmount() {
     return m_dTemporaryRateChangeCoarse.getValue();
 }
@@ -383,16 +391,32 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-double RateControl::calculateSpeed(double baserate, double speed, bool paused,
-                                   int iSamplesPerBuffer,
-                                   bool* pReportScratching,
-                                   bool* pReportReverse) {
+double RateControl::calculateSpeed(double baserate, double speed, bool paused, bool brake, int iSamplesPerBuffer, bool* pReportScratching, bool* pReportReverse, bool* pReportBrakeStop) {
     *pReportScratching = false;
     *pReportReverse = false;
-
     processTempRate(iSamplesPerBuffer);
 
-    double rate = (paused ? 0 : 1.0);
+    // Usually is 1.0 unless braking is activated and m_iBrakeSamples grows
+    double brakeFactor = 1.0;
+
+    // If we are braking adjust the brake factor for the resulting rate.
+    if (brake) {
+        double brakeStopSamples = (double)m_pSampleRate->get() * ((double)m_iBrakeEffectTimeMilliSeconds.getValue() / 1000.);
+        brakeFactor = (double)(brakeStopSamples - m_iBrakeSamples) / brakeStopSamples;
+        m_iBrakeSamples += iSamplesPerBuffer;
+
+        if (brakeFactor < 0) {
+            m_iBrakeSamples = 0;
+            brakeFactor = 1.0;
+            paused = true;
+            *pReportBrakeStop = true;
+        }
+    } else {
+        m_iBrakeSamples = 0;
+    }
+
+    double rate = (paused ? 0.0 : 1.0);
+
     double searching = m_pRateSearch->get();
     if (searching) {
         // If searching is in progress, it overrides everything else
@@ -401,7 +425,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->toBool();
-        bool useScratch2Value = m_pScratch2Enable->get() != 0;
+        bool useScratch2Value = m_pScratch2Enable->toBool();
 
         // By default scratch2_enable is enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
@@ -445,6 +469,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                     // add temp rate, but don't go backwards
                     rate = math_max(speed + getTempRate(), 0.0);
                     rate += wheelFactor;
+                    rate *= brakeFactor;
                 }
                 rate += jogFactor;
             }
@@ -458,17 +483,17 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             rate = m_pScratchController->getRate();
             *pReportScratching = true;
         } else {
-            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+            // If master sync is on, respond to it -- but vinyl mode, scratch mode, or braking always override.
             if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-                    !bVinylControlEnabled && !useScratch2Value) {
+                    !bVinylControlEnabled && !useScratch2Value && !brake) {
                 if (m_pBpmControl == NULL) {
                     qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
                     return 1.0;
                 }
 
                 double userTweak = 0.0;
-                if (!*pReportScratching) {
-                    // Only report user tweak if the user is not scratching.
+                if (!*pReportScratching && !brake) {
+                    // Only report user tweak if the user is not scratching and not braking.
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
                 rate = m_pBpmControl->calcSyncedRate(userTweak);
@@ -486,6 +511,9 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
         }
     }
+
+    // qDebug() << rate << speed << paused << *pReportBraking << *pReportScratching;
+
     return rate;
 }
 

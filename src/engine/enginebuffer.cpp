@@ -1,16 +1,19 @@
 #include "engine/enginebuffer.h"
 
+#include <QtDebug>
 #include <cfloat>
 
-#include <QtDebug>
-
-#include "engine/cachingreader/cachingreader.h"
-#include "preferences/usersettings.h"
 #include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
-#include "control/controlproxy.h"
+#include "control/controlplaybutton.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/bufferscalers/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
+#include "engine/bufferscalers/enginebufferscalest.h"
+#include "engine/cachingreader/cachingreader.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/clockcontrol.h"
 #include "engine/controls/cuecontrol.h"
@@ -19,15 +22,12 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/bufferscalers/enginebufferscalelinear.h"
-#include "engine/bufferscalers/enginebufferscalerubberband.h"
-#include "engine/bufferscalers/enginebufferscalest.h"
-#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "preferences/usersettings.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"
@@ -107,12 +107,10 @@ EngineBuffer::EngineBuffer(const QString& group,
             this, &EngineBuffer::slotTrackLoadFailed,
             Qt::DirectConnection);
 
-    // Play button
-    m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
-    m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    m_playButton->connectValueChangeRequest(
-            this, &EngineBuffer::slotControlPlayRequest,
-            Qt::DirectConnection);
+    // Play button, a special type of ControlPushButton
+    m_pPlayButton = new ControlPlayButton(m_group);
+    m_pPlayButton->connectValueChangeRequest(
+            this, &EngineBuffer::slotControlPlayRequest, Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
@@ -274,7 +272,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pReadAheadManager;
     delete m_pReader;
 
-    delete m_playButton;
+    delete m_pPlayButton;
     delete m_playStartButton;
     delete m_stopStartButton;
 
@@ -383,7 +381,7 @@ void EngineBuffer::requestSyncPhase() {
 
 void EngineBuffer::requestEnableSync(bool enabled) {
     // If we're not playing, the queued event won't get processed so do it now.
-    if (m_playButton->get() == 0.0) {
+    if (m_pPlayButton->get() == 0.0) {
         m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
         return;
     }
@@ -408,7 +406,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
 
 void EngineBuffer::requestSyncMode(SyncMode mode) {
     // If we're not playing, the queued event won't get processed so do it now.
-    if (m_playButton->get() == 0.0) {
+    if (m_pPlayButton->get() == 0.0) {
         m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
     } else {
         m_iSyncModeQueued = mode;
@@ -483,13 +481,13 @@ void EngineBuffer::slotTrackLoading() {
     m_pause.unlock();
 
     // Set play here, to signal the user that the play command is adopted
-    m_playButton->set((double)m_bPlayAfterLoading);
+    m_pPlayButton->set((double)m_bPlayAfterLoading);
     m_pTrackSamples->set(0); // Stop renderer
 }
 
 void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     if (bPlay) {
-        m_playButton->set((double)bPlay);
+        m_pPlayButton->set((double)bPlay);
     }
     slotTrackLoaded(pTrack, pTrack->getSampleRate(),
                     pTrack->getSampleRate() * pTrack->getDurationInt());
@@ -554,7 +552,7 @@ void EngineBuffer::ejectTrack() {
     m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
-    m_playButton->set(0.0);
+    m_pPlayButton->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
     doSeekPlayPos(0.0, SEEK_EXACT);
@@ -628,18 +626,18 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
 }
 
 void EngineBuffer::verifyPlay() {
-    bool play = m_playButton->toBool();
+    bool play = m_pPlayButton->toBool();
     bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
     if (play != verifiedPlay) {
-        m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
+        m_pPlayButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
-    bool oldPlay = m_playButton->toBool();
+    ControlPlayButtonBehavior::ButtonState buttonState = static_cast<ControlPlayButtonBehavior::ButtonState>(m_pPlayButton->get());
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
 
-    if (!oldPlay && verifiedPlay) {
+    if ((buttonState == ControlPlayButtonBehavior::PAUSE || buttonState == ControlPlayButtonBehavior::BRAKE) && verifiedPlay) {
         if (m_pQuantize->toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
@@ -650,7 +648,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     }
 
     // set and confirm must be called here in any case to update the widget toggle state
-    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
+    m_pPlayButton->setAndConfirm(verifiedPlay ? v : 0.0);
 }
 
 void EngineBuffer::slotControlStart(double v)
@@ -671,7 +669,7 @@ void EngineBuffer::slotControlPlayFromStart(double v)
 {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
-        m_playButton->set(1);
+        m_pPlayButton->set(1);
     }
 }
 
@@ -679,14 +677,14 @@ void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
-        m_playButton->set(0);
+        m_pPlayButton->set(0);
     }
 }
 
 void EngineBuffer::slotControlStop(double v)
 {
     if (v > 0.0) {
-        m_playButton->set(0);
+        m_pPlayButton->set(0);
     }
 }
 
@@ -716,18 +714,21 @@ void EngineBuffer::processTrackLocked(
         baserate = m_trackSampleRateOld / sample_rate;
     }
 
-    // Note: play is also active during cue preview
-    bool paused = !m_playButton->toBool();
+    // Note: play is also active during brake and cue preview
+    bool paused = m_pPlayButton->get() == ControlPlayButtonBehavior::PAUSE;
+    bool brake = m_pPlayButton->get() == ControlPlayButtonBehavior::BRAKE;
+
     KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
     // The pitch adjustment in Ratio (1.0 being normal
     // pitch. 2.0 is a full octave shift up).
     double pitchRatio = pitchTempoRatio.pitchRatio;
     double tempoRatio = pitchTempoRatio.tempoRatio;
-    const bool keylock_enabled = pitchTempoRatio.keylock;
+    bool keylock_enabled = pitchTempoRatio.keylock;
 
     bool is_scratching = false;
     bool is_reverse = false;
+    bool brakeHasStopped = false;
 
     // Update the slipped position and seek if it was disabled.
     processSlip(iBufferSize);
@@ -741,13 +742,24 @@ void EngineBuffer::processTrackLocked(
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
     double speed = m_pRateControl->calculateSpeed(
-            baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
+            baserate, tempoRatio, paused, brake, iBufferSize, &is_scratching, &is_reverse, &brakeHasStopped);
+
+    // when we are currently braking but speedcontrol reports that the braking has ended, switch to pause
+    if (m_pPlayButton->get() == ControlPlayButtonBehavior::BRAKE && brakeHasStopped) {
+        m_pPlayButton->set(ControlPlayButtonBehavior::PAUSE);
+        brake = false;
+    }
 
     bool useIndependentPitchAndTempoScaling = false;
 
     // TODO(owen): Maybe change this so that rubberband doesn't disable
     // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
-    if (is_scratching || fabs(speed) > 1.9) {
+    if (brake) {
+        // The brake effect does not sound like a real brake when the pitch is corrected
+
+        // Force pitchRatio to the linear pitch set by speed
+        pitchRatio = speed;
+    } else if (is_scratching || fabs(speed) > 1.9) {
         // Scratching and high speeds with always disables keylock
         // because Soundtouch sounds terrible in these conditions.  Rubberband
         // sounds better, but still has some problems (it may reallocate in
@@ -989,13 +1001,12 @@ void EngineBuffer::processTrackLocked(
             (at_end && !backwards);
 
     // If playbutton is pressed, check if we are at start or end of track
-    if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
-            && end_of_track) {
+    if ((m_pPlayButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool())) && end_of_track) {
         if (repeat_enabled) {
             double fractionalPos = at_start ? 1.0 : 0;
             doSeekFractional(fractionalPos, SEEK_STANDARD);
         } else {
-            m_playButton->set(0.);
+            m_pPlayButton->set(0.);
         }
     }
 
@@ -1324,7 +1335,7 @@ void EngineBuffer::slotEjectTrack(double v) {
     if (v > 0) {
         // Don't allow rejections while playing a track. We don't need to lock to
         // call ControlObject::get() so this is fine.
-        if (m_playButton->get() > 0) {
+        if (m_pPlayButton->get() > 0) {
             return;
         }
         ejectTrack();

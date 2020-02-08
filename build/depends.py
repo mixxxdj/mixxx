@@ -753,6 +753,7 @@ class MixxxCore(Feature):
                    "src/control/controlmodel.cpp",
                    "src/control/controlobject.cpp",
                    "src/control/controlobjectscript.cpp",
+                   "src/control/controlplaybutton.cpp",
                    "src/control/controlpotmeter.cpp",
                    "src/control/controlproxy.cpp",
                    "src/control/controlpushbutton.cpp",
