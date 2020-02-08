@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "track/seratomarkers2.h"
+#include "track/serato/markers2.h"
 #include "util/memory.h"
 
 #include <taglib/tstring.h>
@@ -213,7 +213,7 @@ TEST_F(SeratoMarkers2Test, ParseLoopEntry) {
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2Data) {
-    QDir dir("src/test/seratomarkers2-data");
+    QDir dir("src/test/serato/markers2-data");
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << "*.octet-stream");
 

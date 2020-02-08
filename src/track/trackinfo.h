@@ -7,7 +7,7 @@
 
 #include "track/bpm.h"
 #include "track/replaygain.h"
-#include "track/seratomarkers2.h"
+#include "track/serato/markers2.h"
 
 #include "util/duration.h"
 #include "util/macros.h"
