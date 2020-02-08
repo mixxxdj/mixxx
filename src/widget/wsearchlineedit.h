@@ -44,6 +44,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
   public slots:
     void restoreSearch(const QString& text);
     void disableSearch();
+    void slotSetFont(const QFont& font);
 
   private slots:
     void setShortcutFocus();
@@ -69,6 +70,9 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     QString getSearchText() const;
 
     QToolButton* const m_clearButton;
+
+    int m_frameWidth;
+    int m_innerHeight;
 
     QColor m_foregroundColor;
 

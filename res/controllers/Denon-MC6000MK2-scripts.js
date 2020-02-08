@@ -125,13 +125,13 @@ DenonMC6000MK2.MIDI_BUTTON_OFF = 0x00;
 
 DenonMC6000MK2.isButtonPressed = function(midiValue) {
     switch (midiValue) {
-        case DenonMC6000MK2.MIDI_BUTTON_ON:
-            return true;
-        case DenonMC6000MK2.MIDI_BUTTON_OFF:
-            return false;
-        default:
-            DenonMC6000MK2.logError("Unexpected MIDI button value: " + midiValue);
-            return undefined;
+    case DenonMC6000MK2.MIDI_BUTTON_ON:
+        return true;
+    case DenonMC6000MK2.MIDI_BUTTON_OFF:
+        return false;
+    default:
+        DenonMC6000MK2.logError("Unexpected MIDI button value: " + midiValue);
+        return undefined;
     }
 };
 
@@ -145,13 +145,13 @@ DenonMC6000MK2.MIDI_KNOB_DEC = 0x7F;
 
 DenonMC6000MK2.getKnobDelta = function(midiValue) {
     switch (midiValue) {
-        case DenonMC6000MK2.MIDI_KNOB_INC:
-            return 1;
-        case DenonMC6000MK2.MIDI_KNOB_DEC:
-            return -1;
-        default:
-            DenonMC6000MK2.logError("Unexpected MIDI knob value: " + midiValue);
-            return 0;
+    case DenonMC6000MK2.MIDI_KNOB_INC:
+        return 1;
+    case DenonMC6000MK2.MIDI_KNOB_DEC:
+        return -1;
+    default:
+        DenonMC6000MK2.logError("Unexpected MIDI knob value: " + midiValue);
+        return 0;
     }
 };
 
@@ -365,40 +365,40 @@ DenonMC6000MK2.Sampler.prototype.isPlaying = function() {
 
 DenonMC6000MK2.Sampler.prototype.onButton = function(isButtonPressed) {
     switch (DenonMC6000MK2.DEFAULT_SAMPLER_MODE) {
-        case DenonMC6000MK2.SAMPLER_MODE.TRIGGER:
-            if (isButtonPressed) {
-                if (this.isTrackLoaded()) {
-                    if (this.side.getShiftState()) {
-                        engine.setValue(this.group, "start_stop", true);
-                    } else {
-                        engine.setValue(this.group, "start_play", true);
-                    }
-                } else {
-                    this.loadSelectedTrack();
-                }
-            }
-            break;
-        case DenonMC6000MK2.SAMPLER_MODE.HOLD:
+    case DenonMC6000MK2.SAMPLER_MODE.TRIGGER:
+        if (isButtonPressed) {
             if (this.isTrackLoaded()) {
-                if (isButtonPressed) {
-                    if (this.side.getShiftState()) {
-                        engine.setValue(this.group, "eject", true);
-                    } else {
-                        engine.setValue(this.group, "start_play", true);
-                    }
+                if (this.side.getShiftState()) {
+                    engine.setValue(this.group, "start_stop", true);
                 } else {
-                    // continue playing if shift is pressed when
-                    // releasing the pressed button
-                    if (!this.side.getShiftState()) {
-                        engine.setValue(this.group, "start_stop", true);
-                    }
+                    engine.setValue(this.group, "start_play", true);
                 }
             } else {
-                if (isButtonPressed) {
-                    this.loadSelectedTrack();
+                this.loadSelectedTrack();
+            }
+        }
+        break;
+    case DenonMC6000MK2.SAMPLER_MODE.HOLD:
+        if (this.isTrackLoaded()) {
+            if (isButtonPressed) {
+                if (this.side.getShiftState()) {
+                    engine.setValue(this.group, "eject", true);
+                } else {
+                    engine.setValue(this.group, "start_play", true);
+                }
+            } else {
+                // continue playing if shift is pressed when
+                // releasing the pressed button
+                if (!this.side.getShiftState()) {
+                    engine.setValue(this.group, "start_stop", true);
                 }
             }
-            break;
+        } else {
+            if (isButtonPressed) {
+                this.loadSelectedTrack();
+            }
+        }
+        break;
     }
 };
 
