@@ -45,7 +45,7 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     QSet<TrackId> updatedTrackIds;
     QSet<TrackId> removedTrackIds;
     for (const auto& relocatedTrack : relocatedTracks) {
-        updatedTrackIds.insert(relocatedTrack.mergedTrackRef().getId());
+        updatedTrackIds.insert(relocatedTrack.updatedTrackRef().getId());
         removedTrackIds.insert(relocatedTrack.deletedTrackId());
     }
 

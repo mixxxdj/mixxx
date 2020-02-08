@@ -25,14 +25,14 @@ class RelocatedTrack final {
         // if the relocated track has not been added as a
         // new track to the internal collection before.
         DEBUG_ASSERT(m_addedTrackRef.hasLocation());
-        DEBUG_ASSERT(mergedTrackRef().isValid());
-        DEBUG_ASSERT(mergedTrackRef().hasId());
-        DEBUG_ASSERT(mergedTrackRef().hasLocation());
+        DEBUG_ASSERT(updatedTrackRef().isValid());
+        DEBUG_ASSERT(updatedTrackRef().hasId());
+        DEBUG_ASSERT(updatedTrackRef().hasLocation());
     }
 
-    // The new TrackRef of the relocated track after merging
+    // The new, updated TrackRef of the relocated track after merging
     // the missing with the newly added track.
-    TrackRef mergedTrackRef() const {
+    TrackRef updatedTrackRef() const {
         return TrackRef(
                 m_addedTrackRef,
                 m_missingTrackRef.getId());

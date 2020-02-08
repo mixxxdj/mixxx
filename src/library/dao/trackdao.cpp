@@ -375,7 +375,7 @@ void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
-        const auto changedTrackId = relocatedTrack.mergedTrackRef().getId();
+        const auto changedTrackId = relocatedTrack.updatedTrackRef().getId();
         DEBUG_ASSERT(changedTrackId.isValid());
         DEBUG_ASSERT(!removedTrackIds.contains(changedTrackId));
         changedTrackIds.insert(changedTrackId);
@@ -1765,7 +1765,7 @@ bool TrackDAO::detectMovedTracks(
             QSqlQuery query(m_database);
             query.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
             query.bindValue(":newloc", newTrackLocationId.toVariant());
-            query.bindValue(":oldid", relocatedTrack.mergedTrackRef().getId().toVariant());
+            query.bindValue(":oldid", relocatedTrack.updatedTrackRef().getId().toVariant());
             VERIFY_OR_DEBUG_ASSERT(query.exec()) {
                 LOG_FAILED_QUERY(query);
             }
