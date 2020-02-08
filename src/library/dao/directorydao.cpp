@@ -123,10 +123,7 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
                 TrackFile(oldLocation),
                 std::move(trackId));
         const int oldSuffixLen = oldLocation.size() - oldFolder.size();
-        QString newLocation;
-        newLocation.reserve(newFolder.size() + oldSuffixLen);
-        newLocation.append(newFolder);
-        newLocation.append(oldLocation.right(oldSuffixLen));
+        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
         auto addedTrackRef = TrackRef::fromFileInfo(
             TrackFile(newLocation) /*without TrackId*/);
         relocatedTracks.append(RelocatedTrack(
