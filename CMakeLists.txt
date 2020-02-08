@@ -510,6 +510,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
+  src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/track.cpp
   src/track/trackfile.cpp

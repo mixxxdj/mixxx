@@ -1205,6 +1205,7 @@ class MixxxCore(Feature):
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
+                   "src/track/serato/markers.cpp",
                    "src/track/serato/markers2.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
