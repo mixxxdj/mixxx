@@ -1,18 +1,17 @@
 #pragma once
 
-#include <memory>
-
-#include <QColor>
 #include <QByteArray>
+#include <QColor>
 #include <QDataStream>
 #include <QList>
+#include <memory>
 
 #include "util/types.h"
 
 namespace mixxx {
 
 class SeratoMarkers2Entry {
-public:
+  public:
     virtual ~SeratoMarkers2Entry() = default;
 
     virtual QString type() const = 0;
@@ -26,28 +25,25 @@ public:
 
 typedef std::shared_ptr<SeratoMarkers2Entry> SeratoMarkers2EntryPointer;
 
-inline
-bool operator==(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry& rhs) {
+inline bool operator==(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry& rhs) {
     return (lhs.type() == rhs.type()) && (lhs.data() == rhs.data());
 }
 
-inline
-bool operator!=(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry& rhs) {
+inline bool operator!=(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const SeratoMarkers2Entry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2Entry& arg) {
     return dbg << "type =" << arg.type()
                << "data =" << arg.data()
-               << "(" << "length =" << arg.length() << ")";
+               << "("
+               << "length =" << arg.length() << ")";
 }
 
 class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
-public:
+  public:
     SeratoMarkers2UnknownEntry(QString type, QByteArray data)
-        : m_type(std::move(type))
-        , m_data(std::move(data)) {
+            : m_type(std::move(type)), m_data(std::move(data)) {
     }
     ~SeratoMarkers2UnknownEntry() override = default;
 
@@ -59,22 +55,22 @@ public:
         return m_data;
     }
 
-private:
+  private:
     QString m_type;
     QByteArray m_data;
 };
 
 class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
-public:
+  public:
     SeratoMarkers2BpmlockEntry(bool locked)
-        : m_locked(locked) {
+            : m_locked(locked) {
     }
 
     SeratoMarkers2BpmlockEntry()
-        : m_locked(false) {
+            : m_locked(false) {
     }
 
-    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+    static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
     QString type() const override {
         return "BPMLOCK";
@@ -82,7 +78,7 @@ public:
 
     QByteArray data() const override;
 
-    bool isLocked() const  {
+    bool isLocked() const {
         return m_locked;
     }
 
@@ -92,38 +88,35 @@ public:
 
     quint32 length() const override;
 
-private:
+  private:
     bool m_locked;
 };
 
-inline
-bool operator==(const SeratoMarkers2BpmlockEntry& lhs,
-                const SeratoMarkers2BpmlockEntry& rhs) {
+inline bool operator==(const SeratoMarkers2BpmlockEntry& lhs,
+        const SeratoMarkers2BpmlockEntry& rhs) {
     return (lhs.isLocked() == rhs.isLocked());
 }
 
-inline
-bool operator!=(const SeratoMarkers2BpmlockEntry& lhs,
-                const SeratoMarkers2BpmlockEntry& rhs) {
+inline bool operator!=(const SeratoMarkers2BpmlockEntry& lhs,
+        const SeratoMarkers2BpmlockEntry& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
     return dbg << "locked =" << arg.isLocked();
 }
 
 class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
-public:
+  public:
     SeratoMarkers2ColorEntry(QColor color)
-        : m_color(color) {
+            : m_color(color) {
     }
 
     SeratoMarkers2ColorEntry()
-        : m_color(QColor()) {
+            : m_color(QColor()) {
     }
 
-    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+    static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
     QString type() const override {
         return "COLOR";
@@ -141,45 +134,35 @@ public:
 
     quint32 length() const override;
 
-private:
+  private:
     QColor m_color;
 };
 
-inline
-bool operator==(const SeratoMarkers2ColorEntry& lhs,
-                const SeratoMarkers2ColorEntry& rhs) {
+inline bool operator==(const SeratoMarkers2ColorEntry& lhs,
+        const SeratoMarkers2ColorEntry& rhs) {
     return (lhs.getColor() == rhs.getColor());
 }
 
-inline
-bool operator!=(const SeratoMarkers2ColorEntry& lhs,
-                const SeratoMarkers2ColorEntry& rhs) {
+inline bool operator!=(const SeratoMarkers2ColorEntry& lhs,
+        const SeratoMarkers2ColorEntry& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
     return dbg << "color =" << arg.getColor();
 }
 
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
-public:
-    SeratoMarkers2CueEntry(quint8 index, quint32 position, QColor color,
-            QString label)
-        : m_index(index)
-        , m_position(position)
-        , m_color(color)
-        , m_label(label) {
+  public:
+    SeratoMarkers2CueEntry(quint8 index, quint32 position, QColor color, QString label)
+            : m_index(index), m_position(position), m_color(color), m_label(label) {
     }
 
     SeratoMarkers2CueEntry()
-        : m_index(0)
-        , m_position(0)
-        , m_color(QColor())
-        , m_label(QString("")) {
+            : m_index(0), m_position(0), m_color(QColor()), m_label(QString("")) {
     }
 
-    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+    static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
     QString type() const override {
         return "CUE";
@@ -187,7 +170,7 @@ public:
 
     QByteArray data() const override;
 
-    quint8 getIndex() const  {
+    quint8 getIndex() const {
         return m_index;
     }
 
@@ -211,7 +194,7 @@ public:
         m_color = color;
     }
 
-    QString getLabel() const  {
+    QString getLabel() const {
         return m_label;
     }
 
@@ -221,30 +204,27 @@ public:
 
     quint32 length() const override;
 
-private:
+  private:
     quint8 m_index;
     quint32 m_position;
     QColor m_color;
     QString m_label;
 };
 
-inline
-bool operator==(const SeratoMarkers2CueEntry& lhs,
-                const SeratoMarkers2CueEntry& rhs) {
+inline bool operator==(const SeratoMarkers2CueEntry& lhs,
+        const SeratoMarkers2CueEntry& rhs) {
     return (lhs.getIndex() == rhs.getIndex()) &&
-           (lhs.getPosition() == rhs.getPosition()) &&
-           (lhs.getColor() == rhs.getColor()) &&
-           (lhs.getLabel() == rhs.getLabel());
+            (lhs.getPosition() == rhs.getPosition()) &&
+            (lhs.getColor() == rhs.getColor()) &&
+            (lhs.getLabel() == rhs.getLabel());
 }
 
-inline
-bool operator!=(const SeratoMarkers2CueEntry& lhs,
-                const SeratoMarkers2CueEntry& rhs) {
+inline bool operator!=(const SeratoMarkers2CueEntry& lhs,
+        const SeratoMarkers2CueEntry& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
     return dbg << "index =" << arg.getIndex() << "/"
                << "position =" << arg.getPosition() << "/"
                << "color =" << arg.getColor() << "/"
@@ -252,26 +232,16 @@ QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
 }
 
 class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
-public:
-    SeratoMarkers2LoopEntry(quint8 index, quint32 startposition,
-            quint32 endposition, bool locked,
-            QString label)
-        : m_index(index)
-        , m_startposition(startposition)
-        , m_endposition(endposition)
-        , m_locked(locked)
-        , m_label(label) {
+  public:
+    SeratoMarkers2LoopEntry(quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label)
+            : m_index(index), m_startposition(startposition), m_endposition(endposition), m_locked(locked), m_label(label) {
     }
 
     SeratoMarkers2LoopEntry()
-        : m_index(0)
-        , m_startposition(0)
-        , m_endposition(0)
-        , m_locked(false)
-        , m_label(QString("")) {
+            : m_index(0), m_startposition(0), m_endposition(0), m_locked(false), m_label(QString("")) {
     }
 
-    static SeratoMarkers2EntryPointer parse(const QByteArray &data);
+    static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
     QString type() const override {
         return "LOOP";
@@ -279,7 +249,7 @@ public:
 
     QByteArray data() const override;
 
-    quint8 getIndex() const  {
+    quint8 getIndex() const {
         return m_index;
     }
 
@@ -311,7 +281,7 @@ public:
         m_locked = locked;
     }
 
-    QString getLabel() const  {
+    QString getLabel() const {
         return m_label;
     }
 
@@ -321,7 +291,7 @@ public:
 
     quint32 length() const override;
 
-private:
+  private:
     quint8 m_index;
     quint32 m_startposition;
     quint32 m_endposition;
@@ -329,24 +299,21 @@ private:
     QString m_label;
 };
 
-inline
-bool operator==(const SeratoMarkers2LoopEntry& lhs,
-                const SeratoMarkers2LoopEntry& rhs) {
+inline bool operator==(const SeratoMarkers2LoopEntry& lhs,
+        const SeratoMarkers2LoopEntry& rhs) {
     return (lhs.getIndex() == rhs.getIndex()) &&
-           (lhs.getStartPosition() == rhs.getStartPosition()) &&
-           (lhs.getEndPosition() == rhs.getEndPosition()) &&
-           (lhs.isLocked() == rhs.isLocked()) &&
-           (lhs.getLabel() == rhs.getLabel());
+            (lhs.getStartPosition() == rhs.getStartPosition()) &&
+            (lhs.getEndPosition() == rhs.getEndPosition()) &&
+            (lhs.isLocked() == rhs.isLocked()) &&
+            (lhs.getLabel() == rhs.getLabel());
 }
 
-inline
-bool operator!=(const SeratoMarkers2LoopEntry& lhs,
-                const SeratoMarkers2LoopEntry& rhs) {
+inline bool operator!=(const SeratoMarkers2LoopEntry& lhs,
+        const SeratoMarkers2LoopEntry& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
     return dbg << "index =" << arg.getIndex() << "/"
                << "startposition =" << arg.getStartPosition() << "/"
                << "endposition =" << arg.getEndPosition() << "/"
@@ -364,12 +331,11 @@ QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
 // https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
 //
 class SeratoMarkers2 final {
-public:
+  public:
     SeratoMarkers2() = default;
     explicit SeratoMarkers2(
             QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
-        : m_allocatedSize(0)
-        , m_entries(std::move(entries)) {
+            : m_allocatedSize(0), m_entries(std::move(entries)) {
     }
 
     // Parsing and formatting of gain values according to the
@@ -398,27 +364,24 @@ public:
         m_entries = std::move(entries);
     }
 
-private:
+  private:
     int m_allocatedSize;
     QList<std::shared_ptr<SeratoMarkers2Entry>> m_entries;
 };
 
-inline
-bool operator==(const SeratoMarkers2& lhs, const SeratoMarkers2& rhs) {
+inline bool operator==(const SeratoMarkers2& lhs, const SeratoMarkers2& rhs) {
     return (lhs.getEntries() == rhs.getEntries());
 }
 
-inline
-bool operator!=(const SeratoMarkers2& lhs, const SeratoMarkers2& rhs) {
+inline bool operator!=(const SeratoMarkers2& lhs, const SeratoMarkers2& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const SeratoMarkers2& arg) {
+inline QDebug operator<<(QDebug dbg, const SeratoMarkers2& arg) {
     return dbg << "entries =" << arg.getEntries().length();
 }
 
-}
+} // namespace mixxx
 
 Q_DECLARE_TYPEINFO(mixxx::SeratoMarkers2, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::SeratoMarkers2)
