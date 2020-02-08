@@ -17,11 +17,6 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
     EncoderWaveSettings(UserSettingsPointer pConfig, QString format);
     virtual ~EncoderWaveSettings();
 
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override {
-        return true;
-    }
-
     // Returns the list of radio options to show to the user
     QList<OptionsGroup> getOptionGroups() const override;
     // Selects the option by its index. If it is a single-element option, 

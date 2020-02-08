@@ -28,6 +28,7 @@ class SidebarModel;
 class TrackCollection;
 class TrackCollectionManager;
 class TrackModel;
+class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
 
@@ -58,9 +59,10 @@ class Library: public QObject {
     // Deprecated: Obtain directly from TrackCollectionManager
     TrackCollection& trackCollection();
 
+    void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
+    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
-    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();

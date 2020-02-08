@@ -37,3 +37,15 @@ WColorPicker QPushButton[checked="false"] {
 WColorPicker QPushButton[checked="true"] {
   qproperty-icon: url(:/images/ic_checkmark.svg);
 }
+
+/* Clear button */
+#SearchClearButton {
+  background: none;
+  border: 0px solid #fff;
+}
+#SearchClearButton:!focus {
+  image: url(:/images/library/ic_library_cross_grey.svg)
+}
+#SearchClearButton:focus {
+  image: url(:/images/library/ic_library_cross_orange.svg)
+}

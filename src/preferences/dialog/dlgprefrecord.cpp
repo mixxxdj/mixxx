@@ -260,7 +260,7 @@ void DlgPrefRecord::setupEncoderUI() {
         widget->deleteLater();
     }
     m_optionWidgets.clear();
-    if (settings->usesOptionGroups()) {
+    if (!settings->getOptionGroups().isEmpty()) {
         labelOptionGroup->setVisible(true);
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
@@ -401,7 +401,7 @@ void DlgPrefRecord::saveEncoding() {
         QList<int> comps = settings->getCompressionValues();
         settings->setCompression(comps.at(SliderCompression->value()));
     }
-    if (settings->usesOptionGroups()) {
+    if (!settings->getOptionGroups().isEmpty()) {
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();

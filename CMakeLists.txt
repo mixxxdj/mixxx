@@ -691,16 +691,19 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
-)
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
-)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
+  )
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
+  )
+endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
 if(MSVC)
@@ -1206,6 +1209,9 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/decode.c
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
+if(WIN32)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PUBLIC MP3GuessEnc)
 
