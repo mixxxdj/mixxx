@@ -360,7 +360,7 @@ QString parseCrate(
         return QString();
     }
 
-    QFile crateFile = QFile(crateFilePath);
+    QFile crateFile(crateFilePath);
     if (!crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
@@ -404,7 +404,7 @@ QString parseCrate(
             break;
         }
         case FieldId::Track: {
-            QBuffer buffer = QBuffer(&data);
+            QBuffer buffer(&data);
             buffer.open(QIODevice::ReadOnly);
             QString location = parseCrateTrackPath(&buffer);
             if (!location.isEmpty()) {
@@ -526,7 +526,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             ":serato_db"
             ")");
 
-    QFile databaseFile = QFile(databaseFilePath);
+    QFile databaseFile(databaseFilePath);
     if (!databaseFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << databaseFilePath
@@ -572,7 +572,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
         }
         case FieldId::Track: {
             serato_track_t track;
-            QBuffer buffer = QBuffer(&data);
+            QBuffer buffer(&data);
             buffer.open(QIODevice::ReadOnly);
             if (parseTrack(&track, &buffer)) {
                 QString location = databaseRootDir.absoluteFilePath(track.location);
