@@ -1128,6 +1128,9 @@ class MixxxCore(Feature):
 
                    "src/library/trackloader.cpp",
 
+                   "src/network/jsonwebtask.cpp",
+                   "src/network/webtask.cpp",
+
                    "src/widget/wwaveformviewer.cpp",
 
                    "src/waveform/sharedglcontext.cpp",
