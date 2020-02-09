@@ -70,7 +70,10 @@ inline bool operator!=(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& 
 
 inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
     return dbg << "type =" << arg.type()
-               << "data =" << arg.data();
+               << "startPosition =" << arg.getStartPosition()
+               << "endPosition =" << arg.getEndPosition()
+               << "color =" << arg.getColor()
+               << "isLocked =" << arg.isLocked();
 }
 
 // DTO for storing information from the SeratoMarkers_ tags used by the Serato
