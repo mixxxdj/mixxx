@@ -213,7 +213,7 @@ TEST_F(SeratoMarkers2Test, ParseLoopEntry) {
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2Data) {
-    QDir dir("src/test/serato/markers2-data");
+    QDir dir("src/test/serato/data/markers2");
     dir.setFilter(QDir::Files);
     dir.setNameFilters(QStringList() << "*.octet-stream");
 
