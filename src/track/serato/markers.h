@@ -10,6 +10,10 @@
 
 namespace mixxx {
 
+// Forward declaration
+class SeratoMarkersEntry;
+typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
+
 class SeratoMarkersEntry {
   public:
     SeratoMarkersEntry(bool isSet, int startPosition, bool isEnabled, int endPosition, QRgb color, int type, bool isLocked)
@@ -24,7 +28,7 @@ class SeratoMarkersEntry {
     ~SeratoMarkersEntry() = default;
 
     QByteArray data() const;
-    static SeratoMarkersEntry* parse(const QByteArray& data);
+    static SeratoMarkersEntryPointer parse(const QByteArray& data);
 
     int type() const {
         return m_type;
@@ -63,8 +67,6 @@ class SeratoMarkersEntry {
     int m_startPosition;
     int m_type;
 };
-
-typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 inline bool operator==(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
     return (lhs.data() == rhs.data());

@@ -86,7 +86,7 @@ QByteArray SeratoMarkersEntry::data() const {
     return data;
 }
 
-SeratoMarkersEntry* SeratoMarkersEntry::parse(const QByteArray& data) {
+SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     if (data.length() != kEntrySize) {
         qWarning() << "Parsing SeratoMarkersEntry failed:"
                    << "Length" << data.length() << "!=" << kEntrySize;
@@ -122,14 +122,14 @@ SeratoMarkersEntry* SeratoMarkersEntry::parse(const QByteArray& data) {
     const quint8 type = data.at(20);
     const bool isLocked = static_cast<bool>(data.at(21));
 
-    SeratoMarkersEntry* pEntry = new SeratoMarkersEntry(
+    SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(new SeratoMarkersEntry(
             isSet,
             startPosition,
             isEnabled,
             endPosition,
             color,
             type,
-            isLocked);
+            isLocked));
     qDebug() << "SeratoMarkersEntry" << *pEntry;
     return pEntry;
 }
