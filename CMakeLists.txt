@@ -121,7 +121,7 @@ set_property(DIRECTORY APPEND
     PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/.git/index")
 
-# uses GIT_BRANCH and GIT_COMMIT_COUNT 
+# uses GIT_BRANCH and GIT_COMMIT_COUNT
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
