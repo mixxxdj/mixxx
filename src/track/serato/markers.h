@@ -90,21 +90,12 @@ class SeratoMarkers final {
     SeratoMarkers() = default;
     explicit SeratoMarkers(
             QList<std::shared_ptr<SeratoMarkersEntry>> entries)
-            : m_allocatedSize(0), m_entries(std::move(entries)) {
+            : m_entries(std::move(entries)) {
     }
 
     static bool parse(SeratoMarkers* seratoMarkers, const QByteArray& data);
 
     QByteArray data() const;
-
-    int getAllocatedSize() const {
-        return m_allocatedSize;
-    }
-
-    void setAllocatedSize(int size) {
-        DEBUG_ASSERT(size >= 0);
-        m_allocatedSize = size;
-    }
 
     bool isEmpty() const {
         return m_entries.isEmpty();
@@ -125,7 +116,6 @@ class SeratoMarkers final {
     }
 
   private:
-    int m_allocatedSize;
     QList<std::shared_ptr<SeratoMarkersEntry>> m_entries;
     QRgb m_trackColor;
 };
