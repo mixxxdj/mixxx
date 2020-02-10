@@ -13,7 +13,13 @@ namespace mixxx {
 class SeratoMarkersEntry {
   public:
     SeratoMarkersEntry(bool isSet, int startPosition, bool isEnabled, int endPosition, QRgb color, int type, bool isLocked)
-            : m_color(color), m_isEnabled(isEnabled), m_isLocked(isLocked), m_isSet(isSet), m_endPosition(endPosition), m_startPosition(startPosition), m_type(type) {
+            : m_color(color),
+              m_isEnabled(isEnabled),
+              m_isLocked(isLocked),
+              m_isSet(isSet),
+              m_endPosition(endPosition),
+              m_startPosition(startPosition),
+              m_type(type) {
     }
     ~SeratoMarkersEntry() = default;
 
@@ -88,8 +94,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
 class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
-    explicit SeratoMarkers(
-            QList<std::shared_ptr<SeratoMarkersEntry>> entries)
+    explicit SeratoMarkers(QList<std::shared_ptr<SeratoMarkersEntry>> entries)
             : m_entries(std::move(entries)) {
     }
 
