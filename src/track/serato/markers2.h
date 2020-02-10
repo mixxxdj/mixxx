@@ -155,11 +155,17 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   public:
     SeratoMarkers2CueEntry(quint8 index, quint32 position, QColor color, QString label)
-            : m_index(index), m_position(position), m_color(color), m_label(label) {
+            : m_index(index),
+              m_position(position),
+              m_color(color),
+              m_label(label) {
     }
 
     SeratoMarkers2CueEntry()
-            : m_index(0), m_position(0), m_color(QColor()), m_label(QString("")) {
+            : m_index(0),
+              m_position(0),
+              m_color(QColor()),
+              m_label(QString("")) {
     }
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
@@ -234,11 +240,19 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
 class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
   public:
     SeratoMarkers2LoopEntry(quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label)
-            : m_index(index), m_startposition(startposition), m_endposition(endposition), m_locked(locked), m_label(label) {
+            : m_index(index),
+              m_startposition(startposition),
+              m_endposition(endposition),
+              m_locked(locked),
+              m_label(label) {
     }
 
     SeratoMarkers2LoopEntry()
-            : m_index(0), m_startposition(0), m_endposition(0), m_locked(false), m_label(QString("")) {
+            : m_index(0),
+              m_startposition(0),
+              m_endposition(0),
+              m_locked(false),
+              m_label(QString("")) {
     }
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
