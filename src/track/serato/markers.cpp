@@ -20,6 +20,26 @@ quint32 bytesToUInt32(const QByteArray& data) {
 #endif
 }
 
+// These functions conversion between the 4-byte "Serato Markers_" color format
+// and QRgb (3-Byte RGB, transparency disabled).
+//
+// Serato's custom color format that is used here also represents RGB colors,
+// but inserts a single null bit after every 7 payload bits, starting from the
+// rightmost bit.
+//
+// Here's an example:
+//
+//                   | Hex          Binary
+//     ------------- | -----------  --------------------------------
+//     3-byte RGB    |    00 00 cc       000 0000000 0000001 1001100
+//     Serato format | 00 00 01 4c  00000000000000000000000101001100
+//                   |
+//     3-byte RGB    |    cc 88 00       110 0110010 0010000 0000000
+//     Serato format | 06 32 10 00  00000110001100100001000000000000
+//
+// See this for details:
+// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#color-format
+
 QRgb colorToRgb(quint8 w, quint8 x, quint8 y, quint8 z) {
     quint8 b = (z & 0x7F) | ((y & 0x01) << 7);
     quint8 g = ((y & 0x7F) >> 1) | ((x & 0x03) << 6);
