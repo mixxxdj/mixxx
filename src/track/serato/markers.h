@@ -96,7 +96,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
 class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
-    explicit SeratoMarkers(QList<std::shared_ptr<SeratoMarkersEntry>> entries)
+    explicit SeratoMarkers(QList<SeratoMarkersEntryPointer> entries)
             : m_entries(std::move(entries)) {
     }
 
@@ -108,10 +108,10 @@ class SeratoMarkers final {
         return m_entries.isEmpty();
     }
 
-    const QList<std::shared_ptr<SeratoMarkersEntry>>& getEntries() const {
+    const QList<SeratoMarkersEntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<std::shared_ptr<SeratoMarkersEntry>> entries) {
+    void setEntries(QList<SeratoMarkersEntryPointer> entries) {
         m_entries = std::move(entries);
     }
 
@@ -123,7 +123,7 @@ class SeratoMarkers final {
     }
 
   private:
-    QList<std::shared_ptr<SeratoMarkersEntry>> m_entries;
+    QList<SeratoMarkersEntryPointer> m_entries;
     QRgb m_trackColor;
 };
 
