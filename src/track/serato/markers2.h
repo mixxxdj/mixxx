@@ -16,17 +16,17 @@ class SeratoMarkers2Entry {
 
     virtual QString type() const = 0;
 
-    virtual QByteArray data() const = 0;
+    virtual QByteArray dump() const = 0;
 
     virtual quint32 length() const {
-        return data().length();
+        return dump().length();
     }
 };
 
 typedef std::shared_ptr<SeratoMarkers2Entry> SeratoMarkers2EntryPointer;
 
 inline bool operator==(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry& rhs) {
-    return (lhs.type() == rhs.type()) && (lhs.data() == rhs.data());
+    return (lhs.type() == rhs.type()) && (lhs.dump() == rhs.dump());
 }
 
 inline bool operator!=(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry& rhs) {
@@ -35,7 +35,7 @@ inline bool operator!=(const SeratoMarkers2Entry& lhs, const SeratoMarkers2Entry
 
 inline QDebug operator<<(QDebug dbg, const SeratoMarkers2Entry& arg) {
     return dbg << "type =" << arg.type()
-               << "data =" << arg.data()
+               << "data =" << arg.dump()
                << "("
                << "length =" << arg.length() << ")";
 }
@@ -52,7 +52,7 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
         return m_type;
     }
 
-    QByteArray data() const override {
+    QByteArray dump() const override {
         return m_data;
     }
 
@@ -77,7 +77,7 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
         return "BPMLOCK";
     }
 
-    QByteArray data() const override;
+    QByteArray dump() const override;
 
     bool isLocked() const {
         return m_locked;
@@ -123,7 +123,7 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
         return "COLOR";
     }
 
-    QByteArray data() const override;
+    QByteArray dump() const override;
 
     QColor getColor() const {
         return m_color;
@@ -175,7 +175,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
         return "CUE";
     }
 
-    QByteArray data() const override;
+    QByteArray dump() const override;
 
     quint8 getIndex() const {
         return m_index;
@@ -262,7 +262,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
         return "LOOP";
     }
 
-    QByteArray data() const override;
+    QByteArray dump() const override;
 
     quint8 getIndex() const {
         return m_index;
@@ -357,7 +357,7 @@ class SeratoMarkers2 final {
     // SeratoMarkers2 1.0/2.0 specification.
     static bool parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData);
 
-    QByteArray data() const;
+    QByteArray dump() const;
 
     int getAllocatedSize() const {
         return m_allocatedSize;

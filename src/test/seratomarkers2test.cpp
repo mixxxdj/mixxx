@@ -23,7 +23,7 @@ class SeratoMarkers2Test : public testing::Test {
 
         EXPECT_EQ(locked, bpmlockEntry->isLocked());
 
-        EXPECT_EQ(inputValue, bpmlockEntry->data());
+        EXPECT_EQ(inputValue, bpmlockEntry->dump());
     }
 
     void parseColorEntry(const QByteArray inputValue, bool valid, QColor color) {
@@ -37,7 +37,7 @@ class SeratoMarkers2Test : public testing::Test {
 
         EXPECT_EQ(color, colorEntry->getColor());
 
-        EXPECT_EQ(inputValue, colorEntry->data());
+        EXPECT_EQ(inputValue, colorEntry->dump());
     }
 
     void parseCueEntry(const QByteArray inputValue, bool valid, quint8 index, quint32 position, QColor color, QString label) {
@@ -54,7 +54,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(color, cueEntry->getColor());
         EXPECT_EQ(label, cueEntry->getLabel());
 
-        EXPECT_EQ(inputValue, cueEntry->data());
+        EXPECT_EQ(inputValue, cueEntry->dump());
     }
 
     void parseLoopEntry(const QByteArray inputValue, bool valid, quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label) {
@@ -72,7 +72,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(locked, loopEntry->isLocked());
         EXPECT_EQ(label, loopEntry->getLabel());
 
-        EXPECT_EQ(inputValue, loopEntry->data());
+        EXPECT_EQ(inputValue, loopEntry->dump());
    }
 
     void parseMarkers2Data(const QByteArray inputValue, bool valid) {
@@ -82,7 +82,7 @@ class SeratoMarkers2Test : public testing::Test {
         if (!parseOk) {
             return;
         }
-        EXPECT_EQ(inputValue, seratoMarkers2.data());
+        EXPECT_EQ(inputValue, seratoMarkers2.dump());
     }
 };
 

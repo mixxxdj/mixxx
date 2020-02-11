@@ -17,7 +17,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& d
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
-QByteArray SeratoMarkers2BpmlockEntry::data() const {
+QByteArray SeratoMarkers2BpmlockEntry::dump() const {
     QByteArray data;
     data.resize(length());
 
@@ -57,7 +57,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
-QByteArray SeratoMarkers2ColorEntry::data() const {
+QByteArray SeratoMarkers2ColorEntry::dump() const {
     QByteArray data;
     data.resize(length());
 
@@ -138,7 +138,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
-QByteArray SeratoMarkers2CueEntry::data() const {
+QByteArray SeratoMarkers2CueEntry::dump() const {
     QByteArray data;
     data.resize(length());
 
@@ -234,7 +234,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
-QByteArray SeratoMarkers2LoopEntry::data() const {
+QByteArray SeratoMarkers2LoopEntry::dump() const {
     QByteArray data;
     data.resize(length());
 
@@ -336,7 +336,7 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
     return true;
 }
 
-QByteArray SeratoMarkers2::data() const {
+QByteArray SeratoMarkers2::dump() const {
     QByteArray data("\x01\x01", 2);
 
     for (int i = 0; i < m_entries.size(); i++) {
@@ -345,7 +345,7 @@ QByteArray SeratoMarkers2::data() const {
         data.append(entry->type().toUtf8());
         data.append('\0');
         data.append((const char*)&lengthBE, 4);
-        data.append(entry->data());
+        data.append(entry->dump());
     }
     data.append('\0');
 
