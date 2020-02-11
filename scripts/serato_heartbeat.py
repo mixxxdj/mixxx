@@ -98,12 +98,12 @@ def main(argv=None):
         epilog=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("portname", help="MIDI output port name")
+    parser.add_argument("port", metavar='PORT', help="MIDI output port name")
     parser.add_argument("-f", "--xmlfile", help="Mixxx XML file")
     args = parser.parse_args(argv)
 
     for portname in mido.get_output_names():
-        if args.portname in portname:
+        if args.port in portname:
             break
     else:
         print("Did not find output!")
