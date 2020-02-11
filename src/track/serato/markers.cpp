@@ -204,7 +204,7 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
         return false;
     }
 
-    seratoMarkers->setEntries(entries);
+    seratoMarkers->setEntries(std::move(entries));
     seratoMarkers->setTrackColor(trackColor);
 
     return true;

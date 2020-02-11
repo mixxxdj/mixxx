@@ -102,7 +102,7 @@ class SeratoMarkers final {
         return m_entries;
     }
     void setEntries(QList<SeratoMarkersEntryPointer> entries) {
-        m_entries = std::move(entries);
+        m_entries = entries;
     }
 
     QRgb getTrackColor() const {
