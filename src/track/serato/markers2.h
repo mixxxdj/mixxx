@@ -43,7 +43,8 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2Entry& arg) {
 class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
   public:
     SeratoMarkers2UnknownEntry(QString type, QByteArray data)
-            : m_type(std::move(type)), m_data(std::move(data)) {
+            : m_type(std::move(type)),
+              m_data(std::move(data)) {
     }
     ~SeratoMarkers2UnknownEntry() override = default;
 
