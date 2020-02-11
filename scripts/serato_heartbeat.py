@@ -135,7 +135,11 @@ def main(argv=None):
 
     print_help(descriptions)
     while True:
-        text = prompt("> ").strip()
+        try:
+            text = prompt("> ").strip()
+        except EOFError:
+            text = "exit"
+
         if not text:
             continue
 
