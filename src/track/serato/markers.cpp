@@ -5,19 +5,7 @@
 namespace {
 
 const int kEntrySize = 22;
-const char* kVersion = "\x02\x05";
-const int kVersionSize = 2;
-
-inline
-quint32 bytesToUInt32(const QByteArray& data) {
-    DEBUG_ASSERT(data.size() == sizeof(quint32));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    return qFromBigEndian<quint32>(data.constData());
-#else
-    return qFromBigEndian<quint32>(
-            reinterpret_cast<const uchar*>(data.constData()));
-#endif
-}
+const quint16 kVersion = 0x0205;
 
 // These functions conversion between the 4-byte "Serato Markers_" color format
 // and QRgb (3-Byte RGB, transparency disabled).
@@ -165,24 +153,31 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
 }
 
 bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) {
-    if (!data.startsWith(kVersion)) {
+    QDataStream stream(data);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+
+    quint16 version;
+    stream >> version;
+    if (version != kVersion) {
         qWarning() << "Parsing SeratoMarkers_ failed:"
                    << "Unknown Serato Markers_ tag version";
         return false;
     }
 
-    quint32 numEntries = bytesToUInt32(data.mid(2, 4));
-    QList<std::shared_ptr<SeratoMarkersEntry>> entries;
+    quint32 numEntries;
+    stream >> numEntries;
 
-    int offset = 6;
+    char buffer[kEntrySize];
+    QList<SeratoMarkersEntryPointer> entries;
     for (quint32 i = 0; i < numEntries; i++) {
-        if (data.size() <= (offset + kEntrySize)) {
-            qWarning() << "Parsing SeratoMarkers_ failed:"
-                       << "Incomplete entry" << data.mid(offset);
+        if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
+            qWarning() << "Parsing SeratoMarkersEntry failed:"
+                       << "unable to read entry data";
             return false;
         }
 
-        QByteArray entryData = data.mid(offset, kEntrySize);
+        QByteArray entryData = QByteArray(buffer, kEntrySize);
         SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(
                 SeratoMarkersEntry::parse(entryData));
         if (!pEntry) {
@@ -191,33 +186,26 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
             return false;
         }
         entries.append(pEntry);
-
-        offset += kEntrySize;
     }
 
-    if (data.mid(offset).size() != 4) {
-        qWarning() << "Parsing SeratoMarkers_ failed:"
-                   << "Invalid footer" << data.mid(offset);
-        return false;
-    }
-
-    QRgb color = colorToRgb(bytesToUInt32(data.mid(offset)));
+    quint32 trackColorRaw;
+    stream >> trackColorRaw;
+    QRgb trackColor = colorToRgb(trackColorRaw);
 
     seratoMarkers->setEntries(entries);
-    seratoMarkers->setTrackColor(color);
+    seratoMarkers->setTrackColor(trackColor);
 
     return true;
 }
 
 QByteArray SeratoMarkers::data() const {
     QByteArray data;
-    data.resize(kVersionSize + 2 * sizeof(quint32) + kEntrySize * m_entries.size());
+    data.resize(sizeof(quint16) + 2 * sizeof(quint32) + kEntrySize * m_entries.size());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream.writeRawData(kVersion, kVersionSize);
-    stream << m_entries.size();
+    stream << kVersion << m_entries.size();
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->data(), kEntrySize);
