@@ -9,7 +9,7 @@
 
 class WColorPickerAction : public QWidgetAction {
   public:
-    WColorPickerAction(QWidget* parent)
+    explicit WColorPickerAction(QWidget* parent)
             : QWidgetAction(parent) {
         m_pColorPicker = make_parented<WColorPicker>(true);
 
