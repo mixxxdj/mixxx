@@ -12,7 +12,7 @@ namespace {
     const int kNumColumns = 4;
 }
 
-WColorPicker::WColorPicker(QWidget* parent, bool allowNoColor)
+WColorPicker::WColorPicker(bool allowNoColor, QWidget* parent)
         : QWidget(parent) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);

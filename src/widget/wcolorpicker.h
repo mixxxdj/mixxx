@@ -10,7 +10,7 @@
 class WColorPicker : public QWidget {
     Q_OBJECT
   public:
-    WColorPicker(QWidget* parent = nullptr, bool allowNoColor = false);
+    WColorPicker(bool allowNoColor = false, QWidget* parent = nullptr);
 
     void setSelectedColor(PredefinedColorPointer pColor = nullptr);
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);

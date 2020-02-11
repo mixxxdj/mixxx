@@ -4,13 +4,14 @@
 #include <QWidget>
 #include <QWidgetAction>
 
+#include "util/parented_ptr.h"
 #include "widget/wcolorpicker.h"
 
 class WColorPickerAction : public QWidgetAction {
   public:
     WColorPickerAction(QWidget* parent)
             : QWidgetAction(parent) {
-        m_pColorPicker = new WColorPicker(parent, true);
+        m_pColorPicker = make_parented<WColorPicker>(true);
 
         QHBoxLayout* pLayout = new QHBoxLayout();
         pLayout->addWidget(m_pColorPicker);
@@ -20,14 +21,10 @@ class WColorPickerAction : public QWidgetAction {
         setDefaultWidget(pWidget);
     }
 
-    ~WColorPickerAction() {
-        delete m_pColorPicker;
-    }
-
     WColorPicker* colorPicker() {
-        return m_pColorPicker;
+        return m_pColorPicker.get();
     }
 
   private:
-    WColorPicker* m_pColorPicker;
+    parented_ptr<WColorPicker> m_pColorPicker;
 };
