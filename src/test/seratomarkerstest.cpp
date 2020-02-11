@@ -12,7 +12,14 @@ namespace {
 
 class SeratoMarkersTest : public testing::Test {
   protected:
-    void parseEntry(const QByteArray inputValue, bool valid, quint32 startPosition, quint32 endPosition, QRgb color, quint8 type, bool isLocked) {
+    void parseEntry(
+            const QByteArray& inputValue,
+            bool valid,
+            quint32 startPosition,
+            quint32 endPosition,
+            QRgb color,
+            quint8 type,
+            bool isLocked) {
         const mixxx::SeratoMarkersEntryPointer pEntry = mixxx::SeratoMarkersEntry::parse(inputValue);
         if (!pEntry) {
             EXPECT_FALSE(valid);
@@ -29,7 +36,7 @@ class SeratoMarkersTest : public testing::Test {
         EXPECT_EQ(inputValue, pEntry->data());
     }
 
-    void parseMarkersData(const QByteArray inputValue, bool valid) {
+    void parseMarkersData(const QByteArray& inputValue, bool valid) {
         mixxx::SeratoMarkers seratoMarkers;
         bool parseOk = mixxx::SeratoMarkers::parse(&seratoMarkers, inputValue);
         EXPECT_EQ(valid, parseOk);
