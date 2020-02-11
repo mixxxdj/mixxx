@@ -26,9 +26,6 @@ mixxx::Logger kLogger("LibraryScanner");
 
 QAtomicInt s_instanceCounter(0);
 
-const QString kDeleteOrphanedLibraryScannerDirectories =
-        "delete from LibraryHashes where hash <> 0 and directory_path not in (select directory from track_locations)";
-
 // Returns the number of affected rows or -1 on error
 int execCleanupQuery(QSqlDatabase database, const QString& statement) {
     FwdSqlQuery query(database, statement);
@@ -145,8 +142,11 @@ void LibraryScanner::run() {
             kLogger.info() << "Cleaning up database...";
             PerformanceTimer timer;
             timer.start();
-            auto numRows = execCleanupQuery(dbConnection,
-                    kDeleteOrphanedLibraryScannerDirectories);
+            const auto sqlCmd =
+                    QString("delete from LibraryHashes where hash <> %1 "
+                            "and directory_path not in (select directory from track_locations)")
+                            .arg(mixxx::invalidCacheKey());
+            auto numRows = execCleanupQuery(dbConnection, sqlCmd);
             if (numRows < 0) {
                 kLogger.warning()
                         << "Failed to delete orphaned directory hashes";
@@ -189,7 +189,7 @@ void LibraryScanner::slotStartScan() {
     changeScannerState(SCANNING);
 
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
-    QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
+    QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegExp coverExtensionFilter =
             QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
@@ -515,7 +515,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 }
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
-                                               bool newDirectory, int hash) {
+                                               bool newDirectory, mixxx::cache_key_t hash) {
     ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
     //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
