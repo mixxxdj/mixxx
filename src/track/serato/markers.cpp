@@ -142,6 +142,12 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
         return nullptr;
     }
 
+    if (stream.status() != QDataStream::Status::Ok) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Stream read failed with status" << stream.status();
+        return nullptr;
+    }
+
     SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(new SeratoMarkersEntry(
             startPosition,
             endPosition,
@@ -191,6 +197,12 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
     quint32 trackColorRaw;
     stream >> trackColorRaw;
     QRgb trackColor = colorToRgb(trackColorRaw);
+
+    if (stream.status() != QDataStream::Status::Ok) {
+        qWarning() << "Parsing SeratoMarkers_ failed:"
+                   << "Stream read failed with status" << stream.status();
+        return false;
+    }
 
     seratoMarkers->setEntries(entries);
     seratoMarkers->setTrackColor(trackColor);
