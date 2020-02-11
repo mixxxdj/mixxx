@@ -23,8 +23,8 @@ class SeratoMarkersTest : public testing::Test {
         EXPECT_EQ(startPosition, pEntry->getStartPosition());
         EXPECT_EQ(endPosition, pEntry->getEndPosition());
         EXPECT_EQ(color, pEntry->getColor());
-        EXPECT_EQ(isLocked, pEntry->isLocked());
         EXPECT_EQ(type, pEntry->type());
+        EXPECT_EQ(isLocked, pEntry->isLocked());
 
         EXPECT_EQ(inputValue, pEntry->data());
     }
