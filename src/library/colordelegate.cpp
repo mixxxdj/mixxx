@@ -1,37 +1,29 @@
 #include "library/colordelegate.h"
 
+#include <QColor>
 #include <QPainter>
 #include <QStyle>
-#include <QColor>
 #include <QTableView>
 
 #include "library/trackmodel.h"
-
-namespace {
-    const QRgb hiddenTrackColor = 0xFF000000;
-}
+#include "util/color/rgbcolor.h"
 
 ColorDelegate::ColorDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {
 }
 
 void ColorDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
-    VERIFY_OR_DEBUG_ASSERT(index.data().canConvert<QColor>()) {
-        return;
-    }
-
-    QColor color = qvariant_cast<QColor>(index.data());
-    VERIFY_OR_DEBUG_ASSERT(color.isValid()) {
-        return;
-    }
-
-    // Filter out track color that is hidden
-    if (color.rgb() == hiddenTrackColor) {
+    DEBUG_ASSERT(index.data().isValid());
+    if (index.data().isNull()) {
+        // Filter out track color that is hidden
         if (option.state & QStyle::State_Selected) {
             painter->fillRect(option.rect, option.palette.highlight());
         }
         return;
     }
+
+    QColor color = mixxx::toQColor(mixxx::RgbColor(index.data().toUInt()));
+    qWarning() << "trackColor" << color;
     painter->fillRect(option.rect, color);
 
     // Paint transparent highlight if row is selected

@@ -15,8 +15,6 @@ namespace {
 
 constexpr bool sDebug = false;
 
-constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0x000000); // black
-
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
@@ -472,8 +470,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
-        trackValue.setValue(toQVariant(
-                pTrack->getColor().value_or(kDefaultTrackColor)));
+        trackValue.setValue(toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
