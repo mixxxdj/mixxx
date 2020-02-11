@@ -122,8 +122,7 @@ for:
     - xvfb-run -- cmake --build . --target benchmark
 
   after_test:
-    - curl -OL https://raw.githubusercontent.com/rpavlik/jenkins-ctest-plugin/master/ctest-to-junit.xsl
-    - xsltproc -o ctest-to-junit-results.xml ctest-to-junit.xsl Testing/*/Test.xml
+    - xsltproc -o ctest-to-junit-results.xml ../cmake/ctest-to-junit.xsl Testing/*/Test.xml
     - curl -F 'file=@ctest-to-junit-results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
 
 
@@ -218,8 +217,9 @@ for:
     # Found at https://help.appveyor.com/discussions/suggestions/5298-support-ctest-xml-test-results
     - ps: |
         $ctest_xml = Get-ChildItem -Path Testing\*\Test.xml
+        $ctest_to_junit_xsl = Get-ChildItem -Path ..\cmake\ctest-to-junit.xsl
         $XSLInputElement = New-Object System.Xml.Xsl.XslCompiledTransform
-        $XSLInputElement.Load("https://raw.githubusercontent.com/rpavlik/jenkins-ctest-plugin/master/ctest-to-junit.xsl")
+        $XSLInputElement.Load($ctest_to_junit_xsl)
         $XSLInputElement.Transform((Resolve-Path $ctest_xml), (Join-Path (Resolve-Path .) "ctest-to-junit-results.xml"))
         $wc = New-Object 'System.Net.WebClient'
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\ctest-to-junit-results.xml))
