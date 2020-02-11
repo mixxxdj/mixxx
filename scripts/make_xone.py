@@ -158,11 +158,9 @@ for cc in cc_controls:
 #             'button2', 'button3', 'button4']
 
 
-"""
 ##################################################
-########### Actual stuff you can edit! ###########
+# Actual stuff you can edit!                     #
 ##################################################
-"""
 
 # Note that EQ control objects are munged in code to produce the correct
 # control objects as of Mixxx 2.0.
@@ -425,26 +423,24 @@ def get_group_name(channel, key):
     """Optionally munge group name if an EQ"""
     if "filter" in key:
         return "[EqualizerRack1_[Channel%d]_Effect1]" % channel
-    else:
-        return "[Channel%d]" % channel
+    return "[Channel%d]" % channel
 
 
 def get_key_name(key):
     """Optionally munge key name if an EQ"""
     if key == "filterLow":
         return "parameter1"
-    elif key == "filterMid":
+    if key == "filterMid":
         return "parameter2"
-    elif key == "filterHigh":
+    if key == "filterHigh":
         return "parameter3"
-    elif key == "filterLowKill":
+    if key == "filterLowKill":
         return "button_parameter1"
-    elif key == "filterMidKill":
+    if key == "filterMidKill":
         return "button_parameter2"
-    elif key == "filterLowKill":
+    if key == "filterLowKill":
         return "button_parameter3"
-    else:
-        return key
+    return key
 
 
 # cc controls (no latching needed)

@@ -9,9 +9,8 @@ def createSlice(columns):
     """convert an input string into a slice object"""
     if columns == "all":
         return slice(None)
-    else:
-        # creates a numpy array
-        return np.int64(columns.split(","))
+    # creates a numpy array
+    return np.int64(columns.split(","))
 
 
 def combine_files(files):
