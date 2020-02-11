@@ -78,15 +78,15 @@ repos:
     stages:
     - commit
     - manual
--   repo: https://gitlab.com/pycqa/flake8
-    rev: '3.7.9'
-    hooks:
-    -   id: flake8
-        files: ^scripts/.*$
 -   repo: https://github.com/psf/black
     rev: stable
     hooks:
     -   id: black
+        files: ^scripts/.*$
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: '3.7.9'
+    hooks:
+    -   id: flake8
         files: ^scripts/.*$
 - repo: local
   hooks:
