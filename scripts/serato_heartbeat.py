@@ -55,7 +55,7 @@ MSG_SERATO_KEEPALIVE = mido.Message.from_bytes([0xBF, 0x64, 0x00])
 
 
 def load_descriptions(filename):
-    tree = xml.etree.ElementTree.parse(filename)
+    tree = xml.etree.ElementTree.parse(filename)  # nosec
     for control in tree.findall("controller/controls/control"):
         description = control.find("description")
         status = control.find("status")
@@ -102,6 +102,7 @@ def main(argv=None):
     parser.add_argument("-f", "--xmlfile", help="Mixxx XML file")
     args = parser.parse_args(argv)
 
+    portname = None
     for portname in mido.get_output_names():
         if args.port in portname:
             break
