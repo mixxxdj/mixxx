@@ -117,7 +117,11 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+set_property(DIRECTORY APPEND
+    PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/.git/index")
 
+# uses GIT_BRANCH and GIT_COMMIT_COUNT
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
@@ -692,16 +696,19 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
-)
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
-)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
+  )
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
+  )
+endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
 if(MSVC)
@@ -955,6 +962,7 @@ add_executable(mixxx-test
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
+  src/test/rgbcolor_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
   src/test/schemamanager_test.cpp
@@ -1207,6 +1215,9 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/decode.c
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
+if(WIN32)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PUBLIC MP3GuessEnc)
 
