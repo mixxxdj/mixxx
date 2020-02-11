@@ -6,6 +6,9 @@ MIT License.
 
 It was taken from this GitHub repositiory:
     https://github.com/rpavlik/jenkins-ctest-plugin
+
+Includes modifications by Jan Holthuis to add support for skipped/errored
+tests.
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:output method="xml" indent="yes" />
@@ -27,10 +30,18 @@ It was taken from this GitHub repositiory:
 					<testcase classname="projectroot{$className}"
 						name="{$testName}"
 						time="{$duration}">
-						<xsl:if test="@Status!='passed'">
+						<xsl:if test="@Status='failed'">
 							<failure>
 								<xsl:value-of select="$output" />
 							</failure>
+						</xsl:if>
+						<xsl:if test="@Status='errored'">
+							<error>
+								<xsl:value-of select="$output" />
+							</error>
+						</xsl:if>
+						<xsl:if test="@Status='notrun'">
+							<skipped />
 						</xsl:if>
 						<system-out>
 							<xsl:value-of select="$output" />
