@@ -33,7 +33,7 @@ class SeratoMarkersTest : public testing::Test {
         EXPECT_EQ(type, pEntry->type());
         EXPECT_EQ(isLocked, pEntry->isLocked());
 
-        EXPECT_EQ(inputValue, pEntry->data());
+        EXPECT_EQ(inputValue, pEntry->dump());
     }
 
     void parseMarkersData(const QByteArray& inputValue, bool valid) {
@@ -44,7 +44,7 @@ class SeratoMarkersTest : public testing::Test {
             return;
         }
 
-        EXPECT_EQ(inputValue, seratoMarkers.data());
+        EXPECT_EQ(inputValue, seratoMarkers.dump());
     }
 };
 

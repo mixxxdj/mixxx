@@ -25,7 +25,7 @@ class SeratoMarkersEntry {
     }
     ~SeratoMarkersEntry() = default;
 
-    QByteArray data() const;
+    QByteArray dump() const;
     static SeratoMarkersEntryPointer parse(const QByteArray& data);
 
     int type() const {
@@ -59,7 +59,7 @@ class SeratoMarkersEntry {
 };
 
 inline bool operator==(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
-    return (lhs.data() == rhs.data());
+    return (lhs.dump() == rhs.dump());
 }
 
 inline bool operator!=(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
@@ -92,7 +92,7 @@ class SeratoMarkers final {
 
     static bool parse(SeratoMarkers* seratoMarkers, const QByteArray& data);
 
-    QByteArray data() const;
+    QByteArray dump() const;
 
     bool isEmpty() const {
         return m_entries.isEmpty();

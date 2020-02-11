@@ -58,7 +58,7 @@ quint32 colorFromRgb(QRgb rgb) {
 
 namespace mixxx {
 
-QByteArray SeratoMarkersEntry::data() const {
+QByteArray SeratoMarkersEntry::dump() const {
     QByteArray data;
     data.resize(kEntrySize);
 
@@ -210,7 +210,7 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
     return true;
 }
 
-QByteArray SeratoMarkers::data() const {
+QByteArray SeratoMarkers::dump() const {
     QByteArray data;
     data.resize(sizeof(quint16) + 2 * sizeof(quint32) + kEntrySize * m_entries.size());
 
@@ -220,7 +220,7 @@ QByteArray SeratoMarkers::data() const {
     stream << kVersion << m_entries.size();
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
-        stream.writeRawData(pEntry->data(), kEntrySize);
+        stream.writeRawData(pEntry->dump(), kEntrySize);
     }
     stream << colorFromRgb(m_trackColor);
     return data;
