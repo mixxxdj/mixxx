@@ -1,12 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Interactive prompt to simulate Serato mode on controllers.
-
 This script sends the Serato SysEx messages to a Serato MIDI controller, then
-continuously sends a special MIDI heartbeat message. This is for controllers
-like the Roland DJ-505, that will fall back into a generic mode with a reduced
-feature set if that's not the case.
+continuously sends a special MIDI heartbeat message while presenting an
+interactive prompt that allows sending custom MIDI messages. This is useful for
+controllers like the Roland DJ-505, that will fall back into a generic mode
+with a reduced feature set if that's not the case.
+
+When you're going to create a mapping for such a controller, you can use this
+script to send custom different MIDI messages and see how the controller reacts
+to it while that mode is active. Please make sure that the actual mapping must
+not depend on this script being running in the background. Instead, you can
+just add somethink like this to your JavaScript controller mapping:
+
+    // Send Serato SysEx messages to request initial state and unlock pads
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6);
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6);
+    // Send "keep-alive" message to keep controller in Serato mode
+    engine.beginTimer(500, function() {
+        midi.sendShortMsg(0xBF, 0x64, 0x00);
+    });
+
+Optionally, you can also supply a Mixxx XML mapping file to this script. It
+will use that information to present information about available MIDI messages.
 """
 import argparse
 import queue
@@ -77,7 +93,11 @@ def print_help(descriptions):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Interactive MIDI prompt for Serato mode controllers.",
+        epilog=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("portname", help="MIDI output port name")
     parser.add_argument("-f", "--xmlfile", help="Mixxx XML file")
     args = parser.parse_args(argv)
