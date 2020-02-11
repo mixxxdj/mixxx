@@ -1111,6 +1111,9 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
     // If the second element is false, then the database does still have to be
     // parsed.
     QList<QVariant> data = item->getData().toList();
+    VERIFY_OR_DEBUG_ASSERT(data.size() == 2) {
+        return;
+    }
     QString playlist = data[0].toString();
     bool isPlaylist = data[1].toBool();
 
